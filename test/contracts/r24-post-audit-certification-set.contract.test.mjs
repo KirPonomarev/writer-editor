@@ -3234,3 +3234,47 @@ test('audit-cycle-two verifier preserves role-relative raw ruleset bytes while r
 test('audit-cycle-two verifier rejects malformed terminal-observer raw ruleset evidence',()=>{assert.throws(()=>verifyAuditCycle2TerminalArtifact(cycle2TerminalFixture((subject)=>{subject.member.liveRuleset.returnedBytesDigest='0';})),/E_HEX/);assert.throws(()=>verifyAuditCycle2TerminalArtifact(cycle2TerminalFixture((subject)=>{subject.member.liveRuleset.returnedByteLength=0;})),/E_CYCLE2_LIVE_RULESET_BINDING/);});
 test('audit-cycle-two durable carrier rejects unknown nested keys zero archive size and arbitrary expected digest',()=>{const subject=cycle2TerminalFixture(),result=verifyAuditCycle2TerminalArtifact(subject),base=createAuditCycle2DurableCarrier({zipBytes:subject.zipBytes,memberBytes:result.memberBytes,runEvidenceFile:subject.runEvidenceFile,artifactEvidence:subject.artifactEvidence,verification:result.verification});for(const mutate of [(carrier)=>{carrier.provenance.unknown=true;},(carrier)=>{carrier.archive.sizeBytes=0;}]){const carrier=structuredClone(base);mutate(carrier);const file=durableFile(carrier);assert.throws(()=>verifyAuditCycle2DurableCarrier(file,{expectedCarrierDigest:file.digest}),/E_UNKNOWN_OR_MISSING_FIELD|E_CYCLE2_DURABLE_ARCHIVE/);}const file=durableFile(base);assert.throws(()=>verifyAuditCycle2DurableCarrier(file,{expectedCarrierDigest:'0'.repeat(64)}),/E_CYCLE2_DURABLE_CARRIER_DIGEST/);});
 test('audit-cycle-two terminal verifier rejects repair-law and live-ruleset substitutions',()=>{assert.throws(()=>verifyAuditCycle2TerminalArtifact(cycle2TerminalFixture((subject)=>{subject.member.verifierRepairs.durableCarrier.expectedCarrierDigestRequired=false;})),/E_CYCLE2_DURABLE_REPAIR/);assert.throws(()=>verifyAuditCycle2TerminalArtifact(cycle2TerminalFixture((subject)=>{subject.member.liveRuleset.protections.bypassActorCount=1;})),/E_CYCLE2_LIVE_RULESET_VIEW|E_CYCLE2_LIVE_RULESET_POLICY/);});
+
+
+test('historical pin through a transparent Git adapter preserves the full result without enumerating history', () => {
+  const candidateSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const expected=verifyDocxNotificationOutcomePostEvaluationException({candidateSha});
+  const calls=[];
+  const git=(args,options={})=>{calls.push(args);return execFileSync('git',args,{...options,maxBuffer:64*1024*1024});};
+  assert.deepEqual(verifyDocxNotificationOutcomePostEvaluationException({candidateSha,git}),expected);
+  assert.equal(calls.some(a=>a[0]==='rev-list'),false);
+  assert(calls.some(a=>a[0]==='rev-parse'&&a[1]===`${candidateSha}^{commit}`));
+  assert(calls.some(a=>a[0]==='rev-parse'&&a[1]===`${expected.candidateSha}^{commit}`));
+  assert(calls.some(a=>a[0]==='merge-base'&&a[2]===expected.candidateSha&&a[3]===candidateSha));
+  assert(calls.some(a=>a[0]==='diff'&&a[2]===`${expected.baseSha}..${expected.candidateSha}`));
+});
+test('historical pin never substitutes for validating the selected artifact bytes', () => {
+  const candidateSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const expected=verifyDocxNotificationOutcomePostEvaluationException({candidateSha});
+  const git=(args,options={})=>{
+    const bytes=execFileSync('git',args,{...options,maxBuffer:64*1024*1024});
+    return args[0]==='show'&&args[1]===`${expected.candidateSha}:${R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.bundlePath}`
+      ? Buffer.concat([Buffer.from(bytes),Buffer.from('changed\n')]) : bytes;
+  };
+  assert.throws(()=>verifyDocxNotificationOutcomePostEvaluationException({candidateSha,git}),/E_DOCX_NOTIFICATION_ARTIFACT_DIGEST/);
+});
+test('synthetic successor identity keeps exhaustive lookup instead of inheriting a real historical pin', () => {
+  const fixture=docxNotificationFixture({successor:true}),calls=[];
+  const git=(args,options={})=>{calls.push(args);return fixture.git(args,options);};
+  const expected=verifyDocxFixture(fixture);
+  assert.deepEqual(verifyDocxNotificationOutcomePostEvaluationException({candidateSha:fixture.requested,git}),expected);
+  assert(calls.some(a=>a[0]==='rev-list'));
+});
+
+test('unresolved requested commit identity falls back to actual history and keeps the same verdict', () => {
+  const candidateSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const expected=verifyDocxNotificationOutcomePostEvaluationException({candidateSha});
+  const calls=[];
+  const git=(args,options={})=>{
+    calls.push(args);
+    if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{commit}`)return Buffer.from('0'.repeat(40)+'\n');
+    return execFileSync('git',args,{...options,maxBuffer:64*1024*1024});
+  };
+  assert.deepEqual(verifyDocxNotificationOutcomePostEvaluationException({candidateSha,git}),expected);
+  assert(calls.some(a=>a[0]==='rev-list'));
+});
