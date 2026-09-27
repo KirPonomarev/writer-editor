@@ -514,7 +514,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "c9d887830a7dd936af3551018ab71c740562fe4a9f42ff10aae262a3ea573740"
+        "sha256": "f4d9c1ecf64710637ef17f7b28c7ce39c4eaa3883929b44f2252184c5e2ebab0"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -734,7 +734,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "e057b11a274f39fd01807ae70b70f3bc8d87f597ceb50566ee0c5fdbe7836f3f"
+        "sha256": "37140754411ae92cb0a93f75d343b0c5d396b456ca1665d3f8e382f0eb7defbb"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
