@@ -1869,8 +1869,8 @@ function renderWordCommentAuthoring(projection) {
   const button = (action, label, threadId = '', commentId = '') => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="${action}" data-thread-id="${escape(threadId)}" data-comment-id="${escape(commentId)}" ${wordCommentBusy || !p.available ? 'disabled' : ''}>${label}</button>`;
   const threads = reviewSurfaceArray(p.threads).map(thread => `<article class="right-rail-review-item right-rail-review-item--comments">
     <div class="right-rail-review-item-meta"><span>${thread.status === 'resolved' ? 'Завершено' : 'Открыто'}</span><span>${escape(thread.anchor?.selectedText || '')}</span></div>
-    ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><p class="right-rail-review-item-body">${escape(message.body)}</p>${button('edit', 'Править', thread.threadId, message.commentId)}</div>`).join('')}
-    <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить', thread.threadId)}</div>
+    ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><p class="right-rail-review-item-body">${escape(message.body)}</p>${button('edit', 'Править', thread.threadId, message.commentId)}${message.kind === 'reply' ? button('deleteReply', 'Удалить ответ', thread.threadId, message.commentId) : ''}</div>`).join('')}
+    <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить обсуждение', thread.threadId)}</div>
   </article>`).join('');
   const sameContext = p.available && wordCommentDraft?.binding.subjectId === p.subjectId;
   const draft = wordCommentDraft ? `<div class="right-rail-review-item"><label for="word-comment-body">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</label><textarea id="word-comment-body" class="modal__textarea" rows="4" style="width:100%;box-sizing:border-box" ${wordCommentBusy ? 'readonly' : ''}>${escape(wordCommentDraft.body)}</textarea>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
@@ -1926,7 +1926,17 @@ async function handleWordCommentAction(button) {
       if (!wordCommentDraft || wordCommentDraft.binding.subjectId !== p.subjectId) throw new Error('Вернитесь к исходной сцене.');
       const { binding: bound, ...intent } = wordCommentDraft; payload = { ...bound, ...intent };
     } else {
-      payload = { ...binding, action, threadId, requestId: 'comment-' + crypto.randomUUID(),
+      // A missing reply ID must never degrade into whole-thread deletion.
+      if (action === 'deleteReply') {
+        const thread = reviewSurfaceArray(p.threads).find(t => t.threadId === threadId);
+        const reply = reviewSurfaceArray(thread?.messages).find(m => m.commentId === commentId);
+        if (!commentId || reply?.kind !== 'reply' || commentId === thread.rootCommentId) {
+          throw new Error('Обновите список комментариев: ответ больше недоступен.');
+        }
+      }
+      payload = { ...binding, action: action === 'deleteReply' ? 'delete' : action, threadId,
+        requestId: 'comment-' + crypto.randomUUID(),
+        ...(action === 'deleteReply' ? { commentId } : {}),
         ...(action === 'reanchor' ? { anchor: wordCommentSelectionIntent() } : {}) };
     }
     wordCommentBusy = true; wordCommentNotice = 'Сохранение…'; renderReviewSurface();
