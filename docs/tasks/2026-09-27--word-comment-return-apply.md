@@ -14,6 +14,14 @@ H: retaining a one-use closure preserves the original preview identities without
 reparsing the DOCX or granting authority to renderer data.
 B: protect scenes, drafts, other project data and unrelated review projections;
 no rich-comment grammar expansion, dependencies, storage schema or new writer.
+The fresh native Word return exposed proofing-only metadata on literal comment
+text. For authenticated return, the PLAIN_TEXT_V1 equivalence excludes Word's
+proofing language and edit-session IDs from canonical authoring state. Each
+accepted w:lang attribute and paragraph rsidRPr occurrence is retained in the
+return IR normalization ledger with its exact part, path, offset and value.
+The original returned DOCX remains unchanged. This does not claim preservation
+of Word proofing preferences. Generic import remains strict; rich formatting,
+hidden text, drawings, unknown attributes and content remain unsupported.
 P: actual Core/Kernel/lease negative cases; cancel, stale context and one-use checks;
 SOURCE/PACKAGED ordinary native entry, confirmation, reopen and independent readback;
 existing RTK, baseline, inventory, source bindings, CI and exact merged verification.
