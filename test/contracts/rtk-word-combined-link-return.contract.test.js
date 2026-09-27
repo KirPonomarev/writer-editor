@@ -168,9 +168,10 @@ test('async publication revalidates a link candidate immediately before rename',
  let current=true,options;const input={reviewItems:[{changeId:'docx-clean-link-label-native'}]};
  const sandbox={isDirty:false,autoSaveInProgress:false,queueDiskOperation:fn=>fn(),
  revalidateCleanLinkLabelApplyInput:async()=>({ok:current,reason:'STALE_DURING_PUBLICATION',code:'STALE_DURING_PUBLICATION'}),
- computeHash:hash,publishReviewSceneWithProjectTransaction:()=>{}};
+ computeHash:hash,publishReviewSceneWithProjectTransaction:async(file,content,options)=>{await options.beforeRename();return {ok:true};}};
  vm.createContext(sandbox);vm.runInContext(extracted('runReviewExactTextBatchSafeWriteFromMainState'),sandbox);
  await sandbox.runReviewExactTextBatchSafeWriteFromMainState(async(i,o)=>{options=o;return {ok:true};},input);
- assert.equal(typeof options.beforeRename,'function');await options.beforeRename();current=false;
- await assert.rejects(options.beforeRename(),{code:'STALE_DURING_PUBLICATION'});
+ assert.equal(options.beforeRename,undefined);assert.equal(typeof options.publishScene,'function');
+ await options.publishScene('scene','text',{});current=false;
+ await assert.rejects(options.publishScene('scene','text',{}),{code:'STALE_DURING_PUBLICATION'});
 });

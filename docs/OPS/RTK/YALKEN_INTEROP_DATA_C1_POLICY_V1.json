@@ -510,7 +510,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "bd5cabc353e7bbb9850372d5305b461662c5cee1a2809d3058864ff0f6998793"
+        "sha256": "1cc778dc7905317d713efda04ea0c96eae3cd02ff80295b6478c7599c56cec36"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1158,7 +1158,7 @@
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
-        "sha256": "23db5c7465e814cc3e92bd2c9440d765bd0c631a0dd2333380f390e215db1288"
+        "sha256": "235932e984eb2889b4897df620f6ad8ea3ee07714c826db4dad14d393897838b"
       },
       {
         "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",

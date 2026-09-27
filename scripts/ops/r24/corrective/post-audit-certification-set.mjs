@@ -1331,7 +1331,7 @@ export const R24_INTEROP_WORD_FULL_MANUSCRIPT_LINK_RETURN_SUCCESSOR=Object.freez
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fa4f27cea6c81c6ae1bec5a54651a2c6a6a126c79f8354a5b00a9b719e67cf1f"
+      "sha256": "1d5e23feedc79a23c8ee6d69df84567c45edebe0a074f4ee6d989c226de99cba"
     }
   ]
 });

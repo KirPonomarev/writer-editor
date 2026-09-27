@@ -23041,7 +23041,7 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
         };
       }
       let trustedLinkReplacementDigest = null;
-      let beforeRename = safeWriteOptions.beforeRename;
+      let publishScene = publishReviewSceneWithProjectTransaction;
       if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
         || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
@@ -23049,13 +23049,15 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
         if (input.reviewItems.length === 1 && input.reviewItems[0].richReplacementLink) {
           trustedLinkReplacementDigest = computeHash(JSON.stringify(input.reviewItems[0]));
         }
-        beforeRename = async () => {
+        const beforeRename = async () => {
           const publicationGate = await revalidateCleanLinkLabelApplyInput(input);
           if (!publicationGate.ok) throw Object.assign(new Error(publicationGate.reason), { code: publicationGate.code });
         };
+        publishScene = (filePath, content, options) => publishReviewSceneWithProjectTransaction(
+          filePath, content, { ...options, beforeRename },
+        );
       }
-      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest, beforeRename,
-        publishScene: publishReviewSceneWithProjectTransaction });
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest, publishScene });
     },
     'review exact text batch safe apply',
   );
