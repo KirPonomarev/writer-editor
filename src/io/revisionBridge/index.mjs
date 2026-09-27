@@ -10,6 +10,7 @@ import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../para
 import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import { genericCommentCandidates } from './genericWordComments.mjs';
+import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
   extractDocumentMediaReferencesV1,
@@ -4577,6 +4578,47 @@ function docxReviewFormattingBuildFullManuscriptBlockResolver(exportMap = {}) {
     }
     return { ok: true, authority: cloneJsonSafe(claims[0]) };
   };
+}
+
+// Read-only analysis of one clean link edit across a fully bound manuscript.
+// Every paragraph is compared, including untouched scenes; position alone
+// never establishes identity. The caller retains all write authority.
+export function analyzeFullManuscriptCleanLinkReturn(exportMap, reviewIr = {}) {
+  const reject = detail => ({ ok: false, detail, canWriteManuscript: false });
+  const scenes = exportMap?.scenes;
+  const returned = reviewIr.formattingParagraphs;
+  if (exportMap?.scope !== 'full-manuscript' || !Array.isArray(scenes) || !scenes.length
+    || !Array.isArray(returned) || returned.length > 256) return reject('manuscript-shape');
+  const blocks = scenes.flatMap(scene => (scene.blocks || []).map(block => ({ ...block, sceneId: scene.sceneId })));
+  if (blocks.length !== returned.length || new Set(scenes.map(s => s.sceneId)).size !== scenes.length)
+    return reject('manuscript-cardinality');
+  const guard = docxReviewPreviewSessionBookmarkGuard(exportMap, returned, { fullManuscriptExportMap: exportMap });
+  if (!guard || guard.diagnostics.length) return reject('manuscript-bookmarks');
+  const baseline = [];
+  for (let i = 0; i < blocks.length; i += 1) {
+    const block = blocks[i], paragraph = returned[i];
+    const identity = guard.resolve(paragraph);
+    if (!identity || identity.id !== block.sceneId || identity.blockId !== block.blockId
+      || paragraph.paragraphIndex !== i || block.documentParagraphIndex !== i)
+      return reject('manuscript-identity');
+    const text = (block.formatIr?.runs || []).map(run => run.text).join('');
+    if (block.canonicalTextSha256 !== `sha256:${sha256Hex(text)}`
+      || block.canonicalMarksSha256 !== `sha256:${hashCanonicalValue(block.formatIr)}`)
+      return reject('manuscript-baseline');
+    baseline.push({ text, formatIr: block.formatIr });
+  }
+  const input = { baselineParagraphs: baseline, returnedParagraphs: returned, sceneId: 'full-manuscript',
+    reviewIr, exportTypography: exportMap.exportTypography, allowTargetChange: true };
+  const whole = analyzeCleanLinkLabelReturn({ ...input, comparisonOnly: true });
+  if (!whole.ok) return whole;
+  const sceneId = blocks[whole.effect.paragraphOrdinal].sceneId;
+  const indices = blocks.map((block, index) => block.sceneId === sceneId ? index : -1).filter(index => index >= 0);
+  const result = analyzeCleanLinkLabelReturn({ ...input, sceneId,
+    baselineParagraphs: indices.map(index => baseline[index]),
+    returnedParagraphs: indices.map(index => returned[index]),
+  });
+  if (result.ok) result.change.documentParagraphIndex = whole.effect.paragraphOrdinal;
+  return result;
 }
 
 function docxReviewFormattingLegacyFormatIr(paragraphText) {

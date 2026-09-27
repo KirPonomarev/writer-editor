@@ -1633,12 +1633,12 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "131472fe2d94170b863865252df6d8d4b3b6cfab3415547dd398d8df5d78c56a",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "sha256": "97deb1c4b4c0f5f5534558dc8d4a55723d32ce6adbbc2695ec362de524fe90ff",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1651,12 +1651,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "0d8f70ec4e6c3a34dc0f2f2d8067cbcad1e774c01ae5559efaafab0bd6263554",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "sha256": "bd5cabc353e7bbb9850372d5305b461662c5cee1a2809d3058864ff0f6998793",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:54.204296Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "07292be814a6ce5650ddaf143838333c71e0fc3d547544bfe9f278c5c3680b9d",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "sha256": "fa4f27cea6c81c6ae1bec5a54651a2c6a6a126c79f8354a5b00a9b719e67cf1f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "b413eac05ef3686ec9768e2e3faa5e970204a818bc2e9a1f7b6324a0c9078e9b",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "sha256": "d436d6bc41ba4386904821cc7c5956d5d8e7f0844f31abed5ba8b0d900031ac7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ae47074a611d914ab0e6e22a1cdd87071f3a87e405509a7b8d1dbd3587a9a9a4",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "sha256": "18a24291375aff612c518b0b715d8037fd0a00769fdfac536e72de25c0c0983f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2200,10 +2200,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
-      "sha256": "2a95ccc2aff765988f72afe223265dcf270bea119c444d1b57e952b4952e6d61",
-      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
-      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "3e5ebb944be957db3be87bd6c54d3891157bcd07100a00fdb794dab2644fc5e6",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2317,10 +2317,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
-      "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b",
-      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "23db5c7465e814cc3e92bd2c9440d765bd0c631a0dd2333380f390e215db1288",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e6f8b5e6648b7555bfc07e98756f764f8282453b2abb4b034c1b42a231630c9d",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
+      "sha256": "baa7911183e24c3228b299d63d1b9e87893e8c42199904b49e789757f41f3ad3",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9fb7106b4ce3176a58769fde82985f5731511cc3ae6030597cd4ce8c14a459f7",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "sha256": "ca6a00c067d03313bf28cc217b1578c668f396fd56d67df7d0e80f6121214f05",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "367f8b5f285d0a3a3751787f7286539d3512f39a83a79a95fbe9a5ad02c75226",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
-      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
+      "sha256": "142bc304eb1d00fa8a7ab7015d0c7f1553ac62fe909e9a69426a8bd568f02e2d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:04:36.797673Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2728,6 +2728,15 @@
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-28--word-full-manuscript-link-return.md",
+      "sha256": "e53603cfe43b3f38415ddfb2d501155bdbe9acb137a11501b26050d5a11209e8",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approvedBy": "owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [
@@ -13207,6 +13216,267 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "131472fe2d94170b863865252df6d8d4b3b6cfab3415547dd398d8df5d78c56a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "0d8f70ec4e6c3a34dc0f2f2d8067cbcad1e774c01ae5559efaafab0bd6263554",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "07292be814a6ce5650ddaf143838333c71e0fc3d547544bfe9f278c5c3680b9d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b413eac05ef3686ec9768e2e3faa5e970204a818bc2e9a1f7b6324a0c9078e9b",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ae47074a611d914ab0e6e22a1cdd87071f3a87e405509a7b8d1dbd3587a9a9a4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "2a95ccc2aff765988f72afe223265dcf270bea119c444d1b57e952b4952e6d61",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "e6f8b5e6648b7555bfc07e98756f764f8282453b2abb4b034c1b42a231630c9d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9fb7106b4ce3176a58769fde82985f5731511cc3ae6030597cd4ce8c14a459f7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "367f8b5f285d0a3a3751787f7286539d3512f39a83a79a95fbe9a5ad02c75226",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "899b7ed5f81f81f9eadbada43c5dbb3eec85e53d772508ce45a790d4f36e0be9",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "640b0b96cf50a2afead4b37b3378ae512e4351c1ab630b7f4f8f34a3e7c9f509",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "343bb53f177e8de545c7d570caa0b32d2f9a9b521d89a5f0cb8b55ef83f5508a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "2dc1524887f47e7bc55db60e95c93ab3b6297d570326d4350d1c3c8dfd8efe23",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "56d812391db6bf62366f2e77626f2caf7116d8b869ac84410a5b896ca9c05094",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "fc3fd0c5afce804fdabede82ad618a53a0e659776d13a937aaf67801e4454dd9",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "13e6e9fa1129e0695e3fb192f38a39bb7d2d294fc2daf2db367fb41cd4d80add",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "48643f928ca745405ca9ecad9c622a4efea730d328b3c135dfa75134a53625c7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:02:05.564609Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "30f36967ef9fd384ad3043b81fd381e987df862e824260863031406e61173187",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "682ed69498442f122d4acdb6c05c902d0092eb98c01b9284169370f4103f71cb",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "9c18f5b8f5d916866d86dcde3b38b71dd574c9f30ecd502ee93f54d9ee4a888a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "164fe723e092f24d69c7b2abacc5cd54019e5a2b86071e2183bbd63e2d7a165c",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "d9a0674891595dcae1cb113ac49861ade98b7b526b8f18fefc61d32c7e07b400",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:54.204296Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "190c29721981292444609803b7262ff305da4df91d2f12a1d8e383e4745c3bb2",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:54.204296Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "0fa533eafafd157535b3570ee6e12100e0548c174e426215ce9ca895f83e9fec",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:54.204296Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "f1e490beacfb40c8d993cfd8a75c036b7e2d77c0308d7da6c55f3b517d18ce57",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "6377d5f76deabbb0d7bb33fee12af080517ee8e7f87b1015cd616963d7f1f818",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:54.204296Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "17c0b37407fd723148855f05c6e22e1824be3b18adb9644a2a73f3c391f10420",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "7864e0b24733767908694e3015ec02edc0ced693bbc2b98b785b71a2c3c64143",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928",
+      "approvedAtUtc": "2026-09-27T23:03:09.943224Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized revision-3 Word plan: admit one clean link label and optional target change from a fully compared authenticated manuscript, with queued all-scene revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     }
   ]
 }
