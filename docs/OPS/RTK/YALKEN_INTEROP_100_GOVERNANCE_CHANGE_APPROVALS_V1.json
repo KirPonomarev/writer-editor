@@ -1003,12 +1003,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
-      "sha256": "fba5849bf569643d681eca1f00bfe63070e5051cb49b2e3a7206f6576dfca989"
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit.",
+      "sha256": "caf8fcc0a3836682151817ed64b87d74f6e82af5b84cfc764fee2b74532ab74a"
     },
     {
       "approved": true,
@@ -1633,30 +1633,30 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "7f4e349a6c11aaf11a5e24ee2220f057554a25b12809cc70ef561209ff6fd39b",
-      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T12:39:34.891626+00:00",
+      "sha256": "131472fe2d94170b863865252df6d8d4b3b6cfab3415547dd398d8df5d78c56a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "851fdeb358efc1f5ecf1ac05aecd4805b5311fa71687c83181a98108ee6bd092",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "sha256": "36229185267b487b2d772ccfda8883fd3d223845a1ccee8015eb996496fb1ad7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:52:24.829914+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "8ba216707838fcfb629186a03a400c8e2e70b981bd8bd79cc3e59723c432bb36",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "sha256": "0d8f70ec4e6c3a34dc0f2f2d8067cbcad1e774c01ae5559efaafab0bd6263554",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1696,12 +1696,12 @@
     },
     {
       "filePath": "src/utils/docxImportLocalFilePreview.js",
-      "sha256": "b6d9e8d16526357cef943a66cf35b0d43d88d9eb263c1a385072012f7a13a48e",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "sha256": "d5cba126ec7294735dbbf4206e3ed5b06b6ce709ae511439c69617c71d9e628e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7f3b58bfa605b8dd7ea9b1c309e57ce010484d964725954fec8964d7f0ea4fcb",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "sha256": "07292be814a6ce5650ddaf143838333c71e0fc3d547544bfe9f278c5c3680b9d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "8aacc9827d19ae0a820008f8f4db836f771b8c7237b3f8d9b0a232a864cf69ae",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "sha256": "b413eac05ef3686ec9768e2e3faa5e970204a818bc2e9a1f7b6324a0c9078e9b",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "a7d4f9843ba554b007d1468ee17d487b2d72ca4755fbf33bfcdf3890d1c0cd2f",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "sha256": "ae47074a611d914ab0e6e22a1cdd87071f3a87e405509a7b8d1dbd3587a9a9a4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2344,12 +2344,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
-      "sha256": "4f27853ece39418f9c1f2dd528c0d149d117cc6b5905920a163c1ca8b160d375",
-      "approvedAtUtc": "2026-09-26T23:04:11.160163Z",
-      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "2f118382668b69124241b0c8b0a4748d8e8181200b3168ed801df4375e18e61d",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
@@ -2371,10 +2371,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-      "sha256": "3f2a345b8f25aa08e714f9da4204592701b07983c43be3ecd5e6d5b8eea0a5d4",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained.",
+      "sha256": "bbe09e3dc55cfe6eaa64cc7c31075a9dcc2b43e5cbe5de8cdfded38123b95536",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
@@ -2506,10 +2506,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-      "sha256": "264219437aa452abc7a6c581569b0f1b160bc7253bb7f6081b76436e0a0515da",
-      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
-      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "d24876bce451116f417b6d62efb67264dbd76f0b1a0d7ccfe9318cd4ea778c29",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "0e353ddbd777ece8565d63e28bb95b59429342e25efd7866f0dc45f5f6d43630",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:48.579362+00:00",
+      "sha256": "e6f8b5e6648b7555bfc07e98756f764f8282453b2abb4b034c1b42a231630c9d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b6daba5012d79ec33cc6f541d940f65413f538d96f69a3d7b55dbb728b91d02b",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "sha256": "9fb7106b4ce3176a58769fde82985f5731511cc3ae6030597cd4ce8c14a459f7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "10f7dba22bc4e9349f74e155a655e2eeea2bd454daad90cb1ecd00853138e05e",
-      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
-      "approvedAtUtc": "2026-09-27T18:26:48.579362+00:00",
+      "sha256": "367f8b5f285d0a3a3751787f7286539d3512f39a83a79a95fbe9a5ad02c75226",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:16:02.702014+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2719,6 +2719,15 @@
       "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-native-comment-intake.md",
+      "sha256": "e973969eb840508b5b1b242d85ad3f1cd5ffb1764a3fbc6b07e4fca9511bb248",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     }
   ],
   "evidenceStampIds": [
@@ -12856,6 +12865,348 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "7f4e349a6c11aaf11a5e24ee2220f057554a25b12809cc70ef561209ff6fd39b",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:39:34.891626+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "851fdeb358efc1f5ecf1ac05aecd4805b5311fa71687c83181a98108ee6bd092",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "8ba216707838fcfb629186a03a400c8e2e70b981bd8bd79cc3e59723c432bb36",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "sha256": "4f27853ece39418f9c1f2dd528c0d149d117cc6b5905920a163c1ca8b160d375",
+      "approvedAtUtc": "2026-09-26T23:04:11.160163Z",
+      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "264219437aa452abc7a6c581569b0f1b160bc7253bb7f6081b76436e0a0515da",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "7f3b58bfa605b8dd7ea9b1c309e57ce010484d964725954fec8964d7f0ea4fcb",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a7d4f9843ba554b007d1468ee17d487b2d72ca4755fbf33bfcdf3890d1c0cd2f",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b6daba5012d79ec33cc6f541d940f65413f538d96f69a3d7b55dbb728b91d02b",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0e353ddbd777ece8565d63e28bb95b59429342e25efd7866f0dc45f5f6d43630",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:48.579362+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "8aacc9827d19ae0a820008f8f4db836f771b8c7237b3f8d9b0a232a864cf69ae",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:45.240195+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "10f7dba22bc4e9349f74e155a655e2eeea2bd454daad90cb1ecd00853138e05e",
+      "approvedBy": "owner-direct-task:WORD_DELIVERY_HISTORICAL_LOOKUP_20260927",
+      "approvedAtUtc": "2026-09-27T18:26:48.579362+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded historical lookup optimization; exact identity ancestry delta and artifact gates retained; no runtime or accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2da717a5ae638f338497ecb24d5b3e2e658250f917c6d0f5cbe5c482d5701192",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "b6d2d64a088e9dd348597bd36d57ff34a38b0c8c141fb96f4584a2fe32edcfd4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e52d56a21e52312f0b8ac43669d02ab3914bf6ec3731f649de3be93f83d888e1",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "3b676f04a93f7c2d6923fbbe985e8bfb1898ff60309a0d2ebb46964c6a8395eb",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "8cf2c7755a91df5f21d79af7dc284d4c404591fcdb66d3a1948efd41857baf4d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:52.734520+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "196dbc4a8adeac8a3eb467ae45ed42d8b47f30951fc6c9d63417bb90f7ebdd8e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "sha256": "e63ea1c76cb0614994a16419945dfad476af9d20cea1a7728a8ca2d8371934ba",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-native-comment-intake.md",
+      "sha256": "11d715d11bd3882cc12923a18b98b4b9f879ddf50f9812555507aa3c65f64971",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "daa0dedc569198a068d426256b2d1bc30acec5479f0150bea203ee1f715bdf6c",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:52:24.829914+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "21f20d44effa405a5ec0f197bb73da4b329f1d5b0a9adfcea5807cbda8e56c1a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:52:24.829914+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "81c90e193ca18172660d9505c60c4eb9ebdb1248d98fd89e79184d136f012e65",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "00c0ab79be07580c27ea1f90638e4a56f0e31dd8f11d65f619621495bd0963c5",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:52:24.829914+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "42553f64fd5f73fc949434d5152771129a1f3adc9f86c7f3239a001705584003",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:52:24.829914+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
+      "sha256": "b6d9e8d16526357cef943a66cf35b0d43d88d9eb263c1a385072012f7a13a48e",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "73985d70cc30f53587ab8693b584655ff066198c3d6262f3c19730c8b0e6278d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:52.734520+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5ef5309071329d76230923363a7c6090aeed9e266d5014c85c404028a725e460",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "3a8e5848f4ec96da4c254f3e4f4d6b6def09aceab9109d48ad9fd93c92315a9f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T18:51:49.360512+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-native-comment-intake.md",
+      "sha256": "62748c72bfc526a4cbfd487fd7466aad2f322b333562fdc1ed31fc0d3e22e060",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "cf366bc064c2d0055a757de358be78a009c4df3e131ac349944e6d6fbf334075",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d8219957090d90a92ad40aadaf11852a9a1c121b065d1555846b35491ef4e606",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "7c699f7d0bf97e1939a15c36a33e44d1a30af907e2fb955e16e21a783ddb0dc7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4ae2deff47410ad624af049657b9ea045f71e2d7455df880856dc764a1556732",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:25.173454+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "dfb666ceb066c1e31fd7905c425a9e28ca1018fda407d60dd1b28a185c6974fa",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:21.703325+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "fba5849bf569643d681eca1f00bfe63070e5051cb49b2e3a7206f6576dfca989"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "3f2a345b8f25aa08e714f9da4204592701b07983c43be3ecd5e6d5b8eea0a5d4",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d5fe894878e117d9c08fcea7b6b25c78612c7c91e344cf9bce8268f1b91a97f8",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:05:25.173454+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ac6fe018c08d0cb66467919a1f13ca683ac46d46fb9f80fe8c0eefce8655ab71",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927",
+      "approvedAtUtc": "2026-09-27T19:15:59.280884+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Native literal comment import and safe style-definition validation; exact source and artifact gates retained; no accepted-cell credit."
     }
   ]
 }

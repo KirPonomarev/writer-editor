@@ -17,6 +17,24 @@ const STATE_RELATIVE_PATH = path.join('.yalken', 'word-review', 'non-text-return
 const RECOVERY_RELATIVE_PATH = path.join('.yalken', 'recovery', 'non-text-return-state.v1.json');
 const ROOT_COMMENT_BODY_LIMIT = 16_384;
 
+// Tiptap materializes these declared schema defaults when opening an imported
+// document. Compare their meanings without weakening dirty, revision, lease or
+// byte-bound scene CAS checks. Every other attribute and array order stays exact.
+export function commentSceneSnapshotsEqual(left, right) {
+  const canonical = value => {
+    if (Array.isArray(value)) return value.map(canonical);
+    if (value === null || typeof value !== 'object') return value;
+    let source = value;
+    const defaults = ['paragraph', 'heading'].includes(value.type) ? { textAlign: null }
+      : value.type === 'textStyle' ? { color: null, fontFamily: null, fontSize: null } : null;
+    if (defaults && (value.attrs === undefined || (value.attrs && typeof value.attrs === 'object' && !Array.isArray(value.attrs)))) {
+      source = { ...value, attrs: { ...defaults, ...value.attrs } };
+    }
+    return Object.fromEntries(Object.keys(source).sort().map(key => [key, canonical(source[key])]));
+  };
+  return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
+}
+
 // Fixed canonical target only. Payloads never supply a path or a writer.
 async function safeCommentFile(projectRoot, relativePath) {
   const root = await fs.promises.realpath(projectRoot);

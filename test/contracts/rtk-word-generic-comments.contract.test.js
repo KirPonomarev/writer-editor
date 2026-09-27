@@ -298,3 +298,129 @@ test('legacy scene export cannot silently drop canonical comments before key or 
   vm.runInContext(body, context);
   await assert.rejects(context.readDocxReviewPacketExportSource(), /REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT/);
 });
+
+async function nativeLiteralCommentBytes({ styleId = 'ad', mutate = () => {} } = {}) {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: ordinaryBytes() }).parts };
+  const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const W14 = 'http://schemas.microsoft.com/office/word/2010/wordml';
+  parts['word/comments.xml'] = parts['word/comments.xml'].replace('<w:p>',
+    `<w:p w:rsidRPr="0041448B"><w:pPr><w:pStyle w:val="${styleId}"/><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr>`)
+    .replace('<w:r>', '<w:r><w:rPr><w:lang w:val="ru-RU"/><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/></w:rPr>');
+  parts['word/styles.xml'] = `<w:styles xmlns:w="${W}" xmlns:w14="${W14}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorHAnsi" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:kern w:val="2"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="ru-FI"/><w14:ligatures w14:val="standardContextual"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="paragraph" w:styleId="${styleId}"><w:name w:val="annotation text"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:line="240" w:lineRule="auto"/></w:pPr><w:rPr><w:sz w:val="20"/></w:rPr></w:style></w:styles>`;
+  parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace('</Relationships>',
+    '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+  parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace('</Types>',
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>');
+  mutate(parts);
+  return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+}
+
+test('native literal comment presentation survives main preview and real import receipt with fresh local IDs', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const section = source.slice(source.indexOf('function copyDocxImportPreviewAllowedFields('), source.indexOf('function validateDocxImportPreviewPayload('));
+  const canonicalize = new Function('isPlainObjectValue', 'cloneJsonSafe', section + '; return canonicalizeDocxImportPreviewSourceReport;')(
+    value => !!value && typeof value === 'object' && !Array.isArray(value), value => value === undefined ? undefined : JSON.parse(JSON.stringify(value)));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(await nativeLiteralCommentBytes());
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  const normalized = canonicalize(preview);
+  assert.deepEqual(normalized.contentPreview.commentNormalizationLedger, preview.contentPreview.commentNormalizationLedger);
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(normalized);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, 'Check literal 😀');
+  const item = plan.lossReport.items.find(item => item.code === 'DOCX_GENERIC_COMMENT_PRESENTATION_NORMALIZED');
+  assert.equal(item.severity, 'warning');
+  assert.deepEqual(item.normalizationLedger, preview.contentPreview.commentNormalizationLedger);
+  assert(item.normalizationLedger.some(item => item.definitionPart === 'word/styles.xml'));
+  assert(item.normalizationLedger.some(item => item.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION'));
+  const safe = require('../fixtures/docx-import-real-authority.cjs');
+  safe.rememberDocxImportPreviewPlanAdmission(plan);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'word-native-literal-'));
+  const romanRoot = path.join(root, 'roman'); fs.mkdirSync(romanRoot);
+  const options = { projectRoot: root, romanRoot, projectId: 'native-literal' };
+  const result = await safe.applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const statePath = path.join(root, '.yalken/word-review/non-text-return-state.v1.json');
+  const first = JSON.parse(fs.readFileSync(statePath));
+  assert.equal(first.threads[0].messages[0].body, 'Check literal 😀');
+  assert.equal(first.threads[0].anchor.selectedText, '🧭 anchor');
+  assert.notEqual(first.threads[0].rootCommentId, '0');
+  const again = await safe.applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(again.ok, true, JSON.stringify(again)); assert.equal(again.value.idempotent, true);
+  assert.deepEqual(JSON.parse(fs.readFileSync(statePath)), first);
+  // The idempotence check verifies the complete persisted loss report, not
+  // only a display counter; a modified receipt must not become success.
+  const visit = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? visit(path.join(dir, e.name)) : [path.join(dir, e.name)]);
+  const receipts = visit(root).filter(file => file.endsWith('.json')).map(file => ({ file, text: fs.readFileSync(file, 'utf8') }))
+    .filter(x => x.text.includes('DOCX_GENERIC_COMMENT_PRESENTATION_NORMALIZED'));
+  assert(receipts.length > 0);
+  assert(receipts.some(x => JSON.stringify(JSON.parse(x.text).lossReport?.items) === JSON.stringify(plan.lossReport.items)));
+});
+
+test('localized and English comment styles require safe definitions in both generic and return parsing', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const ports = { cryptoPort: { sha256Text: sha, sha256Json: v => 'sha256:' + sha(JSON.stringify(v)), byteLength: v => Buffer.byteLength(v) } };
+  const mutants = [
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:vanish/>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:webHidden/>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:b/>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:qFormat/>', '<w:qFormat/><w:rPr><w:vanish/></w:rPr>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:kern w:val="2"/>', '<w:kern w:val="2"/><w:vanish/>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('w:val="Normal"/><w:pPr>', 'w:val="unknown"/><w:pPr>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('minorHAnsi', 'execute'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('w:kern w:val="2"', 'w:kern w:val="20000"'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('standardContextual', 'unknown'); },
+    p => { p['word/comments.xml'] = p['word/comments.xml'].replace('<w:lang w:val="ru-RU"/>', '<w:rStyle w:val="CommentReference"/>'); },
+  ];
+  for (const styleId of ['ad', 'CommentText']) {
+    const good = await nativeLiteralCommentBytes({ styleId });
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(good).ok, true);
+    for (const mutate of mutants) {
+      const bytes = await nativeLiteralCommentBytes({ styleId, mutate });
+      const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assert.equal(preview.ok, false, JSON.stringify(preview));
+      assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(preview).ok, false);
+      const analysis = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, ports);
+      assert(analysis.ok === false || analysis.reviewIr?.commentBodyGrammar?.status === 'UNSUPPORTED', JSON.stringify(analysis));
+    }
+  }
+});
+
+test('implicit paragraph and character defaults cannot hide literal comment text', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  for (const hidden of ['none', 'paragraph', 'character', 'defaults']) {
+    const bytes = await nativeLiteralCommentBytes({ mutate(parts) {
+      parts['word/comments.xml'] = parts['word/comments.xml'].replace('<w:pStyle w:val="ad"/>', '');
+      if (hidden === 'paragraph') parts['word/styles.xml'] = parts['word/styles.xml'].replace('<w:qFormat/>', '<w:qFormat/><w:rPr><w:vanish/></w:rPr>');
+      if (hidden === 'character') parts['word/styles.xml'] = parts['word/styles.xml'].replace('</w:styles>', '<w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont"><w:name w:val="Default Paragraph Font"/><w:rPr><w:vanish/></w:rPr></w:style></w:styles>');
+      if (hidden === 'defaults') parts['word/styles.xml'] = parts['word/styles.xml'].replace('<w:kern w:val="2"/>', '<w:kern w:val="2"/><w:vanish/>');
+    } });
+    const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    assert.equal(preview.ok, hidden === 'none', hidden + JSON.stringify(preview));
+    if (hidden === 'none') assert(preview.contentPreview.commentNormalizationLedger.some(item => item.attribute === 'implicitStyle'));
+  }
+});
+
+test('native file-selection preview retains the full comment graph and normalization ledger before safe-create planning', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { createDocxImportLocalFilePreview: localPreview } = require('../../src/utils/docxImportLocalFilePreview.js');
+  for (const native of [false, true]) {
+    const bytes = native ? await nativeLiteralCommentBytes() : ordinaryBytes();
+    const direct = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const options = { pickLocalFile: async () => ({ path: '/synthetic/native-comments.docx', size: bytes.length }),
+      readLocalFileBytes: async () => bytes };
+    const result = await localPreview({ requestId: 'native-graph-preview' }, options);
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.importPreviewOk, true, JSON.stringify(result));
+    assert.deepEqual(result.docxContentPreviewReport.contentPreview.genericComments, direct.contentPreview.genericComments);
+    assert.deepEqual(result.docxContentPreviewReport.contentPreview.commentNormalizationLedger, direct.contentPreview.commentNormalizationLedger);
+    assert.deepEqual(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].comments, direct.contentPreview.genericComments);
+    const expectedPlan = bridge.buildDocxImportPreviewPlanFromContentPreview(direct);
+    assert.deepEqual(result.docxImportPreviewPlan.lossReport, expectedPlan.lossReport);
+    const malformed = structuredClone(direct);
+    malformed.contentPreview.commentNormalizationLedger = [{ path: '/foreign' }];
+    const rejected = await localPreview({ requestId: 'forged-metadata' }, { ...options,
+      loadRevisionBridgeModule: async () => ({ ...bridge, buildDocxContentPreviewFromZipBytes: () => malformed }) });
+    assert.equal(rejected.ok, false); assert.equal(rejected.error.reason, 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_OUTPUT_FORBIDDEN');
+  }
+});

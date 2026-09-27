@@ -123,9 +123,14 @@ test('failure before canonical rename keeps the old graph and readable recovery,
   }
 });
 
-test('actual main handler captures committed scene and rejects forged identity, unsaved changes and lifecycle switches', async t => {
+for (const nativeDefaults of [false, true]) test(`actual main handler captures committed scene and rejects forged identity, unsaved changes and lifecycle switches; native defaults=${nativeDefaults}`, async t => {
   const { projectRoot, statePath, runtime } = await disk(t);
-  const scenePath = path.join(projectRoot, 'roman/a.txt'); fs.mkdirSync(path.dirname(scenePath), { recursive: true }); fs.writeFileSync(scenePath, scene);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: scene, marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] }] }] };
+  const liveDoc = structuredClone(doc); liveDoc.content[0].attrs = { textAlign: null }; liveDoc.content[0].content[0].marks[0].attrs.color = null;
+  const sceneRaw = nativeDefaults ? envelope.composeObservablePayload({ doc }) : scene;
+  const liveRaw = nativeDefaults ? envelope.composeObservablePayload({ doc: liveDoc }) : scene;
+  const scenePath = path.join(projectRoot, 'roman/a.txt'); fs.mkdirSync(path.dirname(scenePath), { recursive: true }); fs.writeFileSync(scenePath, sceneRaw);
   const source = fs.readFileSync(path.resolve(__dirname, '../../src/main.js'), 'utf8');
   const fragment = source.slice(source.indexOf('// Ordinary comment authoring uses committed scene truth'), source.indexOf('async function handleRtkRootCommentReturnCommandSurface'));
   const vm = require('node:vm');
@@ -134,17 +139,17 @@ test('actual main handler captures committed scene and rejects forged identity, 
     currentFilePath: scenePath, lastSignaledEditGeneration: 0, currentLifecycleSubjectId: () => 'subject1',
     isAllowedFilePath: p => p === scenePath, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot, projectId: 'p1' }),
-    loadDocumentContentEnvelopeModule: async () => ({ parseObservablePayload: value => ({ text: value, doc: null }) }),
+    loadDocumentContentEnvelopeModule: async () => envelope,
     computeHash: hash, canonicalizeComparableValue: value => value, normalizeRtkNonTextReturnThreadProjection: value => value,
     loadRtkNonTextReturnModule: async () => runtime, queueDiskOperation: operation => operation(),
     getMainProjectManifestAuthority: async () => ({ withProjectLease: (_id, operation) => operation({ assertOwned: async () => {}, publish: op => op() }) }),
-    requestEditorSnapshot: async () => { if (switchDuringCapture) sandbox.currentFilePath = '/other/scene.txt'; return { content: unsaved ? 'not saved' : scene, generation: 0 }; },
+    requestEditorSnapshot: async () => { if (switchDuringCapture) sandbox.currentFilePath = '/other/scene.txt'; return { content: unsaved ? 'not saved' : liveRaw, generation: 0 }; },
   };
   const ctx = vm.createContext(sandbox); vm.runInContext(fragment, ctx);
   const kernel = require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({ [model.COMMAND_ID]: ctx.handleCommentAuthoringCommand });
   const command = payload => kernel.dispatch(model.COMMAND_ID, payload);
   const projection = await ctx.readCommentAuthoringProjection(); assert.equal(projection.available, true);
-  const input = { ...intent(null, 'create', { body: 'main-owned', anchor: { paragraphIndex: 0, startUtf16: 7, selectedText: 'anchor' } }), subjectId: projection.subjectId };
+  const input = { ...intent(null, 'create', { body: 'main-owned', anchor: { paragraphIndex: 0, startUtf16: 7, selectedText: 'anchor' } }), subjectId: projection.subjectId, expectedSceneSha256: hash(sceneRaw) };
   assert.equal((await command({ ...input, projectId: 'forged' })).ok, false); assert.equal(fs.existsSync(statePath), false);
   unsaved = true; assert.equal((await command(input)).error.reason, 'COMMENT_SAVE_SCENE_FIRST'); assert.equal(fs.existsSync(statePath), false);
   unsaved = false; switchDuringCapture = true; assert.equal((await command(input)).error.reason, 'COMMENT_SCENE_CHANGED'); assert.equal(fs.existsSync(statePath), false);
@@ -319,4 +324,27 @@ test('reply UI protects drafts and busy state; stale projection is rejected by r
   await h.ctx.handleWordCommentAction(h.button());
   assert.equal(h.calls.length, 1); assert.match(h.ctx.wordCommentNotice, /COMMENT_STATE_CONFLICT/);
   assert.equal(h.state().afterText, concurrent); assert.equal(h.ctx.wordCommentBusy, false);
+});
+
+
+test('comment snapshot equality admits only declared null defaults and preserves substantive differences', async () => {
+  const { commentSceneSnapshotsEqual: equal } = await runtimePromise;
+  const original = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'якорь', marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] }] }] };
+  const opened = structuredClone(original); opened.content[0].attrs = { textAlign: null };
+  opened.content[0].content[0].marks[0].attrs.color = null;
+  const preserved = JSON.stringify(original);
+  assert(equal(original, opened)); assert(equal(opened, original));
+  for (const mutate of [
+    d => { d.content[0].attrs.textAlign = 'right'; },
+    d => { d.content[0].attrs.unknown = null; },
+    d => { d.content[0].content[0].marks[0].attrs.color = '#ff0000'; },
+    d => { d.content[0].content[0].marks[0].attrs.fontFamily = 'Arial'; },
+    d => { d.content[0].content[0].marks[0].attrs.fontSize = '14pt'; },
+    d => { d.content[0].content[0].marks.push({ type: 'bold' }); },
+    d => { d.content[0].content[0].text += ' '; },
+    d => { d.content.push({ type: 'paragraph' }); },
+    d => { d.content[0].type = 'heading'; },
+  ]) { const changed = structuredClone(opened); mutate(changed); assert(!equal(original, changed)); assert(!equal(changed, original)); }
+  assert(!equal('якорь', original)); assert(!equal({ type: 'unknown' }, { type: 'unknown', attrs: { textAlign: null } }));
+  assert.equal(JSON.stringify(original), preserved);
 });

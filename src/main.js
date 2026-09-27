@@ -5757,8 +5757,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true) throw rejected('COMMENT_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
-      if (live.issue || saved.issue || JSON.stringify(canonicalizeComparableValue(live.doc || live.text))
-        !== JSON.stringify(canonicalizeComparableValue(saved.doc || saved.text))) throw rejected('COMMENT_SAVE_SCENE_FIRST');
+      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('COMMENT_SAVE_SCENE_FIRST');
       checkIdentity();
     };
     await revalidateScenes();
@@ -10944,6 +10943,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
         sourcePart: sourceReport.contentPreview.sourcePart,
         ...(Array.isArray(sourceReport.contentPreview.genericComments)
           ? { genericComments: cloneJsonSafe(sourceReport.contentPreview.genericComments) } : {}),
+        ...(Array.isArray(sourceReport.contentPreview.commentNormalizationLedger)
+          ? { commentNormalizationLedger: cloneJsonSafe(sourceReport.contentPreview.commentNormalizationLedger) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.mediaParts) ? { mediaParts: [...sourceReport.contentPreview.mediaParts] } : {}),
         paragraphCount: sourceReport.contentPreview.paragraphCount,
         textLength: sourceReport.contentPreview.textLength,
@@ -22374,8 +22375,8 @@ async function handleCommentAuthoringCommand(payload = {}) {
       if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0) throw new Error('COMMENT_EDITOR_GENERATION_REQUIRED');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
-      if (live.issue || JSON.stringify(canonicalizeComparableValue(live.doc || live.text))
-        !== JSON.stringify(canonicalizeComparableValue(context.parsed.doc || context.parsed.text))) throw new Error('COMMENT_SAVE_SCENE_FIRST');
+      const module = await loadRtkNonTextReturnModule();
+      if (live.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, context.parsed.doc || context.parsed.text)) throw new Error('COMMENT_SAVE_SCENE_FIRST');
       const authority = await getMainProjectManifestAuthority();
       return authority.withProjectLease(context.projectId, async lease => {
         const revalidate = async () => {
@@ -22385,7 +22386,6 @@ async function handleCommentAuthoringCommand(payload = {}) {
           const fresh = await readCommentAuthoringContext();
           if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw new Error('COMMENT_SCENE_CHANGED');
         };
-        const module = await loadRtkNonTextReturnModule();
         return module.commitCommentAuthoring({ projectRoot: context.projectRoot, projectId: context.projectId,
           sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: context.paragraphs,
           input: payload, now: new Date().toISOString() }, { publish: operation => lease.publish(operation), revalidate });

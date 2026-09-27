@@ -181,6 +181,8 @@ function sanitizeContentPreviewReport(report) {
       ? {
           sourcePart: report.contentPreview.sourcePart,
           ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),
+          ...(Array.isArray(report.contentPreview.genericComments) ? { genericComments: cloneJsonSafe(report.contentPreview.genericComments) } : {}),
+          ...(Array.isArray(report.contentPreview.commentNormalizationLedger) ? { commentNormalizationLedger: cloneJsonSafe(report.contentPreview.commentNormalizationLedger) } : {}),
           paragraphCount: report.contentPreview.paragraphCount,
           textLength: report.contentPreview.textLength,
           textHash: report.contentPreview.textHash,
@@ -316,7 +318,9 @@ function sanitizeImportPreviewPlan(plan) {
                 'feature',
                 'location',
                 'sourceProperty',
+                'paragraphIndex',
                 'transformation',
+                'normalizationLedger',
               ]))
               .filter(isPlainObject)
             : [],
