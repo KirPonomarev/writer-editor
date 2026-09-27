@@ -41,7 +41,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ deletion = false, addition = false } = {}) {
+async function fixture({ deletion = false, addition = false, replyDeletion = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -71,6 +71,13 @@ async function fixture({ deletion = false, addition = false } = {}) {
     parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace(/<Override\b[^>]*\bPartName="\/word\/comments[^"]*"[^>]*\/>/gu, '');
     bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
   }
+  if (replyDeletion) {
+    const edited = structuredClone(state);
+    edited.threads[0].messages.pop();
+    bytes = buildDocxReviewPacketBuffer(makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: edited,
+      scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+        doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] }));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
@@ -81,10 +88,10 @@ async function fixture({ deletion = false, addition = false } = {}) {
     returnedParagraphs: parsed.reviewIr.formattingParagraphs } };
 }
 
-async function preparedHarness(t, { deletion = false, addition = false, explicitConfirmed = false } = {}) {
+async function preparedHarness(t, { deletion = false, addition = false, replyDeletion = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition });
-  if (!deletion && !addition) input.returnedThreads[0].body = 'Main Word delta';
+  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion });
+  if (!deletion && !addition && !replyDeletion) input.returnedThreads[0].body = 'Main Word delta';
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -299,4 +306,18 @@ test('new root native prompt discloses added discussions and defaults to Cancel'
   assert.equal(await context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ created: true }] }), false);
   assert.match(prompt.detail, /Новых обсуждений: 1/u);
   assert.equal(prompt.defaultId, 0); assert.equal(prompt.cancelId, 0);
+});
+
+test('reply deletion needs fresh explicit confirmation; Kernel preserves root and readable prior state', async t => {
+  const h = await preparedHarness(t, { replyDeletion: true, explicitConfirmed: true });
+  const before = JSON.parse(h.input.beforeText);
+  assert.deepEqual(Array.from(h.prepared.changes[0].deletedMessageIds), ['reply-a']);
+  assert.equal(await h.fs.readFile(h.stateFile, 'utf8'), h.input.beforeText);
+  assert.equal((await h.prepared.apply()).writerCalled, true);
+  const after = JSON.parse(await h.fs.readFile(h.stateFile, 'utf8'));
+  assert.deepEqual(after.threads[0].messages, [before.threads[0].messages[0]]);
+  assert.deepEqual(after.threads[0].deletedMessages, [before.threads[0].messages[1]]);
+  const recovery = h.stateFile.replace('word-review/non-text-return-state', 'recovery/non-text-return-state');
+  assert.equal(await h.fs.readFile(recovery, 'utf8'), h.input.beforeText);
+  await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/);
 });

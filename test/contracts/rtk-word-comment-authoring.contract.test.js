@@ -226,3 +226,22 @@ test('actual lifecycle confirmation vetoes pending comment authoring before docu
   assert.equal(norm.normalizeEditorSnapshotPayload({content:'saved',commentAuthoringPending:true}).commentAuthoringPending,true);
   assert.equal(norm.normalizeEditorSnapshotPayload({content:'saved',commentAuthoringPending:'false'}).commentAuthoringPending,false);
 });
+
+test('local individual reply deletion archives exact history, preserves peers and cannot delete root through reply intent', () => {
+  let result = apply(create(), 'reply', { body: 'first reply' });
+  const first = result.state.threads[0].messages[1];
+  result = apply(result, 'reply', { body: 'second reply' });
+  const before = result, root = before.state.threads[0].messages[0], second = before.state.threads[0].messages[2];
+  assert.throws(() => apply(before, 'delete', { commentId: root.commentId }), /REPLY_TARGET_INVALID/);
+  assert.throws(() => apply(before, 'delete', { commentId: 'foreign' }), /REPLY_TARGET_INVALID/);
+  result = apply(before, 'delete', { commentId: first.commentId });
+  assert.deepEqual(result.state.threads[0].messages, [root, second]);
+  assert.deepEqual(result.state.threads[0].deletedMessages, [first]);
+  assert.equal(result.state.threads[0].status, 'open');
+  assert.throws(() => apply(result, 'edit', { commentId: first.commentId, body: 'revived' }), /MESSAGE_UNKNOWN/);
+  assert.throws(() => apply(result, 'delete', { commentId: first.commentId }), /REPLY_TARGET_INVALID/);
+  const corrupt = structuredClone(result.state); corrupt.threads[0].deletedMessages.push(root);
+  assert.throws(() => model.readState(JSON.stringify(corrupt), 'p1'), /STATE_INVALID/);
+  const invalidRoot = structuredClone(result.state); invalidRoot.threads[0].deletedMessages[0].kind = 'root';
+  assert.throws(() => model.readState(JSON.stringify(invalidRoot), 'p1'), /STATE_INVALID/);
+});

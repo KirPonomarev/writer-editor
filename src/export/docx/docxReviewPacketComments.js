@@ -99,7 +99,10 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
       && ['open', 'resolved', 'deleted'].includes(thread.status), 'DOCX_COMMENT_THREAD_INVALID');
     reserve(ids, thread.threadId);
     demand(Array.isArray(thread.messages) && thread.messages.length > 0, 'DOCX_COMMENT_MESSAGES_REQUIRED');
-    const messages = thread.messages.map((message, index) => {
+    demand(thread.deletedMessages === undefined || Array.isArray(thread.deletedMessages), 'DOCX_COMMENT_STATE_INVALID');
+    const sourceMessages = [...thread.messages, ...(thread.deletedMessages || [])];
+    demand(sourceMessages.length <= 129, 'DOCX_COMMENT_STATE_INVALID');
+    const allMessages = sourceMessages.map((message, index) => {
       demand(plain(message) && typeof message.commentId === 'string'
         && message.kind === (index === 0 ? 'root' : 'reply')
         && typeof message.body === 'string' && message.body.trim()
@@ -115,14 +118,20 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
         durableId: reserve(durableIds, wordId('comment-durable', message.commentId)),
       };
     });
+    const messages = allMessages.slice(0, thread.messages.length);
+    const deletedMessages = allMessages.slice(thread.messages.length);
     demand(messages[0].canonicalCommentId === thread.rootCommentId, 'DOCX_COMMENT_ROOT_IDENTITY_INVALID');
     if (thread.status === 'deleted') {
       tombstones.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: 'deleted',
-        messageIds: messages.map(message => message.canonicalCommentId),
-        messageDurableIds: messages.map(message => message.durableId),
+        messageIds: allMessages.map(message => message.canonicalCommentId),
+        messageDurableIds: allMessages.map(message => message.durableId),
         outcome: 'CANONICAL_DELETION_NOT_EXPORTED', threadDigest: digest(stable(thread)) });
       continue;
     }
+    if (deletedMessages.length) tombstones.push({ threadId: thread.threadId, sceneId: thread.sceneId,
+      status: 'deleted-replies', messageIds: deletedMessages.map(m => m.canonicalCommentId),
+      messageDurableIds: deletedMessages.map(m => m.durableId), outcome: 'CANONICAL_DELETION_NOT_EXPORTED',
+      threadDigest: digest(stable(thread)) });
     demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
     threads.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: thread.status,
       anchor: exactCommentAnchor(thread, blocks), messages });
