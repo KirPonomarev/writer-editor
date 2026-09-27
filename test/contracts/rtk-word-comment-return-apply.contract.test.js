@@ -41,7 +41,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ deletion = false } = {}) {
+async function fixture({ deletion = false, addition = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -53,6 +53,16 @@ async function fixture({ deletion = false } = {}) {
       doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   let bytes = buildDocxReviewPacketBuffer(source);
+  if (addition) {
+    const edited = structuredClone(state), thread = structuredClone(state.threads[0]);
+    thread.threadId = 'new-provider-thread'; thread.rootCommentId = 'new-provider-root';
+    thread.messages = [{ commentId: 'new-provider-root', kind: 'root', body: 'New Word discussion', provenance: { author: 'Reviewer' } }];
+    edited.threads.push(thread);
+    const returnedSource = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: edited,
+      scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+        doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+    bytes = buildDocxReviewPacketBuffer(returnedSource);
+  }
   if (deletion) {
     const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
     for (const name of Object.keys(parts).filter(n => n.startsWith('word/comments'))) delete parts[name];
@@ -71,10 +81,10 @@ async function fixture({ deletion = false } = {}) {
     returnedParagraphs: parsed.reviewIr.formattingParagraphs } };
 }
 
-async function preparedHarness(t, { deletion = false, explicitConfirmed = false } = {}) {
+async function preparedHarness(t, { deletion = false, addition = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture({ deletion });
-  if (!deletion) input.returnedThreads[0].body = 'Main Word delta';
+  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition });
+  if (!deletion && !addition) input.returnedThreads[0].body = 'Main Word delta';
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -261,4 +271,32 @@ test('ordinary DOCX return entry is available in FREE and the packaged local Wor
       false,
     );
   }
+});
+
+
+test('new root requires fresh explicit confirmation and commits via Kernel once with unchanged peers', async t => {
+  const h = await preparedHarness(t, { addition: true, explicitConfirmed: true });
+  const before = JSON.parse(h.input.beforeText);
+  assert.equal(h.prepared.changes.length, 1);
+  assert.equal(h.prepared.changes[0].created, true);
+  const result = await h.prepared.apply();
+  assert.equal(result.writerCalled, true);
+  const after = JSON.parse(await h.fs.readFile(h.stateFile, 'utf8'));
+  assert.deepEqual(after.threads[0], before.threads[0]);
+  assert.equal(after.threads[1].messages[0].body, 'New Word discussion');
+  await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/);
+});
+
+test('new root native prompt discloses added discussions and defaults to Cancel', async () => {
+  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const source = main.match(/async function confirmLocalWordCommentDelta\([^]*?\n\}(?=\n|$)/u)[0];
+  let prompt;
+  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, dialog: {
+    showMessageBox: async (_, value) => { prompt = value; return { response: 0 }; },
+  } });
+  vm.runInContext(source, context);
+  assert.equal(await context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ created: true }] }), false);
+  assert.match(prompt.detail, /Новых обсуждений: 1/u);
+  assert.equal(prompt.defaultId, 0); assert.equal(prompt.cancelId, 0);
 });

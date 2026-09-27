@@ -183,10 +183,12 @@ function compareCommentExportReadback(projection, returned) {
   const missing = [], changed = [], unchangedThreadIds = [];
   const deletedIds = new Set((projection.tombstones || []).flatMap(item => item.messageDurableIds || []));
   const byDurable = new Map();
+  const expectedRoots = new Set(projection.threads.map(thread => thread.messages[0].durableId));
   for (const thread of returned || []) {
     if ([thread, ...(thread.replies || [])].some(message => deletedIds.has(message.durableId))) {
       changed.push({ code: 'COMMENT_DELETED_IDENTITY_REAPPEARED', durableId: thread.durableId });
     }
+    if (!expectedRoots.has(thread.durableId)) changed.push({ code: 'COMMENT_ROOT_ADDED', durableId: thread.durableId });
     if (!thread.durableId) continue;
     if (byDurable.has(thread.durableId)) { changed.push({ code: 'COMMENT_DURABLE_ID_DUPLICATE', durableId: thread.durableId }); continue; }
     byDurable.set(thread.durableId, thread);

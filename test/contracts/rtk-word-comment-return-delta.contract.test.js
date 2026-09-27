@@ -10,7 +10,7 @@ const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ twoThreads = false } = {}) {
+async function fixture({ twoThreads = false, empty = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -23,6 +23,7 @@ async function fixture({ twoThreads = false } = {}) {
     second.messages[0].commentId = 'root-b'; second.messages[1].commentId = 'reply-b';
     state.threads.push(second);
   }
+  if (empty) { state.threads = []; state.revision = 0; }
   const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
       doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
@@ -486,4 +487,107 @@ test('Word minute rounding preserves original provenance; unrelated author or da
   input.returnedThreads[0].date = '2026-09-26T00:00:00Z';
   input.returnedThreads[0].authorPersonIdentity.author = 'Another author';
   assert.throws(() => plan(input), /AUTHOR_CHANGED/u);
+});
+
+
+// Generated OOXML passes through the actual parser; the authenticated baseline
+// remains the pre-edit graph rather than adopting authority from the new export.
+async function addedRootFixture({ empty = false } = {}) {
+  const f = await fixture({ empty });
+  const sceneId = 'roman/a.md', text = f.input.returnedParagraphs[0].paragraphText;
+  const edited = structuredClone(f.state);
+  edited.threads.push({ threadId: 'provider-created', rootCommentId: 'provider-root', sceneId, status: 'open',
+    anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 0, selectedText: 'Before' }, sceneId, [text]),
+    messages: [{ commentId: 'provider-root', kind: 'root', body: 'New Word discussion', provenance: { author: 'Reviewer' } },
+      { commentId: 'provider-reply', kind: 'reply', body: 'New Word reply', provenance: { author: 'Second reviewer' } }] });
+  const source = makeSource({ projectId: f.state.projectId, projectRoot: '/project', nonTextReturnState: edited,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+      doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const bytes = buildDocxReviewPacketBuffer(source);
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+    sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
+  assert.equal(parsed.ok, true);
+  return { ...f, input: { ...f.input, beforeText: empty ? null : f.input.beforeText, artifactSha256: hash(bytes),
+    returnedThreads: parsed.reviewIr.commentThreads, returnedParagraphs: parsed.reviewIr.formattingParagraphs,
+    commentReturnInventory: parsed.reviewIr.commentReturnInventory } };
+}
+
+for (const empty of [false, true]) test(`new Word root (${empty ? 'first ever' : 'existing graph'}) preserves peers, canonicalizes IDs and replays once`, async () => {
+  const { input, state } = await addedRootFixture({ empty });
+  const { compareCommentExportReadback } = require('../../src/export/docx/docxReviewPacketComments.js');
+  const comparison = compareCommentExportReadback(input.baseline, input.returnedThreads);
+  assert.equal(comparison.ok, false);
+  assert(comparison.changed.some(item => item.code === 'COMMENT_ROOT_ADDED'));
+  const result = plan(input), after = JSON.parse(result.afterText);
+  assert.equal(after.threads.length, state.threads.length + 1);
+  assert.deepEqual(after.threads.slice(0, state.threads.length), state.threads);
+  const added = after.threads.at(-1);
+  assert.match(added.threadId, /^word-thread-[a-f0-9]{64}$/);
+  assert.match(added.rootCommentId, /^word-root-[a-f0-9]{64}$/);
+  assert.equal(added.messages[0].body, 'New Word discussion');
+  assert.equal(added.messages[0].provenance.author, 'Reviewer');
+  assert.equal(added.messages[1].body, 'New Word reply');
+  assert.equal(added.anchor.selectedText, 'Before'); assert.equal(added.anchor.startUtf16, 0);
+  assert.equal(result.changes.length, 1); assert.equal(result.changes[0].created, true);
+  assert.equal(plan({ ...input, beforeText: result.afterText }).replay, true);
+  assert.equal(JSON.parse(plan({ ...input, beforeText: result.afterText }).afterText).threads.length, after.threads.length);
+  // Re-export generated canonical identities and independently parse them.
+  const text = input.returnedParagraphs[0].paragraphText, sceneId = added.sceneId;
+  const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: after,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+      doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: buildDocxReviewPacketBuffer(source) }, { cryptoPort: {
+    sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
+  assert.equal(parsed.ok, true);
+  assert.equal(compareCommentExportReadback(source.commentExport, parsed.reviewIr.commentThreads).ok, true);
+  assert.equal(plan({ ...input, beforeText: result.afterText, baseline: source.commentExport, roundId: 'fresh-round',
+    returnedThreads: parsed.reviewIr.commentThreads, commentReturnInventory: parsed.reviewIr.commentReturnInventory }).unchanged, true);
+});
+
+test('new roots require complete inventory, fresh graph and exact scene anchors; identities never resurrect', async () => {
+  for (const mutate of [i => delete i.commentReturnInventory,
+    i => i.commentReturnInventory.messageDurableIds.pop(),
+    i => i.returnedThreads.at(-1).paragraphIndex = 1234,
+    i => i.returnedThreads.at(-1).finalTextAnchorRange.startUtf16++,
+    i => i.returnedThreads.at(-1).durableId = i.returnedThreads[0].replies[0].durableId,
+    i => i.baseline.tombstones = [{ messageDurableIds: [i.returnedThreads.at(-1).durableId] }],
+    i => i.returnedThreads.at(-1).replies[0].parentRawId = 'foreign',
+    i => i.returnedParagraphs[0].paragraphText += ' changed',
+    i => { const current = JSON.parse(i.beforeText); current.revision++; i.beforeText = JSON.stringify(current); },
+    i => i.returnedThreads.at(-1).body = '\ud800']) {
+    const { input } = await addedRootFixture(); mutate(input);
+    assert.throws(() => plan(input), /COMMENT_RETURN_|COMMENT_ANCHOR_/);
+  }
+});
+
+test('first Word root writes readable empty recovery; failed recovery or lost lease creates no canonical graph', async t => {
+  const fs = require('node:fs/promises'), os = require('node:os'), path = require('node:path');
+  const runtime = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+  const { atomicWriteFile } = await import('../../src/io/markdown/atomicWriteFile.mjs');
+  for (const failure of ['recovery', 'before-canonical', 'after-canonical', 'none']) {
+    const { input, state } = await addedRootFixture({ empty: true });
+    const projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'first-word-root-'));
+    t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+    const target = path.join(projectRoot, '.yalken/word-review/non-text-return-state.v1.json');
+    let writes = 0;
+    const opts = { publish: fn => fn(), revalidate: async () => {}, atomicWriter: async (file, bytes, options) => {
+      writes++;
+      if (failure === 'recovery' && writes === 1 || failure === 'before-canonical' && writes === 2) throw new Error('INJECTED');
+      await atomicWriteFile(file, bytes, options);
+      if (failure === 'after-canonical' && writes === 2) throw new Error('INJECTED');
+    } };
+    const run = () => runtime.commitAuthenticatedCommentDelta({ ...input, projectRoot }, opts);
+    if (failure === 'none') assert.equal((await run()).writerCalled, true);
+    else await assert.rejects(run, /INJECTED/);
+    if (['recovery', 'before-canonical'].includes(failure)) await assert.rejects(fs.stat(target), { code: 'ENOENT' });
+    else {
+      assert.equal(JSON.parse(await fs.readFile(target, 'utf8')).threads.length, 1);
+      const count = writes;
+      assert.equal((await run()).replay, true); assert.equal(writes, count);
+    }
+    if (failure !== 'recovery') assert.deepEqual(JSON.parse(await fs.readFile(path.join(projectRoot,
+      '.yalken/recovery/non-text-return-state.v1.json'), 'utf8')), state);
+  }
 });
