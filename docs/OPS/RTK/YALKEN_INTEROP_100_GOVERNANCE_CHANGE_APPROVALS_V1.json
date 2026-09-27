@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e402c7bba2e8e6312c7cca07119bb32f050c66d736623c38eae9afe2fec5e42a",
+      "sha256": "d3408140698c847f7726dd24a70ecd4a054a93df7dfc41c5bb86b6ccee374c45",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "718e0488179bb2c2afdad50962d221c0d264adeeb5bd6005bb16286d03c9849e",
+      "sha256": "1028e8aad46f2260207f29924cae809fa6127be2801b3c66216f6515f6086a45",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "baa4fc994e4e898ad10836fda1645deb10423f1f7235393875053bf72a5ff51a",
+      "sha256": "f562c18e147eefbe4923815cf06383e20c2f5ad0fcbf45edae4a658181ffb1b0",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -1818,7 +1818,7 @@
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2547,7 +2547,7 @@
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -2556,7 +2556,7 @@
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
