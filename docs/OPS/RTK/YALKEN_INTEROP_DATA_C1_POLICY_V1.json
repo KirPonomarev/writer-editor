@@ -256,7 +256,10 @@
     "src/core/word-comment-anchor-save-v1.cjs",
     "src/core/document-content-envelope-v1.cjs",
     "src/renderer/documentContentEnvelope.mjs",
-    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+    "docs/tasks/2026-09-27--word-comment-return-delta.md",
+    "src/core/word-comment-return-delta-v1.cjs",
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -485,7 +488,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "2a3701a65680177cb43d98b5dff44990af582d454e1514cb9f37514cac78f06a"
+        "sha256": "6c1c2890cd3d0fd41c9d352b85dc4bf9bc4d54738da84814667c8c8bacc48bda"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -601,7 +604,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "cc83fee3ed983f1b424346f831b14c9c3a6cfe7c2707bf73b952b0b6ac0d09e3"
+        "sha256": "7cd796bcb71b38411efec368c7ae79bd4ec65e1f5bfe245a17e3fdb2999738ef"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -801,7 +804,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "7a568ff57d029ab05df663d9dc8e184de43d00cca70892058df1c000e777128c"
+        "sha256": "86e011123a693e3f875ee73316144431b37bd76361dfb81ee26937681f5c873f"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -957,7 +960,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "802884037e9fd8ef83117b94836b582513ace1a34acbb2ac201f53c0c22ba2b0"
+        "sha256": "4f495cb4f27600e257c12ce76e9077a02208f78c3916bdaa7bf6b7a7afe793bd"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1202,6 +1205,18 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
         "sha256": "2df32af554af7753fb5288b9a62f876f62948f341e508078ca5525762610683c"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-return-delta.md",
+        "sha256": "8f466288948f01bb81bae8f6f924f9307c5fb54843c990bc83126ca3dd415f5f"
+      },
+      {
+        "path": "src/core/word-comment-return-delta-v1.cjs",
+        "sha256": "34d97ded3533f5bcbb158d13ec814422deab8e9b0b2d778d0eea3424c2dbc3d2"
+      },
+      {
+        "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+        "sha256": "f499ddd6566c4edbf468c29c277e11a45214d1a30c92d69970079e70b28953b9"
       }
     ],
     "followupRepair": {

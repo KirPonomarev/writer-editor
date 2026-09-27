@@ -4164,6 +4164,19 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   if (sourceMode === 'MIXED') reasons.push(reason('RTK_MANUAL_MIXED_RETURN', 'sourceMode', 'MIXED return remains manual review in B02.'));
   const commentGraphCapability = buildCommentGraphCapability(input, partNames, comments.commentThreads);
 
+  let commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'ABSENT' };
+  if (parts['word/comments.xml']) {
+    const byPart = { 'word/comments.xml': scans.comments, 'word/commentsExtended.xml': scans.commentsExtended,
+      'word/commentsIds.xml': scans.commentsIds, 'word/commentsExtensible.xml': scans.commentsExtensible };
+    try {
+      validateCommentMetadataScans(parts, name => byPart[name]);
+      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED' };
+    } catch (error) {
+      if (error.message !== 'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED') throw error;
+      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'UNSUPPORTED', code: error.message };
+    }
+  }
+
   const reviewIr = {
     schemaVersion: RTK_REVIEW_IR_V2_SCHEMA,
     sourceMode,
@@ -4182,6 +4195,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     opaqueUnsupported,
     authorityCarrier,
     commentGraphCapability,
+    commentBodyGrammar,
     changes: textRevisions,
     diagnostics: reasons,
     conservation: {
@@ -4463,6 +4477,11 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   if (!cryptoPort.ok) fail();
   const state = createParserBudgetState(budgets, cryptoPort);
+  return validateCommentMetadataScans(parts, name => parseXmlPart(name, rawString(parts[name]), budgets, cryptoPort, state));
+}
+
+function validateCommentMetadataScans(parts, scanPart) {
+  const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   const childrenFor = scan => {
     const map = new Map(), stack = [];
     for (const token of [...scan.tokens].sort((a, b) => a.openStart - b.openStart)) {
@@ -4484,7 +4503,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   };
   if (parts['word/comments.xml']) {
     const xml = rawString(parts['word/comments.xml']);
-    const scan = parseXmlPart('word/comments.xml', xml, budgets, cryptoPort, state);
+    const scan = scanPart('word/comments.xml');
     const childrenMap = childrenFor(scan);
     const paths = new Set(['comments', 'comments/comment', 'comments/comment/p',
       'comments/comment/p/r', 'comments/comment/p/r/t', 'comments/comment/p/r/tab',
@@ -4530,7 +4549,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
     ['word/commentsExtensible.xml', W16CEX_NS, 'commentsExtensible', 'commentExtensible', ['durableId', 'paraId', 'dateUtc', 'reopened']],
   ]) {
     if (!parts[partName]) continue;
-    const xml = rawString(parts[partName]), scan = parseXmlPart(partName, xml, budgets, cryptoPort, state);
+    const xml = rawString(parts[partName]), scan = scanPart(partName);
     const childrenMap = childrenFor(scan);
     const roots = scan.tokens.filter(token => token.depth === 0);
     if (scan.diagnostics.length || roots.length !== 1 || roots[0].namespaceUri !== ns || roots[0].localName !== rootName) fail();

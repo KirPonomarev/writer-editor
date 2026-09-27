@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
+import commentReturnDelta from '../../core/word-comment-return-delta-v1.cjs';
 import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
 import { parseObservablePayload, deriveVisibleTextFromDocument } from '../../renderer/documentContentEnvelope.mjs';
 
@@ -62,6 +63,38 @@ export async function commitCommentAuthoring(input, { publish, revalidate, atomi
   const after = await readCommentAuthoringState(input);
   if (after.text !== plan.afterText) throw new Error('COMMENT_READBACK_FAILED');
   return { ok: true, replay: false, threadId: plan.threadId, stateSha256: after.stateSha256, revision: after.state.revision };
+}
+
+export const planCommentReturnDelta = commentReturnDelta.planCommentReturnDelta;
+
+// One graph, one atomic publication. The main-owned command admission and project
+// lease supply authority; a parsed Word document cannot supply these callbacks.
+export async function commitAuthenticatedCommentDelta(input, { publish, revalidate, atomicWriter = atomicWriteFile } = {}) {
+  if (typeof publish !== 'function' || typeof revalidate !== 'function') throw new Error('COMMENT_PUBLICATION_AUTHORITY_REQUIRED');
+  await revalidate();
+  const before = await readCommentAuthoringState(input);
+  const plan = planCommentReturnDelta({ ...input, beforeText: before.text });
+  if (plan.replay || plan.unchanged) {
+    await revalidate();
+    if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
+    return { ok: true, replay: plan.replay, unchanged: plan.unchanged === true, writerCalled: false,
+      operationId: plan.operationId, revision: before.state.revision, stateSha256: before.stateSha256 };
+  }
+  await publish(async () => {
+    await revalidate();
+    if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
+    const recoveryPath = await safeCommentFile(input.projectRoot, RECOVERY_RELATIVE_PATH);
+    await atomicWriter(recoveryPath, before.text, { safetyMode: 'strict' });
+    if (await fs.promises.readFile(recoveryPath, 'utf8') !== before.text) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
+    const statePath = await safeCommentFile(input.projectRoot, STATE_RELATIVE_PATH);
+    await revalidate();
+    if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
+    await atomicWriter(statePath, plan.afterText, { safetyMode: 'strict' });
+  });
+  const after = await readCommentAuthoringState(input);
+  if (after.text !== plan.afterText) throw new Error('COMMENT_READBACK_FAILED');
+  return { ok: true, replay: false, writerCalled: true, operationId: plan.operationId,
+    changes: plan.changes, revision: after.state.revision, stateSha256: after.stateSha256 };
 }
 
 function isPlainObject(value) {

@@ -5684,12 +5684,109 @@ async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
   });
 }
 
+// Admission is object-identity scoped to the authenticated main intake. An IPC
+// payload with identical fields cannot authorize this publication.
+const authenticatedCommentDeltaAdmissions = new WeakMap();
+async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge }) {
+  try {
+    const capsule = context.reviewTransportAuthorityCapsule;
+    const intake = context.reviewTransportReturnIntake;
+    const owner = activeStage10ApplicationBootstrap;
+    const lifecycle = currentLifecycleSubjectId();
+    const file = currentFilePath;
+    const generation = lastSignaledEditGeneration;
+    if (typeof isCurrent !== 'function' || !isCurrent() || intake?.authenticated !== true
+      || capsule?.projectRoot !== context.projectRoot || capsule?.commentExport?.projectId !== context.projectId) {
+      throw new Error('COMMENT_RETURN_AUTHORITY_REQUIRED');
+    }
+    const module = await loadRtkNonTextReturnModule();
+    if (!Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) {
+      throw new Error('COMMENT_RETURN_ARTIFACT_MISMATCH');
+    }
+    const grammar = intake.parserResult?.reviewIr?.commentBodyGrammar;
+    if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar?.status !== 'SUPPORTED') {
+      throw new Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+    }
+    const input = { projectRoot: context.projectRoot, projectId: context.projectId,
+      roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
+      artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
+      exportMap: capsule.exportMap, returnedThreads: intake.parserResult?.reviewIr?.commentThreads,
+      returnedParagraphs: intake.parserResult?.reviewIr?.formattingParagraphs };
+    const checkIdentity = () => {
+      if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
+        || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
+        || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw new Error('COMMENT_RETURN_CONTEXT_STALE');
+    };
+    const revalidateScenes = async () => {
+      checkIdentity();
+      const root = await fs.realpath(context.projectRoot);
+      const scenes = capsule.exportMap?.scenes;
+      if (!Array.isArray(scenes) || !scenes.length) throw new Error('COMMENT_RETURN_SCENES_REQUIRED');
+      let openRaw = null;
+      for (const scene of scenes) {
+        const target = capsule.scenePathBySceneId?.[scene.sceneId];
+        const baseline = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
+          ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId];
+        if (typeof target !== 'string' || typeof baseline !== 'string') throw new Error('COMMENT_RETURN_SCENE_BINDING_REQUIRED');
+        const relative = path.relative(path.resolve(context.projectRoot), target);
+        if (!relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw new Error('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+        let entry = root;
+        for (const component of relative.split(path.sep)) {
+          entry = path.join(entry, component);
+          const stat = await fs.lstat(entry);
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+        }
+        const raw = await fs.readFile(target, 'utf8');
+        if (raw !== baseline) throw new Error('COMMENT_RETURN_SCENE_CONFLICT');
+        if (target === file) openRaw = raw;
+      }
+      if (openRaw === null) throw new Error('COMMENT_RETURN_OPEN_SCENE_REQUIRED');
+      const snapshot = await requestEditorSnapshot();
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true) throw new Error('COMMENT_RETURN_EDITOR_STALE');
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
+      if (live.issue || saved.issue || JSON.stringify(canonicalizeComparableValue(live.doc || live.text))
+        !== JSON.stringify(canonicalizeComparableValue(saved.doc || saved.text))) throw new Error('COMMENT_SAVE_SCENE_FIRST');
+      checkIdentity();
+    };
+    await revalidateScenes();
+    const before = await module.readCommentAuthoringState(input);
+    const plan = module.planCommentReturnDelta({ ...input, beforeText: before.text });
+    checkIdentity();
+    if (explicitCanonicalApplyConfirmed !== true) return { ok: true, status: 'preview-ready',
+      code: 'RTK_COMMENT_DELTA_EXPLICIT_APPLY_REQUIRED', writerCalled: false, pendingProductApplyLane: true,
+      changes: plan.changes, applyReceipts: [], replayReceipts: [] };
+    const payload = { action: 'authenticated-comment-delta', requestId };
+    authenticatedCommentDeltaAdmissions.set(payload, () => queueDiskOperation(async () => {
+      checkIdentity();
+      const authority = await getMainProjectManifestAuthority();
+      return authority.withProjectLease(context.projectId, async lease => module.commitAuthenticatedCommentDelta(input, {
+        publish: operation => lease.publish(operation),
+        revalidate: async () => { await lease.assertOwned(); await revalidateScenes(); },
+      }));
+    }, 'authenticated comment return'));
+    let receipt;
+    try { receipt = await dispatchCommandSurfaceKernel('cmd.rtk.review.applyCommentLifecycleReturn', payload); }
+    finally { authenticatedCommentDeltaAdmissions.delete(payload); }
+    if (receipt?.ok !== true) throw new Error(receipt?.code || receipt?.error?.code || 'COMMENT_RETURN_DISPATCH_FAILED');
+    return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',
+      code: 'RTK_COMMENT_DELTA_APPLIED', writerCalled: receipt.writerCalled === true,
+      commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
+      applyReceipts: [receipt], replayReceipts: [] };
+  } catch (error) {
+    return { ok: false, status: 'blocked', code: error.code || error.message,
+      writerOutcome: 'NOT_CONFIRMED', applyReceipts: [], replayReceipts: [] };
+  }
+}
+
 async function applyAuthenticatedDocxCommentProductPath({
   context,
   commentShadowPayload,
   requestId,
   revisionBridge,
   explicitCanonicalApplyConfirmed = false,
+  isCurrent,
+  docxBytes,
 } = {}) {
   const intake = isPlainObjectValue(context?.reviewTransportReturnIntake)
     ? context.reviewTransportReturnIntake
@@ -5744,6 +5841,9 @@ async function applyAuthenticatedDocxCommentProductPath({
     };
   }
   const baselineComments = context.reviewTransportAuthorityCapsule?.commentExport;
+  if (baselineComments && !compareCommentExportReadback(baselineComments, commentShadowPayload.reviewIr.commentThreads).ok) {
+    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge });
+  }
   if (baselineComments) {
     const owner = activeStage10ApplicationBootstrap;
     let currentState;
@@ -9660,9 +9760,13 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     });
   if (!isCurrent()) return superseded();
   const explicitCanonicalApplyConfirmed = payload?.explicitCanonicalApplyConfirmed === true;
+  const existingCommentDelta = activeContext.reviewTransportAuthorityCapsule?.commentExport
+    && !compareCommentExportReadback(activeContext.reviewTransportAuthorityCapsule.commentExport,
+      commentShadowPayload?.reviewIr?.commentThreads || []).ok;
   let preCommentExactTextApplyResult = null;
   if (
-    explicitCanonicalApplyConfirmed
+    !existingCommentDelta
+    && explicitCanonicalApplyConfirmed
     && nonOverlapTrackedReplacementProductPath?.prepared === true
     && isPlainObjectValue(nonOverlapTrackedReplacementProductPath.reviewSurface)
   ) {
@@ -9706,6 +9810,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       requestId,
       revisionBridge,
       explicitCanonicalApplyConfirmed,
+      isCurrent,
+      docxBytes: decoded.bytes,
     })
     : null;
   if (!isCurrent()) return superseded();
@@ -22226,6 +22332,12 @@ async function handleRtkRootCommentReturnCommandSurface(payload = {}) {
 }
 
 async function handleRtkCommentLifecycleReturnCommandSurface(payload = {}) {
+  if (payload.action === 'authenticated-comment-delta') {
+    const admitted = authenticatedCommentDeltaAdmissions.get(payload);
+    if (!admitted) return { ok: false, code: 'COMMENT_RETURN_ADMISSION_REQUIRED', writerCalled: false };
+    authenticatedCommentDeltaAdmissions.delete(payload);
+    return admitted();
+  }
   let module = null;
   try {
     module = await loadRtkNonTextReturnModule();
