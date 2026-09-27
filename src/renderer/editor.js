@@ -1851,6 +1851,17 @@ function reviewSurfaceNormalizeProgress(rawProgress, transient = null) {
 let wordCommentDraft = null;
 let wordCommentBusy = false;
 let wordCommentNotice = '';
+function guardWordCommentDraftUnload(event) {
+  if (!wordCommentDraft && !wordCommentBusy) return;
+  event.preventDefault();
+  event.returnValue = false;
+  wordCommentNotice = wordCommentBusy
+    ? 'Дождитесь завершения сохранения комментария.'
+    : 'Закрытие отменено. Сохраните комментарий или явно отмените черновик.';
+  renderReviewSurface();
+}
+window.addEventListener('beforeunload', guardWordCommentDraftUnload);
+
 function renderWordCommentAuthoring(projection) {
   const p = projection || {};
   const escape = reviewSurfaceEscapeHtml;
@@ -1861,7 +1872,7 @@ function renderWordCommentAuthoring(projection) {
     <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить', thread.threadId)}</div>
   </article>`).join('');
   const sameContext = p.available && wordCommentDraft?.binding.subjectId === p.subjectId;
-  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><label for="word-comment-body">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</label><textarea id="word-comment-body" class="modal__textarea" rows="4" style="width:100%;box-sizing:border-box" ${wordCommentBusy ? 'readonly' : ''}>${escape(wordCommentDraft.body)}</textarea>${!sameContext ? '<p>Вернитесь к исходной сохранённой сцене. Черновик сохранён в этой сессии.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
+  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><label for="word-comment-body">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</label><textarea id="word-comment-body" class="modal__textarea" rows="4" style="width:100%;box-sizing:border-box" ${wordCommentBusy ? 'readonly' : ''}>${escape(wordCommentDraft.body)}</textarea>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
   return `<section class="right-rail-surface"><div class="right-rail-section__label">Комментарии к сцене</div>${p.available ? button('create', 'Добавить к выделению') : '<p>Откройте и сохраните сцену для работы с комментариями.</p>'}${draft}<p role="status" aria-live="polite">${escape(wordCommentNotice)}</p>${threads || (p.available ? '<p>Комментариев пока нет.</p>' : '')}</section>`;
 }
 

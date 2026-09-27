@@ -169,3 +169,30 @@ test('authored root and reply body/status/anchor survive actual DOCX serializati
   assert.equal(root.body, 'Изменённый root');assert.equal(root.quotedAnchorText, 'Before');
   assert.equal(root.authorPersonIdentity.author, 'Автор Yalken');assert.equal(root.replies[0].body, 'Ответ\nточный');
 });
+
+
+test('pending comment draft and publication veto unload; empty state permits close and veto resets main lifecycle flags', () => {
+  const vm = require('node:vm');
+  const editor = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const start = editor.indexOf('function guardWordCommentDraftUnload(event) {');
+  const end = editor.indexOf('function renderWordCommentAuthoring(projection)', start);
+  let listener, renders = 0;
+  const ctx = vm.createContext({ wordCommentDraft: null, wordCommentBusy: false, wordCommentNotice: '',
+    renderReviewSurface: () => { renders++; }, window: { addEventListener: (name, fn) => { assert.equal(name, 'beforeunload'); listener = fn; } } });
+  vm.runInContext(editor.slice(start, end), ctx);
+  for (const [draft, busy, blocked] of [[null, false, false], [{body:'do not lose'}, false, true], [null, true, true]]) {
+    ctx.wordCommentDraft = draft; ctx.wordCommentBusy = busy;
+    let prevented = false; const event = { preventDefault() { prevented = true; } };
+    listener(event); assert.equal(prevented, blocked); assert.equal(event.returnValue, blocked ? false : undefined);
+    assert.equal(ctx.wordCommentDraft, draft); // Closing never discards or commits authoring.
+  }
+  assert.equal(renders, 2);
+  const main = fs.readFileSync(path.resolve(__dirname, '../../src/main.js'), 'utf8');
+  const a = main.indexOf("  mainWindow.webContents.on('will-prevent-unload',");
+  const b = main.indexOf("  mainWindow.on('closed',", a);
+  let veto; const mainCtx = vm.createContext({ isWindowClosing: true, isQuitting: true, updateStatus: () => {},
+    mainWindow: { webContents: { on: (name, fn) => { assert.equal(name, 'will-prevent-unload'); veto = fn; } } } });
+  vm.runInContext(main.slice(a, b), mainCtx);
+  veto({ preventDefault() { assert.fail('must not override authoring veto'); } });
+  assert.equal(mainCtx.isWindowClosing, false); assert.equal(mainCtx.isQuitting, false);
+});

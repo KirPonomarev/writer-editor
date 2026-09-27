@@ -29896,6 +29896,14 @@ function createWindow() {
     })().catch(() => {});
   });
 
+  mainWindow.webContents.on('will-prevent-unload', () => {
+    // Honour the renderer's no-loss veto. Never preventDefault here: Electron
+    // interprets that as permission to discard the pending authoring state.
+    isWindowClosing = false;
+    isQuitting = false;
+    updateStatus('Закрытие отменено: сохраните или отмените черновик комментария.');
+  });
+
   mainWindow.on('closed', () => {
     clearPendingTextRequests('Window closed');
     mainWindow = null;
