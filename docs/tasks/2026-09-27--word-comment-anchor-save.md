@@ -35,7 +35,7 @@ old v1-v3 formats retain their rules. Main recovery holds the same project lease
 negativeChecks: graph forgery, foreign project, link aliases, stale lease/state,
 ambiguous repeats, grapheme splits, structural edits and forced process termination.
 performance: bounded 8 MiB scene and 64 KiB graph; no work on each keystroke.
-accessibility: manual Save failure uses a labelled native dismiss-only dialog; Escape returns to the unchanged editor buffer. Autosave never opens repeated dialogs.
+accessibility: manual Save failure uses a labelled native dismiss-only dialog; Return or the labelled button returns to the unchanged editor buffer. Autosave never opens repeated dialogs.
 
 The renderer envelope module remains a compatibility facade with the same API;
 its pure implementation now belongs to Core. Authenticated review keeps its
@@ -50,7 +50,7 @@ portability globally. Official accepted-cell delta remains zero until acceptance
 SURFACE_MANIFEST_V1:
 surfaceId: manual-save-comment-failure; host: existing Electron dialog adapter.
 projection: typed save refusal, no file paths, user payload or secret content.
-interaction: one Return-to-text action; Escape dismisses without product writes.
+interaction: one Return-to-text action; Return or a button click dismisses without product writes.
 No bypass, force-save, discard or automatic reanchor action. Concurrent warnings
 coalesce; background autosave only publishes its existing status signal.
 Native system typography, colors and focus handling; no HTML/CSS or token changes.

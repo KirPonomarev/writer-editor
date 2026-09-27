@@ -2485,8 +2485,8 @@
     },
     {
       "filePath": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
-      "sha256": "4d813887dcfac8a53cd721f5e0f6aa2cb59540fe2e8ad8bb10a7a80c031dab08",
-      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
+      "sha256": "2df32af554af7753fb5288b9a62f876f62948f341e508078ca5525762610683c",
+      "approvedAtUtc": "2026-09-27T01:43:37.434268Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
       "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
@@ -10217,6 +10217,15 @@
       "filePath": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
       "sha256": "5625a5b4a510bfbe4e1793a422b532a41ffafe54008a3e05184d6b705b8f3a7e",
       "approvedAtUtc": "2026-09-27T01:22:01.970765Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
+      "sha256": "4d813887dcfac8a53cd721f5e0f6aa2cb59540fe2e8ad8bb10a7a80c031dab08",
+      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
       "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
