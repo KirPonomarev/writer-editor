@@ -492,7 +492,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "9b26b966b8fb6880a12322bb2bb245173412f8ad778257a14f2ed1b72c32f01a"
+        "sha256": "e177a6de83cd00545ce28d627878be2a4fd7b6684d529971d7eed485b9ba55f6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1228,7 +1228,19 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "45972c1332421bf5093178999cb954a95e2bc962a5d1f20585eb1c399a53ec50"
+        "sha256": "b0d261fb135c7abfd6b0a1ff30906a1b41ca18dfa39d6b110492154fd788a049"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
+        "sha256": "bdfe67ea5d9da26cd749936f54577b5b444c219e215004a48652abeda8c3b99c"
+      },
+      {
+        "path": "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",
+        "sha256": "20532c14e4c28d849db5999b4f2c9bb60082846ee39420159a1b98d1050ebc78"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
+        "sha256": "4ac0513ba1f6db0bf4399810501d8e65b212cc2332c24ce1e6b22ab433af4421"
       }
     ],
     "followupRepair": {
@@ -1333,6 +1345,11 @@
       "candidateIds": 24,
       "physicalAcceptanceRequired": true,
       "admissionCredit": 0
+    },
+    "wordCommentShadowReplay": {
+      "taskId": "WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "bindingBaseSha": "ca5278966fc65170f0210056305810288e06f052",
+      "scope": "Stable derived comment shadow identity excludes only candidate intake-clock metadata, binds full IR, preserves all legacy records and canonical state. No new cell credit."
     }
   },
   "wordTextOrderBatch": {

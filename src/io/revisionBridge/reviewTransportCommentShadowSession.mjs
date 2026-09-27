@@ -440,6 +440,7 @@ function buildSessionRecord(input = {}) {
     };
   }
   const commentShadowDigest = sha256Json(normalized.threads);
+  const reviewIrDigest = sha256Json(reviewIr);
   const identityPayload = {
     schemaVersion: RTK_COMMENT_SHADOW_SESSION_V1_SCHEMA,
     commandId: RTK_COMMENT_SHADOW_IMPORT_COMMAND_ID,
@@ -448,6 +449,7 @@ function buildSessionRecord(input = {}) {
     semanticReturnId,
     authenticatedReturnIdentity: identity.binding,
     commentShadowDigest,
+    reviewIrDigest,
   };
   const requestKey = sha256Json(identityPayload);
   const effectKey = sha256Json({
@@ -455,6 +457,7 @@ function buildSessionRecord(input = {}) {
     semanticReturnId,
     authenticatedReturnIdentity: identity.binding,
     commentShadowDigest,
+    reviewIrDigest,
     lane: 'comments-shadow',
   });
   const record = {
@@ -472,7 +475,7 @@ function buildSessionRecord(input = {}) {
     authenticatedReturnIdentity: identity.binding,
     requestKey,
     effectKey,
-    reviewIrDigest: sha256Json(reviewIr),
+    reviewIrDigest,
     commentShadowDigest,
     threads: normalized.threads,
     summary: summarizeThreads(normalized.threads),

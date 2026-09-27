@@ -5553,6 +5553,13 @@ function buildDocxReviewPreviewSessionCommentShadowPayload(context, candidate, r
     : (Array.isArray(reviewPacket.commentPlacements)
       ? cloneJsonSafe(reviewPacket.commentPlacements)
       : []);
+  if (!Array.isArray(intakeReviewIr?.commentPlacements)) {
+    // Candidate placement creation time belongs to this preview, not to the
+    // Word artifact. Keep source thread dates and parser-owned metadata intact.
+    for (const placement of rawCommentPlacements) {
+      if (isPlainObjectValue(placement)) delete placement.createdAt;
+    }
+  }
   const sceneBinding = revisionBridge?.bindAuthenticatedCommentPlacementSceneAuthority?.({
     commentThreads,
     parserPlacements: rawCommentPlacements,
