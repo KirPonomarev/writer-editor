@@ -84,8 +84,9 @@ export async function commitAuthenticatedCommentDelta(input, { publish, revalida
     await revalidate();
     if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
     const recoveryPath = await safeCommentFile(input.projectRoot, RECOVERY_RELATIVE_PATH);
-    await atomicWriter(recoveryPath, before.text, { safetyMode: 'strict' });
-    if (await fs.promises.readFile(recoveryPath, 'utf8') !== before.text) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
+    const recoveryText = before.text ?? JSON.stringify(before.state, null, 2) + '\n';
+    await atomicWriter(recoveryPath, recoveryText, { safetyMode: 'strict' });
+    if (await fs.promises.readFile(recoveryPath, 'utf8') !== recoveryText) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
     const statePath = await safeCommentFile(input.projectRoot, STATE_RELATIVE_PATH);
     await revalidate();
     if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');

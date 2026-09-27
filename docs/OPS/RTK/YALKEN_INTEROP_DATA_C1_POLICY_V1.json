@@ -274,7 +274,8 @@
     "test/unit/r24-wp104-evidence-integrity.test.js",
     "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
     "docs/tasks/2026-09-27--word-review-selection-identity.md",
-    "docs/tasks/2026-09-27--word-comment-literal-font.md"
+    "docs/tasks/2026-09-27--word-comment-literal-font.md",
+    "docs/tasks/2026-09-27--word-new-comment-return.md"
   ],
   "protectedFiles": [
     {
@@ -503,7 +504,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "99810f3b7c320ec7481dde09d1f4e8e21681e387fb4ee066f7cd9f7f5dd37355"
+        "sha256": "221c446ce62b229fd2c803f1e20d0da58c24b31490c6428120b6c6b3e93a8583"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -619,7 +620,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "cb81fec4dadce061f04c6d856b85062a5263137a0d1e2b3a5ee1e55a2129b3fd"
+        "sha256": "851fdeb358efc1f5ecf1ac05aecd4805b5311fa71687c83181a98108ee6bd092"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -815,11 +816,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "3878a453c49bd60ad08fd78517cf90e99cdf1c35f3ad2005bd0d613b98453f49"
+        "sha256": "acb8364969c97d74eca61b3a52b083652161d5de658bf9a080c68f534e18577a"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "86e011123a693e3f875ee73316144431b37bd76361dfb81ee26937681f5c873f"
+        "sha256": "fba5849bf569643d681eca1f00bfe63070e5051cb49b2e3a7206f6576dfca989"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -1227,11 +1228,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "2025aec01f4ee0a4888708b88afd60709f4fd702baa97559b574bc9c24946e6e"
+        "sha256": "75969e20a343a484f301f8ef3437885ba191cf7c8191de6d08ab36cc20a6e06e"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "84b08349dc42f978a948d44984cbb5972e6e1e70c0586fcdd63701a4463ae068"
+        "sha256": "b587d0726de85619f9311ef0dfecf19c7c271fe077965b95920a08258e98e0c7"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1239,7 +1240,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b2523c51e2651563b4084267ab11d2e7dd58f14fba686f7cb53f1bc8f09fca52"
+        "sha256": "395c6ad6b721532b3ab18ddc27db50a1bdab6d80a7b6fb1b7502dbda9023ea90"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1284,6 +1285,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-literal-font.md",
         "sha256": "e35cc464c791e4e1260af46f6cce115030184ed3ab8b05384ec14f16c221c0c2"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-new-comment-return.md",
+        "sha256": "7dd19078d0631e8e0d2dfebd30aef8ddc4a490ae0910e163e5589ff400bdccb5"
       }
     ],
     "followupRepair": {

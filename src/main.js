@@ -5788,9 +5788,9 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
         commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
         applyReceipts: [receipt], replayReceipts: [] };
     };
-    // The old broad Apply flag cannot confirm a newly discovered absence.
-    // Only the prepared native prompt describes and confirms these deletions.
-    if (explicitCanonicalApplyConfirmed !== true || plan.changes.some(change => change.statusAfter === 'deleted')) {
+    // The old broad Apply flag cannot confirm newly discovered additions or absence.
+    // Only the prepared native prompt describes and confirms these graph changes.
+    if (explicitCanonicalApplyConfirmed !== true || plan.changes.some(change => change.created === true || change.statusAfter === 'deleted')) {
       if (typeof onPrepared === 'function') onPrepared({ apply, changes: cloneJsonSafe(plan.changes) });
       return { ok: true, status: 'preview-ready', code: 'RTK_COMMENT_DELTA_EXPLICIT_APPLY_REQUIRED',
         writerCalled: false, pendingProductApplyLane: true, changes: plan.changes, applyReceipts: [], replayReceipts: [] };
@@ -10266,10 +10266,11 @@ async function confirmLocalWordCommentDelta({ fileName, changes }) {
   const count = Array.isArray(changes) ? changes.length : 0;
   if (!count) return false;
   const deleted = changes.filter(change => change.statusAfter === 'deleted').length;
+  const added = changes.filter(change => change.created === true).length;
   const result = await dialog.showMessageBox(mainWindow, {
     type: 'question', title: 'Комментарии из Word',
     message: 'Применить изменения комментариев?',
-    detail: `${fileName}\nИзменённых обсуждений: ${count}. ${deleted
+    detail: `${fileName}\nИзменённых обсуждений: ${count}. ${added ? `Новых обсуждений: ${added}. ` : ''}${deleted
       ? `В файле Word отсутствует обсуждений: ${deleted}. При применении они будут помечены удалёнными в Ялкене; их тексты и авторы сохранятся в истории. ` : ''}Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.`,
     buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true,
   });
