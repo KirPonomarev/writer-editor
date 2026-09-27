@@ -498,6 +498,39 @@ test('DOCX review local-file entry: command is bridge-allowlisted and menu-owned
   );
 });
 
+test('DOCX review local-file entry: fresh picker actions accept changed bytes without reusing request identity', async () => {
+  const port = instantiateDocxReviewLocalFileEntryPort();
+  const first = await port.handleDocxReviewPreviewSessionLocalFileCommandSurface({});
+  assert.equal(first.ok, true, JSON.stringify(first));
+  const changedBytes = docxWithAnchoredComment('<w:p><w:r><w:t>Word edit</w:t></w:r></w:p>');
+  const second = await port.handleDocxReviewPreviewSessionLocalFileCommandSurface({}, {
+    readLocalFileBytes: async () => changedBytes,
+  });
+  assert.equal(second.ok, true, JSON.stringify(second));
+  assert.equal(second.activated, true);
+  assert.notEqual(second.requestId, first.requestId);
+  assert.equal(port.calls.showOpenDialog.length, 2);
+  assert.equal(second.canWriteStorage, false);
+});
+
+test('DOCX review local-file entry: explicit request identity still rejects changed bytes', async () => {
+  const port = instantiateDocxReviewLocalFileEntryPort();
+  const payload = { requestId: 'explicit-repeat' };
+  const first = await port.handleDocxReviewPreviewSessionLocalFileCommandSurface(payload);
+  assert.equal(first.ok, true, JSON.stringify(first));
+  const repeat = await port.handleDocxReviewPreviewSessionLocalFileCommandSurface(payload);
+  assert.equal(repeat.ok, true, JSON.stringify(repeat));
+  assert.equal(repeat.requestId, first.requestId);
+  const before = JSON.stringify(port.getState().currentReviewSurfacePayload);
+  const changed = await port.handleDocxReviewPreviewSessionLocalFileCommandSurface(payload, {
+    readLocalFileBytes: async () => docxWithAnchoredComment('<w:p><w:r><w:t>Word edit</w:t></w:r></w:p>'),
+  });
+  assert.equal(changed.ok, false);
+  assert.equal(changed.error.reason, 'RTK_DOCX_ACTIVATION_DUPLICATE_REQUEST_MUTATED_PAYLOAD');
+  assert.equal(JSON.stringify(port.getState().currentReviewSurfacePayload), before);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+});
+
 test('DOCX review local-file entry: selected DOCX comments activate an in-memory Review session', async () => {
   const bytes = docxWithAnchoredComment();
   const port = instantiateDocxReviewLocalFileEntryPort({ bytes });

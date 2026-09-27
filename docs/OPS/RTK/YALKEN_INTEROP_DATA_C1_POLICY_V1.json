@@ -271,7 +271,9 @@
     "docs/tasks/2026-09-27--word-watchdog-test-determinism.md",
     "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
     "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
-    "test/unit/r24-wp104-evidence-integrity.test.js"
+    "test/unit/r24-wp104-evidence-integrity.test.js",
+    "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+    "docs/tasks/2026-09-27--word-review-selection-identity.md"
   ],
   "protectedFiles": [
     {
@@ -500,7 +502,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "cc285031f5782ddb69e34136102df6302e5da74ddfbd0c8993d9e2cefe4ca303"
+        "sha256": "99810f3b7c320ec7481dde09d1f4e8e21681e387fb4ee066f7cd9f7f5dd37355"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1236,7 +1238,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "e91d68e0ae0b4b44f0940233a6f79a218bd8408032a4ca318c1e816de90d17df"
+        "sha256": "b2523c51e2651563b4084267ab11d2e7dd58f14fba686f7cb53f1bc8f09fca52"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1269,6 +1271,14 @@
       {
         "path": "test/unit/r24-wp104-evidence-integrity.test.js",
         "sha256": "608037c614e73482e2788e6f8facf62a689f1140d2338033fa38b38200a08f57"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+        "sha256": "550d620d34ea2a5780413cbb358698e00c209ef7d61b0473eb4687070a549066"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-review-selection-identity.md",
+        "sha256": "e2930fa2da62052e081a69c8eac3e63d8af01317590c6cdd0f2eab58e23e33cb"
       }
     ],
     "followupRepair": {
