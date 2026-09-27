@@ -263,7 +263,10 @@
     "docs/tasks/2026-09-27--word-comment-return-apply.md",
     "test/contracts/rtk-word-comment-return-apply.contract.test.js",
     "test/unit/r24-ent0-entitlement-law.test.js",
-    "test/unit/r24-ent0-port-enforcement.test.js"
+    "test/unit/r24-ent0-port-enforcement.test.js",
+    "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
+    "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
+    "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js"
   ],
   "protectedFiles": [
     {

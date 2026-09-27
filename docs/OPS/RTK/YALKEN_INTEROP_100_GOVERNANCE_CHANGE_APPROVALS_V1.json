@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f2960a56dec4d56bf5902a60af1c00e8dd227a10dbeb2270d1801aad53e3c44a",
+      "sha256": "4453f4863484031e024b60b31728a1f282590ee7b163090bf629cd9d7bfb80cd",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
-      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approvedAtUtc": "2026-09-27T11:06:22.421471Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "77afcfb614daf2981452f0294f8f4596e754d36e697c8d908410c93d578a566b",
+      "sha256": "b917087d72ea932d7c5ba5ddd232a2d562d4ce972587dea2198b0d4dbbdd0170",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
-      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approvedAtUtc": "2026-09-27T11:06:22.422318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "abe493e484348ac22ce2d7309706687adb43b579f4933a6c579b4f8f989a2866",
+      "sha256": "e9e4e83f91c222ba9714afe2c22dd5cff8ddd35e4f5ce7b021347e5403e762af",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
-      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approvedAtUtc": "2026-09-27T11:06:22.422390Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
@@ -2533,9 +2533,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ddacd41577d468ee0b823261706687864aac3dd23dcd2f2f58f98cb53e9aa5a4",
+      "sha256": "cb62a7d975b4e3533ae4b33d3be94b8bcb1f00c8df2d990d2de20ca45e3f57dd",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
-      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approvedAtUtc": "2026-09-27T11:06:22.422575Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
@@ -11106,6 +11106,42 @@
       "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f2960a56dec4d56bf5902a60af1c00e8dd227a10dbeb2270d1801aad53e3c44a",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "77afcfb614daf2981452f0294f8f4596e754d36e697c8d908410c93d578a566b",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "abe493e484348ac22ce2d7309706687adb43b579f4933a6c579b4f8f989a2866",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ddacd41577d468ee0b823261706687864aac3dd23dcd2f2f58f98cb53e9aa5a4",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     }
   ]
 }
