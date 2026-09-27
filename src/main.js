@@ -10130,7 +10130,7 @@ function makeDocxReviewPreviewSessionLocalFileTypedError(code, reason, details =
 function normalizeDocxReviewPreviewSessionLocalFileRequestId(value) {
   return typeof value === 'string' && value.trim()
     ? value.trim()
-    : 'docx-review-preview-session-local-file-request';
+    : `docx-review-preview-session-local-file-${crypto.randomUUID()}`;
 }
 
 async function pickDocxReviewPreviewSessionLocalFile(options = {}) {
