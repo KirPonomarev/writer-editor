@@ -245,3 +245,78 @@ test('local individual reply deletion archives exact history, preserves peers an
   const invalidRoot = structuredClone(result.state); invalidRoot.threads[0].deletedMessages[0].kind = 'root';
   assert.throws(() => model.readState(JSON.stringify(invalidRoot), 'p1'), /STATE_INVALID/);
 });
+
+function replyUiHarness(saved = apply(create(), 'reply', { body: 'Reply to remove' })) {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const fragment = source.slice(source.indexOf('function renderWordCommentAuthoring(projection)'),
+    source.indexOf('function reviewSurfaceNormalizeState(input'));
+  const projection = { available: true, ...intent(saved.afterText, 'delete'), threads: saved.state.threads };
+  const calls = []; let current = saved, focused = 0;
+  const sandbox = { wordCommentDraft: null, wordCommentBusy: false, wordCommentNotice: '',
+    reviewSurfaceState: { commentAuthoring: projection }, crypto,
+    reviewSurfaceArray: v => Array.isArray(v) ? v : [],
+    reviewSurfaceEscapeHtml: value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]),
+    renderReviewSurface: () => {}, document: { getElementById: () => ({ focus: () => { focused++; } }) },
+    reviewSurfaceUnwrapCommandResult: value => value,
+    loadReviewSurfaceFromQuery: async () => {},
+    invokePreloadUiCommandBridge: async (id, input) => {
+      calls.push({ id, input: JSON.parse(JSON.stringify(input)) });
+      try { current = model.planCommentAuthoring({ ...context, beforeText: current.afterText, input }); return { ok: true }; }
+      catch (error) { return { ok: false, reason: error.message }; }
+    },
+  };
+  const ctx = vm.createContext(sandbox); vm.runInContext(fragment, ctx);
+  const button = (action = 'deleteReply', commentId = saved.state.threads[0].messages[1].commentId, threadId = saved.threadId) =>
+    ({ disabled: false, dataset: { wordCommentAction: action, commentId, threadId } });
+  return { ctx, calls, projection, button, state: () => current, focused: () => focused,
+    advance: () => { current = apply(current, 'edit', { commentId: current.state.threads[0].rootCommentId, body: 'Concurrent root edit' }); } };
+}
+
+test('ordinary renderer reply deletion dispatches exact identity through existing command and preserves root/history', async () => {
+  const h = replyUiHarness(), before = h.state(), reply = before.state.threads[0].messages[1];
+  const html = h.ctx.renderWordCommentAuthoring(h.projection);
+  assert.equal((html.match(/data-word-comment-action="deleteReply"/g) || []).length, 1);
+  assert.match(html, /Удалить ответ/); assert.match(html, /Удалить обсуждение/);
+  await h.ctx.handleWordCommentAction(h.button());
+  assert.equal(h.calls.length, 1); assert.equal(h.calls[0].id, model.COMMAND_ID);
+  assert.equal(h.calls[0].input.action, 'delete'); assert.equal(h.calls[0].input.commentId, reply.commentId);
+  assert.equal(h.calls[0].input.expectedStateSha256, hash(before.afterText));
+  assert.deepEqual(h.state().state.threads[0].messages, [before.state.threads[0].messages[0]]);
+  assert.deepEqual(h.state().state.threads[0].deletedMessages, [reply]);
+  assert.equal(h.state().state.threads[0].status, 'open');
+});
+
+test('missing, foreign, archived and root reply targets never fall back to whole-thread deletion', async () => {
+  for (const target of ['missing', 'empty', 'foreign', 'root', 'thread', 'archived']) {
+    const h = replyUiHarness(), before = h.state().afterText, button = h.button();
+    if (target === 'missing') delete button.dataset.commentId;
+    if (target === 'empty') button.dataset.commentId = '';
+    if (target === 'foreign') button.dataset.commentId = 'not-a-reply';
+    if (target === 'root') button.dataset.commentId = h.state().state.threads[0].rootCommentId;
+    if (target === 'thread') button.dataset.threadId = 'foreign-thread';
+    if (target === 'archived') h.projection.threads = [{ ...h.projection.threads[0], messages: h.projection.threads[0].messages.slice(0, 1) }];
+    await h.ctx.handleWordCommentAction(button);
+    assert.equal(h.calls.length, 0, target); assert.equal(h.state().afterText, before, target);
+    assert.match(h.ctx.wordCommentNotice, /ответ больше недоступен/);
+  }
+});
+
+test('reply UI protects drafts and busy state; stale projection is rejected by real Core without losing concurrent edits', async () => {
+  for (const blocked of ['draft', 'busy', 'disabled', 'unavailable']) {
+    const h = replyUiHarness(), button = h.button(), before = h.state().afterText;
+    const draft = { binding: { subjectId: h.projection.subjectId }, action: 'reply', body: 'Unsent body' };
+    if (blocked === 'draft') h.ctx.wordCommentDraft = draft;
+    if (blocked === 'busy') h.ctx.wordCommentBusy = true;
+    if (blocked === 'disabled') button.disabled = true;
+    if (blocked === 'unavailable') h.projection.available = false;
+    await h.ctx.handleWordCommentAction(button);
+    assert.equal(h.calls.length, 0, blocked); assert.equal(h.state().afterText, before, blocked);
+    if (blocked === 'draft') { assert.equal(h.ctx.wordCommentDraft, draft); assert.equal(h.focused(), 1); }
+    if (blocked === 'busy') assert.match(h.ctx.renderWordCommentAuthoring(h.projection), /data-word-comment-action="deleteReply"[^>]*disabled/);
+  }
+  const h = replyUiHarness(); h.advance(); const concurrent = h.state().afterText;
+  await h.ctx.handleWordCommentAction(h.button());
+  assert.equal(h.calls.length, 1); assert.match(h.ctx.wordCommentNotice, /COMMENT_STATE_CONFLICT/);
+  assert.equal(h.state().afterText, concurrent); assert.equal(h.ctx.wordCommentBusy, false);
+});
