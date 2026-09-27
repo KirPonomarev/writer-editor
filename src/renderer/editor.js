@@ -48,6 +48,7 @@ import {
 } from './commands/flowMode.mjs';
 import {
   composeObservablePayload,
+  deriveVisibleTextFromDocument,
   parseObservablePayload,
 } from './documentContentEnvelope.mjs';
 import {
@@ -1846,6 +1847,97 @@ function reviewSurfaceNormalizeProgress(rawProgress, transient = null) {
   };
 }
 
+// Unsent body belongs to authoring working state, outside refreshed projections.
+let wordCommentDraft = null;
+let wordCommentBusy = false;
+let wordCommentNotice = '';
+function guardWordCommentDraftUnload(event) {
+  if (!wordCommentDraft && !wordCommentBusy) return;
+  event.preventDefault();
+  event.returnValue = false;
+  event.stopImmediatePropagation(); // Do not destroy the editor after a cancelled unload.
+  wordCommentNotice = wordCommentBusy
+    ? 'Дождитесь завершения сохранения комментария.'
+    : 'Закрытие отменено. Сохраните комментарий или явно отмените черновик.';
+  renderReviewSurface();
+}
+window.addEventListener('beforeunload', guardWordCommentDraftUnload);
+
+function renderWordCommentAuthoring(projection) {
+  const p = projection || {};
+  const escape = reviewSurfaceEscapeHtml;
+  const button = (action, label, threadId = '', commentId = '') => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="${action}" data-thread-id="${escape(threadId)}" data-comment-id="${escape(commentId)}" ${wordCommentBusy || !p.available ? 'disabled' : ''}>${label}</button>`;
+  const threads = reviewSurfaceArray(p.threads).map(thread => `<article class="right-rail-review-item right-rail-review-item--comments">
+    <div class="right-rail-review-item-meta"><span>${thread.status === 'resolved' ? 'Завершено' : 'Открыто'}</span><span>${escape(thread.anchor?.selectedText || '')}</span></div>
+    ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><p class="right-rail-review-item-body">${escape(message.body)}</p>${button('edit', 'Править', thread.threadId, message.commentId)}</div>`).join('')}
+    <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить', thread.threadId)}</div>
+  </article>`).join('');
+  const sameContext = p.available && wordCommentDraft?.binding.subjectId === p.subjectId;
+  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><label for="word-comment-body">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</label><textarea id="word-comment-body" class="modal__textarea" rows="4" style="width:100%;box-sizing:border-box" ${wordCommentBusy ? 'readonly' : ''}>${escape(wordCommentDraft.body)}</textarea>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
+  return `<section class="right-rail-surface"><div class="right-rail-section__label">Комментарии к сцене</div>${p.available ? button('create', 'Добавить к выделению') : '<p>Откройте и сохраните сцену для работы с комментариями.</p>'}${draft}<p role="status" aria-live="polite">${escape(wordCommentNotice)}</p>${threads || (p.available ? '<p>Комментариев пока нет.</p>' : '')}</section>`;
+}
+
+function wordCommentSelectionIntent() {
+  const selection = getSelectionOffsets();
+  const parsed = parseObservablePayload(composeDocumentContent());
+  if (parsed.issue || selection.start === selection.end) throw new Error('Выделите текст в сцене.');
+  const paragraphs = parsed.doc ? parsed.doc.content.map(node => {
+    if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('Сейчас доступно выделение в обычном абзаце.');
+    return deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
+  }) : parsed.text.split('\n');
+  let offset = 0;
+  for (let index = 0; index < paragraphs.length; index++) {
+    const text = paragraphs[index];
+    if (selection.start >= offset && selection.end <= offset + text.length) {
+      return { paragraphIndex: index, startUtf16: selection.start - offset, selectedText: text.slice(selection.start - offset, selection.end - offset) };
+    }
+    offset += text.length + 1;
+  }
+  throw new Error('Выделите текст внутри одного абзаца.');
+}
+
+async function handleWordCommentAction(button) {
+  const action = button.dataset.wordCommentAction;
+  if (wordCommentBusy || button.disabled) return;
+  if (action === 'cancel') { wordCommentDraft = null; wordCommentNotice = ''; renderReviewSurface(); return; }
+  const p = reviewSurfaceState?.commentAuthoring;
+  if (!p?.available) return;
+  try {
+    if (action !== 'save' && wordCommentDraft) {
+      wordCommentNotice = 'Сначала сохраните или отмените текущий черновик.'; renderReviewSurface();
+      document.getElementById('word-comment-body')?.focus(); return;
+    }
+    const binding = { projectId: p.projectId, sceneId: p.sceneId, subjectId: p.subjectId,
+      expectedStateSha256: p.expectedStateSha256, expectedSceneSha256: p.expectedSceneSha256 };
+    const threadId = button.dataset.threadId;
+    const commentId = button.dataset.commentId;
+    if (['create', 'reply', 'edit'].includes(action)) {
+      const thread = reviewSurfaceArray(p.threads).find(t => t.threadId === threadId);
+      const message = thread?.messages?.find(m => m.commentId === commentId);
+      if ((action === 'edit' && !message) || (action === 'reply' && !thread)) throw new Error('Обновите список комментариев.');
+      wordCommentDraft = { binding, action, requestId: 'comment-' + crypto.randomUUID(),
+        body: action === 'edit' ? message.body : '',
+        ...(action === 'create' ? { anchor: wordCommentSelectionIntent() } : { threadId }),
+        ...(action === 'edit' ? { commentId } : {}) };
+      wordCommentNotice = ''; renderReviewSurface(); document.getElementById('word-comment-body')?.focus(); return;
+    }
+    let payload;
+    if (action === 'save') {
+      if (!wordCommentDraft || wordCommentDraft.binding.subjectId !== p.subjectId) throw new Error('Вернитесь к исходной сцене.');
+      const { binding: bound, ...intent } = wordCommentDraft; payload = { ...bound, ...intent };
+    } else {
+      payload = { ...binding, action, threadId, requestId: 'comment-' + crypto.randomUUID(),
+        ...(action === 'reanchor' ? { anchor: wordCommentSelectionIntent() } : {}) };
+    }
+    wordCommentBusy = true; wordCommentNotice = 'Сохранение…'; renderReviewSurface();
+    const result = reviewSurfaceUnwrapCommandResult(await invokePreloadUiCommandBridge('cmd.project.review.editComment', payload));
+    if (!result?.ok) throw new Error(result?.reason || result?.error?.reason || result?.code || 'Изменение не подтверждено. Черновик сохранён.');
+    wordCommentDraft = null; wordCommentNotice = 'Комментарий сохранён.';
+    await loadReviewSurfaceFromQuery();
+  } catch (error) { wordCommentNotice = 'Не удалось сохранить: ' + error.message; }
+  finally { wordCommentBusy = false; renderReviewSurface(); }
+}
+
 function reviewSurfaceNormalizeState(input = {}) {
   const source = reviewSurfaceResolveIncomingPayload(input);
   const revisionSession = reviewSurfaceCanonicalSession(source);
@@ -1922,6 +2014,7 @@ function reviewSurfaceNormalizeState(input = {}) {
 
   return {
     status,
+    commentAuthoring: reviewSurfaceIsPlainObject(source.commentAuthoring) ? source.commentAuthoring : null,
     revisionSession,
     exactTextPlanPreview,
     structuralManualReviewPreview,
@@ -2366,6 +2459,7 @@ function buildReviewSurfaceViewModel(input = {}) {
     formattingReturn: state.formattingReturn,
     lanes: reviewSurfaceBuildLanes(state, exactTextPreview),
     commentLane: reviewSurfaceBuildCommentLane(state),
+    commentAuthoring: state.commentAuthoring,
     sourceMode: state.sourceMode,
     lifecycleState: state.lifecycleState,
     identity: {
@@ -2963,6 +3057,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   `;
 
   return `
+    ${renderWordCommentAuthoring(viewModel.commentAuthoring)}
     ${errorMarkup}
     ${reconciliationMarkup}
     <section class="right-rail-surface right-rail-surface--review-header">
@@ -2995,7 +3090,7 @@ function renderReviewSurfaceMarkup(viewModel) {
     </section>
     <section class="right-rail-surface">
       <div class="right-rail-section__label">Comment lane</div>
-      ${commentLaneMarkup}
+      ${viewModel.commentAuthoring?.available ? '' : commentLaneMarkup}
     </section>
     <section class="right-rail-surface">
       <div class="right-rail-section__label">Потерянные комментарии</div>
@@ -8273,6 +8368,7 @@ function composeEditorSnapshot() {
     bookProfile: getActiveBookProfile(),
     selectionRange: getSelectionOffsets(),
     generation: localEditGeneration,
+    commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
   };
 }
 
@@ -18328,7 +18424,10 @@ function renderReviewSurface() {
   });
   reviewSurfaceHost.dataset.reviewSurfaceStatus = viewModel.status;
   reviewSurfaceHost.dataset.reviewSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
+  const activeDraft = document.activeElement?.id === 'word-comment-body' ? document.activeElement : null;
+  const draftSelection = activeDraft ? [activeDraft.selectionStart, activeDraft.selectionEnd] : null;
   reviewSurfaceHost.innerHTML = renderReviewSurfaceMarkup(viewModel);
+  if (draftSelection) { const textarea = document.getElementById('word-comment-body'); textarea?.focus(); textarea?.setSelectionRange(...draftSelection); }
 }
 
 function setReviewSurfaceState(nextState = {}, options = {}) {
@@ -18473,6 +18572,10 @@ async function handleStage10LifecycleProductCommand(button) {
 async function handleReviewSurfaceExactTextApplyClick(event) {
   const target = event?.target;
   if (!(target instanceof Element) || !(reviewSurfaceHost instanceof HTMLElement)) return;
+  const wordCommentButton = target.closest('[data-word-comment-action]');
+  if (wordCommentButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(wordCommentButton)) {
+    await handleWordCommentAction(wordCommentButton); return;
+  }
   const stage10Button = target.closest('[data-stage10-product-command]');
   if (stage10Button instanceof HTMLButtonElement && reviewSurfaceHost.contains(stage10Button)) {
     await handleStage10LifecycleProductCommand(stage10Button);
@@ -18787,6 +18890,14 @@ function bindReviewSurfaceApplyActions() {
     return;
   }
   reviewSurfaceHost.addEventListener('click', handleReviewSurfaceExactTextApplyClick);
+  reviewSurfaceHost.addEventListener('input', event => {
+    if (event.target?.id === 'word-comment-body' && wordCommentDraft && !wordCommentBusy) wordCommentDraft.body = event.target.value;
+  });
+  reviewSurfaceHost.addEventListener('keydown', event => {
+    if (event.target?.id === 'word-comment-body' && (event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault(); reviewSurfaceHost.querySelector('[data-word-comment-action="save"]')?.click();
+    }
+  });
   reviewSurfaceApplyActionListenerBound = true;
 }
 

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
+import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
 import { parseObservablePayload, deriveVisibleTextFromDocument } from '../../renderer/documentContentEnvelope.mjs';
 
@@ -14,6 +15,54 @@ export const RTK_NON_TEXT_RETURN_EVENT_SCHEMA = 'yalken.rtk.word.non-text-return
 const STATE_RELATIVE_PATH = path.join('.yalken', 'word-review', 'non-text-return-state.v1.json');
 const RECOVERY_RELATIVE_PATH = path.join('.yalken', 'recovery', 'non-text-return-state.v1.json');
 const ROOT_COMMENT_BODY_LIMIT = 16_384;
+
+// Fixed canonical target only. Payloads never supply a path or a writer.
+async function safeCommentFile(projectRoot, relativePath) {
+  const root = await fs.promises.realpath(projectRoot);
+  let target = root;
+  const parts = relativePath.split(path.sep);
+  for (let index = 0; index < parts.length; index++) {
+    target = path.join(target, parts[index]);
+    let stat;
+    try { stat = await fs.promises.lstat(target); }
+    catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    if (stat.isSymbolicLink() || (index === parts.length - 1
+      ? !stat.isFile() || stat.nlink !== 1 || stat.size > 65536
+      : !stat.isDirectory())) throw new Error('COMMENT_STATE_PATH_UNSAFE');
+  }
+  return target;
+}
+
+export async function readCommentAuthoringState({ projectRoot, projectId }) {
+  const target = await safeCommentFile(projectRoot, STATE_RELATIVE_PATH);
+  let text = null;
+  try { text = await fs.promises.readFile(target, 'utf8'); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  return { text, state: commentAuthoring.readState(text, projectId), stateSha256: text === null ? '' : sha256(text) };
+}
+
+export async function commitCommentAuthoring(input, { publish, revalidate, atomicWriter = atomicWriteFile } = {}) {
+  if (typeof publish !== 'function' || typeof revalidate !== 'function') throw new Error('COMMENT_PUBLICATION_AUTHORITY_REQUIRED');
+  await revalidate();
+  const before = await readCommentAuthoringState(input);
+  const plan = commentAuthoring.planCommentAuthoring({ ...input, beforeText: before.text });
+  if (plan.replay) return { ok: true, replay: true, threadId: plan.threadId, stateSha256: before.stateSha256 };
+  await publish(async () => {
+    await revalidate();
+    if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
+    const recoveryPath = await safeCommentFile(input.projectRoot, RECOVERY_RELATIVE_PATH);
+    await atomicWriter(recoveryPath, JSON.stringify(before.state, null, 2) + '\n', { safetyMode: 'strict' });
+    const recovery = JSON.parse(await fs.promises.readFile(recoveryPath, 'utf8'));
+    if (JSON.stringify(recovery) !== JSON.stringify(before.state)) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
+    await revalidate();
+    if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
+    const statePath = await safeCommentFile(input.projectRoot, STATE_RELATIVE_PATH);
+    await atomicWriter(statePath, plan.afterText, { safetyMode: 'strict' });
+  });
+  const after = await readCommentAuthoringState(input);
+  if (after.text !== plan.afterText) throw new Error('COMMENT_READBACK_FAILED');
+  return { ok: true, replay: false, threadId: plan.threadId, stateSha256: after.stateSha256, revision: after.state.revision };
+}
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

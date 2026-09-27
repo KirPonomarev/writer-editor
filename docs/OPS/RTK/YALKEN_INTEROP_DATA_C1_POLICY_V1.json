@@ -242,7 +242,15 @@
     "test/unit/sector-m-preload-ui-command-bridge.test.js",
     "docs/tasks/2026-09-27--word-generic-comments.md",
     "test/contracts/rtk-word-generic-comments.contract.test.js",
-    "src/io/revisionBridge/genericWordComments.mjs"
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "docs/tasks/2026-09-27--word-comment-authoring.md",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "src/core/word-comment-authoring-v1.cjs",
+    "src/core/entitlement-law-v1.cjs",
+    "src/command/commandSurfaceKernel.js",
+    "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+    "test/unit/sector-m-review-surface-ui.test.js",
+    "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -471,7 +479,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e458d4f7c550c0b5081c0d3dd396c455e1a82060ed2597bff34d6a74891ba2e7"
+        "sha256": "307b7140fefeaef04efae71c1aa8871bdb479e945168002b18768cd7eff3e66b"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -483,7 +491,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cc48789bb9f5edb73fe0810bbe95ae05ffb169de0a4863c333dd54cde890d8f3"
+        "sha256": "8e117dc08f32ab6e92af8ab62586c3d54eba355ccb7b8276efef44fcc61945be"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -647,7 +655,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "34c0eabae7b8ec028ec6d05599496cb714e7899dcb2a79fbcd917aa98a37641c"
+        "sha256": "b939de4a38406b156f8650b96b3d2f3a18ec9b60f13be614e8b12c92bd575a6a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -711,11 +719,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "f1918a8944e8ae848aa7e5ead567a2411e2c52b2c448a73b93c65821203e93af"
+        "sha256": "d87d704770a646d8b627edd666fab5443078a050e97cbd93aa1421dff67d1d8a"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "67657203efe96aeec9787ef0251df3baef9eb77911061fb195fb6d54a19fc951"
+        "sha256": "e057b11a274f39fd01807ae70b70f3bc8d87f597ceb50566ee0c5fdbe7836f3f"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -787,7 +795,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "c29d37d58303d519a09e92a29887cfcc6e7555101a2181776f1ab0f3fe5bbf2f"
+        "sha256": "7a568ff57d029ab05df663d9dc8e184de43d00cca70892058df1c000e777128c"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -943,7 +951,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "98f1a19fce86649d2de91313911a8e0c61c6995cc8992edd15327b1b7887b124"
+        "sha256": "88551bbabeecab1a0012b98585b6033c2163804d6881e400dd3a48bd8b264602"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1132,6 +1140,38 @@
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
         "sha256": "f222c83aabd591dbf471f204c33187435e5096abb3952c04019bf8f77628ebdc"
+      },
+      {
+        "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+        "sha256": "6050ccc0bd356fbc6721b18575c2a9b5d21ed84dc7b807e68e00e2ea9f9c7c7b"
+      },
+      {
+        "path": "src/core/word-comment-authoring-v1.cjs",
+        "sha256": "0bf4ff0795ce777d5b3ae1100a65fb6c68f8091d96c38dfb90308d575cd4d8e2"
+      },
+      {
+        "path": "src/core/entitlement-law-v1.cjs",
+        "sha256": "974827b3744d03b2dabf3a2ee1e4727864440f0bafa237947c7ff6d0a5d1da1b"
+      },
+      {
+        "path": "src/command/commandSurfaceKernel.js",
+        "sha256": "78080435bee93132b68b8a4a3adcdb13f906fb1cc2b93d2db3d448e50482887e"
+      },
+      {
+        "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
+        "sha256": "48b078ccf799815883a49d9ad8272fab690c7340f4dcb2942bb53e9fca1ad871"
+      },
+      {
+        "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+        "sha256": "d05dcf522ec4096e7d8f2ab692757a1c074d502aed72a9465571c65d7796cc24"
+      },
+      {
+        "path": "test/unit/sector-m-review-surface-ui.test.js",
+        "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
+        "sha256": "c140b081decf8fc43c31b5133a30c7f528a7b9653826da7064ca7d37bb74c69e"
       }
     ],
     "followupRepair": {
