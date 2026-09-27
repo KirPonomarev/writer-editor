@@ -23,8 +23,11 @@ async function harness(t,options={}) {
  await fsp.writeFile(scenePath,'original');
  await fsp.writeFile(manifestPath,JSON.stringify({projectId:'fixture-project',proUnknown:{comments:[{sceneId:'scene.txt',body:'preserve me'}]}}));
  const preservation=await import(pathToFileURL(path.join(ROOT,'src/core/proRoundtripPreservation.mjs')));
+ const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
+ const authority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'leases'),useLeaseHeartbeatWorker:false});
  let publications=0;
- const context=vm.createContext({fs:fsp,Buffer,commitProjectTransaction,durableSaveTransaction,...gateway,
+ const context=vm.createContext({fs:fsp,path,Buffer,planCommentAnchorSave:require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave,
+  loadRtkNonTextReturnModule:async()=>({readCommentAuthoringState:async()=>({text:null})}),commitProjectTransaction,durableSaveTransaction,...gateway,
   isDirty:false,autoSaveInProgress:false,lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
   resolveProjectBindingForFile:async()=>({manifestPath,manifest:JSON.parse(await fsp.readFile(manifestPath,'utf8'))}),
   SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
@@ -32,7 +35,7 @@ async function harness(t,options={}) {
   getDocumentContextFromPath:()=>({kind:options.contextKind||'scene'}),getProjectRelativeFilePath:p=>path.relative(root,p),
   loadProRoundtripPreservationModule:async()=>options.missingInvalidation?{}:preservation,
   prepareBookProfileManifestForFile:async()=>{const raw=await fsp.readFile(manifestPath,'utf8');return {manifestPath,projectId:'fixture-project',expectedText:raw,nextText:raw};},
-  getMainProjectManifestAuthority:async()=>({commitManifestText:async({expectedText,nextText,targetPath})=>{
+  getMainProjectManifestAuthority:async()=>({...authority,commitManifestText:async({expectedText,nextText,targetPath})=>{
    assert.equal(await fsp.readFile(targetPath,'utf8'),expectedText,'manifest compare-and-swap');
    if(options.failPublication)throw Object.assign(new Error('injected write refusal'),{code:'E_TEST_WRITE_REFUSED'});
    publications++;

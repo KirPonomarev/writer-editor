@@ -250,7 +250,12 @@
     "src/command/commandSurfaceKernel.js",
     "test/contracts/donor-port-command-surface-kernel.contract.test.js",
     "test/unit/sector-m-review-surface-ui.test.js",
-    "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js"
+    "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
+    "docs/tasks/2026-09-27--word-comment-anchor-save.md",
+    "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+    "src/core/word-comment-anchor-save-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/renderer/documentContentEnvelope.mjs"
   ],
   "protectedFiles": [
     {
@@ -479,7 +484,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "307b7140fefeaef04efae71c1aa8871bdb479e945168002b18768cd7eff3e66b"
+        "sha256": "b949bffa870d195a6feab2c479d0cd87952e106bc0e37d34518f499d017b11ce"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -491,7 +496,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "8e117dc08f32ab6e92af8ab62586c3d54eba355ccb7b8276efef44fcc61945be"
+        "sha256": "99bd9819c5c1c0eb5a27226b2ba1fa9c40307d6721caa8c0a23625aa20f49815"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -731,7 +736,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "6171268f03f9dd96f024db9ce3a89e89113cdb351c513979ca657bfd3d660246"
+        "sha256": "f195b3cdf7c901841d7d4ceafd2fecea2dc96585c60eb4d86142316e39edb4d1"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -751,7 +756,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "4aeb0812234bb0a97dc8f044405e62ea3570cd2da0ccc3f5300c73f8f2b9c2ba"
+        "sha256": "7a78d0c081368468adcf7b2cdd33d7c821ff70ebe7bcc6b9120aa01fdb49407e"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -951,7 +956,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "88551bbabeecab1a0012b98585b6033c2163804d6881e400dd3a48bd8b264602"
+        "sha256": "802884037e9fd8ef83117b94836b582513ace1a34acbb2ac201f53c0c22ba2b0"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1172,6 +1177,22 @@
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
         "sha256": "c140b081decf8fc43c31b5133a30c7f528a7b9653826da7064ca7d37bb74c69e"
+      },
+      {
+        "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+        "sha256": "5625a5b4a510bfbe4e1793a422b532a41ffafe54008a3e05184d6b705b8f3a7e"
+      },
+      {
+        "path": "src/core/word-comment-anchor-save-v1.cjs",
+        "sha256": "88fb660a961734cd6fb6c096273fd1890e08605d6263b8875ae27bdb5b7a6957"
+      },
+      {
+        "path": "src/core/document-content-envelope-v1.cjs",
+        "sha256": "09fc91ba98407356f247648c97cdfcab073f33e3dfae0bec29572f97ee44fa87"
+      },
+      {
+        "path": "src/renderer/documentContentEnvelope.mjs",
+        "sha256": "3883940cda31083a0ff56bee70fadb4a14b69278cd9ff54b55d19c0092672ae8"
       }
     ],
     "followupRepair": {

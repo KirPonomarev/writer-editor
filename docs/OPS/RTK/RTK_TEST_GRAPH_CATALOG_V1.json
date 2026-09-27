@@ -90,6 +90,7 @@
     "rtk-word-canonical-notes-roundtrip.contract.test.js",
     "rtk-word-clean-link-label.contract.test.js",
     "rtk-word-combined-link-return.contract.test.js",
+    "rtk-word-comment-anchor-save.contract.test.js",
     "rtk-word-comment-authoring.contract.test.js",
     "rtk-word-composite-fidelity.contract.test.js",
     "rtk-word-full-manuscript-volume.contract.test.js",

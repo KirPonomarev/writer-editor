@@ -166,3 +166,33 @@ for(const kind of ['symlink','hardlink'])test('canonical comment '+kind+' reject
  await assert.rejects(tx.commitProjectTransaction({...f.request,publishManifest}));
  assert.deepEqual(observed(f),[f.beforeScene,f.beforeManifest,f.beforeText]);assert.equal(fs.readFileSync(original,'utf8'),f.beforeText);
 });
+
+test('v4 corrupt commit repair requires exact packet authority and restores the three-file transaction',async t=>{
+ const f=fixture(t);fs.writeFileSync(tx.commitPathFor(f.scenePath),'{torn');let failure;
+ try{await tx.commitProjectTransaction({...f.request,publishManifest});}catch(e){failure=e;}
+ assert.equal(failure?.code,'E_PROJECT_COMMIT_CORRUPT');
+ const request={scenePath:f.scenePath,manifestPath:f.manifestPath,publishManifest,decision:'REPAIR_TO_AFTER',authorityProof:{proofId:'independent-test'},recoveryTransactionId:failure.recovery.transactionId,recoveryPacketDigest:failure.recovery.packetDigest};
+ await assert.rejects(tx.repairCorruptProjectCommit({...request,verifyAuthorityProof:()=>false}));
+ assert.deepEqual(observed(f),[f.beforeScene,f.beforeManifest,f.beforeText]);
+ const result=await tx.repairCorruptProjectCommit({...request,verifyAuthorityProof:q=>q.transactionId===request.recoveryTransactionId&&q.packetDigest===request.recoveryPacketDigest&&q.decision==='REPAIR_TO_AFTER'});
+ assert.equal(result.outcome,'COMMITTED_CONVERGED');assert.deepEqual(observed(f),[f.afterScene,f.afterManifest,f.request.commentState.afterText]);
+ assert.equal(JSON.parse(fs.readFileSync(tx.commitPathFor(f.scenePath))).schemaVersion,'yalken.project-transaction.commit.v4');
+});
+
+test('v4 synthetic repair refuses a resource-bearing packet even with fresh outer hash',async t=>{
+ const f=fixture(t);fs.writeFileSync(tx.commitPathFor(f.scenePath),'{torn');let failure;
+ try{await tx.commitProjectTransaction({...f.request,publishManifest});}catch(e){failure=e;}
+ const p=tx.recoveryPacketPathFor(f.manifestPath,failure.recovery.transactionId),packet=JSON.parse(fs.readFileSync(p));
+ packet.companionResources=[{path:path.join(f.root,'assets/injected.bin'),contentBase64:Buffer.from('forbidden').toString('base64')}];
+ const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;
+ const bytes=JSON.stringify(canonical(packet))+'\n';fs.writeFileSync(p,bytes);
+ await assert.rejects(tx.repairCorruptProjectCommit({scenePath:f.scenePath,manifestPath:f.manifestPath,publishManifest,decision:'REPAIR_TO_AFTER',authorityProof:{proofId:'not-authority-to-add-resources'},recoveryTransactionId:failure.recovery.transactionId,recoveryPacketDigest:sha(bytes),verifyAuthorityProof:()=>true}),/COMMENT_STATE/);
+ assert.deepEqual(observed(f),[f.beforeScene,f.beforeManifest,f.beforeText]);assert.equal(fs.existsSync(path.join(f.root,'assets/injected.bin')),false);
+});
+
+test('other-scene threads and deleted ranges remain byte-equivalent across an ordinary edit',()=>{
+ const original=JSON.parse(graph());original.threads.push({...structuredClone(original.threads[0]),threadId:'other-scene',sceneId:'roman/other.txt',anchor:{...original.threads[0].anchor,sceneId:'roman/other.txt'}});
+ original.threads.push({...structuredClone(original.threads[0]),threadId:'deleted',status:'deleted'});
+ const after=JSON.parse(plan('Left anchor right','NEW Left anchor right',JSON.stringify(original)).afterText);
+ assert.deepEqual(after.threads.slice(1),original.threads.slice(1));
+});
