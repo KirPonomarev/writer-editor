@@ -270,7 +270,8 @@
     "docs/tasks/2026-09-27--word-comment-reply-return.md",
     "docs/tasks/2026-09-27--word-watchdog-test-determinism.md",
     "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
-    "docs/tasks/2026-09-27--word-comment-thread-deletion.md"
+    "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
+    "test/unit/r24-wp104-evidence-integrity.test.js"
   ],
   "protectedFiles": [
     {
@@ -1264,6 +1265,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
         "sha256": "1b42f4fdbc539ea4840b03bae19ac69e1b1f3c7e9367b87235a42404d47e8d48"
+      },
+      {
+        "path": "test/unit/r24-wp104-evidence-integrity.test.js",
+        "sha256": "608037c614e73482e2788e6f8facf62a689f1140d2338033fa38b38200a08f57"
       }
     ],
     "followupRepair": {

@@ -1079,7 +1079,7 @@ export const R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c1bcfda4cd275ea60f866b9308cb37fdd9ec945ea2bff9bf32e2215dfc544c6a"
+      "sha256": "564cc8bc4e6f8dff1f3a06f0499bc67edd01a0997a3627627fd114f4281279ab"
     }
   ]
 }
