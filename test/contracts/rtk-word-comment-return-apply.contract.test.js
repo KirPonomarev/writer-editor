@@ -15,7 +15,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
   const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR;
+  const current = cert.R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR;
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);
@@ -41,7 +41,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture() {
+async function fixture({ deletion = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -52,7 +52,15 @@ async function fixture() {
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
       doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
-  const bytes = buildDocxReviewPacketBuffer(source);
+  let bytes = buildDocxReviewPacketBuffer(source);
+  if (deletion) {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+    for (const name of Object.keys(parts).filter(n => n.startsWith('word/comments'))) delete parts[name];
+    parts['word/document.xml'] = parts['word/document.xml'].replace(/<w:(?:commentRangeStart|commentRangeEnd|commentReference)\b[^>]*\/>/gu, '');
+    parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace(/<Relationship\b[^>]*\bType="[^"]*\/comments[^"]*"[^>]*\/>/gu, '');
+    parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace(/<Override\b[^>]*\bPartName="\/word\/comments[^"]*"[^>]*\/>/gu, '');
+    bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
@@ -63,9 +71,10 @@ async function fixture() {
     returnedParagraphs: parsed.reviewIr.formattingParagraphs } };
 }
 
-async function preparedHarness(t) {
+async function preparedHarness(t, { deletion = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture(); input.returnedThreads[0].body = 'Main Word delta';
+  const { input, source, bytes, reviewIr } = await fixture({ deletion });
+  if (!deletion) input.returnedThreads[0].body = 'Main Word delta';
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -104,7 +113,7 @@ async function preparedHarness(t) {
 
   let prepared;
   const result = await ctx.applyAuthenticatedCommentDelta({ context, docxBytes: bytes,
-    requestId: 'prepared', explicitCanonicalApplyConfirmed: false, isCurrent: () => current,
+    requestId: 'prepared', explicitCanonicalApplyConfirmed: explicitConfirmed, isCurrent: () => current,
     onPrepared: value => { prepared = value; } });
   assert.equal(result.status, 'preview-ready'); assert.equal(typeof prepared.apply, 'function');
   assert.equal(await fs.readFile(stateFile, 'utf8'), input.beforeText);
@@ -133,6 +142,33 @@ test('prepared callback uses actual Kernel and lease exactly once', async t => {
   assert.equal(JSON.parse(after).threads[0].messages[0].body, 'Main Word delta');
   await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/u);
   assert.equal(await h.fs.readFile(h.stateFile, 'utf8'), after);
+});
+
+test('whole-thread deletion cannot use a broad prior Apply flag; native callback preserves history through actual Kernel', async t => {
+  const h = await preparedHarness(t, { deletion: true, explicitConfirmed: true });
+  const before = JSON.parse(h.input.beforeText);
+  assert.equal(h.prepared.changes[0].statusAfter, 'deleted');
+  assert.equal(await h.fs.readFile(h.stateFile, 'utf8'), h.input.beforeText);
+  const result = await h.prepared.apply();
+  assert.equal(result.writerCalled, true);
+  const after = JSON.parse(await h.fs.readFile(h.stateFile, 'utf8'));
+  assert.deepEqual(after.threads[0], { ...before.threads[0], status: 'deleted' });
+  await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/);
+});
+
+test('native deletion confirmation discloses missing discussions and retained content; Cancel is default', async () => {
+  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const source = main.match(/async function confirmLocalWordCommentDelta\([^]*?\n\}(?=\n|$)/u)[0];
+  let prompt;
+  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, dialog: {
+    showMessageBox: async (_, value) => { prompt = value; return { response: 0 }; },
+  } });
+  vm.runInContext(source, context);
+  assert.equal(await context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ statusAfter: 'deleted' }] }), false);
+  assert.match(prompt.detail, /отсутствует обсуждений: 1/u);
+  assert.match(prompt.detail, /тексты и авторы сохранятся/u);
+  assert.equal(prompt.defaultId, 0); assert.equal(prompt.cancelId, 0);
 });
 
 function localEntryHarness({ confirm = false, failure = false } = {}) {

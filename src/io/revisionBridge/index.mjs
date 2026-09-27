@@ -6989,6 +6989,18 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       },
     ));
   }
+  // A locally authenticated baseline may have discussions even when Word has
+  // removed the final one. Surface absence as a diagnostic, never as a fake
+  // comment or an automatic deletion. Main still requires explicit confirmation.
+  if (options.authenticatedCommentExport?.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
+    && options.authenticatedCommentExport.threads?.length > 0 && commentThreads.length === 0
+    && projection.commentReturnInventory?.status === 'COMPLETE'
+    && projection.commentReturnInventory?.packageState === 'ABSENT') {
+    diagnostics.push(docxReviewPreviewSessionDiagnostic('DOCX_REVIEW_MISSING_DISCUSSIONS_REQUIRE_DECISION', {
+      message: 'Exported discussions are absent in the returned file; explicit confirmation is required.',
+      severity: 'warning', targetScope, createdAt,
+    }));
+  }
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;

@@ -5712,13 +5712,17 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       throw rejected('COMMENT_RETURN_ARTIFACT_MISMATCH');
     }
     const grammar = intake.parserResult?.reviewIr?.commentBodyGrammar;
-    if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar?.status !== 'SUPPORTED') {
+    const inventory = intake.parserResult?.reviewIr?.commentReturnInventory;
+    const completeAbsence = grammar?.status === 'ABSENT' && inventory?.status === 'COMPLETE'
+      && inventory?.packageState === 'ABSENT';
+    if (grammar?.profile !== 'PLAIN_TEXT_V1' || (grammar?.status !== 'SUPPORTED' && !completeAbsence)) {
       throw rejected('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
     }
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
       exportMap: capsule.exportMap, returnedThreads: intake.parserResult?.reviewIr?.commentThreads,
+      commentReturnInventory: inventory,
       returnedParagraphs: intake.parserResult?.reviewIr?.formattingParagraphs };
     const checkIdentity = () => {
       if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
@@ -5784,7 +5788,9 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
         commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
         applyReceipts: [receipt], replayReceipts: [] };
     };
-    if (explicitCanonicalApplyConfirmed !== true) {
+    // The old broad Apply flag cannot confirm a newly discovered absence.
+    // Only the prepared native prompt describes and confirms these deletions.
+    if (explicitCanonicalApplyConfirmed !== true || plan.changes.some(change => change.statusAfter === 'deleted')) {
       if (typeof onPrepared === 'function') onPrepared({ apply, changes: cloneJsonSafe(plan.changes) });
       return { ok: true, status: 'preview-ready', code: 'RTK_COMMENT_DELTA_EXPLICIT_APPLY_REQUIRED',
         writerCalled: false, pendingProductApplyLane: true, changes: plan.changes, applyReceipts: [], replayReceipts: [] };
@@ -5822,9 +5828,7 @@ async function applyAuthenticatedDocxCommentProductPath({
   }
   if (commentShadowPayload.reviewIr.commentThreads?.length === 0
     && context.reviewTransportAuthorityCapsule?.commentExport?.threads?.length > 0) {
-    const lost = compareCommentExportReadback(context.reviewTransportAuthorityCapsule.commentExport, []);
-    return { ok: false, status: 'blocked', code: 'RTK_COMMENT_REEXPORT_RETURN_CHANGED_OR_MISSING',
-      typedBlocked: lost.missing, writerCalled: false, applyReceipts: [], replayReceipts: [] };
+    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge, onPrepared });
   }
   const identityJoin = isPlainObjectValue(commentShadowPayload.sceneAuthorityIdentityJoin)
     ? commentShadowPayload.sceneAuthorityIdentityJoin
@@ -9679,6 +9683,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
         createdAt: activeContext.createdAt,
         fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
         formattingExportMap: authenticatedFormattingExportMap,
+        authenticatedCommentExport: returnIntake.authenticated === true
+          ? activeContext.reviewTransportAuthorityCapsule?.commentExport : null,
         cryptoPort: createRtkReviewTransportCryptoPort(),
         verifiedDocumentSections: authenticatedFullManuscriptExportMap
           ? returnIntake.parserResult?.documentSectionsBinding
@@ -10259,10 +10265,12 @@ async function confirmLocalWordCommentDelta({ fileName, changes }) {
   if (!mainWindow || mainWindow.isDestroyed()) return false;
   const count = Array.isArray(changes) ? changes.length : 0;
   if (!count) return false;
+  const deleted = changes.filter(change => change.statusAfter === 'deleted').length;
   const result = await dialog.showMessageBox(mainWindow, {
     type: 'question', title: 'Комментарии из Word',
     message: 'Применить изменения комментариев?',
-    detail: `${fileName}\nИзменённых обсуждений: ${count}. Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.`,
+    detail: `${fileName}\nИзменённых обсуждений: ${count}. ${deleted
+      ? `В файле Word отсутствует обсуждений: ${deleted}. При применении они будут помечены удалёнными в Ялкене; их тексты и авторы сохранятся в истории. ` : ''}Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.`,
     buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true,
   });
   return result.response === 1;
