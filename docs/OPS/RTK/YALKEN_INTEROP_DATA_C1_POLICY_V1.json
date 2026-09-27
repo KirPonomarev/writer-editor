@@ -490,7 +490,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0a7f2f474253f6c103c02797f0c9457ef8a9554127b4eeee0c83a09bdab2bd3f"
+        "sha256": "9b26b966b8fb6880a12322bb2bb245173412f8ad778257a14f2ed1b72c32f01a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -730,7 +730,7 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "d87d704770a646d8b627edd666fab5443078a050e97cbd93aa1421dff67d1d8a"
+        "sha256": "e6b2ad662056a19488de21c06edd08e32d34768a6b3cfa3370ff79c9959d3825"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
@@ -1162,7 +1162,7 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "974827b3744d03b2dabf3a2ee1e4727864440f0bafa237947c7ff6d0a5d1da1b"
+        "sha256": "0daa0ef67d134d06c286a8149b408b59cbae2a21edf27f30c3e1fad5a6a2f608"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
@@ -1226,7 +1226,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "0409a956113c942227411ce3dbae04e009a72e02fef659ef05bd0027d31634c4"
+        "sha256": "dd40507f138572e48b460c00756c5ad0ec309b6d34af5a44e49d0e0ea277861c"
       }
     ],
     "followupRepair": {
