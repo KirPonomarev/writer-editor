@@ -54,3 +54,10 @@ The resulting text-only import is retained as failed evidence, not acceptance.
 The repair preserves the graph and normalization ledger through that sanitizer
 and its loss-report projection. A real local-file helper regression now compares
 both complete projections with direct byte parsing and rejects injected paths.
+
+The native edit canary also found a false unsaved-scene rejection: Tiptap adds
+schema-default null paragraph alignment and text-style attributes on load.
+Comment snapshot comparison now expands only those declared defaults before
+comparison; text, substantive formatting, unknown attributes, ordered structure,
+dirty state, generation, project identity, lease and exact scene CAS remain
+protected. No editor snapshot is written or silently adopted by this comparison.

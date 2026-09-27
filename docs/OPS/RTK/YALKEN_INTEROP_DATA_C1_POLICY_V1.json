@@ -509,7 +509,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "3a8e5848f4ec96da4c254f3e4f4d6b6def09aceab9109d48ad9fd93c92315a9f"
+        "sha256": "0d8f70ec4e6c3a34dc0f2f2d8067cbcad1e774c01ae5559efaafab0bd6263554"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -825,7 +825,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "fba5849bf569643d681eca1f00bfe63070e5051cb49b2e3a7206f6576dfca989"
+        "sha256": "caf8fcc0a3836682151817ed64b87d74f6e82af5b84cfc764fee2b74532ab74a"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -1173,7 +1173,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "3f2a345b8f25aa08e714f9da4204592701b07983c43be3ecd5e6d5b8eea0a5d4"
+        "sha256": "bbe09e3dc55cfe6eaa64cc7c31075a9dcc2b43e5cbe5de8cdfded38123b95536"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -1313,7 +1313,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-native-comment-intake.md",
-        "sha256": "62748c72bfc526a4cbfd487fd7466aad2f322b333562fdc1ed31fc0d3e22e060"
+        "sha256": "e973969eb840508b5b1b242d85ad3f1cd5ffb1764a3fbc6b07e4fca9511bb248"
       }
     ],
     "followupRepair": {
