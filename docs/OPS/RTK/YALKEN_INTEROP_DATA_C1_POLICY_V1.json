@@ -261,7 +261,9 @@
     "src/core/word-comment-return-delta-v1.cjs",
     "test/contracts/rtk-word-comment-return-delta.contract.test.js",
     "docs/tasks/2026-09-27--word-comment-return-apply.md",
-    "test/contracts/rtk-word-comment-return-apply.contract.test.js"
+    "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+    "test/unit/r24-ent0-entitlement-law.test.js",
+    "test/unit/r24-ent0-port-enforcement.test.js"
   ],
   "protectedFiles": [
     {
