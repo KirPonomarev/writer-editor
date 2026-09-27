@@ -1785,7 +1785,7 @@ leaseTest('ORCH_TEST_14O: stage wall and progress watchdogs use injected monoton
     const normal = writeSleepChild(dir, 'monotonic-normal.cjs', "process.stdout.write('visible\\n');setTimeout(()=>process.exit(0),400);");
     const normalResult = await orch.runOwnedStageProcess({
       stage: 'POSITIVE', command: process.execPath, args: [normal], cwd: REPO_ROOT, logDir: path.join(dir, 'normal-logs'),
-      heartbeatPath: path.join(dir, 'normal-hb.jsonl'), campaignId: 'c', chainId: 'W06', stageTimeoutMs: 2000, progressTimeoutMs: 2000, killGraceMs: 300,
+      heartbeatPath: path.join(dir, 'normal-hb.jsonl'), campaignId: 'c', chainId: 'W06', stageTimeoutMs: 10000, progressTimeoutMs: 10000, killGraceMs: 1000,
       monotonicNow: () => performance.now(),
     });
     assert.equal(normalResult.ok, true, JSON.stringify(normalResult));
@@ -1793,14 +1793,19 @@ leaseTest('ORCH_TEST_14O: stage wall and progress watchdogs use injected monoton
 
     let reversedWall = 10 ** 12;
     Date.now = () => reversedWall--;
-    const stalled = writeSleepChild(dir, 'monotonic-stalled.cjs', "process.stdout.write('boot\\n');setTimeout(()=>process.exit(0),1200);setInterval(()=>{},500);");
+    // This case proves watchdog timekeeping, not a race with a 1.2s natural
+    // exit. Keep the owned child alive until the real watchdog terminates it.
+    // Process inspection can legitimately take seconds on a loaded host.
+    const stalled = writeSleepChild(dir, 'monotonic-stalled.cjs', "process.stdout.write('boot\\n');setInterval(()=>{},500);");
     const stalledResult = await orch.runOwnedStageProcess({
       stage: 'POSITIVE', command: process.execPath, args: [stalled], cwd: REPO_ROOT, logDir: path.join(dir, 'stalled-logs'),
-      heartbeatPath: path.join(dir, 'stalled-hb.jsonl'), campaignId: 'c', chainId: 'W06', stageTimeoutMs: 2000, progressTimeoutMs: 400, killGraceMs: 300,
+      heartbeatPath: path.join(dir, 'stalled-hb.jsonl'), campaignId: 'c', chainId: 'W06', stageTimeoutMs: 10000, progressTimeoutMs: 400, killGraceMs: 1000,
       monotonicNow: () => performance.now(),
     });
     assert.equal(stalledResult.ok, false, JSON.stringify(stalledResult));
     assert.match(stalledResult.code, /ORCH_PROGRESS_TIMEOUT/u);
+    assert.notEqual(stalledResult.exitCode, 0);
+    assert.throws(() => process.kill(stalledResult.pid, 0), error => error.code === 'ESRCH');
     assert.equal(Number.isFinite(stalledResult.durationMs) && stalledResult.durationMs >= 0, true);
   } finally {
     Date.now = originalDateNow;

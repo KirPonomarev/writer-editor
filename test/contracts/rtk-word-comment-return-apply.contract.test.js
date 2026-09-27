@@ -15,7 +15,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
   const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_COMMENT_REPLY_RETURN_SUCCESSOR;
+  const current = cert.R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR;
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);

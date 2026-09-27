@@ -267,7 +267,9 @@
     "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
     "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
     "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",
-    "docs/tasks/2026-09-27--word-comment-reply-return.md"
+    "docs/tasks/2026-09-27--word-comment-reply-return.md",
+    "docs/tasks/2026-09-27--word-watchdog-test-determinism.md",
+    "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1232,7 +1234,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "d20d93af561b1bb336a3f85efb6353b262ee07ce3c7b66c3084835f4c793ce0a"
+        "sha256": "26894c2d882c25e05e0e46f7c8e719e4b330c9e6b5ab9c9eef7f62854828bbfb"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1249,6 +1251,14 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-reply-return.md",
         "sha256": "5129e2fceec9c78102cb9697a40f552e7edfc5c4d1336eb9fb5f96ff7df8d9ee"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-watchdog-test-determinism.md",
+        "sha256": "55b1c88944edb945f97be2321a2cf414b8401864606c5c7bb08e921afb192340"
+      },
+      {
+        "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+        "sha256": "3aaaaef6d2456ace75db440bbd01aca301c5a0fdb7852ad8634b398cd3b489e2"
       }
     ],
     "followupRepair": {
