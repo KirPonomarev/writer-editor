@@ -5,7 +5,6 @@ import path from 'node:path';
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import commentReturnDelta from '../../core/word-comment-return-delta-v1.cjs';
-export { validateGenericCommentMetadataV1 as validateCommentReturnMetadata } from './reviewTransportPackageParserV2.mjs';
 import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
 import { parseObservablePayload, deriveVisibleTextFromDocument } from '../../renderer/documentContentEnvelope.mjs';
 

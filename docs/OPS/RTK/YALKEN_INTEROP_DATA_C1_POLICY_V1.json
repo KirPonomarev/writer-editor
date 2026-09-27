@@ -488,7 +488,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "24709af9cafa33b0dc05c41626de85d41b14009ae74c682dc5da3fa53736b990"
+        "sha256": "6c1c2890cd3d0fd41c9d352b85dc4bf9bc4d54738da84814667c8c8bacc48bda"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -604,7 +604,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "cc83fee3ed983f1b424346f831b14c9c3a6cfe7c2707bf73b952b0b6ac0d09e3"
+        "sha256": "7cd796bcb71b38411efec368c7ae79bd4ec65e1f5bfe245a17e3fdb2999738ef"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -804,7 +804,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "f7d35851e8e09301f3bdfb3f7f1a844eaad7eb0e1ba6f8d3197c55fa249adace"
+        "sha256": "86e011123a693e3f875ee73316144431b37bd76361dfb81ee26937681f5c873f"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -1208,7 +1208,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-delta.md",
-        "sha256": "c384527ec12690dbf8c1d781dcc970c499daaf1d8ae674912b354aa498b22ca9"
+        "sha256": "8f466288948f01bb81bae8f6f924f9307c5fb54843c990bc83126ca3dd415f5f"
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
@@ -1216,7 +1216,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "a9a72fe3df7f92a0858083606bd765e1ee1930c7bff0549f864ef2e2a62fe0c5"
+        "sha256": "f499ddd6566c4edbf468c29c277e11a45214d1a30c92d69970079e70b28953b9"
       }
     ],
     "followupRepair": {

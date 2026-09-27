@@ -25,7 +25,8 @@ returned artifact digest, current scene bytes and canonical graph revision/diges
 FEATURE_INTEGRATION_MANIFEST_V1:
 featureId: word-comment-return-delta-v1; integrationMode: EXISTING_SEAM.
 productPlane: Core owns the validated graph delta and replay invariants.
-interfacePlane: existing immutable comment preview and explicit return Apply.
+interfacePlane: immutable comment preview; explicit Apply is currently available
+through the main command contract, not yet through an ordinary renderer action.
 commands: existing authenticated return and comment lifecycle Command Kernel lane.
 queries: existing comment projection; events: bounded committed-return receipt.
 effects: existing fixed comment file and readable before snapshot atomic writer.
@@ -48,7 +49,8 @@ No full Word feature acceptance or new official cell is claimed by this document
 Provider observation: Word for Mac truncates original message timestamps to minute
 precision. The delta retains authenticated original provenance; unrelated author
 or date changes are conflicts. Return metadata passes the existing closed generic
-comment grammar against hash-bound raw package parts before any publication;
+comment grammar during the single worker parse; the verdict travels in its
+artifact-bound immutable evidence packet before any publication;
 unrepresented rich comment-body content is rejected rather than flattened.
 
 Candidate physical evidence: actual Word root-body edits applied in SOURCE and
@@ -57,3 +59,8 @@ new DOCX exports passed an independent XML oracle for body, author/date, anchor,
 parent and status plus body/parent/anchor loss mutations. These bounded results do
 not close the full P1c matrix. Existing review-shadow orphan presentation remains
 an explicitly open projection finding, separate from canonical graph publication.
+
+Open product closure: wire ordinary explicit Apply and reconcile the preview with
+canonical threads. A real new Word reply with localized paragraph style and
+language metadata currently fails closed; supporting it requires a separate
+lossless representation, not a broader silent whitelist.

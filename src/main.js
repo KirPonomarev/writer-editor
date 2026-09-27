@@ -5703,10 +5703,10 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     if (!Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) {
       throw new Error('COMMENT_RETURN_ARTIFACT_MISMATCH');
     }
-    const extracted = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: docxBytes },
-      { budgets: docxReviewReturnIntakeProductBudgets({}) });
-    if (!extracted.ok || !extracted.parts['word/comments.xml']) throw new Error('COMMENT_RETURN_PARTS_INVALID');
-    module.validateCommentReturnMetadata(extracted.parts, { cryptoPort: createRtkReviewTransportCryptoPort() });
+    const grammar = intake.parserResult?.reviewIr?.commentBodyGrammar;
+    if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar?.status !== 'SUPPORTED') {
+      throw new Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+    }
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
