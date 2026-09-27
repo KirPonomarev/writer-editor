@@ -4170,10 +4170,12 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       'word/commentsIds.xml': scans.commentsIds, 'word/commentsExtensible.xml': scans.commentsExtensible };
     try {
       const normalizationLedger = [];
-      validateCommentMetadataScans(parts, name => byPart[name], { normalizationLedger });
+      validateCommentMetadataScans(parts, name => byPart[name], { normalizationLedger, stylesScan });
       commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED',
         ...(normalizationLedger.length ? {
-          normalizationPolicy: 'LITERAL_COMMENT_TEXT_RETURN_PROOFING_METADATA_ONLY',
+          normalizationPolicy: normalizationLedger.some(item => item.definitionPart === 'word/styles.xml')
+            ? 'LITERAL_COMMENT_TEXT_RETURN_BUILTIN_PRESENTATION_AND_PROOFING'
+            : 'LITERAL_COMMENT_TEXT_RETURN_PROOFING_METADATA_ONLY',
           normalizationLedger,
         } : {}) };
     } catch (error) {
@@ -4485,8 +4487,104 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   return validateCommentMetadataScans(parts, name => parseXmlPart(name, rawString(parts[name]), budgets, cryptoPort, state));
 }
 
-function validateCommentMetadataScans(parts, scanPart, { normalizationLedger } = {}) {
+// Word's built-in comment paragraph style has a localized ID. Resolve its
+// actual definition and inherited defaults; the name alone proves nothing.
+// Only literal-text presentation (font, size, spacing, proofing) is admitted.
+// Hidden text, numbering, transforms, rich emphasis and unknown properties
+// remain outside this return profile, even when injected through a parent.
+function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
+  if (!stylesScan || stylesScan.diagnostics.length) return false;
+  const tokens = stylesScan.tokens, roots = tokens.filter(t => t.depth === 0);
+  if (roots.length !== 1 || !isWordToken(roots[0], 'styles')) return false;
+  const children = parent => childTokensWithin(stylesScan, parent).filter(t => t.depth === parent.depth + 1);
+  const onlyAttrs = (token, allowed) => token.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
+    || (a.namespaceUri === W_NS && allowed.includes(a.localName)));
+  const val = token => attr(token, 'val', W_NS);
+  const noUnrepresentedText = token => {
+    let cursor = token.openEnd;
+    for (const child of children(token)) {
+      if (stylesXml.slice(cursor, child.openStart).trim()) return false;
+      cursor = child.closeEnd;
+    }
+    return token.selfClosing || !stylesXml.slice(cursor, token.closeStart).trim();
+  };
+  const leaf = (token, allowed) => !children(token).length && onlyAttrs(token, allowed) && noUnrepresentedText(token);
+  const language = value => value.length <= 63 && /^(?:[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*|x-none)$/u.test(value);
+  const properties = parent => {
+    if (!onlyAttrs(parent, []) || !noUnrepresentedText(parent)) return false;
+    const seen = new Set();
+    return children(parent).every(t => {
+      if (t.namespaceUri !== W_NS || seen.has(t.localName)) return false;
+      seen.add(t.localName);
+      if (parent.localName === 'pPr') return t.localName === 'spacing'
+        && leaf(t, ['before', 'after', 'line', 'lineRule'])
+        && t.attributes.every(a => a.namespaceUri !== W_NS || (a.localName === 'lineRule'
+          ? ['auto', 'exact', 'atLeast'].includes(a.value) : /^\d{1,5}$/u.test(a.value)));
+      if (['sz', 'szCs'].includes(t.localName)) return leaf(t, ['val']) && /^\d{1,4}$/u.test(val(t))
+        && Number(val(t)) >= 2 && Number(val(t)) <= 1638;
+      if (t.localName === 'lang') return leaf(t, ['val', 'eastAsia', 'bidi'])
+        && t.attributes.every(a => a.namespaceUri !== W_NS || language(a.value));
+      return t.localName === 'rFonts' && leaf(t, ['ascii', 'hAnsi', 'eastAsia', 'cs'])
+        && t.attributes.every(a => a.namespaceUri !== W_NS || (a.value.length > 0 && a.value.length <= 128
+          && !/[\u0000-\u001f]/u.test(a.value)));
+    });
+  };
+  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults') && t.depth === 1);
+  if (defaults.length > 1) return false;
+  if (defaults.length) {
+    if (!onlyAttrs(defaults[0], []) || !noUnrepresentedText(defaults[0])) return false;
+    const seen = new Set();
+    for (const wrapper of children(defaults[0])) {
+      if (wrapper.namespaceUri !== W_NS || !['rPrDefault', 'pPrDefault'].includes(wrapper.localName)
+        || seen.has(wrapper.localName) || !onlyAttrs(wrapper, []) || !noUnrepresentedText(wrapper)) return false;
+      seen.add(wrapper.localName);
+      const values = children(wrapper);
+      if (values.length > 1 || values.some(t => t.namespaceUri !== W_NS
+        || t.localName !== wrapper.localName.replace('Default', '') || !properties(t))) return false;
+    }
+  }
+  const styles = tokens.filter(t => isWordToken(t, 'style') && t.depth === 1);
+  const seen = new Set();
+  const visit = (id, first) => {
+    if (!id || seen.has(id) || seen.size >= 16) return false;
+    seen.add(id);
+    const matches = styles.filter(t => attr(t, 'styleId', W_NS) === id);
+    if (matches.length !== 1) return false;
+    const style = matches[0];
+    if (!noUnrepresentedText(style) || attr(style, 'type', W_NS) !== 'paragraph'
+      || !onlyAttrs(style, ['type', 'styleId', 'default'])
+      || (attr(style, 'default', W_NS) && !['0', '1', 'true', 'false'].includes(attr(style, 'default', W_NS)))) return false;
+    const nodes = children(style), names = new Set();
+    for (const t of nodes) {
+      if (t.namespaceUri !== W_NS || names.has(t.localName)) return false;
+      names.add(t.localName);
+      if (['pPr', 'rPr'].includes(t.localName)) { if (!properties(t)) return false; continue; }
+      if (['name', 'basedOn', 'link', 'uiPriority', 'rsid'].includes(t.localName)) {
+        if (!leaf(t, ['val']) || !val(t)) return false;
+      } else if (!['qFormat', 'semiHidden', 'unhideWhenUsed'].includes(t.localName) || !leaf(t, [])) return false;
+    }
+    const name = nodes.find(t => t.localName === 'name');
+    if (!name || (first ? !['annotation text', 'comment text'].includes(val(name).toLowerCase())
+      : val(name) !== 'Normal')) return false;
+    const parent = nodes.find(t => t.localName === 'basedOn');
+    // A built-in comment style must explicitly resolve to the default Normal
+    // paragraph style. This avoids guessing implicit inheritance.
+    if (first) return !!parent && visit(val(parent), false);
+    return !parent && ['1', 'true'].includes(attr(style, 'default', W_NS))
+      && styles.filter(t => attr(t, 'type', W_NS) === 'paragraph'
+        && ['1', 'true'].includes(attr(t, 'default', W_NS))).length === 1;
+  };
+  return visit(styleId, true);
+}
+
+function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, stylesScan } = {}) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
+  const literalStyles = new Map();
+  const literalStyle = id => {
+    if (!literalStyles.has(id)) literalStyles.set(id,
+      isLiteralCommentParagraphStyle(stylesScan, rawString(parts['word/styles.xml']), id));
+    return literalStyles.get(id);
+  };
   const childrenFor = scan => {
     const map = new Map(), stack = [];
     for (const token of [...scan.tokens].sort((a, b) => a.openStart - b.openStart)) {
@@ -4553,6 +4651,15 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger } =
         if (token.localName === 'br' && ns === W_NS && name === 'type' && attribute.value === 'textWrapping') continue;
         if (['pStyle', 'rStyle'].includes(token.localName) && ns === W_NS && name === 'val'
           && attribute.value === (token.localName === 'pStyle' ? 'CommentText' : 'CommentReference')) continue;
+        if (normalizationLedger && token.localName === 'pStyle' && ns === W_NS && name === 'val'
+          && literalStyle(attribute.value)) {
+          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
+            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
+            disposition: 'NORMALIZED_NON_AUTHORING_METADATA',
+            reason: 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION',
+            definitionPart: 'word/styles.xml' });
+          continue;
+        }
         // Word localizes the annotation-reference style ID. It is safe only
         // on the generated marker run, which contains no author message text.
         if (token.localName === 'rStyle' && ns === W_NS && name === 'val') {

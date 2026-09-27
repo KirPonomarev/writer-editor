@@ -105,6 +105,63 @@ test('new reply uses a fresh local identity and preserves the parent/root', asyn
   assert.equal(after.threads[0].messages[2].body, 'New reply');
 });
 
+test('native Word reply style resolves definitions, defaults and parent before literal return', async () => {
+  const { bytes, input, state } = await fixture();
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
+  const options = { cryptoPort: { sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } };
+  const ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const styles = `<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman"/><w:sz w:val="24"/><w:lang w:val="ru-FI"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="a"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="paragraph" w:styleId="a3"><w:name w:val="annotation text"/><w:basedOn w:val="a"/><w:link w:val="a4"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:line="240" w:lineRule="auto"/></w:pPr><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:style></w:styles>`;
+  const rootPara = parts['word/comments.xml'].match(/w14:paraId="([^"]+)"/u)[1];
+  const comments = parts['word/comments.xml'].replace('</w:comments>', '<w:comment w:id="9" w:author="Carol" w:initials="C" w:date="2026-09-27T14:29:00Z"><w:p w14:paraId="6AEAA8E0" w:rsidRPr="00E65C11"><w:pPr><w:pStyle w:val="a3"/><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr><w:r><w:rPr><w:rStyle w:val="a5"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="ru-RU"/></w:rPr><w:t>Ответ 🧭 مرحبا</w:t></w:r></w:p></w:comment></w:comments>');
+  const extended = parts['word/commentsExtended.xml'].replace('</w15:commentsEx>', `<w15:commentEx w15:paraId="6AEAA8E0" w15:paraIdParent="${rootPara}" w15:done="0"/></w15:commentsEx>`);
+  const ids = parts['word/commentsIds.xml'].replace('</w16cid:commentsIds>', '<w16cid:commentId w16cid:paraId="6AEAA8E0" w16cid:durableId="5152C897"/></w16cid:commentsIds>');
+  const returnedParts = { ...parts, 'word/styles.xml': styles, 'word/comments.xml': comments,
+    'word/commentsExtended.xml': extended, 'word/commentsIds.xml': ids };
+  const analyze = (styleXml, commentXml = comments) => {
+    const returned = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries({ ...returnedParts,
+      'word/styles.xml': styleXml, 'word/comments.xml': commentXml }).map(([name, data]) => ({ name, data })));
+    return { returned, parsed: bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: returned }, options) };
+  };
+  const { returned, parsed } = analyze(styles);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
+  assert(parsed.reviewIr.commentBodyGrammar.normalizationLedger.some(x => x.value === 'a3'
+    && x.definitionPart === 'word/styles.xml' && x.reason === 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION'));
+  const planned = plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs });
+  const after = JSON.parse(planned.afterText);
+  assert.deepEqual(after.threads[0].messages.slice(0, 2), state.threads[0].messages);
+  assert.deepEqual(after.threads[0].anchor, state.threads[0].anchor);
+  const reply = after.threads[0].messages[2];
+  assert.equal(reply.body, 'Ответ 🧭 مرحبا');
+  assert.equal(reply.provenance.author, 'Carol');
+  assert.match(reply.commentId, /^word-reply-[a-f0-9]{64}$/u);
+  assert.throws(() => validateGenericCommentMetadataV1(returnedParts, options), /METADATA_UNSUPPORTED/u);
+  assert.equal(analyze(styles.replaceAll('a3', 'LocalizedComment'), comments.replaceAll('a3', 'LocalizedComment')).parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
+  for (const bad of [
+    styles.replace('<w:sz w:val="20"/>', '<w:vanish/>'),
+    styles.replace('<w:sz w:val="20"/>', '<w:b/>'),
+    styles.replace('<w:qFormat/>', '<w:rPr><w:vanish/></w:rPr>'),
+    styles.replace('<w:sz w:val="24"/>', '<w:vanish/>'),
+    styles.replace('<w:spacing w:line="240" w:lineRule="auto"/>', '<w:numPr><w:numId w:val="1"/></w:numPr>'),
+    styles.replace('w:basedOn w:val="a"', 'w:basedOn w:val="a3"'),
+    styles.replace('w:basedOn w:val="a"', 'w:basedOn w:val="missing"'),
+    styles.replace('w:type="paragraph" w:styleId="a3"', 'w:type="character" w:styleId="a3"'),
+    styles.replace('<w:basedOn w:val="a"/>', ''),
+    styles.replace('annotation text', 'Untrusted style'),
+    styles.replace('<w:qFormat/>', '<w:qFormat>hidden payload</w:qFormat>'),
+    styles.replace('w:sz w:val="20"', 'w:sz w:val="0"'),
+    styles.replace('w:lang w:val="ru-FI"', 'w:lang w:unknown="ru-FI"'),
+    styles.replace('</w:styles>', '<w:style w:type="paragraph" w:styleId="a3"><w:name w:val="annotation text"/></w:style></w:styles>'),
+  ]) {
+    const result = analyze(bad).parsed;
+    assert(result.ok === false || result.reviewIr.commentBodyGrammar?.status === 'UNSUPPORTED', bad);
+    assert.notEqual(result.reviewIr.commentBodyGrammar?.status, 'SUPPORTED', bad);
+  }
+});
+
 test('duplicate Apply is no-write; mutated payload or intervening canonical state is rejected', async () => {
   const { input } = await fixture(); input.returnedThreads[0].body = 'Changed';
   const result = plan(input); const replay = { ...input, beforeText: result.afterText };
