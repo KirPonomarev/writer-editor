@@ -95,6 +95,7 @@ test('WP307 admits only owner-authorized DOCX review roundtrip survivors in pack
     'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     'cmd.project.review.editComment',
     'cmd.project.review.decidePendingRevision',
+    'cmd.project.review.recordTextRevisions',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
     'cmd.project.review.applyFormattingReturn',

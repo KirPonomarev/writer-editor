@@ -304,15 +304,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "evidenceStampIds": [
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "src/core/writer-local-profile-v1.cjs",
-      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
-      "sha256": "82442d7cee6ff1652e802aac76c1732dbb6be1b27cb82f51730a8c141f3aad69"
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "c1cdc3d4414a21c50908565aa89e1db9ab5bf663296ff629cfa80ee2508b9e5f"
     },
     {
       "approved": true,
@@ -1507,12 +1507,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "e74ee1c266ce5e5634d97a4c5fc34dbe9340d81415edb5a81cb1a7b1c6edbeda",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:11:13.772959Z",
+      "sha256": "3a28af296353a54af6e4911ca50eba3193ca5c0d3d67c54f77655f925a1d21a3",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1651,30 +1651,30 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "0ba20bf4610a197e07dcdc56fea49c7cc9169a1a8b60b7dc1aa136d139f99a18",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:17:02.054946Z",
+      "sha256": "d281b4691a5c35df2630fe2d5802a7f8dfc3c50f98b7c23c7bc4c6562b375a12",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "60c69267df21b882198216a246718318aa1522a7378ea33a1b296c14716938a6",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "7f5caa679476bafe388ece85edebccd537d6d7e0ac3f02e21470da39931f1df9",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "0bde47ac7c791b9a9dba1ac8a6f2d0e36ba445fd7965efc88636d900222e4a4b",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:11:13.772959Z",
+      "sha256": "e5bfde22a21abb8fffa881e16689a88617f0691c4022ff7ef944115f57bea097",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "1ce72ca8c51616cd2bcf9907f7de256954ae1c2dec06d595176e1a814578d569",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "99a1a7bd8483ce0528fc1a87f9bad2ea897500b2cedb7d246e0559a3c53688ba",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "fe3ba4e37e6d00309f84bdd1b5914e9a6f93a0f02b64d12cc049ae2dafe8cf50",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "58f51764dabab1fc651e121b46c8894341560e999c90aabe22a6cf376b512320",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4e36226aa600da1d5a00b4dbb50afd717a64b25e9c4a99d0ffed62ba0d6119e4",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "45b047f9e69eb25347ff902bbe1c408da15b239a0ca26ccedf9846f0aa3492c2",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2389,28 +2389,28 @@
     },
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
-      "sha256": "7efa93a0b788036b43b7fb5080364e04f7d3060b00ca01de455410b3aa895848",
-      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
-      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "fcfd6a3469467a04bb85d980901157c3b338ea1a0bc3ef33041245bce263a79b",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
-      "sha256": "27fb9070ed1c0fc85dbf26edb92145875e4462d956b0ff0d2e744ffd8778f1c2",
-      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
-      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "ca9d6cef46c5fe4421303a39b89fd653fc601995fadeb9eb028cf7de6d01c44f",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-      "sha256": "cd86b6a1bf48844a5ef34932aace12f948318d20f414d782de171dd6ab4209b5",
-      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
-      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "e2825b3919069aff3f420fee2883315742cd1e74bb6ed230d5cb3ae4192becc2",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c05a45402209850efeb6364fed8c1bcaf1513130fe249eb32908e229941df4a7",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "54b3d17aaa7d39f84804e9792b785c7ab6a4f076f345e37a3c9eea169350dabf",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "3c527631210ed8be61cc165e2bdbe38e4c0a35b8260cbe1692aad51951d9f00d",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "910f5a98ea9c0b0d21b562c1384a909abf4957c66b83d58c8f63c766aa76aec7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ef3a913aba159e98d92bd9a002c1f5547ecc112d03fd4908e0b11f80db9a7291",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
-      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "sha256": "41641603fda11606ce53a6f40b5afe45ed3bb8364b081bef6672de7c930d69f0",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2587,12 +2587,12 @@
     },
     {
       "filePath": "test/unit/r24-wp307-writer-local-profile.test.js",
-      "sha256": "f15fe2aab3bc5d8d573056dcf2fd014f54fe624a13ceaa4f76cc91bf26ea5f39",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
-      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "sha256": "14763e6df3a4067555c8389d91d9160bbaf7c5c003e783ece43bc4d4d6aac07e",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "approved": true,
@@ -2987,6 +2987,42 @@
       "approvedAtUtc": "2026-09-28T06:17:02.054946Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
       "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-28--word-pending-recording.md",
+      "sha256": "84b93b7b31857428b72c587f41273887ce95e6ff4366a426d113c0dceff8f307",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/core/word-pending-recording-v1.cjs",
+      "sha256": "f75fe341dba06343920f915164215d9216af0c830902660326dc71f14a8b8ee2",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording.contract.test.js",
+      "sha256": "04b7dd0a0b8d2d6a5b35c1f5c79b562ad17be6b7b891840d9dc583b5a347bda1",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "9d460ef44cabde6c1981e4f1ccaaba6f116742af876e8c44d1507c2aea2f6dda",
+      "approvedAtUtc": "2026-09-28T07:04:41.495063Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928",
+      "rationale": "Owner-authorized macOS Word new tracked text recording with stable main-owned authoring, autosave, durable session undo and no-loss authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -16918,6 +16954,144 @@
       "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "src/core/writer-local-profile-v1.cjs",
+      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "82442d7cee6ff1652e802aac76c1732dbb6be1b27cb82f51730a8c141f3aad69"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "e74ee1c266ce5e5634d97a4c5fc34dbe9340d81415edb5a81cb1a7b1c6edbeda",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:11:13.772959Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "0ba20bf4610a197e07dcdc56fea49c7cc9169a1a8b60b7dc1aa136d139f99a18",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:17:02.054946Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "60c69267df21b882198216a246718318aa1522a7378ea33a1b296c14716938a6",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "0bde47ac7c791b9a9dba1ac8a6f2d0e36ba445fd7965efc88636d900222e4a4b",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:11:13.772959Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "1ce72ca8c51616cd2bcf9907f7de256954ae1c2dec06d595176e1a814578d569",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "fe3ba4e37e6d00309f84bdd1b5914e9a6f93a0f02b64d12cc049ae2dafe8cf50",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "4e36226aa600da1d5a00b4dbb50afd717a64b25e9c4a99d0ffed62ba0d6119e4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/core/entitlement-law-v1.cjs",
+      "sha256": "7efa93a0b788036b43b7fb5080364e04f7d3060b00ca01de455410b3aa895848",
+      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/command/commandSurfaceKernel.js",
+      "sha256": "27fb9070ed1c0fc85dbf26edb92145875e4462d956b0ff0d2e744ffd8778f1c2",
+      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "cd86b6a1bf48844a5ef34932aace12f948318d20f414d782de171dd6ab4209b5",
+      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "c05a45402209850efeb6364fed8c1bcaf1513130fe249eb32908e229941df4a7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3c527631210ed8be61cc165e2bdbe38e4c0a35b8260cbe1692aad51951d9f00d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ef3a913aba159e98d92bd9a002c1f5547ecc112d03fd4908e0b11f80db9a7291",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928",
+      "approvedAtUtc": "2026-09-28T06:34:05.758411Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word authenticated single-scene pending return with durable whole-round undo redo, explicit confirmation and no-write authority negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "test/unit/r24-wp307-writer-local-profile.test.js",
+      "sha256": "f15fe2aab3bc5d8d573056dcf2fd014f54fe624a13ceaa4f76cc91bf26ea5f39",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928",
+      "approvedAtUtc": "2026-09-28T04:19:33.847757Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word plan P2a pending text review: durable scene ledger, guarded Kernel decisions, undo redo, and native export. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     }
   ]
 }

@@ -310,7 +310,11 @@
     "docs/tasks/2026-09-28--word-scene-default-profile.md",
     "test/contracts/rtk-word-pending-return.contract.test.js",
     "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-    "docs/tasks/2026-09-28--word-pending-return-history.md"
+    "docs/tasks/2026-09-28--word-pending-return-history.md",
+    "src/core/word-pending-recording-v1.cjs",
+    "test/contracts/rtk-word-pending-recording.contract.test.js",
+    "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+    "docs/tasks/2026-09-28--word-pending-recording.md"
   ],
   "protectedFiles": [
     {
@@ -539,7 +543,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0ba20bf4610a197e07dcdc56fea49c7cc9169a1a8b60b7dc1aa136d139f99a18"
+        "sha256": "d281b4691a5c35df2630fe2d5802a7f8dfc3c50f98b7c23c7bc4c6562b375a12"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -551,7 +555,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "60c69267df21b882198216a246718318aa1522a7378ea33a1b296c14716938a6"
+        "sha256": "7f5caa679476bafe388ece85edebccd537d6d7e0ac3f02e21470da39931f1df9"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -715,7 +719,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "0bde47ac7c791b9a9dba1ac8a6f2d0e36ba445fd7965efc88636d900222e4a4b"
+        "sha256": "e5bfde22a21abb8fffa881e16689a88617f0691c4022ff7ef944115f57bea097"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -779,11 +783,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "82442d7cee6ff1652e802aac76c1732dbb6be1b27cb82f51730a8c141f3aad69"
+        "sha256": "c1cdc3d4414a21c50908565aa89e1db9ab5bf663296ff629cfa80ee2508b9e5f"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "f15fe2aab3bc5d8d573056dcf2fd014f54fe624a13ceaa4f76cc91bf26ea5f39"
+        "sha256": "14763e6df3a4067555c8389d91d9160bbaf7c5c003e783ece43bc4d4d6aac07e"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -1211,11 +1215,11 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "7efa93a0b788036b43b7fb5080364e04f7d3060b00ca01de455410b3aa895848"
+        "sha256": "fcfd6a3469467a04bb85d980901157c3b338ea1a0bc3ef33041245bce263a79b"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
-        "sha256": "27fb9070ed1c0fc85dbf26edb92145875e4462d956b0ff0d2e744ffd8778f1c2"
+        "sha256": "ca9d6cef46c5fe4421303a39b89fd653fc601995fadeb9eb028cf7de6d01c44f"
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
@@ -1223,7 +1227,7 @@
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-        "sha256": "cd86b6a1bf48844a5ef34932aace12f948318d20f414d782de171dd6ab4209b5"
+        "sha256": "e2825b3919069aff3f420fee2883315742cd1e74bb6ed230d5cb3ae4192becc2"
       },
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
@@ -1387,7 +1391,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "e74ee1c266ce5e5634d97a4c5fc34dbe9340d81415edb5a81cb1a7b1c6edbeda"
+        "sha256": "3a28af296353a54af6e4911ca50eba3193ca5c0d3d67c54f77655f925a1d21a3"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1440,6 +1444,18 @@
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
         "sha256": "8afbcce387548f474dfbdaa3fee458b3beb3c55039ecc78a7745389932465ed1"
+      },
+      {
+        "path": "src/core/word-pending-recording-v1.cjs",
+        "sha256": "f75fe341dba06343920f915164215d9216af0c830902660326dc71f14a8b8ee2"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
+        "sha256": "04b7dd0a0b8d2d6a5b35c1f5c79b562ad17be6b7b891840d9dc583b5a347bda1"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+        "sha256": "9d460ef44cabde6c1981e4f1ccaaba6f116742af876e8c44d1507c2aea2f6dda"
       }
     ],
     "followupRepair": {
