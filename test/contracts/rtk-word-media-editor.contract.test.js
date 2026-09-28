@@ -26,6 +26,23 @@ test('Word media editor: malicious URI, wrong media type and excessive dimension
   }
 });
 
+test('JPEG editor: real canonical bytes survive schema persistence and render only through the owned data URI', async () => {
+  const { Node, getSchema } = require('@tiptap/core');
+  const { DocumentMedia, mediaImageDom } = await import('../../src/renderer/tiptap/documentMedia.mjs');
+  const { createImageAttrs } = require('../../src/io/documentMedia.js');
+  const { rgb } = require('../fixtures/document-jpeg-fixtures.cjs');
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const schema = getSchema([Node.create({ name: 'doc', topNode: true, content: 'paragraph+' }), Node.create({ name: 'paragraph', content: 'inline*' }), Node.create({ name: 'text', group: 'inline' }), DocumentMedia]);
+  const attrs = createImageAttrs(rgb, { alt: 'JPEG иллюстрация', displayWidthEmu: 400001, displayHeightEmu: 300001 });
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] };
+  const state = schema.nodeFromJSON(doc); state.check();
+  const reopened = schema.nodeFromJSON(envelope.parseObservablePayload(envelope.composeObservablePayload({ doc: state.toJSON() })).doc);
+  assert.deepEqual(JSON.parse(JSON.stringify(reopened.toJSON())), doc);
+  const view = mediaImageDom(attrs); assert.equal(view[0], 'img'); assert.equal(view[1].src, `data:image/jpeg;base64,${rgb.toString('base64')}`);
+  assert.equal(view[1].alt, attrs.alt); assert.match(view[1].style, /aspect-ratio:400001\/300001/u);
+  assert.equal(Object.values(view[1]).includes(attrs.assetPath), false); assert.deepEqual(DocumentMedia.config.parseHTML(), []);
+});
+
 
 test('Word media editor: sheet refresh prevents clipping every image and restores text pagination after removal', () => {
   const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');

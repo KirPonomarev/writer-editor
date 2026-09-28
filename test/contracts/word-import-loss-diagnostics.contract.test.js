@@ -134,6 +134,8 @@ test('W2: an unexpected native validator failure is not relabelled as damaged in
   const source=fs.readFileSync(path.join(__dirname,'../../src/io/documentMedia.js'),'utf8');
   const unexpected=new Error('/private/host/runtime-internal');
   const module={exports:{}};
-  vm.runInNewContext(source,{Buffer,module,process:{getBuiltinModule:name=>name==='node:zlib'?{inflateSync(){throw unexpected;}}:require(name)}});
+  vm.runInNewContext(source,{Buffer,module,
+    require:name=>{assert.equal(name,'./documentJpeg.js');return require('../../src/io/documentJpeg.js');},
+    process:{getBuiltinModule:name=>name==='node:zlib'?{inflateSync(){throw unexpected;}}:require(name)}});
   assert.throws(()=>module.exports.inspectPng(png()),error=>error===unexpected);
 });

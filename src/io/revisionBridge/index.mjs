@@ -3915,8 +3915,8 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
       dataStart,
       dataEnd,
     });
-    const isPng = /^word\/media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.png$/u.test(entry.entryId);
-    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId) && !isPng) continue;
+    const isImage = /^word\/media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:png|jpe?g)$/u.test(entry.entryId);
+    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId) && !isImage) continue;
     // Pre-inflate part budget: effective.maxInflatedPartBytes (10 MiB V6),
     // NOT the 32 MiB host bound (Z6).
     if (entry.byteSize > effective.maxInflatedPartBytes) {
@@ -3950,7 +3950,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     // central CRC is the legacy-fixture sentinel (no real CRC evidence); real
     // DOCX packages always carry a non-zero CRC for non-empty parts, so this
     // never opens a bypass for tampered non-empty content in real archives.
-    if (Number.isSafeInteger(entry.centralCrc32) && (entry.centralCrc32 !== 0 || isPng)) {
+    if (Number.isSafeInteger(entry.centralCrc32) && (entry.centralCrc32 !== 0 || isImage)) {
       const actualCrc32 = zipEvidenceCrc32(inflated.contentBytes);
       if (actualCrc32 !== entry.centralCrc32) {
         return {
@@ -3970,7 +3970,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         };
       }
     }
-    if (isPng) binaryParts[entry.entryId] = Buffer.from(inflated.contentBytes);
+    if (isImage) binaryParts[entry.entryId] = Buffer.from(inflated.contentBytes);
     else parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
   }
 
@@ -4005,8 +4005,8 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     if (!Buffer.isBuffer(bytes) || bytes.length > documentMediaData.MEDIA_LIMITS.bytes) throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
     mediaBytes += bytes.length;
     if (mediaBytes > documentMediaData.MEDIA_LIMITS.totalBytes || mediaCache.size >= documentMediaData.MEDIA_LIMITS.assets) throw Error('DOCUMENT_MEDIA_BYTES');
-    const { sha256, width, height } = createImageAttrs(bytes);
-    const result = Object.freeze({ sha256, width, height }); mediaCache.set(name, result); return result;
+    const { sha256, width, height, mimeType } = createImageAttrs(bytes);
+    const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
   };
   return {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart }),
@@ -10296,6 +10296,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         if (!image) throw Error('DOCUMENT_MEDIA_PART_MISSING');
         if ((mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_TOTAL_BYTE_LIMIT');
         const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName, displayWidthEmu: ref.cx, displayHeightEmu: ref.cy });
+        if (attrs.mimeType !== ref.mimeType) throw Error('DOCUMENT_MEDIA_MIME_MISMATCH');
         (paragraph.media ||= []).push({ offset: ref.offset, attrs });
       }
     }

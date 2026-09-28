@@ -9,11 +9,12 @@ const attribute = value => escapeXml(value).replaceAll('\n', '&#10;').replaceAll
 function buildMediaPackage(doc) {
   const graph = documentMedia(doc);
   const byId = new Map(graph.assets.map((asset, index) => [asset.attrs.assetId, { ...asset, relationshipId: `yalkenMedia${index + 1}` }]));
+  const extension = asset => asset.attrs.mimeType === 'image/jpeg' ? 'jpg' : 'png';
   let placementId = 0;
   return {
-    parts: [...byId.values()].map(a => ({ name: `word/media/${a.attrs.sha256}.png`, data: a.bytes })),
-    contentTypes: byId.size ? '<Default Extension="png" ContentType="image/png"/>' : '',
-    relationships: [...byId.values()].map(a => `<Relationship Id="${a.relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${a.attrs.sha256}.png"/>`).join(''),
+    parts: [...byId.values()].map(a => ({ name: `word/media/${a.attrs.sha256}.${extension(a)}`, data: a.bytes })),
+    contentTypes: [...new Set([...byId.values()].map(a => `<Default Extension="${extension(a)}" ContentType="${a.attrs.mimeType}"/>`))].join(''),
+    relationships: [...byId.values()].map(a => `<Relationship Id="${a.relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${a.attrs.sha256}.${extension(a)}"/>`).join(''),
     drawing(attrs) {
       const validated = validateImageAttrs(attrs).attrs, asset = byId.get(validated.assetId);
       if (!asset) throw Error('DOCX_MEDIA_UNBOUND_ASSET');

@@ -4090,6 +4090,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
             || !Number.isSafeInteger(attrs.width) || !Number.isSafeInteger(attrs.height)
             || attrs.width < 1 || attrs.height < 1 || attrs.width > 8192 || attrs.height > 8192)
             throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
+          if (attrs.mimeType !== ref.mimeType) throw Error('DOCUMENT_MEDIA_MIME_MISMATCH');
           // XML size is bounded independently of PNG pixels. Authenticated
           // source binding decides whether a size change is an allowed return.
           return { ...ref, sha256: attrs.sha256, width: attrs.width, height: attrs.height };
@@ -5003,18 +5004,19 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (matches.length !== 1) fail('RELATIONSHIP_LOOKUP');
     const rel = matches[0], target = plain(rel, 'Target');
     if (plain(rel, 'Type') !== `${NS_R}/image` || !['', 'Internal'].includes(plain(rel, 'TargetMode'))
-      || !/^media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.png$/u.test(target) || target.includes('..')) fail('RELATIONSHIP_TARGET');
+      || !/^media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:png|jpe?g)$/u.test(target) || target.includes('..')) fail('RELATIONSHIP_TARGET');
     const partName = `word/${target}`;
+    const extension = target.split('.').at(-1), mimeType = extension === 'png' ? 'image/png' : 'image/jpeg';
     const overrides = types.filter(t => t.namespaceUri === CONTENT_TYPES_NS && t.localName === 'Override' && plain(t, 'PartName') === `/${partName}`);
-    const defaults = types.filter(t => t.namespaceUri === CONTENT_TYPES_NS && t.localName === 'Default' && plain(t, 'Extension').toLowerCase() === 'png');
+    const defaults = types.filter(t => t.namespaceUri === CONTENT_TYPES_NS && t.localName === 'Default' && plain(t, 'Extension').toLowerCase() === extension);
     const typeMatches = overrides.length ? overrides : defaults;
-    if (typeMatches.length !== 1 || plain(typeMatches[0], 'ContentType') !== 'image/png') fail('CONTENT_TYPE');
+    if (typeMatches.length !== 1 || plain(typeMatches[0], 'ContentType') !== mimeType) fail('CONTENT_TYPE');
     const dimension = key => { const value = plain(extent, key); if (!/^[1-9][0-9]*$/u.test(value) || Number(value) > 8192 * 9525) fail('EXTENT'); return Number(value); };
     const before = tokens.filter(t => inside(t, paragraph) && t.openStart < drawing.openStart);
     const offset = before.reduce((sum, t) => sum + (isWordToken(t, 'delText') ? 0 : wordInlineTextValue(documentXml, t).length), 0);
     const correspondence = correspondenceFor(paragraph), positions = correspondence.offsets.get(drawing.openStart);
     const firstDrawing = correspondence.offsets.keys().next().value === drawing.openStart;
-    return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
+    return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, mimeType, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
       ...(correspondence.eligible ? { originalOffset: positions.originalOffset,
         ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments,
           ...(correspondence.fieldLinks.length ? { fieldLinks: correspondence.fieldLinks } : {}) } } : {}) } : {}) };
