@@ -1010,7 +1010,7 @@ function isInertHyperlinkRelationship(item) {
 function isInertGoogleOfficeCustomXmlRelationship(item) {
   return item.partName === 'word/_rels/document.xml.rels'
     && item.type === 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml'
-    && item.target === '../customXML/item1.xml'
+    && ['../customXML/item1.xml', '../customXml/item1.xml'].includes(item.target)
     && (item.targetMode === '' || item.targetMode.toLowerCase() === 'internal');
 }
 

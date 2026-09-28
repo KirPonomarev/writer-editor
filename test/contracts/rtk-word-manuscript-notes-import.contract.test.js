@@ -8,11 +8,12 @@ const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
-function fixture({ kind = 'footnote', id = '7', reference = id, body, href = 'https://example.invalid/note', extra = '' } = {}) {
+function fixture({ kind = 'footnote', id = '7', reference = id, body, href = 'https://example.invalid/note', extra = '', customXml = '' } = {}) {
   return buildStoredZip([
+    ...(customXml ? [{ name: 'customXml/item1.xml', data: '<b:Sources xmlns:b="http://schemas.openxmlformats.org/officeDocument/2006/bibliography"/>' }] : []),
     { name: '[Content_Types].xml', data: `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/${kind}s.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/></Types>` },
     { name: '_rels/.rels', data: `<Relationships xmlns="${P}"><Relationship Id="d" Type="${R}/officeDocument" Target="word/document.xml"/></Relationships>` },
-    { name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${P}"><Relationship Id="n" Type="${R}/${kind}s" Target="${kind}s.xml"/></Relationships>` },
+    { name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${P}"><Relationship Id="n" Type="${R}/${kind}s" Target="${kind}s.xml"/>${customXml ? `<Relationship Id="cx" Type="${R}/customXml" Target="${customXml}"/>` : ''}</Relationships>` },
     { name: `word/_rels/${kind}s.xml.rels`, data: `<Relationships xmlns="${P}"><Relationship Id="l" Type="${R}/hyperlink" Target="${href}" TargetMode="External"/></Relationships>` },
     { name: 'word/document.xml', data: `<w:document xmlns:w="${W}"><w:body><w:p><w:r><w:t xml:space="preserve">До </w:t></w:r><w:r><w:${kind}Reference w:id="${reference}"/></w:r><w:r><w:t>слова</w:t></w:r></w:p></w:body></w:document>` },
     { name: `word/${kind}s.xml`, data: `<w:${kind}s xmlns:w="${W}" xmlns:r="${R}"><w:${kind} w:id="${id}"><w:p><w:r><w:${kind}Ref/></w:r>${body || '<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">Точная </w:t><w:tab/><w:t>😀</w:t><w:br/><w:t>строка</w:t></w:r><w:hyperlink r:id="l"><w:r><w:t>ссылка</w:t></w:r></w:hyperlink>'}</w:p><w:p/></w:${kind}>${extra}</w:${kind}s>` },
@@ -89,4 +90,15 @@ test('scene DOCX export carries both native note kinds and rich bodies; private 
     { kind: 'footnote', paragraphIndex: 0, offsetUtf16: 3, body },
     { kind: 'endnote', paragraphIndex: 0, offsetUtf16: 8, body },
   ]);
+});
+
+
+test('native Word customXml casing is inert while missing or traversal targets remain blocked', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const good = bridge.buildDocxContentPreviewFromZipBytes(fixture({ customXml: '../customXml/item1.xml' }));
+  assert.equal(good.ok, true, JSON.stringify(good));
+  assert.equal(good.contentPreview.manuscriptNotes.length, 1);
+  for (const customXml of ['../customXml/missing.xml', '../../customXml/item1.xml', 'file:///private/item1.xml']) {
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(fixture({ customXml })).ok, false, customXml);
+  }
 });

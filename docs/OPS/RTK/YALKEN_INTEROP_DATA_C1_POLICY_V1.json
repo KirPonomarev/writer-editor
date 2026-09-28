@@ -558,7 +558,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "1a86fb2ba10d0d02d415ec2b8108e22f9727c7a5434c46c579d16a2175bea694"
+        "sha256": "7c107f21a5cd07a5e4f677667e3fd442c38cc94651af76935154aa0594e1559e"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -638,7 +638,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "b7fefbefa392d148549f100dc0872b5a182ab66c4ab7693769b790f394a481d1"
+        "sha256": "9bbcabc6cc8ce078d523eb3f5c2eb3255d33aa3909e2c25c0a011a581dbad99e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1350,7 +1350,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-        "sha256": "7836dde69fc678e3c6b918795bc44ec4ea9d04f5fc3b9ec5e967c59cae116489"
+        "sha256": "214501432b924e2105c080710cd2b6e46da11cbdfb15d9c31bae0746fe33d01a"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
