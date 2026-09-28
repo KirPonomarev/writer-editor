@@ -522,7 +522,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c529cb2d88015baa76a21db4a07c738f1b60f208e0f3e042cf1ebdc0a52d64a9"
+        "sha256": "327eb21aeda3277f3b87902695ce1754b51d51fd785a6e2952ac47670f3a10a2"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -566,7 +566,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "d5cba126ec7294735dbbf4206e3ed5b06b6ce709ae511439c69617c71d9e628e"
+        "sha256": "66622b59911fac6a647ace3002cc2e825c0fabcc9c2577ff3ce8500ce857dd7c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -1350,7 +1350,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-        "sha256": "214501432b924e2105c080710cd2b6e46da11cbdfb15d9c31bae0746fe33d01a"
+        "sha256": "d1d427ab7f79374d3b3e62de8a400932e6f230738cdc5f17fa17b7ab0d2e7aea"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",

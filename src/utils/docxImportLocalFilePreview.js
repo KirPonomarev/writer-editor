@@ -180,6 +180,7 @@ function sanitizeContentPreviewReport(report) {
     contentPreview: isPlainObject(report.contentPreview)
       ? {
           sourcePart: report.contentPreview.sourcePart,
+          ...(Array.isArray(report.contentPreview.manuscriptNotes) ? { manuscriptNotes: cloneJsonSafe(report.contentPreview.manuscriptNotes) } : {}),
           ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),
           ...(Array.isArray(report.contentPreview.genericComments) ? { genericComments: cloneJsonSafe(report.contentPreview.genericComments) } : {}),
           ...(Array.isArray(report.contentPreview.commentNormalizationLedger) ? { commentNormalizationLedger: cloneJsonSafe(report.contentPreview.commentNormalizationLedger) } : {}),
@@ -278,6 +279,7 @@ function sanitizeImportPreviewPlan(plan) {
                   title: entry.title,
                   content: entry.content,
                   ...(entry.comments !== undefined ? { comments: cloneJsonSafe(entry.comments) } : {}),
+                  ...(entry.notes !== undefined ? { notes: cloneJsonSafe(entry.notes) } : {}),
                   contentTextHash: entry.contentTextHash,
                   candidateContentSha256: typeof entry.candidateContentSha256 === 'string'
                     ? entry.candidateContentSha256

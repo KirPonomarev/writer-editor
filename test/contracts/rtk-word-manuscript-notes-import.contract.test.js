@@ -102,3 +102,23 @@ test('native Word customXml casing is inert while missing or traversal targets r
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(fixture({ customXml })).ok, false, customXml);
   }
 });
+
+test('native file picker and main preview projection retain notes through actual safe-create planning', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
+  const bytes = fixture(), direct = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  const selected = await createDocxImportLocalFilePreview({ requestId: 'native-notes' }, {
+    pickLocalFile: async () => ({ path: '/synthetic/notes.docx', size: bytes.length }), readLocalFileBytes: async () => bytes,
+  });
+  assert.equal(selected.ok, true, JSON.stringify(selected));
+  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const section = source.slice(source.indexOf('function copyDocxImportPreviewAllowedFields('), source.indexOf('function validateDocxImportPreviewPayload('));
+  const canonicalize = new Function('isPlainObjectValue', 'cloneJsonSafe', section + '; return canonicalizeDocxImportPreviewSourceReport;')(
+    value => !!value && typeof value === 'object' && !Array.isArray(value), value => value === undefined ? undefined : JSON.parse(JSON.stringify(value)));
+  const normalized = canonicalize(selected.docxContentPreviewReport);
+  assert.deepEqual(normalized.contentPreview.manuscriptNotes, direct.contentPreview.manuscriptNotes);
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(normalized);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.deepEqual(plan.candidateCreatePlan.entries[0].notes, direct.contentPreview.manuscriptNotes);
+  assert.deepEqual(selected.docxImportPreviewPlan.candidateCreatePlan.entries[0].notes, direct.contentPreview.manuscriptNotes);
+});
