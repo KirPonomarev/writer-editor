@@ -180,6 +180,7 @@ function sanitizeContentPreviewReport(report) {
     contentPreview: isPlainObject(report.contentPreview)
       ? {
           sourcePart: report.contentPreview.sourcePart,
+          ...(isPlainObject(report.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(report.contentPreview.pendingRevisionDocument) } : {}),
           ...(Array.isArray(report.contentPreview.manuscriptNotes) ? { manuscriptNotes: cloneJsonSafe(report.contentPreview.manuscriptNotes) } : {}),
           ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),
           ...(Array.isArray(report.contentPreview.genericComments) ? { genericComments: cloneJsonSafe(report.contentPreview.genericComments) } : {}),

@@ -32,7 +32,7 @@ test('sector-m scene rich truth: tiptap exposes document snapshots instead of te
   assert.ok(source.includes('canonicalizeDocumentJson'));
   assert.ok(source.includes('attachWindowListeners: options.attachWindowListeners === true'));
   assert.ok(source.includes('doc: readEditorDocument(editor),'));
-  assert.ok(source.includes('editor.commands.setContent(parsed.doc || buildParagraphDocumentFromText(parsed.text || \'\'), false)'));
+  assert.ok(source.includes('setCheckedDocument(editor, parsed.doc || buildParagraphDocumentFromText(parsed.text || \'\'))'));
   assert.ok(source.includes('export function getTiptapDocumentSnapshot() {'));
   assert.ok(source.includes('export function setTiptapDocumentSnapshot(snapshot = {}) {'));
 });

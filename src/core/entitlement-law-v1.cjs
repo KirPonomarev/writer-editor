@@ -133,6 +133,7 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
   'cmd.project.review.editComment',
+  'cmd.project.review.decidePendingRevision',
   'cmd.project.insert.markdownPrompt',
   'cmd.project.insert.flowOpen',
   'cmd.project.insert.addCard',

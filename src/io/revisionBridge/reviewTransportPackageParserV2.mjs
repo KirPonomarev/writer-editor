@@ -5059,3 +5059,66 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
           ...(correspondence.fieldLinks.length ? { fieldLinks: correspondence.fieldLinks } : {}) } } : {}) } : {}) };
   });
 }
+
+// Generic Word intake only: flatten supported run wrappers for the existing
+// rich-text reader, while retaining an exact, namespace-aware revision map.
+// The flattened XML is an internal parse view, never an accepted document.
+export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort);
+  if (!cryptoPort.ok) throw Error('PENDING_REVISIONS_CRYPTO_REQUIRED');
+  const budgets = normalizeBudgets(options.budgets);
+  const budgetState = createParserBudgetState(budgets, cryptoPort);
+  const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
+  const tokens = scan.tokens.filter(t => isWordToken(t, 'ins') || isWordToken(t, 'del'));
+  if (!tokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
+  if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
+  if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
+  const unsupported = new Set(['moveFrom', 'moveTo', 'moveFromRangeStart', 'moveToRangeStart', 'rPrChange', 'pPrChange',
+    'tbl', 'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
+    'commentRangeStart', 'commentRangeEnd', 'commentReference', 'numPr', 'ruby', 'sym', 'ptab']);
+  if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+  const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
+  if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
+  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
+  const edits = [], revisions = [], ids = new Set();
+  const allowed = new Set(['r', 'rPr', 't', 'delText', 'tab', 'br', 'cr', 'noBreakHyphen', 'softHyphen', 'lastRenderedPageBreak',
+    'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
+  for (const token of tokens.sort((a, b) => a.openStart - b.openStart)) {
+    const paragraphIndex = paragraphs.findIndex(p => p.openEnd <= token.openStart && p.closeStart >= token.closeEnd);
+    const p = paragraphs[paragraphIndex];
+    if (!p || token.selfClosing || token.depth !== p.depth + 1 || token.path.at(-2) !== 'p') throw Error('PENDING_REVISIONS_STRUCTURE_UNSUPPORTED');
+    const nativeId = attr(token, 'id', W_NS);
+    if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
+    const inside = scan.tokens.filter(t => t.openStart >= token.openEnd && t.closeEnd <= token.closeStart);
+    if (inside.some(t => t.namespaceUri !== W_NS || !allowed.has(t.localName))) throw Error('PENDING_REVISIONS_BODY_UNSUPPORTED');
+    if (inside.some(t => isWordToken(t, 'br') && ['page', 'column'].includes(attr(t, 'type')))) throw Error('PENDING_REVISIONS_BREAK_UNSUPPORTED');
+    if (inside.some(t => token.localName === 'ins' && isWordToken(t, 'delText') || token.localName === 'del' && isWordToken(t, 't'))) throw Error('PENDING_REVISIONS_TEXT_KIND_INVALID');
+    const sourceText = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, token)).replaceAll('\r', '\n');
+    if (!sourceText) throw Error('PENDING_REVISIONS_EMPTY_UNSUPPORTED');
+    const from = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, { ...p, closeStart: token.openStart })).replaceAll('\r', '\n').length;
+    revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: token.localName === 'ins' ? 'insert' : 'delete',
+      author: attr(token, 'author', W_NS), date: attr(token, 'date', W_NS), dateUtc: attr(token, 'dateUtc', W16DU_NS),
+      groupId: null, paragraphIndex, from, to: from + sourceText.length, state: 'pending' });
+    edits.push({ from: token.openStart, to: token.openEnd, text: '' }, { from: token.closeStart, to: token.closeEnd, text: '' });
+  }
+  let group = 0;
+  for (let i = 0; i < revisions.length - 1; i++) {
+    const a = revisions[i], b = revisions[i + 1];
+    if (a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
+      a.groupId = b.groupId = `group-${++group}`; i++;
+    }
+  }
+  for (const token of scan.tokens.filter(t => isWordToken(t, 'delText'))) {
+    if (!tokens.some(r => isWordToken(r, 'del') && token.openStart > r.openStart && token.closeEnd < r.closeEnd)) throw Error('PENDING_REVISIONS_ORPHAN_DELETION');
+    edits.push({ from: token.openStart, to: token.openEnd, text: documentXml.slice(token.openStart, token.openEnd).replace(/delText/u, 't') },
+      { from: token.closeStart, to: token.closeEnd, text: documentXml.slice(token.closeStart, token.closeEnd).replace(/delText/u, 't') });
+  }
+  let xml = documentXml;
+  for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
+  let currentXml = documentXml;
+  const currentEdits = tokens.flatMap(token => token.localName === 'del'
+    ? [{ from: token.openStart, to: token.closeEnd }]
+    : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
+  for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
+  return { xml, currentXml, revisions };
+}

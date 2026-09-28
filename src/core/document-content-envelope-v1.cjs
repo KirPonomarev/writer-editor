@@ -234,6 +234,7 @@ function canonicalizeDocumentJson(doc) {
   if (!isPlainObject(doc)) {
     return buildParagraphDocumentFromText('');
   }
+  require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
   return canonicalizeJsonValue(cloneJsonValue(doc));
 }
 

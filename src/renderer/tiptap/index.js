@@ -1,3 +1,4 @@
+import { WordPendingRevisions, setCheckedDocument } from './wordPendingRevisions.mjs'
 import { Editor } from '@tiptap/core'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
@@ -60,7 +61,8 @@ function readEditorDocument(editor) {
 
   try {
     return canonicalizeDocumentJson(editor.getJSON())
-  } catch {
+  } catch (error) {
+    if (editor.getJSON()?.attrs?.wordPendingRevisions) throw error
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
 }
@@ -443,7 +445,7 @@ function createIpcSession(editor, options = {}) {
 
       state.applyingExternalPayload = true
       try {
-        editor.commands.setContent(parsed.doc || buildParagraphDocumentFromText(parsed.text || ''), false)
+        setCheckedDocument(editor, parsed.doc || buildParagraphDocumentFromText(parsed.text || ''))
       } finally {
         state.applyingExternalPayload = false
       }
@@ -549,6 +551,7 @@ export function initTiptap(mountEl, options = {}) {
       DocumentTables,
       DocumentMedia,
       ManuscriptNoteReferences,
+      WordPendingRevisions,
       Color,
       Highlight.configure({
         multicolor: true,
@@ -681,7 +684,7 @@ export function getTiptapPlainText() {
 
 export function setTiptapPlainText(text = '') {
   if (!currentEditorInstance) return
-  currentEditorInstance.commands.setContent(buildParagraphDocumentFromText(text), false)
+  setCheckedDocument(currentEditorInstance, buildParagraphDocumentFromText(text))
   notifyFormattingStateChange()
 }
 
@@ -697,7 +700,7 @@ export function setTiptapDocumentSnapshot(snapshot = {}) {
   const doc = snapshot && snapshot.doc && typeof snapshot.doc === 'object'
     ? snapshot.doc
     : buildParagraphDocumentFromText(snapshot && typeof snapshot.text === 'string' ? snapshot.text : '')
-  currentEditorInstance.commands.setContent(doc, false)
+  setCheckedDocument(currentEditorInstance, doc)
   notifyFormattingStateChange()
 }
 

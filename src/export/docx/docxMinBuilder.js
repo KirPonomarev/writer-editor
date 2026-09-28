@@ -1,3 +1,5 @@
+const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
+const { buildPendingRunsXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
@@ -306,6 +308,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   };
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
+  const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
+  const revisionCounter = { next: 1 };
   const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
     semanticBlocks
@@ -344,7 +348,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
       const hasMedia = Array.isArray(runs) && runs.some(run => run.image);
-      if (!text && !hasMedia && !markers.size) {
+      if (!text && !hasMedia && !markers.size && !pendingLedger) {
         return `<w:p>${styleXml}</w:p>`;
       }
       // Keep the established plain serialization byte-stable when no supported
@@ -357,6 +361,11 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       let runsXml = hasMarks || hasColors || hasTypography || hasMedia || hasLinks
         ? runs.map(run => run.image ? media.drawing(run.image)
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
+      if (pendingLedger) {
+        if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+        runsXml = buildPendingRunsXml(pendingTextRevisions.segments(pendingLedger, index, 'export'),
+          node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter);
+      }
       if (markers.size) {
         const parts = [], boundaries = [...markers.keys()].sort((a, b) => a - b);
         let offset = 0;

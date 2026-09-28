@@ -128,6 +128,8 @@ async function mainHarness(t,options={}) {
  }};
  const gateway=require('../../src/core/legacy-strangler-v1.cjs');
  const sandbox={fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
+  loadDocumentContentEnvelopeModule:()=>import('../../src/renderer/documentContentEnvelope.mjs'),
+  pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs'),
   commitProjectTransaction:tx.commitProjectTransaction,recoverProjectTransaction:tx.recoverProjectTransaction,
   durableSaveTransaction,planCommentAnchorSave,
   manuscriptNoteModel:require('../../src/core/word-manuscript-notes-v1.cjs'),

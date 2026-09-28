@@ -1,3 +1,4 @@
+const pendingTextRevisions = require('./core/word-pending-text-revisions-v1.cjs');
 const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
 const { createReviewSecretStore } = require('./core/review-secret-store-v1.cjs');
 const { performance } = require('perf_hooks');
@@ -698,6 +699,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET: FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   PROJECT_REVIEW_EDIT_COMMENT: 'cmd.project.review.editComment',
+  PROJECT_REVIEW_DECIDE_PENDING_REVISION: 'cmd.project.review.decidePendingRevision',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
   PROJECT_RELEASE_CLAIM_EXECUTE: 'cmd.project.releaseClaim.execute',
   RTK_REVIEW_SESSION_IMPORT_COMMENTS: 'cmd.rtk.reviewSession.importComments',
@@ -9759,6 +9761,15 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       isPlainObjectValue(returnIntake.details) ? returnIntake.details : undefined,
     );
   }
+  if (returnIntake.authenticated === true) {
+    const envelope = await loadDocumentContentEnvelopeModule();
+    for (const raw of Object.values(returnIntake.localAuthorityCapsule?.baselineObservableContentBySceneId || {})) {
+      const baseline = envelope.parseObservablePayload(raw);
+      if (baseline.issue || pendingTextRevisions.readLedger(baseline.doc)) {
+        return makeDocxReviewPreviewSessionTypedError('E_PENDING_REVISION_RETURN_UNSUPPORTED', 'PENDING_REVISION_DURABLE_RETURN_REQUIRED');
+      }
+    }
+  }
   const activeContext = returnIntake.authenticated === true
     ? {
       ...context,
@@ -11142,6 +11153,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(isPlainObjectValue(sourceReport.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(sourceReport.contentPreview.pendingRevisionDocument) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
           ? { manuscriptNotes: cloneJsonSafe(sourceReport.contentPreview.manuscriptNotes) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.genericComments)
@@ -13550,6 +13562,7 @@ function getInternalCommandSurfaceKernel() {
       return handleExportMarkdownV1(payload);
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EDIT_COMMENT]: handleCommentAuthoringCommand,
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_DECIDE_PENDING_REVISION]: handlePendingRevisionCommand,
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET]: async (payload = {}) => {
       return handleFullManuscriptReviewDocxExportPacketCommandSurface(payload);
     },
@@ -21216,6 +21229,14 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             error.code = 'E_PROJECT_TRANSACTION_SCENE_CAS';
             throw error;
           }
+          const envelope = await loadDocumentContentEnvelopeModule();
+          const beforeDocument = envelope.parseObservablePayload(expectedSceneContent || '');
+          const afterDocument = envelope.parseObservablePayload(content);
+          if (beforeDocument.issue || afterDocument.issue) throw Error('PROJECT_TRANSACTION_DOCUMENT_INVALID');
+          const beforeReview = pendingTextRevisions.readLedger(beforeDocument.doc);
+          const afterReview = pendingTextRevisions.readLedger(afterDocument.doc);
+          if ((beforeReview || afterReview) && options.pendingRevisionDecision !== true
+            && JSON.stringify(beforeReview) !== JSON.stringify(afterReview)) throw Error('PENDING_REVISION_COMMAND_REQUIRED');
           // Invalidation is part of the same scene/manifest commit. Publishing it
           // after ACK would immediately invalidate the commit's manifest digest.
           let manifestContent = prepared.nextText;
@@ -21253,6 +21274,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
               beforeContent: expectedSceneContent, afterContent: content });
           }
+          if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
           const receipt = await commitProjectTransaction({
             ...(commentState ? { commentState } : {}),
             ...(noteState ? { noteState } : {}),
@@ -22665,6 +22687,75 @@ async function readCommentAuthoringProjection() {
       threads: context.saved.state.threads.filter(t => t.sceneId === context.sceneId && t.status !== 'deleted')
         .map(normalizeRtkNonTextReturnThreadProjection) };
   } catch (error) { return { available: false, reason: error.message, threads: [] }; }
+}
+
+async function readPendingRevisionProjection() {
+  try {
+    const context = await readCommentAuthoringContext();
+    const projection = pendingTextRevisions.projection(context.parsed.doc);
+    if (!projection) return null;
+    return { ...projection, available: true, projectId: context.projectId, sceneId: context.sceneId,
+      subjectId: context.subjectId, expectedSceneSha256: context.sceneSha256 };
+  } catch (error) { return { available: false, reason: error.code || error.message }; }
+}
+
+async function handlePendingRevisionCommand(payload = {}) {
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['projectId', 'sceneId', 'subjectId', 'expectedSceneSha256', 'action', 'revisionId'].includes(key))) throw Error('PENDING_REVISION_REQUEST_INVALID');
+    return await queueDiskOperation(async () => {
+      const context = await readCommentAuthoringContext();
+      if (payload.projectId !== context.projectId || payload.sceneId !== context.sceneId || payload.subjectId !== context.subjectId
+        || payload.expectedSceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_IDENTITY_STALE');
+      const snapshot = await requestEditorSnapshot();
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0 || snapshot.commentAuthoringPending
+        || snapshot.manuscriptNoteAuthoringPending) throw Error('PENDING_REVISION_AUTHORING_PENDING');
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content);
+      if (live.issue || !live.doc || !context.parsed.doc) throw Error('PENDING_REVISION_EDITOR_INVALID');
+      pendingTextRevisions.readLedger(live.doc);
+      if (JSON.stringify(envelope.canonicalizeDocumentJson(live.doc).attrs?.wordPendingRevisions)
+        !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc).attrs?.wordPendingRevisions)) throw Error('PENDING_REVISION_EDITOR_STALE');
+      const revalidate = async () => {
+        if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
+          || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('PENDING_REVISION_CONTEXT_CHANGED');
+        const fresh = await readCommentAuthoringContext();
+        if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_SCENE_CHANGED');
+        if (fresh.saved?.state?.threads?.some(t => t.sceneId === context.sceneId && t.status !== 'deleted')) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+        const storage = await loadNotesStorageModule();
+        const notes = await storage.readNotesStorage({ projectRoot: context.projectRoot, projectId: context.projectId });
+        if (!notes.ok) throw Error('PENDING_REVISION_NOTES_UNAVAILABLE');
+        if (notes.document.notes.some(n => !n.deleted && n.manuscript?.reference?.sceneId === context.sceneId)) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+      };
+      await revalidate();
+      const decided = pendingTextRevisions.decide(context.parsed.doc, { action: payload.action,
+        ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) });
+      if (!decided.changed) return { ok: true, changed: false, writerCalled: false };
+      const content = envelope.composeObservablePayload({ ...context.parsed, doc: decided.doc });
+      const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
+        'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true });
+      if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });
+      const readback = await fs.readFile(context.filePath, 'utf8');
+      if (readback !== content) throw Error('PENDING_REVISION_READBACK_MISMATCH');
+      // A committed scene must not steal focus from a later navigation.
+      if (currentFilePath === context.filePath && currentLifecycleSubjectId() + ':' + commentAuthoringSessionId === context.subjectId
+        && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
+        // Same-scene publication needs no navigation/settings write. Reopening
+        // here would enqueue settings behind this disk operation and deadlock.
+        const documentIdentity = await getProjectDocumentIdentityPayload(context.filePath);
+        const documentContext = getDocumentContextFromPath(context.filePath);
+        const publication = await attachProjectIdToEditorPayload({ content, ...documentIdentity,
+          projectId: context.projectId, title: documentContext.title, kind: documentContext.kind,
+          metaEnabled: documentContext.metaEnabled }, context.filePath);
+        if (currentFilePath === context.filePath && currentLifecycleSubjectId() + ':' + commentAuthoringSessionId === context.subjectId
+          && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
+          sendEditorText(publication);
+          lastAutosaveHash = computeHash(content); backupHashes.set(context.filePath, lastAutosaveHash);
+          updateStatus('Решение по исправлениям сохранено');
+        }
+      }
+      return { ok: true, changed: true, writerCalled: true, receipt };
+    }, 'pending revision decision');
+  } catch (error) { return { ok: false, code: error.code || error.message, reason: error.message, writerOutcome: 'NOT_CONFIRMED' }; }
 }
 
 async function handleCommentAuthoringCommand(payload = {}) {
@@ -29673,6 +29764,7 @@ async function directReviewSurfacePayloadStillMatchesCurrentText() {
 
 async function handleWorkspaceReviewSurfaceQuery() {
   const commentAuthoring = await readCommentAuthoringProjection();
+  const pendingRevisions = await readPendingRevisionProjection();
   await refreshActiveReviewExactTextUiPlan();
   const activeReviewSurface = attachReviewExactTextApplyReconciliationState(
     readActiveReviewSessionReviewSurface(),
@@ -29681,7 +29773,7 @@ async function handleWorkspaceReviewSurfaceQuery() {
   if (hasReviewSurfacePayload(activeReviewSurface)) {
     return {
       ok: true,
-      reviewSurface: { ...activeReviewSurface, commentAuthoring },
+      reviewSurface: { ...activeReviewSurface, commentAuthoring, pendingRevisions },
     };
   }
   const canonicalCommentProjection = handleWorkspaceRtkNonTextReturnStateQuery();
@@ -29693,12 +29785,12 @@ async function handleWorkspaceReviewSurfaceQuery() {
   ) {
     return {
       ok: true,
-      reviewSurface: { ...canonicalCommentProjection.reviewSurface, commentAuthoring },
+      reviewSurface: { ...canonicalCommentProjection.reviewSurface, commentAuthoring, pendingRevisions },
     };
   }
   return {
     ok: true,
-    reviewSurface: { ...activeReviewSurface, commentAuthoring },
+    reviewSurface: { ...activeReviewSurface, commentAuthoring, pendingRevisions },
   };
 }
 
@@ -31210,6 +31302,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
   'cmd.project.review.editComment',
+  'cmd.project.review.decidePendingRevision',
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
@@ -31574,6 +31667,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return handleReviewDocxExportPacketCommandSurface(payload);
   },
   'cmd.project.review.editComment': async (payload = {}) => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EDIT_COMMENT, payload),
+  'cmd.project.review.decidePendingRevision': async (payload = {}) => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_DECIDE_PENDING_REVISION, payload),
   'cmd.project.review.exportFullManuscriptDocxReviewPacket': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET,
