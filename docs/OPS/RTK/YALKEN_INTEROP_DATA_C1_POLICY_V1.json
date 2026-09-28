@@ -527,7 +527,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e60a7e8fb4ff4bd420d0bc44eff13a9292f1c28194cd2f3c7fc5b40ab18385b7"
+        "sha256": "d7e6e52f203fb7409e3f245ab7393ee29f963743fb7f9065ba4322fac86135b6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -563,7 +563,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "949c8155d4efeff87424a9c0d726dcad51d473affa69c2f572f88d4f26446a58"
+        "sha256": "462b2a1b49fd280dc5e885aa71f30aa9f2df0eee2f610cd9e36a47f98f62535c"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1383,7 +1383,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
-        "sha256": "0305ea1aaffae2f7db8b01142162b271ac45638812f4b98e09089930f4cee081"
+        "sha256": "0a40952b8b1dc72fc2c699f1c629a713e7007ae6fb7c8c606e81402f98db7ae0"
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",

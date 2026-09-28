@@ -81,3 +81,15 @@ test('malformed bookmark pair and duplicate identity are rejected by actual pack
     assert(f.parsed.reasons.some(x => x.code === 'RTK_WORD_NOTES_MALFORMED_BLOCKED'));
   }
 });
+
+test('note-only authenticated evidence opens a decision preview without inventing comments or text revisions', async () => {
+  const f = await fixture();
+  const candidate = f.bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({ returnedProjection: f.parsed.reviewIr }, {
+    authenticatedNoteExport: f.source.documentNotes });
+  assert.equal(candidate.status, 'diagnostics');
+  assert(candidate.reviewPacket.diagnosticItems.some(x => x.diagnosticId === 'docx-review-diagnostic-DOCX_REVIEW_NOTES_REQUIRE_DECISION'));
+  assert.equal(candidate.reviewPacket.commentThreads.length, 0); assert.equal(candidate.reviewPacket.textChanges.length, 0);
+  assert.equal(candidate.canWriteStorage, false); assert.equal(candidate.canAutoApply, false);
+  const unbound = f.bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({ returnedProjection: f.parsed.reviewIr });
+  assert(!unbound.reviewPacket?.diagnosticItems?.some(x => x.diagnosticId === 'docx-review-diagnostic-DOCX_REVIEW_NOTES_REQUIRE_DECISION'));
+});

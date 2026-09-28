@@ -7042,6 +7042,15 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       severity: 'warning', targetScope, createdAt,
     }));
   }
+  // A note-only return has no comments or tracked text changes. Keep its
+  // explicit-decision diagnostic visible without synthesizing a text revision.
+  if (options.authenticatedNoteExport?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+    && (options.authenticatedNoteExport.sourceBindings?.length > 0 || projection.documentNotes?.notes?.length > 0)) {
+    diagnostics.push(docxReviewPreviewSessionDiagnostic('DOCX_REVIEW_NOTES_REQUIRE_DECISION', {
+      message: 'Manuscript notes are available for explicit return review.',
+      severity: 'info', targetScope, createdAt,
+    }));
+  }
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;

@@ -9817,6 +9817,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
         createdAt: activeContext.createdAt,
         fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
         formattingExportMap: authenticatedFormattingExportMap,
+        authenticatedNoteExport: returnIntake.authenticated === true
+          ? activeContext.reviewTransportAuthorityCapsule?.documentNotes : null,
         authenticatedCommentExport: returnIntake.authenticated === true
           ? activeContext.reviewTransportAuthorityCapsule?.commentExport : null,
         cryptoPort: createRtkReviewTransportCryptoPort(),
