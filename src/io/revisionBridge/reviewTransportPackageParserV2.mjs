@@ -3578,6 +3578,17 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
           continue;
         }
         requireNote(Number(id) > 0, 'NORMAL_NOTE_ID');
+        const reserved = childTokensWithin(scan, entry).filter(token => isWordToken(token, 'bookmarkStart')
+          && attr(token, 'name', W_NS).startsWith('_YALKEN_NOTE_'));
+        requireNote(reserved.length <= 1, 'NOTE_TRANSPORT_ID_DUPLICATE');
+        let transportIdentity = null;
+        if (reserved.length) {
+          const marker = reserved[0], name = attr(marker, 'name', W_NS), bookmarkId = attr(marker, 'id', W_NS);
+          requireNote(/^_YALKEN_NOTE_[a-f0-9]{24}$/u.test(name) && /^\d{1,9}$/u.test(bookmarkId), 'NOTE_TRANSPORT_ID_INVALID');
+          const ends = childTokensWithin(scan, entry).filter(token => isWordToken(token, 'bookmarkEnd') && attr(token, 'id', W_NS) === bookmarkId);
+          requireNote(ends.length === 1 && ends[0].openStart >= marker.closeEnd, 'NOTE_TRANSPORT_ID_UNPAIRED');
+          transportIdentity = name;
+        }
         const ps = directChildTokensWithin(scan, entry);
         requireNote(ps.length > 0 && ps.length <= 128 && ps.every(token => isWordToken(token, 'p')), 'NOTE_PARAGRAPH_STRUCTURE');
         let markCount = 0;
@@ -3615,7 +3626,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
             + value.slice(marker.closeEnd - paragraph.openStart);
           return value;
         }).join('');
-        bodySources.push({ kind, nativeId: id, relationshipPart: noteRelationshipPart,
+        bodySources.push({ kind, nativeId: id, transportIdentity, relationshipPart: noteRelationshipPart,
           documentXml: `${opening}<${prefix}body>${paragraphsXml}</${prefix}body></${prefix}document>` });
         noteByKey.set(`${kind}:${id}`, body);
         requireNote(noteByKey.size <= 256, 'NOTE_COUNT');

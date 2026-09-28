@@ -5694,6 +5694,108 @@ async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
   });
 }
 
+// Only an object retained by authenticated main intake can enter this batch
+// writer. A renderer-created copy of the payload has no matching admission.
+const authenticatedNoteDeltaAdmissions = new WeakMap();
+async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, docxBytes, revisionBridge, onPrepared }) {
+  const capsule = context?.reviewTransportAuthorityCapsule;
+  if (capsule?.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') return null;
+  const rejected = code => Object.assign(Error(code), { code });
+  try {
+    const intake = context.reviewTransportReturnIntake;
+    const owner = activeStage10ApplicationBootstrap, lifecycle = currentLifecycleSubjectId();
+    const file = currentFilePath, generation = lastSignaledEditGeneration;
+    if (typeof isCurrent !== 'function' || !isCurrent() || intake?.authenticated !== true
+      || capsule.projectRoot !== context.projectRoot || capsule.documentNotes.projectId !== context.projectId
+      || !Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) throw rejected('NOTE_RETURN_AUTHORITY_REQUIRED');
+    const module = await loadRtkNonTextReturnModule();
+    const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
+    const input = { projectId: context.projectId, roundId: capsule.roundId,
+      artifactSha256: intake.returnedArtifactSha256, baseline: capsule.documentNotes,
+      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
+      returnedParagraphs: intake.parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() };
+    const checkIdentity = () => {
+      if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
+        || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
+        || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw rejected('NOTE_RETURN_CONTEXT_STALE');
+    };
+    const revalidateScenes = async () => {
+      checkIdentity();
+      const root = await fs.realpath(context.projectRoot);
+      const scenes = capsule.exportMap?.scenes;
+      if (!Array.isArray(scenes) || !scenes.length) throw rejected('NOTE_RETURN_SCENES_REQUIRED');
+      let openRaw = null;
+      for (const scene of scenes) {
+        const target = capsule.scenePathBySceneId?.[scene.sceneId];
+        const baseline = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
+          ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId];
+        if (typeof target !== 'string' || typeof baseline !== 'string') throw rejected('NOTE_RETURN_SCENE_BINDING_REQUIRED');
+        const relative = path.relative(path.resolve(context.projectRoot), target);
+        if (!relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
+        let entry = root;
+        for (const component of relative.split(path.sep)) {
+          entry = path.join(entry, component);
+          const stat = await fs.lstat(entry);
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
+        }
+        const raw = await fs.readFile(target, 'utf8');
+        if (raw !== baseline) throw rejected('NOTE_RETURN_SCENE_CONFLICT');
+        if (target === file) openRaw = raw;
+      }
+      if (openRaw === null) throw rejected('NOTE_RETURN_OPEN_SCENE_REQUIRED');
+      const snapshot = await requestEditorSnapshot();
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true || snapshot.manuscriptNoteAuthoringPending === true) throw rejected('NOTE_RETURN_EDITOR_STALE');
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
+      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('NOTE_SAVE_SCENE_FIRST');
+      checkIdentity();
+    };
+    await revalidateScenes();
+    const notesContext = await getProjectNotesContext({ projectId: context.projectId });
+    if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
+    const before = await readProjectNotesDocument(notesContext);
+    if (!before.ok) throw rejected(before.reason);
+    const plan = planNoteReturnDelta({ ...input, document: before.current.document });
+    checkIdentity();
+    let consumed = false;
+    const apply = async () => {
+      if (consumed) throw rejected('NOTE_RETURN_PREPARED_CONSUMED');
+      consumed = true; checkIdentity();
+      const payload = { action: 'authenticated-note-delta', requestId, projectId: context.projectId };
+      authenticatedNoteDeltaAdmissions.set(payload, () => queueDiskOperation(async () => {
+        const authority = await getMainProjectManifestAuthority();
+        return authority.withProjectLease(context.projectId, lease => lease.publish(async () => {
+          const revalidate = async () => {
+            await lease.assertOwned(); await revalidateScenes();
+            const fresh = await readProjectNotesDocument(notesContext);
+            if (!fresh.ok || fresh.current.sourceText !== before.current.sourceText) throw rejected('NOTE_RETURN_BASELINE_CONFLICT');
+          };
+          await revalidate();
+          if (plan.replay || plan.unchanged) return { ok: true, replay: plan.replay === true, unchanged: plan.unchanged === true, writerCalled: false, operationId: plan.operationId };
+          const written = await writeProjectNotesDocument(notesContext, before.current, plan.document, NOTES_UPDATE_COMMAND_ID,
+            { beforeWrite: revalidate, inDiskOperation: true });
+          if (!written.ok) return written;
+          const after = await readProjectNotesDocument(notesContext);
+          if (!after.ok || notesStateDigest(after.current.document) !== notesStateDigest(plan.document)) throw rejected('NOTE_RETURN_READBACK_FAILED');
+          return { ok: true, writerCalled: true, operationId: plan.operationId, changes: plan.changes };
+        }));
+      }, 'authenticated Word manuscript notes return'));
+      let receipt;
+      try { receipt = await dispatchCommandSurfaceKernel(NOTES_UPDATE_COMMAND_ID, payload); }
+      finally { authenticatedNoteDeltaAdmissions.delete(payload); }
+      if (receipt?.ok !== true) throw rejected(receipt?.code || receipt?.error?.code || 'NOTE_RETURN_DISPATCH_FAILED');
+      return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',
+        writerCalled: receipt.writerCalled === true, pendingProductApplyLane: false, operationId: receipt.operationId };
+    };
+    if (plan.replay || plan.unchanged) return await apply();
+    if (typeof onPrepared === 'function') onPrepared({ apply, changes: cloneJsonSafe(plan.changes) });
+    return { ok: true, status: 'preview-ready', code: 'NOTE_RETURN_EXPLICIT_APPLY_REQUIRED',
+      writerCalled: false, pendingProductApplyLane: true, changes: plan.changes };
+  } catch (error) {
+    return { ok: false, status: 'blocked', code: error.code || error.message, writerOutcome: 'NOT_CONFIRMED' };
+  }
+}
+
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
@@ -9530,7 +9632,13 @@ async function inspectDocxReviewReturnIntakeV2({
     verifiedParserResult.documentSectionsBinding.status = documentSectionsBinding.status;
   }
   if (localAuthority.documentNotes || verifiedParserResult.reviewIr?.documentNotes?.notes?.length || payload.documentNotesDigest) {
-    const binding = validateDocumentNotesReturn({
+    const editable = localAuthority.documentNotes?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1';
+    const binding = editable ? {
+      ok: payload.documentNotesDigest === localAuthority.documentNotes.protectedDigest,
+      status: 'AUTHENTICATED_DOCUMENT_NOTES_REQUIRE_EXPLICIT_DELTA', mismatches: ['signedDigest'],
+      proof: { policy: localAuthority.documentNotes.policy, protectedDigest: localAuthority.documentNotes.protectedDigest,
+        authority: 'PREVIEW_ONLY_NO_CANONICAL_NOTE_WRITE' },
+    } : validateDocumentNotesReturn({
       expected: localAuthority.documentNotes,
       returned: verifiedParserResult.reviewIr?.documentNotes,
       signedDigest: payload.documentNotesDigest,
@@ -9866,6 +9974,9 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     })
     : null;
   if (!isCurrent()) return superseded();
+  const noteProductPath = await prepareAuthenticatedNoteDelta({ context: activeContext, requestId,
+    isCurrent, docxBytes: decoded.bytes, revisionBridge, onPrepared: options.onNoteDeltaPrepared });
+  if (!isCurrent()) return superseded();
   const formattingProductPath = prepareAuthenticatedDocxFormattingReturnProductPath({
     context: activeContext,
     requestId,
@@ -9916,6 +10027,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
           : null,
       }
       : null,
+    noteProductPath: isPlainObjectValue(noteProductPath) ? cloneJsonSafe(noteProductPath) : null,
     commentProductPath: isPlainObjectValue(commentProductPath) ? cloneJsonSafe(commentProductPath) : null,
     preCommentExactTextApplyResult: isPlainObjectValue(preCommentExactTextApplyResult)
       ? {
@@ -10287,6 +10399,19 @@ async function notifyLocalWordCommentDeltaFailure() {
   });
 }
 
+async function confirmLocalWordNoteDelta({ fileName, changes }) {
+  if (!mainWindow || mainWindow.isDestroyed() || !Array.isArray(changes) || !changes.length) return false;
+  const body = value => value ? manuscriptNoteModel.validateNoteBody(value.body).text : '—';
+  const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
+  const labels = { create: 'Добавить', update: 'Изменить', delete: 'Удалить' };
+  const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\n${body(change.before)}\n→ ${body(change.after)}`);
+  const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Сноски из Word',
+    message: 'Применить изменения сносок?',
+    detail: `${fileName}\nИзменений: ${changes.length}. Удалённых: ${changes.filter(change => change.operation === 'delete').length}.\n${details.join('\n\n')}\nУдалённые сноски сохранятся с отметкой удаления.`,
+    buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true });
+  return result.response === 1;
+}
+
 async function confirmLocalWordCommentDelta({ fileName, changes }) {
   if (!mainWindow || mainWindow.isDestroyed()) return false;
   const count = Array.isArray(changes) ? changes.length : 0;
@@ -10383,11 +10508,13 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
     );
   }
 
+  let preparedNoteDelta = null;
   let preparedCommentDelta = null;
   const activationResult = await handleDocxReviewPreviewSessionActivationCommandSurface({
     requestId,
     bufferSource: buffer.toString('base64'),
-  }, { ...options, onCommentDeltaPrepared: value => { preparedCommentDelta = value; } });
+  }, { ...options, onCommentDeltaPrepared: value => { preparedCommentDelta = value; },
+    onNoteDeltaPrepared: value => { preparedNoteDelta = value; } });
   if (!activationResult || activationResult.ok !== true) {
     const nestedError = isPlainObjectValue(activationResult?.error) ? activationResult.error : {};
     const nestedDetails = isPlainObjectValue(nestedError.details) ? nestedError.details : {};
@@ -10437,6 +10564,27 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
         ? options.notifyCommentDeltaFailure : notifyLocalWordCommentDeltaFailure;
       await notifyFailure();
     }
+  }
+
+  if (preparedNoteDelta && activationResult.noteProductPath?.status === 'preview-ready') {
+    const prepared = preparedNoteDelta; preparedNoteDelta = null;
+    try {
+      const confirm = typeof options.confirmNoteDelta === 'function' ? options.confirmNoteDelta : confirmLocalWordNoteDelta;
+      if (await confirm({ fileName: selection.value.name, changes: prepared.changes }) === true) {
+        activationResult.noteProductPath = await prepared.apply();
+      } else activationResult.noteProductPath = { ...activationResult.noteProductPath,
+        status: 'cancelled', code: 'NOTE_RETURN_APPLY_CANCELLED', pendingProductApplyLane: false };
+    } catch (error) {
+      activationResult.noteProductPath = { ok: false, status: 'blocked', code: error.code || error.message, writerOutcome: 'NOT_CONFIRMED' };
+    }
+  }
+  if (activationResult.noteProductPath?.ok === false) {
+    if (typeof options.notifyNoteDeltaFailure === 'function') await options.notifyNoteDeltaFailure(activationResult.noteProductPath);
+    else if (mainWindow && !mainWindow.isDestroyed()) await dialog.showMessageBox(mainWindow, {
+      type: 'warning', title: 'Сноски из Word', message: 'Сноски не применены',
+      detail: 'Проверьте сохранённые правки и повторно откройте файл Word. Код: ' + activationResult.noteProductPath.code,
+      buttons: ['Понятно'], defaultId: 0, cancelId: 0,
+    });
   }
 
   return {
@@ -18559,6 +18707,11 @@ async function handleNotesCreateCommand(payload = {}, options = {}) {
 }
 
 async function handleNotesUpdateCommand(payload = {}, options = {}) {
+  if (payload.action === 'authenticated-note-delta') {
+    const admission = authenticatedNoteDeltaAdmissions.get(payload);
+    if (typeof admission !== 'function') return makeNotesCommandError(NOTES_UPDATE_COMMAND_ID, 'NOTE_RETURN_ADMISSION_REQUIRED', 'NOTE_RETURN_ADMISSION_REQUIRED');
+    return admission();
+  }
   return runNotesMutationCommand(NOTES_UPDATE_COMMAND_ID, payload, {
     op: 'update',
     title: typeof payload.title === 'string' ? payload.title : undefined,

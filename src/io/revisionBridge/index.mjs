@@ -10112,6 +10112,37 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   };
 }
 
+// Shared bounded body grammar for generic import and authenticated return.
+function parseDocumentNoteRichBody(bytes, source, note) {
+  const inlineStyles = docxInlineStyleCatalog(bytes);
+  const styles = { ...inlineStyles, hyperlinks: docxHyperlinkCatalog(bytes, source.relationshipPart) };
+  const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
+  if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
+    || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)
+    || styles.hyperlinks.usedIds.size !== styles.hyperlinks.size) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
+  const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
+  if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
+  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
+  return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text);
+}
+
+export function parseDocumentNotesRichReturn(bytes, notes) {
+  if (notes == null) return [];
+  if (!Array.isArray(notes.notes) || notes.notes.length > 256
+    || notes.notes.length !== notes.references?.length || notes.notes.length !== notes.bodySources?.length) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
+  const seen = new Set();
+  return notes.notes.map((note, index) => {
+    const ref = notes.references[index];
+    const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
+    if (!source || ref.kind !== note.kind || ref.paragraphIndex !== note.paragraphIndex || ref.offsetUtf16 !== note.offsetUtf16) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
+    if (source.transportIdentity && seen.has(source.transportIdentity)) throw Error('NOTE_RETURN_IDENTITY_COLLISION');
+    if (source.transportIdentity) seen.add(source.transportIdentity);
+    return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
+      transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
+      body: parseDocumentNoteRichBody(bytes, source, note) };
+  });
+}
+
 export function buildDocxContentPreviewFromZipBytes(input) {
   const preflight = buildDocxIntakePreflightReportFromZipBytes(input);
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
@@ -10276,16 +10307,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           const paragraph = parsed.contentPreview.paragraphs[note.paragraphIndex];
           if (!source || !paragraph || paragraph.table || paragraph.list
             || !Number.isSafeInteger(note.offsetUtf16) || note.offsetUtf16 < 0 || note.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
-          const styles = { ...inlineStyles, hyperlinks: docxHyperlinkCatalog(bytes, source.relationshipPart) };
-          const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
-          if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
-            || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)
-            || styles.hyperlinks.usedIds.size !== styles.hyperlinks.size) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
-          const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
-          if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
-          const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
           return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
-            body: rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text) };
+            body: parseDocumentNoteRichBody(bytes, source, note) };
         });
         parsed.diagnostics = parsed.diagnostics.filter(item => !['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName));
       }

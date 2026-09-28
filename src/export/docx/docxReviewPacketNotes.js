@@ -76,7 +76,7 @@ function resolveNoteAnchor(note, blocks) {
   throw new Error('DOCX_NOTE_ANCHOR_UNSUPPORTED_OR_STALE');
 }
 
-function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId) {
+function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, options = {}) {
   const selections = normalizeDocumentNoteSelections(selectionsRaw);
   const selected = new Set(selections.map(item => item.noteId));
   for (const note of document?.notes || []) {
@@ -111,7 +111,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId) {
       sceneId: block.sceneId, blockId: block.blockId, documentParagraphIndex: block.documentParagraphIndex,
       offsetUtf16, blockTextSha256: sha(block.text),
       paragraphs: richBody ? richBody.content.map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : [note.title, note.body],
-      ...(richBody ? { richBody } : {}) };
+      ...(richBody ? { richBody, ...(options.editableReturn === true ? { transportIdentity: `_YALKEN_NOTE_${sha(projectId + "\n" + noteId).slice(0, 24)}` } : {}) } : {}) };
   }).sort((a, b) => a.documentParagraphIndex - b.documentParagraphIndex || a.offsetUtf16 - b.offsetUtf16
     || a.selectionOrdinal - b.selectionOrdinal);
   const ordinalByKind = { footnote: 0, endnote: 0 };
@@ -120,7 +120,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId) {
   sourceBindings.forEach(binding => { binding.nativeId = String(++ordinalByKind[binding.kind]); });
   return { schemaVersion: DOCUMENT_NOTES_SCHEMA, projectId, selections, stateDigest: notesStateDigest(document),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
-    policy: 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
+    policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }
 
 function noteMarkersForBlock(projection, block) {
@@ -158,7 +158,7 @@ function notePackageParts(projection) {
         return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
       }).join('') : `<w:r>${buildDocxRunContentXml(value)}</w:r>`;
       const align = paragraph?.attrs?.textAlign;
-      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${runs}</w:p>`;
+      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
     }).join('')}</w:${kind}>`).join('');
     const name = `${kind}s.xml`;
     entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });

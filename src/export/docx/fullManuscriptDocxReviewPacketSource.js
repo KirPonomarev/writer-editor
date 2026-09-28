@@ -1139,7 +1139,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   });
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
-  const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId);
+  const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
   const sceneText = scenes.map((scene) => blocks
