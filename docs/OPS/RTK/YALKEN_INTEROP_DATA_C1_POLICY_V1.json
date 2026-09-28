@@ -915,7 +915,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
-        "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
+        "sha256": "a1f1049babfe192ec01b05a1969d2b4ea8bd2803836e7673813b6b14e56320cd"
       },
       {
         "path": "docs/tasks/2026-09-22--word-notes-footnotes.md",
@@ -1191,7 +1191,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "bbe09e3dc55cfe6eaa64cc7c31075a9dcc2b43e5cbe5de8cdfded38123b95536"
+        "sha256": "a1e0617ae7f8eea29ee315f2949d1c3e7a795e85d85a8b172c1b26dfe367ac6b"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
