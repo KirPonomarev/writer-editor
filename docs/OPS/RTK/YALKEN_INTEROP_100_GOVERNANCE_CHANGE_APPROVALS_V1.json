@@ -1660,21 +1660,21 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "3b993d61e86b15d72e0bb42f678e7f57a2802684c972f1accfccab28316bfa90",
+      "sha256": "77ed9b6b7a9a89d4da9703535e105ee363e9c06c6e0c2b19cc789b371d0e2191",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:26:36.408755Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "8667c322ef45836ad39b03e4835f6367ff26406941e994f3b4459cb38894c76f",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "sha256": "fb9b3fda8dcf293ac7904f0b5006f6a6b0780ee49559973b948d9d294dbacb0a",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b2184e166e08738149fbd0ed5a81c93ce574017d1b15b77f5a01ddd4f0d90e6c",
+      "sha256": "7b57530c0c0560946f4af7e529f22a6701f15113b0f6a35c720834e5ef238a30",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3984485c0e49a63271c2a49a31140dc578f9c0cb3a92e4c464b6df7ff9c8fff9",
+      "sha256": "8e5758816ac6beb4a14f7dac0833a12e6922bf64239c831ba36d397c337b5e17",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "a741d6b5fed3b800938a4e76d692debb876a8686ca1cdaf7280705bc4a183059",
+      "sha256": "81bfef2179e20ca462d7cf6b23993284211314a21863b77ca2cbfd74bea67d82",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
@@ -2416,10 +2416,10 @@
     },
     {
       "filePath": "test/unit/sector-m-review-surface-ui.test.js",
-      "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac",
-      "approvedAtUtc": "2026-09-27T00:25:12.871190Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "4dec850d76ffef988d787b2e59e288619e6ee5903ffd19d75eb744604831fc7d",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f696a41ccd14fbce3b5c7d853d1d4b8b44673a2fd65f80c6168e93a657d443ce",
+      "sha256": "865cf7fe1d4ba1f88ef96eec175eeaa888584a7b33820105444d90c1f6c1a923",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "acd9f93b4c5d791c7ba441dc85d3554a4f2dee3b64bfb79b78aa1fad39825270",
+      "sha256": "353a6cba7d102d9fbfd5efca48d009a7e8db4701cff208a23ac1d3a6b7e27cd5",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2069a136f0e3bb342f70faaa8cad3e80e5cfd3b0b1baa92caf55677136b2c467",
+      "sha256": "b5add8ee93c011dbc7335859a7f046ec4922c52157c58ebb28355731d55ea786",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
@@ -2740,8 +2740,8 @@
     },
     {
       "filePath": "docs/tasks/2026-09-28--word-jpeg-media.md",
-      "sha256": "3be4317263fab5a9de1bbbcb84b09b006c0a027b0b94e905da1bda2080ba2c66",
-      "approvedAtUtc": "2026-09-28T00:11:05.622934Z",
+      "sha256": "e1e3d5bee41739ca404e2bdbc5c4372954511160a9576466f0fb903b6a3a8f14",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
       "approvedBy": "owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle.",
       "approved": true,
@@ -13810,6 +13810,96 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "3b993d61e86b15d72e0bb42f678e7f57a2802684c972f1accfccab28316bfa90",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:26:36.408755Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "8667c322ef45836ad39b03e4835f6367ff26406941e994f3b4459cb38894c76f",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "b2184e166e08738149fbd0ed5a81c93ce574017d1b15b77f5a01ddd4f0d90e6c",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3984485c0e49a63271c2a49a31140dc578f9c0cb3a92e4c464b6df7ff9c8fff9",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a741d6b5fed3b800938a4e76d692debb876a8686ca1cdaf7280705bc4a183059",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "test/unit/sector-m-review-surface-ui.test.js",
+      "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac",
+      "approvedAtUtc": "2026-09-27T00:25:12.871190Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f696a41ccd14fbce3b5c7d853d1d4b8b44673a2fd65f80c6168e93a657d443ce",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "acd9f93b4c5d791c7ba441dc85d3554a4f2dee3b64bfb79b78aa1fad39825270",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2069a136f0e3bb342f70faaa8cad3e80e5cfd3b0b1baa92caf55677136b2c467",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "approvedAtUtc": "2026-09-28T00:36:46.362947Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-28--word-jpeg-media.md",
+      "sha256": "3be4317263fab5a9de1bbbcb84b09b006c0a027b0b94e905da1bda2080ba2c66",
+      "approvedAtUtc": "2026-09-28T00:11:05.622934Z",
+      "approvedBy": "owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }

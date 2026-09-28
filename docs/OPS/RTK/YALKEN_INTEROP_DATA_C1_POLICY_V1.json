@@ -525,7 +525,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "3b993d61e86b15d72e0bb42f678e7f57a2802684c972f1accfccab28316bfa90"
+        "sha256": "77ed9b6b7a9a89d4da9703535e105ee363e9c06c6e0c2b19cc789b371d0e2191"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -689,7 +689,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "8667c322ef45836ad39b03e4835f6367ff26406941e994f3b4459cb38894c76f"
+        "sha256": "fb9b3fda8dcf293ac7904f0b5006f6a6b0780ee49559973b948d9d294dbacb0a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1201,7 +1201,7 @@
       },
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
-        "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac"
+        "sha256": "4dec850d76ffef988d787b2e59e288619e6ee5903ffd19d75eb744604831fc7d"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",

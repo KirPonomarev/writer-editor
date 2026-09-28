@@ -1429,6 +1429,7 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
     || reviewSurfaceIsPlainObject(source.exactTextApplyReconciliation)
     || reviewSurfaceIsPlainObject(source.formattingReturnPreview)
     || reviewSurfaceIsPlainObject(source.formattingReturnResult)
+    || reviewSurfaceIsPlainObject(source.formattingReturn)
     || source.ok === false
   ) {
     return source;
@@ -1971,8 +1972,8 @@ function reviewSurfaceNormalizeState(input = {}) {
     source.exactTextApplyReconciliation,
   );
   const formattingReturn = reviewSurfaceNormalizeFormattingReturn(
-    source.formattingReturnPreview,
-    source.formattingReturnResult,
+    source.formattingReturnPreview ?? source.formattingReturn,
+    source.formattingReturnResult ?? source.formattingReturn,
   );
   const error = reviewSurfaceIsPlainObject(source.error)
     ? {

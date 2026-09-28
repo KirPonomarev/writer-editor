@@ -47,6 +47,14 @@ arithmetic/lossless coding and other orientation values are explicit gaps.
 This delivery does not claim media add/delete/replace/resize return operations,
 all JPEG profiles, full P3a acceptance or completion of the Word plan.
 
+Native JPEG plus hyperlink return exposed an existing presentation defect:
+`setReviewSurfaceState` normalized a ready formatting operation, then the render
+pass normalized it again and dropped the operation. Preserve that normalized
+projection through both passes, including blocked and replay states. This only
+restores the existing explicit Apply control; Kernel validation and write
+authority remain unchanged. Clean link-label changes in media paragraphs remain
+an explicit composite gap; address-only formatting is a separate operation.
+
 Validation reference: ITU-T T.81 Annexes B, C and F,
 https://www.w3.org/Graphics/JPEG/itu-t81.pdf ; JFIF transport,
 https://www.w3.org/Graphics/JPEG/jfif.pdf .

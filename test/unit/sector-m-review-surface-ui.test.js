@@ -1150,3 +1150,33 @@ test('review surface ui: empty and error states stay deterministic', () => {
   assert.ok(errorMarkup.includes('Rejected payload.'));
   assert.ok(errorMarkup.includes('REVIEW_SURFACE_REJECTED'));
 });
+
+test('Word formatting operations survive state storage and repeated rendering without inventing authority', () => {
+  const h = loadReviewSurfaceHelpers();
+  const preview = { status: 'ready', code: 'RTK_FORMATTING_RETURN_USER_DECISION_READY', operationCount: 1,
+    sceneCount: 1, operations: [{ operationId: 'format-link', sceneId: 'scene-1', blockId: 'block-1',
+      selectedText: 'JPEG neighbor link', expectedOutcome: 'SAFE_APPLY' }] };
+  let state = h.reviewSurfaceNormalizeState({ formattingReturnPreview: preview });
+  const expected = JSON.stringify(state.formattingReturn);
+  for (let i = 0; i < 3; i++) {
+    const view = h.buildReviewSurfaceViewModel(state);
+    assert.equal(JSON.stringify(view.formattingReturn), expected);
+    assert.equal(view.formattingReturn.ready, true);
+    assert.equal(view.formattingReturn.writerCalled, false);
+    assert.match(h.renderReviewSurfaceMarkup(view), /Применить форматирование/u);
+    state = h.reviewSurfaceNormalizeState(state);
+  }
+  for (const status of ['blocked', 'manual']) {
+    const blocked = h.reviewSurfaceNormalizeState({ formattingReturnPreview: { ...preview, status } });
+    assert.equal(h.buildReviewSurfaceViewModel(blocked).formattingReturn.ready, false);
+  }
+  const applied = h.reviewSurfaceNormalizeState({ formattingReturnPreview: preview,
+    formattingReturnResult: { status: 'applied', applied: true, replayVerified: true, writerCalled: true,
+      sceneReadback: [{ sceneId: 'scene-1', matchesAfter: true }] } });
+  const replay = h.buildReviewSurfaceViewModel(applied).formattingReturn;
+  assert.equal(replay.replayVerified, true);
+  assert.equal(replay.applied, true);
+  assert.equal(replay.writerCalled, true);
+  assert.equal(replay.sceneReadback[0].matchesAfter, true);
+  assert.equal(h.buildReviewSurfaceViewModel(h.reviewSurfaceNormalizeState({})).formattingReturn, null);
+});
