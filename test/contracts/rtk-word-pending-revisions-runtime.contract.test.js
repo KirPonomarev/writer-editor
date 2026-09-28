@@ -5,7 +5,7 @@ const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
 const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { createCommandSurfaceKernel } = require('../../src/command/commandSurfaceKernel.js');
 const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
-const source = main.slice(main.indexOf('async function readPendingRevisionProjection('), main.indexOf('async function handleCommentAuthoringCommand('));
+const source = main.slice(main.indexOf('const authenticatedPendingReturnAdmissions ='), main.indexOf('async function handleCommentAuthoringCommand('));
 const bus = main.slice(main.indexOf('function dispatchMenuCommand('), main.indexOf('function buildCommandClickHandler('));
 const id = 'cmd.project.review.decidePendingRevision';
 const hash = v => crypto.createHash('sha256').update(v).digest('hex');

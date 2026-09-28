@@ -307,7 +307,10 @@
     "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
     "docs/tasks/2026-09-28--word-pending-text-revisions.md",
     "test/unit/export-book-profile-binding.test.js",
-    "docs/tasks/2026-09-28--word-scene-default-profile.md"
+    "docs/tasks/2026-09-28--word-scene-default-profile.md",
+    "test/contracts/rtk-word-pending-return.contract.test.js",
+    "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
+    "docs/tasks/2026-09-28--word-pending-return-history.md"
   ],
   "protectedFiles": [
     {
@@ -536,7 +539,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "eac4d756006165cf72cba33abced822c6d460426b6d4705b764ef444361888f5"
+        "sha256": "0ba20bf4610a197e07dcdc56fea49c7cc9169a1a8b60b7dc1aa136d139f99a18"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -548,7 +551,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "b075d3ac544b3ef9622aaa364dd7a24d690d33d4b8cc60e952ff0381d4371be4"
+        "sha256": "60c69267df21b882198216a246718318aa1522a7378ea33a1b296c14716938a6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -712,7 +715,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "141541d535dc7bd9e608139321bf295f8d341ae2aabbc45824511e684974e072"
+        "sha256": "0bde47ac7c791b9a9dba1ac8a6f2d0e36ba445fd7965efc88636d900222e4a4b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1384,7 +1387,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "fb07ac0364207efe9da8d7a72659129b109f4f72bd7e2f1273c64f0df65be1e8"
+        "sha256": "e74ee1c266ce5e5634d97a4c5fc34dbe9340d81415edb5a81cb1a7b1c6edbeda"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1404,7 +1407,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "c6ecad1b8f900359232e4c1688601a74894682ca0d8397b4aeb3e9a9b0e81ecb"
+        "sha256": "2da5b922f8fadc20eb0995636ed51cf3ade630214cc3b190e6ea213df7b95905"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -1420,15 +1423,23 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-package.contract.test.js",
-        "sha256": "a92fe09ce2fc047b49577027f1225cb0f1986f56847f7f76f8268eccc30906b1"
+        "sha256": "8001c5f9eaa2a24730006ce979e7aee0e412f81bcc6b38818a3f76b254aab35b"
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
-        "sha256": "08a15be729abaa5cfa67d58bf4eb18f9a42ab3b42f6ff517e68267317a00b347"
+        "sha256": "fe2c0368e9dd78314d69974e68a6bf1edc00e3d2e66ffd7ec1179b9a0171fc87"
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
         "sha256": "2af4b59cb10a06b49fbcbbfce40ab5768e34079e0439a3aae5527d1ba73d6163"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-return.contract.test.js",
+        "sha256": "7cda6a1bf48767093a2f69b49548784ca5c8cb9a0bfca8c144d502eb090f921d"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
+        "sha256": "8afbcce387548f474dfbdaa3fee458b3beb3c55039ecc78a7745389932465ed1"
       }
     ],
     "followupRepair": {

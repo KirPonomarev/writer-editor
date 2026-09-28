@@ -61,11 +61,13 @@ function validateSource(doc) {
     }
   }
 }
-function validateLedger(input) {
+function validateState(input, frame = false) {
   assert(object(input) && new TextEncoder().encode(JSON.stringify(input)).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
-  assert(exact(input, ['schemaVersion', 'source', 'revisions', 'undo', 'redo']) && input.schemaVersion === 1);
+  const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo'];
+  assert([1, 2].includes(input.schemaVersion));
+  assert(exact(input, input.schemaVersion === 2 && !frame ? [...baseKeys, 'roundUndo', 'roundRedo', 'returnReceipts'] : baseKeys));
   validateSource(input.source);
-  assert(Array.isArray(input.revisions) && input.revisions.length > 0 && input.revisions.length <= 1024);
+  assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
   const ids = new Set(), groups = new Map(); let previousParagraph = -1, previousEnd = 0;
   for (const r of input.revisions) {
     assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state']));
@@ -91,7 +93,98 @@ function validateLedger(input) {
       for (const group of groups.values()) assert(row[input.revisions.indexOf(group[0])] === row[input.revisions.indexOf(group[1])]);
     }
   }
+  if (input.schemaVersion === 2 && !frame) {
+    for (const rounds of [input.roundUndo, input.roundRedo]) {
+      assert(Array.isArray(rounds) && rounds.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
+      for (const previous of rounds) validateState(previous, true);
+    }
+    assert(Array.isArray(input.returnReceipts) && input.returnReceipts.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
+    const receipts = new Set();
+    for (const receipt of input.returnReceipts) {
+      assert(exact(receipt, ['roundId', 'artifactSha256']) && typeof receipt.roundId === 'string'
+        && receipt.roundId.length > 0 && receipt.roundId.length <= 200 && !/[\x00-\x1f]/u.test(receipt.roundId)
+        && /^[a-f0-9]{64}$/u.test(receipt.artifactSha256), 'PENDING_RETURN_RECEIPT_INVALID');
+      const key = receipt.roundId + ':' + receipt.artifactSha256;
+      assert(!receipts.has(key), 'PENDING_RETURN_RECEIPT_INVALID'); receipts.add(key);
+    }
+  }
   return input;
+}
+function validateLedger(input) { return validateState(input); }
+function roundFrame(ledger) {
+  return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
+}
+function revisionMeaning(ledger, revision) {
+  const text = ledger.source.content[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+  return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text]);
+}
+function preserveReturnedIdentities(before, proposed) {
+  const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
+  let nextRevision = 1, nextGroup = 1;
+  // A clean returned source may have no current revisions. Older and undone
+  // rounds still own their IDs; a new revision cannot impersonate that history.
+  for (const frame of [before, ...(before.roundUndo || []), ...(before.roundRedo || [])]) {
+    for (const revision of frame.revisions) {
+      nextRevision = Math.max(nextRevision, Number(revision.id.slice(9)) + 1);
+      nextGroup = Math.max(nextGroup, Number(revision.groupId?.slice(6) || 0) + 1);
+    }
+  }
+  for (const revision of before.revisions.filter(r => r.state === 'pending')) {
+    const key = revisionMeaning(before, revision), rows = occurrences.get(key) || [];
+    rows.push(revision); occurrences.set(key, rows);
+  }
+  const incomingCounts = new Map();
+  for (const revision of proposed.revisions) {
+    const key = revisionMeaning(proposed, revision);
+    incomingCounts.set(key, (incomingCounts.get(key) || 0) + 1);
+  }
+  for (const [key, rows] of occurrences) {
+    const count = incomingCounts.get(key) || 0;
+    assert(count === 0 || count === rows.length, 'PENDING_RETURN_IDENTITY_AMBIGUOUS');
+  }
+  const groups = new Map();
+  for (const revision of proposed.revisions) {
+    assert(revision.state === 'pending', 'PENDING_RETURN_STATE_INVALID');
+    const previous = occurrences.get(revisionMeaning(proposed, revision))?.shift();
+    assert(previous || nextRevision <= 9999, 'PENDING_REVISIONS_ID_BUDGET');
+    revision.id = previous?.id || `revision-${nextRevision++}`;
+    if (revision.groupId) { const rows = groups.get(revision.groupId) || []; rows.push(revision); groups.set(revision.groupId, rows); }
+  }
+  const usedGroups = new Set();
+  for (const rows of groups.values()) {
+    const oldGroup = oldById.get(rows[0].id)?.groupId;
+    const retained = oldGroup && rows.every(r => oldById.get(r.id)?.groupId === oldGroup) && !usedGroups.has(oldGroup);
+    assert(retained || nextGroup <= 9999, 'PENDING_REVISIONS_ID_BUDGET');
+    const groupId = retained ? oldGroup : `group-${nextGroup++}`;
+    usedGroups.add(groupId); rows.forEach(r => { r.groupId = groupId; });
+  }
+}
+function asRoundLedger(doc) {
+  const existing = readLedger(doc);
+  if (existing) return { ...clone(existing), schemaVersion: 2,
+    roundUndo: clone(existing.roundUndo || []), roundRedo: clone(existing.roundRedo || []), returnReceipts: clone(existing.returnReceipts || []) };
+  const source = normalizeNode(doc);
+  assert(source?.type === 'doc' && !source.attrs, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
+  source.content?.forEach(p => { p.content ||= []; });
+  return validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+}
+function replaceFromReturn(doc, returnedDoc, receipt) {
+  assert(exact(receipt, ['roundId', 'artifactSha256']) && typeof receipt.roundId === 'string'
+    && receipt.roundId.length > 0 && receipt.roundId.length <= 200 && !/[\x00-\x1f]/u.test(receipt.roundId)
+    && /^[a-f0-9]{64}$/u.test(receipt.artifactSha256), 'PENDING_RETURN_RECEIPT_INVALID');
+  const before = asRoundLedger(doc);
+  const proposed = asRoundLedger(returnedDoc);
+  // The caller authenticates the round. This receipt only prevents replay and
+  // deliberately remains remembered across undo; it can never grant a write.
+  const after = { ...proposed, undo: [], redo: [], roundUndo: before.roundUndo,
+    roundRedo: [], returnReceipts: [...before.returnReceipts, clone(receipt)] };
+  if (before.returnReceipts.some(r => r.roundId === receipt?.roundId && r.artifactSha256 === receipt?.artifactSha256)) {
+    return { changed: false, replay: true, doc };
+  }
+  preserveReturnedIdentities(before, proposed);
+  const previous = roundFrame(before); previous.redo = [];
+  after.roundUndo.push(previous);
+  return { changed: true, replay: false, doc: bindLedger(after) };
 }
 function includeRevision(revision, mode) {
   if (mode === 'original') return revision.operation === 'delete';
@@ -140,7 +233,15 @@ function decide(doc, input) {
   if (input.action === 'undo' || input.action === 'redo') {
     assert(input.revisionId === undefined);
     const source = input.action === 'undo' ? ledger.undo : ledger.redo, target = input.action === 'undo' ? ledger.redo : ledger.undo;
-    if (!source.length) return { changed: false, doc };
+    if (!source.length) {
+      const rounds = input.action === 'undo' ? ledger.roundUndo : ledger.roundRedo;
+      const other = input.action === 'undo' ? ledger.roundRedo : ledger.roundUndo;
+      if (!rounds?.length) return { changed: false, doc };
+      assert(other.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
+      const next = rounds.pop(); other.push(roundFrame(ledger));
+      return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: 2,
+        roundUndo: ledger.roundUndo, roundRedo: ledger.roundRedo, returnReceipts: ledger.returnReceipts }) };
+    }
     assert(target.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET'); target.push(before);
     const next = source.pop(); ledger.revisions.forEach((r, i) => { r.state = next[i]; });
   } else {
@@ -155,6 +256,7 @@ function decide(doc, input) {
     }
     if (!selected.length) return { changed: false, doc };
     assert(ledger.undo.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET'); ledger.undo.push(before); ledger.redo = [];
+    if (ledger.schemaVersion === 2) ledger.roundRedo = [];
     selected.forEach(r => { r.state = input.action.startsWith('accept') ? 'accepted' : 'rejected'; });
   }
   return { changed: true, doc: bindLedger(ledger) };
@@ -163,7 +265,7 @@ function projection(doc) {
   const ledger = readLedger(doc); if (!ledger) return null;
   const text = value => value.content.map(p => (p.content || []).map(textOf).join('')).join('\n');
   return { original: text(materialize(ledger, 'original')), current: text(materialize(ledger)),
-    canUndo: ledger.undo.length > 0, canRedo: ledger.redo.length > 0,
+    canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: ledger.source.content[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode };
+module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn };
