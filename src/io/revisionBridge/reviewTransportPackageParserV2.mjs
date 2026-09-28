@@ -3528,7 +3528,9 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
   const reasons = [], notes = [], references = [], formatting = [], bodySources = [];
   const refs = documentScan.tokens.filter(token => ['footnoteReference', 'endnoteReference'].includes(token.localName))
     .sort((a, b) => a.openStart - b.openStart);
-  if (!refs.length && !parts['word/footnotes.xml'] && !parts['word/endnotes.xml']) return { documentNotes: null, reasons };
+  if (!refs.length && !parts['word/footnotes.xml'] && !parts['word/endnotes.xml']
+    && !relationships.some(item => /\/(?:footnotes|endnotes)$/u.test(item.type))
+    && !contentTypes.some(item => /^\/word\/(?:footnotes|endnotes)\.xml$/u.test(item.partName))) return { documentNotes: null, reasons };
   const requireNote = (ok, detail) => {
     if (!ok) throw new Error(detail);
   };
@@ -3545,7 +3547,8 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       const matchingRefs = refs.filter(token => token.localName === `${kind}Reference`);
       const rels = relationships.filter(item => item.type === `http://schemas.openxmlformats.org/officeDocument/2006/relationships/${kind}s`);
       if (xml === undefined) {
-        requireNote(matchingRefs.length === 0 && rels.length === 0, 'MISSING_PART_OR_REFERENCE');
+        requireNote(matchingRefs.length === 0 && rels.length === 0
+          && !contentTypes.some(item => item.partName === `/${partName}`), 'MISSING_PART_OR_REFERENCE');
         continue;
       }
       requireNote(rels.length === 1 && rels[0].partName === 'word/_rels/document.xml.rels'
@@ -3620,7 +3623,9 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
         const opening = xml.slice(root.openStart, root.openEnd).replace(`<${root.qName}`, `<${prefix}document`);
         const paragraphsXml = ps.map(paragraph => {
           let value = xml.slice(paragraph.openStart, paragraph.closeEnd);
-          const markers = childTokensWithin(scan, paragraph).filter(token => isWordToken(token, `${kind}Ref`))
+          const markers = childTokensWithin(scan, paragraph).filter(token => isWordToken(token, `${kind}Ref`)
+            || transportIdentity && (isWordToken(token, 'bookmarkStart') && attr(token, 'name', W_NS) === transportIdentity
+              || isWordToken(token, 'bookmarkEnd') && attr(token, 'id', W_NS) === attr(reserved[0], 'id', W_NS)))
             .sort((a, b) => b.openStart - a.openStart);
           for (const marker of markers) value = value.slice(0, marker.openStart - paragraph.openStart)
             + value.slice(marker.closeEnd - paragraph.openStart);
@@ -3663,6 +3668,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       'Native note parts and references require bounded, complete semantic correspondence.', { detail: error.message }));
   }
   return { documentNotes: { schemaVersion, notes, references, bodySources,
+    inventoryStatus: reasons.some(item => /BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || '')) ? 'INCOMPLETE' : 'COMPLETE',
     protectedDigest: cryptoPort.sha256Json({ schemaVersion, notes }),
     lossLedger: { formattingPolicy: 'NATIVE_NOTE_TEXT_AND_PLACEMENT_PROTECTED_FORMATTING_ADVISORY',
       providerFormattingElements: [...new Map(formatting.map(item => [`${item.kind}:${item.elementName}`, item])).values()] } }, reasons };

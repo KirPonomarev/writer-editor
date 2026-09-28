@@ -8396,6 +8396,7 @@ function composeEditorSnapshot() {
     selectionRange: getSelectionOffsets(),
     generation: localEditGeneration,
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
+    manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending),
   };
 }
 

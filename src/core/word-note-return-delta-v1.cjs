@@ -7,6 +7,31 @@ const stable = value => Array.isArray(value) ? `[${value.map(stable).join(',')}]
   : value && typeof value === 'object' ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}` : JSON.stringify(value);
 const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code }); };
 
+// Word materializes document defaults and may split equivalent text runs.
+// Compare effective meanings, retaining the original authored representation
+// only when every supported property and exact character remains equivalent.
+function effectiveBody(body, defaults) {
+  return body.content.map(paragraph => {
+    const runs = [];
+    for (const node of paragraph.content || []) {
+      if (node.type === 'hardBreak') { runs.push({ type: 'hardBreak' }); continue; }
+      const marks = [], style = { ...(defaults?.fontSize ? { fontSize: defaults.fontSize } : {}) };
+      for (const mark of node.marks || []) {
+        if (mark.type === 'textStyle') Object.assign(style, Object.fromEntries(Object.entries(mark.attrs || {}).filter(([, v]) => v != null)));
+        else if (mark.type === 'link') marks.push({ type: 'link', href: mark.attrs.href });
+        else marks.push(mark.type === 'highlight' ? { type: mark.type, color: mark.attrs.color.toLowerCase() } : { type: mark.type });
+      }
+      if (style.color) style.color = style.color.toLowerCase();
+      if (Object.keys(style).length) marks.push({ type: 'textStyle', attrs: style });
+      marks.sort((a, b) => a.type.localeCompare(b.type));
+      const previous = runs.at(-1);
+      if (previous?.type === 'text' && stable(previous.marks) === stable(marks)) previous.text += node.text;
+      else runs.push({ type: 'text', text: node.text, marks });
+    }
+    return { align: paragraph.attrs?.textAlign || 'left', runs };
+  });
+}
+
 // Pure plan: caller supplies authenticated local authority, fresh canonical
 // state and a fully validated package. Provider identities never select paths.
 function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, baseline,
@@ -62,7 +87,9 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const sceneBlocks = blocks.filter(b => b.sceneId === block.sceneId);
     const blockIndex = sceneBlocks.indexOf(block), sceneContent = sceneBlocks.map(b => b.text).join('\n');
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
-    const manuscript = model.bindManuscriptPayload({ kind: note.kind, body: note.body, sceneId: block.sceneId, offsetUtf16, sceneContent });
+    const body = binding && stable(effectiveBody(binding.richBody, exportMap.exportTypography)) === stable(effectiveBody(note.body, exportMap.exportTypography))
+      ? binding.richBody : note.body;
+    const manuscript = model.bindManuscriptPayload({ kind: note.kind, body, sceneId: block.sceneId, offsetUtf16, sceneContent });
     candidates.push({ noteId: binding?.noteId || `note-${model.sha(projectId + '\n' + roundId + '\n' + artifactSha256 + '\n' + index).slice(0, 32)}`,
       created: !binding, manuscript, body: model.validateNoteBody(note.body).text });
   }

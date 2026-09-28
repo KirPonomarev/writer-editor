@@ -293,7 +293,12 @@
     "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
     "src/core/notesStorage.mjs",
     "src/export/docx/docxMinExportHandler.js",
-    "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js"
+    "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
+    "docs/tasks/2026-09-28--word-note-return.md",
+    "src/core/word-note-return-delta-v1.cjs",
+    "test/contracts/rtk-word-note-return.contract.test.js",
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-note-return-package.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -522,7 +527,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "197689dfe5aa89c24ae7eac8d26a5a0eefb38a97213aa529ff207c138600d86f"
+        "sha256": "e60a7e8fb4ff4bd420d0bc44eff13a9292f1c28194cd2f3c7fc5b40ab18385b7"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -534,7 +539,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "00f6c7ca2a7a0fca0c4300273b6c0ab56d820b0518d1189224dd10720db5f6bb"
+        "sha256": "821f37239a1ce536f534d898b8db71b85717095e939d663cd40c1a53bf8dce5a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -558,7 +563,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "7c107f21a5cd07a5e4f677667e3fd442c38cc94651af76935154aa0594e1559e"
+        "sha256": "949c8155d4efeff87424a9c0d726dcad51d473affa69c2f572f88d4f26446a58"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -638,7 +643,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "9bbcabc6cc8ce078d523eb3f5c2eb3255d33aa3909e2c25c0a011a581dbad99e"
+        "sha256": "7fa509eb8bcacad4a7ed1bcbc4c1612cb720ff3ed1c541e6dc36e4e948c5aa83"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -658,7 +663,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "a212f7a2b1919094c30a9fbd1d74a35477dbc15785dde5de990f68ea8c47fcc9"
+        "sha256": "cd83d53c468a504e0ca3e74f5b25d88ac838529f21c9c0cea67d7862962ea502"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -698,7 +703,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "ce22a6008fee286c092dd56813fbbd3cff39d3ae13edda869c401c8de6b225d3"
+        "sha256": "8939dd5ff25364033774851cebddbf67a7a8c3b731278fc608bee6d3c426cc8b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -906,7 +911,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketNotes.js",
-        "sha256": "f8ed042e5646880b73318a95b33986fb0d19647089da51a31b7f9b05d94eab5b"
+        "sha256": "c942ceebc9df28c9205cedffd56edc61268949115e81a46a904cf7bf66a52c5e"
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
@@ -1370,7 +1375,23 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "75587517e1df54a1dbc18ecd9b247ddc30ac5eeab4f83a24a32d71c14ff1f844"
+        "sha256": "de1300da0b0ba3127b2bde5fffe88eddb567e854aeeb1549920d5030ce714938"
+      },
+      {
+        "path": "src/core/word-note-return-delta-v1.cjs",
+        "sha256": "064d2abb7313f924a6efdde40b3a68d209a923c988cdd851b796bcf2f431ccf1"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return.contract.test.js",
+        "sha256": "0305ea1aaffae2f7db8b01142162b271ac45638812f4b98e09089930f4cee081"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+        "sha256": "e5572fab89b117a85d3b52cd0c35aff1260877e54a92bb3f6f1e2e313afe1fd9"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return-package.contract.test.js",
+        "sha256": "c376fdc547aa466b1972ea6262c95ae03f4100dd4ad0819738d7bef0ec360a10"
       }
     ],
     "followupRepair": {

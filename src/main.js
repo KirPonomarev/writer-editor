@@ -4789,7 +4789,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, documentNoteSelections.length === 0);
   const source = buildFullManuscriptDocxReviewPacketSource({
     documentNoteSelections,
-    notesDocument,
+    notesDocument: notesDocument || { schemaVersion: 1, projectId, notes: [] },
     projectId,
     projectName: docxReviewPreviewSessionDetailString(scope.projectName),
     projectCreatedAtUtc: docxReviewPreviewSessionDetailString(scope.projectCreatedAtUtc),
@@ -5708,6 +5708,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
     if (typeof isCurrent !== 'function' || !isCurrent() || intake?.authenticated !== true
       || capsule.projectRoot !== context.projectRoot || capsule.documentNotes.projectId !== context.projectId
       || !Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) throw rejected('NOTE_RETURN_AUTHORITY_REQUIRED');
+    if (intake.parserResult?.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))) throw rejected('NOTE_RETURN_PACKAGE_INCOMPLETE');
     const module = await loadRtkNonTextReturnModule();
     const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
     const input = { projectId: context.projectId, roundId: capsule.roundId,
@@ -10404,7 +10405,8 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
   const body = value => value ? manuscriptNoteModel.validateNoteBody(value.body).text : '—';
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
   const labels = { create: 'Добавить', update: 'Изменить', delete: 'Удалить' };
-  const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\n${body(change.before)}\n→ ${body(change.after)}`);
+  const point = value => value ? `${value.reference.sceneId}: ${value.reference.offsetUtf16}` : '—';
+  const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\nПозиция: ${point(change.before)} → ${point(change.after)}\nТекст и оформление: ${body(change.before)}\n→ ${body(change.after)}`);
   const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Сноски из Word',
     message: 'Применить изменения сносок?',
     detail: `${fileName}\nИзменений: ${changes.length}. Удалённых: ${changes.filter(change => change.operation === 'delete').length}.\n${details.join('\n\n')}\nУдалённые сноски сохранятся с отметкой удаления.`,
@@ -20819,6 +20821,7 @@ function normalizeEditorSnapshotPayload(payload) {
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
     selectionRange: normalizeSelectionRangeForSettings(source.selectionRange),
     commentAuthoringPending: source.commentAuthoringPending === true,
+    manuscriptNoteAuthoringPending: source.manuscriptNoteAuthoringPending === true,
     generation: Number.isSafeInteger(source.generation) && source.generation >= 0
       ? source.generation
       : null,

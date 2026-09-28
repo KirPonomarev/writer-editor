@@ -83,7 +83,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     if (note.manuscript && !note.deleted && blocks.some(block => block.sceneId === note.manuscript.reference?.sceneId)
       && !selected.has(note.id)) selections.push({ noteId: note.id, kind: note.manuscript.kind });
   }
-  if (!selections.length) return null;
+  if (!selections.length && !(options.editableReturn === true && document)) return null;
   demand(plain(document) && document.schemaVersion === 1 && document.projectId === projectId
     && Array.isArray(document.notes), 'DOCX_NOTES_STATE_INVALID');
   manuscriptModel.validateManuscriptDocument(document, projectId);
@@ -173,6 +173,8 @@ function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) 
   if (!expected) return { ok: !returned?.notes?.length && !signedDigest, applicable: false,
     status: 'DOCUMENT_NOTES_NOT_APPLICABLE', mismatches: returned?.notes?.length || signedDigest ? ['unexpectedNotes'] : [] };
   const mismatches = [];
+  if (!returned && expected.notes.length === 0 && signedDigest === expected.protectedDigest) return { ok: true, applicable: true, status: 'VERIFIED_PROTECTED_DOCUMENT_NOTES', mismatches,
+    proof: { authority: 'ADVISORY_ONLY_NO_CANONICAL_NOTE_WRITE', protectedDigest: expected.protectedDigest, notes: [], sourceBindings: [], policy: expected.policy } };
   if (returned?.schemaVersion !== DOCUMENT_NOTES_SCHEMA) mismatches.push('schemaVersion');
   if (stable(returned?.notes || []) !== stable(expected.notes)) mismatches.push('notes');
   if (returned?.protectedDigest !== expected.protectedDigest) mismatches.push('protectedDigest');
