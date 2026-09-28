@@ -22901,6 +22901,8 @@ async function handlePendingRecordingCommand(payload = {}) {
     if (!isPlainObjectValue(payload) || Object.keys(payload).some(k => !['action', 'author', 'sessionId', 'projectId', 'sceneId', 'subjectId', 'expectedSceneSha256'].includes(k))
       || !['start', 'stop'].includes(payload.action)) throw Error('RECORDING_REQUEST_INVALID');
     pendingRecordingCapability();
+    // Main installs the recording port only through this governed command.
+    commitWriterProjectSnapshot.recordingPort = Object.freeze({ admit: resolvePendingRecordingSaveAdmission, revalidate: revalidatePendingRecordingSave });
     if (payload.action === 'stop') {
       const session = activePendingRecording;
       assertPendingRecordingSession(session);
@@ -22952,10 +22954,6 @@ async function handlePendingRecordingCommand(payload = {}) {
   } catch (error) { return { ok: false, code: error.code || error.message, reason: error.message }; }
 }
 
-// Private main-owned product port; no renderer payload can install this hook.
-commitWriterProjectSnapshot.recordingPort = Object.freeze({
-  admit: resolvePendingRecordingSaveAdmission, revalidate: revalidatePendingRecordingSave,
-});
 const authenticatedPendingReturnAdmissions = new WeakMap();
 async function readPendingRevisionProjection() {
   try {

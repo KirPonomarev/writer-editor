@@ -69,3 +69,13 @@ test('renderer cannot inject a ledger, author controls or unbounded history', ()
   const ledger = review.readLedger(result.doc); ledger.roundUndo = Array.from({ length: 128 }, () => structuredClone(ledger.roundUndo[0]));
   assert.throws(() => recording.derive(review.bindLedger(ledger), doc('!AB'), meta), /HISTORY_BUDGET/);
 });
+
+test('native Tiptap typing and plain paste emit empty inherited color without changing rich truth', () => {
+  const base = doc('Native text'); base.content[0].content[0].marks = [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }];
+  const working = structuredClone(base); working.attrs = { wordPendingRevisions: null }; working.content[0].attrs = { textAlign: null };
+  working.content[0].content.unshift({ type: 'text', text: 'Recorded ', marks: [{ type: 'textStyle', attrs: { color: '', fontFamily: 'Aptos', fontSize: '12pt' } }] });
+  const result = recording.derive(base, working, meta);
+  assert.equal(review.projection(result.doc).current, 'Recorded Native text');
+  assert.equal(review.projection(result.doc).original, 'Native text');
+  assert.ok(!JSON.stringify(review.readLedger(result.doc).source).includes('"color":""'));
+});
