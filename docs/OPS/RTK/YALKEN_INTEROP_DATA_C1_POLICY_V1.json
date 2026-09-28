@@ -1230,7 +1230,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "c061f6d15175c11713d1ce1994ac23c73866d0a6f588e18bc1cc69926982efe3"
+        "sha256": "f490043b12e3db203e3e2b8a3977e4dc1d5ffb24340c4ffee76d51ae87a5de6f"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
