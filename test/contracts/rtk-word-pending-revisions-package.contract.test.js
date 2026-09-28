@@ -65,3 +65,24 @@ test('malformed/nested/structural/composite revisions never flatten into accepte
     assert.equal(b.buildDocxContentPreviewFromZipBytes(pack(xml)).ok, false, xml);
   }
 });
+
+test('native local-file preview and main source sanitizer retain the complete pending ledger before safe-create', async () => {
+  const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
+  const b = await import('../../src/io/revisionBridge/index.mjs');
+  const value = await createDocxImportLocalFilePreview({ requestId: 'pending-native-chain' }, {
+    pickLocalFile: async () => ({ path: '/synthetic/pending.docx' }), readLocalFileBytes: async () => pack(),
+  });
+  assert.equal(value.importPreviewOk, true, JSON.stringify(value));
+  assert.equal(model.projection(envelope.parseObservablePayload(value.docxImportPreviewPlan.candidateCreatePlan.entries[0].content).doc).revisions.length, 2);
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = main.indexOf('function copyDocxImportPreviewAllowedFields(');
+  const end = main.indexOf('\nfunction ', main.indexOf('function canonicalizeDocxImportPreviewSourceReport(') + 10);
+  const vm = require('node:vm'), context = vm.createContext({
+    isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v), cloneJsonSafe: v => structuredClone(v),
+  });
+  vm.runInContext(main.slice(start, end), context);
+  const normalized = context.canonicalizeDocxImportPreviewSourceReport(value.docxContentPreviewReport);
+  const plan = b.buildDocxImportPreviewPlanFromContentPreview(normalized);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(model.projection(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc).revisions.length, 2);
+});

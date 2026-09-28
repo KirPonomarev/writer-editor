@@ -534,7 +534,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "08db9da79a04f100c0b86cf322fd62626f2f048a78e8509b9123b7ae76451a57"
+        "sha256": "c963a9b7b23e4c2c3b5ca180a6d45e826160ccaba192bd7a0a2be3986e57e168"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -578,7 +578,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "66622b59911fac6a647ace3002cc2e825c0fabcc9c2577ff3ce8500ce857dd7c"
+        "sha256": "13d7537737b99699401c21d0815d4955f34e6c5fa92881f2d634921745ac1511"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -1418,7 +1418,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-package.contract.test.js",
-        "sha256": "c927a5c150aebc0ed2bb05073b0867f8638feb2db69427ab56f5e80908fcb50b"
+        "sha256": "09d0f66928b37f8f26137777ab4289770015a20456237f3ee07e1742bc45b01c"
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
