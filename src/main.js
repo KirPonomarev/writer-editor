@@ -25905,7 +25905,7 @@ async function handleExportDocxMin(payloadRaw) {
   const readSource = async payload => {
     const filePath = currentFilePath, subjectId = currentLifecycleSubjectId();
     const snapshot = await readCanonicalExportSnapshot(payload);
-    const binding = await resolveProjectBindingForFile(filePath);
+    const binding = await readReviewExactTextApplyProjectBinding(filePath);
     const projectRoot = getProjectRootPath(), projectId = binding?.manifest?.projectId;
     const notes = projectId ? await readCanonicalNotesForDocxExport(projectId, projectRoot, true) : null;
     const sceneId = path.relative(projectRoot, filePath).split(path.sep).join('/');

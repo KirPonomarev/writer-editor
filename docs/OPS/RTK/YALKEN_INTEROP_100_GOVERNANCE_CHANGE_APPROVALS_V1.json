@@ -1651,9 +1651,9 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "dd68177310578392a614e35a04bb0ee8efd6bd3ab57f42377453f840322e68b3",
+      "sha256": "eac4d756006165cf72cba33abced822c6d460426b6d4705b764ef444361888f5",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "bd0c6e30581c2d665a40f20adad3b183041f8d969030cae323d8dc2a6994ab45",
+      "sha256": "65ac39ea3e6aea98d25a598303c2c7fca4da4adaf48779101fed84c5c0cec783",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c23750fd2ea3754820c39ff2f9e2c654bc5721910efa4b4b0b33c52f7808e0f0",
+      "sha256": "b88be9e2d50382b33e87eb9890cd6c31b7e5de31ad05b7e619e5d32f10a6db8b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "8b237363050cb7b84c9e36bafed87db9a56d18b58f6d7b5ca7455e7392ae9a7d",
+      "sha256": "8e02332f2fab052eaa7c93eb2150fc78f94c2be029169a3305552aada803b2e8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "624f902352a2fc411b23fd640d8ec33d37b76de2e2d4696cf1f475b6795e431c",
+      "sha256": "4272e6f12c56a4c7f059012ee1faffb0e181c46af518fbe730969350f8670bcf",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b5fb66ad0df8e6bb6b0e1d8b95f03d2c3bfdda7f6c42fb371234e3667ff6139a",
+      "sha256": "b1ff2bf827fc268538b454e3209e9d957e02227b25abc94ef32ffd928d30ba7e",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9c81de80618755843ac06265ef4935ea30e60f0c91b9041acce3b312b77c0ef7",
+      "sha256": "c119e799792b9d5f086bd18c8439fd8dadfbc6f9a196adcb7577411a8bd1b10d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -2956,8 +2956,8 @@
     },
     {
       "filePath": "test/unit/export-book-profile-binding.test.js",
-      "sha256": "74180b2f0d7347acdbe756e641ed419a181227cb2ccaa747fe927e6a60dc4839",
-      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "sha256": "2af4b59cb10a06b49fbcbbfce40ab5768e34079e0439a3aae5527d1ba73d6163",
+      "approvedAtUtc": "2026-09-28T05:42:07.701113Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
@@ -16545,6 +16545,78 @@
       "filePath": "test/unit/export-book-profile-binding.test.js",
       "sha256": "91a321d12d09ee86d24fb8dd95bd2c76cd843e3bc53234157a13920031e5a409",
       "approvedAtUtc": "2026-09-28T05:17:14.739013Z",
+      "approvedBy": "owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "dd68177310578392a614e35a04bb0ee8efd6bd3ab57f42377453f840322e68b3",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bd0c6e30581c2d665a40f20adad3b183041f8d969030cae323d8dc2a6994ab45",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "c23750fd2ea3754820c39ff2f9e2c654bc5721910efa4b4b0b33c52f7808e0f0",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "8b237363050cb7b84c9e36bafed87db9a56d18b58f6d7b5ca7455e7392ae9a7d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "624f902352a2fc411b23fd640d8ec33d37b76de2e2d4696cf1f475b6795e431c",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b5fb66ad0df8e6bb6b0e1d8b95f03d2c3bfdda7f6c42fb371234e3667ff6139a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9c81de80618755843ac06265ef4935ea30e60f0c91b9041acce3b312b77c0ef7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "test/unit/export-book-profile-binding.test.js",
+      "sha256": "74180b2f0d7347acdbe756e641ed419a181227cb2ccaa747fe927e6a60dc4839",
+      "approvedAtUtc": "2026-09-28T05:33:33.380573Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928",
       "rationale": "Owner-authorized macOS Word plan scene export repair: absent BookProfile resolves Core default, explicit invalid profiles remain rejected. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
