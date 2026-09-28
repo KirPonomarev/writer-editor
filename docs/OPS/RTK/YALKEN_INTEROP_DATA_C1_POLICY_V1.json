@@ -1005,7 +1005,7 @@
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
-        "sha256": "b11bc1ffdbbb3fec429c4b4a639dadf3ada5ebe98cc5abdba2b48e58a5d2837e"
+        "sha256": "2e3b2294128574ed05d64113f53270bb88644800143652b943b5f77ec151d8a5"
       },
       {
         "path": "test/unit/document-media.test.js",
