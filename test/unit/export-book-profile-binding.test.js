@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const vm = require('node:vm');
 
 function read(relativePath) {
   return fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8');
@@ -179,4 +180,98 @@ test('export book profile binding: backend delegates section setup to the fail-c
   );
   assert.equal(bindSource.includes('roundTwips(210)'), false);
   assert.equal(bindSource.includes('roundTwips(297)'), false);
+});
+
+test('export book profile binding: actual main snapshot resolves absent default and preserves explicit profile validation', async () => {
+  const { bookProfile, docxPageSetupBind } = await loadModules();
+  const main = read('src/main.js');
+  const start = main.indexOf('async function readCanonicalExportSnapshot(payload = {})');
+  const end = main.indexOf('async function persistProjectManifestAtPath', start);
+  assert.ok(start >= 0 && end > start);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const { normalizeEditorSnapshotPayload } = require('../../src/export/docx/docxMinBuilder.js');
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Saved scene' }] }] };
+  const content = envelope.composeObservablePayload({ text: 'Saved scene', doc });
+  let manifest = {};
+  const context = vm.createContext({
+    JSON,
+    currentFilePath: '/project/scene.txt', isDirty: false,
+    isAllowedFilePath: () => true,
+    isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
+    fs: { readFile: async file => {
+      if (file === '/project/scene.txt') return content;
+      assert.equal(file, '/project/project.craftsman.json');
+      return JSON.stringify(manifest);
+    } },
+    resolveProjectBindingForFile: async () => { throw Error('Export must not normalize or write the manifest'); },
+    isPathInside: (root, file) => root === '/project' && file === '/project/scene.txt',
+    getProjectManifestPath: () => '/project/project.craftsman.json',
+    currentProjectName: 'Project', DEFAULT_PROJECT_NAME: 'Project',
+    loadBookProfileModule: async () => bookProfile,
+    loadDocumentContentEnvelopeModule: async () => envelope,
+    verifyDocxMediaAssetFiles: async () => {},
+    getProjectRootPath: () => '/project', normalizeEditorSnapshotPayload,
+  });
+  vm.runInContext(main.slice(start, end), context);
+  const snapshot = await context.readCanonicalExportSnapshot({});
+  assert.deepEqual(snapshot.bookProfile, bookProfile.createDefaultBookProfile());
+  assert.equal(snapshot.plainText, 'Saved scene');
+  assert.deepEqual(manifest, {}, 'export must not persist a project default');
+  assert.match(docxPageSetupBind.buildDocxSectionPropertiesXml(snapshot.bookProfile), /w:w="11906" w:h="16838"/u);
+  manifest = { bookProfile: { formatId: 'A5' } };
+  assert.deepEqual((await context.readCanonicalExportSnapshot({})).bookProfile, manifest.bookProfile);
+  const override = { formatId: 'A4' };
+  assert.equal((await context.readCanonicalExportSnapshot({ options: { bookProfile: override } })).bookProfile, override);
+  for (const invalid of [null, [], 'A4', 42]) {
+    await assert.rejects(context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } }), /E_BOOK_PROFILE_OBJECT/u);
+    manifest = { bookProfile: invalid };
+    await assert.rejects(context.readCanonicalExportSnapshot({}), /E_BOOK_PROFILE_OBJECT/u);
+  }
+  for (const invalid of [null, [], 'invalid manifest']) {
+    manifest = invalid;
+    await assert.rejects(context.readCanonicalExportSnapshot({}), /E_DOCX_PROJECT_MANIFEST_INVALID/u);
+  }
+  for (const invalid of [{ formatId: 'UNKNOWN' }, { formatId: 'A4', marginLeftMm: -1 }]) {
+    const explicit = await context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } });
+    assert.throws(() => docxPageSetupBind.buildDocxSectionPropertiesXml(explicit.bookProfile), /E_DOCX_BOOK_PROFILE_INVALID/u);
+    manifest = { bookProfile: invalid };
+    const persisted = await context.readCanonicalExportSnapshot({});
+    assert.throws(() => docxPageSetupBind.buildDocxSectionPropertiesXml(persisted.bookProfile), /E_DOCX_BOOK_PROFILE_INVALID/u);
+  }
+  // Note resolution follows the snapshot: execute the whole handler to catch a
+  // second manifest-normalizing writer after the initial read-only boundary.
+  let writes = 0;
+  Object.assign(context, {
+    path, Buffer, autoSaveInProgress: false,
+    currentLifecycleSubjectId: () => 'life',
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, manifest: { projectId: 'project' } }),
+    readCanonicalNotesForDocxExport: async () => undefined,
+    runDocxMinExport: require('../../src/export/docx/docxMinExportHandler.js').runDocxMinExport,
+    normalizeExportPayload: value => value,
+    makeTypedExportError: (code, reason, details) => ({ ok: 0, error: { code, reason, details } }),
+    buildPathBoundaryDetails: error => error,
+    resolveDocxExportPath: async () => '/out/export.docx',
+    validateDocxExportTarget: async () => ({ ok: true }),
+    buildDocxMinBuffer: snapshot => Buffer.from(docxPageSetupBind.buildDocxSectionPropertiesXml(snapshot.bookProfile)),
+    queueDiskOperation: operation => operation(),
+    writeBufferAtomic: async () => { writes++; }, updateStatus: () => {},
+  });
+  const handlerStart = main.indexOf('async function handleExportDocxMin(payloadRaw)');
+  const handlerEnd = main.indexOf('async function handleExportPdf', handlerStart);
+  assert.ok(handlerStart > 0 && handlerEnd > handlerStart);
+  vm.runInContext(main.slice(handlerStart, handlerEnd), context);
+  manifest = {};
+  assert.equal((await context.handleExportDocxMin({})).ok, 1);
+  assert.equal(writes, 1);
+  for (const invalid of [null, { formatId: 'UNKNOWN' }]) {
+    manifest = { bookProfile: invalid };
+    const before = JSON.stringify(manifest);
+    const result = await context.handleExportDocxMin({});
+    assert.equal(result.ok, 0);
+    assert.match(result.error.details.message, /E_DOCX_BOOK_PROFILE_INVALID/u);
+    assert.equal(JSON.stringify(manifest), before);
+    assert.equal(writes, 1);
+  }
+  context.isDirty = true;
+  await assert.rejects(context.readCanonicalExportSnapshot({}), /Unsaved editor state/u);
 });

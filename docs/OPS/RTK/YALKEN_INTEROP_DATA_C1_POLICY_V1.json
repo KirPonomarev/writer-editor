@@ -305,7 +305,9 @@
     "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
     "test/contracts/rtk-word-pending-revisions-package.contract.test.js",
     "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
-    "docs/tasks/2026-09-28--word-pending-text-revisions.md"
+    "docs/tasks/2026-09-28--word-pending-text-revisions.md",
+    "test/unit/export-book-profile-binding.test.js",
+    "docs/tasks/2026-09-28--word-scene-default-profile.md"
   ],
   "protectedFiles": [
     {
@@ -534,7 +536,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "79b72a3767a6d0adae8458cff6393a4354d24808f181dcc2564f255f319f0fe1"
+        "sha256": "eac4d756006165cf72cba33abced822c6d460426b6d4705b764ef444361888f5"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1423,6 +1425,10 @@
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
         "sha256": "08a15be729abaa5cfa67d58bf4eb18f9a42ab3b42f6ff517e68267317a00b347"
+      },
+      {
+        "path": "test/unit/export-book-profile-binding.test.js",
+        "sha256": "2af4b59cb10a06b49fbcbbfce40ab5768e34079e0439a3aae5527d1ba73d6163"
       }
     ],
     "followupRepair": {

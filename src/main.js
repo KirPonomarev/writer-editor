@@ -20926,23 +20926,30 @@ async function readCanonicalExportSnapshot(payload = {}) {
   }
 
   const content = await fs.readFile(currentFilePath, 'utf8');
-  let bookProfile = (
-    payload.options
-    && isPlainObjectValue(payload.options)
-    && isPlainObjectValue(payload.options.bookProfile)
-  )
-    ? payload.options.bookProfile
-    : null;
+  const hasExplicitProfile = isPlainObjectValue(payload.options)
+    && Object.prototype.hasOwnProperty.call(payload.options, 'bookProfile');
+  if (hasExplicitProfile && !isPlainObjectValue(payload.options.bookProfile)) {
+    throw new Error('E_DOCX_BOOK_PROFILE_INVALID:E_BOOK_PROFILE_OBJECT');
+  }
+  let bookProfile = hasExplicitProfile ? payload.options.bookProfile : null;
 
-  if (!bookProfile) {
-    const projectBinding = await resolveProjectBindingForFile(currentFilePath);
-    if (
-      projectBinding
-      && isPlainObjectValue(projectBinding.manifest)
-      && isPlainObjectValue(projectBinding.manifest.bookProfile)
-    ) {
-      bookProfile = projectBinding.manifest.bookProfile;
+  if (!bookProfile && isPathInside(getProjectRootPath(), currentFilePath)) {
+    // Export is read-only. Binding through ensureProjectManifest would normalize
+    // and persist an invalid profile before the strict DOCX validator sees it.
+    const manifest = JSON.parse(await fs.readFile(
+      getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8',
+    ));
+    if (!isPlainObjectValue(manifest)) throw new Error('E_DOCX_PROJECT_MANIFEST_INVALID');
+    if (Object.prototype.hasOwnProperty.call(manifest, 'bookProfile')) {
+      if (!isPlainObjectValue(manifest.bookProfile)) {
+        throw new Error('E_DOCX_BOOK_PROFILE_INVALID:E_BOOK_PROFILE_OBJECT');
+      }
+      bookProfile = manifest.bookProfile;
     }
+  }
+  if (!bookProfile) {
+    const bookProfileModule = await loadBookProfileModule();
+    bookProfile = bookProfileModule.createDefaultBookProfile();
   }
 
   const envelopeModule = await loadDocumentContentEnvelopeModule();
@@ -25898,7 +25905,7 @@ async function handleExportDocxMin(payloadRaw) {
   const readSource = async payload => {
     const filePath = currentFilePath, subjectId = currentLifecycleSubjectId();
     const snapshot = await readCanonicalExportSnapshot(payload);
-    const binding = await resolveProjectBindingForFile(filePath);
+    const binding = await readReviewExactTextApplyProjectBinding(filePath);
     const projectRoot = getProjectRootPath(), projectId = binding?.manifest?.projectId;
     const notes = projectId ? await readCanonicalNotesForDocxExport(projectId, projectRoot, true) : null;
     const sceneId = path.relative(projectRoot, filePath).split(path.sep).join('/');
