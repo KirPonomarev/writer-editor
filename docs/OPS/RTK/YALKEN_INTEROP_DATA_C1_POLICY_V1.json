@@ -527,7 +527,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6938f60cef04eece253849a547f735e7f4de6221f61471c0ff64608adfa2febe"
+        "sha256": "59df9e91dd0122f8f8306fd8d1c4e1f746e576258d5e0fdaf7a10c86c037adf3"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -539,7 +539,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "821f37239a1ce536f534d898b8db71b85717095e939d663cd40c1a53bf8dce5a"
+        "sha256": "0531e5a5a91c2ba40eba2c3e6c77e29779e0dcfa56ae96b3c219704847d3c786"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -703,7 +703,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "8939dd5ff25364033774851cebddbf67a7a8c3b731278fc608bee6d3c426cc8b"
+        "sha256": "89967021bbe332ae40ab7ecce03cf077fb33f25ac3f906f7200b9aefc08edd5c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1387,7 +1387,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-        "sha256": "5acd6248dd967fb9e7901ed9f9bac769bd2cf17fb8f7f7b6b8dc69e3d9a38f81"
+        "sha256": "8f78e91472d16290dddb72080a9f422b031408d4575aea3ad9ea8791352d1c88"
       },
       {
         "path": "test/contracts/rtk-word-note-return-package.contract.test.js",

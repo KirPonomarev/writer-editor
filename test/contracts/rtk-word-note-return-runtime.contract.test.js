@@ -61,6 +61,7 @@ async function harness(t) {
       if (h.duringWrite) await h.duringWrite(); await options.beforeWrite(); h.writes++;
       fs.writeFileSync(notesPath, JSON.stringify(after)); return { ok: true };
     },
+    updateStatus: value => { h.notification = value; },
     makeNotesCommandError: (id, code) => ({ ok: false, code }), runNotesMutationCommand: () => { throw Error('unexpected ordinary route'); },
     cloneJsonSafe: value => JSON.parse(JSON.stringify(value)),
   };
@@ -126,4 +127,16 @@ test('deletion uses canonical tombstone fields and survives actual notes normali
   assert.equal(raw.notes[0].deleted, true); assert.equal(raw.notes[0].deletedAtUtc, raw.notes[0].updatedAtUtc);
   assert.deepEqual(h.storage.normalizeNotesDocument(raw, { projectId: 'p' }).value, raw);
   assert.equal((await h.prepare()).status, 'replayed'); assert.equal(h.writes, 1);
+});
+
+test('publication notification refreshes read-only projections only for the current project', () => {
+  const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const section = renderer.slice(renderer.indexOf('  window.electronAPI.onStatusUpdate('), renderer.indexOf('  window.electronAPI.onSetDirty('));
+  let callback, references = 0, workspace = 0, status = '';
+  const context = { window: { electronAPI: { onStatusUpdate: fn => { callback = fn; } } }, currentProjectId: 'current',
+    refreshManuscriptNoteReferences: () => { references++; }, refreshNotesWorkspace: () => { workspace++; },
+    updateStatusText: value => { status = value; }, updateWarningStateText() {}, updatePerfHintText() {}, updateInspectorSnapshot() {} };
+  vm.createContext(context); vm.runInContext(section, context);
+  callback({ type: 'manuscript-notes-published', projectId: 'foreign' }); assert.equal(references + workspace, 0);
+  callback({ type: 'manuscript-notes-published', projectId: 'current' }); assert.equal(references, 1); assert.equal(workspace, 1); assert.equal(status, 'Сноски обновлены');
 });

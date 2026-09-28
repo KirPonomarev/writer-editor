@@ -23791,6 +23791,13 @@ if (isTiptapMode) {
 
 if (window.electronAPI) {
   window.electronAPI.onStatusUpdate((status) => {
+    if (status?.type === 'manuscript-notes-published') {
+      if (status.projectId !== currentProjectId) return;
+      void refreshManuscriptNoteReferences();
+      void refreshNotesWorkspace();
+      updateStatusText('Сноски обновлены');
+      return;
+    }
     updateStatusText(status);
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {

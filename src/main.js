@@ -5785,6 +5785,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       try { receipt = await dispatchMenuCommand(NOTES_UPDATE_COMMAND_ID, payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedNoteDeltaAdmissions.delete(payload); }
       if (receipt?.ok !== true) throw rejected(receipt?.code || receipt?.error?.code || 'NOTE_RETURN_DISPATCH_FAILED');
+      if (receipt.writerCalled === true) updateStatus({ type: 'manuscript-notes-published', projectId: context.projectId });
       return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',
         writerCalled: receipt.writerCalled === true, pendingProductApplyLane: false, operationId: receipt.operationId };
     };
