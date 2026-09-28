@@ -27,6 +27,7 @@ async function harness(t,options={}) {
  const authority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'leases'),useLeaseHeartbeatWorker:false});
  let publications=0;
  const context=vm.createContext({fs:fsp,path,Buffer,planCommentAnchorSave:require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave,
+  loadNotesStorageModule:()=>import('../../src/product/notesStoragePersistence.mjs'),manuscriptNoteModel:require('../../src/core/word-manuscript-notes-v1.cjs'),
   loadRtkNonTextReturnModule:async()=>({readCommentAuthoringState:async()=>({text:null})}),commitProjectTransaction,durableSaveTransaction,...gateway,
   isDirty:false,autoSaveInProgress:false,lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
   resolveProjectBindingForFile:async()=>({manifestPath,manifest:JSON.parse(await fsp.readFile(manifestPath,'utf8'))}),

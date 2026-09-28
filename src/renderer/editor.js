@@ -11762,7 +11762,7 @@ function renderManuscriptNoteBody(note) {
     manuscriptKindSelect.value = draft?.kind || note.manuscript.kind;
   }
   manuscriptBodyEditor.setEditable(!note.deleted); manuscriptKindSelect.disabled = note.deleted;
-  if (notesDetailMeta) notesDetailMeta.textContent = note.manuscript.kind === 'endnote' ? 'Концевая сноска · входит в экспорт Word' : 'Сноска · входит в экспорт Word';
+  if (notesDetailMeta) notesDetailMeta.textContent = `${note.manuscript.kind === 'endnote' ? 'Концевая сноска' : 'Сноска'}${note.deleted ? ' · удалена' : ''}`;
 }
 
 function manuscriptMutationBinding() {

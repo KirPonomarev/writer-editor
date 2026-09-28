@@ -28,6 +28,7 @@ const { selectStorageRecoveryPlan } = require('../../src/core/storage-selection-
 
 const MODULE_BASENAME = 'lifecycle-recovery-v1.cjs';
 const DEPENDENCIES = [
+  'word-manuscript-notes-v1.cjs',
   'word-comment-anchor-save-v1.cjs',
   'word-comment-authoring-v1.cjs',
   'document-content-envelope-v1.cjs',
@@ -101,7 +102,13 @@ async function realSelection() {
 
 function loadMutant(mutant) {
   assert.ok(source.includes(mutant.find), `${mutant.id} insertion point exists`);
-  const dir = sandbox(`r24-wp204-${mutant.id.toLowerCase()}-`);
+  const root = sandbox(`r24-wp204-${mutant.id.toLowerCase()}-`);
+  const dir = path.join(root, 'core');
+  fs.mkdirSync(dir);
+  fs.mkdirSync(path.join(root, 'io'));
+  for (const basename of ['docxHyperlinks.cjs', 'inlineTypography.cjs']) {
+    fs.copyFileSync(path.join(ROOT, 'src', 'io', basename), path.join(root, 'io', basename));
+  }
   fs.writeFileSync(path.join(dir, MODULE_BASENAME), source.replace(mutant.find, mutant.replace));
   for (const basename of DEPENDENCIES) {
     fs.copyFileSync(path.join(CORE, basename), path.join(dir, basename));

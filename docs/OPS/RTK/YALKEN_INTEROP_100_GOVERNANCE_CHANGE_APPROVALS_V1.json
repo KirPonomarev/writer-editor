@@ -1660,18 +1660,18 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "eadeb8e0544efce34940c5f48327845a6a7aa00a91f4bc159379e1cd6381b973",
+      "sha256": "00f6c7ca2a7a0fca0c4300273b6c0ab56d820b0518d1189224dd10720db5f6bb",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "8f53f8aba352caffe6dfcd6a534d43394bfa18d6399422fe8ccbc2a2ed0020a0",
+      "sha256": "ce22a6008fee286c092dd56813fbbd3cff39d3ae13edda869c401c8de6b225d3",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ab3ab1a8729ae6b21c767ac9edd706d6aa177a3960fec260137f3047c1596f96",
+      "sha256": "245fa2dcc1632ea09589225cdb7a919c49f35333399880c6a4f075dea1c32173",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "26cf1a5ff893caca29918a9081a1fb0fc1c1836ed507a6cca4d5425c7823d3c3",
+      "sha256": "c78b54ff876ef49b447564270a8cc96f31bbf2d89999c95db7db93653e414e6e",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "9cb8aa6cf178c7f2c4877a06b42060cee7c2fe8fb92e7550f83b1353dcc0743d",
+      "sha256": "5cf4de468f07cea1348af5746161966bb0dbb2c6052d3f2d978ab735f7956d15",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
@@ -1822,12 +1822,12 @@
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "f195b3cdf7c901841d7d4ceafd2fecea2dc96585c60eb4d86142316e39edb4d1",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
-      "approvedAtUtc": "2026-09-27T01:20:54.263013Z",
+      "sha256": "ed79304a53ada97a8dc1922063a038745f65f1c6ff5c2a2b05e3aaab487063b5",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -2479,10 +2479,10 @@
     },
     {
       "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-      "sha256": "5f468833ed73241c7b386735b83cb5e38c4f8853a571a3626957c90de679cbe5",
-      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "33b2c3fe5a89949a72a243aa48feadbf5f4bd19d55f3fc8dfa340796acff5c84",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e53d2cb8f188f694a09f26297c7828eb6f5a0e3be59dbe698cade3de9f4c0a35",
+      "sha256": "a5b1fb6870221776cbf548896c3d163634682a21e8c53eedf93bee2e6d91280f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "d66f8d5a828e60c53a4ac8b34632e16850d6a552e08224398179de8576a55fe4",
+      "sha256": "645ccbb698454e66751a29e8699118566bedc3d9fb53784bc54d13886e418b18",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "770f690c329a9afde897818434d77b97c36949639025fd0b81081eaf4ca61447",
+      "sha256": "4c5cd9be8b9715bf821e5c612926867e579d0db4d29605b1e5853109be5874ec",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
-      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approvedAtUtc": "2026-09-28T02:15:14.919722Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
@@ -14755,6 +14755,159 @@
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "eadeb8e0544efce34940c5f48327845a6a7aa00a91f4bc159379e1cd6381b973",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "8f53f8aba352caffe6dfcd6a534d43394bfa18d6399422fe8ccbc2a2ed0020a0",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ab3ab1a8729ae6b21c767ac9edd706d6aa177a3960fec260137f3047c1596f96",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "26cf1a5ff893caca29918a9081a1fb0fc1c1836ed507a6cca4d5425c7823d3c3",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "9cb8aa6cf178c7f2c4877a06b42060cee7c2fe8fb92e7550f83b1353dcc0743d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "f195b3cdf7c901841d7d4ceafd2fecea2dc96585c60eb4d86142316e39edb4d1",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
+      "approvedAtUtc": "2026-09-27T01:20:54.263013Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+      "sha256": "5f468833ed73241c7b386735b83cb5e38c4f8853a571a3626957c90de679cbe5",
+      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "e53d2cb8f188f694a09f26297c7828eb6f5a0e3be59dbe698cade3de9f4c0a35",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d66f8d5a828e60c53a4ac8b34632e16850d6a552e08224398179de8576a55fe4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "770f690c329a9afde897818434d77b97c36949639025fd0b81081eaf4ca61447",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:03:31.150573Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "694d0e85333f28a1bafbe111ccbcb0c00ae0619b03ae64fea843761236a622a9",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "4b5457525f702d2ff5ad8bd9ef24ab74ce75456d8927af51200d597667867e2a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "317d4be9a97cb0d5cae5168f9f52e73a5411298e6ad121880b3adeda2ec432b2",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+      "sha256": "ef25902b9c4dadd303c2d2c253649788aca2a19065bcb048ee7c705085177719",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d87a37ee0235b60fe981d3a8e17c26e3cc7b4bdd1b52b81184c3ba9fd03d5a36",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6f27f48177564c31d502d59250c98fec919341caf1ca1f2915c5abd27e3c6447",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2d2600f9253c2a7434ab310a5ec970d2084cd50909acb9189c237f3b970b21cb",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
+      "approvedAtUtc": "2026-09-28T02:14:36.557910Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes."
     }
   ]
 }
