@@ -1,4 +1,5 @@
 'use strict';
+const { inspectJpeg } = require('./documentJpeg.js');
 
 // Pure, bounded canonical media data. No filesystem, DOM, network or authority.
 const builtin = name => {
@@ -99,9 +100,11 @@ function imageDisplaySize(attrs) {
 }
 function createImageAttrs(bytes, options = {}) {
   const { alt = '', displayName = '' } = options;
-  const info = inspectPng(bytes);
+  const info = Buffer.isBuffer(bytes) && bytes[0] === 0xff && bytes[1] === 0xd8
+    ? { ...inspectJpeg(bytes, LIMITS), sha256: hash(bytes) } : inspectPng(bytes);
   const size = imageDisplaySize({ ...info, displayWidthEmu: options.displayWidthEmu, displayHeightEmu: options.displayHeightEmu });
-  return { assetId: `sha256-${info.sha256}`, assetPath: `assets/media/${info.sha256}.png`, ...info,
+  const extension = info.mimeType === 'image/jpeg' ? 'jpg' : 'png';
+  return { assetId: `sha256-${info.sha256}`, assetPath: `assets/media/${info.sha256}.${extension}`, ...info,
     ...(size.cx !== info.width * 9525 || size.cy !== info.height * 9525
       ? { displayWidthEmu: size.cx, displayHeightEmu: size.cy } : {}),
     alt: label(alt, 'ALT'), displayName: label(displayName, 'NAME'), dataBase64: bytes.toString('base64') };

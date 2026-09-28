@@ -2,9 +2,9 @@ import { Node } from '@tiptap/core';
 
 const fields = ['assetId', 'assetPath', 'sha256', 'mimeType', 'width', 'height', 'alt', 'displayName', 'dataBase64'];
 // Render a main-owned document projection. No filesystem lookup or remote URI
-// is ever accepted here. PNG validation and asset identity belong to the Core.
+// is ever accepted here. Binary validation and asset identity belong to Core.
 export function mediaImageDom(attrs = {}) {
-  const safe = attrs.mimeType === 'image/png' && typeof attrs.dataBase64 === 'string'
+  const safe = ['image/png', 'image/jpeg'].includes(attrs.mimeType) && typeof attrs.dataBase64 === 'string'
     && attrs.dataBase64.length > 0 && attrs.dataBase64.length <= 5592408
     && attrs.dataBase64.length % 4 === 0 && !/[^A-Za-z0-9+/=]/u.test(attrs.dataBase64)
     && Number.isSafeInteger(attrs.width) && attrs.width > 0 && attrs.width <= 8192
@@ -14,7 +14,7 @@ export function mediaImageDom(attrs = {}) {
   const sizeSafe = legacy || [attrs.displayWidthEmu, attrs.displayHeightEmu].every(n => Number.isSafeInteger(n) && n > 0 && n <= 78028800);
   if (!safe || !sizeSafe) return ['span', { role: 'img', 'aria-label': 'Изображение недоступно', 'data-media-unavailable': 'true' }, 'Изображение недоступно'];
   return ['img', {
-    src: `data:image/png;base64,${attrs.dataBase64}`,
+    src: `data:${attrs.mimeType};base64,${attrs.dataBase64}`,
     alt: typeof attrs.alt === 'string' ? attrs.alt : '',
     title: typeof attrs.displayName === 'string' ? attrs.displayName : '',
     width: attrs.width, height: attrs.height,

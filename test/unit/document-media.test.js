@@ -2,6 +2,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const zlib = require('node:zlib');
 const { inspectPng, createImageAttrs, validateImageAttrs, documentMedia } = require('../../src/io/documentMedia');
+const jpegFixtures = require('../fixtures/document-jpeg-fixtures.cjs');
+const { inspectJpeg } = require('../../src/io/documentJpeg.js');
+const { MEDIA_LIMITS } = require('../../src/io/documentMedia.js');
 // Test fixture encoder is independent of the production reader.
 function crc(bytes) { let c = -1; for (const b of bytes) { c ^= b; for (let i = 0; i < 8; i++) c = c & 1 ? (c >>> 1) ^ 0xedb88320 : c >>> 1; } return (c ^ -1) >>> 0; }
 function chunk(type, data) { const b = Buffer.alloc(data.length + 12); b.writeUInt32BE(data.length); b.write(type, 4); data.copy(b, 8); b.writeUInt32BE(crc(b.subarray(4, -4)), b.length - 4); return b; }
@@ -88,4 +91,89 @@ test('W3: one binary has independent bounded placements and cannot evade display
   const graph=documentMedia(doc([1,2,3]));assert.equal(graph.assets.length,1);
   assert.deepEqual(graph.placements.map(a=>a.displayWidthEmu||a.width*9525),[9525,19050,28575]);
   assert.throws(()=>documentMedia(doc([8192,8192])),/DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
+});
+
+test('JPEG: independent grayscale, 4:4:4, optimized 4:2:0 and restart streams retain original bytes', () => {
+  for (const name of ['rgb', 'gray', 'subsampled', 'restart']) {
+    const bytes = jpegFixtures[name], attrs = createImageAttrs(bytes, { alt: 'Иллюстрация 🧭', displayName: 'book.jpeg' });
+    assert.equal(attrs.mimeType, 'image/jpeg'); assert.equal(attrs.width, 19); assert.equal(attrs.height, 17);
+    assert.match(attrs.assetPath, /^assets\/media\/[a-f0-9]{64}\.jpg$/u);
+    assert.deepEqual(validateImageAttrs(attrs).bytes, bytes);
+    assert.deepEqual(validateImageAttrs(attrs).attrs, attrs);
+  }
+});
+
+test('JPEG: every truncation, trailing bytes and missing entropy is rejected, even with valid dimensions', () => {
+  const bytes = jpegFixtures.rgb;
+  for (let length = 0; length < bytes.length; length++) {
+    assert.throws(() => inspectJpeg(bytes.subarray(0, length), MEDIA_LIMITS), /DOCUMENT_MEDIA_JPEG_/u, `prefix ${length}`);
+  }
+  assert.throws(() => createImageAttrs(Buffer.concat([bytes, Buffer.from([0])])), /DOCUMENT_MEDIA_JPEG_END/u);
+  const scan = bytes.indexOf(Buffer.from([0xff, 0xda])), data = scan + 2 + bytes.readUInt16BE(scan + 2);
+  const empty = Buffer.concat([bytes.subarray(0, data), Buffer.from([0xff, 0xd9])]);
+  assert.throws(() => createImageAttrs(empty), /DOCUMENT_MEDIA_JPEG_ENTROPY/u);
+  const extra = Buffer.concat([bytes.subarray(0, -2), Buffer.from([0]), bytes.subarray(-2)]);
+  assert.throws(() => createImageAttrs(extra), /DOCUMENT_MEDIA_JPEG_/u);
+});
+
+test('JPEG: malformed quantization, Huffman, component and restart data cannot gain media identity', () => {
+  const mutate = (source, marker, fn) => { const b = Buffer.from(source), at = b.indexOf(Buffer.from([0xff, marker])); assert.ok(at >= 0); fn(b, at + 4); return b; };
+  const cases = [
+    mutate(jpegFixtures.rgb, 0xdb, (b, p) => { b[p + 1] = 0; }),
+    mutate(jpegFixtures.rgb, 0xc4, (b, p) => { b[p + 1] = 255; }),
+    mutate(jpegFixtures.rgb, 0xc4, (b, p) => { b[p] = 0x22; }),
+    mutate(jpegFixtures.rgb, 0xc0, (b, p) => { b[p + 7] = 0; }),
+    mutate(jpegFixtures.rgb, 0xc0, (b, p) => { b[p + 9] = b[p + 6]; }),
+    mutate(jpegFixtures.rgb, 0xda, (b, p) => { b[p + 2] = 0x33; }),
+    mutate(jpegFixtures.rgb, 0xda, (b, p) => { b[p + 1] = 9; }),
+  ];
+  const badRestart = Buffer.from(jpegFixtures.restart), rst = badRestart.indexOf(Buffer.from([0xff, 0xd0]));
+  assert.ok(rst > 0); badRestart[rst + 1] = 0xd3; cases.push(badRestart);
+  for (const bytes of cases) assert.throws(() => createImageAttrs(bytes), /DOCUMENT_MEDIA_JPEG_/u);
+});
+
+test('JPEG: byte, dimension and pixel limit edges are checked before entropy traversal', () => {
+  const bytes = jpegFixtures.rgb;
+  for (const delta of [-1, 0, 1]) {
+    const check = patch => inspectJpeg(bytes, { ...MEDIA_LIMITS, ...patch });
+    for (const patch of [{ bytes: bytes.length + delta }, { pixels: 19 * 17 + delta }, { dimension: 19 + delta }]) {
+      if (delta < 0) assert.throws(() => check(patch), /DOCUMENT_MEDIA_JPEG_(BYTE|PIXEL)_LIMIT/u);
+      else assert.equal(check(patch).width, 19);
+    }
+  }
+  const large = Buffer.from(bytes), sof = large.indexOf(Buffer.from([0xff, 0xc0]));
+  large.writeUInt16BE(8193, sof + 7);
+  assert.throws(() => createImageAttrs(large), /DOCUMENT_MEDIA_JPEG_PIXEL_LIMIT/u);
+  assert.throws(() => inspectJpeg(Buffer.alloc(MEDIA_LIMITS.bytes + 1), MEDIA_LIMITS), /DOCUMENT_MEDIA_JPEG_BYTE_LIMIT/u);
+});
+
+function jpegApp(marker, data) {
+  const head = Buffer.alloc(4); head[0] = 0xff; head[1] = marker; head.writeUInt16BE(data.length + 2, 2);
+  return Buffer.concat([jpegFixtures.rgb.subarray(0, 2), head, data, jpegFixtures.rgb.subarray(2)]);
+}
+function exif(orientation = 1) {
+  const t = Buffer.alloc(26); t.write('II'); t.writeUInt16LE(42, 2); t.writeUInt32LE(8, 4);
+  t.writeUInt16LE(1, 8); t.writeUInt16LE(0x112, 10); t.writeUInt16LE(3, 12); t.writeUInt32LE(1, 14); t.writeUInt16LE(orientation, 18);
+  return Buffer.concat([Buffer.from('Exif\0\0'), t]);
+}
+test('JPEG: metadata policy preserves identity orientation and rejects rotation, ICC and unqualified coding', () => {
+  const bytes = jpegApp(0xe1, exif(1)); assert.deepEqual(validateImageAttrs(createImageAttrs(bytes)).bytes, bytes);
+  for (const n of [0, 2, 3, 4, 5, 6, 7, 8, 9]) assert.throws(() => createImageAttrs(jpegApp(0xe1, exif(n))), /ORIENTATION_UNSUPPORTED/u);
+  const malformed = exif(1); malformed.writeUInt32LE(0xffffffff, 10);
+  assert.throws(() => createImageAttrs(jpegApp(0xe1, malformed)), /EXIF_BOUNDS/u);
+  assert.throws(() => createImageAttrs(jpegApp(0xe2, Buffer.from('ICC_PROFILE\0'))), /ICC_OR_APP2_UNSUPPORTED/u);
+  assert.throws(() => createImageAttrs(jpegFixtures.progressive), /CODING_OR_METADATA_UNSUPPORTED/u);
+  assert.throws(() => createImageAttrs(jpegFixtures.cmyk), /COLOR_UNSUPPORTED/u);
+});
+
+test('JPEG: MIME, path and placement claims cannot override inspected identity; PNG and JPEG share budgets', () => {
+  const attrs = createImageAttrs(jpegFixtures.rgb);
+  for (const patch of [{ mimeType: 'image/png' }, { assetPath: attrs.assetPath.replace('.jpg', '.png') }, { width: 18 },
+    { dataBase64: jpegFixtures.gray.toString('base64') }, { assetPath: '../../book.jpg' }, { orientation: 6 }]) {
+    assert.throws(() => validateImageAttrs({ ...attrs, ...patch }), /DOCUMENT_MEDIA_/u);
+  }
+  const sized = createImageAttrs(jpegFixtures.rgb, { displayWidthEmu: 38101, displayHeightEmu: 28577 });
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [attrs, createImageAttrs(png()), sized].map(attrs => ({ type: 'image', attrs })) }] };
+  const graph = documentMedia(doc); assert.equal(graph.assets.length, 2); assert.equal(graph.placements.length, 3);
+  assert.equal(graph.placements[2].displayWidthEmu, 38101);
 });

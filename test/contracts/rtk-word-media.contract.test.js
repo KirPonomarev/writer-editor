@@ -5,6 +5,7 @@ const { spawnSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
 const { createImageAttrs } = require('../../src/io/documentMedia.js');
 const { buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
+const jpegFixtures = require('../fixtures/document-jpeg-fixtures.cjs');
 function python(code, input) {
   const r = spawnSync('python3', ['-c', code], { input, maxBuffer: 8 * 1024 * 1024 });
   assert.equal(r.status, 0, r.stderr.toString()); return r.stdout;
@@ -21,6 +22,108 @@ async function exported(doc) {
   ]);
   return buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule });
 }
+
+test('JPEG DOCX: five generic save/reopen/export rounds preserve mixed-format assets and every placement', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const attrs = [createImageAttrs(jpegFixtures.rgb, { alt: 'Цвет', displayName: 'same.jpeg' }),
+    createImageAttrs(image(), { alt: 'PNG', displayName: 'same.png' }),
+    createImageAttrs(jpegFixtures.gray, { alt: 'Серый', displayName: 'same.jpeg', displayWidthEmu: 400001, displayHeightEmu: 300001 })];
+  const original = { type: 'doc', content: [{ type: 'paragraph', content: [
+    { type: 'text', text: 'before ' }, ...[attrs[0], attrs[1], attrs[2], attrs[0]].map(attrs => ({ type: 'image', attrs })), { type: 'text', text: ' after' },
+  ] }] };
+  let doc = envelope.canonicalizeDocumentJson(original);
+  for (let cycle = 0; cycle < 5; cycle++) {
+    const bytes = await exported(doc), seen = inspect(bytes);
+    assert.deepEqual(seen.hashes, [attrs[0], attrs[1], attrs[2], attrs[0]].map(a => a.sha256));
+    assert.equal(seen.targets.filter(p => p.endsWith('.jpg')).length, 2); assert.equal(seen.targets.filter(p => p.endsWith('.png')).length, 1);
+    assert.deepEqual(seen.dimensions, [['180975', '161925'], ['19050', '9525'], ['400001', '300001'], ['180975', '161925']]);
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
+    assert.equal(plan.ok, true, JSON.stringify(plan));
+    doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+    assert.deepEqual(doc, envelope.canonicalizeDocumentJson(original));
+  }
+});
+
+test('JPEG DOCX: ordinary atomic import stores original JPEG bytes and replay detects asset substitution', async t => {
+  const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
+  const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'word-jpeg-create-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const attrs = createImageAttrs(jpegFixtures.subsampled, { alt: 'JPEG' });
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] };
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(await exported(doc)));
+  assert.equal(plan.ok, true, JSON.stringify(plan)); rememberDocxImportPreviewPlanAdmission(plan);
+  const options = { projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'jpeg-project' };
+  const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(fs.readFileSync(path.join(root, attrs.assetPath)), jpegFixtures.subsampled);
+  assert.equal((await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options)).value.idempotent, true);
+  fs.writeFileSync(path.join(root, attrs.assetPath), jpegFixtures.rgb);
+  assert.equal((await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options)).error.code, 'DOCX_SAFE_CREATE_MEDIA_INVALID');
+});
+
+test('JPEG DOCX: package MIME agrees with inspected bytes in both generic intake and review analysis', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const attrs = createImageAttrs(jpegFixtures.rgb), doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] };
+  const bytes = await exported(doc);
+  const cryptoPort = { sha256Text: v => `sha256:${createHash('sha256').update(v).digest('hex')}`,
+    sha256Json: v => `sha256:${createHash('sha256').update(JSON.stringify(v)).digest('hex')}`, byteLength: v => Buffer.byteLength(v) };
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort });
+  assert.equal(parsed.reviewIr.documentMedia.placements[0].sha256, attrs.sha256);
+  assert.equal(parsed.reviewIr.documentMedia.placements[0].mimeType, 'image/jpeg');
+  assert.equal(parsed.reviewIr.documentMedia.canWriteManuscript, false);
+  for (const mode of ['wrong-type', 'png-bytes', 'truncated', 'progressive']) {
+    const replacement = mode === 'png-bytes' ? image() : mode === 'progressive' ? jpegFixtures.progressive : jpegFixtures.rgb.subarray(0, -3);
+    const bad = python(`import sys,io,zipfile,json,base64
+source,mode,replacement=json.loads(sys.stdin.read());z=zipfile.ZipFile(io.BytesIO(base64.b64decode(source)));parts={n:z.read(n) for n in z.namelist()}
+if mode=='wrong-type':parts['[Content_Types].xml']=parts['[Content_Types].xml'].replace(b'image/jpeg',b'image/png')
+else:
+ name=next(n for n in parts if n.startswith('word/media/'));parts[name]=base64.b64decode(replacement)
+out=io.BytesIO()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as w:
+ for n,b in parts.items():w.writestr(n,b)
+sys.stdout.buffer.write(out.getvalue())`, JSON.stringify([bytes.toString('base64'), mode, replacement.toString('base64')]));
+    const generic = bridge.buildDocxContentPreviewFromZipBytes(bad);
+    assert.equal(generic.ok, false, `${mode}: ${JSON.stringify(generic)}`);
+    const review = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: bad }, { cryptoPort });
+    assert.equal(review.reviewIr?.documentMedia || null, null, `${mode} must not publish a media projection`);
+  }
+});
+
+test('JPEG review: unchanged authenticated media matches while replacement, movement and resize stay blocked', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildFormatIrParagraphs } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const cryptoPort = { sha256Text: v => `sha256:${createHash('sha256').update(v).digest('hex')}`,
+    sha256Json: v => `sha256:${createHash('sha256').update(JSON.stringify(v)).digest('hex')}`, byteLength: v => Buffer.byteLength(v) };
+  const attrs = createImageAttrs(jpegFixtures.rgb, { alt: 'protected JPEG', displayName: 'book.jpg' });
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'before ' }, { type: 'image', attrs }, { type: 'text', text: ' after' }] }] };
+  const blocks = buildFormatIrParagraphs({ doc, text: 'before  after', sceneId: 'jpeg.txt' });
+  const bytes = buildDocxReviewPacketBuffer({ blocks, customProperties: [{ name: 'YRTK_C01_AUTH', value: 'synthetic-without-authority' }, { name: 'YRTK2_TOKEN', value: 'synthetic-without-authority' }] });
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort });
+  assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
+  const map = { scenes: [{ sceneId: 'jpeg.txt', blocks }] }, match = bridge.bindDocxReviewMedia(parsed.reviewIr, map);
+  assert.equal(match.ok, true, JSON.stringify(match)); assert.equal(match.proof.automaticApplyAuthority, false);
+  for (const patch of [{ sha256: '0'.repeat(64) }, { offset: 0 }, { cx: 12345 }, { alt: 'unaccepted change' }]) {
+    const changed = structuredClone(parsed.reviewIr); Object.assign(changed.documentMedia.placements[0], patch);
+    assert.equal(bridge.bindDocxReviewMedia(changed, map).ok, false);
+  }
+});
+
+test('JPEG: ordinary .jpeg part alias retains byte/MIME correspondence without inventing a second asset', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
+  const attrs = createImageAttrs(jpegFixtures.rgb), doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] };
+  const source = await exported(doc), { parts, binaryParts } = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: source });
+  const renamed = Object.entries({ ...parts, ...binaryParts }).map(([name, data]) => ({
+    name: name.endsWith('.jpg') ? name.replace(/\.jpg$/u, '.jpeg') : name,
+    data: typeof data === 'string' ? data.replaceAll('.jpg', '.jpeg').replace('Extension="jpg"', 'Extension="jpeg"') : data,
+  }));
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(buildStoredZip(renamed)));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.deepEqual(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc, envelope.canonicalizeDocumentJson(doc));
+});
 function inspect(bytes) {
   return JSON.parse(python(`import sys,io,zipfile,json,hashlib,xml.etree.ElementTree as E
 z=zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read()))

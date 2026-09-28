@@ -281,7 +281,10 @@
     "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
     "docs/tasks/2026-09-27--word-delivery-historical-lookup.md",
     "docs/tasks/2026-09-27--word-native-comment-intake.md",
-    "docs/tasks/2026-09-28--word-full-manuscript-link-return.md"
+    "docs/tasks/2026-09-28--word-full-manuscript-link-return.md",
+    "docs/tasks/2026-09-28--word-jpeg-media.md",
+    "src/io/documentJpeg.js",
+    "test/fixtures/document-jpeg-fixtures.cjs"
   ],
   "protectedFiles": [
     {
@@ -546,7 +549,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "97deb1c4b4c0f5f5534558dc8d4a55723d32ce6adbbc2695ec362de524fe90ff"
+        "sha256": "32448f036eb185a98f973482be61e3c7df901c6b4f6918e6d3327a4c6a2c748e"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -626,7 +629,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "36229185267b487b2d772ccfda8883fd3d223845a1ccee8015eb996496fb1ad7"
+        "sha256": "5e79f75a3f4bc900c534aeb85c0d01ca61ac7bbfff15f396273d22307f03ec7c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -918,15 +921,15 @@
       },
       {
         "path": "src/io/documentMedia.js",
-        "sha256": "0b07e8cfb9b170acf665babc238326f72a3faacfb63ba26d48e02695547ccf08"
+        "sha256": "7e365b030d51e9e77a0064d1f18ae4641642194242480573f6da5754b1f5c2c6"
       },
       {
         "path": "src/export/docx/docxMedia.js",
-        "sha256": "4ed0ac22615122d810eaa29a6cafcf1e68ff626418cf8b613283fc622aa6eb6f"
+        "sha256": "a2678c8d1b9d2835fd854aa0ce95f95283d25b2e98dd5a2401a5a31c29831cda"
       },
       {
         "path": "src/renderer/tiptap/documentMedia.mjs",
-        "sha256": "912aae7b4df113a16d8c56e0b954aaa84787c2dbfc69060fd56bd6ce7aed86a5"
+        "sha256": "bc3c43d50e5ff668ff31c160be6c0c78e4d2a0e820e4e0ad8e85211d882b5a34"
       },
       {
         "path": "src/utils/flowSceneBatchAtomic.js",
@@ -946,7 +949,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
-        "sha256": "7029315519b73841f64af24e19eddf1023d24c5e3c710369ffae49cef8400bba"
+        "sha256": "7d6c265fc30f6840802c66b4981d5e554b76cfe9657fedd8645fbab3f081d18c"
       },
       {
         "path": "test/contracts/rtk-word-tables.contract.test.js",
@@ -1006,7 +1009,7 @@
       },
       {
         "path": "test/unit/document-media.test.js",
-        "sha256": "aa7519e71fbc9288dc1b914cd08b4c1c9c6e0835d2d55050d9de18c1261e1e1b"
+        "sha256": "56cf1d0a17f8456ab1497f49766ead8f51c247b4f27a299085b8be5834e306fa"
       },
       {
         "path": "docs/tasks/2026-09-25--word-inline-png-display-size.md",
@@ -1014,7 +1017,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media-editor.contract.test.js",
-        "sha256": "64ff226f0351189a0cff3730fe57d72b4abe34a8f1d3368245205248345fd0eb"
+        "sha256": "9040de413fb1961f2a027bacca7f501bf61b746bcb846ec256922c1fa2a56113"
       },
       {
         "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
@@ -1315,6 +1318,14 @@
       {
         "path": "docs/tasks/2026-09-27--word-native-comment-intake.md",
         "sha256": "e973969eb840508b5b1b242d85ad3f1cd5ffb1764a3fbc6b07e4fca9511bb248"
+      },
+      {
+        "path": "src/io/documentJpeg.js",
+        "sha256": "9805c24f0da2c8609c5d6d4f499c1d464bfcab25bc0240b470aa7d194a8daf9d"
+      },
+      {
+        "path": "test/fixtures/document-jpeg-fixtures.cjs",
+        "sha256": "c4c6789855aa6f151e96f4278fe9db87b0ae5e069a83e102e498dec0debac304"
       }
     ],
     "followupRepair": {
