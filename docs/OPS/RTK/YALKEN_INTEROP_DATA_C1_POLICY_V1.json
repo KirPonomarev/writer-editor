@@ -1367,6 +1367,10 @@
       {
         "path": "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
         "sha256": "59c13510df6c5e55884432f5c68765a177cab0c4e15a1dc1387ce881bdfca906"
+      },
+      {
+        "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+        "sha256": "75587517e1df54a1dbc18ecd9b247ddc30ac5eeab4f83a24a32d71c14ff1f844"
       }
     ],
     "followupRepair": {
