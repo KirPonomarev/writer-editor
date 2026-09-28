@@ -5070,7 +5070,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const budgetState = createParserBudgetState(budgets, cryptoPort);
   const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   const tokens = scan.tokens.filter(t => isWordToken(t, 'ins') || isWordToken(t, 'del'));
-  if (!tokens.length) return { xml: documentXml, revisions: [] };
+  if (!tokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
   const unsupported = new Set(['moveFrom', 'moveTo', 'moveFromRangeStart', 'moveToRangeStart', 'rPrChange', 'pPrChange',
@@ -5115,5 +5115,10 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   }
   let xml = documentXml;
   for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
-  return { xml, revisions };
+  let currentXml = documentXml;
+  const currentEdits = tokens.flatMap(token => token.localName === 'del'
+    ? [{ from: token.openStart, to: token.closeEnd }]
+    : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
+  for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
+  return { xml, currentXml, revisions };
 }

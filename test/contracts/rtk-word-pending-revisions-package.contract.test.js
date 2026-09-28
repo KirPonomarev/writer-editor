@@ -66,6 +66,21 @@ test('malformed/nested/structural/composite revisions never flatten into accepte
   }
 });
 
+test('full-manuscript publication gate independently projects Current from native pending XML', async () => {
+  const { b, doc } = await parse(pack());
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/synthetic',
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', text: 'До новое после.', doc, order: 0 }] });
+  const bytes = buildDocxReviewPacketBuffer(source);
+  const crypto = require('node:crypto');
+  const cryptoPort = { sha256Text: value => 'sha256:' + crypto.createHash('sha256').update(value).digest('hex'),
+    sha256Json: value => 'sha256:' + crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex'), byteLength: value => Buffer.byteLength(value) };
+  const projection = b.extractDocxReviewTransportWordDocumentProjection({ bytes }, { cryptoPort });
+  assert.equal(projection.ok, true, JSON.stringify(projection));
+  const current = b.visibleSceneTextsFromWordDocumentXml(projection.documentXml, source.localAuthorityCapsule.exportMap, { cryptoPort });
+  assert.equal(current.ok, true, JSON.stringify(current));
+  assert.deepEqual(current.sceneTexts, ['До новое после.']);
+});
+
 test('native local-file preview and main source sanitizer retain the complete pending ledger before safe-create', async () => {
   const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
   const b = await import('../../src/io/revisionBridge/index.mjs');

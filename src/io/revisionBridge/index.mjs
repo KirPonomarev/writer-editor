@@ -3724,7 +3724,17 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
 }
 
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
-  const xml = normalizeString(documentXml);
+  let xml = normalizeString(documentXml);
+  let hasPendingRevisions = false;
+  try {
+    const pending = extractPendingTextRevisionSourceV1(xml, { ...options, cryptoPort: options.cryptoPort || {
+      sha256Text: text => `sha256:${sha256Hex(text)}`,
+      sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+      byteLength: text => new TextEncoder().encode(text).length,
+    } });
+    hasPendingRevisions = pending.revisions.length > 0;
+    xml = pending.currentXml;
+  } catch (error) { return { ok: false, code: error.message }; }
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
   const sceneOrderBySceneId = new Map();
   const sceneIdByBookmarkName = new Map();
@@ -3760,7 +3770,7 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
   // Keep the existing clean-producer projection for ordinary documents. The
   // final bounded package parser still executes in the publication gate.
   // Table ownership requires the namespace-aware grid projection below.
-  const scanned = hasTables ? extractReviewTransportFormattingRunsV2(xml, {
+  const scanned = hasTables || hasPendingRevisions ? extractReviewTransportFormattingRunsV2(xml, {
     ...options,
     cryptoPort: options.cryptoPort || {
       sha256Text: text => `sha256:${sha256Hex(text)}`,
