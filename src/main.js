@@ -14650,6 +14650,11 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
           mutation.scope = 'manuscript';
           mutation.body = manuscriptNoteModel.validateNoteBody(body).text;
         } else if (!current?.manuscript || current.manuscript.reference.sceneId !== source.sceneId) throw Error('NOTE_ACTIVE_SCENE_REQUIRED');
+        if (mutation.op === 'restore') {
+          const text = manuscriptNoteModel.sceneText(source.raw), reference = current.manuscript.reference;
+          if (reference.sourceTextSha256 !== manuscriptNoteModel.sha(text)
+            || !manuscriptNoteModel.boundary(text, reference.offsetUtf16)) throw Error('NOTE_REFERENCE_STALE');
+        }
         const result = context.notesStorage.applyNotesMutation(fresh.current.document, mutation, {
           projectId: context.projectId, ...(typeof options.now === 'function' ? { now: options.now } : {}),
         });

@@ -123,6 +123,13 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   assert.equal(writes, 0);
   const result = await run(input());assert.equal(result.ok, true, JSON.stringify(result));assert.equal(writes, 1);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'notes.json'))).notes[0].manuscript.body, body());
+  const created = document.notes[0];created.deleted = true;
+  const referenceHash = created.manuscript.reference.sourceTextSha256;
+  created.manuscript.reference.sourceTextSha256 = model.sha('Changed scene');
+  const restore = () => sandbox.runManuscriptNotesMutation('notes.restore', { ...input(), noteId: created.id }, { op: 'restore' }, context);
+  assert.equal((await restore()).reason, 'NOTE_REFERENCE_STALE');assert.equal(writes, 1);assert.equal(created.deleted, true);
+  created.manuscript.reference.sourceTextSha256 = referenceHash;
+  assert.equal((await restore()).ok, true);assert.equal(writes, 2);assert.equal(document.notes[0].deleted, false);
 });
 
 test('actual editor offset mapping stops at the matched paragraph and counts hard breaks', () => {

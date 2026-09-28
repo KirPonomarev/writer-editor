@@ -737,7 +737,7 @@ let notesWorkspaceState = {
   notes: [],
   counts: { total: 0, deleted: 0, inbox: 0 },
   selectedId: '',
-  includeDeleted: false,
+  includeDeleted: true,
 };
 let manuscriptBodyEditor = null;
 let manuscriptBodyHost = null;
