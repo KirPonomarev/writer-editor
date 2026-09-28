@@ -27,5 +27,7 @@ export const WordPendingRevisions = Extension.create({
 export function setCheckedDocument(editor, doc) {
   model.readLedger(doc);
   return editor.chain().command(({ tr }) => { tr.setMeta('wordPendingRevisionsExternal', true); return true; })
-    .setContent(doc, false).run();
+    .setContent(doc, { emitUpdate: false, errorOnInvalidContent: true }).command(({ tr }) => {
+      tr.setDocAttribute(model.KEY, doc.attrs?.[model.KEY] || null); return true;
+    }).run();
 }

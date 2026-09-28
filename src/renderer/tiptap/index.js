@@ -61,7 +61,8 @@ function readEditorDocument(editor) {
 
   try {
     return canonicalizeDocumentJson(editor.getJSON())
-  } catch {
+  } catch (error) {
+    if (editor.getJSON()?.attrs?.wordPendingRevisions) throw error
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
 }

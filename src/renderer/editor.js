@@ -1432,6 +1432,8 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
   }
   if (
     reviewSurfaceIsPlainObject(source.revisionSession)
+    || reviewSurfaceIsPlainObject(source.pendingRevisions)
+    || reviewSurfaceIsPlainObject(source.commentAuthoring)
     || reviewSurfaceIsPlainObject(source.session)
     || reviewSurfaceIsPlainObject(source.exactTextPlanPreview)
     || reviewSurfaceIsPlainObject(source.planPreview)

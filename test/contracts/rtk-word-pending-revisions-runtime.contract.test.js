@@ -91,3 +91,40 @@ test('real ProseMirror schema preserves ledger; typing, formatting and forged me
     .setMeta('wordPendingRevisionsExternal', true));
   assert.equal(model.projection(state.doc.toJSON()).current, 'old');
 });
+
+test('renderer accepts an ordinary saved-scene review projection without requiring a returned Word session', () => {
+  const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const source = renderer.slice(renderer.indexOf('function reviewSurfaceResolveIncomingPayload('), renderer.indexOf('function reviewSurfaceNormalizeFormattingReturn('));
+  const context = vm.createContext({ reviewSurfaceIsPlainObject: v => v && typeof v === 'object' && !Array.isArray(v) });
+  vm.runInContext(source, context);
+  for (const value of [{ pendingRevisions: { available: true, revisions: [] } }, { commentAuthoring: { available: true, threads: [] } }]) {
+    assert.equal(context.reviewSurfaceResolveIncomingPayload(value), value);
+    assert.equal(context.reviewSurfaceResolveIncomingPayload({ reviewSurface: value }), value);
+  }
+});
+
+test('checked Tiptap setContent publishes root ledger and clears it on ordinary scene navigation without an authoring update', async () => {
+  const [{ getSchema, commands }, { default: StarterKit }, { WordPendingRevisions, setCheckedDocument }, { EditorState }] = await Promise.all([
+    import('@tiptap/core'), import('@tiptap/starter-kit'), import('../../src/renderer/tiptap/wordPendingRevisions.mjs'), import('@tiptap/pm/state'),
+  ]);
+  const schema = getSchema([StarterKit, WordPendingRevisions]);
+  let state = EditorState.create({ schema, plugins: WordPendingRevisions.config.addProseMirrorPlugins.call({}) });
+  const editor = { schema, options: { enableContentCheck: true }, chain() {
+    const tr = state.tr;
+    const chain = {
+      command(fn) { assert.equal(fn({ tr }), true); return chain; },
+      setContent(doc, options) {
+        assert.equal(commands.setContent(doc, options)({ editor, tr, dispatch() {}, commands: {} }), true); return chain;
+      },
+      run() { assert.equal(tr.getMeta('preventUpdate'), true); state = state.apply(tr); return true; },
+    };
+    return chain;
+  } };
+  assert.equal(setCheckedDocument(editor, document()), true);
+  assert.equal(model.projection(state.doc.toJSON()).current, 'new');
+  assert.equal(setCheckedDocument(editor, model.decide(document(), { action: 'rejectAll' }).doc), true);
+  assert.equal(model.projection(state.doc.toJSON()).current, 'old');
+  assert.equal(setCheckedDocument(editor, { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'ordinary' }] }] }), true);
+  assert.equal(model.readLedger(state.doc.toJSON()), null);
+  assert.equal(state.doc.textContent, 'ordinary');
+});

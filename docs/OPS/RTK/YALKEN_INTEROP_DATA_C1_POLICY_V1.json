@@ -546,7 +546,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "145bf9bc33f853fa36a999c34367dc786ea3f662291c14c5126864c20a73ef18"
+        "sha256": "b075d3ac544b3ef9622aaa364dd7a24d690d33d4b8cc60e952ff0381d4371be4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -674,7 +674,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "ac742192d4bdc842ff1c272e2174a1cb28ec4dc3c29b45926adcbe7dfcfb93db"
+        "sha256": "08f3f061e3eade219287943778bbf6c21333d7114da3de383f85dea7c5f2cde5"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -710,7 +710,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "a6fd17271ea649e1e0059f04fd7daf41408dcc091b1bedea6c868b8f07dedf23"
+        "sha256": "141541d535dc7bd9e608139321bf295f8d341ae2aabbc45824511e684974e072"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1410,7 +1410,7 @@
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
-        "sha256": "b55aa3582caa4ade055ad3d1632bced4012b53cabd78d1d08430c2f3f14bb28d"
+        "sha256": "25e768f31206d41c329edc4b5cfe98952990f765d05e213f6d517fad37780b00"
       },
       {
         "path": "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
@@ -1422,7 +1422,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
-        "sha256": "b31e6901d46e628f61506780dd35a28cb83ef3716675ce1ebdef7261093716d3"
+        "sha256": "cf85ba2993e129717c11cda26fee7c32bc89bfb00f5076615a65318f6233ea2b"
       }
     ],
     "followupRepair": {
