@@ -62,7 +62,7 @@ function validateSource(doc) {
   }
 }
 function validateLedger(input) {
-  assert(object(input) && JSON.stringify(input).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
+  assert(object(input) && new TextEncoder().encode(JSON.stringify(input)).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
   assert(exact(input, ['schemaVersion', 'source', 'revisions', 'undo', 'redo']) && input.schemaVersion === 1);
   validateSource(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length > 0 && input.revisions.length <= 1024);
@@ -72,8 +72,9 @@ function validateLedger(input) {
     assert(/^revision-[1-9]\d{0,3}$/u.test(r.id) && !ids.has(r.id)); ids.add(r.id);
     assert(typeof r.nativeId === 'string' && r.nativeId.length <= 80 && typeof r.author === 'string' && r.author.length <= 1024);
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
+    assert(![r.nativeId, r.author, r.date, r.dateUtc].some(value => /[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)));
     assert(['insert', 'delete'].includes(r.operation) && status(r.state));
-    assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= previousParagraph && r.paragraphIndex < input.source.content.length);
+    assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < input.source.content.length);
     const p = input.source.content[r.paragraphIndex], text = p.content.map(textOf).join('');
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to) && r.to > r.from && (r.paragraphIndex !== previousParagraph || r.from >= previousEnd));
     previousParagraph = r.paragraphIndex; previousEnd = r.to;

@@ -5077,6 +5077,8 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     'tbl', 'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
     'commentRangeStart', 'commentRangeEnd', 'commentReference', 'numPr', 'ruby', 'sym', 'ptab']);
   if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+  const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
+  if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
   const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
   const edits = [], revisions = [], ids = new Set();
   const allowed = new Set(['r', 'rPr', 't', 'delText', 'tab', 'br', 'cr', 'noBreakHyphen', 'softHyphen', 'lastRenderedPageBreak',

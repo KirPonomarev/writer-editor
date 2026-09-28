@@ -43,3 +43,8 @@ referenceEvidence: Lazyweb document tracked-changes accept/reject search returne
 adjacent Butterdocs249875, PandaDoc246548 and Dropbox241405 only; no claim of an
 exact tracked-changes reference. Reuse established Yalken Review interaction.
 rollback: one delivery revert, preserving canonical scenes and recovery data.
+
+Bounded follow-ups: authenticated return into an existing pending ledger, new
+recording, and restoration of annotation coordinates across decisions require
+separate extensions. This delivery blocks pending-source return and decisions
+with live scene comments/manuscript notes instead of flattening or losing them.

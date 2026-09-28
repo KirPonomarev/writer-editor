@@ -9,6 +9,7 @@ const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS = Object.freeze([
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
   'cmd.project.review.editComment',
+  'cmd.project.review.decidePendingRevision',
   'cmd.project.review.activateDocxReviewPreviewSession',
   'cmd.project.review.applyExactTextChangesBatch',
   'cmd.project.review.applyFormattingReturn',

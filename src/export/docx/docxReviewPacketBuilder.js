@@ -115,6 +115,7 @@ function normalizeReviewPacketBlocks(input = {}) {
       sceneOrdinal: Number.isInteger(block.sceneOrdinal) && block.sceneOrdinal >= 0 ? block.sceneOrdinal : null,
       sceneTitle: normalizeString(block.sceneTitle),
       sceneBoundary: block.sceneBoundary === true,
+      ...(Array.isArray(block.pendingRevisionSegments) ? { pendingRevisionSegments: JSON.parse(JSON.stringify(block.pendingRevisionSegments)) } : {}),
       paraId: normalizeString(block.paraId).replace(/[^a-fA-F0-9]/g, '').slice(0, 8).padStart(8, '0'),
       textId: normalizeString(block.textId).replace(/[^a-fA-F0-9]/g, '').slice(0, 8).padStart(8, '0'),
       text: normalizeDocxXmlText(block.text),

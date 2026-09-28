@@ -7693,6 +7693,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_TABLE_UNCLOSED',
   ].map(reason => [reason, 'CONTENT_INVALID']),
  ]);
+for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
@@ -10304,7 +10305,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure && pendingSource.revisions.length) {
-      if (parsed.diagnostics.length || parsed.contentPreview.paragraphs.some(p => p.table || p.list || p.blockKind || p.blockquoteDepth || p.sectionBreakType)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
+      if (parsed.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd'].includes(d.tagName)) || parsed.contentPreview.paragraphs.some(p => p.table || p.list || p.blockKind || p.blockquoteDepth || p.sectionBreakType)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
       const source = rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
       source.content.forEach(p => { p.content ||= []; });

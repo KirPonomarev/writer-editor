@@ -1139,6 +1139,8 @@ let flowModeState = {
   dirty: false,
 };
 let reviewSurfaceState = null;
+let pendingRevisionBusy = false;
+let pendingRevisionNotice = '';
 let reviewSurfaceExactTextApplyTransientState = null;
 let stage10LifecycleSurfaceState = {
   status: 'idle',
@@ -1880,6 +1882,41 @@ function guardWordCommentDraftUnload(event) {
 }
 window.addEventListener('beforeunload', guardWordCommentDraftUnload);
 
+function renderPendingRevisions(projection) {
+  if (!projection || !projection.available) return '';
+  const esc = reviewSurfaceEscapeHtml;
+  const button = (action, label, id = '', disabled = false) => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-pending-revision-action="${action}" data-revision-id="${esc(id)}" ${pendingRevisionBusy || disabled ? 'disabled' : ''}>${label}</button>`;
+  const revisions = reviewSurfaceArray(projection.revisions);
+  const pending = revisions.some(r => r.state === 'pending');
+  return `<section class="right-rail-review-group" aria-label="Непринятые исправления Word"><h3>Исправления Word</h3>
+    <p>Решения сохраняются вместе со сценой. Пока действует история исправлений, текст доступен для чтения.</p>
+    <details><summary>Исходный текст · Original</summary><pre style="white-space:pre-wrap">${esc(projection.original)}</pre></details>
+    <details><summary>Текущий текст · Current</summary><pre style="white-space:pre-wrap">${esc(projection.current)}</pre></details>
+    <div class="right-rail-review-item-meta">${button('acceptAll', 'Принять все', '', !pending)}${button('rejectAll', 'Отклонить все', '', !pending)}${button('undo', 'Отменить решение', '', !projection.canUndo)}${button('redo', 'Повторить решение', '', !projection.canRedo)}</div>
+    ${revisions.map(r => `<article class="right-rail-review-item"><p>${r.operation === 'insert' ? 'Вставка' : 'Удаление'}${r.groupId ? ' · часть замены' : ''} · ${esc(r.state === 'pending' ? 'ожидает решения' : r.state === 'accepted' ? 'принято' : 'отклонено')}</p><p>${esc(r.author || 'Автор не указан')} · ${esc(r.dateUtc || r.date || 'Дата не указана')}</p><blockquote>${esc(r.text)}</blockquote>${r.state === 'pending' ? `<div class="right-rail-review-item-meta">${button('accept', r.groupId ? 'Принять замену' : 'Принять', r.id)}${button('reject', r.groupId ? 'Отклонить замену' : 'Отклонить', r.id)}</div>` : ''}</article>`).join('')}
+    <p role="status">${esc(pendingRevisionNotice)}</p></section>`;
+}
+
+async function handlePendingRevisionAction(button) {
+  const p = reviewSurfaceState?.pendingRevisions;
+  if (!p?.available || pendingRevisionBusy || button.disabled) return;
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) {
+    pendingRevisionNotice = 'Сначала сохраните или отмените черновик комментария или сноски.'; renderReviewSurface(); return;
+  }
+  pendingRevisionBusy = true; pendingRevisionNotice = 'Сохранение решения…'; renderReviewSurface();
+  try {
+    const result = reviewSurfaceUnwrapCommandResult(await invokePreloadUiCommandBridge('cmd.project.review.decidePendingRevision', {
+      projectId: p.projectId, sceneId: p.sceneId, subjectId: p.subjectId, expectedSceneSha256: p.expectedSceneSha256,
+      action: button.dataset.pendingRevisionAction,
+      ...(button.dataset.revisionId ? { revisionId: button.dataset.revisionId } : {}),
+    }));
+    if (!result?.ok) throw Error(result?.error?.reason || result?.reason || result?.code || 'Решение не подтверждено');
+    pendingRevisionNotice = result.changed === false ? 'Решение уже учтено.' : 'Решение сохранено.';
+    await loadReviewSurfaceFromQuery();
+  } catch (error) { pendingRevisionNotice = 'Не удалось сохранить: ' + error.message; }
+  finally { pendingRevisionBusy = false; renderReviewSurface(); }
+}
+
 function renderWordCommentAuthoring(projection) {
   const p = projection || {};
   const escape = reviewSurfaceEscapeHtml;
@@ -2042,6 +2079,7 @@ function reviewSurfaceNormalizeState(input = {}) {
   return {
     status,
     commentAuthoring: reviewSurfaceIsPlainObject(source.commentAuthoring) ? source.commentAuthoring : null,
+    pendingRevisions: reviewSurfaceIsPlainObject(source.pendingRevisions) ? source.pendingRevisions : null,
     revisionSession,
     exactTextPlanPreview,
     structuralManualReviewPreview,
@@ -2487,6 +2525,7 @@ function buildReviewSurfaceViewModel(input = {}) {
     lanes: reviewSurfaceBuildLanes(state, exactTextPreview),
     commentLane: reviewSurfaceBuildCommentLane(state),
     commentAuthoring: state.commentAuthoring,
+    pendingRevisions: state.pendingRevisions,
     sourceMode: state.sourceMode,
     lifecycleState: state.lifecycleState,
     identity: {
@@ -3084,6 +3123,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   `;
 
   return `
+    ${renderPendingRevisions(viewModel.pendingRevisions)}
     ${renderWordCommentAuthoring(viewModel.commentAuthoring)}
     ${errorMarkup}
     ${reconciliationMarkup}
@@ -18725,6 +18765,8 @@ async function handleStage10LifecycleProductCommand(button) {
 async function handleReviewSurfaceExactTextApplyClick(event) {
   const target = event?.target;
   if (!(target instanceof Element) || !(reviewSurfaceHost instanceof HTMLElement)) return;
+  const pendingButton = target.closest('[data-pending-revision-action]');
+  if (pendingButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(pendingButton)) { await handlePendingRevisionAction(pendingButton); return; }
   const wordCommentButton = target.closest('[data-word-comment-action]');
   if (wordCommentButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(wordCommentButton)) {
     await handleWordCommentAction(wordCommentButton); return;
