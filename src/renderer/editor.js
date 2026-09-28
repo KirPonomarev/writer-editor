@@ -10,12 +10,14 @@ import {
   redoTiptap,
   runTiptapFormatCommand,
   setTiptapDocumentSnapshot,
+  setTiptapManuscriptNoteProjection,
   setTiptapFormattingStateHandler,
   setTiptapSelectionOffsets,
   setTiptapPlainText,
   setTiptapRuntimeHandlers,
   undoTiptap,
 } from './tiptap/index.js';
+import { createManuscriptBodyEditor } from './tiptap/manuscriptNotes.mjs';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
@@ -737,6 +739,20 @@ let notesWorkspaceState = {
   selectedId: '',
   includeDeleted: false,
 };
+let manuscriptBodyEditor = null;
+let manuscriptBodyHost = null;
+let manuscriptKindSelect = null;
+let manuscriptBodyIdentity = '';
+let manuscriptInsertionPoint = 0;
+let manuscriptProjectionRequest = 0;
+const manuscriptDrafts = new Map();
+let notesMutationPending = 0;
+function guardManuscriptNoteDraftUnload(event) {
+  if (!manuscriptDrafts.size && !notesMutationPending) return;
+  event.preventDefault(); event.returnValue = false; event.stopImmediatePropagation();
+  setNotesWorkspaceStatus(notesMutationPending ? 'Дождитесь сохранения сноски.' : 'Закрытие отменено: сохраните текст сноски или отмените изменения.');
+}
+window.addEventListener('beforeunload', guardManuscriptNoteDraftUnload, { capture: true });
 let currentRightTab = 'inspector';
 let currentAtlasSurface = 'currentScene';
 let pendingDocxImportPreviewValue = null;
@@ -11556,6 +11572,7 @@ function normalizeNotesWorkspaceReadModel(result = {}) {
             : {},
           conversions: Array.isArray(note.conversions) ? note.conversions : [],
           contentHash: typeof note.contentHash === 'string' ? note.contentHash : '',
+          ...(note.manuscript ? { manuscript: note.manuscript } : {}),
         }))
         .filter((note) => note.id)
     : [];
@@ -11566,6 +11583,8 @@ function normalizeNotesWorkspaceReadModel(result = {}) {
     ok: result.ok === true,
     state: typeof result.state === 'string' ? result.state : 'unavailable',
     notes,
+    documentHash: typeof result.documentHash === 'string' ? result.documentHash : '',
+    manuscriptAuthoring: result.manuscriptAuthoring || { available: false },
     counts: {
       total: Number.isInteger(counts.total) ? Math.max(0, counts.total) : notes.filter((note) => !note.deleted).length,
       deleted: Number.isInteger(counts.deleted) ? Math.max(0, counts.deleted) : notes.filter((note) => note.deleted).length,
@@ -11679,6 +11698,7 @@ function renderNotesWorkspaceDetail() {
   if (!hasNote) {
     if (notesDetailTitle) notesDetailTitle.value = '';
     if (notesDetailBody) notesDetailBody.value = '';
+    if (manuscriptBodyHost) manuscriptBodyHost.hidden = true;
     return;
   }
   if (notesDetailMeta) {
@@ -11689,13 +11709,104 @@ function renderNotesWorkspaceDetail() {
   }
   if (notesDetailTitle && notesDetailTitle.value !== note.title) notesDetailTitle.value = note.title;
   if (notesDetailBody && notesDetailBody.value !== note.body) notesDetailBody.value = note.body;
+  if (notesDetailBody) notesDetailBody.hidden = Boolean(note.manuscript);
+  if (notesDetailTitle) notesDetailTitle.hidden = Boolean(note.manuscript);
+  renderManuscriptNoteBody(note);
   if (notesSaveButton) notesSaveButton.disabled = note.deleted;
   if (notesAttachSceneButton) {
     notesAttachSceneButton.disabled = note.deleted || !currentDocumentId || currentDocumentKind !== 'scene';
+    notesAttachSceneButton.textContent = note.manuscript ? 'К текущей позиции' : 'К сцене';
   }
-  if (notesConvertSceneButton) notesConvertSceneButton.disabled = note.deleted || !note.body.trim();
+  if (notesConvertSceneButton) {
+    notesConvertSceneButton.hidden = Boolean(note.manuscript);
+    notesConvertSceneButton.disabled = note.deleted || !note.body.trim();
+  }
   if (notesDeleteButton) notesDeleteButton.hidden = note.deleted;
   if (notesRestoreButton) notesRestoreButton.hidden = !note.deleted;
+}
+
+function renderManuscriptNoteBody(note) {
+  if (!note?.manuscript) { if (manuscriptBodyHost) manuscriptBodyHost.hidden = true; return; }
+  if (!manuscriptBodyHost) {
+    manuscriptBodyHost = document.createElement('section'); manuscriptBodyHost.className = 'manuscript-note-editor';
+    manuscriptBodyHost.setAttribute('aria-label', 'Сноска рукописи');
+    const label = document.createElement('label'); label.textContent = 'Тип сноски';
+    manuscriptKindSelect = document.createElement('select'); manuscriptKindSelect.className = 'notes-button';
+    manuscriptKindSelect.setAttribute('aria-label', 'Тип сноски');
+    for (const [value, text] of [['footnote', 'Сноска'], ['endnote', 'Концевая сноска']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; manuscriptKindSelect.append(option);
+    }
+    label.append(manuscriptKindSelect); manuscriptBodyHost.append(label);
+    notesDetailBody?.before(manuscriptBodyHost);
+    const changed = body => {
+      if (!manuscriptBodyIdentity) return;
+      manuscriptDrafts.set(manuscriptBodyIdentity, { body, kind: manuscriptKindSelect.value });
+      setNotesWorkspaceStatus('Сноска изменена — сохраните её');
+    };
+    manuscriptBodyEditor = createManuscriptBodyEditor(manuscriptBodyHost, { onChange: changed, onSave: () => { void saveSelectedNote(); } });
+    manuscriptKindSelect.addEventListener('change', () => changed(manuscriptBodyEditor.getJSON()));
+    const discard = document.createElement('button'); discard.type = 'button'; discard.className = 'notes-button'; discard.textContent = 'Отменить изменения сноски';
+    discard.addEventListener('click', () => {
+      if (notesMutationPending) return;
+      manuscriptDrafts.delete(manuscriptBodyIdentity); renderNotesWorkspaceDetail(); setNotesWorkspaceStatus('Изменения сноски отменены');
+    });
+    manuscriptBodyHost.append(discard);
+  }
+  manuscriptBodyHost.hidden = false;
+  const identity = `${currentProjectId}:${note.id}`, draft = manuscriptDrafts.get(identity);
+  if (identity !== manuscriptBodyIdentity || !draft) {
+    manuscriptBodyIdentity = identity;
+    manuscriptBodyEditor.setDocument(draft?.body || note.manuscript.body);
+    manuscriptKindSelect.value = draft?.kind || note.manuscript.kind;
+  }
+  manuscriptBodyEditor.setEditable(!note.deleted); manuscriptKindSelect.disabled = note.deleted;
+  if (notesDetailMeta) notesDetailMeta.textContent = note.manuscript.kind === 'endnote' ? 'Концевая сноска · входит в экспорт Word' : 'Сноска · входит в экспорт Word';
+}
+
+function manuscriptMutationBinding() {
+  const source = notesWorkspaceState.manuscriptAuthoring;
+  if (!source?.available) { setNotesWorkspaceStatus('Сначала откройте и сохраните сцену со сноской'); return null; }
+  return { projectId: currentProjectId, subjectId: source.subjectId,
+    expectedSceneSha256: source.expectedSceneSha256, expectedDocumentHash: notesWorkspaceState.documentHash };
+}
+
+async function refreshManuscriptNoteReferences() {
+  if (!isTiptapMode || !currentProjectId || !currentDocumentId) return;
+  const request = ++manuscriptProjectionRequest, projectId = currentProjectId, documentId = currentDocumentId;
+  const result = await invokeWorkspaceQueryBridge(NOTES_WORKSPACE_QUERY_ID, { projectId });
+  if (request !== manuscriptProjectionRequest || projectId !== currentProjectId || documentId !== currentDocumentId) return;
+  setTiptapManuscriptNoteProjection(result?.ok && result.projectId === projectId ? result : null);
+}
+
+async function createManuscriptNote() {
+  const projectId = currentProjectId, documentId = currentDocumentId;
+  const saved = await dispatchUiCommand('cmd.project.save', {});
+  if (!saved?.ok || projectId !== currentProjectId || documentId !== currentDocumentId) {
+    setNotesWorkspaceStatus('Сохраните сцену перед добавлением сноски'); return;
+  }
+  await refreshNotesWorkspace();
+  if (projectId !== currentProjectId || documentId !== currentDocumentId) return;
+  const binding = manuscriptMutationBinding(); if (!binding) return;
+  const created = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_CREATE, { ...binding,
+    manuscript: { kind: 'footnote', offsetUtf16: manuscriptInsertionPoint, body: { type: 'doc', content: [{ type: 'paragraph' }] } },
+  }, 'Сноска добавлена');
+  if (created && projectId === currentProjectId) manuscriptBodyEditor?.focus();
+}
+
+async function saveManuscriptNote(note, reanchor = false) {
+  const binding = manuscriptMutationBinding(); if (!binding || !manuscriptBodyEditor) return;
+  if (!reanchor && note.manuscript.reference.sceneId !== notesWorkspaceState.manuscriptAuthoring.sceneId) {
+    setNotesWorkspaceStatus('Откройте сцену этой сноски перед редактированием'); return;
+  }
+  const identity = `${currentProjectId}:${note.id}`, body = manuscriptBodyEditor.getJSON(), kind = manuscriptKindSelect.value;
+  const result = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_UPDATE, { ...binding, noteId: note.id,
+    manuscript: { kind, body, offsetUtf16: reanchor ? manuscriptInsertionPoint : note.manuscript.reference.offsetUtf16 },
+  }, 'Сноска сохранена');
+  const latest = manuscriptDrafts.get(identity);
+  if (result && (!latest || (JSON.stringify(latest.body) === JSON.stringify(body) && latest.kind === kind))) {
+    manuscriptDrafts.delete(identity);
+    renderNotesWorkspaceDetail();
+  }
 }
 
 function renderNotesWorkspace() {
@@ -11716,6 +11827,7 @@ function getNotesCommandResult(dispatchResult) {
 
 async function refreshNotesWorkspace(options = {}) {
   if (!notesWorkspace) return;
+  const requestedProjectId = currentProjectId;
   notesWorkspaceState = {
     ...notesWorkspaceState,
     state: 'loading',
@@ -11727,6 +11839,7 @@ async function refreshNotesWorkspace(options = {}) {
     scope: '',
     includeDeleted: notesWorkspaceState.includeDeleted,
   });
+  if (requestedProjectId !== currentProjectId) return;
   if (!result || result.ok === false) {
     notesWorkspaceState = {
       ...notesWorkspaceState,
@@ -11745,12 +11858,15 @@ async function refreshNotesWorkspace(options = {}) {
     state: readModel.state === 'ready' ? 'ready' : readModel.state,
     notes: readModel.notes,
     counts: readModel.counts,
+    documentHash: readModel.documentHash,
+    manuscriptAuthoring: readModel.manuscriptAuthoring,
     selectedId: selectedStillExists ? notesWorkspaceState.selectedId : (readModel.notes[0]?.id || ''),
   };
   renderNotesWorkspace();
 }
 
 function showNotesWorkspace() {
+  if (isTiptapMode) manuscriptInsertionPoint = getTiptapSelectionOffsets().end;
   hideManualMapPlanWorkspace();
   hideWriterHomeSurface();
   hideAuthoringSurfacesSurface();
@@ -11771,6 +11887,7 @@ function hideNotesWorkspace() {
   notesWorkspace?.setAttribute('hidden', '');
   notesWorkspace?.classList.remove('is-active');
   mainContent?.classList.remove('main-content--notes');
+  void refreshManuscriptNoteReferences();
 }
 
 function showProjectSearchWorkspace() {
@@ -11830,18 +11947,24 @@ function hideManualMapPlanWorkspace() {
 }
 
 async function runNotesMutation(commandId, payload, successStatus) {
+  notesMutationPending++;
+  try {
+  const requestProjectId = currentProjectId, requestSelectedId = notesWorkspaceState.selectedId;
   const result = await dispatchUiCommand(commandId, payload);
+  if (requestProjectId !== currentProjectId) return null;
   const notesResult = getNotesCommandResult(result);
   if (!notesResult) {
     setNotesWorkspaceStatus('Не сохранено');
     return null;
   }
-  if (notesResult.note && typeof notesResult.note.id === 'string') {
+  if (notesResult.note && typeof notesResult.note.id === 'string' && requestSelectedId === notesWorkspaceState.selectedId) {
     notesWorkspaceState.selectedId = notesResult.note.id;
   }
   setNotesWorkspaceStatus(successStatus || 'Сохранено');
   await refreshNotesWorkspace();
+  void refreshManuscriptNoteReferences();
   return notesResult;
+  } finally { notesMutationPending--; }
 }
 
 async function createInboxNoteFromCapture() {
@@ -11867,6 +11990,7 @@ async function createInboxNoteFromCapture() {
 async function saveSelectedNote() {
   const note = getSelectedNotesWorkspaceNote();
   if (!note || note.deleted) return;
+  if (note.manuscript) { await saveManuscriptNote(note); return; }
   await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_UPDATE, {
     projectId: currentProjectId,
     noteId: note.id,
@@ -11878,6 +12002,7 @@ async function saveSelectedNote() {
 async function attachSelectedNoteToActiveScene() {
   const note = getSelectedNotesWorkspaceNote();
   if (!note || note.deleted || !currentDocumentId || currentDocumentKind !== 'scene') return;
+  if (note.manuscript) { await saveManuscriptNote(note, true); return; }
   await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_ATTACH_SCENE, {
     projectId: currentProjectId,
     noteId: note.id,
@@ -22279,6 +22404,10 @@ if (leftTabsHost) {
 }
 
 if (notesCaptureForm) {
+  const createNoteButton = document.createElement('button'); createNoteButton.type = 'button';
+  createNoteButton.className = 'notes-button'; createNoteButton.textContent = 'Добавить сноску';
+  createNoteButton.addEventListener('click', () => { void createManuscriptNote(); });
+  notesCaptureForm.querySelector('.notes-capture__footer')?.append(createNoteButton);
   notesCaptureForm.addEventListener('submit', (event) => {
     event.preventDefault();
     void createInboxNoteFromCapture();
@@ -22322,19 +22451,31 @@ notesConvertSceneButton?.addEventListener('click', () => {
 notesDeleteButton?.addEventListener('click', () => {
   const note = getSelectedNotesWorkspaceNote();
   if (!note || note.deleted) return;
+  const binding = note.manuscript ? manuscriptMutationBinding() : {};
+  if (!binding) return;
   void runNotesMutation(EXTRA_COMMAND_IDS.NOTES_DELETE, {
     projectId: currentProjectId,
     noteId: note.id,
+    ...binding,
   }, 'Заметка удалена');
 });
 
 notesRestoreButton?.addEventListener('click', () => {
   const note = getSelectedNotesWorkspaceNote();
   if (!note || !note.deleted) return;
+  const binding = note.manuscript ? manuscriptMutationBinding() : {};
+  if (!binding) return;
   void runNotesMutation(EXTRA_COMMAND_IDS.NOTES_RESTORE, {
     projectId: currentProjectId,
     noteId: note.id,
+    ...binding,
   }, 'Заметка возвращена');
+});
+
+window.addEventListener('yalken:manuscript-note-open', event => {
+  if (event.detail?.projectId !== currentProjectId || typeof event.detail.noteId !== 'string') return;
+  notesWorkspaceState.selectedId = event.detail.noteId;
+  showNotesWorkspace();
 });
 
 projectLibraryCloseButtons.forEach((button) => {
@@ -23180,6 +23321,7 @@ if (window.electronAPI) {
     });
     activeDocumentRevealRequested = shouldRevealActiveDocument && !revealResult.found;
     updateSaveStateText('loaded');
+    void refreshManuscriptNoteReferences();
     updatePerfHintText('normal');
     updateInspectorSnapshot();
     refreshMetadataInspector();
@@ -23663,6 +23805,7 @@ if (window.electronAPI) {
       localDirty = Boolean(message);
     }
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
+    if (!localDirty) void refreshManuscriptNoteReferences();
     updateInspectorSnapshot();
   });
 }

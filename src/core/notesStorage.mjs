@@ -1,4 +1,5 @@
 import { sha256Hex } from './browser-safe-hash.mjs';
+import manuscriptNotes from './word-manuscript-notes-v1.cjs';
 
 export const NOTES_STORAGE_SCHEMA_VERSION = 1;
 export const NOTES_STORAGE_FILENAME = 'notes.craftsman.json';
@@ -130,6 +131,13 @@ function normalizeAttachment(source, scope) {
 
 function normalizeNote(source, index, context) {
   if (!isPlainObject(source)) return null;
+  if (source.manuscript !== undefined) {
+    manuscriptNotes.validateManuscriptPayload(source.manuscript);
+    if (source.scope !== 'manuscript'
+      || source.body !== manuscriptNotes.validateNoteBody(source.manuscript.body).text) {
+      throw Object.assign(new Error('NOTE_MANUSCRIPT_PROJECTION_MISMATCH'), { code: 'NOTE_MANUSCRIPT_PROJECTION_MISMATCH' });
+    }
+  }
   const note = cloneJson(source);
   const scope = normalizeScope(note.scope || note.kind || note.attachment?.scope);
   note.schemaVersion = NOTES_STORAGE_SCHEMA_VERSION;
@@ -174,12 +182,17 @@ function normalizeNoteList(items, context) {
     seen.add(noteId);
     notes.push(note);
   }
-  return notes.sort((a, b) => a.id.localeCompare(b.id));
+  // Manuscript imports append a journalled cohort without reordering older
+  // private records. Keep that canonical order stable on read and reopen.
+  return notes.some(note => note.manuscript) ? notes : notes.sort((a, b) => a.id.localeCompare(b.id));
 }
 
 export function normalizeNotesDocument(source = {}, options = {}) {
   const nowIso = typeof options.now === 'function' ? options.now() : new Date().toISOString();
   const projectId = normalizeOptionalString(options.projectId || source.projectId, 128);
+  if (Array.isArray(source?.notes) && source.notes.some(note => note?.manuscript !== undefined)) {
+    manuscriptNotes.validateManuscriptDocument(source, projectId);
+  }
   const base = isPlainObject(source) ? cloneJson(source) : {};
   const notes = normalizeNoteList(base.notes, { projectId, nowIso });
   const normalized = {
@@ -209,6 +222,10 @@ export function toPublicNote(note) {
     attachment: normalizeAttachment(note.attachment || note, normalizeScope(note.scope)),
     contentHash: computeNotesHash({ body: typeof note.body === 'string' ? note.body : '' }),
   };
+  if (note.manuscript !== undefined) {
+    publicNote.manuscript = manuscriptNotes.validateManuscriptPayload(note.manuscript);
+    publicNote.contentHash = computeNotesHash({ manuscript: publicNote.manuscript, deleted: publicNote.deleted });
+  }
   if (publicNote.deleted) {
     publicNote.deletedAtUtc = normalizeOptionalString(note.deletedAtUtc, 64);
   }
@@ -236,6 +253,7 @@ export function buildNotesReadModel(document, options = {}) {
   return {
     ok: true,
     schemaVersion: 'notes-read-model.v1',
+    documentHash: computeNotesHash(normalized),
     projectId: normalized.projectId,
     state: 'ready',
     scope: scope || 'all',
@@ -255,10 +273,19 @@ function findNoteIndex(document, noteId) {
   return document.notes.findIndex((note) => note.id === normalizedId);
 }
 
-export function applyNotesMutation(document, mutation = {}, options = {}) {
+function applyNotesMutationChecked(document, mutation = {}, options = {}) {
   const nowIso = typeof options.now === 'function' ? options.now() : new Date().toISOString();
   const projectId = normalizeOptionalString(options.projectId || document?.projectId, 128);
   const base = normalizeNotesDocument(document, { projectId, now: () => nowIso }).value;
+  if (mutation.expectedDocumentHash !== undefined && mutation.expectedDocumentHash !== computeNotesHash(base)) {
+    return { ok: false, code: 'E_NOTES_REVISION_STALE', reason: 'NOTES_REVISION_STALE' };
+  }
+  if (mutation.manuscript !== undefined) {
+    manuscriptNotes.validateManuscriptPayload(mutation.manuscript);
+    if (mutation.body !== manuscriptNotes.validateNoteBody(mutation.manuscript.body).text) {
+      return { ok: false, code: 'E_NOTE_MANUSCRIPT_PROJECTION_MISMATCH', reason: 'NOTE_MANUSCRIPT_PROJECTION_MISMATCH' };
+    }
+  }
   const next = cloneJson(base);
   const op = normalizeOptionalString(mutation.op, 64);
   let noteId = normalizeNoteId(mutation.noteId);
@@ -291,6 +318,12 @@ export function applyNotesMutation(document, mutation = {}, options = {}) {
       return { ok: false, code: 'E_NOTE_NOT_FOUND', reason: 'NOTE_NOT_FOUND' };
     }
     const current = next.notes[index];
+    if (current.manuscript && ['attachToScene', 'recordConversion'].includes(op)) {
+      return { ok: false, code: 'E_NOTE_MANUSCRIPT_OPERATION_UNSUPPORTED', reason: 'NOTE_MANUSCRIPT_OPERATION_UNSUPPORTED' };
+    }
+    if (current.manuscript && op === 'update' && mutation.manuscript === undefined) {
+      return { ok: false, code: 'E_NOTE_MANUSCRIPT_BODY_REQUIRED', reason: 'NOTE_MANUSCRIPT_BODY_REQUIRED' };
+    }
     if (op === 'update') {
       if (current.deleted === true) {
         return { ok: false, code: 'E_NOTE_DELETED', reason: 'NOTE_DELETED' };
@@ -299,6 +332,7 @@ export function applyNotesMutation(document, mutation = {}, options = {}) {
         ...current,
         title: Object.prototype.hasOwnProperty.call(mutation, 'title') ? mutation.title : current.title,
         body: Object.prototype.hasOwnProperty.call(mutation, 'body') ? mutation.body : current.body,
+        ...(mutation.manuscript !== undefined ? { manuscript: mutation.manuscript, scope: 'manuscript' } : {}),
         updatedAtUtc: nowIso,
       }, index, { projectId, nowIso });
       changed = true;
@@ -364,6 +398,7 @@ export function applyNotesMutation(document, mutation = {}, options = {}) {
   }
 
   next.notes = normalizeNoteList(next.notes, { projectId, nowIso });
+  manuscriptNotes.validateManuscriptDocument(next, projectId);
   return {
     ok: true,
     changed,
@@ -372,6 +407,16 @@ export function applyNotesMutation(document, mutation = {}, options = {}) {
     note: toPublicNote(next.notes[findNoteIndex(next, noteId)]),
     hash: computeNotesHash(next),
   };
+}
+
+export function applyNotesMutation(document, mutation = {}, options = {}) {
+  try { return applyNotesMutationChecked(document, mutation, options); }
+  catch (error) {
+    if (typeof error.code === 'string' && error.code.startsWith('NOTE_')) {
+      return { ok: false, code: `E_${error.code}`, reason: error.code };
+    }
+    throw error;
+  }
 }
 
 export function buildEmptyNotesDocument(projectId, options = {}) {

@@ -4,7 +4,7 @@ import documentMediaData from '../documentMedia.js';
 const { createImageAttrs, validateImageAttrs } = documentMediaData;
 import documentTables from '../documentTables.js';
 const { groupTableParagraphs, createTableReader, compareTableParagraphTopology } = documentTables;
-import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
+import { composeObservablePayload, parseObservablePayload, buildParagraphDocumentFromText } from '../../renderer/documentContentEnvelope.mjs';
 import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
 import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
 import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
@@ -2421,7 +2421,7 @@ function docxHostileFileGateRelationshipAttributeValue(attributeText, name) {
 
 function docxHostileFileGateSafeExternalHyperlinkRelationship(entryId, attributeText) {
   const normalizedEntryId = docxHostileFileGateNormalizedEntryId(entryId);
-  if (normalizedEntryId !== 'word/_rels/document.xml.rels') return false;
+  if (!['word/_rels/document.xml.rels', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels'].includes(normalizedEntryId)) return false;
   const type = docxHostileFileGateRelationshipAttributeValue(attributeText, 'Type');
   if (type !== 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink') {
     return false;
@@ -9158,15 +9158,15 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
   }
 }
 
-function docxHyperlinkCatalog(bytes) {
+function docxHyperlinkCatalog(bytes, relationshipPart = 'word/_rels/document.xml.rels') {
   const result = new Map();
   result.usedIds = new Set();
   result.onlyHyperlinks = false;
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
-  if (!metadata.entries.some(entry => entry.entryId === 'word/_rels/document.xml.rels')) return result;
+  if (!metadata.entries.some(entry => entry.entryId === relationshipPart)) return result;
   const ids = new Set();
-  docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
+  docxFontVisitPart(bytes, relationshipPart, DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
     if (stack.length !== 1 || stack[0].namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE
       || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
     const id = attr('Id');
@@ -10255,6 +10255,36 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
+      if (auxiliary('word/footnotes.xml') || auxiliary('word/endnotes.xml')
+        || parsed.diagnostics.some(item => ['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName))) {
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+          sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+          byteLength: value => new TextEncoder().encode(value).length,
+        } });
+        const ir = analysis.reviewIr, notes = ir?.documentNotes;
+        if (!analysis.ok || ir.sourceMode !== 'CLEAN' || !notes
+          || analysis.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))
+          || ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
+          || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
+        parsed.contentPreview.manuscriptNotes = notes.notes.map((note, index) => {
+          const ref = notes.references[index];
+          const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
+          const paragraph = parsed.contentPreview.paragraphs[note.paragraphIndex];
+          if (!source || !paragraph || paragraph.table || paragraph.list
+            || !Number.isSafeInteger(note.offsetUtf16) || note.offsetUtf16 < 0 || note.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
+          const styles = { ...inlineStyles, hyperlinks: docxHyperlinkCatalog(bytes, source.relationshipPart) };
+          const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
+          if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
+            || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)
+            || styles.hyperlinks.usedIds.size !== styles.hyperlinks.size) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
+          const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
+          if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
+          const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
+          return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
+            body: rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text) };
+        });
+        parsed.diagnostics = parsed.diagnostics.filter(item => !['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName));
+      }
       if (auxiliary('word/comments.xml') || parsed.diagnostics.some(item => /^w:comment/u.test(item.tagName || ''))) {
         const commentPorts = { cryptoPort: {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
@@ -11258,6 +11288,19 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     sectionBoundaryRecovery,
     richContent !== null,
   );
+  if (contentPreview.manuscriptNotes?.length) {
+    if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length) {
+      return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { sourceCode: 'DOCX_GENERIC_NOTE_TOPOLOGY' });
+    }
+    candidateCreatePlan.entries[0].notes = cloneJsonSafe(contentPreview.manuscriptNotes);
+    lossReport.items = lossReport.items.filter(item => item.code !== 'DOCX_IMPORT_PREVIEW_NOTES_NOT_IMPORTED'
+      && !['word/footnotes.xml', 'word/endnotes.xml', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels'].includes(item.sourcePart));
+    lossReport.items.push(docxImportPreviewLossItem('DOCX_GENERIC_MANUSCRIPT_NOTES_PRESERVED', {
+      category: 'notes', severity: 'info', sourcePart: 'word/document.xml',
+      message: 'Footnote and endnote points and supported rich paragraph bodies receive new local manuscript-note identities with the imported scene. Private notes are unchanged.',
+    }));
+    lossReport.itemCount = lossReport.items.length;
+  }
   if (contentPreview.genericComments?.length) {
     // These are new-scene candidates only. A carrier, Word comment ID, author,
     // or return-looking package cannot target an existing canonical thread.

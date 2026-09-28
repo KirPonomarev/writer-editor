@@ -1,7 +1,8 @@
 'use strict';
 
 const crypto = require('node:crypto');
-const { buildDocxRunContentXml, segmentDocxTextForSerialization } = require('./docxTextXml.js');
+const { buildDocxRunContentXml, segmentDocxTextForSerialization, escapeXml } = require('./docxTextXml.js');
+const manuscriptModel = require('../../core/word-manuscript-notes-v1.cjs');
 
 const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
 const MAX_NOTES = 256;
@@ -33,6 +34,21 @@ function normalizeDocumentNoteSelections(value) {
 function notesStateDigest(document) { return sha(stable(document)); }
 
 function resolveNoteAnchor(note, blocks) {
+  if (note.manuscript) {
+    const value = manuscriptModel.validateManuscriptPayload(note.manuscript);
+    const candidates = blocks.filter(block => block.sceneId === value.reference.sceneId);
+    const text = candidates.map(block => block.text).join('\n');
+    demand(candidates.length && sha(text) === value.reference.sourceTextSha256
+      && boundary(text, value.reference.offsetUtf16), 'DOCX_NOTE_ANCHOR_STALE');
+    let start = 0;
+    for (const block of candidates) {
+      if (value.reference.offsetUtf16 <= start + block.text.length) {
+        return { block, offsetUtf16: value.reference.offsetUtf16 - start };
+      }
+      start += block.text.length + 1;
+    }
+    throw Error('DOCX_NOTE_ANCHOR_STALE');
+  }
   demand(['inbox', 'project', 'manuscript', 'scene', 'selection'].includes(note.scope), 'DOCX_NOTE_SCOPE_INVALID');
   let candidates = blocks;
   if (['scene', 'selection'].includes(note.scope)) {
@@ -62,9 +78,15 @@ function resolveNoteAnchor(note, blocks) {
 
 function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId) {
   const selections = normalizeDocumentNoteSelections(selectionsRaw);
+  const selected = new Set(selections.map(item => item.noteId));
+  for (const note of document?.notes || []) {
+    if (note.manuscript && !note.deleted && blocks.some(block => block.sceneId === note.manuscript.reference?.sceneId)
+      && !selected.has(note.id)) selections.push({ noteId: note.id, kind: note.manuscript.kind });
+  }
   if (!selections.length) return null;
   demand(plain(document) && document.schemaVersion === 1 && document.projectId === projectId
     && Array.isArray(document.notes), 'DOCX_NOTES_STATE_INVALID');
+  manuscriptModel.validateManuscriptDocument(document, projectId);
   const byId = new Map();
   for (const note of document.notes) {
     demand(plain(note) && typeof note.id === 'string' && !byId.has(note.id), 'DOCX_NOTES_STATE_INVALID');
@@ -83,9 +105,13 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId) {
     }
     demand(textBytes <= MAX_TEXT_BYTES, 'DOCX_NOTES_TEXT_BUDGET');
     const { block, offsetUtf16 } = resolveNoteAnchor(note, blocks);
+    if (note.manuscript) demand(kind === note.manuscript.kind, 'DOCX_NOTE_KIND_MISMATCH');
+    const richBody = note.manuscript ? manuscriptModel.validateNoteBody(note.manuscript.body).body : null;
     return { noteId, kind, selectionOrdinal, scope: note.scope, attachment: clone(note.attachment || {}),
       sceneId: block.sceneId, blockId: block.blockId, documentParagraphIndex: block.documentParagraphIndex,
-      offsetUtf16, blockTextSha256: sha(block.text), paragraphs: [note.title, note.body] };
+      offsetUtf16, blockTextSha256: sha(block.text),
+      paragraphs: richBody ? richBody.content.map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : [note.title, note.body],
+      ...(richBody ? { richBody } : {}) };
   }).sort((a, b) => a.documentParagraphIndex - b.documentParagraphIndex || a.offsetUtf16 - b.offsetUtf16
     || a.selectionOrdinal - b.selectionOrdinal);
   const ordinalByKind = { footnote: 0, endnote: 0 };
@@ -118,12 +144,25 @@ function notePackageParts(projection) {
     const bindings = projection.sourceBindings.filter(binding => binding.kind === kind);
     if (!bindings.length) continue;
     const style = kind === 'footnote' ? 'Footnote' : 'Endnote';
+    const links = new Map();
     const separator = `<w:${kind} w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:${kind}>`
       + `<w:${kind} w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:${kind}>`;
-    const body = bindings.map(binding => `<w:${kind} w:id="${binding.nativeId}">${binding.paragraphs.map((value, index) =>
-      `<w:p><w:pPr><w:pStyle w:val="${style}Text"/></w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}<w:r>${buildDocxRunContentXml(value)}</w:r></w:p>`).join('')}</w:${kind}>`).join('');
+    const body = bindings.map(binding => `<w:${kind} w:id="${binding.nativeId}">${binding.paragraphs.map((value, index) => {
+      const paragraph = binding.richBody?.content[index];
+      const runs = paragraph ? (paragraph.content || []).map(node => {
+        if (node.type === 'hardBreak') return '<w:r><w:br/></w:r>';
+        const xml = require('./docxMinBuilder.js').buildDocxMarkedRunXml(node, true, true);
+        const href = node.marks?.find(mark => mark.type === 'link')?.attrs?.href;
+        if (!href) return xml;
+        if (!links.has(href)) links.set(href, `noteLink${links.size + 1}`);
+        return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
+      }).join('') : `<w:r>${buildDocxRunContentXml(value)}</w:r>`;
+      const align = paragraph?.attrs?.textAlign;
+      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${runs}</w:p>`;
+    }).join('')}</w:${kind}>`).join('');
     const name = `${kind}s.xml`;
-    entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}">${separator}${body}</w:${kind}s>` });
+    entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });
+    if (links.size) entries.push({ name: `word/_rels/${name}.rels`, data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href, id]) => `<Relationship Id="${id}" Type="${REL_NS}hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('')}</Relationships>` });
     types.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>`);
     relationships.push(`<Relationship Id="rIdYalken${style}s" Type="${REL_NS}${kind}s" Target="${name}"/>`);
   }

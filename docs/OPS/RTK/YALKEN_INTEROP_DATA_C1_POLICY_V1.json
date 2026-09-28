@@ -284,7 +284,16 @@
     "docs/tasks/2026-09-28--word-full-manuscript-link-return.md",
     "docs/tasks/2026-09-28--word-jpeg-media.md",
     "src/io/documentJpeg.js",
-    "test/fixtures/document-jpeg-fixtures.cjs"
+    "test/fixtures/document-jpeg-fixtures.cjs",
+    "docs/tasks/2026-09-28--word-manuscript-notes.md",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+    "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+    "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
+    "src/core/notesStorage.mjs",
+    "src/export/docx/docxMinExportHandler.js",
+    "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -513,7 +522,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "1cc778dc7905317d713efda04ea0c96eae3cd02ff80295b6478c7599c56cec36"
+        "sha256": "c529cb2d88015baa76a21db4a07c738f1b60f208e0f3e042cf1ebdc0a52d64a9"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -525,7 +534,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "77ed9b6b7a9a89d4da9703535e105ee363e9c06c6e0c2b19cc789b371d0e2191"
+        "sha256": "f7bbfa422569a633743a5447158dfc9c47d572545303dde2bae38fcbc44b6178"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -545,15 +554,15 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "691237f783867356c0f33686917fb8ee6a4b010ba7cb84f4be9da634d82e8aee"
+        "sha256": "96a7c38f722704af9e318c74128dfe1420d6eed1d86e2f227ce02c6375731743"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "32448f036eb185a98f973482be61e3c7df901c6b4f6918e6d3327a4c6a2c748e"
+        "sha256": "1a86fb2ba10d0d02d415ec2b8108e22f9727c7a5434c46c579d16a2175bea694"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "c0b5acdb4605689a29d5a961a6b20accb4665b7ad153f72cc1d020339b2ca253"
+        "sha256": "72b86a4639d0ba3f9debbe3a78ebbf10b995a80ef34c1e11ab3e4fe3c6a6e148"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -613,7 +622,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "073ec047488110b6854bda392c511a48b44752e60a19e07dbae8127bd1f12a2b"
+        "sha256": "66f1a40b0a59e09d19fb38a08f13f2922c238f21bad2395e5bc77ac049dc5a0d"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -629,7 +638,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "5e79f75a3f4bc900c534aeb85c0d01ca61ac7bbfff15f396273d22307f03ec7c"
+        "sha256": "b7fefbefa392d148549f100dc0872b5a182ab66c4ab7693769b790f394a481d1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -653,7 +662,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "3a8df9fc6e59b91e8d126cf82829ff1f5298a89a7ab1af265b8bddf439692447"
+        "sha256": "faa4350bd7f26d53b600af2a24c53cf981733c2484d34062994c156c9e289d53"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -689,7 +698,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fb9b3fda8dcf293ac7904f0b5006f6a6b0780ee49559973b948d9d294dbacb0a"
+        "sha256": "665395fb65ceffefbf768207c9b9583275b97759ce8e9d65bf1a4c6adffc5a2f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -785,7 +794,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "7a78d0c081368468adcf7b2cdd33d7c821ff70ebe7bcc6b9120aa01fdb49407e"
+        "sha256": "cd0c99388aee71d24835fc566b9419e58f9965669065f7850b7c4d33d43c6ae9"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -897,7 +906,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketNotes.js",
-        "sha256": "3ec2eeb7b7ffdd73ebef90ec15c7b1aa5523d23a14eb69e4b61b2e3d41833c03"
+        "sha256": "f8ed042e5646880b73318a95b33986fb0d19647089da51a31b7f9b05d94eab5b"
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
@@ -1209,7 +1218,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "2e5cf0c8709fd059b67c6d5f71a3586edfc82d827a41cf7db5596b8e9dd6e0d5"
+        "sha256": "c061f6d15175c11713d1ce1994ac23c73866d0a6f588e18bc1cc69926982efe3"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
@@ -1326,6 +1335,38 @@
       {
         "path": "test/fixtures/document-jpeg-fixtures.cjs",
         "sha256": "c4c6789855aa6f151e96f4278fe9db87b0ae5e069a83e102e498dec0debac304"
+      },
+      {
+        "path": "src/core/word-manuscript-notes-v1.cjs",
+        "sha256": "3ecc2d5affdadc1c1328b13c345afd23546f0a5ef1895af6359ebf504a32e3ed"
+      },
+      {
+        "path": "src/renderer/tiptap/manuscriptNotes.mjs",
+        "sha256": "31be81072ef7b8005be6543ec6012d61a9659cbac445bba0644e7f8d13916e82"
+      },
+      {
+        "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+        "sha256": "d4e137f359ab37e3744491f97a2e4806292820e5ac1fa81700c7e3deb046b907"
+      },
+      {
+        "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+        "sha256": "7836dde69fc678e3c6b918795bc44ec4ea9d04f5fc3b9ec5e967c59cae116489"
+      },
+      {
+        "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
+        "sha256": "09d0b16509f6d9f0c6f9c946e89ad6fed6088729510a5916b19368aa94c28337"
+      },
+      {
+        "path": "src/core/notesStorage.mjs",
+        "sha256": "e1864cf355f9ff3ea693b093fc6d86e678e0e7ee704b1c459cf60b82a8f66d57"
+      },
+      {
+        "path": "src/export/docx/docxMinExportHandler.js",
+        "sha256": "40e9c55d7016edb2c9b91388dee62447b52aff94ae8f7a2806cc54a03038963f"
+      },
+      {
+        "path": "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
+        "sha256": "59c13510df6c5e55884432f5c68765a177cab0c4e15a1dc1387ce881bdfca906"
       }
     ],
     "followupRepair": {

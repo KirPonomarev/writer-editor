@@ -6,6 +6,7 @@ import { DocumentTextStyle } from './documentTextStyle.mjs'
 import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
 import { DocumentTables } from './documentTables.mjs'
 import { DocumentMedia } from './documentMedia.mjs'
+import { ManuscriptNoteReferences, applyManuscriptNoteProjection } from './manuscriptNotes.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -544,6 +545,7 @@ export function initTiptap(mountEl, options = {}) {
       DocumentParagraphAlignment,
       DocumentTables,
       DocumentMedia,
+      ManuscriptNoteReferences,
       Color,
       Highlight.configure({
         multicolor: true,
@@ -639,6 +641,10 @@ export function getTiptapSelectionOffsets() {
   const start = getTextOffsetForDocumentPosition(currentEditorInstance, Math.min(from, to))
   const end = getTextOffsetForDocumentPosition(currentEditorInstance, Math.max(from, to))
   return { start, end }
+}
+
+export function setTiptapManuscriptNoteProjection(projection) {
+  applyManuscriptNoteProjection(currentEditorInstance, projection, getDocumentPositionForTextOffset)
 }
 
 export function setTiptapSelectionOffsets(start = 0, end = start) {
