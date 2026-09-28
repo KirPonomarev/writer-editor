@@ -11788,7 +11788,7 @@ async function createManuscriptNote() {
   if (projectId !== currentProjectId || documentId !== currentDocumentId) return;
   const binding = manuscriptMutationBinding(); if (!binding) return;
   const created = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_CREATE, { ...binding,
-    manuscript: { kind: 'footnote', offsetUtf16: manuscriptInsertionPoint, body: { type: 'doc', content: [{ type: 'paragraph' }] } },
+    manuscript: { kind: 'footnote', offsetUtf16: manuscriptInsertionPoint, bodyJson: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] }) },
   }, 'Сноска добавлена');
   if (created && projectId === currentProjectId) manuscriptBodyEditor?.focus();
 }
@@ -11800,7 +11800,7 @@ async function saveManuscriptNote(note, reanchor = false) {
   }
   const identity = `${currentProjectId}:${note.id}`, body = manuscriptBodyEditor.getJSON(), kind = manuscriptKindSelect.value;
   const result = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_UPDATE, { ...binding, noteId: note.id,
-    manuscript: { kind, body, offsetUtf16: reanchor ? manuscriptInsertionPoint : note.manuscript.reference.offsetUtf16 },
+    manuscript: { kind, bodyJson: JSON.stringify(body), offsetUtf16: reanchor ? manuscriptInsertionPoint : note.manuscript.reference.offsetUtf16 },
   }, 'Сноска сохранена');
   const latest = manuscriptDrafts.get(identity);
   if (result && (!latest || (JSON.stringify(latest.body) === JSON.stringify(body) && latest.kind === kind))) {

@@ -34,7 +34,8 @@ export function applyManuscriptNoteProjection(editor, projection, positionForOff
   const widgets = notes.sort((a, b) => a.manuscript.reference.offsetUtf16 - b.manuscript.reference.offsetUtf16 || a.id.localeCompare(b.id))
     .map(note => { const ordinal = ++ordinals[note.manuscript.kind]; return Decoration.widget(positionForOffset(editor, note.manuscript.reference.offsetUtf16), () => {
       const button = document.createElement('button');
-      button.type = 'button'; button.className = 'manuscript-note-reference'; button.textContent = String(ordinal);
+      button.type = 'button'; button.className = 'manuscript-note-reference'; button.dataset.noteNumber = String(ordinal);
+      button.contentEditable = 'false';
       button.setAttribute('aria-label', `${note.manuscript.kind === 'endnote' ? 'Концевая сноска' : 'Сноска'} ${ordinal}: ${note.body.slice(0, 80)}`);
       button.addEventListener('click', event => {
         event.preventDefault();

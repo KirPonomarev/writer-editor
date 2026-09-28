@@ -522,7 +522,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "327eb21aeda3277f3b87902695ce1754b51d51fd785a6e2952ac47670f3a10a2"
+        "sha256": "bee4ce3381784d4f355ef13f219f1a9cc501ea17494a80309fdbde3294f32112"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -534,7 +534,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "f7bbfa422569a633743a5447158dfc9c47d572545303dde2bae38fcbc44b6178"
+        "sha256": "255619c5c09dce2055478bf357474168468304c7f041c17c21da00593912d4f0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -622,7 +622,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "66f1a40b0a59e09d19fb38a08f13f2922c238f21bad2395e5bc77ac049dc5a0d"
+        "sha256": "08ba589411938eb75758942948ffb059ba88308fba29132fd3da27e1169fedb4"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -662,7 +662,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "faa4350bd7f26d53b600af2a24c53cf981733c2484d34062994c156c9e289d53"
+        "sha256": "2652837b7e89ce313db303370569c955b1209712f235f72070eb2cd7c0232d14"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -698,7 +698,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "665395fb65ceffefbf768207c9b9583275b97759ce8e9d65bf1a4c6adffc5a2f"
+        "sha256": "c0dcd7b4a2bc331fb9548fd1f623e501869a7f215fbb1d148465883351aa25d7"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1342,11 +1342,11 @@
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "31be81072ef7b8005be6543ec6012d61a9659cbac445bba0644e7f8d13916e82"
+        "sha256": "de246b837292016e021f3d7544a0acfec406de1eeeddd622409edfa204dd6e96"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "d4e137f359ab37e3744491f97a2e4806292820e5ac1fa81700c7e3deb046b907"
+        "sha256": "daa20b291e97825bc0f77230fb787f0adee46b7415035b71ea4734ebfedbb76e"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",

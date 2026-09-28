@@ -14641,11 +14641,14 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
         delete mutation.manuscriptRequest;
         if (mutationInput.manuscriptRequest !== undefined) {
           const request = mutationInput.manuscriptRequest;
-          if (!isPlainObjectValue(request) || Object.keys(request).some(key => !['kind', 'body', 'offsetUtf16'].includes(key))) throw Error('NOTE_MANUSCRIPT_REQUEST_INVALID');
-          mutation.manuscript = manuscriptNoteModel.bindManuscriptPayload({ ...request,
+          if (!isPlainObjectValue(request) || Object.keys(request).some(key => !['kind', 'bodyJson', 'offsetUtf16'].includes(key))
+            || typeof request.bodyJson !== 'string' || Buffer.byteLength(request.bodyJson) > manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_MANUSCRIPT_REQUEST_INVALID');
+          let body;
+          try { body = JSON.parse(request.bodyJson); } catch { throw Error('NOTE_BODY_JSON_INVALID'); }
+          mutation.manuscript = manuscriptNoteModel.bindManuscriptPayload({ kind: request.kind, body, offsetUtf16: request.offsetUtf16,
             sceneId: source.sceneId, sceneContent: source.raw });
           mutation.scope = 'manuscript';
-          mutation.body = manuscriptNoteModel.validateNoteBody(request.body).text;
+          mutation.body = manuscriptNoteModel.validateNoteBody(body).text;
         } else if (!current?.manuscript || current.manuscript.reference.sceneId !== source.sceneId) throw Error('NOTE_ACTIVE_SCENE_REQUIRED');
         const result = context.notesStorage.applyNotesMutation(fresh.current.document, mutation, {
           projectId: context.projectId, ...(typeof options.now === 'function' ? { now: options.now } : {}),

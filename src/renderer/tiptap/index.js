@@ -337,12 +337,15 @@ function getDocumentPositionForTextOffset(editor, offset) {
   let matched = false
 
   doc.descendants((node, pos) => {
+    if (matched) return false
     if (!node || !node.isTextblock) {
       return undefined
     }
 
     const blockStart = pos + 1
-    const blockText = typeof node.textContent === 'string' ? node.textContent : ''
+    const blockText = typeof node.textBetween === 'function'
+      ? node.textBetween(0, node.content.size, '', '\0')
+      : typeof node.textContent === 'string' ? node.textContent : ''
 
     if (sawTextblock) {
       if (targetOffset === plainOffset) {

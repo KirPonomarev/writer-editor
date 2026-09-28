@@ -96,7 +96,7 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   const source = { projectId: 'p', projectRoot: root, filePath, subjectId: 'subject:session', sceneId: 'scene.txt', raw: 'До слова', sceneSha256: model.sha('До слова'), parsed: { text: 'До слова', doc: null } };
   let document = storage.buildEmptyNotesDocument('p'), writes = 0, loseLease = false, staleOnWrite = false;
   const read = () => ({ ok: true, current: { document, hash: storage.buildNotesReadModel(document, { projectId: 'p' }).documentHash, sourceText: JSON.stringify(document) } });
-  const sandbox = { fs: fs.promises, isDirty: false, autoSaveInProgress: false, currentFilePath: filePath, lastSignaledEditGeneration: 0,
+  const sandbox = { Buffer, fs: fs.promises, isDirty: false, autoSaveInProgress: false, currentFilePath: filePath, lastSignaledEditGeneration: 0,
     commentAuthoringSessionId: 'session', currentLifecycleSubjectId: () => 'subject', manuscriptNoteModel: model,
     isPlainObjectValue: value => value && typeof value === 'object' && !Array.isArray(value), queueDiskOperation: fn => fn(),
     readCommentAuthoringContext: async () => source, requestEditorSnapshot: async () => ({ content: 'До слова', generation: 0 }),
@@ -114,7 +114,7 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   vm.runInNewContext(main.slice(main.indexOf('async function runManuscriptNotesMutation('), main.indexOf('async function handleWorkspaceProjectNotesQuery(')), sandbox);
   const context = { projectId: 'p', projectRoot: root, notesStorage: storage };
   const input = () => ({ projectId: 'p', subjectId: source.subjectId, expectedSceneSha256: source.sceneSha256, expectedDocumentHash: read().current.hash });
-  const mutation = { op: 'create', manuscriptRequest: { kind: 'footnote', body: body(), offsetUtf16: 3 } };
+  const mutation = { op: 'create', manuscriptRequest: { kind: 'footnote', bodyJson: JSON.stringify(body()), offsetUtf16: 3 } };
   const run = payload => sandbox.runManuscriptNotesMutation('notes.create', payload, mutation, context);
   assert.equal((await run({ ...input(), subjectId: 'foreign' })).reason, 'NOTE_SOURCE_IDENTITY_STALE');
   assert.equal((await run({ ...input(), expectedDocumentHash: 'stale' })).reason, 'NOTES_REVISION_STALE');
@@ -123,4 +123,35 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   assert.equal(writes, 0);
   const result = await run(input());assert.equal(result.ok, true, JSON.stringify(result));assert.equal(writes, 1);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'notes.json'))).notes[0].manuscript.body, body());
+});
+
+test('actual editor offset mapping stops at the matched paragraph and counts hard breaks', () => {
+  const fs = require('node:fs'), path = require('node:path');
+  const { Schema } = require('@tiptap/pm/model');
+  const schema = new Schema({ nodes: { doc: { content: 'paragraph+' }, paragraph: { content: '(text|hardBreak)*', group: 'block' }, text: { group: 'inline' }, hardBreak: { inline: true, group: 'inline' } } });
+  const doc = schema.node('doc', null, [schema.node('paragraph', null, [schema.text('До слова после.')]),
+    schema.node('paragraph', null, [schema.text('abc'), schema.node('hardBreak'), schema.text('def')])]);
+  const text = fs.readFileSync(path.join(__dirname, '../../src/renderer/tiptap/index.js'), 'utf8');
+  const section = text.slice(text.indexOf('function getDocumentPositionForTextOffset('), text.indexOf('function runFocusedChainCommand('));
+  const resolve = new Function('getTiptapDocumentContentSize', section + ';return getDocumentPositionForTextOffset;')(editor => editor.state.doc.content.size);
+  const editor = { state: { doc } };
+  assert.equal(resolve(editor, 8), 9);
+  assert.equal(resolve(editor, 0), 1);
+  assert.equal(resolve(editor, 15), 16);
+  assert.equal(resolve(editor, 16), 18);
+  assert.equal(resolve(editor, 20), 22);
+  for (let offset = 0; offset <= 23; offset++) {
+    assert.equal(doc.textBetween(0, resolve(editor, offset), '\n', '\0').length, offset);
+  }
+});
+
+test('rich note command crosses unchanged IPC depth and breadth limits as bounded validated JSON', () => {
+  const { createEnvelope, validateIpcEnvelope } = require('../../src/core/ipc-envelope-v1.cjs');
+  const payload = { projectId: 'p', subjectId: 'saved-scene', expectedSceneSha256: 'a'.repeat(64), expectedDocumentHash: 'b'.repeat(64),
+    manuscript: { kind: 'footnote', offsetUtf16: 3, bodyJson: JSON.stringify(body()) } };
+  const wire = createEnvelope('ui:command-bridge', 'cmd.project.notes.create', payload);
+  assert.equal(validateIpcEnvelope(wire, 'ui:command-bridge').ok, true);
+  assert.deepEqual(model.validateNoteBody(JSON.parse(wire.payload.manuscript.bodyJson)).body, body());
+  const forged = structuredClone(wire);forged.payload.manuscript.bodyJson = 'x'.repeat(1024 * 1024);
+  assert.equal(validateIpcEnvelope(forged, 'ui:command-bridge').code, 'E_ENVELOPE_BYTES');
 });
