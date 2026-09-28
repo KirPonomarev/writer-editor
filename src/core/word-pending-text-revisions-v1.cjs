@@ -120,8 +120,15 @@ function revisionMeaning(ledger, revision) {
 }
 function preserveReturnedIdentities(before, proposed) {
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
-  let nextRevision = Math.max(0, ...before.revisions.map(r => Number(r.id.slice(9)))) + 1;
-  let nextGroup = Math.max(0, ...before.revisions.map(r => Number(r.groupId?.slice(6) || 0))) + 1;
+  let nextRevision = 1, nextGroup = 1;
+  // A clean returned source may have no current revisions. Older and undone
+  // rounds still own their IDs; a new revision cannot impersonate that history.
+  for (const frame of [before, ...(before.roundUndo || []), ...(before.roundRedo || [])]) {
+    for (const revision of frame.revisions) {
+      nextRevision = Math.max(nextRevision, Number(revision.id.slice(9)) + 1);
+      nextGroup = Math.max(nextGroup, Number(revision.groupId?.slice(6) || 0) + 1);
+    }
+  }
   for (const revision of before.revisions.filter(r => r.state === 'pending')) {
     const key = revisionMeaning(before, revision), rows = occurrences.get(key) || [];
     rows.push(revision); occurrences.set(key, rows);

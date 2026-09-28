@@ -93,3 +93,10 @@ test('pending return: recursive frames, mismatched projection, forged receipts a
   const huge = textDoc('x'.repeat(4 * 1024 * 1024));
   assert.throws(() => model.replaceFromReturn(doc, huge, receipt(5)), /BUDGET/u);
 });
+
+test('new revisions never reuse IDs retained by an earlier round after a clean Word return', () => {
+  const first = model.replaceFromReturn(pending(), textDoc('new tail'), receipt(6)).doc;
+  const next = model.replaceFromReturn(first, pending(), receipt(7)).doc;
+  assert.deepEqual(model.readLedger(next).revisions.map(r => r.id), ['revision-3', 'revision-4']);
+  assert.deepEqual(model.readLedger(next).revisions.map(r => r.groupId), ['group-2', 'group-2']);
+});
