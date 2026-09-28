@@ -1,3 +1,4 @@
+const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
 const { tableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { documentMedia } = require('../../io/documentMedia.js');
@@ -825,6 +826,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
   const blocks = [];
   for (const scene of scenes) {
     const paragraphs = buildFormatIrParagraphs(scene);
+    const pendingLedger = pendingTextRevisions.readLedger(scene.doc);
     for (let index = 0; index < paragraphs.length; index += 1) {
       const { text, formatIr } = paragraphs[index];
       const seed = `${scene.sceneId}\n${scene.sceneOrdinal}\n${index}\n${text}`;
@@ -847,6 +849,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalTextSha256: sha256Text(text),
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
+        ...(pendingLedger ? { pendingRevisionSegments: pendingTextRevisions.segments(pendingLedger, index, 'export') } : {}),
         wordSignals: [
           {
             kind: 'w14ParaIdTextId',

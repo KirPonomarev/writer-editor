@@ -483,6 +483,11 @@ function validateDocxImportPreviewPlan(plan) {
     );
   }
   const content = normalizeText(entry.content);
+  try {
+    const envelope = require('../core/document-content-envelope-v1.cjs').parseObservablePayload(content);
+    if (envelope.issue) throw Error('PENDING_REVISIONS_ENVELOPE_INVALID');
+    require('../core/word-pending-text-revisions-v1.cjs').readLedger(envelope.doc);
+  } catch (error) { return buildError('DOCX_SAFE_CREATE_REVISIONS_INVALID', 'docx_import_revisions_invalid', { code: error.code || error.message }); }
   if (entry.notes !== undefined) {
     try {
       require('../core/word-manuscript-notes-v1.cjs').materializeImportedNotes({ candidates: entry.notes,

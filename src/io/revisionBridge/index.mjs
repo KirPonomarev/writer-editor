@@ -1,3 +1,4 @@
+import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentMediaData from '../documentMedia.js';
@@ -13,6 +14,7 @@ import { genericCommentCandidates } from './genericWordComments.mjs';
 import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
+  extractPendingTextRevisionSourceV1,
   extractDocumentMediaReferencesV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
@@ -10296,7 +10298,27 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   let allDocumentRelationshipsPreserved = false;
   try {
     const inlineStyles = docxInlineStyleCatalog(bytes);
-    parsed = docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, docxNumberingCatalog(bytes));
+    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { cryptoPort: {
+      sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+      byteLength: value => new TextEncoder().encode(value).length,
+    } });
+    parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
+    if (!parsed.failure && pendingSource.revisions.length) {
+      if (parsed.diagnostics.length || parsed.contentPreview.paragraphs.some(p => p.table || p.list || p.blockKind || p.blockquoteDepth || p.sectionBreakType)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
+      const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
+      const source = rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
+      source.content.forEach(p => { p.content ||= []; });
+      const ledger = { schemaVersion: 1, source, revisions: pendingSource.revisions, undo: [], redo: [] };
+      const doc = pendingTextRevisions.bindLedger(ledger);
+      parsed.contentPreview.pendingRevisionDocument = doc;
+      const current = pendingTextRevisions.materialize(ledger);
+      parsed.contentPreview.paragraphs = current.content.map((p, i) => {
+        const text = (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('');
+        return { order: i, text, textHash: docxContentPreviewStableHash(text), charCount: text.length };
+      });
+      const text = parsed.contentPreview.paragraphs.map(p => p.text).join('\n');
+      parsed.contentPreview.textLength = text.length; parsed.contentPreview.textHash = docxContentPreviewStableHash(text);
+    }
     allDocumentRelationshipsPreserved = !parsed.failure && inlineStyles.hyperlinks.onlyHyperlinks
       && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
     if (!parsed.failure) {
@@ -11311,6 +11333,13 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   let richContent;
   try {
     richContent = docxInlineCanonicalContent(importParagraphs);
+    if (contentPreview.pendingRevisionDocument !== undefined) {
+      const doc = contentPreview.pendingRevisionDocument;
+      pendingTextRevisions.readLedger(doc);
+      if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length
+        || pendingTextRevisions.projection(doc).current !== importedText) throw Error('PENDING_REVISIONS_IMPORT_BINDING');
+      richContent = composeObservablePayload({ doc });
+    }
   } catch (error) {
     return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { field: 'contentPreview.paragraphs.inlineRuns', sourceCode: error.message });
   }

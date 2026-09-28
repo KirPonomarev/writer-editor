@@ -1,3 +1,4 @@
+const { buildPendingRunsXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage } = require('./docxMedia.js');
@@ -303,7 +304,7 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
@@ -313,8 +314,22 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   for (const image of block.formatIr?.media || []) {
     markers.set(image.offset, (markers.get(image.offset) || '') + mediaPackage.drawing(image.attrs));
   }
-  const textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
+  let textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
+  if (block.pendingRevisionSegments) {
+    if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+    textRun = buildPendingRunsXml(block.pendingRevisionSegments, node => {
+      const inline = {}, preservedMarks = [];
+      for (const mark of node.marks || []) {
+        if (['bold', 'italic', 'underline', 'strike'].includes(mark.type)) inline[mark.type] = true;
+        else if (mark.type === 'textStyle') Object.assign(inline, mark.attrs);
+        else if (mark.type === 'highlight') inline.highlight = mark.attrs.color;
+        else throw Error('PENDING_REVISIONS_MARK_EXPORT_UNSUPPORTED');
+      }
+      const text = node.type === 'hardBreak' ? '\n' : node.text;
+      return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks }] } }, hyperlinkByHref);
+    }, revisionCounter);
+  }
   // Google Office drops an otherwise empty paragraph carrying a section
   // break. A word joiner is visually empty but keeps the authored paragraph
   // and its boundary in the DOCX transport. It is enabled only for C4 export.
@@ -372,6 +387,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
     .map((section) => [section.endParagraphIndex, section]));
+  const revisionCounter = { next: 1 };
   const paragraphs = renderTableParagraphs(blocks, block => block.formatIr?.table, (block, index) => buildParagraphXml(
     block,
     index,
@@ -381,6 +397,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     documentNotes,
     officeModeTransport,
     mediaPackage,
+    revisionCounter,
   ));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
