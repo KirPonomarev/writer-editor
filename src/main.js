@@ -5782,7 +5782,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
         }));
       }, 'authenticated Word manuscript notes return'));
       let receipt;
-      try { receipt = await dispatchCommandSurfaceKernel(NOTES_UPDATE_COMMAND_ID, payload); }
+      try { receipt = await dispatchMenuCommand(NOTES_UPDATE_COMMAND_ID, payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedNoteDeltaAdmissions.delete(payload); }
       if (receipt?.ok !== true) throw rejected(receipt?.code || receipt?.error?.code || 'NOTE_RETURN_DISPATCH_FAILED');
       return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',

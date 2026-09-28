@@ -13,6 +13,7 @@ const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxRevie
 const sourceMain = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
 const helper = sourceMain.slice(sourceMain.indexOf('const authenticatedNoteDeltaAdmissions ='), sourceMain.indexOf('// Admission is object-identity scoped'));
 const handler = sourceMain.slice(sourceMain.indexOf('async function handleNotesUpdateCommand('), sourceMain.indexOf('async function handleNotesDeleteCommand('));
+const bus = sourceMain.slice(sourceMain.indexOf('function dispatchMenuCommand('), sourceMain.indexOf('function buildCommandClickHandler('));
 const snapshotNormalizer = sourceMain.slice(sourceMain.indexOf('function normalizeEditorSnapshotPayload('), sourceMain.indexOf('function requestEditorSnapshot('));
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
@@ -43,6 +44,11 @@ async function harness(t) {
   const sandbox = { Buffer, console, require: createRequire(path.join(__dirname, '../../src/main.js')), fs: fs.promises, path,
     activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life', currentFilePath: scenePath,
     lastSignaledEditGeneration: 0, isDirty: false, autoSaveInProgress: false, notesStateDigest,
+    COMMAND_BUS_ROUTE: 'command.bus', evaluateWriterLocalCommandAccess: () => ({ allowed: h.profileAllowed !== false, reason: 'PROFILE_DENIED' }),
+    getWriterLocalRuntimeProfile: () => ({}), getProductCommandRecord: () => null,
+    decideCommandEntitlement: () => ({ available: h.entitled !== false, reason: 'ENTITLEMENT_DENIED' }), getProductEntitlementTier: () => 'free',
+    E_COMMAND_DISABLED_FOR_ENTITLEMENT: 'ENTITLEMENT_DENIED', isMenuLocalCustomizationCommandId: () => false,
+    resolveMenuCommandId: id => ({ ok: true, commandId: id }),
     NOTES_UPDATE_COMMAND_ID: 'cmd.project.notes.update', getProjectRootPath: () => root, computeHash: model.sha,
     loadRtkNonTextReturnModule: async () => runtime, loadDocumentContentEnvelopeModule: async () => envelope,
     requestEditorSnapshot: async () => h.snapshot, getProjectNotesContext: async () => ({ ok: true, projectId, projectRoot: root }),
@@ -57,8 +63,10 @@ async function harness(t) {
     makeNotesCommandError: (id, code) => ({ ok: false, code }), runNotesMutationCommand: () => { throw Error('unexpected ordinary route'); },
     cloneJsonSafe: value => JSON.parse(JSON.stringify(value)),
   };
-  vm.createContext(sandbox); vm.runInContext(helper + '\n' + handler + '\nglobalThis.prepare = prepareAuthenticatedNoteDelta; globalThis.update = handleNotesUpdateCommand;', sandbox);
-  sandbox.dispatchCommandSurfaceKernel = async (id, payload) => { h.dispatches++; assert.equal(id, 'cmd.project.notes.update'); return sandbox.update(payload); };
+  vm.createContext(sandbox); vm.runInContext(helper + '\n' + handler + '\n' + bus + '\nglobalThis.prepare = prepareAuthenticatedNoteDelta; globalThis.update = handleNotesUpdateCommand;', sandbox);
+  sandbox.MENU_COMMAND_HANDLERS = { 'cmd.project.notes.update': payload => sandbox.update(payload) };
+  const actualDispatch = sandbox.dispatchMenuCommand;
+  sandbox.dispatchMenuCommand = async (id, payload, options) => { h.dispatches++; assert.equal(id, 'cmd.project.notes.update'); return actualDispatch(id, payload, options); };
   h.prepare = () => sandbox.prepare({ context, requestId: 'test', isCurrent: () => h.current, docxBytes: bytes,
     revisionBridge: { parseDocumentNotesRichReturn: () => structuredClone(returned) }, onPrepared: value => { h.prepared = value; } });
   h.context = context; h.sandbox = sandbox; h.document = document; return h;
@@ -102,4 +110,9 @@ test('actual editor snapshot normalization retains the no-loss note draft flag',
   assert.equal(context.normalize({ content: 'x', generation: 1, manuscriptNoteAuthoringPending: true }).manuscriptNoteAuthoringPending, true);
   const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
   assert(renderer.includes('manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending)'));
+});
+
+for (const mode of ['entitled', 'profileAllowed']) test(`actual notes bus revalidates ${mode} at dispatch`, async t => {
+  const h = await harness(t); assert.equal((await h.prepare()).status, 'preview-ready'); h[mode] = false;
+  await assert.rejects(h.prepared.apply(), /ENTITLEMENT_DENIED|PROFILE_DENIED/); assert.equal(h.writes, 0); assert.equal(h.leaseCalls, 0);
 });
