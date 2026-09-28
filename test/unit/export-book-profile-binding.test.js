@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const vm = require('node:vm');
 
 function read(relativePath) {
   return fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8');
@@ -179,4 +180,50 @@ test('export book profile binding: backend delegates section setup to the fail-c
   );
   assert.equal(bindSource.includes('roundTwips(210)'), false);
   assert.equal(bindSource.includes('roundTwips(297)'), false);
+});
+
+test('export book profile binding: actual main snapshot resolves absent default and preserves explicit profile validation', async () => {
+  const { bookProfile, docxPageSetupBind } = await loadModules();
+  const main = read('src/main.js');
+  const start = main.indexOf('async function readCanonicalExportSnapshot(payload = {})');
+  const end = main.indexOf('async function persistProjectManifestAtPath', start);
+  assert.ok(start >= 0 && end > start);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const { normalizeEditorSnapshotPayload } = require('../../src/export/docx/docxMinBuilder.js');
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Saved scene' }] }] };
+  const content = envelope.composeObservablePayload({ text: 'Saved scene', doc });
+  let manifest = {};
+  const context = vm.createContext({
+    currentFilePath: '/project/scene.txt', isDirty: false,
+    isAllowedFilePath: () => true,
+    isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
+    fs: { readFile: async () => content },
+    resolveProjectBindingForFile: async () => ({ manifest }),
+    loadBookProfileModule: async () => bookProfile,
+    loadDocumentContentEnvelopeModule: async () => envelope,
+    verifyDocxMediaAssetFiles: async () => {},
+    getProjectRootPath: () => '/project', normalizeEditorSnapshotPayload,
+  });
+  vm.runInContext(main.slice(start, end), context);
+  const snapshot = await context.readCanonicalExportSnapshot({});
+  assert.deepEqual(snapshot.bookProfile, bookProfile.createDefaultBookProfile());
+  assert.equal(snapshot.plainText, 'Saved scene');
+  assert.deepEqual(manifest, {}, 'export must not persist a project default');
+  assert.match(docxPageSetupBind.buildDocxSectionPropertiesXml(snapshot.bookProfile), /w:w="11906" w:h="16838"/u);
+  manifest = { bookProfile: { formatId: 'A5' } };
+  assert.equal((await context.readCanonicalExportSnapshot({})).bookProfile, manifest.bookProfile);
+  const override = { formatId: 'A4' };
+  assert.equal((await context.readCanonicalExportSnapshot({ options: { bookProfile: override } })).bookProfile, override);
+  for (const invalid of [null, [], 'A4', 42]) {
+    await assert.rejects(context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } }), /E_BOOK_PROFILE_OBJECT/u);
+  }
+  for (const invalid of [{ formatId: 'UNKNOWN' }, { formatId: 'A4', marginLeftMm: -1 }]) {
+    const explicit = await context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } });
+    assert.throws(() => docxPageSetupBind.buildDocxSectionPropertiesXml(explicit.bookProfile), /E_DOCX_BOOK_PROFILE_INVALID/u);
+    manifest = { bookProfile: invalid };
+    const persisted = await context.readCanonicalExportSnapshot({});
+    assert.throws(() => docxPageSetupBind.buildDocxSectionPropertiesXml(persisted.bookProfile), /E_DOCX_BOOK_PROFILE_INVALID/u);
+  }
+  context.isDirty = true;
+  await assert.rejects(context.readCanonicalExportSnapshot({}), /Unsaved editor state/u);
 });

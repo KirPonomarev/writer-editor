@@ -20926,13 +20926,12 @@ async function readCanonicalExportSnapshot(payload = {}) {
   }
 
   const content = await fs.readFile(currentFilePath, 'utf8');
-  let bookProfile = (
-    payload.options
-    && isPlainObjectValue(payload.options)
-    && isPlainObjectValue(payload.options.bookProfile)
-  )
-    ? payload.options.bookProfile
-    : null;
+  const hasExplicitProfile = isPlainObjectValue(payload.options)
+    && Object.prototype.hasOwnProperty.call(payload.options, 'bookProfile');
+  if (hasExplicitProfile && !isPlainObjectValue(payload.options.bookProfile)) {
+    throw new Error('E_DOCX_BOOK_PROFILE_INVALID:E_BOOK_PROFILE_OBJECT');
+  }
+  let bookProfile = hasExplicitProfile ? payload.options.bookProfile : null;
 
   if (!bookProfile) {
     const projectBinding = await resolveProjectBindingForFile(currentFilePath);
@@ -20943,6 +20942,10 @@ async function readCanonicalExportSnapshot(payload = {}) {
     ) {
       bookProfile = projectBinding.manifest.bookProfile;
     }
+  }
+  if (!bookProfile) {
+    const bookProfileModule = await loadBookProfileModule();
+    bookProfile = bookProfileModule.createDefaultBookProfile();
   }
 
   const envelopeModule = await loadDocumentContentEnvelopeModule();
