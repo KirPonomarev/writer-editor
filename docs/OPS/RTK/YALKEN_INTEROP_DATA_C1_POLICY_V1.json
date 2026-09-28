@@ -1379,7 +1379,7 @@
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "064d2abb7313f924a6efdde40b3a68d209a923c988cdd851b796bcf2f431ccf1"
+        "sha256": "387fa3fd2a20c13b28738cac2f791b34589b8d01c442ffa1c6276540c298c121"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -1387,7 +1387,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-        "sha256": "4d0dd4d238965e37673bfb6c887d5327998b03ced6484ace5772c07e65c978b2"
+        "sha256": "5acd6248dd967fb9e7901ed9f9bac769bd2cf17fb8f7f7b6b8dc69e3d9a38f81"
       },
       {
         "path": "test/contracts/rtk-word-note-return-package.contract.test.js",

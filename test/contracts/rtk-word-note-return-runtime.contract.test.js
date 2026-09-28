@@ -23,8 +23,9 @@ async function harness(t) {
   const sceneId = 'roman/a.txt', scenePath = path.join(root, sceneId), text = 'До слова после.', projectId = 'p';
   fs.writeFileSync(scenePath, text);
   const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Old' }] }] };
-  const document = { schemaVersion: 1, projectId, notes: [{ id: 'note-a', title: '', scope: 'manuscript', body: 'Old', deleted: false,
-    manuscript: model.bindManuscriptPayload({ body, kind: 'footnote', sceneId, offsetUtf16: 3, sceneContent: text }) }] };
+  const storage = await import('../../src/core/notesStorage.mjs');
+  const document = storage.normalizeNotesDocument({ schemaVersion: 1, projectId, notes: [{ id: 'note-a', title: '', scope: 'manuscript', body: 'Old', deleted: false,
+    manuscript: model.bindManuscriptPayload({ body, kind: 'footnote', sceneId, offsetUtf16: 3, sceneContent: text }) }] }, { projectId, now: () => '2026-09-28T00:00:00Z' }).value;
   const source = makeSource({ projectId, projectRoot: root, notesDocument: document,
     scenes: [{ sceneId, scenePath, order: 0, text, doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
   const bytes = buildDocxReviewPacketBuffer(source), bridge = await import('../../src/io/revisionBridge/index.mjs');
@@ -52,7 +53,7 @@ async function harness(t) {
     NOTES_UPDATE_COMMAND_ID: 'cmd.project.notes.update', getProjectRootPath: () => root, computeHash: model.sha,
     loadRtkNonTextReturnModule: async () => runtime, loadDocumentContentEnvelopeModule: async () => envelope,
     requestEditorSnapshot: async () => h.snapshot, getProjectNotesContext: async () => ({ ok: true, projectId, projectRoot: root }),
-    readProjectNotesDocument: async () => { const sourceText = fs.readFileSync(notesPath, 'utf8'); return { ok: true, current: { sourceText, document: JSON.parse(sourceText) } }; },
+    readProjectNotesDocument: async () => { const sourceText = fs.readFileSync(notesPath, 'utf8'); return { ok: true, current: { sourceText, document: storage.normalizeNotesDocument(JSON.parse(sourceText), { projectId }).value } }; },
     queueDiskOperation: operation => operation(), getMainProjectManifestAuthority: async () => ({ withProjectLease: async (id, fn) => {
       h.leaseCalls++; assert.equal(id, projectId); return fn({ assertOwned: async () => {}, publish: async fn => { if (h.duringPublish) await h.duringPublish(); return fn(); } });
     } }),
@@ -69,7 +70,7 @@ async function harness(t) {
   sandbox.dispatchMenuCommand = async (id, payload, options) => { h.dispatches++; assert.equal(id, 'cmd.project.notes.update'); return actualDispatch(id, payload, options); };
   h.prepare = () => sandbox.prepare({ context, requestId: 'test', isCurrent: () => h.current, docxBytes: bytes,
     revisionBridge: { parseDocumentNotesRichReturn: () => structuredClone(returned) }, onPrepared: value => { h.prepared = value; } });
-  h.context = context; h.sandbox = sandbox; h.document = document; return h;
+  h.returned = returned; h.storage = storage; h.context = context; h.sandbox = sandbox; h.document = document; return h;
 }
 test('actual main return is preview-only until Kernel apply, publishes once and rejects forged or consumed admission', async t => {
   const h = await harness(t); const preview = await h.prepare();
@@ -115,4 +116,14 @@ test('actual editor snapshot normalization retains the no-loss note draft flag',
 for (const mode of ['entitled', 'profileAllowed']) test(`actual notes bus revalidates ${mode} at dispatch`, async t => {
   const h = await harness(t); assert.equal((await h.prepare()).status, 'preview-ready'); h[mode] = false;
   await assert.rejects(h.prepared.apply(), /ENTITLEMENT_DENIED|PROFILE_DENIED/); assert.equal(h.writes, 0); assert.equal(h.leaseCalls, 0);
+});
+
+test('deletion uses canonical tombstone fields and survives actual notes normalization and replay', async t => {
+  const h = await harness(t); h.returned.splice(0);
+  assert.equal((await h.prepare()).status, 'preview-ready');
+  assert.equal((await h.prepared.apply()).status, 'applied');
+  const raw = JSON.parse(fs.readFileSync(h.notesPath));
+  assert.equal(raw.notes[0].deleted, true); assert.equal(raw.notes[0].deletedAtUtc, raw.notes[0].updatedAtUtc);
+  assert.deepEqual(h.storage.normalizeNotesDocument(raw, { projectId: 'p' }).value, raw);
+  assert.equal((await h.prepare()).status, 'replayed'); assert.equal(h.writes, 1);
 });

@@ -126,7 +126,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const old = after.notes.find(note => note.id === binding.noteId);
     need(old?.manuscript && !old.deleted, 'NOTE_RETURN_TARGET_INVALID');
     changes.push({ noteId: old.id, operation: 'delete', before: clone(old.manuscript), after: null });
-    old.deleted = true; old.updatedAtUtc = now;
+    old.deleted = true; old.deletedAtUtc = now; old.updatedAtUtc = now;
   }
   if (!changes.length) return { unchanged: true, replay: false, document, operationId, changes };
   model.validateManuscriptDocument(after, projectId);

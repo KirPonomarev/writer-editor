@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f3912d60d31acfa0bc3fb109d976223b7327f606e591166e4538b8a80261a784",
+      "sha256": "1a32f09392c2aa366da4041cc7d7d0c23393e2ae284717eb2a6e1d2588f28828",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3e5985df83faa1981abdbe095da8e1cd933d31859107f70843080aefa99a2707",
+      "sha256": "9845423f7b39eb31c524175cdcec422dd25f4568ea5b3f788667479c4e383fa8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ee056f15e00c4f22dc3dfc5346b2493865005f02c6c444808960630515cf5463",
+      "sha256": "5fecb6421e8454e6ad796360f951b326cb04edbbd8fb2fdf44981eb196e23693",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "50e07d5d535638c7458a6108e48068320bc225f67acdd05555510d367a730f20",
+      "sha256": "dacd04b9361c75c3aa2cc2a6362074ac128b834b9d1ec1af81d4c655cb2c2070",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "acae3585afc2f631c0cbb3efad9ec78b1847eae505761ca9a3133f2940059808",
+      "sha256": "297812a23c2c22cec3a1348d1b61a307c7bfe110b43a540b9998fff1485d6798",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "27a4d498011aa875ab50149393a644279f81b11805bceb7af6f398cb6e0071aa",
+      "sha256": "e89d7e05347956978f70d9de5b4090fef9cf23ab363d31670dd564d0f5a62a47",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -2848,8 +2848,8 @@
     },
     {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
-      "sha256": "064d2abb7313f924a6efdde40b3a68d209a923c988cdd851b796bcf2f431ccf1",
-      "approvedAtUtc": "2026-09-28T02:54:07.735454Z",
+      "sha256": "387fa3fd2a20c13b28738cac2f791b34589b8d01c442ffa1c6276540c298c121",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
@@ -2866,8 +2866,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-      "sha256": "4d0dd4d238965e37673bfb6c887d5327998b03ced6484ace5772c07e65c978b2",
-      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "sha256": "5acd6248dd967fb9e7901ed9f9bac769bd2cf17fb8f7f7b6b8dc69e3d9a38f81",
+      "approvedAtUtc": "2026-09-28T03:09:42.699347Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
@@ -15228,6 +15228,78 @@
       "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
       "sha256": "e5572fab89b117a85d3b52cd0c35aff1260877e54a92bb3f6f1e2e313afe1fd9",
       "approvedAtUtc": "2026-09-28T02:54:07.735454Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f3912d60d31acfa0bc3fb109d976223b7327f606e591166e4538b8a80261a784",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3e5985df83faa1981abdbe095da8e1cd933d31859107f70843080aefa99a2707",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ee056f15e00c4f22dc3dfc5346b2493865005f02c6c444808960630515cf5463",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "50e07d5d535638c7458a6108e48068320bc225f67acdd05555510d367a730f20",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "acae3585afc2f631c0cbb3efad9ec78b1847eae505761ca9a3133f2940059808",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "27a4d498011aa875ab50149393a644279f81b11805bceb7af6f398cb6e0071aa",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/core/word-note-return-delta-v1.cjs",
+      "sha256": "064d2abb7313f924a6efdde40b3a68d209a923c988cdd851b796bcf2f431ccf1",
+      "approvedAtUtc": "2026-09-28T02:54:07.735454Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+      "sha256": "4d0dd4d238965e37673bfb6c887d5327998b03ced6484ace5772c07e65c978b2",
+      "approvedAtUtc": "2026-09-28T03:02:36.709846Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
       "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
