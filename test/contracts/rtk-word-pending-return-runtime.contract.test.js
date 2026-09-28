@@ -136,3 +136,12 @@ test('native confirmation describes complete semantics, defaults to Cancel, and 
   await assert.rejects(h.c.confirmLocalWordPendingReturn({ fileName: 'x'.repeat(32001), changes: h.prepared.changes }), /PREVIEW_BUDGET/);
   assert.equal(calls, 1);
 });
+
+test('native Tiptap null defaults and merged runs remain equal; meaningful clean-scene edits stay blocked', async t => {
+  const h = await harness(t), live = document();
+  live.content[0].attrs = { textAlign: null };
+  h.snapshot = { generation: 0, content: envelope.composeObservablePayload({ doc: live }) };
+  assert.equal((await h.prepare()).status, 'preview-ready');
+  assert.equal((await h.prepared.apply()).ok, true);
+  assert.equal(h.writes, 1);
+});

@@ -22844,8 +22844,12 @@ async function handlePendingRevisionCommand(payload = {}) {
       const live = envelope.parseObservablePayload(snapshot.content);
       if (live.issue || !live.doc || !context.parsed.doc) throw Error('PENDING_REVISION_EDITOR_INVALID');
       pendingTextRevisions.readLedger(live.doc);
-      if (JSON.stringify(envelope.canonicalizeDocumentJson(live.doc))
-        !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc))) throw Error('PENDING_REVISION_EDITOR_STALE');
+      // Tiptap merges adjacent equal runs and materializes null schema defaults.
+      // Compare the checked visible meaning plus the exact durable ledger.
+      const visible = doc => envelope.canonicalizeDocumentJson(pendingTextRevisions.normalizeNode(doc));
+      if (JSON.stringify(visible(live.doc)) !== JSON.stringify(visible(context.parsed.doc))
+        || JSON.stringify(envelope.canonicalizeDocumentJson(live.doc).attrs?.wordPendingRevisions)
+          !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc).attrs?.wordPendingRevisions)) throw Error('PENDING_REVISION_EDITOR_STALE');
       const revalidate = async () => {
         if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId

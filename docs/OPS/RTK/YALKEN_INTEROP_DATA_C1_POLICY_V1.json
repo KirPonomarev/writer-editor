@@ -539,7 +539,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a954faa851423951798513467555197a86d2253c380e36d78b769b4463af30d2"
+        "sha256": "0ba20bf4610a197e07dcdc56fea49c7cc9169a1a8b60b7dc1aa136d139f99a18"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1439,7 +1439,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "8bbb9c5d1fc4e3fbf6cca958e0d438c07db609958d116ca81507f21f171fc805"
+        "sha256": "8afbcce387548f474dfbdaa3fee458b3beb3c55039ecc78a7745389932465ed1"
       }
     ],
     "followupRepair": {
