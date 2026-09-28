@@ -33,7 +33,11 @@ guards: project/lifecycle/editor generation, saved scene equality, notes CAS,
 package graph completeness, local capsule digest, one-shot prepared operation.
 fallback: typed rejection before write; preserve drafts and recovery evidence.
 performance: 256 notes, 128 paragraphs per body, bounded aggregate bytes and receipts.
+Native confirmation is limited to 32000 UTF-16 characters before display; larger
+deltas fail with NOTE_RETURN_PREVIEW_BUDGET and no writer, never hidden truncation.
 accessibility: native named confirmation buttons, default Cancel, readable changes.
+Formatting-only edits list paragraph alignment, exact text runs, emphasis, font,
+size, colors and link destinations before and after the proposed change.
 
 SURFACE_MANIFEST_V1:
 surfaceId: EXISTING_NATIVE_WORD_RETURN_CONFIRMATION.

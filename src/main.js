@@ -10406,10 +10406,32 @@ async function notifyLocalWordCommentDeltaFailure() {
 async function confirmLocalWordNoteDelta({ fileName, changes }) {
   if (!mainWindow || mainWindow.isDestroyed() || !Array.isArray(changes) || !changes.length) return false;
   const body = value => value ? manuscriptNoteModel.validateNoteBody(value.body).text : '—';
+  const formatting = value => {
+    if (!value) return '—';
+    const alignments = { left: 'по левому краю', center: 'по центру', right: 'по правому краю', justify: 'по ширине' };
+    const marks = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание' };
+    return value.body.content.map((paragraph, index) => {
+      const runs = (paragraph.content || []).map(node => {
+        if (node.type === 'hardBreak') return 'Перенос строки';
+        const properties = (node.marks || []).flatMap(mark => {
+          if (marks[mark.type]) return [marks[mark.type]];
+          if (mark.type === 'link') return [`ссылка: ${mark.attrs.href}`];
+          if (mark.type === 'highlight') return [`выделение: ${mark.attrs.color}`];
+          return Object.entries(mark.attrs || {}).filter(([, v]) => v != null).map(([key, v]) =>
+            `${({ fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет' })[key] || key}: ${v}`);
+        });
+        return `«${node.text}»: ${properties.join(', ') || 'обычное, параметры абзаца'}`;
+      });
+      return `Абзац ${index + 1}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
+    }).join('\n');
+  };
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
   const labels = { create: 'Добавить', update: 'Изменить', delete: 'Удалить' };
   const point = value => value ? `${value.reference.sceneId}: ${value.reference.offsetUtf16}` : '—';
-  const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\nПозиция: ${point(change.before)} → ${point(change.after)}\nТекст и оформление: ${body(change.before)}\n→ ${body(change.after)}`);
+  const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\nПозиция: ${point(change.before)} → ${point(change.after)}\nТекст: ${body(change.before)}\n→ ${body(change.after)}\nОформление до:\n${formatting(change.before)}\nОформление после:\n${formatting(change.after)}`);
+  // Never hide changes behind a truncated native confirmation or an enormous
+  // platform dialog. The caller reports this typed no-write refusal.
+  if (details.join('\n\n').length + String(fileName).length > 32000) throw Error('NOTE_RETURN_PREVIEW_BUDGET');
   const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Сноски из Word',
     message: 'Применить изменения сносок?',
     detail: `${fileName}\nИзменений: ${changes.length}. Удалённых: ${changes.filter(change => change.operation === 'delete').length}.\n${details.join('\n\n')}\nУдалённые сноски сохранятся с отметкой удаления.`,

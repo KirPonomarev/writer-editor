@@ -15,8 +15,30 @@ const helper = sourceMain.slice(sourceMain.indexOf('const authenticatedNoteDelta
 const handler = sourceMain.slice(sourceMain.indexOf('async function handleNotesUpdateCommand('), sourceMain.indexOf('async function handleNotesDeleteCommand('));
 const bus = sourceMain.slice(sourceMain.indexOf('function dispatchMenuCommand('), sourceMain.indexOf('function buildCommandClickHandler('));
 const snapshotNormalizer = sourceMain.slice(sourceMain.indexOf('function normalizeEditorSnapshotPayload('), sourceMain.indexOf('function requestEditorSnapshot('));
+const nativeConfirmation = sourceMain.slice(sourceMain.indexOf('async function confirmLocalWordNoteDelta('), sourceMain.indexOf('async function confirmLocalWordCommentDelta('));
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
+test('native confirmation exposes exact formatting-only changes and refuses an unreviewable oversized delta', async () => {
+  let shown = null, response = 0, calls = 0;
+  const ctx = vm.createContext({ manuscriptNoteModel: model, mainWindow: { isDestroyed: () => false },
+    dialog: { showMessageBox: async (_window, value) => { shown = value; calls++; return { response }; } } });
+  vm.runInContext(nativeConfirmation, ctx);
+  const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Same text' }] }] };
+  const before = model.bindManuscriptPayload({ body, kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
+  const after = JSON.parse(JSON.stringify(before));
+  after.body.content[0].attrs = { textAlign: 'center' };
+  after.body.content[0].content[0].marks = [{ type: 'bold' }, { type: 'italic' }, { type: 'underline' }, { type: 'strike' },
+    { type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '10pt', color: '#112233' } },
+    { type: 'link', attrs: { href: 'https://example.invalid/exact' } }, { type: 'highlight', attrs: { color: '#ffff00' } }];
+  const input = { fileName: 'return.docx', changes: [{ operation: 'update', before, after }] };
+  assert.equal(await ctx.confirmLocalWordNoteDelta(input), false);
+  for (const text of ['Оформление до:', 'по левому краю', 'Оформление после:', 'по центру', 'полужирное', 'курсив', 'подчёркивание', 'зачёркивание', 'Aptos', '10pt', '#112233', '#ffff00', 'https://example.invalid/exact']) assert(shown.detail.includes(text), text);
+  assert.equal(shown.defaultId, 0); assert.equal(shown.cancelId, 0);
+  response = 1; assert.equal(await ctx.confirmLocalWordNoteDelta(input), true);
+  const huge = JSON.parse(JSON.stringify(after)); huge.body.content[0].content[0].text = 'x'.repeat(20000);
+  await assert.rejects(ctx.confirmLocalWordNoteDelta({ ...input, changes: [{ operation: 'update', before, after: huge }] }), /NOTE_RETURN_PREVIEW_BUDGET/);
+  assert.equal(calls, 2, 'oversized details cannot open a truncated confirmation');
+});
 async function harness(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'note-return-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman'));

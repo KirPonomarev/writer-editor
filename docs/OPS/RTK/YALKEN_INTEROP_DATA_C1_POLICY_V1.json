@@ -527,7 +527,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "59df9e91dd0122f8f8306fd8d1c4e1f746e576258d5e0fdaf7a10c86c037adf3"
+        "sha256": "c25231e9a76d350afd6daa736dcdd2d3e4abba8a30bb54806805a41a67a32f5d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1387,7 +1387,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-        "sha256": "8f78e91472d16290dddb72080a9f422b031408d4575aea3ad9ea8791352d1c88"
+        "sha256": "c7beddba181656e20df2f5fe54b930cff52863c5c9529444c0028970a108e306"
       },
       {
         "path": "test/contracts/rtk-word-note-return-package.contract.test.js",
