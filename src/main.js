@@ -5696,6 +5696,85 @@ async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
   });
 }
 
+// Pending return replaces one authenticated scene source, retaining prior rounds
+// inside the same atomic envelope. Parsed Word content cannot select a target.
+async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent, docxBytes, revisionBridge, onPrepared }) {
+  const capsule = context?.reviewTransportAuthorityCapsule, intake = context?.reviewTransportReturnIntake;
+  if (intake?.authenticated !== true) return null;
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const baselines = Object.values(capsule?.baselineObservableContentBySceneId || {});
+  const baselinePending = baselines.some(raw => {
+    const parsed = envelope.parseObservablePayload(raw);
+    if (parsed.issue) throw Error('PENDING_RETURN_BASELINE_INVALID');
+    return !!pendingTextRevisions.readLedger(parsed.doc);
+  });
+  const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+  const returnedPending = !!preview?.contentPreview?.pendingRevisionDocument;
+  if (!baselinePending && !returnedPending) return null;
+  try {
+    const owner = activeStage10ApplicationBootstrap, lifecycle = currentLifecycleSubjectId();
+    const generation = lastSignaledEditGeneration, file = currentFilePath;
+    const check = () => {
+      if (typeof isCurrent !== 'function' || !isCurrent() || owner !== activeStage10ApplicationBootstrap
+        || lifecycle !== currentLifecycleSubjectId() || file !== currentFilePath || generation !== lastSignaledEditGeneration
+        || isDirty || autoSaveInProgress || context.projectRoot !== getProjectRootPath()) throw Error('PENDING_RETURN_CONTEXT_STALE');
+    };
+    check();
+    if (capsule.projectRoot !== context.projectRoot || capsule.exportMapAuthority !== 'main-owned-active-export-authority-store-after-return-authentication'
+      || capsule.returnedArtifactExportMapAccepted !== false || !Buffer.isBuffer(docxBytes)
+      || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) throw Error('PENDING_RETURN_AUTHORITY_REQUIRED');
+    const scenes = capsule.exportMap?.scenes;
+    if (!Array.isArray(scenes) || scenes.length !== 1 || baselines.length !== 1) throw Error('PENDING_RETURN_SINGLE_SCENE_REQUIRED');
+    const sceneId = scenes[0].sceneId;
+    if (capsule.scenePathBySceneId?.[sceneId] !== file) throw Error('PENDING_RETURN_OPEN_SCENE_REQUIRED');
+    const cryptoPort = createRtkReviewTransportCryptoPort();
+    const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
+    const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets() });
+    if (!mapped.ok) throw Error(mapped.code);
+    if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
+    if (intake.parserResult?.reviewIr?.commentThreads?.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)
+      throw Error('PENDING_RETURN_ANNOTATION_UNDO_REQUIRED');
+    const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+    if (!plan.ok || plan.candidateCreatePlan?.entries?.length !== 1) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
+    const incoming = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content);
+    if (incoming.issue || !incoming.doc) throw Error('PENDING_RETURN_DOCUMENT_REQUIRED');
+    // This Core validation rejects mixed notes, links, tables and other content
+    // whose complete reversible semantics are outside this text-return lane.
+    const current = await readCommentAuthoringContext(); check();
+    if (current.projectId !== context.projectId || current.projectRoot !== context.projectRoot || current.sceneId !== sceneId)
+      throw Error('PENDING_RETURN_PROJECT_MISMATCH');
+    const receipt = { roundId: capsule.roundId, artifactSha256: computeHash(docxBytes) };
+    const ledger = pendingTextRevisions.readLedger(current.parsed.doc);
+    const replay = ledger?.returnReceipts?.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256);
+    if (!replay && current.raw !== capsule.baselineObservableContentBySceneId[sceneId]) throw Error('PENDING_RETURN_BASELINE_CONFLICT');
+    const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt);
+    if (envelope.deriveVisibleTextFromDocument(incoming.doc) !== mapped.sceneTexts[0]) throw Error('PENDING_RETURN_PROJECTION_MISMATCH');
+    let consumed = false;
+    const apply = async () => {
+      if (consumed) throw Error('PENDING_RETURN_PREPARED_CONSUMED');
+      consumed = true; check();
+      const payload = { action: 'authenticated-pending-return', projectId: current.projectId,
+        sceneId, subjectId: current.subjectId, expectedSceneSha256: current.sceneSha256 };
+      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement });
+      let result;
+      try { result = await dispatchMenuCommand('cmd.project.review.decidePendingRevision', payload, { route: COMMAND_BUS_ROUTE }); }
+      finally { authenticatedPendingReturnAdmissions.delete(payload); }
+      if (result?.ok !== true) throw Error(result?.code || result?.error?.code || 'PENDING_RETURN_DISPATCH_FAILED');
+      return { ok: true, status: result.replay ? 'replayed' : 'applied', writerCalled: result.writerCalled === true,
+        pendingProductApplyLane: false };
+    };
+    if (replacement.replay) return await apply();
+    const changes = { before: current.parsed.doc, after: replacement.doc };
+    if (typeof onPrepared === 'function') onPrepared({ apply, changes });
+    return { ok: true, status: 'preview-ready', code: 'PENDING_RETURN_EXPLICIT_APPLY_REQUIRED',
+      writerCalled: false, pendingProductApplyLane: true };
+  } catch (error) {
+    return { ok: false, status: 'blocked', code: error.code || error.message, writerOutcome: 'NOT_CONFIRMED' };
+  }
+}
+
 // Only an object retained by authenticated main intake can enter this batch
 // writer. A renderer-created copy of the payload has no matching admission.
 const authenticatedNoteDeltaAdmissions = new WeakMap();
@@ -9761,15 +9840,6 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       isPlainObjectValue(returnIntake.details) ? returnIntake.details : undefined,
     );
   }
-  if (returnIntake.authenticated === true) {
-    const envelope = await loadDocumentContentEnvelopeModule();
-    for (const raw of Object.values(returnIntake.localAuthorityCapsule?.baselineObservableContentBySceneId || {})) {
-      const baseline = envelope.parseObservablePayload(raw);
-      if (baseline.issue || pendingTextRevisions.readLedger(baseline.doc)) {
-        return makeDocxReviewPreviewSessionTypedError('E_PENDING_REVISION_RETURN_UNSUPPORTED', 'PENDING_REVISION_DURABLE_RETURN_REQUIRED');
-      }
-    }
-  }
   const activeContext = returnIntake.authenticated === true
     ? {
       ...context,
@@ -9780,6 +9850,13 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       ...context,
       reviewTransportReturnIntake: returnIntake,
     };
+  const pendingProductPath = await prepareAuthenticatedPendingReturn({ context: activeContext, requestId,
+    isCurrent, docxBytes: decoded.bytes, revisionBridge, onPrepared: options.onPendingReturnPrepared });
+  if (pendingProductPath) {
+    // Never let older accepted-text apply lanes flatten the durable ledger.
+    return { ok: true, commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID, requestId,
+      activated: false, pendingProductPath };
+  }
   const authenticatedFullManuscriptReturn = returnIntake.authenticated === true
     && returnIntake.localAuthorityCapsule?.scope === 'full-manuscript';
   const authenticatedFullManuscriptExportMap = authenticatedFullManuscriptReturn
@@ -10414,6 +10491,27 @@ async function notifyLocalWordCommentDeltaFailure() {
   });
 }
 
+async function confirmLocalWordPendingReturn({ fileName, changes }) {
+  if (!mainWindow || mainWindow.isDestroyed() || !changes?.before || !changes?.after) return false;
+  const describe = doc => {
+    const ledger = pendingTextRevisions.readLedger(doc);
+    const source = ledger?.source || doc;
+    const names = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание',
+      textAlign: 'выравнивание', level: 'уровень заголовка', fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет' };
+    const attrs = value => Object.entries(value || {}).map(([key, val]) => `${names[key] || key}: ${val}`).join(', ');
+    const paragraphs = source.content.map((p, index) => `Абзац ${index + 1} (${p.type === 'heading' ? 'заголовок' : 'текст'}${attrs(p.attrs) ? ', ' + attrs(p.attrs) : ''}):\n` +
+      (p.content || []).map(n => n.type === 'hardBreak' ? '[перенос строки]' : `«${n.text}» — ${(n.marks || []).map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычный'}`).join('\n'));
+    const revisions = (ledger?.revisions || []).map(r => `${r.operation === 'insert' ? 'Вставка' : 'Удаление'}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}`);
+    const view = ledger ? pendingTextRevisions.projection(doc) : null;
+    return paragraphs.join('\n') + '\nИсправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
+  };
+  const detail = `${fileName}\nДо возврата:\n${describe(changes.before)}\nПосле возврата:\n${describe(changes.after)}\nВозврат можно отменить и повторить в панели исправлений, в том числе после перезапуска.`;
+  if (detail.length > 32000) throw Error('PENDING_RETURN_PREVIEW_BUDGET');
+  const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Исправления из Word',
+    message: 'Применить возврат Word к этой сцене?', detail, buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true });
+  return result.response === 1;
+}
+
 async function confirmLocalWordNoteDelta({ fileName, changes }) {
   if (!mainWindow || mainWindow.isDestroyed() || !Array.isArray(changes) || !changes.length) return false;
   const body = value => value ? manuscriptNoteModel.validateNoteBody(value.body).text : '—';
@@ -10546,13 +10644,15 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
     );
   }
 
+  let preparedPendingReturn = null;
   let preparedNoteDelta = null;
   let preparedCommentDelta = null;
   const activationResult = await handleDocxReviewPreviewSessionActivationCommandSurface({
     requestId,
     bufferSource: buffer.toString('base64'),
   }, { ...options, onCommentDeltaPrepared: value => { preparedCommentDelta = value; },
-    onNoteDeltaPrepared: value => { preparedNoteDelta = value; } });
+    onNoteDeltaPrepared: value => { preparedNoteDelta = value; },
+    onPendingReturnPrepared: value => { preparedPendingReturn = value; } });
   if (!activationResult || activationResult.ok !== true) {
     const nestedError = isPlainObjectValue(activationResult?.error) ? activationResult.error : {};
     const nestedDetails = isPlainObjectValue(nestedError.details) ? nestedError.details : {};
@@ -10569,6 +10669,25 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
           : undefined,
       },
     );
+  }
+
+  if (preparedPendingReturn && activationResult.pendingProductPath?.status === 'preview-ready') {
+    const prepared = preparedPendingReturn; preparedPendingReturn = null;
+    try {
+      const confirm = typeof options.confirmPendingReturn === 'function' ? options.confirmPendingReturn : confirmLocalWordPendingReturn;
+      activationResult.pendingProductPath = await confirm({ fileName: selection.value.name, changes: prepared.changes }) === true
+        ? await prepared.apply() : { ok: true, status: 'cancelled', writerCalled: false, pendingProductApplyLane: false };
+    } catch (error) {
+      activationResult.pendingProductPath = { ok: false, status: 'blocked', code: error.code || error.message, writerOutcome: 'NOT_CONFIRMED' };
+    }
+  }
+  if (activationResult.pendingProductPath?.ok === false) {
+    if (typeof options.notifyPendingReturnFailure === 'function') await options.notifyPendingReturnFailure(activationResult.pendingProductPath);
+    else if (mainWindow && !mainWindow.isDestroyed()) await dialog.showMessageBox(mainWindow, {
+      type: 'warning', title: 'Исправления из Word', message: 'Возврат не применён',
+      detail: 'Проверьте сохранённую сцену и повторно откройте файл Word. Код: ' + activationResult.pendingProductPath.code,
+      buttons: ['Понятно'], defaultId: 0, cancelId: 0,
+    });
   }
 
   if (preparedCommentDelta && activationResult.commentProductPath?.status === 'preview-ready') {
@@ -22696,6 +22815,7 @@ async function readCommentAuthoringProjection() {
   } catch (error) { return { available: false, reason: error.message, threads: [] }; }
 }
 
+const authenticatedPendingReturnAdmissions = new WeakMap();
 async function readPendingRevisionProjection() {
   try {
     const context = await readCommentAuthoringContext();
@@ -22708,9 +22828,13 @@ async function readPendingRevisionProjection() {
 
 async function handlePendingRevisionCommand(payload = {}) {
   try {
+    const admission = authenticatedPendingReturnAdmissions.get(payload);
+    if (payload.action === 'authenticated-pending-return' && !admission) throw Error('PENDING_RETURN_ADMISSION_REQUIRED');
+    if (admission) authenticatedPendingReturnAdmissions.delete(payload);
     if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['projectId', 'sceneId', 'subjectId', 'expectedSceneSha256', 'action', 'revisionId'].includes(key))) throw Error('PENDING_REVISION_REQUEST_INVALID');
     return await queueDiskOperation(async () => {
       const context = await readCommentAuthoringContext();
+      if (admission) { admission.check(); if (context.raw !== admission.raw) throw Error('PENDING_RETURN_BASELINE_CONFLICT'); }
       if (payload.projectId !== context.projectId || payload.sceneId !== context.sceneId || payload.subjectId !== context.subjectId
         || payload.expectedSceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_IDENTITY_STALE');
       const snapshot = await requestEditorSnapshot();
@@ -22720,9 +22844,10 @@ async function handlePendingRevisionCommand(payload = {}) {
       const live = envelope.parseObservablePayload(snapshot.content);
       if (live.issue || !live.doc || !context.parsed.doc) throw Error('PENDING_REVISION_EDITOR_INVALID');
       pendingTextRevisions.readLedger(live.doc);
-      if (JSON.stringify(envelope.canonicalizeDocumentJson(live.doc).attrs?.wordPendingRevisions)
-        !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc).attrs?.wordPendingRevisions)) throw Error('PENDING_REVISION_EDITOR_STALE');
+      if (JSON.stringify(envelope.canonicalizeDocumentJson(live.doc))
+        !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc))) throw Error('PENDING_REVISION_EDITOR_STALE');
       const revalidate = async () => {
+        if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
           || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('PENDING_REVISION_CONTEXT_CHANGED');
         const fresh = await readCommentAuthoringContext();
@@ -22734,15 +22859,16 @@ async function handlePendingRevisionCommand(payload = {}) {
         if (notes.document.notes.some(n => !n.deleted && n.manuscript?.reference?.sceneId === context.sceneId)) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
       };
       await revalidate();
-      const decided = pendingTextRevisions.decide(context.parsed.doc, { action: payload.action,
+      const decided = admission ? admission.replacement : pendingTextRevisions.decide(context.parsed.doc, { action: payload.action,
         ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) });
-      if (!decided.changed) return { ok: true, changed: false, writerCalled: false };
+      if (!decided.changed) return { ok: true, changed: false, replay: decided.replay === true, writerCalled: false };
       const content = envelope.composeObservablePayload({ ...context.parsed, doc: decided.doc });
       const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
         'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true });
       if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });
       const readback = await fs.readFile(context.filePath, 'utf8');
       if (readback !== content) throw Error('PENDING_REVISION_READBACK_MISMATCH');
+      if (admission) resetActiveReviewSessionStore('cleared');
       // A committed scene must not steal focus from a later navigation.
       if (currentFilePath === context.filePath && currentLifecycleSubjectId() + ':' + commentAuthoringSessionId === context.subjectId
         && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
@@ -22757,7 +22883,7 @@ async function handlePendingRevisionCommand(payload = {}) {
           && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
           sendEditorText(publication);
           lastAutosaveHash = computeHash(content); backupHashes.set(context.filePath, lastAutosaveHash);
-          updateStatus('Решение по исправлениям сохранено');
+          updateStatus(admission ? 'Возврат Word сохранён. Доступна отмена в панели исправлений.' : 'Решение по исправлениям сохранено');
         }
       }
       return { ok: true, changed: true, writerCalled: true, receipt };

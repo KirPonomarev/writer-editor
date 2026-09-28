@@ -101,3 +101,24 @@ test('native local-file preview and main source sanitizer retain the complete pe
   assert.equal(plan.ok, true, JSON.stringify(plan));
   assert.equal(model.projection(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc).revisions.length, 2);
 });
+
+test('returned round history survives five authenticated-source export parse cycles and decision changes', async () => {
+  let { doc } = await parse(pack());
+  const first = model.projection(doc);
+  for (let n = 1; n <= 5; n++) {
+    const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/synthetic',
+      scenes: [{ sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', text: model.projection(doc).current, doc, order: 0 }] });
+    const returned = await parse(buildDocxReviewPacketBuffer(source));
+    doc = model.replaceFromReturn(doc, returned.doc, { roundId: 'round-' + n, artifactSha256: String(n).padStart(64, '0') }).doc;
+    doc = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc })).doc;
+    assert.equal(model.readLedger(doc).roundUndo.length, n);
+    assert.equal(model.projection(doc).original, first.original); assert.equal(model.projection(doc).current, first.current);
+    const rejected = model.decide(doc, { action: 'rejectAll' }).doc;
+    assert.equal(model.projection(rejected).current, first.original);
+    doc = model.decide(rejected, { action: 'undo' }).doc;
+  }
+  for (let n = 0; n < 5; n++) doc = model.decide(doc, { action: 'undo' }).doc;
+  assert.equal(model.readLedger(doc).roundUndo.length, 0);
+  for (let n = 0; n < 5; n++) doc = model.decide(doc, { action: 'redo' }).doc;
+  assert.equal(model.readLedger(doc).roundUndo.length, 5);
+});
