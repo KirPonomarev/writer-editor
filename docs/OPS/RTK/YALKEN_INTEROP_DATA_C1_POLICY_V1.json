@@ -786,7 +786,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "ed79304a53ada97a8dc1922063a038745f65f1c6ff5c2a2b05e3aaab487063b5"
+        "sha256": "9939ab7f3d2e837d6649b06f73e1e3cb8d1e63b3b9d41adcf16f7802c68378a5"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -966,7 +966,7 @@
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-        "sha256": "f9fabae94ec3c8ab3ec5317f93271e463a0ddc2333d92b32eb107a33e37586c0"
+        "sha256": "5354d332e9f2e939c3a68fa80c05f90294bda686cd889ec085d0195b43218344"
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
@@ -1214,7 +1214,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
-        "sha256": "48b078ccf799815883a49d9ad8272fab690c7340f4dcb2942bb53e9fca1ad871"
+        "sha256": "4c2c7916687e3cddce0c656b06f1eb4dc4b3647bdaf3173f81971419f6e91772"
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",

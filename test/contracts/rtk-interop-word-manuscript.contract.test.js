@@ -26,7 +26,8 @@ async function harness(t,options={}) {
  const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
  const authority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'leases'),useLeaseHeartbeatWorker:false});
  let publications=0;
- const context=vm.createContext({fs:fsp,path,Buffer,planCommentAnchorSave:require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave,
+ const context=vm.createContext({fs:fsp,path,Buffer,
+  loadDocumentContentEnvelopeModule:()=>import('../../src/renderer/documentContentEnvelope.mjs'),pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs'),planCommentAnchorSave:require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave,
   loadNotesStorageModule:()=>import('../../src/product/notesStoragePersistence.mjs'),manuscriptNoteModel:require('../../src/core/word-manuscript-notes-v1.cjs'),
   loadRtkNonTextReturnModule:async()=>({readCommentAuthoringState:async()=>({text:null})}),commitProjectTransaction,durableSaveTransaction,...gateway,
   isDirty:false,autoSaveInProgress:false,lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
