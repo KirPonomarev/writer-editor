@@ -534,7 +534,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "255619c5c09dce2055478bf357474168468304c7f041c17c21da00593912d4f0"
+        "sha256": "56cb99019e59c2dd6adc877057a615ac3cf0b09930f1982ada6bcc624c23e540"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -698,7 +698,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "c0dcd7b4a2bc331fb9548fd1f623e501869a7f215fbb1d148465883351aa25d7"
+        "sha256": "b1ce4eaa4f67e95c6f99fce49017aa71b92a58726f610295b92f882cfb3552fe"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1342,11 +1342,11 @@
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "de246b837292016e021f3d7544a0acfec406de1eeeddd622409edfa204dd6e96"
+        "sha256": "bd1512c3cfbb74b6c0e7e455ffc4dcdd5409b74f4021d20cee6db0d29f8d476b"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "daa20b291e97825bc0f77230fb787f0adee46b7415035b71ea4734ebfedbb76e"
+        "sha256": "29280f5a19b9da6c6e9445100f7f14053e851d4c11d375bd6344d05e3c400a39"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
@@ -1358,7 +1358,7 @@
       },
       {
         "path": "src/core/notesStorage.mjs",
-        "sha256": "e1864cf355f9ff3ea693b093fc6d86e678e0e7ee704b1c459cf60b82a8f66d57"
+        "sha256": "7fb3c9be2cd41f9a662cf63e2790e811a6b5d2113caad49efe9e511be1af08ef"
       },
       {
         "path": "src/export/docx/docxMinExportHandler.js",

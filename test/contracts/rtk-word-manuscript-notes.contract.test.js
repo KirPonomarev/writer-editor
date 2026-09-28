@@ -155,3 +155,38 @@ test('rich note command crosses unchanged IPC depth and breadth limits as bounde
   const forged = structuredClone(wire);forged.payload.manuscript.bodyJson = 'x'.repeat(1024 * 1024);
   assert.equal(validateIpcEnvelope(forged, 'ui:command-bridge').code, 'E_ENVELOPE_BYTES');
 });
+
+test('body save refreshes scene identity but never overwrites a concurrent note or changed editor identity', async () => {
+  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+  const text = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const source = text.slice(text.indexOf('async function saveManuscriptNote('), text.indexOf('function renderNotesWorkspace()'));
+  const note = { id: 'note-a', contentHash: 'baseline', manuscript: payload() };
+  const draft = { body: body(), kind: 'footnote', baselineHash: 'baseline' };
+  let writes = [], pending, status;
+  const fresh = () => ({ ok: true, projectId: 'p', documentHash: 'notes-before', notes: [note],
+    manuscriptAuthoring: { available: true, sceneId: 'roman/scene.txt', subjectId: 'fresh-subject', expectedSceneSha256: 'new-raw-scene' } });
+  const sandbox = { currentProjectId: 'p', currentDocumentId: 'scene', manuscriptBodyIdentity: 'p:note-a', notesMutationPending: 0,
+    manuscriptBodyEditor: { getJSON: body }, manuscriptKindSelect: { value: 'footnote' }, manuscriptInsertionPoint: 3,
+    manuscriptDrafts: new Map([['p:note-a', draft]]),
+    notesWorkspaceState: { documentHash: 'notes-before', selectedId: 'note-a', manuscriptAuthoring: { expectedSceneSha256: 'old-raw-scene' } },
+    NOTES_WORKSPACE_QUERY_ID: 'notes', EXTRA_COMMAND_IDS: { NOTES_UPDATE: 'update' },
+    invokeWorkspaceQueryBridge: () => new Promise(resolve => { pending = resolve; }),
+    manuscriptMutationBinding: () => ({ ...sandbox.notesWorkspaceState.manuscriptAuthoring, expectedDocumentHash: sandbox.notesWorkspaceState.documentHash }),
+    runNotesMutation: async (command, value) => { writes.push(value); return { ok: true }; },
+    setNotesWorkspaceStatus: value => { status = value; }, renderNotesWorkspaceDetail() {},
+  };
+  vm.runInNewContext(source, sandbox);
+  let work = sandbox.saveManuscriptNote(note);pending(fresh());await work;
+  assert.equal(writes.length, 1);assert.equal(writes[0].expectedSceneSha256, 'new-raw-scene');assert.equal(writes[0].expectedDocumentHash, 'notes-before');
+  assert.equal(sandbox.manuscriptDrafts.size, 0);
+  for (const changed of [value => { value.documentHash = 'concurrent'; }, value => { value.notes = [{ ...note, contentHash: 'changed-body' }]; },
+    value => { value.projectId = 'foreign'; }, value => { value.notes = [{ ...note, deleted: true }]; }]) {
+    sandbox.manuscriptDrafts.set('p:note-a', draft);work = sandbox.saveManuscriptNote(note);const value = fresh();changed(value);pending(value);await work;
+    assert.equal(writes.length, 1);assert.equal(sandbox.manuscriptDrafts.get('p:note-a'), draft);assert.match(status, /черновик сохранён/);
+  }
+  work = sandbox.saveManuscriptNote(note);sandbox.currentDocumentId = 'other';pending(fresh());await work;
+  assert.equal(writes.length, 1);sandbox.currentDocumentId = 'scene';
+  work = sandbox.saveManuscriptNote(note);const newer = { ...draft, body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'New typing' }] }] } };
+  sandbox.manuscriptDrafts.set('p:note-a', newer);pending(fresh());await work;
+  assert.equal(writes.length, 2);assert.equal(sandbox.manuscriptDrafts.get('p:note-a'), newer);
+});

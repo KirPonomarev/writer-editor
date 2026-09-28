@@ -11740,7 +11740,9 @@ function renderManuscriptNoteBody(note) {
     notesDetailBody?.before(manuscriptBodyHost);
     const changed = body => {
       if (!manuscriptBodyIdentity) return;
-      manuscriptDrafts.set(manuscriptBodyIdentity, { body, kind: manuscriptKindSelect.value });
+      const previous = manuscriptDrafts.get(manuscriptBodyIdentity);
+      manuscriptDrafts.set(manuscriptBodyIdentity, { body, kind: manuscriptKindSelect.value,
+        baselineHash: previous?.baselineHash || getSelectedNotesWorkspaceNote()?.contentHash });
       setNotesWorkspaceStatus('Сноска изменена — сохраните её');
     };
     manuscriptBodyEditor = createManuscriptBodyEditor(manuscriptBodyHost, { onChange: changed, onSave: () => { void saveSelectedNote(); } });
@@ -11794,13 +11796,27 @@ async function createManuscriptNote() {
 }
 
 async function saveManuscriptNote(note, reanchor = false) {
-  const binding = manuscriptMutationBinding(); if (!binding || !manuscriptBodyEditor) return;
-  if (!reanchor && note.manuscript.reference.sceneId !== notesWorkspaceState.manuscriptAuthoring.sceneId) {
+  if (!manuscriptBodyEditor || notesMutationPending) return;
+  const projectId = currentProjectId, documentId = currentDocumentId;
+  const identity = `${projectId}:${note.id}`, body = manuscriptBodyEditor.getJSON(), kind = manuscriptKindSelect.value;
+  const expectedDocumentHash = notesWorkspaceState.documentHash;
+  const baselineHash = manuscriptDrafts.get(identity)?.baselineHash || note.contentHash;
+  const insertionPoint = manuscriptInsertionPoint;
+  const fresh = await invokeWorkspaceQueryBridge(NOTES_WORKSPACE_QUERY_ID, { projectId });
+  if (projectId !== currentProjectId || documentId !== currentDocumentId || identity !== manuscriptBodyIdentity
+    || notesWorkspaceState.selectedId !== note.id || notesMutationPending) return;
+  const current = fresh?.notes?.find(item => item.id === note.id);
+  if (!fresh?.ok || fresh.projectId !== projectId || fresh.documentHash !== expectedDocumentHash
+    || !current || current.deleted || current.contentHash !== baselineHash) {
+    setNotesWorkspaceStatus('Сноска изменилась в проекте. Ваш черновик сохранён; проверьте изменения перед повторным сохранением'); return;
+  }
+  notesWorkspaceState.manuscriptAuthoring = fresh.manuscriptAuthoring;
+  const binding = manuscriptMutationBinding(); if (!binding) return;
+  if (!reanchor && note.manuscript.reference.sceneId !== fresh.manuscriptAuthoring.sceneId) {
     setNotesWorkspaceStatus('Откройте сцену этой сноски перед редактированием'); return;
   }
-  const identity = `${currentProjectId}:${note.id}`, body = manuscriptBodyEditor.getJSON(), kind = manuscriptKindSelect.value;
   const result = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_UPDATE, { ...binding, noteId: note.id,
-    manuscript: { kind, bodyJson: JSON.stringify(body), offsetUtf16: reanchor ? manuscriptInsertionPoint : note.manuscript.reference.offsetUtf16 },
+    manuscript: { kind, bodyJson: JSON.stringify(body), offsetUtf16: reanchor ? insertionPoint : note.manuscript.reference.offsetUtf16 },
   }, 'Сноска сохранена');
   const latest = manuscriptDrafts.get(identity);
   if (result && (!latest || (JSON.stringify(latest.body) === JSON.stringify(body) && latest.kind === kind))) {

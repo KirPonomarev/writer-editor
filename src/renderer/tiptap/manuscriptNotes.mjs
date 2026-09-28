@@ -62,7 +62,9 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
         const text = event.clipboardData?.getData('text/plain');
         if (typeof text !== 'string') return false;
         event.preventDefault();
-        editor.commands.insertContent(text.split(/\r\n?|\n/u).map(line => ({ type: 'paragraph', content: line ? [{ type: 'text', text: line }] : [] })));
+        const lines = text.split(/\r\n?|\n/u);
+        if (lines.length === 1) { if (text) editor.commands.insertContent({ type: 'text', text }); }
+        else editor.commands.insertContent(lines.map(line => ({ type: 'paragraph', content: line ? [{ type: 'text', text: line }] : [] })));
         return true;
       } },
     onUpdate: () => onChange?.(editor.getJSON()),
@@ -86,11 +88,11 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
   controls.append(linkButton);
   host.addEventListener('keydown', event => {
     event.stopPropagation();
-    if ((event.metaKey || event.ctrlKey) && (event.key === 'Enter' || event.key.toLowerCase() === 's')) {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault(); onSave?.();
     }
   });
   return { getJSON: () => editor.getJSON(), setDocument: doc => { documentGeneration++; editor.commands.setContent(doc, { emitUpdate: false }); },
-    setEditable: value => { editor.setEditable(value); for (const button of controls.querySelectorAll('button')) button.disabled = !value; },
+    setEditable: value => { editor.setEditable(value, false); for (const button of controls.querySelectorAll('button')) button.disabled = !value; },
     focus: () => editor.commands.focus('end'), destroy: () => editor.destroy() };
 }

@@ -306,6 +306,7 @@ function applyNotesMutationChecked(document, mutation = {}, options = {}) {
     }
     const note = normalizeNote({
       ...mutation,
+      ...(mutation.manuscript ? { attachment: { scope: 'manuscript' } } : {}),
       id: noteId,
       createdAtUtc: nowIso,
       updatedAtUtc: nowIso,
