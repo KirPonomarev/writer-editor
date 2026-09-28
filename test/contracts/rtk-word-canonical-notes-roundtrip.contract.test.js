@@ -67,7 +67,11 @@ test('selected canonical notes emit real footnotes and endnotes with literal bod
 test('default export does not include private notes and selectors never accept bodies or paths', async () => {
   const value = input(); delete value.documentNoteSelections;
   const { source, parts } = await fixture(value);
-  assert.equal(source.documentNotes, null);
+  assert.deepEqual(source.documentNotes.notes, []);
+  assert.deepEqual(source.documentNotes.selections, []);
+  assert.deepEqual(source.documentNotes.sourceBindings, []);
+  assert.equal(source.localAuthorityCapsule.documentNotes.policy, 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1');
+  assert.ok(!Object.values(parts).some(part => part.includes('Never exported')));
   assert.equal(parts['word/footnotes.xml'], undefined);
   assert.equal(parts['word/endnotes.xml'], undefined);
   for (const invalid of [null, {}, 'all', [{ noteId: 'note-foot', kind: 'footnote', body: 'injected' }],

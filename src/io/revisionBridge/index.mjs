@@ -7042,6 +7042,15 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       severity: 'warning', targetScope, createdAt,
     }));
   }
+  // A note-only return has no comments or tracked text changes. Keep its
+  // explicit-decision diagnostic visible without synthesizing a text revision.
+  if (options.authenticatedNoteExport?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+    && (options.authenticatedNoteExport.sourceBindings?.length > 0 || projection.documentNotes?.notes?.length > 0)) {
+    diagnostics.push(docxReviewPreviewSessionDiagnostic('DOCX_REVIEW_NOTES_REQUIRE_DECISION', {
+      message: 'Manuscript notes are available for explicit return review.',
+      severity: 'info', targetScope, createdAt,
+    }));
+  }
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;
@@ -10112,6 +10121,39 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   };
 }
 
+// Shared bounded body grammar for generic import and authenticated return.
+function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
+  const inlineStyles = docxInlineStyleCatalog(bytes);
+  const styles = { ...inlineStyles, hyperlinks };
+  const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
+  if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
+    || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
+  const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
+  if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
+  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
+  return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text);
+}
+
+export function parseDocumentNotesRichReturn(bytes, notes) {
+  if (notes == null) return [];
+  if (notes.inventoryStatus !== 'COMPLETE' || !Array.isArray(notes.notes) || notes.notes.length > 256
+    || notes.notes.length !== notes.references?.length || notes.notes.length !== notes.bodySources?.length) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
+  const seen = new Set(), linksByPart = new Map();
+  const result = notes.notes.map((note, index) => {
+    const ref = notes.references[index];
+    const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
+    if (!source || ref.kind !== note.kind || ref.paragraphIndex !== note.paragraphIndex || ref.offsetUtf16 !== note.offsetUtf16) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
+    if (source.transportIdentity && seen.has(source.transportIdentity)) throw Error('NOTE_RETURN_IDENTITY_COLLISION');
+    if (source.transportIdentity) seen.add(source.transportIdentity);
+    if (!linksByPart.has(source.relationshipPart)) linksByPart.set(source.relationshipPart, docxHyperlinkCatalog(bytes, source.relationshipPart));
+    return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
+      transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
+      body: parseDocumentNoteRichBody(bytes, source, note, linksByPart.get(source.relationshipPart)) };
+  });
+  if ([...linksByPart.values()].some(links => links.usedIds.size !== links.size)) throw Error('NOTE_RETURN_UNUSED_RELATIONSHIP');
+  return result;
+}
+
 export function buildDocxContentPreviewFromZipBytes(input) {
   const preflight = buildDocxIntakePreflightReportFromZipBytes(input);
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
@@ -10270,22 +10312,15 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           || analysis.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))
           || ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
           || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
+        const richNotes = parseDocumentNotesRichReturn(bytes, notes);
         parsed.contentPreview.manuscriptNotes = notes.notes.map((note, index) => {
           const ref = notes.references[index];
           const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
           const paragraph = parsed.contentPreview.paragraphs[note.paragraphIndex];
           if (!source || !paragraph || paragraph.table || paragraph.list
             || !Number.isSafeInteger(note.offsetUtf16) || note.offsetUtf16 < 0 || note.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
-          const styles = { ...inlineStyles, hyperlinks: docxHyperlinkCatalog(bytes, source.relationshipPart) };
-          const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
-          if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
-            || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)
-            || styles.hyperlinks.usedIds.size !== styles.hyperlinks.size) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
-          const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
-          if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
-          const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
           return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
-            body: rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text) };
+            body: richNotes[index].body };
         });
         parsed.diagnostics = parsed.diagnostics.filter(item => !['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName));
       }

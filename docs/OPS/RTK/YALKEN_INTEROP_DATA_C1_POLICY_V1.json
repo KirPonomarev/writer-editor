@@ -293,7 +293,12 @@
     "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
     "src/core/notesStorage.mjs",
     "src/export/docx/docxMinExportHandler.js",
-    "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js"
+    "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
+    "docs/tasks/2026-09-28--word-note-return.md",
+    "src/core/word-note-return-delta-v1.cjs",
+    "test/contracts/rtk-word-note-return.contract.test.js",
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-note-return-package.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -522,7 +527,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "197689dfe5aa89c24ae7eac8d26a5a0eefb38a97213aa529ff207c138600d86f"
+        "sha256": "c25231e9a76d350afd6daa736dcdd2d3e4abba8a30bb54806805a41a67a32f5d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -534,7 +539,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "00f6c7ca2a7a0fca0c4300273b6c0ab56d820b0518d1189224dd10720db5f6bb"
+        "sha256": "0531e5a5a91c2ba40eba2c3e6c77e29779e0dcfa56ae96b3c219704847d3c786"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -558,7 +563,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "7c107f21a5cd07a5e4f677667e3fd442c38cc94651af76935154aa0594e1559e"
+        "sha256": "462b2a1b49fd280dc5e885aa71f30aa9f2df0eee2f610cd9e36a47f98f62535c"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -638,7 +643,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "9bbcabc6cc8ce078d523eb3f5c2eb3255d33aa3909e2c25c0a011a581dbad99e"
+        "sha256": "7fa509eb8bcacad4a7ed1bcbc4c1612cb720ff3ed1c541e6dc36e4e948c5aa83"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -658,7 +663,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "a212f7a2b1919094c30a9fbd1d74a35477dbc15785dde5de990f68ea8c47fcc9"
+        "sha256": "cd83d53c468a504e0ca3e74f5b25d88ac838529f21c9c0cea67d7862962ea502"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -698,7 +703,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "ce22a6008fee286c092dd56813fbbd3cff39d3ae13edda869c401c8de6b225d3"
+        "sha256": "89967021bbe332ae40ab7ecce03cf077fb33f25ac3f906f7200b9aefc08edd5c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -906,11 +911,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketNotes.js",
-        "sha256": "f8ed042e5646880b73318a95b33986fb0d19647089da51a31b7f9b05d94eab5b"
+        "sha256": "c942ceebc9df28c9205cedffd56edc61268949115e81a46a904cf7bf66a52c5e"
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
-        "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
+        "sha256": "a1f1049babfe192ec01b05a1969d2b4ea8bd2803836e7673813b6b14e56320cd"
       },
       {
         "path": "docs/tasks/2026-09-22--word-notes-footnotes.md",
@@ -1186,7 +1191,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "bbe09e3dc55cfe6eaa64cc7c31075a9dcc2b43e5cbe5de8cdfded38123b95536"
+        "sha256": "a1e0617ae7f8eea29ee315f2949d1c3e7a795e85d85a8b172c1b26dfe367ac6b"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -1370,7 +1375,23 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "75587517e1df54a1dbc18ecd9b247ddc30ac5eeab4f83a24a32d71c14ff1f844"
+        "sha256": "de1300da0b0ba3127b2bde5fffe88eddb567e854aeeb1549920d5030ce714938"
+      },
+      {
+        "path": "src/core/word-note-return-delta-v1.cjs",
+        "sha256": "387fa3fd2a20c13b28738cac2f791b34589b8d01c442ffa1c6276540c298c121"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return.contract.test.js",
+        "sha256": "0a40952b8b1dc72fc2c699f1c629a713e7007ae6fb7c8c606e81402f98db7ae0"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+        "sha256": "c7beddba181656e20df2f5fe54b930cff52863c5c9529444c0028970a108e306"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-return-package.contract.test.js",
+        "sha256": "c376fdc547aa466b1972ea6262c95ae03f4100dd4ad0819738d7bef0ec360a10"
       }
     ],
     "followupRepair": {
