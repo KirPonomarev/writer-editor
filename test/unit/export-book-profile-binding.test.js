@@ -194,11 +194,19 @@ test('export book profile binding: actual main snapshot resolves absent default 
   const content = envelope.composeObservablePayload({ text: 'Saved scene', doc });
   let manifest = {};
   const context = vm.createContext({
+    JSON,
     currentFilePath: '/project/scene.txt', isDirty: false,
     isAllowedFilePath: () => true,
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
-    fs: { readFile: async () => content },
-    resolveProjectBindingForFile: async () => ({ manifest }),
+    fs: { readFile: async file => {
+      if (file === '/project/scene.txt') return content;
+      assert.equal(file, '/project/project.craftsman.json');
+      return JSON.stringify(manifest);
+    } },
+    resolveProjectBindingForFile: async () => { throw Error('Export must not normalize or write the manifest'); },
+    isPathInside: (root, file) => root === '/project' && file === '/project/scene.txt',
+    getProjectManifestPath: () => '/project/project.craftsman.json',
+    currentProjectName: 'Project', DEFAULT_PROJECT_NAME: 'Project',
     loadBookProfileModule: async () => bookProfile,
     loadDocumentContentEnvelopeModule: async () => envelope,
     verifyDocxMediaAssetFiles: async () => {},
@@ -211,11 +219,17 @@ test('export book profile binding: actual main snapshot resolves absent default 
   assert.deepEqual(manifest, {}, 'export must not persist a project default');
   assert.match(docxPageSetupBind.buildDocxSectionPropertiesXml(snapshot.bookProfile), /w:w="11906" w:h="16838"/u);
   manifest = { bookProfile: { formatId: 'A5' } };
-  assert.equal((await context.readCanonicalExportSnapshot({})).bookProfile, manifest.bookProfile);
+  assert.deepEqual((await context.readCanonicalExportSnapshot({})).bookProfile, manifest.bookProfile);
   const override = { formatId: 'A4' };
   assert.equal((await context.readCanonicalExportSnapshot({ options: { bookProfile: override } })).bookProfile, override);
   for (const invalid of [null, [], 'A4', 42]) {
     await assert.rejects(context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } }), /E_BOOK_PROFILE_OBJECT/u);
+    manifest = { bookProfile: invalid };
+    await assert.rejects(context.readCanonicalExportSnapshot({}), /E_BOOK_PROFILE_OBJECT/u);
+  }
+  for (const invalid of [null, [], 'invalid manifest']) {
+    manifest = invalid;
+    await assert.rejects(context.readCanonicalExportSnapshot({}), /E_DOCX_PROJECT_MANIFEST_INVALID/u);
   }
   for (const invalid of [{ formatId: 'UNKNOWN' }, { formatId: 'A4', marginLeftMm: -1 }]) {
     const explicit = await context.readCanonicalExportSnapshot({ options: { bookProfile: invalid } });

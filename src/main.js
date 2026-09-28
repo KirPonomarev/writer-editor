@@ -20933,14 +20933,18 @@ async function readCanonicalExportSnapshot(payload = {}) {
   }
   let bookProfile = hasExplicitProfile ? payload.options.bookProfile : null;
 
-  if (!bookProfile) {
-    const projectBinding = await resolveProjectBindingForFile(currentFilePath);
-    if (
-      projectBinding
-      && isPlainObjectValue(projectBinding.manifest)
-      && isPlainObjectValue(projectBinding.manifest.bookProfile)
-    ) {
-      bookProfile = projectBinding.manifest.bookProfile;
+  if (!bookProfile && isPathInside(getProjectRootPath(), currentFilePath)) {
+    // Export is read-only. Binding through ensureProjectManifest would normalize
+    // and persist an invalid profile before the strict DOCX validator sees it.
+    const manifest = JSON.parse(await fs.readFile(
+      getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8',
+    ));
+    if (!isPlainObjectValue(manifest)) throw new Error('E_DOCX_PROJECT_MANIFEST_INVALID');
+    if (Object.prototype.hasOwnProperty.call(manifest, 'bookProfile')) {
+      if (!isPlainObjectValue(manifest.bookProfile)) {
+        throw new Error('E_DOCX_BOOK_PROFILE_INVALID:E_BOOK_PROFILE_OBJECT');
+      }
+      bookProfile = manifest.bookProfile;
     }
   }
   if (!bookProfile) {

@@ -10,6 +10,8 @@ T: saved scene and bound manifest -> canonical export snapshot -> Core default
 only when absent -> existing strict DOCX page binding -> atomic export port.
 H: the snapshot previously forwarded null to a strict object validator. Resolve
 the absent profile before building; invalid explicit profiles must still fail.
+Read the original project manifest without normalization: export must neither
+repair the manifest nor turn an invalid stored profile into an absent one.
 B: no project writes, schema change, dependency, UI change or new authority.
 P: execute the actual main snapshot function, validate A4/A5 and invalid inputs,
 run affected export tests and native macOS SOURCE/PACKAGED command exports.

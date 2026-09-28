@@ -536,7 +536,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f9432b7d1c60dae1e66d4983bc95e55363d9fbc12039eb306eb06d15fe82169f"
+        "sha256": "dd68177310578392a614e35a04bb0ee8efd6bd3ab57f42377453f840322e68b3"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1428,7 +1428,7 @@
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
-        "sha256": "91a321d12d09ee86d24fb8dd95bd2c76cd843e3bc53234157a13920031e5a409"
+        "sha256": "74180b2f0d7347acdbe756e641ed419a181227cb2ccaa747fe927e6a60dc4839"
       }
     ],
     "followupRepair": {
