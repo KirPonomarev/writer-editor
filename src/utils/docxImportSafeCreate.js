@@ -64,6 +64,7 @@ const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PLAN_KEYS = new Set([
 ]);
 const DOCX_IMPORT_SAFE_CREATE_ALLOWED_ENTRY_KEYS = new Set([
   'comments',
+  'notes',
   'sceneId',
   'kind',
   'title',
@@ -482,6 +483,12 @@ function validateDocxImportPreviewPlan(plan) {
     );
   }
   const content = normalizeText(entry.content);
+  if (entry.notes !== undefined) {
+    try {
+      require('../core/word-manuscript-notes-v1.cjs').materializeImportedNotes({ candidates: entry.notes,
+        sceneContent: content, projectId: 'preview', sceneId: 'roman/preview.txt', importOperationId: 'preview', beforeText: null });
+    } catch (error) { return buildError('DOCX_SAFE_CREATE_NOTES_INVALID', 'docx_import_notes_invalid', { code: error.code || error.message }); }
+  }
   if (entry.comments !== undefined && (!Array.isArray(entry.comments) || !entry.comments.length
     || entry.comments.length > 128 || Buffer.byteLength(JSON.stringify(entry.comments)) > 65536)) {
     return buildError('DOCX_SAFE_CREATE_COMMENTS_INVALID', 'docx_import_comments_invalid');
@@ -576,6 +583,7 @@ function validateDocxImportPreviewPlan(plan) {
           : 'Imported DOCX preview',
         content,
         ...(entry.comments !== undefined ? { comments: cloneJsonSafe(entry.comments) } : {}),
+        ...(entry.notes !== undefined ? { notes: cloneJsonSafe(entry.notes) } : {}),
         contentTextHash: entry.contentTextHash,
         candidateContentSha256: typeof entry.candidateContentSha256 === 'string'
           && /^[a-f0-9]{64}$/u.test(entry.candidateContentSha256)
@@ -1219,7 +1227,7 @@ async function validateExistingDocxImportReceipt(options) {
       verifyManifestContinuation: args => transactionAuthority.verifyManifestContinuation({ ...args, projectId }) });
     const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
     const stored = await fs.readFile(receiptPath);
-    if (!['yalken.project-transaction.commit.v2', 'yalken.project-transaction.commit.v3'].includes(commit.schemaVersion)
+    if (!['yalken.project-transaction.commit.v2', 'yalken.project-transaction.commit.v3', 'yalken.project-transaction.commit.v5'].includes(commit.schemaVersion)
       || commit.revision !== receipt.manifestAuthority.fencingGeneration
       || commit.manifestDigest !== receipt.manifestAuthority.nextHash
       || !commit.resources.some(resource => resource.path === receiptPath && resource.digest === hashExactBytes(stored))) {
@@ -1233,6 +1241,15 @@ async function validateExistingDocxImportReceipt(options) {
       for (const thread of expectedThreads) {
         const matches = actual.threads.filter(item => item.threadId === thread.threadId);
         if (matches.length !== 1 || !jsonStableEqual(matches[0], thread)) return fail('comments', 'comment_readback_mismatch');
+      }
+    }
+    if (validated.value.entry.notes?.length) {
+      const expected = await prepareGenericNoteState({ entry: validated.value.entry, projectRoot,
+        targetPath, projectId, importOperationId, empty: true, createdAt: receipt.createdAt });
+      const actual = JSON.parse(await fs.readFile(path.join(projectRoot, 'notes.craftsman.json'), 'utf8'));
+      for (const note of expected.imported) {
+        const matches = actual.notes.filter(item => item.id === note.id);
+        if (matches.length !== 1 || !jsonStableEqual(matches[0], note)) return fail('notes', 'note_readback_mismatch');
       }
     }
   } catch { return fail('transactionEvidence', 'committed_transaction_readback_failed'); }
@@ -1315,6 +1332,22 @@ async function prepareGenericCommentState({ entry, projectRoot, targetPath, proj
   return { path: saved.path, ...materializeGenericComments({ candidates: entry.comments, paragraphs, projectId,
     sceneId: path.relative(projectRoot, targetPath).split(path.sep).join('/'), importOperationId,
     beforeText: empty ? null : saved.text }) };
+}
+
+async function prepareGenericNoteState({ entry, projectRoot, targetPath, projectId, importOperationId, empty = false, createdAt }) {
+  if (!entry.notes?.length) return null;
+  let beforeText = null;
+  if (!empty) {
+    const notesPath = path.join(projectRoot, 'notes.craftsman.json');
+    try {
+      const stat = await fs.lstat(notesPath);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.size > 4 * 1024 * 1024) throw Error('NOTE_STORAGE_BOUNDARY');
+      beforeText = await fs.readFile(notesPath, 'utf8');
+    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
+  return require('../core/word-manuscript-notes-v1.cjs').materializeImportedNotes({ candidates: entry.notes,
+    sceneContent: entry.content, projectId, sceneId: path.relative(projectRoot, targetPath).split(path.sep).join('/'),
+    importOperationId, beforeText, createdAt });
 }
 
 async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
@@ -1424,6 +1457,12 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
   let commentState;
   try { commentState = await prepareGenericCommentState({ entry: validated.value.entry, projectRoot, targetPath, projectId, importOperationId }); }
   catch (error) { return buildError('DOCX_SAFE_CREATE_COMMENTS_INVALID', 'docx_import_comments_invalid', { code: error.message }); }
+  let noteState;
+  const importCreatedAt = new Date().toISOString();
+  try {
+    const prepared = await prepareGenericNoteState({ entry: validated.value.entry, projectRoot, targetPath, projectId, importOperationId, createdAt: importCreatedAt });
+    if (prepared) { const { imported, ...cohort } = prepared; noteState = cohort; }
+  } catch (error) { return buildError('DOCX_SAFE_CREATE_NOTES_INVALID', 'docx_import_notes_invalid', { code: error.message }); }
 
   const normalizedEntry = {
     sceneId: validated.value.entry.sceneId,
@@ -1516,7 +1555,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
       markerCleared: true,
     },
     createdAtAuthority: DOCX_IMPORT_SAFE_CREATE_CREATED_AT_AUTHORITY,
-    createdAt: new Date().toISOString(),
+    createdAt: importCreatedAt,
   };
 
   const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
@@ -1527,6 +1566,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
       ...(commentState?.beforeText === null ? [{ path: commentState.path, content: commentState.afterText }] : []),
       { path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` }],
     ...(commentState?.beforeText ? { commentState: { beforeText: commentState.beforeText, afterText: commentState.afterText } } : {}),
+    ...(noteState ? { noteState } : {}),
     publishManifest: options.publishManifest, verifyManifestContinuation: options.verifyManifestContinuation,
     fsAdapter: options.fsAdapter });
   // Precomputed receipt fields confer no success until independent durable

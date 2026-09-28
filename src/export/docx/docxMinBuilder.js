@@ -1,5 +1,6 @@
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage } = require('./docxMedia.js');
+const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
 const { tableParagraphs, renderTableParagraphs } = require('../../io/documentTables.js');
 const ZIP_CRC32_TABLE = (() => {
   const table = new Uint32Array(256);
@@ -291,6 +292,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   const media = buildMediaPackage(snapshot.doc);
+  const notes = notePackageParts(deps.documentNotes);
   const hyperlinks = new Map();
   const readHref = run => {
     const links = (Array.isArray(run.marks) ? run.marks : []).filter(mark => mark?.type === 'link');
@@ -339,8 +341,10 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
       const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
       const runs = semanticBlocks?.[index]?.runs;
+      const noteBlock = deps.noteBlocks?.[index];
+      const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
       const hasMedia = Array.isArray(runs) && runs.some(run => run.image);
-      if (!text && !hasMedia) {
+      if (!text && !hasMedia && !markers.size) {
         return `<w:p>${styleXml}</w:p>`;
       }
       // Keep the established plain serialization byte-stable when no supported
@@ -350,9 +354,27 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const hasColors = Array.isArray(runs) && runs.some(run => Object.keys(readRunColors(run)).length > 0);
       const hasTypography = Array.isArray(runs) && runs.some(run => Object.keys(readRunTypography(run)).length > 0);
       const hasLinks = Array.isArray(runs) && runs.some(run => readHref(run));
-      const runsXml = hasMarks || hasColors || hasTypography || hasMedia || hasLinks
+      let runsXml = hasMarks || hasColors || hasTypography || hasMedia || hasLinks
         ? runs.map(run => run.image ? media.drawing(run.image)
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
+      if (markers.size) {
+        const parts = [], boundaries = [...markers.keys()].sort((a, b) => a - b);
+        let offset = 0;
+        for (const run of runs || [{ text }]) {
+          if (run.image) throw new Error('DOCX_NOTE_MEDIA_COORDINATE_UNSUPPORTED');
+          const end = offset + run.text.length;
+          const cuts = [offset, ...boundaries.filter(point => point > offset && point < end), end];
+          for (let i = 0; i < cuts.length - 1; i++) {
+            const start = cuts[i];
+            if (markers.has(start)) { parts.push(markers.get(start)); markers.delete(start); }
+            parts.push(wrapLink(buildDocxMarkedRunXml({ ...run, text: run.text.slice(start - offset, cuts[i + 1] - offset) }, hasColors, hasTypography), readHref(run)));
+          }
+          offset = end;
+        }
+        if (markers.has(offset)) { parts.push(markers.get(offset)); markers.delete(offset); }
+        if (markers.size) throw new Error('DOCX_NOTE_ANCHOR_UNEMITTED');
+        runsXml = parts.join('');
+      }
       return `<w:p>${styleXml}${runsXml}</w:p>`;
     })
     : '<w:p/>';
@@ -360,7 +382,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>${media.contentTypes}
+  <Default Extension="xml" ContentType="application/xml"/>${media.contentTypes}${notes.contentTypes}
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -387,9 +409,9 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     const instances = [...numberings.keys()].map((numId) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
     styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
   }
-  if (headingLevels.size || blockStyles.size || numberings.size || media.parts.length || hyperlinks.size) {
+  if (headingLevels.size || blockStyles.size || numberings.size || media.parts.length || hyperlinks.size || notes.entries.length) {
     const relationships = (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
-      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships
+      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships + notes.relationships
       + [...hyperlinks].map(([href, id]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('');
     styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
   }
@@ -399,10 +421,12 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: 'word/document.xml', data: documentXml },
     ...styleParts,
     ...media.parts,
+    ...notes.entries,
   ]);
 }
 
 module.exports = {
+  buildDocxMarkedRunXml,
   buildDocxMinBuffer,
   buildDocxTextRunsXml,
   buildStoredZip,

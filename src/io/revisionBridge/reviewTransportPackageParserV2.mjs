@@ -1010,7 +1010,7 @@ function isInertHyperlinkRelationship(item) {
 function isInertGoogleOfficeCustomXmlRelationship(item) {
   return item.partName === 'word/_rels/document.xml.rels'
     && item.type === 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml'
-    && item.target === '../customXML/item1.xml'
+    && ['../customXML/item1.xml', '../customXml/item1.xml'].includes(item.target)
     && (item.targetMode === '' || item.targetMode.toLowerCase() === 'internal');
 }
 
@@ -3525,7 +3525,7 @@ function directChildTokensWithin(documentScan, parent) {
 // binds body text and source positions; no note returned here grants write authority.
 function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState) {
   const schemaVersion = 'yalken.rtk.word.document-notes.v1';
-  const reasons = [], notes = [], references = [], formatting = [];
+  const reasons = [], notes = [], references = [], formatting = [], bodySources = [];
   const refs = documentScan.tokens.filter(token => ['footnoteReference', 'endnoteReference'].includes(token.localName))
     .sort((a, b) => a.openStart - b.openStart);
   if (!refs.length && !parts['word/footnotes.xml'] && !parts['word/endnotes.xml']) return { documentNotes: null, reasons };
@@ -3551,7 +3551,13 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       requireNote(rels.length === 1 && rels[0].partName === 'word/_rels/document.xml.rels'
         && rels[0].target === `${kind}s.xml` && ['', 'Internal'].includes(rels[0].targetMode), 'PART_RELATIONSHIP');
       requireNote(relationships.filter(item => item.partName === 'word/_rels/document.xml.rels' && item.id === rels[0].id).length === 1, 'DUPLICATE_RELATIONSHIP_ID');
-      requireNote(!relationships.some(item => item.partName === `word/_rels/${kind}s.xml.rels`), 'NOTE_RELATIONSHIP_UNSUPPORTED');
+      const noteRelationshipPart = `word/_rels/${kind}s.xml.rels`;
+      const noteLinks = parts[noteRelationshipPart] === undefined ? new Map()
+        : reviewHyperlinkRelationships(parts[noteRelationshipPart], budgets, cryptoPort, budgetState);
+      for (const link of noteLinks.values()) {
+        requireNote(link.type === HYPERLINK_REL_TYPE && link.mode === 'External', 'NOTE_RELATIONSHIP_UNSUPPORTED');
+        normalizeDocxHttpHref(link.target);
+      }
       const types = contentTypes.filter(item => item.partName === `/${partName}`);
       requireNote(types.length === 1 && types[0].contentType === `application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml`, 'PART_CONTENT_TYPE');
       const scan = parseXmlPart(partName, xml, budgets, cryptoPort, budgetState);
@@ -3583,6 +3589,8 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
               if (token.localName === `${kind}Ref`) markCount++;
               if (token.localName === 'br') requireNote(['', 'textWrapping'].includes(attr(token, 'type', W_NS)), 'NOTE_BREAK_KIND');
               requireNote(token.localName !== 'cr', 'NOTE_NON_CANONICAL_NEWLINE');
+            } else if (token.localName === 'hyperlink') {
+              requireNote(token.namespaceUri === W_NS && noteLinks.has(attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships')), 'NOTE_LINK_RELATIONSHIP');
             } else if (['r', 'rPr', 'pPr', 'proofErr', 'bookmarkStart', 'bookmarkEnd'].includes(token.localName)) {
               requireNote(token.namespaceUri === W_NS, 'NOTE_ELEMENT_NAMESPACE');
             } else if (property && token.namespaceUri === W_NS) {
@@ -3597,6 +3605,18 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
           return value;
         });
         requireNote(markCount === 1, 'NOTE_REFERENCE_MARK');
+        const root = roots[0], prefix = root.prefix ? `${root.prefix}:` : '';
+        const opening = xml.slice(root.openStart, root.openEnd).replace(`<${root.qName}`, `<${prefix}document`);
+        const paragraphsXml = ps.map(paragraph => {
+          let value = xml.slice(paragraph.openStart, paragraph.closeEnd);
+          const markers = childTokensWithin(scan, paragraph).filter(token => isWordToken(token, `${kind}Ref`))
+            .sort((a, b) => b.openStart - a.openStart);
+          for (const marker of markers) value = value.slice(0, marker.openStart - paragraph.openStart)
+            + value.slice(marker.closeEnd - paragraph.openStart);
+          return value;
+        }).join('');
+        bodySources.push({ kind, nativeId: id, relationshipPart: noteRelationshipPart,
+          documentXml: `${opening}<${prefix}body>${paragraphsXml}</${prefix}body></${prefix}document>` });
         noteByKey.set(`${kind}:${id}`, body);
         requireNote(noteByKey.size <= 256, 'NOTE_COUNT');
       }
@@ -3631,7 +3651,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
     reasons.push(reason('RTK_WORD_NOTES_MALFORMED_BLOCKED', 'reviewIr.documentNotes',
       'Native note parts and references require bounded, complete semantic correspondence.', { detail: error.message }));
   }
-  return { documentNotes: { schemaVersion, notes, references,
+  return { documentNotes: { schemaVersion, notes, references, bodySources,
     protectedDigest: cryptoPort.sha256Json({ schemaVersion, notes }),
     lossLedger: { formattingPolicy: 'NATIVE_NOTE_TEXT_AND_PLACEMENT_PROTECTED_FORMATTING_ADVISORY',
       providerFormattingElements: [...new Map(formatting.map(item => [`${item.kind}:${item.elementName}`, item])).values()] } }, reasons };

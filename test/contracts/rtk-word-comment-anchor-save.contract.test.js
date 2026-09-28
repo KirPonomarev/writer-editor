@@ -130,6 +130,8 @@ async function mainHarness(t,options={}) {
  const sandbox={fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   commitProjectTransaction:tx.commitProjectTransaction,recoverProjectTransaction:tx.recoverProjectTransaction,
   durableSaveTransaction,planCommentAnchorSave,
+  manuscriptNoteModel:require('../../src/core/word-manuscript-notes-v1.cjs'),
+  loadNotesStorageModule:()=>import('../../src/product/notesStoragePersistence.mjs'),
   prepareBookProfileManifestForFile:async()=>({manifestPath:f.manifestPath,projectId,expectedText:fs.readFileSync(f.manifestPath,'utf8'),nextText:f.afterManifest}),
   getMainProjectManifestAuthority:async()=>authority,
   getDocumentContextFromPath:()=>({kind:'scene'}),getProjectRelativeFilePath:p=>path.relative(f.root,p),

@@ -83,6 +83,7 @@ const {
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
 const { planCommentAnchorSave } = require('./core/word-comment-anchor-save-v1.cjs');
+const manuscriptNoteModel = require('./core/word-manuscript-notes-v1.cjs');
 const {
   ATOMIC_IMPORT_LIBRARY_TARGET_ROLES,
   ATOMIC_SINGLE_FILE_TARGET_ROLES,
@@ -232,7 +233,7 @@ const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require('./export/docx/docxReviewPacketBuilder');
 const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExportHandler');
 const { commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
-const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotesReturn } = require('./export/docx/docxReviewPacketNotes.js');
+const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotesReturn, buildCanonicalNotesExport } = require('./export/docx/docxReviewPacketNotes.js');
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
@@ -4727,9 +4728,11 @@ async function readDocxReviewPacketExportSource() {
   };
 }
 
-async function readCanonicalNotesForDocxExport(projectId, projectRoot) {
+async function readCanonicalNotesForDocxExport(projectId, projectRoot, allowMissing = false) {
   const notesStorage = await loadNotesStorageModule();
   const read = await readProjectNotesDocument({ projectId, projectRoot, notesStorage });
+  if (allowMissing && read.ok && (!read.current.sourceExists
+    || (read.current.state !== 'ready' && !read.current.document.notes.some(note => note.manuscript)))) return undefined;
   if (!read.ok || read.current.state !== 'ready' || !read.current.sourceExists) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_NOTES_NOT_READY');
   }
@@ -4783,8 +4786,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_RTK_BUILDERS_UNAVAILABLE');
   }
   const documentNoteSelections = normalizeDocumentNoteSelections(payload.options?.documentNotes);
-  const notesDocument = documentNoteSelections.length
-    ? await readCanonicalNotesForDocxExport(projectId, projectRoot) : undefined;
+  const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, documentNoteSelections.length === 0);
   const source = buildFullManuscriptDocxReviewPacketSource({
     documentNoteSelections,
     notesDocument,
@@ -4801,6 +4803,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     cryptoPort: createRtkReviewTransportCryptoPort(),
   });
   source.officeModeTransport = payload.options?.officeModeTransport === true;
+  source.notesSourceDigest = notesDocument ? notesStateDigest(notesDocument) : '';
   source.localAuthorityCapsule.officeModeTransport = source.officeModeTransport;
   source.publicationOwner = activeStage10ApplicationBootstrap;
   // ROUND-01 (V3): import the export-time secret into the main-process-only
@@ -4885,9 +4888,9 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
       throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_STALE');
     }
   }
-  if (source.documentNotes) {
-    const notes = await readCanonicalNotesForDocxExport(scope.projectId, scope.projectRoot);
-    if (notesStateDigest(notes) !== source.documentNotes.stateDigest) {
+  if (source.notesSourceDigest !== undefined || source.documentNotes) {
+    const notes = await readCanonicalNotesForDocxExport(scope.projectId, scope.projectRoot, true);
+    if ((notes ? notesStateDigest(notes) : '') !== (source.notesSourceDigest ?? source.documentNotes.stateDigest)) {
       throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_NOTES_STALE');
     }
   }
@@ -10964,6 +10967,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
+          ? { manuscriptNotes: cloneJsonSafe(sourceReport.contentPreview.manuscriptNotes) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.genericComments)
           ? { genericComments: cloneJsonSafe(sourceReport.contentPreview.genericComments) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.commentNormalizationLedger)
@@ -14335,6 +14340,8 @@ async function writeNotesOrSettingsThroughAtomicGateway({
   targetRole,
   projectId,
   operationLabel,
+  beforeWrite,
+  inDiskOperation = false,
 }) {
   const request = {
     filePath,
@@ -14354,12 +14361,14 @@ async function writeNotesOrSettingsThroughAtomicGateway({
   });
 
   try {
-    return await queueDiskOperation(
+    const schedule = inDiskOperation ? operation => operation() : queueDiskOperation;
+    return await schedule(
       () => executeAtomicSingleFileGatewayCutover({
         request,
         observeLegacy,
         observeGateway,
         executeGateway: async ({ authorityIdentity }) => {
+          if (beforeWrite) await beforeWrite();
           const result = await fileManager.writeFileAtomic(filePath, content);
           return {
             ...result,
@@ -14522,7 +14531,7 @@ async function writeProjectNotesDocument(context, current, document, commandId, 
     projectRoot: context.projectRoot,
     notesPath,
     sourceText: beforeText,
-    writeRecoveryFileAtomic: (targetPath, content) => queueDiskOperation(
+    writeRecoveryFileAtomic: (targetPath, content) => (options.inDiskOperation ? operation => operation() : queueDiskOperation)(
       () => backupManager.writeReceiptOrBackupThroughAtomicGateway({
         targetPath,
         content,
@@ -14539,6 +14548,8 @@ async function writeProjectNotesDocument(context, current, document, commandId, 
     targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.NOTES_PRIMARY,
     projectId: context.projectId,
     operationLabel: 'save project notes command',
+    beforeWrite: options.beforeWrite,
+    inDiskOperation: options.inDiskOperation === true,
   });
   if (!writeResult || writeResult.success !== true) {
     return makeNotesCommandError(
@@ -14574,6 +14585,10 @@ async function runNotesMutationCommand(commandId, payload = {}, mutationInput = 
   if (!read.ok) {
     return makeNotesCommandError(commandId, read.code, read.reason);
   }
+  if (mutationInput.manuscriptRequest !== undefined
+    || read.current.document.notes.some(note => note.id === payload.noteId && note.manuscript)) {
+    return runManuscriptNotesMutation(commandId, payload, mutationInput, context, options);
+  }
   const mutation = {
     ...mutationInput,
     noteId: typeof payload.noteId === 'string' ? payload.noteId : mutationInput.noteId,
@@ -14601,6 +14616,70 @@ async function runNotesMutationCommand(commandId, payload = {}, mutationInput = 
   };
 }
 
+async function runManuscriptNotesMutation(commandId, payload, mutationInput, context, options = {}) {
+  try {
+    return await queueDiskOperation(async () => {
+      const source = await readCommentAuthoringContext();
+      if (source.projectId !== context.projectId || source.projectRoot !== context.projectRoot
+        || payload.projectId !== source.projectId || payload.subjectId !== source.subjectId
+        || payload.expectedSceneSha256 !== source.sceneSha256) throw Error('NOTE_SOURCE_IDENTITY_STALE');
+      const snapshot = await requestEditorSnapshot();
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0) throw Error('NOTE_EDITOR_GENERATION_REQUIRED');
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content);
+      const review = await loadRtkNonTextReturnModule();
+      if (live.issue || !review.commentSceneSnapshotsEqual(live.doc || live.text, source.parsed.doc || source.parsed.text)) throw Error('NOTE_SAVE_SCENE_FIRST');
+      const authority = await getMainProjectManifestAuthority();
+      return authority.withProjectLease(context.projectId, lease => lease.publish(async () => {
+        const fresh = await readProjectNotesDocument(context, options);
+        if (!fresh.ok) throw Error(fresh.reason);
+        if (typeof payload.expectedDocumentHash !== 'string'
+          || payload.expectedDocumentHash !== fresh.current.hash) throw Error('NOTES_REVISION_STALE');
+        const current = fresh.current.document.notes.find(note => note.id === payload.noteId);
+        const mutation = { ...mutationInput, noteId: payload.noteId,
+          expectedDocumentHash: payload.expectedDocumentHash };
+        delete mutation.manuscriptRequest;
+        if (mutationInput.manuscriptRequest !== undefined) {
+          const request = mutationInput.manuscriptRequest;
+          if (!isPlainObjectValue(request) || Object.keys(request).some(key => !['kind', 'bodyJson', 'offsetUtf16'].includes(key))
+            || typeof request.bodyJson !== 'string' || Buffer.byteLength(request.bodyJson) > manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_MANUSCRIPT_REQUEST_INVALID');
+          let body;
+          try { body = JSON.parse(request.bodyJson); } catch { throw Error('NOTE_BODY_JSON_INVALID'); }
+          mutation.manuscript = manuscriptNoteModel.bindManuscriptPayload({ kind: request.kind, body, offsetUtf16: request.offsetUtf16,
+            sceneId: source.sceneId, sceneContent: source.raw });
+          mutation.scope = 'manuscript';
+          mutation.body = manuscriptNoteModel.validateNoteBody(body).text;
+        } else if (!current?.manuscript || current.manuscript.reference.sceneId !== source.sceneId) throw Error('NOTE_ACTIVE_SCENE_REQUIRED');
+        if (mutation.op === 'restore') {
+          const text = manuscriptNoteModel.sceneText(source.raw), reference = current.manuscript.reference;
+          if (reference.sourceTextSha256 !== manuscriptNoteModel.sha(text)
+            || !manuscriptNoteModel.boundary(text, reference.offsetUtf16)) throw Error('NOTE_REFERENCE_STALE');
+        }
+        const result = context.notesStorage.applyNotesMutation(fresh.current.document, mutation, {
+          projectId: context.projectId, ...(typeof options.now === 'function' ? { now: options.now } : {}),
+        });
+        if (!result.ok) return makeNotesCommandError(commandId, result.code, result.reason);
+        const beforeWrite = async () => {
+          await lease.assertOwned();
+          if (currentFilePath !== source.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== source.subjectId
+            || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('NOTE_SOURCE_IDENTITY_STALE');
+          if (await fs.readFile(source.filePath, 'utf8') !== source.raw) throw Error('NOTE_SOURCE_REVISION_STALE');
+          const readback = await readProjectNotesDocument(context, options);
+          if (!readback.ok || readback.current.sourceText !== fresh.current.sourceText) throw Error('NOTES_REVISION_STALE');
+        };
+        await beforeWrite();
+        const written = await writeProjectNotesDocument(context, fresh.current, result.document, commandId,
+          { ...options, beforeWrite, inDiskOperation: true });
+        if (!written.ok) return written;
+        return { ok: true, note: result.note,
+          receipt: buildNotesMutationReceipt({ commandId, mutation, result, recovery: written.recovery }) };
+      }));
+    }, 'canonical manuscript note authoring');
+  } catch (error) {
+    return makeNotesCommandError(commandId, error.code || error.message, error.message);
+  }
+}
+
 async function handleWorkspaceProjectNotesQuery(payload = {}) {
   const context = await getProjectNotesContext(payload);
   if (!context.ok) {
@@ -14618,11 +14697,19 @@ async function handleWorkspaceProjectNotesQuery(payload = {}) {
       counts: { total: 0, deleted: 0, inbox: 0 },
     };
   }
-  return context.notesStorage.buildNotesReadModel(read.current.document, {
+  const projection = context.notesStorage.buildNotesReadModel(read.current.document, {
     projectId: context.projectId,
     scope: typeof payload.scope === 'string' ? payload.scope : '',
     includeDeleted: payload.includeDeleted === true,
   });
+  try {
+    const source = await readCommentAuthoringContext();
+    if (source.projectId !== context.projectId) throw Error('NOTE_PROJECT_CHANGED');
+    projection.manuscriptAuthoring = { available: true, projectId: source.projectId, sceneId: source.sceneId,
+      subjectId: source.subjectId, expectedSceneSha256: source.sceneSha256,
+      sourceTextSha256: manuscriptNoteModel.sha(manuscriptNoteModel.sceneText(source.raw)) };
+  } catch (error) { projection.manuscriptAuthoring = { available: false, reason: error.message }; }
+  return projection;
 }
 
 function normalizeProjectSearchPayload(payload = {}) {
@@ -18467,6 +18554,7 @@ async function handleNotesCreateCommand(payload = {}, options = {}) {
     scope: typeof payload.scope === 'string' ? payload.scope : 'inbox',
     title: typeof payload.title === 'string' ? payload.title : '',
     body: typeof payload.body === 'string' ? payload.body : '',
+    ...(Object.hasOwn(payload, 'manuscript') ? { manuscriptRequest: payload.manuscript } : {}),
   }, options);
 }
 
@@ -18475,6 +18563,7 @@ async function handleNotesUpdateCommand(payload = {}, options = {}) {
     op: 'update',
     title: typeof payload.title === 'string' ? payload.title : undefined,
     body: typeof payload.body === 'string' ? payload.body : undefined,
+    ...(Object.hasOwn(payload, 'manuscript') ? { manuscriptRequest: payload.manuscript } : {}),
   }, options);
 }
 
@@ -20965,6 +21054,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             manifestContent = JSON.stringify(invalidation.manifest, null, 2);
           }
           let commentState = null;
+          let noteState = null;
           if (lease && typeof expectedSceneContent === 'string'
             && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
             const comments = await loadRtkNonTextReturnModule();
@@ -20974,9 +21064,17 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             commentState = planCommentAnchorSave({ beforeText: current.text,
               projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
               beforeContent: expectedSceneContent, afterContent: content });
+            const notesStorage = await loadNotesStorageModule();
+            const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
+            if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
+            noteState = manuscriptNoteModel.planManuscriptNoteAnchorSave({
+              beforeText: notes.sourceExists ? notes.sourceText : null, projectId: prepared.projectId,
+              sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
+              beforeContent: expectedSceneContent, afterContent: content });
           }
           const receipt = await commitProjectTransaction({
             ...(commentState ? { commentState } : {}),
+            ...(noteState ? { noteState } : {}),
             scenePath: filePath,
             sceneContent: content,
             expectedSceneContent,
@@ -24873,7 +24971,7 @@ async function validateDocxExportTarget(outPath) {
   });
 }
 
-async function buildDocxMinBuffer(editorSnapshot) {
+async function buildDocxMinBuffer(editorSnapshot, noteSource = {}) {
   const [
     docxPageSetupBindModule,
     semanticMappingModule,
@@ -24884,6 +24982,8 @@ async function buildDocxMinBuffer(editorSnapshot) {
     loadStyleMapModule(),
   ]);
   return buildDocxMinBufferCore(editorSnapshot, {
+    documentNotes: noteSource.documentNotes,
+    noteBlocks: noteSource.noteBlocks,
     docxPageSetupBindModule,
     semanticMappingModule,
     styleMapModule,
@@ -25522,14 +25622,42 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
 }
 
 async function handleExportDocxMin(payloadRaw) {
+  let source;
+  const readSource = async payload => {
+    const filePath = currentFilePath, subjectId = currentLifecycleSubjectId();
+    const snapshot = await readCanonicalExportSnapshot(payload);
+    const binding = await resolveProjectBindingForFile(filePath);
+    const projectRoot = getProjectRootPath(), projectId = binding?.manifest?.projectId;
+    const notes = projectId ? await readCanonicalNotesForDocxExport(projectId, projectRoot, true) : null;
+    const sceneId = path.relative(projectRoot, filePath).split(path.sep).join('/');
+    const active = notes?.notes?.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId);
+    let noteBlocks, documentNotes;
+    if (active) {
+      manuscriptNoteModel.sceneText(snapshot.content);
+      const paragraphs = snapshot.doc ? snapshot.doc.content.map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
+      noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text }));
+      documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
+    }
+    if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || isDirty) throw new Error('DOCX_SOURCE_CHANGED');
+    source = { filePath, subjectId, projectId, projectRoot, content: snapshot.content,
+      notesDigest: notes ? notesStateDigest(notes) : '', noteBlocks, documentNotes };
+    return snapshot;
+  };
   return runDocxMinExport(payloadRaw, {
     normalizeExportPayload,
     makeTypedExportError,
     buildPathBoundaryDetails,
     resolveDocxExportPath,
     validateDocxExportTarget,
-    readCanonicalExportSnapshot,
-    buildDocxMinBuffer,
+    readCanonicalExportSnapshot: readSource,
+    buildDocxMinBuffer: snapshot => buildDocxMinBuffer(snapshot, source),
+    revalidateCanonicalExportSource: async () => {
+      if (!source || source.filePath !== currentFilePath || source.subjectId !== currentLifecycleSubjectId()
+        || source.projectRoot !== getProjectRootPath() || isDirty || autoSaveInProgress) throw new Error('DOCX_SOURCE_CHANGED');
+      if (await fs.readFile(source.filePath, 'utf8') !== source.content) throw new Error('DOCX_SOURCE_CHANGED');
+      const notes = source.projectId ? await readCanonicalNotesForDocxExport(source.projectId, source.projectRoot, true) : null;
+      if ((notes ? notesStateDigest(notes) : '') !== source.notesDigest) throw new Error('DOCX_NOTES_CHANGED');
+    },
     queueDiskOperation,
     writeBufferAtomic,
     updateStatus,

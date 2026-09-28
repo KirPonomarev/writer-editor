@@ -169,8 +169,10 @@ async function assertMainProductionExportWiring() {
   assert.doesNotMatch(readBody, /viewportDomText/u);
   assert.doesNotMatch(readBody, /visibleWindowText/u);
   assert.match(exportBody, /return runDocxMinExport\(payloadRaw,/u);
-  assert.match(exportBody, /\breadCanonicalExportSnapshot,\n/u);
-  assert.match(exportBody, /\bbuildDocxMinBuffer,\n/u);
+  assert.match(exportBody, /readCanonicalExportSnapshot: readSource/u);
+  assert.match(exportBody, /await readCanonicalExportSnapshot\(payload\)/u);
+  assert.match(exportBody, /buildDocxMinBuffer: snapshot => buildDocxMinBuffer\(snapshot, source\)/u);
+  assert.match(exportBody, /revalidateCanonicalExportSource: async/u);
   assert.match(exportBody, /\bwriteBufferAtomic,\n/u);
 }
 

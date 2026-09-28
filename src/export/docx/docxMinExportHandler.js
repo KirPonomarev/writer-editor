@@ -138,6 +138,7 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
           : 'EXPORT_TARGET_FORBIDDEN';
         throw error;
       }
+      if (typeof deps.revalidateCanonicalExportSource === 'function') await deps.revalidateCanonicalExportSource();
       return writeBufferAtomic(outPath, documentBuffer);
     }, 'export docx min');
   } catch (error) {

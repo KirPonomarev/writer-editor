@@ -8,6 +8,9 @@ const path = require('node:path');
 
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
 const { MODE: COMMENT_REBASE_MODE, planCommentAnchorSave } = require('./word-comment-anchor-save-v1.cjs');
+const { validateNoteCohort } = require('./word-manuscript-notes-v1.cjs');
+const NOTE_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v5';
+const NOTE_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v5';
 
 const JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v1';
 const COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v1';
@@ -205,6 +208,46 @@ async function publishCommentState(change, manifestPath, nextText, revision, fsA
   }
 }
 
+const noteStatePath = manifestPath => path.join(path.dirname(manifestPath), 'notes.craftsman.json');
+const noteBinding = value => value ? { beforeDigest: digestOptional(value.beforeText),
+  afterDigest: sha256hex(value.afterText), mode: value.mode } : null;
+
+function normalizeNoteState(value, scenePath, manifestPath, { before, after }) {
+  if (value == null) return null;
+  try {
+    const projectId = JSON.parse(before.manifest).projectId;
+    if (typeof projectId !== 'string' || !projectId || JSON.parse(after.manifest).projectId !== projectId) throw Error('PROJECT');
+    return validateNoteCohort(value, { projectId,
+      sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
+      beforeContent: before.scene, afterContent: after.scene });
+  } catch (error) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.ADMIT, error.code || 'SCHEMA');
+  }
+}
+
+async function inspectNoteState(change, manifestPath, fsAdapter) {
+  if (!change) return null;
+  const target = noteStatePath(manifestPath);
+  await assertResourceBoundary(target, manifestPath, fsAdapter);
+  const bytes = await readResource({ path: target }, manifestPath, fsAdapter);
+  const current = bytes === null ? null : bytes.toString('utf8');
+  if (current !== change.beforeText && current !== change.afterText) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_CAS', TRANSACTION_PHASES.RECOVER);
+  }
+  return current;
+}
+
+async function publishNoteState(change, manifestPath, nextText, revision, fsAdapter) {
+  const current = await inspectNoteState(change, manifestPath, fsAdapter);
+  if (current !== nextText) {
+    if (nextText === null) await removeDurably(noteStatePath(manifestPath), fsAdapter);
+    else await durableSaveTransaction({ filePath: noteStatePath(manifestPath), content: nextText, revision, fsAdapter });
+  }
+  if (await inspectNoteState(change, manifestPath, fsAdapter) !== nextText) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_READBACK', TRANSACTION_PHASES.READBACK);
+  }
+}
+
 // These are create-only companions of the scene, never arbitrary replacements.
 // Validate journal-derived paths and bytes before using them for recovery I/O.
 function normalizeResources(resources, { scenePath, manifestPath }, wire = false) {
@@ -341,7 +384,7 @@ async function cleanupResourceStaging(resources, manifestPath, fsAdapter, transa
   }
 }
 
-function transactionIdFor({ scenePath, manifestPath, revision, before, after, resources = [], commentState = null }) {
+function transactionIdFor({ scenePath, manifestPath, revision, before, after, resources = [], commentState = null, noteState = null }) {
   return sha256hex(JSON.stringify({
     scenePath,
     manifestPath,
@@ -350,6 +393,7 @@ function transactionIdFor({ scenePath, manifestPath, revision, before, after, re
     after: { sceneDigest: sha256hex(after.scene), manifestDigest: sha256hex(after.manifest) },
     ...(resources.length ? { resources: resourceBindings(resources) } : {}),
     ...(commentState ? { commentState: commentBinding(commentState) } : {}),
+    ...(noteState ? { noteState: noteBinding(noteState) } : {}),
   }));
 }
 
@@ -360,7 +404,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   } catch {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_JSON', TRANSACTION_PHASES.RECOVER);
   }
-  if (!journal || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)) {
+  if (!journal || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION, NOTE_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SCHEMA', TRANSACTION_PHASES.RECOVER);
   }
   if (journal.scenePath !== scenePath || journal.manifestPath !== manifestPath) {
@@ -380,26 +424,33 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   if (before.manifest === null || after.scene === null || after.manifest === null) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
   }
-  const resources = [RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)
+  const resources = ([RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)
+    || (journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION && journal.resources !== undefined))
     ? normalizeResources(journal.resources, { scenePath, manifestPath }, true) : [];
   if (journal.schemaVersion === JOURNAL_SCHEMA_VERSION && journal.resources !== undefined) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
   }
   if (resources.length && before.scene !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.RECOVER);
-  const hasComments = [COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion);
+  const hasComments = [COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)
+    || (journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION && journal.commentState !== undefined);
   const commentState = hasComments
     ? normalizeCommentState(journal.commentState, scenePath, manifestPath, { before, after }) : null;
-  if ((hasComments && (!commentState || commentJournalSchema(commentState) !== journal.schemaVersion))
+  if ((hasComments && (!commentState || (journal.schemaVersion !== NOTE_JOURNAL_SCHEMA_VERSION && commentJournalSchema(commentState) !== journal.schemaVersion)))
     || (!hasComments && journal.commentState !== undefined)
     || (journal.schemaVersion === ANCHOR_JOURNAL_SCHEMA_VERSION && journal.resources !== undefined)
     || (commentState && resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
   }
-  const expectedId = transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources, commentState });
+  const noteState = normalizeNoteState(journal.noteState, scenePath, manifestPath, { before, after });
+  if ((journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION) !== Boolean(noteState)
+    || (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath)))) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.RECOVER);
+  }
+  const expectedId = transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources, commentState, noteState });
   if (journal.transactionId !== expectedId) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_DIGEST', TRANSACTION_PHASES.RECOVER);
   }
-  return { ...journal, before, after, resources, commentState };
+  return { ...journal, before, after, resources, commentState, noteState };
 }
 
 function isDigest(value) {
@@ -427,7 +478,7 @@ async function readCommitRecordState({
   } catch {
     return corruptCommitState(source, 'COMMIT_RECORD_JSON');
   }
-  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION, NOTE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || !isDigest(record.transactionId)
     || !Number.isSafeInteger(record.revision) || record.revision < 0
     || !isDigest(record.sceneDigest) || !isDigest(record.manifestDigest)) {
@@ -436,19 +487,27 @@ async function readCommitRecordState({
   if (record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return corruptCommitState(source, 'COMMIT_RECORD_BINDING');
   }
-  if ([RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
+  if ([RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+    || (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION && record.resources !== undefined)) {
     if (!Array.isArray(record.resources) || !record.resources.length || record.resources.length > MAX_RESOURCES
       || record.resources.some(entry => !entry || typeof entry.path !== 'string' || !isDigest(entry.digest)
         || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || entry.bytes > MAX_RESOURCE_BYTES)) {
       return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
     }
   } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
-  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
+  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+    || (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION && record.commentState !== undefined)) {
     if (!record.commentState || !isDigest(record.commentState.beforeDigest) || !isDigest(record.commentState.afterDigest)
-      || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? record.commentState.mode !== COMMENT_REBASE_MODE : record.commentState.mode !== undefined)) {
+      || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? record.commentState.mode !== COMMENT_REBASE_MODE
+        : record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE].includes(record.commentState.mode) : record.commentState.mode !== undefined)) {
       return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
     }
   } else if (record.commentState !== undefined) return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
+  if (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION) {
+    if (!record.noteState || (record.noteState.beforeDigest !== null && !isDigest(record.noteState.beforeDigest))
+      || !isDigest(record.noteState.afterDigest)
+      || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1'].includes(record.noteState.mode)) return corruptCommitState(source, 'COMMIT_NOTE_SCHEMA');
+  } else if (record.noteState !== undefined) return corruptCommitState(source, 'COMMIT_NOTE_SCHEMA');
   const manifestMatches = async (targetDigest) => {
     if (record.manifestDigest === targetDigest) return true;
     if (typeof verifyManifestContinuation !== 'function') return false;
@@ -464,7 +523,8 @@ async function readCommitRecordState({
       && record.sceneDigest === sha256hex(expectedJournal.after.scene)
       && record.manifestDigest === sha256hex(expectedJournal.after.manifest)
       && canonicalize(record.resources || []) === canonicalize(resourceBindings(expectedJournal.resources || []))
-      && canonicalize(record.commentState || null) === canonicalize(commentBinding(expectedJournal.commentState));
+      && canonicalize(record.commentState || null) === canonicalize(commentBinding(expectedJournal.commentState))
+      && canonicalize(record.noteState || null) === canonicalize(noteBinding(expectedJournal.noteState));
     if (currentCommit) return Object.freeze({ status: 'VALID', relation: 'CURRENT', record, source });
     const priorCommit = record.sceneDigest === digestOptional(expectedJournal.before.scene)
       && await manifestMatches(sha256hex(expectedJournal.before.manifest));
@@ -505,6 +565,7 @@ function buildRecoveryPacket({ journal, journalSource, commitState, currentScene
     capabilityId: PROJECT_COMMIT_REPAIR_CAPABILITY_ID,
     status: 'PRESERVED_AWAITING_INDEPENDENT_AUTHORITY',
     ...(journal.commentState ? { commentState: journal.commentState } : {}),
+    ...(journal.noteState ? { noteState: journal.noteState } : {}),
     ...(journal.resources?.length ? { companionResources: journal.resources.map(entry => ({ path: entry.path, contentBase64: entry.content.toString('base64') })) } : {}),
     binding: {
       transactionId: journal.transactionId,
@@ -694,6 +755,7 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   // Classify all companions and their ownership before any recovery mutation.
   const resourceStates = await inspectResources(stagedResources, manifestPath, fsAdapter, journal.transactionId, !committed);
   await inspectCommentState(journal.commentState, manifestPath, fsAdapter);
+  await inspectNoteState(journal.noteState, manifestPath, fsAdapter);
   const target = committed ? journal.after : journal.before;
   const manifestClass = classifyBytes(currentManifest, journal.before.manifest, journal.after.manifest);
   const sceneClass = classifyBytes(currentScene, journal.before.scene, journal.after.scene);
@@ -737,6 +799,8 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   }
   if (journal.commentState) await publishCommentState(journal.commentState, manifestPath,
     committed ? journal.commentState.afterText : journal.commentState.beforeText, journal.revision, fsAdapter);
+  if (journal.noteState) await publishNoteState(journal.noteState, manifestPath,
+    committed ? journal.noteState.afterText : journal.noteState.beforeText, journal.revision, fsAdapter);
   const finalResources = await inspectResources(journal.resources, manifestPath, fsAdapter, journal.transactionId);
   if (finalResources.some(bytes => committed ? bytes === null : bytes !== null)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.RECOVER);
@@ -767,6 +831,7 @@ async function commitProjectTransaction({
   verifyManifestContinuation,
   createResources,
   commentState: inputCommentState,
+  noteState: inputNoteState,
   fsAdapter = fsp,
 }) {
   assertPathPair(scenePath, manifestPath);
@@ -788,13 +853,20 @@ async function commitProjectTransaction({
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
+  const noteState = normalizeNoteState(inputNoteState, scenePath, manifestPath, {
+    before: { scene: expectedSceneContent, manifest: expectedManifestContent },
+    after: { scene: sceneContent, manifest: manifestContent },
+  });
+  if (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath))) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.ADMIT);
+  }
   if (commentState && (commentState.mode === COMMENT_REBASE_MODE
     ? resources.length !== 0
     : !resources.length || resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT);
   }
   if (resources.length && expectedSceneContent !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.ADMIT);
-  if (resources.length || commentState?.mode === COMMENT_REBASE_MODE) {
+  if (resources.length || commentState?.mode === COMMENT_REBASE_MODE || noteState) {
     await assertResourceBoundary(scenePath, manifestPath, fsAdapter);
     await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
     await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
@@ -820,7 +892,10 @@ async function commitProjectTransaction({
   if (commentState && await inspectCommentState(commentState, manifestPath, fsAdapter) !== commentState.beforeText) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_CAS', TRANSACTION_PHASES.ADMIT);
   }
-  const transactionId = transactionIdFor({ scenePath, manifestPath, revision, before, after, resources, commentState });
+  if (noteState && await inspectNoteState(noteState, manifestPath, fsAdapter) !== noteState.beforeText) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_CAS', TRANSACTION_PHASES.ADMIT);
+  }
+  const transactionId = transactionIdFor({ scenePath, manifestPath, revision, before, after, resources, commentState, noteState });
   const stagedResources = resources.length ? [...resources, { path: scenePath, content: Buffer.from(sceneContent) }] : [];
   for (const entry of stagedResources) {
     if (await readResource({ path: resourceStagingPath(entry, transactionId) }, manifestPath, fsAdapter) !== null) {
@@ -828,12 +903,13 @@ async function commitProjectTransaction({
     }
   }
   const journal = {
-    schemaVersion: commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+    schemaVersion: noteState ? NOTE_JOURNAL_SCHEMA_VERSION : commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     transactionId,
     revision,
     scenePath,
     manifestPath,
     ...(commentState ? { commentState } : {}),
+    ...(noteState ? { noteState } : {}),
     ...(resources.length ? { resources: resources.map(entry => ({ path: entry.path, contentBase64: entry.content.toString('base64') })) } : {}),
     before: {
       sceneBase64: encodeOptionalText(before.scene),
@@ -855,7 +931,7 @@ async function commitProjectTransaction({
   if (priorCommitState.status === 'CORRUPT') {
     await failCorruptCommit({
       manifestPath,
-      journal: { ...journal, before, after, resources, commentState },
+      journal: { ...journal, before, after, resources, commentState, noteState },
       journalSource: null,
       commitState: priorCommitState,
       currentScene: observedScene,
@@ -913,9 +989,11 @@ async function commitProjectTransaction({
   });
 
   if (commentState) await publishCommentState(commentState, manifestPath, commentState.afterText, revision, fsAdapter);
+  if (noteState) await publishNoteState(noteState, manifestPath, noteState.afterText, revision, fsAdapter);
   const commitRecord = {
-    schemaVersion: commentState ? commentCommitSchema(commentState) : resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
+    schemaVersion: noteState ? NOTE_COMMIT_SCHEMA_VERSION : commentState ? commentCommitSchema(commentState) : resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
     ...(commentState ? { commentState: commentBinding(commentState) } : {}),
+    ...(noteState ? { noteState: noteBinding(noteState) } : {}),
     transactionId,
     revision,
     scenePath,
@@ -938,6 +1016,9 @@ async function commitProjectTransaction({
   }
   if (commentState && await inspectCommentState(commentState, manifestPath, fsAdapter) !== commentState.afterText) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_READBACK', TRANSACTION_PHASES.READBACK);
+  }
+  if (noteState && await inspectNoteState(noteState, manifestPath, fsAdapter) !== noteState.afterText) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_READBACK', TRANSACTION_PHASES.READBACK);
   }
   if (finalScene !== after.scene || finalManifest !== after.manifest) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_READBACK', TRANSACTION_PHASES.READBACK);
@@ -988,8 +1069,9 @@ function decodePacketRole(packet, role) {
 
 function journalWireRecord(journal) {
   return {
-    schemaVersion: journal.commentState ? commentJournalSchema(journal.commentState) : journal.resources?.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+    schemaVersion: journal.noteState ? NOTE_JOURNAL_SCHEMA_VERSION : journal.commentState ? commentJournalSchema(journal.commentState) : journal.resources?.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     ...(journal.commentState ? { commentState: journal.commentState } : {}),
+    ...(journal.noteState ? { noteState: journal.noteState } : {}),
     transactionId: journal.transactionId,
     revision: journal.revision,
     scenePath: journal.scenePath,
@@ -1065,6 +1147,7 @@ async function repairCorruptProjectCommit({
       manifest: decodePacketRole(packet, 'AFTER_MANIFEST'),
     };
     const commentState = normalizeCommentState(packet.commentState, scenePath, manifestPath, { before, after });
+    const noteState = normalizeNoteState(packet.noteState, scenePath, manifestPath, { before, after });
     const resources = packet.companionResources === undefined ? [] : normalizeResources(packet.companionResources, { scenePath, manifestPath }, true);
     if (commentState?.mode === COMMENT_REBASE_MODE && packet.companionResources !== undefined) {
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
@@ -1073,7 +1156,7 @@ async function repairCorruptProjectCommit({
       throw new ProjectTransactionError('E_PROJECT_COMMIT_RECOVERY_PACKET_SHAPE', TRANSACTION_PHASES.RECOVER);
     }
     journal = {
-      schemaVersion: commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+      schemaVersion: noteState ? NOTE_JOURNAL_SCHEMA_VERSION : commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
       transactionId: recoveryTransactionId,
       revision: packet.binding.revision,
       scenePath,
@@ -1082,8 +1165,9 @@ async function repairCorruptProjectCommit({
       after,
       resources,
       commentState,
+      noteState,
     };
-    if (transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources, commentState }) !== recoveryTransactionId) {
+    if (transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources, commentState, noteState }) !== recoveryTransactionId) {
       throw new ProjectTransactionError('E_PROJECT_COMMIT_RECOVERY_PACKET_BINDING', TRANSACTION_PHASES.RECOVER);
     }
     syntheticJournal = true;
@@ -1137,6 +1221,7 @@ async function repairCorruptProjectCommit({
   }
   await inspectResources(journal.resources, manifestPath, fsAdapter, journal.transactionId);
   await inspectCommentState(journal.commentState, manifestPath, fsAdapter);
+  await inspectNoteState(journal.noteState, manifestPath, fsAdapter);
 
   const [journalReadback, commitReadback, sceneReadback, manifestReadback] = await Promise.all([
     readOptionalText(journalPath, fsAdapter),
@@ -1164,8 +1249,9 @@ async function repairCorruptProjectCommit({
   } else {
     const commitPath = commitPathFor(scenePath);
     const commitRecord = {
-      schemaVersion: journal.commentState ? commentCommitSchema(journal.commentState) : journal.resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
+      schemaVersion: journal.noteState ? NOTE_COMMIT_SCHEMA_VERSION : journal.commentState ? commentCommitSchema(journal.commentState) : journal.resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
       ...(journal.commentState ? { commentState: commentBinding(journal.commentState) } : {}),
+      ...(journal.noteState ? { noteState: noteBinding(journal.noteState) } : {}),
       transactionId: journal.transactionId,
       revision: journal.revision,
       scenePath,
@@ -1222,6 +1308,12 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_READBACK', TRANSACTION_PHASES.READBACK);
     }
   }
+  if (state.record.noteState) {
+    const value = await readResource({ path: noteStatePath(manifestPath) }, manifestPath, fsAdapter);
+    if (value === null || sha256hex(value) !== state.record.noteState.afterDigest) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_READBACK', TRANSACTION_PHASES.READBACK);
+    }
+  }
   return Object.freeze({ ...state.record });
 }
 
@@ -1235,7 +1327,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
   } catch {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_INVALID' };
   }
-  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION, NOTE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_BINDING' };
   }
@@ -1247,7 +1339,8 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
   if (sceneDigest !== record.sceneDigest || manifestDigest !== record.manifestDigest) {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'ARTIFACT_DIGEST_MISMATCH' };
   }
-  if ([RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
+  if ([RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+    || (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION && record.resources !== undefined)) {
     try {
       normalizeResources(record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
       let total = 0;
@@ -1266,7 +1359,8 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
       }
     } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'RESOURCE_BINDING_MISMATCH' }; }
   }
-  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
+  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+    || (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION && record.commentState !== undefined)) {
     try {
       const target = commentStatePath(manifestPath);
       let current = path.dirname(manifestPath);
@@ -1277,6 +1371,18 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
       if (!isDigest(record.commentState?.beforeDigest) || !isDigest(record.commentState?.afterDigest)
         || sha256hex(fs.readFileSync(target)) !== record.commentState.afterDigest) throw Error('DIGEST');
     } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMENT_BINDING_MISMATCH' }; }
+  }
+  if (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION) {
+    try {
+      const target = noteStatePath(manifestPath), stat = fs.lstatSync(target);
+      if (stat.isSymbolicLink() || !stat.isFile() || stat.nlink !== 1 || stat.size > 4 * 1024 * 1024
+        || !record.noteState || (record.noteState.beforeDigest !== null && !isDigest(record.noteState.beforeDigest))
+        || !isDigest(record.noteState.afterDigest)
+        || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1'].includes(record.noteState.mode)
+        || sha256hex(fs.readFileSync(target)) !== record.noteState.afterDigest) throw Error('NOTE_BINDING');
+    } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'NOTE_BINDING_MISMATCH' }; }
+  } else if (record.noteState !== undefined) {
+    return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'NOTE_SCHEMA' };
   }
   return { classification: 'NEW_COMMITTED', record };
 }

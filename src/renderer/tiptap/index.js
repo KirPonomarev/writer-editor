@@ -6,6 +6,7 @@ import { DocumentTextStyle } from './documentTextStyle.mjs'
 import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
 import { DocumentTables } from './documentTables.mjs'
 import { DocumentMedia } from './documentMedia.mjs'
+import { ManuscriptNoteReferences, applyManuscriptNoteProjection } from './manuscriptNotes.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -336,12 +337,15 @@ function getDocumentPositionForTextOffset(editor, offset) {
   let matched = false
 
   doc.descendants((node, pos) => {
+    if (matched) return false
     if (!node || !node.isTextblock) {
       return undefined
     }
 
     const blockStart = pos + 1
-    const blockText = typeof node.textContent === 'string' ? node.textContent : ''
+    const blockText = typeof node.textBetween === 'function'
+      ? node.textBetween(0, node.content.size, '', '\0')
+      : typeof node.textContent === 'string' ? node.textContent : ''
 
     if (sawTextblock) {
       if (targetOffset === plainOffset) {
@@ -544,6 +548,7 @@ export function initTiptap(mountEl, options = {}) {
       DocumentParagraphAlignment,
       DocumentTables,
       DocumentMedia,
+      ManuscriptNoteReferences,
       Color,
       Highlight.configure({
         multicolor: true,
@@ -639,6 +644,10 @@ export function getTiptapSelectionOffsets() {
   const start = getTextOffsetForDocumentPosition(currentEditorInstance, Math.min(from, to))
   const end = getTextOffsetForDocumentPosition(currentEditorInstance, Math.max(from, to))
   return { start, end }
+}
+
+export function setTiptapManuscriptNoteProjection(projection) {
+  applyManuscriptNoteProjection(currentEditorInstance, projection, getDocumentPositionForTextOffset)
 }
 
 export function setTiptapSelectionOffsets(start = 0, end = start) {
