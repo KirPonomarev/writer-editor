@@ -555,7 +555,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "6f8f8d8f5872af80bd08a4a75890d668b83197b383af6339898721a991a12aa2"
+        "sha256": "e29b4acaaba2ffccc1406ffeadf2e2596bae281c85fef3fcf2379aeb59e680bc"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -683,7 +683,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "08f3f061e3eade219287943778bbf6c21333d7114da3de383f85dea7c5f2cde5"
+        "sha256": "3dcb80e41071643c31cf1dfebfdb3f5739b1a313f6fe908b9cc8a5c1a9665f21"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -719,7 +719,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "e5bfde22a21abb8fffa881e16689a88617f0691c4022ff7ef944115f57bea097"
+        "sha256": "ba2f18792f26c13c27c3064efedc1790cc7f93414d217cc8dacb8bb7fd40c06a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",

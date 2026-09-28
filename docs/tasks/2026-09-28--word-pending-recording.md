@@ -43,3 +43,9 @@ alternate draft/code-review marketing is not claimed as an interaction oracle.
 Non-claims: format/move/structural tracked authoring, mixed annotation undo,
 multi-scene recording, full P2/P5 and five-cycle saturation remain open.
 Rollback: revert this bounded code delivery, preserving canonical scene and recovery.
+
+Native resume found that a ProseMirror paste changed text without DOM input, leaving
+autosave unaware. Authoring now follows Tiptap document updates; external document
+loads remain silent, and formatting commands do not increment generation twice.
+Acceptance includes paste and typing Undo without explicit Save, on-disk readback,
+and rejected read-only edits and selection-only transactions without dirty writes.

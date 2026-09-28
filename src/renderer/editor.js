@@ -221,6 +221,7 @@ if (isTiptapMode) {
   initTiptap(editor, {
     attachIpc: false,
     onContentParseIssue: handleDocumentContentParseIssue,
+    onDocumentUpdate: handleTiptapDocumentUpdate,
   });
 }
 
@@ -20805,7 +20806,6 @@ function applyTextStyle(action) {
         ? applyTiptapCharacterStyle(action)
         : { performed: false, action: 'applyTextStyle', reason: 'UNSUPPORTED_STYLE_OPTION', optionId: action });
     if (tiptapResult && tiptapResult.performed !== false) {
-      markAsModified();
       updateWordCount();
     }
     syncToolbarFormattingState();
@@ -21940,7 +21940,6 @@ function handleTiptapFormatCommand(commandName, payload = {}) {
   }
   const result = runTiptapFormatCommand(commandName, payload);
   if (result && result.performed !== false) {
-    markAsModified();
     updateWordCount();
   }
   syncToolbarFormattingState();
@@ -23685,6 +23684,26 @@ if (window.electronAPI) {
   }
 }
 
+// Observe committed editor transactions: paste and history changes need not emit DOM input.
+// External setCheckedDocument uses emitUpdate:false and must never mark authored work dirty.
+function handleTiptapDocumentUpdate() {
+  const typingStartedAt = nowMs();
+  const needsPostStructuralRefresh = centralSheetStripPendingStructuralInput;
+  scheduleIncrementalInputDomSync();
+  syncPlainTextBufferFromEditorDom();
+  scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
+  scheduleDeferredPaginationRefresh();
+  if (needsPostStructuralRefresh) {
+    scheduleCentralSheetStripProofRefresh();
+    scheduleCentralSheetStripPostStructuralRefresh();
+  } else {
+    scheduleCentralSheetStripProofRefresh();
+  }
+  markAsModified();
+  scheduleWordCountRefresh(plainTextBuffer);
+  recordWriterRuntimeBudget('typing', typingStartedAt, localEditGeneration);
+}
+
 if (isTiptapMode) {
   editor.addEventListener('keydown', (event) => {
     if (event.isComposing) {
@@ -23743,21 +23762,8 @@ if (isTiptapMode) {
     beginCentralSheetStripStructuralTransition();
   });
   editor.addEventListener('input', () => {
-    const typingStartedAt = nowMs();
-    const needsPostStructuralRefresh = centralSheetStripPendingStructuralInput;
-    scheduleIncrementalInputDomSync();
-    syncPlainTextBufferFromEditorDom();
-    scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
-    scheduleDeferredPaginationRefresh();
-    if (needsPostStructuralRefresh) {
-      scheduleCentralSheetStripProofRefresh();
-      scheduleCentralSheetStripPostStructuralRefresh();
-    } else {
-      scheduleCentralSheetStripProofRefresh();
-    }
-    markAsModified();
-    scheduleWordCountRefresh(plainTextBuffer);
-    recordWriterRuntimeBudget('typing', typingStartedAt, localEditGeneration);
+    // The large-payload fallback edits its own DOM instead of a Tiptap document.
+    if (centralSheetStripLargePayloadFastPathActive) handleTiptapDocumentUpdate();
   });
 } else {
   editor.addEventListener('pointerdown', (event) => {
