@@ -22739,8 +22739,19 @@ async function handlePendingRevisionCommand(payload = {}) {
       // A committed scene must not steal focus from a later navigation.
       if (currentFilePath === context.filePath && currentLifecycleSubjectId() + ':' + commentAuthoringSessionId === context.subjectId
         && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
-        const reopened = await openProjectDocumentFile(context.filePath, { projectId: context.projectId, statusText: 'Решение по исправлениям сохранено' });
-        if (!reopened.ok) return { ok: false, committed: true, code: 'PENDING_REVISION_RELOAD_FAILED', receipt };
+        // Same-scene publication needs no navigation/settings write. Reopening
+        // here would enqueue settings behind this disk operation and deadlock.
+        const documentIdentity = await getProjectDocumentIdentityPayload(context.filePath);
+        const documentContext = getDocumentContextFromPath(context.filePath);
+        const publication = await attachProjectIdToEditorPayload({ content, ...documentIdentity,
+          projectId: context.projectId, title: documentContext.title, kind: documentContext.kind,
+          metaEnabled: documentContext.metaEnabled }, context.filePath);
+        if (currentFilePath === context.filePath && currentLifecycleSubjectId() + ':' + commentAuthoringSessionId === context.subjectId
+          && !isDirty && lastSignaledEditGeneration <= snapshot.generation) {
+          sendEditorText(publication);
+          lastAutosaveHash = computeHash(content); backupHashes.set(context.filePath, lastAutosaveHash);
+          updateStatus('Решение по исправлениям сохранено');
+        }
       }
       return { ok: true, changed: true, writerCalled: true, receipt };
     }, 'pending revision decision');

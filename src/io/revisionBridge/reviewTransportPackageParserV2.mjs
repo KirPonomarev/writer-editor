@@ -5069,9 +5069,9 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const budgets = normalizeBudgets(options.budgets);
   const budgetState = createParserBudgetState(budgets, cryptoPort);
   const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
-  if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   const tokens = scan.tokens.filter(t => isWordToken(t, 'ins') || isWordToken(t, 'del'));
   if (!tokens.length) return { xml: documentXml, revisions: [] };
+  if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
   const unsupported = new Set(['moveFrom', 'moveTo', 'moveFromRangeStart', 'moveToRangeStart', 'rPrChange', 'pPrChange',
     'tbl', 'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',

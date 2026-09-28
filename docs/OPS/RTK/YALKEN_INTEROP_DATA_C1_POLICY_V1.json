@@ -534,7 +534,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c963a9b7b23e4c2c3b5ca180a6d45e826160ccaba192bd7a0a2be3986e57e168"
+        "sha256": "79b72a3767a6d0adae8458cff6393a4354d24808f181dcc2564f255f319f0fe1"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -650,7 +650,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "737831578cafb370775e5118f0628a118912c63e37e73cf270f22445e8457e6d"
+        "sha256": "891409a529e0886987fd356ad5a2f42012a2b5aa1b6c656f17456a6b907eb050"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -814,7 +814,7 @@
       },
       {
         "path": "test/unit/sector-m-scene-rich-truth.test.js",
-        "sha256": "29bca52d8ccb9f361baa539eba0b6615d584b061e21daffe101178163165c602"
+        "sha256": "6fe30162e28f85a3f0cd4bfdbc88566c6bfc8a1fc8010812357e25351141f036"
       },
       {
         "path": "test/contracts/revision-bridge-docx-block-styles.contract.test.js",
@@ -1422,7 +1422,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
-        "sha256": "cf85ba2993e129717c11cda26fee7c32bc89bfb00f5076615a65318f6233ea2b"
+        "sha256": "08a15be729abaa5cfa67d58bf4eb18f9a42ab3b42f6ff517e68267317a00b347"
       }
     ],
     "followupRepair": {

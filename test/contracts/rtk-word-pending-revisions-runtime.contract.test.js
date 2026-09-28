@@ -32,7 +32,12 @@ async function harness(t) {
       if (h.race) h.race(); await options.beforeScenePublish();
       assert.equal(fs.readFileSync(file, 'utf8'), options.expectedSceneContent);
       h.writes++; fs.writeFileSync(file, content); return { success: true, projectTransaction: true };
-    }, openProjectDocumentFile: async () => { h.opens++; return { ok: true }; },
+    }, openProjectDocumentFile: async () => { throw Error('nested navigation would deadlock disk queue'); },
+    getProjectDocumentIdentityPayload: async () => ({ documentId: 'd' }),
+    getDocumentContextFromPath: () => ({ title: 'scene', kind: 'scene', metaEnabled: true }),
+    attachProjectIdToEditorPayload: async value => { if (h.publicationRace) h.publicationRace(); return value; },
+    sendEditorText: value => { h.opens++; assert.equal(value.content, fs.readFileSync(file, 'utf8')); },
+    computeHash: hash, backupHashes: new Map(), lastAutosaveHash: '', updateStatus() {},
     COMMAND_BUS_ROUTE: 'command.bus', resolveMenuCommandId: commandId => ({ ok: true, commandId }),
     evaluateWriterLocalCommandAccess: () => ({ allowed: h.allowed !== false, reason: 'PROFILE_DENIED' }), getWriterLocalRuntimeProfile: () => ({}),
     getProductCommandRecord: () => null, decideCommandEntitlement: () => ({ available: h.entitled !== false, reason: 'ENTITLEMENT_DENIED' }),
@@ -53,6 +58,14 @@ test('actual main bus and Kernel persist decisions, reopen, undo redo and no-op 
   assert.equal((await h.command('undo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'new');
   assert.equal((await h.command('redo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'old');
   assert.equal(h.writes, 3); assert.equal(h.opens, 3);
+});
+test('async publication does not replace editor after navigation or new authoring', async t => {
+  for (const mutation of ['navigation', 'generation']) {
+    const h = await harness(t);
+    h.publicationRace = () => { if (mutation === 'navigation') h.c.currentFilePath = 'another-scene'; else h.c.lastSignaledEditGeneration++; };
+    const r = await h.command('acceptAll');
+    assert.equal(r.ok, true); assert.equal(h.writes, 1); assert.equal(h.opens, 0);
+  }
 });
 for (const kind of ['scene', 'project', 'subject', 'hash', 'draft', 'noteDraft', 'dirtyRace', 'generationRace', 'diskRace', 'profile', 'entitlement', 'payloadPath', 'annotationUndo']) {
   test(`pending decisions block ${kind} without write`, async t => {
