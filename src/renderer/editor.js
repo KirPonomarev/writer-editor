@@ -1886,14 +1886,23 @@ function guardWordCommentDraftUnload(event) {
 }
 window.addEventListener('beforeunload', guardWordCommentDraftUnload);
 
+function pendingFormattingDescription(value) {
+  const labels = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание',
+    fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет', textAlign: 'выравнивание', level: 'уровень заголовка' };
+  const alignment = { left: 'слева', center: 'по центру', right: 'справа', justify: 'по ширине' };
+  const attrs = object => Object.entries(object || {}).map(([key, v]) => `${labels[key] || key}: ${key === 'textAlign' ? alignment[v] || v : v}`).join(', ');
+  return Array.isArray(value) ? value.map(m => labels[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs?.color : attrs(m.attrs))).join(', ') || 'обычное'
+    : (value?.type === 'heading' ? 'заголовок' : 'абзац') + (attrs(value?.attrs) ? ', ' + attrs(value.attrs) : ', выравнивание по умолчанию');
+}
+
 function renderPendingRevisions(projection) {
   if (!projection || !projection.available) return '';
   const esc = reviewSurfaceEscapeHtml;
   const button = (action, label, id = '', disabled = false) => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-pending-revision-action="${action}" data-revision-id="${esc(id)}" ${pendingRevisionBusy || disabled ? 'disabled' : ''}>${label}</button>`;
   const recordingButton = `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-pending-recording-action="${projection.recording ? 'stop' : 'start'}" ${pendingRevisionBusy || (!projection.recording && !projection.recordingAvailable) ? 'disabled' : ''}>${projection.recording ? 'Завершить запись' : 'Начать запись исправлений'}</button>`;
-  if (projection.recording) return `<section class="right-rail-review-group" aria-label="Запись исправлений"><h3>Запись исправлений включена</h3><p>Автор: ${esc(projection.author)}</p><p>Вставки, удаления и замены в существующих абзацах сохраняются как исправления. Перед решениями завершите запись.</p>${recordingButton}<p role="status">${esc(pendingRevisionNotice)}</p></section>`;
+  if (projection.recording) return `<section class="right-rail-review-group" aria-label="Запись исправлений"><h3>Запись исправлений включена</h3><p>Автор: ${esc(projection.author)}</p><p>Вставки, удаления, замены и форматирование в существующих абзацах сохраняются как исправления. Перед решениями завершите запись.</p>${recordingButton}<p role="status">${esc(pendingRevisionNotice)}</p></section>`;
   const recordingControls = `<label>Автор исправлений <input type="text" data-pending-recording-author maxlength="256" value="${esc(pendingRecordingAuthor)}" autocomplete="name"></label>${recordingButton}${projection.recordingReason ? '<p>Для этой сцены запись пока недоступна: проверьте комментарии, сноски и структуру текста.</p>' : ''}`;
-  if (!projection.hasHistory) return `<section class="right-rail-review-group" aria-label="Запись исправлений"><h3>Исправления</h3><p>Записывайте вставки, удаления и замены в существующих абзацах. Имя автора будет видно в Word.</p>${recordingControls}<p role="status">${esc(pendingRevisionNotice)}</p></section>`;
+  if (!projection.hasHistory) return `<section class="right-rail-review-group" aria-label="Запись исправлений"><h3>Исправления</h3><p>Записывайте вставки, удаления, замены и форматирование в существующих абзацах. Имя автора будет видно в Word.</p>${recordingControls}<p role="status">${esc(pendingRevisionNotice)}</p></section>`;
   const revisions = reviewSurfaceArray(projection.revisions);
   const pending = revisions.some(r => r.state === 'pending');
   return `<section class="right-rail-review-group" aria-label="Непринятые исправления Word"><h3>Исправления Word</h3>
@@ -1901,7 +1910,7 @@ function renderPendingRevisions(projection) {
     <details><summary>Исходный текст · Original</summary><pre style="white-space:pre-wrap">${esc(projection.original)}</pre></details>
     <details><summary>Текущий текст · Current</summary><pre style="white-space:pre-wrap">${esc(projection.current)}</pre></details>
     <div class="right-rail-review-item-meta">${button('acceptAll', 'Принять все', '', !pending)}${button('rejectAll', 'Отклонить все', '', !pending)}${button('undo', 'Отменить действие', '', !projection.canUndo)}${button('redo', 'Повторить действие', '', !projection.canRedo)}</div>
-    ${revisions.map(r => `<article class="right-rail-review-item"><p>${r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}${r.groupId && !r.moveName ? ' · часть замены' : ''} · ${esc(r.state === 'pending' ? 'ожидает решения' : r.state === 'accepted' ? 'принято' : 'отклонено')}</p><p>${esc(r.author || 'Автор не указан')} · ${esc(r.dateUtc || r.date || 'Дата не указана')}</p><blockquote>${esc(r.text)}</blockquote>${r.state === 'pending' ? `<div class="right-rail-review-item-meta">${button('accept', r.moveName ? 'Принять перенос' : r.groupId ? 'Принять замену' : 'Принять', r.id)}${button('reject', r.moveName ? 'Отклонить перенос' : r.groupId ? 'Отклонить замену' : 'Отклонить', r.id)}</div>` : ''}</article>`).join('')}
+    ${revisions.map(r => `<article class="right-rail-review-item"><p>${r.operation === 'format' ? (r.format?.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}${r.groupId && !r.moveName ? ' · часть замены' : ''} · ${esc(r.state === 'pending' ? 'ожидает решения' : r.state === 'accepted' ? 'принято' : 'отклонено')}</p><p>${esc(r.author || 'Автор не указан')} · ${esc(r.dateUtc || r.date || 'Дата не указана')}</p><blockquote>${esc(r.text)}</blockquote>${r.format ? `<p>Было: ${esc(pendingFormattingDescription(r.format.before))}</p><p>Стало: ${esc(pendingFormattingDescription(r.format.after))}</p>` : ''}${r.state === 'pending' ? `<div class="right-rail-review-item-meta">${button('accept', r.moveName ? 'Принять перенос' : r.groupId ? 'Принять замену' : 'Принять', r.id)}${button('reject', r.moveName ? 'Отклонить перенос' : r.groupId ? 'Отклонить замену' : 'Отклонить', r.id)}</div>` : ''}</article>`).join('')}
     <p role="status">${esc(pendingRevisionNotice)}</p></section>`;
 }
 

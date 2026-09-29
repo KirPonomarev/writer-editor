@@ -1,5 +1,5 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
-const { buildPendingRunsXml } = require('./docxPendingRevisions.js');
+const { buildPendingRunsXml, buildPendingParagraphPropertiesXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
@@ -354,7 +354,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
-      const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
+      const paragraphRevision = pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
+      const styleXml = buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter);
       const runs = semanticBlocks?.[index]?.runs;
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();

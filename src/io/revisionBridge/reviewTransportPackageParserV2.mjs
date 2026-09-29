@@ -5073,10 +5073,11 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const moveMarkers = scan.tokens.filter(t => t.namespaceUri === W_NS
     && ['moveFromRangeStart', 'moveFromRangeEnd', 'moveToRangeStart', 'moveToRangeEnd'].includes(t.localName));
   if (!tokens.length && moveMarkers.length) throw Error('PENDING_MOVE_RANGE_ORPHAN');
-  if (!tokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
+  const propertyTokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['rPrChange', 'pPrChange'].includes(t.localName));
+  if (!tokens.length && !propertyTokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
-  if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
-  const unsupported = new Set(['rPrChange', 'pPrChange',
+  if (tokens.length + propertyTokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
+  const unsupported = new Set(['numPrChange',
     'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
     'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
     'commentRangeStart', 'commentRangeEnd', 'commentReference', 'ruby', 'sym', 'ptab']);
@@ -5139,6 +5140,44 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
       ...(moveOwner.has(token) ? { moveName: moveOwner.get(token) } : {}) });
     edits.push({ from: token.openStart, to: token.openEnd, text: '' }, { from: token.closeStart, to: token.closeEnd, text: '' });
   }
+  const propertyReplacements = [], propertyRemovals = [];
+  const runProperties = new Set(['rPr', 'rPrChange', 'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight',
+    'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
+  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId']);
+  for (const token of propertyTokens) {
+    const kind = token.localName === 'rPrChange' ? 'run' : 'paragraph';
+    const propertyName = kind === 'run' ? 'rPr' : 'pPr';
+    const parent = scan.tokens.find(t => isWordToken(t, propertyName) && t.depth === token.depth - 1
+      && t.openEnd <= token.openStart && t.closeStart >= token.closeEnd);
+    const ownerName = kind === 'run' ? 'r' : 'p';
+    const owner = parent && scan.tokens.find(t => isWordToken(t, ownerName) && t.depth === parent.depth - 1
+      && t.openEnd <= parent.openStart && t.closeStart >= parent.closeEnd);
+    const paragraphIndex = paragraphs.findIndex(p => owner && (p === owner || p.openEnd <= owner.openStart && p.closeStart >= owner.closeEnd));
+    const p = paragraphs[paragraphIndex];
+    if (!p || !parent || !owner || token.selfClosing || (kind === 'run' && owner.depth !== p.depth + 1))
+      throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
+    const previous = scan.tokens.filter(t => t.depth === token.depth + 1 && t.openStart >= token.openEnd && t.closeEnd <= token.closeStart);
+    if (previous.length !== 1 || !isWordToken(previous[0], propertyName)) throw Error('PENDING_FORMAT_PREVIOUS_INVALID');
+    const children = scan.tokens.filter(t => t.openStart >= parent.openEnd && t.closeEnd <= parent.closeStart);
+    const admitted = kind === 'run' ? runProperties : paragraphProperties;
+    if (children.some(t => t.namespaceUri !== W_NS || !admitted.has(t.localName))
+      || children.filter(t => t.localName === token.localName).length !== 1)
+      throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+    const nativeId = attr(token, 'id', W_NS);
+    if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
+    const from = kind === 'paragraph' ? 0
+      : semanticAtomsToText(extractSemanticAtoms(documentXml, scan, { ...p, closeStart: owner.openStart })).replaceAll('\r', '\n').length;
+    const length = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, owner)).replaceAll('\r', '\n').length;
+    if (kind === 'run' && !length) throw Error('PENDING_FORMAT_EMPTY_RUN');
+    revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: 'format', propertyKind: kind,
+      author: attr(token, 'author', W_NS), date: attr(token, 'date', W_NS), dateUtc: attr(token, 'dateUtc', W16DU_NS),
+      groupId: null, paragraphIndex, from, to: from + length, state: 'pending' });
+    propertyRemovals.push({ from: token.openStart, to: token.closeEnd, text: '' });
+    propertyReplacements.push({ from: parent.openStart, to: parent.closeEnd,
+      text: documentXml.slice(previous[0].openStart, previous[0].closeEnd) });
+  }
+  edits.push(...propertyRemovals);
+  revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
   let group = 0;
   for (const name of movePairs.keys()) {
     const groupId = `group-${++group}`;
@@ -5146,7 +5185,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   }
   for (let i = 0; i < revisions.length - 1; i++) {
     const a = revisions[i], b = revisions[i + 1];
-    if (!a.moveName && !b.moveName && a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
+    if (a.operation !== 'format' && b.operation !== 'format' && !a.moveName && !b.moveName && a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
       a.groupId = b.groupId = `group-${++group}`; i++;
     }
   }
@@ -5155,13 +5194,26 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     edits.push({ from: token.openStart, to: token.openEnd, text: documentXml.slice(token.openStart, token.openEnd).replace(/delText/u, 't') },
       { from: token.closeStart, to: token.closeEnd, text: documentXml.slice(token.closeStart, token.closeEnd).replace(/delText/u, 't') });
   }
-  let xml = documentXml;
-  for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
+  const applyEdits = list => {
+    let result = documentXml;
+    for (const edit of [...list].sort((a, b) => b.from - a.from)) result = result.slice(0, edit.from) + (edit.text || '') + result.slice(edit.to);
+    return result;
+  };
+  const xml = applyEdits(edits);
+  const beforeProperties = list => [...list.filter(e => !propertyReplacements.some(p => e.from >= p.from && e.to <= p.to)), ...propertyReplacements];
+  const formatBeforeXml = propertyTokens.length ? applyEdits(beforeProperties(edits)) : null;
   let currentXml = documentXml;
   const currentEdits = tokens.flatMap(token => ['del', 'moveFrom'].includes(token.localName)
     ? [{ from: token.openStart, to: token.closeEnd }]
     : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
+  currentEdits.push(...propertyRemovals);
   currentEdits.push(...moveMarkers.map(token => ({ from: token.openStart, to: token.closeEnd })));
   for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
-  return { xml, currentXml, revisions, paragraphCount: paragraphs.length };
+  const originalEdits = tokens.flatMap(token => ['ins', 'moveTo'].includes(token.localName)
+    ? [{ from: token.openStart, to: token.closeEnd }]
+    : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
+  originalEdits.push(...edits.filter(e => !tokens.some(t => ['ins', 'moveTo'].includes(t.localName) && e.from >= t.openStart && e.to <= t.closeEnd)
+    && !tokens.some(t => e.from === t.openStart || e.from === t.closeStart)));
+  const originalXml = applyEdits(beforeProperties(originalEdits));
+  return { xml, currentXml, originalXml, formatBeforeXml, revisions, paragraphCount: paragraphs.length };
 }
