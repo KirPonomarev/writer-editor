@@ -1507,12 +1507,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "d0544cbb7190efb9dee4202b5798afc9d256b046c92ec6d1e90d250ee2933756",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "sha256": "099fffd0125b76e7f08a10ac025171f717830251dfdd7de76afaeb27f68bcbf5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1660,21 +1660,21 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "606cd42fccee0179e1a6942f5dbae5218c3ddc806851d168a7f81c17bcf91070",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "18a3de70bd604cbbbd293559e67808fccb3e1491e440024e499ac2efa8aeb71d",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "d6c29fbcda86e7c3224a29bcde6967df6c2d8b9cdd32dc4acca54e38ddd44383",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "sha256": "32f4cdcd72d8a0ec7bb816b5a43d8fa710e08e812f72c0e153aad4d9438c0218",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fc19d5aeb61fe636421af894bb86b99f9c598d27522ab71c0214345cfe2f32ff",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "5354a5a1ec2aa6d4f340da8b5bdfb07ba0e2a84f933fd3d0e3f98dbbd5d47356",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "35a6778212f45788a352d5a0e605e0066fd760b194ff54f4cd3a1c46aa154c5e",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "176b28a66cf2c6d3e27263f6b576b76c53c8d8be622c2a1deaebeabfcb827bce",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "45c4e3753c0adae2a39c1c18cc218a58a7dcfa3e2f65d80528aa7afd1455e921",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "9cb99de7acb9d38b3d4914711d9a96f65938a9b32a46825962ea62dbbc5bec76",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e8b57506ea227d11e03b004542ff157d80eb953c11213daa9d78ac507646cc6e",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "62afd93af3af40f1d991a32a44292050a56f3af39c0d2209a8a5ef09776fdb6f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c8072602e2d611cde0c0c6802662180812bd6d373d98730a89a67b50553ce0bd",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "da849003c0e7a62a08efbd67703a6952839138973cde876dfe429f21aabce4e2",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "275a4450971c5ba07ba83e9a4602168779b1997cadeb8ead5b6aef093711dc27",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "sha256": "be5f18481697359de1ab8b3e1e842fd488a3b5563f60e80941635f50c6bdb4f7",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -3001,10 +3001,10 @@
     },
     {
       "filePath": "src/core/word-pending-recording-v1.cjs",
-      "sha256": "705fb01326c87c66d8855a3762d94572412a94807227d93aa78b09c19a03a842",
-      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "316a9df4afed36f7fa526060afba9fc703d358143ba0b9caa3f32ab31b7d294e",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3019,10 +3019,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "1678587784ec0a9c57752d634cb7c5d1c503f181d58a21386246499c7e72cd87",
-      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "2645803d88c0abdb33cba46491b20a3355e84204fdc256d85f9dbbde4eefab1a",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3095,6 +3095,24 @@
       "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
       "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-29--word-move-recording.md",
+      "sha256": "2601eaca78f9ef03c4588435f710cca648fddb58c790644cc72f5081316292f8",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
+      "approvedBy": "owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-move-recording.contract.test.js",
+      "sha256": "b07d93b9b81d9d2b120bf5d83b7aee94eab7ca03fcc4c6145c94b624f35d6c75",
+      "approvedAtUtc": "2026-09-29T03:34:50.382443Z",
+      "approvedBy": "owner-delegated-codex:WORD_MOVE_RECORDING_20260929",
+      "rationale": "Owner-authorized exact rich cross-paragraph move recording: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -18736,6 +18754,105 @@
       "sha256": "185c22a09649c4d25be1243693b86b5f163e330822f83fb50836b42285a378db",
       "approvedAtUtc": "2026-09-29T03:03:01.439896Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "d0544cbb7190efb9dee4202b5798afc9d256b046c92ec6d1e90d250ee2933756",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "606cd42fccee0179e1a6942f5dbae5218c3ddc806851d168a7f81c17bcf91070",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "d6c29fbcda86e7c3224a29bcde6967df6c2d8b9cdd32dc4acca54e38ddd44383",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "fc19d5aeb61fe636421af894bb86b99f9c598d27522ab71c0214345cfe2f32ff",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "35a6778212f45788a352d5a0e605e0066fd760b194ff54f4cd3a1c46aa154c5e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "45c4e3753c0adae2a39c1c18cc218a58a7dcfa3e2f65d80528aa7afd1455e921",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "e8b57506ea227d11e03b004542ff157d80eb953c11213daa9d78ac507646cc6e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c8072602e2d611cde0c0c6802662180812bd6d373d98730a89a67b50553ce0bd",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "275a4450971c5ba07ba83e9a4602168779b1997cadeb8ead5b6aef093711dc27",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "approvedAtUtc": "2026-09-29T03:07:58.117082Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/core/word-pending-recording-v1.cjs",
+      "sha256": "705fb01326c87c66d8855a3762d94572412a94807227d93aa78b09c19a03a842",
+      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "1678587784ec0a9c57752d634cb7c5d1c503f181d58a21386246499c7e72cd87",
+      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
       "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"

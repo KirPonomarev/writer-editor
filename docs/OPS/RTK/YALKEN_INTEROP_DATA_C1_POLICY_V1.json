@@ -322,7 +322,9 @@
     "test/contracts/rtk-word-pending-moves.contract.test.js",
     "docs/tasks/2026-09-29--word-pending-text-moves.md",
     "test/contracts/rtk-word-pending-formatting.contract.test.js",
-    "docs/tasks/2026-09-29--word-pending-formatting.md"
+    "docs/tasks/2026-09-29--word-pending-formatting.md",
+    "test/contracts/rtk-word-move-recording.contract.test.js",
+    "docs/tasks/2026-09-29--word-move-recording.md"
   ],
   "protectedFiles": [
     {
@@ -563,7 +565,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "606cd42fccee0179e1a6942f5dbae5218c3ddc806851d168a7f81c17bcf91070"
+        "sha256": "18a3de70bd604cbbbd293559e67808fccb3e1491e440024e499ac2efa8aeb71d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -727,7 +729,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "d6c29fbcda86e7c3224a29bcde6967df6c2d8b9cdd32dc4acca54e38ddd44383"
+        "sha256": "32f4cdcd72d8a0ec7bb816b5a43d8fa710e08e812f72c0e153aad4d9438c0218"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1399,7 +1401,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "d0544cbb7190efb9dee4202b5798afc9d256b046c92ec6d1e90d250ee2933756"
+        "sha256": "099fffd0125b76e7f08a10ac025171f717830251dfdd7de76afaeb27f68bcbf5"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1455,7 +1457,7 @@
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
-        "sha256": "705fb01326c87c66d8855a3762d94572412a94807227d93aa78b09c19a03a842"
+        "sha256": "316a9df4afed36f7fa526060afba9fc703d358143ba0b9caa3f32ab31b7d294e"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
@@ -1463,7 +1465,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "1678587784ec0a9c57752d634cb7c5d1c503f181d58a21386246499c7e72cd87"
+        "sha256": "2645803d88c0abdb33cba46491b20a3355e84204fdc256d85f9dbbde4eefab1a"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -1480,6 +1482,10 @@
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
         "sha256": "f6fd4bb6ba140530068db743469de4b3cf050b6720b035424a3a6ab67deb68e7"
+      },
+      {
+        "path": "test/contracts/rtk-word-move-recording.contract.test.js",
+        "sha256": "b07d93b9b81d9d2b120bf5d83b7aee94eab7ca03fcc4c6145c94b624f35d6c75"
       }
     ],
     "followupRepair": {
