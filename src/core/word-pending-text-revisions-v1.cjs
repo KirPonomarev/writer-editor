@@ -237,6 +237,10 @@ function segments(ledger, paragraphIndex, mode = 'current') {
   const p = paragraphs(ledger.source)[paragraphIndex];
   return paragraphSegments(ledger, p, paragraphIndex, mode);
 }
+function exportSegments(ledger) {
+  validateLedger(ledger);
+  return paragraphs(ledger.source).map((p, index) => paragraphSegments(ledger, p, index, 'export'));
+}
 function paragraphSegments(ledger, p, paragraphIndex, mode) {
   const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex);
   const result = []; let offset = 0;
@@ -317,4 +321,4 @@ function projection(doc) {
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs };
+module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments };

@@ -834,6 +834,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
   for (const scene of scenes) {
     const paragraphs = buildFormatIrParagraphs(scene);
     const pendingLedger = pendingTextRevisions.readLedger(scene.doc);
+    const pendingSegments = pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
     for (let index = 0; index < paragraphs.length; index += 1) {
       const { text, formatIr } = paragraphs[index];
       const seed = `${scene.sceneId}\n${scene.sceneOrdinal}\n${index}\n${text}`;
@@ -856,7 +857,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalTextSha256: sha256Text(text),
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
-        ...(pendingLedger ? { pendingRevisionSegments: pendingTextRevisions.segments(pendingLedger, index, 'export') } : {}),
+        ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index] } : {}),
         wordSignals: [
           {
             kind: 'w14ParaIdTextId',
