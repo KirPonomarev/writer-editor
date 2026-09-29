@@ -185,8 +185,10 @@ function tableGroupXml(group, renderParagraph) {
     for (let x = 0; x < group.layout.columns;) {
       const cell = row[x], entry = byNode.get(cell.node), continuation = cell.row < y;
       const widths = explicit?.grid.slice(x, x + cell.colspan);
-      const cellWidth = widths?.every(w => Number.isSafeInteger(w) && w > 0)
-        ? `<w:tcW w:w="${widths.reduce((sum, w) => sum + w, 0)}" w:type="dxa"/>` : '';
+      const widthSum = widths?.every(w => Number.isSafeInteger(w) && w > 0)
+        ? widths.reduce((sum, w) => sum + w, 0) : null;
+      const cellWidth = widthSum !== null && widthSum <= MAX_DXA
+        ? `<w:tcW w:w="${widthSum}" w:type="dxa"/>` : '';
       const properties = cellWidth + `${cell.colspan > 1 ? `<w:gridSpan w:val="${cell.colspan}"/>` : ''}`
         + (cell.rowspan > 1 ? `<w:vMerge w:val="${continuation ? 'continue' : 'restart'}"/>` : '')
         + (cell.node.attrs?.wordCell ? borderXml(cell.node.attrs.wordCell.borders, 'tcBorders') + shadingXml(cell.node.attrs.wordCell.shading) : '');

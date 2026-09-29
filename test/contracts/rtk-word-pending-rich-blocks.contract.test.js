@@ -267,3 +267,17 @@ test('Native pending confirmation names all canonical paragraph leaves without e
   assert.match(shown.detail, /Абзац 12 \(текст\):\n«protected»/u);
   assert.equal((shown.detail.match(/^Абзац /gmu) || []).length, model.paragraphs(model.normalizeNode(doc)).length * 2);
 });
+
+test('Preferred width scalar bounds never invalidate a supported merged-cell grid', async () => {
+  for (const width of [31679, 31680, 31681]) {
+    const wide = cell(p('wide')); wide.attrs.colspan = 2;
+    const doc = { type: 'doc', content: [{ type: 'table', attrs: { wordTable: { version: 1,
+      grid: [16000, width - 16000], layout: 'fixed', widthDxa: null, shading: null, borders: {} } },
+      content: [{ type: 'tableRow', content: [wide] }] }] };
+    for (const profile of ['minimum', 'full']) {
+      const bytes = await exportDoc(doc, profile);
+      assert.deepEqual(shape(await parse(bytes)), shape(doc));
+      assert.equal(bytes.includes(Buffer.from('<w:tcW w:w="' + width + '"')), width <= 31680);
+    }
+  }
+});

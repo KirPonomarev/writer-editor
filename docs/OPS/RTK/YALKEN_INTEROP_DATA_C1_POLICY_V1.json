@@ -559,7 +559,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "d0dc5c070b7f56429234c2a133e649880b65a3c372a6d516204cc382a4d9bf80"
+        "sha256": "2a27785d80bed8c7133dff7d8d74207ed42d273b2753d04a105d3cbddb9eabd0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -947,7 +947,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "789ab30be6b5e96fa7e386c1a62b3045ec7dd4de57cc6e609a8643af4648d0c7"
+        "sha256": "6a6834061843d95de5b26518a8cada39a8debe3f59c57f5ae2b3b58b69b797af"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -1467,7 +1467,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-        "sha256": "356683b963d357ccc96076c51a53fa7eb436115d2a244282f829a184841b08dc"
+        "sha256": "39ba07f7f5d157ea2c3a012ac22b91806470a7d87c1c3eeb4107b576bb59161e"
       }
     ],
     "followupRepair": {
