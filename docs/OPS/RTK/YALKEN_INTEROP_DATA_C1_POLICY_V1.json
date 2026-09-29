@@ -566,7 +566,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8372add197bc05f778798c9b516ecbae56aeef9fea55aeb537497aed5de9af18"
+        "sha256": "81178d163d60985efb5c5285fd14da43c0cd407cab0aebb1ad94f046b93a3686"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1466,7 +1466,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "8afbcce387548f474dfbdaa3fee458b3beb3c55039ecc78a7745389932465ed1"
+        "sha256": "388f4ee31ade40908a79ad722d8764f11f5faea5eb7831e18ec4ea369b06e264"
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
