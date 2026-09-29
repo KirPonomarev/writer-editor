@@ -1574,7 +1574,7 @@ export const R24_INTEROP_WORD_PENDING_RICH_BLOCKS_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a53db11437ae16d4b9d6d6263329dd44eb1044693777f8ab07b52d70a881f442"
+      "sha256": "0914583aef762567a56a8df0541ba83fc75f21109370b8ecd7f6b98f059b893a"
     }
   ]
 });

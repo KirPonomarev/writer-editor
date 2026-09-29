@@ -2,6 +2,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
+const fs = require('node:fs'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
 const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
 const recording = require('../../src/core/word-pending-recording-v1.cjs');
 const envelope = require('../../src/core/document-content-envelope-v1.cjs');
@@ -154,6 +155,32 @@ test('Pending rich paragraph, list and nesting budgets enforce boundary minus on
     if (depth <= 8) assert.doesNotThrow(() => model.validateLedger(value));
     else assert.throws(() => model.validateLedger(value), /PENDING_REVISIONS_BUDGET/u);
   }
+});
+test('Actual committed-context reader admits bounded pending leaves while keeping comment and dirty-scene restrictions', async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-rich-context-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const file = path.join(root, 'scene.txt'), doc = fixture();
+  fs.writeFileSync(file, envelope.composeObservablePayload({ doc }));
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = main.indexOf('async function readCommentAuthoringContext(');
+  const source = main.slice(start, main.indexOf('async function readCommentAuthoringProjection(', start));
+  const context = vm.createContext({ fs: fs.promises, path, activePendingRecording: null, isDirty: false,
+    autoSaveInProgress: false, currentFilePath: file, currentLifecycleSubjectId: () => 'life', commentAuthoringSessionId: 'session',
+    isAllowedFilePath: value => value === file, getDocumentContextFromPath: () => ({ kind: 'scene' }),
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot: root, projectId: 'rich-context' }),
+    loadDocumentContentEnvelopeModule: async () => envelope, pendingTextRevisions: model,
+    computeHash: value => crypto.createHash('sha256').update(value).digest('hex'),
+    loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ state: { threads: [] } }) }),
+  });
+  vm.runInContext(source, context);
+  await assert.rejects(context.readCommentAuthoringContext(), /COMMENT_STORY_UNSUPPORTED/u);
+  const result = await context.readCommentAuthoringContext({ pendingRichBlocks: true });
+  assert.deepEqual(Array.from(result.paragraphs), model.paragraphs(model.normalizeNode(doc)).map(text));
+  assert.equal(result.sceneId, 'scene.txt'); assert.equal(result.projectId, 'rich-context');
+  context.isDirty = true;
+  await assert.rejects(context.readCommentAuthoringContext({ pendingRichBlocks: true }), /COMMENT_SAVE_SCENE_FIRST/u);
+  context.isDirty = false; context.activePendingRecording = {};
+  await assert.rejects(context.readCommentAuthoringContext({ pendingRichBlocks: true }), /RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW/u);
 });
 test('Tracked table mutations and text revisions targeting a continuation cell cannot inherit text authority', async () => {
   const [bridge] = await modules;

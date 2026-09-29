@@ -5742,9 +5742,9 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     if (!plan.ok || plan.candidateCreatePlan?.entries?.length !== 1) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     const incoming = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content);
     if (incoming.issue || !incoming.doc) throw Error('PENDING_RETURN_DOCUMENT_REQUIRED');
-    // This Core validation rejects mixed notes, links, tables and other content
-    // whose complete reversible semantics are outside this text-return lane.
-    const current = await readCommentAuthoringContext(); check();
+    // Core retains bounded list/cell ownership; unsupported mixed annotations
+    // and content remain outside this reversible text-return lane.
+    const current = await readCommentAuthoringContext({ pendingRichBlocks: true }); check();
     if (current.projectId !== context.projectId || current.projectRoot !== context.projectRoot || current.sceneId !== sceneId)
       throw Error('PENDING_RETURN_PROJECT_MISMATCH');
     const receipt = { roundId: capsule.roundId, artifactSha256: computeHash(docxBytes) };
@@ -22787,7 +22787,7 @@ function loadRtkNonTextReturnModule() {
 
 // Ordinary comment authoring uses committed scene truth, never returned Word IDs.
 let commentAuthoringSessionId = crypto.randomUUID();
-async function readCommentAuthoringContext() {
+async function readCommentAuthoringContext({ pendingRichBlocks = false } = {}) {
   if (activePendingRecording) throw Error('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
   if (isDirty || autoSaveInProgress) throw new Error('COMMENT_SAVE_SCENE_FIRST');
   const filePath = currentFilePath;
@@ -22807,7 +22807,9 @@ async function readCommentAuthoringContext() {
   const envelope = await loadDocumentContentEnvelopeModule();
   const parsed = envelope.parseObservablePayload(raw);
   if (parsed.issue) throw new Error('COMMENT_SCENE_INVALID');
-  const paragraphs = parsed.doc ? parsed.doc.content.map(node => {
+  const nodes = parsed.doc && (pendingRichBlocks
+    ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(parsed.doc)) : parsed.doc.content);
+  const paragraphs = parsed.doc ? nodes.map(node => {
     if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('COMMENT_STORY_UNSUPPORTED');
     return envelope.deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
   }) : parsed.text.split('\n');
@@ -22923,7 +22925,7 @@ async function handlePendingRecordingCommand(payload = {}) {
     }
     return await queueDiskOperation(async () => {
       if (activePendingRecording) throw Error('RECORDING_ALREADY_ACTIVE');
-      const context = await readCommentAuthoringContext();
+      const context = await readCommentAuthoringContext({ pendingRichBlocks: true });
       if (payload.projectId !== context.projectId || payload.sceneId !== context.sceneId || payload.subjectId !== context.subjectId
         || payload.expectedSceneSha256 !== context.sceneSha256) throw Error('RECORDING_IDENTITY_STALE');
       const snapshot = await requestEditorSnapshot();
@@ -22940,7 +22942,7 @@ async function handlePendingRecordingCommand(payload = {}) {
       const session = { ...context, id: crypto.randomUUID(), baseline: cloneJsonSafe(original), metadata,
         owner: activeStage10ApplicationBootstrap, savedGeneration: snapshot.generation };
       await assertPendingRecordingAnnotations(session);
-      const fresh = await readCommentAuthoringContext();
+      const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
       if (fresh.raw !== context.raw || fresh.subjectId !== context.subjectId || fresh.projectId !== context.projectId
         || lastSignaledEditGeneration > snapshot.generation) throw Error('RECORDING_SCENE_CHANGED');
       pendingRecordingCapability();
@@ -22962,7 +22964,7 @@ async function readPendingRevisionProjection() {
       return { available: true, recording: true, sessionId: session.id, author: session.metadata.author,
         projectId: session.projectId, sceneId: session.sceneId, subjectId: session.subjectId };
     }
-    const context = await readCommentAuthoringContext();
+    const context = await readCommentAuthoringContext({ pendingRichBlocks: true });
     const projection = pendingTextRevisions.projection(context.parsed.doc);
     let recordingAvailable = true, recordingReason = '';
     try {
@@ -22983,7 +22985,7 @@ async function handlePendingRevisionCommand(payload = {}) {
     if (admission) authenticatedPendingReturnAdmissions.delete(payload);
     if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['projectId', 'sceneId', 'subjectId', 'expectedSceneSha256', 'action', 'revisionId'].includes(key))) throw Error('PENDING_REVISION_REQUEST_INVALID');
     return await queueDiskOperation(async () => {
-      const context = await readCommentAuthoringContext();
+      const context = await readCommentAuthoringContext({ pendingRichBlocks: true });
       if (admission) { admission.check(); if (context.raw !== admission.raw) throw Error('PENDING_RETURN_BASELINE_CONFLICT'); }
       if (payload.projectId !== context.projectId || payload.sceneId !== context.sceneId || payload.subjectId !== context.subjectId
         || payload.expectedSceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_IDENTITY_STALE');
@@ -23004,7 +23006,7 @@ async function handlePendingRevisionCommand(payload = {}) {
         if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
           || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('PENDING_REVISION_CONTEXT_CHANGED');
-        const fresh = await readCommentAuthoringContext();
+        const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
         if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_SCENE_CHANGED');
         if (fresh.saved?.state?.threads?.some(t => t.sceneId === context.sceneId && t.status !== 'deleted')) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
         const storage = await loadNotesStorageModule();
