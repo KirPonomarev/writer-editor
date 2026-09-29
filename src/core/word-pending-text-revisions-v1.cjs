@@ -260,7 +260,7 @@ function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
   return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
 }
-function revisionMeaning(sourceParagraphs, revision) {
+function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex) {
   // A paragraph property's identity covers the paragraph, not its changing text.
   const text = isParagraphBoundary(revision) ? '\n' : isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
   // Word preserves dateUtc to seconds, while rewriting legacy date at minute
@@ -269,9 +269,16 @@ function revisionMeaning(sourceParagraphs, revision) {
   const date = revision.dateUtc || revision.date;
   const time = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(date) && Number.isFinite(Date.parse(date))
     ? Math.floor(Date.parse(date) / 1000) : [revision.date, revision.dateUtc];
-  return stable([revision.paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), revision.format || null]);
+  return stable([paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), revision.format || null]);
 }
-function preserveReturnedIdentities(before, proposed) {
+function preserveReturnedIdentities(before, proposed, paragraphBindings) {
+  if (paragraphBindings !== undefined) {
+    assert(Array.isArray(paragraphBindings) && paragraphBindings.length === paragraphs(proposed.source).length
+      && paragraphBindings.every((v, i) => Number.isSafeInteger(v) && v >= 0
+        && (i === 0 ? v === 0 : v === paragraphBindings[i - 1] || v === paragraphBindings[i - 1] + 1))
+      && paragraphBindings.at(-1) === paragraphs(before.source).length - 1, 'PENDING_RETURN_PARAGRAPH_BINDING_INVALID');
+  }
+  const incomingMeaning = (source, revision) => revisionMeaning(source, revision, paragraphBindings?.[revision.paragraphIndex]);
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
   const oldParagraphs = paragraphs(before.source), newParagraphs = paragraphs(proposed.source);
   let nextRevision = 1, nextGroup = 1;
@@ -289,7 +296,7 @@ function preserveReturnedIdentities(before, proposed) {
   }
   const incomingCounts = new Map();
   for (const revision of proposed.revisions) {
-    const key = revisionMeaning(newParagraphs, revision);
+    const key = incomingMeaning(newParagraphs, revision);
     incomingCounts.set(key, (incomingCounts.get(key) || 0) + 1);
   }
   for (const [key, rows] of occurrences) {
@@ -299,7 +306,7 @@ function preserveReturnedIdentities(before, proposed) {
   const groups = new Map();
   for (const revision of proposed.revisions) {
     assert(revision.state === 'pending', 'PENDING_RETURN_STATE_INVALID');
-    const previous = occurrences.get(revisionMeaning(newParagraphs, revision))?.shift();
+    const previous = occurrences.get(incomingMeaning(newParagraphs, revision))?.shift();
     assert(previous || nextRevision <= 9999, 'PENDING_REVISIONS_ID_BUDGET');
     revision.id = previous?.id || `revision-${nextRevision++}`;
     if (revision.groupId) { const rows = groups.get(revision.groupId) || []; rows.push(revision); groups.set(revision.groupId, rows); }
@@ -322,7 +329,7 @@ function asRoundLedger(doc) {
   paragraphs(source).forEach(p => { p.content ||= []; });
   return validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 }
-function replaceFromReturn(doc, returnedDoc, receipt) {
+function replaceFromReturn(doc, returnedDoc, receipt, paragraphBindings) {
   assert(exact(receipt, ['roundId', 'artifactSha256']) && typeof receipt.roundId === 'string'
     && receipt.roundId.length > 0 && receipt.roundId.length <= 200 && !/[\x00-\x1f]/u.test(receipt.roundId)
     && /^[a-f0-9]{64}$/u.test(receipt.artifactSha256), 'PENDING_RETURN_RECEIPT_INVALID');
@@ -335,7 +342,7 @@ function replaceFromReturn(doc, returnedDoc, receipt) {
   if (before.returnReceipts.some(r => r.roundId === receipt?.roundId && r.artifactSha256 === receipt?.artifactSha256)) {
     return { changed: false, replay: true, doc };
   }
-  preserveReturnedIdentities(before, proposed);
+  preserveReturnedIdentities(before, proposed, paragraphBindings);
   const previous = roundFrame(before); previous.redo = [];
   after.roundUndo.push(previous);
   return { changed: true, replay: false, doc: bindLedger(after) };

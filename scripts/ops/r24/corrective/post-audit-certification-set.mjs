@@ -1682,7 +1682,7 @@ export const R24_INTEROP_WORD_PARAGRAPH_BOUNDARIES_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b1a08ae2f4aa114e39b7c7fcf66f2f63429b8953351438ffe11db71eb6568d2b"
+      "sha256": "12277eae3e3e252e11923e698c27b213721530fa07ba9eba6629a778c84da4ea"
     }
   ]
 });

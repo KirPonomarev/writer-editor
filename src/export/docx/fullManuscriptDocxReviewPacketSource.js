@@ -708,6 +708,24 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
       }
     }
   }
+  if (input.paragraphBindings !== undefined) {
+    const bindings = input.paragraphBindings;
+    if (!Array.isArray(bindings) || !bindings.length || bindings.some((v, i) => !Number.isSafeInteger(v) || v < 0
+      || (i === 0 ? v !== 0 : v !== bindings[i - 1] && v !== bindings[i - 1] + 1))
+      || bindings.at(-1) !== expectedSections.at(-1)?.endParagraphIndex) {
+      mismatches.push('paragraphBindings');
+    } else {
+      for (const section of normalizedSections) {
+        if (!Number.isSafeInteger(section.startParagraphIndex) || !Number.isSafeInteger(section.endParagraphIndex)
+          || section.startParagraphIndex < 0 || section.endParagraphIndex >= bindings.length) {
+          mismatches.push('paragraphBindings'); continue;
+        }
+        section.startParagraphIndex = bindings[section.startParagraphIndex];
+        section.endParagraphIndex = bindings[section.endParagraphIndex];
+      }
+      providerNormalizedFields.push('native-pending-paragraph-occurrence-binding');
+    }
+  }
   const normalizedProjection = { schemaVersion: returned.schemaVersion, protectedSections: normalizedSections };
   const expectedDigest = normalizeString(expected.protectedDigest);
   const signedDigest = normalizeString(input.signedDigest);

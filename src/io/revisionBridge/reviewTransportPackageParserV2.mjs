@@ -5282,3 +5282,36 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     originalParagraphCount: paragraphs.length - [...boundaryOwners.values()].filter(v => v === 'ins').length };
 
 }
+
+// Read-only occurrence ownership. A Word split can stretch one transport
+// bookmark over several paragraphs; the caller still validates revision and
+// section semantics against its local authenticated map.
+export function extractTransportParagraphOwnershipV1(documentXml, names, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
+  if (!cryptoPort.ok) throw Error('PENDING_REVISIONS_CRYPTO_REQUIRED');
+  const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+  if (blockingReason(scan.diagnostics)) throw Error('PENDING_RETURN_BOOKMARK_XML_INVALID');
+  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
+  const starts = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
+  const ends = scan.tokens.filter(t => isWordToken(t, 'bookmarkEnd'));
+  const declared = starts.filter(t => /^YRTK_/u.test(attr(t, 'name', W_NS)));
+  if (declared.length !== names.length || new Set(names).size !== names.length
+    || declared.some((t, i) => attr(t, 'name', W_NS) !== names[i])) throw Error('PENDING_RETURN_BOOKMARK_ORDER');
+  const ranges = declared.map((start, ordinal) => {
+    const id = attr(start, 'id', W_NS), paired = ends.filter(t => attr(t, 'id', W_NS) === id);
+    if (!start.selfClosing || !id || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1
+      || paired.length !== 1 || !paired[0].selfClosing || paired[0].openStart < start.closeEnd)
+      throw Error('PENDING_RETURN_BOOKMARK_PAIR');
+    const end = paired[0];
+    const first = paragraphs.findIndex(p => start.openStart >= p.openEnd && start.closeEnd <= p.closeStart && start.depth === p.depth + 1);
+    const last = paragraphs.findIndex(p => end.openStart >= p.openEnd && end.closeEnd <= p.closeStart && end.depth === p.depth + 1);
+    if (first < 0 || last < first) throw Error('PENDING_RETURN_BOOKMARK_OWNER');
+    return { ordinal, first, last, start: start.openStart, end: end.closeEnd };
+  });
+  if (ranges.some((r, i) => i && r.start < ranges[i - 1].end)) throw Error('PENDING_RETURN_BOOKMARK_OVERLAP');
+  return paragraphs.map((p, i) => {
+    const owners = ranges.filter(r => r.first <= i && r.last >= i).map(r => r.ordinal);
+    if (!owners.length) throw Error('PENDING_RETURN_BOOKMARK_UNOWNED');
+    return owners;
+  });
+}

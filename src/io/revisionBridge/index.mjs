@@ -15,6 +15,7 @@ import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs
 import {
   extractReviewTransportFormattingRunsV2,
   extractPendingTextRevisionSourceV1,
+  extractTransportParagraphOwnershipV1,
   extractDocumentMediaReferencesV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
@@ -3723,6 +3724,39 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
     opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
 }
 
+function visiblePendingParagraphReturn(pending, exportMap, options) {
+  const scenes = exportMap?.scenes || [], blocks = scenes.flatMap(scene => (scene.blocks || []).map(block => ({ ...block, ownerSceneId: scene.sceneId })));
+  const names = blocks.map(block => {
+    const signals = (block.wordSignals || []).filter(signal => signal.kind === 'bookmarkName');
+    if (signals.length !== 1 || !signals[0].value?.name) throw Error('PENDING_RETURN_BOOKMARK_MAP');
+    return signals[0].value.name;
+  });
+  if (!blocks.length || new Set(scenes.map(scene => scene.sceneId)).size !== scenes.length) throw Error('PENDING_RETURN_BOOKMARK_MAP');
+  const union = extractTransportParagraphOwnershipV1(pending.xml, names, options);
+  const current = extractTransportParagraphOwnershipV1(pending.currentXml, names, options);
+  const inserted = new Set(pending.revisions.filter(r => r.boundary === 'paragraph' && r.operation === 'insert').map(r => r.paragraphIndex));
+  const bindings = union.map((owners, i) => {
+    if (owners.length !== 1) throw Error('PENDING_RETURN_BOOKMARK_UNION_OWNER');
+    if (i && owners[0] === union[i - 1][0] && !inserted.has(i - 1)) throw Error('PENDING_RETURN_UNTRACKED_PARAGRAPH_SPLIT');
+    return owners[0];
+  });
+  const unionFormatting = extractReviewTransportFormattingRunsV2(pending.xml, options);
+  const currentFormatting = extractReviewTransportFormattingRunsV2(pending.currentXml, options);
+  if (!unionFormatting.ok || !currentFormatting.ok) throw Error('PENDING_RETURN_PARAGRAPH_FORMAT');
+  // Table topology remains exact; expanding a bookmark inside a cell requires
+  // a separate cell occurrence binding and is not admitted by this route.
+  const topology = validateDocxReviewTableTopology(unionFormatting.paragraphs, exportMap);
+  if (!topology.ok) throw Error(topology.code);
+  if (currentFormatting.paragraphs.length !== current.length) throw Error('PENDING_RETURN_PARAGRAPH_COUNT');
+  const texts = new Map(scenes.map(scene => [scene.sceneId, []]));
+  for (const [i, owners] of current.entries()) {
+    const ids = new Set(owners.map(owner => blocks[owner].ownerSceneId));
+    if (ids.size !== 1) throw Error('PENDING_RETURN_CROSS_SCENE_BOUNDARY');
+    texts.get([...ids][0]).push(currentFormatting.paragraphs[i].paragraphText);
+  }
+  return { ok: true, sceneTexts: scenes.map(scene => texts.get(scene.sceneId).join('\n')), paragraphBindings: bindings };
+}
+
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   let xml = normalizeString(documentXml);
   let hasPendingRevisions = false;
@@ -3735,6 +3769,12 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     } });
     hasPendingRevisions = pending.revisions.length > 0;
     hasParagraphBoundaries = pending.revisions.some(revision => revision.boundary === 'paragraph');
+    if (hasParagraphBoundaries && options.allowPendingParagraphSplits === true) {
+      return visiblePendingParagraphReturn(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
+        sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+        byteLength: text => new TextEncoder().encode(text).length,
+      } });
+    }
     if (hasParagraphBoundaries) {
       // First bind every union paragraph to the local map. Current can merge
       // adjacent paragraphs, but cannot invent, reorder or cross scene identity.

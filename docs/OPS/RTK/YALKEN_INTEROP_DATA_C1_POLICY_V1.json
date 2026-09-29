@@ -556,7 +556,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ecc73159d3a09a68bc1f08a3943032f96851c86ffccce5093efa23d41cc56ffc"
+        "sha256": "f61f477c664a3314c6a84b1f856dc32a5ad817eda61d69135f6c99af3268fe9d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -568,7 +568,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "76f91b8288d4ccc55836e61242956cad44fb236fc95aa48b10e72149791c60af"
+        "sha256": "f1e395504832c9dfb88d29b44798838f5b582c931a6d81e5a209dea344afef6c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -592,7 +592,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "3917a642fe00f83c16cbc6c5f5edeb7d173c157685ebb712227e2bceab07735e"
+        "sha256": "d6b088cd719ae97afaa8a8e23eaa8272618505218e2408af1f9d71c9a942aae3"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -672,7 +672,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "d4c3295f457853432a670a573e3f7973bf4afa06cd8247587bdf2bbf407a9d8c"
+        "sha256": "494d979f42edb5ae36dd6de460de372a512b36cf8f6523c67e64bc99f3c4c23a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -692,7 +692,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "f39f49051b21d00be60a820bca3bb7ac57c794002fb40696ff037680048b984a"
+        "sha256": "027f4627c2af4a336b0e112527accfb4e4942bcb91525e7813375abbfd1a0e8f"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1424,7 +1424,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "732c8823805504aa15d2b85cfc7b3e3e2c4c59cf9743ac802a71dc6f6542f462"
+        "sha256": "bf80eac70b116021474388744a64429f8802750177bd95900de20526407eb1f1"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -1492,7 +1492,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
-        "sha256": "2268031189d86734a6762e918440ac2f7158cbe4dd39b842f3ba87f6b3059b1d"
+        "sha256": "bf5bbdcc15db677828ddfe60e08bf5df3295eecbe1f3260a956d530364d3def3"
       }
     ],
     "followupRepair": {

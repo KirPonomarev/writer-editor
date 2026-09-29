@@ -5746,7 +5746,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets() });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), allowPendingParagraphSplits: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     if (intake.parserResult?.reviewIr?.commentThreads?.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)
@@ -5764,7 +5764,9 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const ledger = pendingTextRevisions.readLedger(current.parsed.doc);
     const replay = ledger?.returnReceipts?.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256);
     if (!replay && current.raw !== capsule.baselineObservableContentBySceneId[sceneId]) throw Error('PENDING_RETURN_BASELINE_CONFLICT');
-    const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt);
+    const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt,
+      mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(current.parsed.doc)?.source || current.parsed.doc).length
+        ? mapped.paragraphBindings : undefined);
     // Compare exact paragraph occurrences. The envelope's legacy display text
     // collapses consecutive empty blocks and cannot prove table-leaf identity.
     const incomingText = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(incoming.doc))
@@ -9716,12 +9718,26 @@ async function inspectDocxReviewReturnIntakeV2({
     verifiedParserResult.documentMetadataBinding = documentMetadataBinding.proof;
     verifiedParserResult.documentMetadataBinding.status = documentMetadataBinding.status;
   }
-  const documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
+  let documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
     expected: localAuthority.documentSections,
     returned: verifiedParserResult.reviewIr?.documentSections,
     signedDigest: payload.documentSectionsDigest,
     allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
   });
+  if (!documentSectionsBinding.ok && localAuthority.officeModeTransport === true
+    && localAuthority.exportMap?.scenes?.length === 1) {
+    const cryptoPort = createRtkReviewTransportCryptoPort();
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
+      localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingParagraphSplits: true }) : null;
+    if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
+      documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
+        expected: localAuthority.documentSections, returned: verifiedParserResult.reviewIr?.documentSections,
+        signedDigest: payload.documentSectionsDigest, allowOfficeDefaultOmissions: true,
+        paragraphBindings: ownership.paragraphBindings,
+      });
+    }
+  }
   if (!documentSectionsBinding.ok) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH', {
       mismatches: Array.isArray(documentSectionsBinding.mismatches)

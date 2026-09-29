@@ -185,3 +185,40 @@ test('Full publication binds union identities before projecting merged paragraph
   assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, splitScenes).code,
     'RTK_V4_PUBLICATION_GATE_PROVISIONAL_BOOKMARK_AMBIGUOUS');
 });
+
+test('New tracked split inside an authenticated bookmark rebinds sections and retains pre-existing revision IDs', async () => {
+  const [bridge] = await modules, doc = await parse(pack(body));
+  const { validateFullManuscriptDocumentSectionsReturn: validateSections } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'boundaries', projectRoot: '/synthetic', scenes: [
+    { sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), order: 0 },
+  ] });
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes(buildDocxReviewPacketBuffer(source)).parts;
+  const xml = parts['word/document.xml'], paragraph = [...xml.matchAll(/<w:p\b[\s\S]*?<\/w:p>/g)][1][0];
+  assert.match(paragraph, /here\.<\/w:t><\/w:r>/);
+  const split = paragraph.replace('</w:pPr>', mark('ins', 77) + '</w:pPr>')
+    .replace('here.</w:t></w:r>', 'he</w:t></w:r></w:p><w:p><w:pPr><w:jc w:val="left"/></w:pPr>' + run('re.'));
+  const returnedXml = xml.replace(paragraph, split);
+  const options = { allowPendingParagraphSplits: true }, map = source.localAuthorityCapsule.exportMap;
+  const mapped = bridge.visibleSceneTextsFromWordDocumentXml(returnedXml, map, options);
+  assert.equal(mapped.ok, true, JSON.stringify(mapped));
+  assert.deepEqual(mapped.paragraphBindings, [0, 1, 1, 2, 3]);
+  assert.deepEqual(mapped.sceneTexts, ['Split 😀 \nhe\nre.\nMerge.Next.']);
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(returnedXml.replace(mark('ins', 77), ''), map, options).ok, false);
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(returnedXml.replace(/<w:bookmarkEnd[^>]*\/>/, ''), map, options).ok, false);
+  const crypto = require('node:crypto'), canonical = value => Array.isArray(value) ? '[' + value.map(canonical).join(',') + ']'
+    : value && typeof value === 'object' ? '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key])).join(',') + '}' : JSON.stringify(value);
+  const expected = source.documentSections, returned = structuredClone(expected); returned.applicable = true;
+  returned.protectedSections[0].endParagraphIndex++;
+  const digest = () => returned.protectedDigest = 'sha256:' + crypto.createHash('sha256').update(canonical({schemaVersion:returned.schemaVersion, protectedSections:returned.protectedSections})).digest('hex');
+  digest();
+  const sectionInput = { expected, returned, signedDigest: expected.protectedDigest, allowOfficeDefaultOmissions: true };
+  assert.equal(validateSections(sectionInput).ok, false);
+  assert.equal(validateSections({ ...sectionInput, paragraphBindings: mapped.paragraphBindings }).ok, true);
+  returned.protectedSections[0].properties.pageSize.widthTwips++; digest();
+  assert.equal(validateSections({ ...sectionInput, paragraphBindings: mapped.paragraphBindings }).ok, false);
+  const incoming = await parse(buildStoredZip(Object.entries({ ...parts, 'word/document.xml': returnedXml }).map(([name, data]) => ({name, data}))));
+  const replacement = model.replaceFromReturn(doc, incoming, { roundId: 'new-native-split', artifactSha256: 'a'.repeat(64) }, mapped.paragraphBindings).doc;
+  const revisions = model.readLedger(replacement).revisions;
+  assert.equal(revisions.find(r => r.operation === 'delete').id, 'revision-2');
+  assert.deepEqual(model.normalizeNode(model.decide(replacement, {action:'undo'}).doc), model.normalizeNode(doc));
+});
