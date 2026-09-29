@@ -3,7 +3,7 @@ import { Plugin } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import tables from '../../io/documentTables.js';
 import properties from '../../io/documentTableProperties.js';
-import { tableNodes, tableEditing, goToNextCell } from '@tiptap/pm/tables';
+import { tableNodes, tableEditing, goToNextCell, addRowAfter } from '@tiptap/pm/tables';
 
 // Display conversion consumes canonical document data; it never publishes truth.
 const borderCss = border => !border || border.style === 'none' ? 'none'
@@ -80,6 +80,18 @@ const nodes = Object.entries(specifications).map(([key, spec]) => Node.create({
   },
 }));
 
+// Last-cell Tab is one authoring transaction, including the new selection.
+// It uses the same working-document/save route as ordinary cell typing.
+export function nextTableCell(state, dispatch) {
+  if (goToNextCell(1)(state, dispatch)) return true;
+  let added;
+  if (!addRowAfter(state, tr => { added = tr; })) return false;
+  let selection;
+  if (!goToNextCell(1)(state.apply(added), tr => { selection = tr.selection; })) return false;
+  if (dispatch) dispatch(added.setSelection(selection).scrollIntoView());
+  return true;
+}
+
 export const DocumentTables = Extension.create({
   name: 'documentTables',
   addExtensions() { return nodes; },
@@ -93,7 +105,7 @@ export const DocumentTables = Extension.create({
   })]; },
   addKeyboardShortcuts() {
     return {
-      Tab: () => goToNextCell(1)(this.editor.state, this.editor.view.dispatch),
+      Tab: () => nextTableCell(this.editor.state, this.editor.view.dispatch),
       'Shift-Tab': () => goToNextCell(-1)(this.editor.state, this.editor.view.dispatch),
     };
   },

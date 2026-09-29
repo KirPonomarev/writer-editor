@@ -570,7 +570,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cd1c32d8f33daf7af0799ccca87c64fcff20fd571163e4817f2c242455335eaf"
+        "sha256": "2ad8e001adbaa0fce69fb0e6cd910a6ab3317af1ba195d96674618f2edb35c42"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -962,7 +962,7 @@
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
-        "sha256": "d51e9c51328b94f42a0d4240510cd3bc78e77e1bac7ada5c67667706ea17ba20"
+        "sha256": "98f26e0b7bb2e872bf763a358f536b46dbd15b8118bbf66be1cdf441037a1b65"
       },
       {
         "path": "src/io/documentMedia.js",
@@ -1094,7 +1094,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "59a55619a0b90cb152f563ef3ff9508e75c53f5abe43dee0ec53be2392a2548c"
+        "sha256": "a08d7a3ee297b3624805f7ba660f8fee9a3b11c35bf45e46b0dcec25ff6c2c16"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
