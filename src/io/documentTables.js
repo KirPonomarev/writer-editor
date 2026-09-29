@@ -2,7 +2,7 @@
 
 // Pure document data: no DOM, I/O, provider or mutation authority.
 const { EDGES, MAX_DXA, validateTableProperties, validateCellProperties, legacyTableProperties, propertiesEqual, borderXml, shadingXml } = require('./documentTableProperties.js');
-const TABLE_LIMITS = Object.freeze({ rows: 512, columns: 128, slots: 65536, paragraphs: 50000 });
+const TABLE_LIMITS = Object.freeze({ rows: 512, columns: 128, slots: 65536, paragraphs: 50000, lists: 2048, listDepth: 8 });
 const META_KEYS = ['tableId', 'row', 'column', 'rowCount', 'columnCount', 'colspan', 'rowspan', 'header', 'paragraphIndex', 'paragraphCount'];
 const fail = code => { throw new Error(`DOCX_TABLE_${code}`); };
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
@@ -12,12 +12,47 @@ function attrsOnly(node, allowed) {
 }
 function integer(value, min, max) { return Number.isSafeInteger(value) && value >= min && value <= max; }
 
+// Leaf addresses retain list ownership as well as cell ownership. Empty and
+// repeated paragraphs are real leaves, never inferred from their text.
+function cellParagraphs(content, budget) {
+  if (!Array.isArray(content) || !content.length) fail('CELL_CONTENT_UNSUPPORTED');
+  const result = [];
+  const append = (node, listStack) => {
+    if (++budget.paragraphs > TABLE_LIMITS.paragraphs) fail('PARAGRAPH_LIMIT');
+    result.push({ node, listStack });
+  };
+  const visitList = (list, ancestors) => {
+    if (ancestors.length > TABLE_LIMITS.listDepth || ++budget.lists > TABLE_LIMITS.lists) fail('LIST_LIMIT');
+    attrsOnly(list, list.type === 'orderedList' ? ['start', 'type'] : []);
+    const start = list.type === 'orderedList' ? (list.attrs?.start ?? 1) : 1;
+    if (!Array.isArray(list.content) || !list.content.length
+      || !integer(start, 0, 2147483647) || start + list.content.length - 1 > 2147483647
+      || (list.attrs?.type != null && list.attrs.type !== '1')) fail('LIST_INVALID');
+    const listId = budget.lists;
+    list.content.forEach((item, itemOrdinal) => {
+      if (item?.type !== 'listItem' || !Array.isArray(item.content) || item.content[0]?.type !== 'paragraph'
+        || item.content.slice(1).some(n => !['bulletList', 'orderedList'].includes(n?.type))) fail('LIST_ITEM_UNSUPPORTED');
+      attrsOnly(item, []);
+      const listStack = [...ancestors, { listId, kind: list.type, start, itemOrdinal }];
+      append(item.content[0], listStack);
+      for (const nested of item.content.slice(1)) visitList(nested, listStack);
+    });
+  };
+  for (const node of content) {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node?.type)) append(node, []);
+    else if (['bulletList', 'orderedList'].includes(node?.type)) visitList(node, []);
+    else fail('CELL_CONTENT_UNSUPPORTED');
+  }
+  return result;
+}
+
 function inspectTable(table) {
   if (!object(table) || table.type !== 'table' || !Array.isArray(table.content)
     || !integer(table.content.length, 1, TABLE_LIMITS.rows)) fail('SHAPE_INVALID');
   attrsOnly(table, ['wordTable']);
   const rows = table.content.length, grid = Array.from({ length: rows }, () => []), cells = [];
-  let width = 0, paragraphs = 0;
+  let width = 0;
+  const budget = { paragraphs: 0, lists: 0 };
   table.content.forEach((row, y) => {
     if (row?.type !== 'tableRow' || !Array.isArray(row.content)) fail('ROW_INVALID');
     attrsOnly(row, []);
@@ -31,12 +66,9 @@ function inspectTable(table) {
         || x + colspan > TABLE_LIMITS.columns || y + rowspan > rows) fail('SPAN_INVALID');
       // Column resizing is not in this transport profile. Never discard it.
       if (node.attrs?.colwidth != null) fail('COLUMN_WIDTH_UNSUPPORTED');
-      if (!Array.isArray(node.content) || !node.content.length
-        || node.content.some(p => !['paragraph', 'heading', 'codeBlock'].includes(p?.type))) fail('CELL_CONTENT_UNSUPPORTED');
-      paragraphs += node.content.length;
-      if (paragraphs > TABLE_LIMITS.paragraphs) fail('PARAGRAPH_LIMIT');
+      const paragraphs = cellParagraphs(node.content, budget);
       validateCellProperties(node.attrs?.wordCell);
-      const cell = { node, row: y, column: x, colspan, rowspan, header: node.type === 'tableHeader' };
+      const cell = { node, paragraphs, row: y, column: x, colspan, rowspan, header: node.type === 'tableHeader' };
       for (let yy = y; yy < y + rowspan; yy++) for (let xx = x; xx < x + colspan; xx++) {
         if (grid[yy][xx]) fail('OVERLAP');
         grid[yy][xx] = cell;
@@ -55,11 +87,11 @@ function inspectTable(table) {
 
 function tableParagraphs(table, tableId) {
   const layout = inspectTable(table);
-  return layout.cells.flatMap(cell => cell.node.content.map((node, paragraphIndex) => ({
-    node,
+  return layout.cells.flatMap(cell => cell.paragraphs.map(({ node, listStack }, paragraphIndex) => ({
+    node, listStack,
     table: { tableId, row: cell.row, column: cell.column, rowCount: layout.rows, columnCount: layout.columns,
       colspan: cell.colspan, rowspan: cell.rowspan, header: cell.header,
-      paragraphIndex, paragraphCount: cell.node.content.length,
+      paragraphIndex, paragraphCount: cell.paragraphs.length,
       ...(table.attrs?.wordTable ? { wordTable: table.attrs.wordTable } : {}),
       ...(cell.node.attrs?.wordCell ? { wordCell: cell.node.attrs.wordCell } : {}) },
   })));

@@ -182,11 +182,21 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   const visit = (node, blockquoteDepth = 0) => {
     if (!isPlainObjectValue(node)) return;
     if (node.type === 'table') {
+      const listIds = new Map();
       for (const entry of tableParagraphs(node, `table-${nextTableId++}`)) {
         const before = blocks.length;
         visit(entry.node);
         if (blocks.length !== before + 1) throw new Error('DOCX_TABLE_PARAGRAPH_INVALID');
         blocks.at(-1).table = entry.table;
+        const list = entry.listStack.at(-1);
+        if (list) {
+          if (blocks.at(-1).kind !== 'paragraph') throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
+          if (!listIds.has(list.listId)) {
+            if (nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
+            listIds.set(list.listId, nextListId++);
+          }
+          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: entry.listStack.length - 1, kind: list.kind, start: list.start };
+        }
       }
       return;
     }

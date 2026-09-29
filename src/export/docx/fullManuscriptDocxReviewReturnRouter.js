@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const { deriveVisibleTextFromDocument } = require('../../core/document-content-envelope-v1.cjs');
 
 const {
   validateFullManuscriptAuthorityReturn,
@@ -231,7 +232,12 @@ function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, baseli
     if (!blocks.length || blocks.some(block => !Array.isArray(block?.formatIr?.runs)
       || block.formatIr.runs.some(run => typeof run?.text !== 'string')
       || sha256Text(block.formatIr.runs.map(run => run.text).join('')) !== block.canonicalTextSha256)
-      || blocks.map(block => block.formatIr.runs.map(run => run.text).join('')).join('\n') !== baselineText) {
+      // Match the Core projection used to capture baselineText, including its
+      // treatment of adjacent empty paragraphs. Raw integrity and every block
+      // hash remain exact; projection normalization grants no source authority.
+      || deriveVisibleTextFromDocument({ type: 'doc', content: blocks.map(block => ({
+        type: 'paragraph', content: block.formatIr.runs.map(run => ({ type: 'text', text: run.text })),
+      })) }) !== baselineText) {
       return makeBlocked('FULL_MANUSCRIPT_EXACT_AUTHORITY_VISIBLE_BASELINE_MISMATCH', { sceneId });
     }
   }

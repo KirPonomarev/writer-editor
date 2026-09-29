@@ -14,6 +14,11 @@ const row = (...content) => ({ type: 'tableRow', content });
 const table = (...content) => ({ type: 'table', content });
 function fixture() {
   const multiple = cell('R2C1'); multiple.content.push(p('second paragraph 日本語 é'));
+  multiple.content.push({ type: 'orderedList', attrs: { start: 7 }, content: [
+    { type: 'listItem', content: [p('repeat'), { type: 'bulletList', content: [
+      { type: 'listItem', content: [p('nested é 😀')] }, { type: 'listItem', content: [p('')] },
+    ] }] }, { type: 'listItem', content: [p('repeat')] },
+  ] }, p(''));
   return { type: 'doc', content: [p('before'), table(
     row(cell('R1C1'), cell('repeat'), cell('')),
     row(multiple, cell('repeat'), cell('R2C3')),

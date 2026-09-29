@@ -19,6 +19,12 @@ async function fixture() {
     { type: 'tableRow', content: [cell('cell sentinel alpha'), cell('repeated')] },
     { type: 'tableRow', content: [cell(''), cell('repeated')] },
   ] }, p('after')] };
+  doc.content[1].content[0].content[0].content = [{ type: 'orderedList', attrs: { start: 4 }, content: [
+    { type: 'listItem', content: [p('cell sentinel alpha'), { type: 'bulletList', content: [
+      { type: 'listItem', content: [p('nested repeated')] },
+    ] }] }, { type: 'listItem', content: [p('repeated')] },
+  ] }, p('')];
+  doc.content[1].content[1].content[0].content.push(p(''));
   const raw = envelope.composeObservablePayload({ doc });
   const scene = { sceneId: 'roman/table.txt', scenePath: '/synthetic/roman/table.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), observableContent: raw, order: 0 };
   const source = producer.buildFullManuscriptDocxReviewPacketSource({ projectId: 'table-review-test', projectRoot: '/synthetic', manifestPath: '/synthetic/manifest.json', scenes: [scene], expectedOrderedSceneIds: [scene.sceneId] },
@@ -41,6 +47,27 @@ test('Table review binding accounts only matching native table occurrences and l
   assert.equal(result.reviewIr.opaqueUnsupported.some(x => x.elementName === 'tbl'), false);
   assert.deepEqual(ir, before); assert.deepEqual(exportMap, mapBefore);
   assert.deepEqual(result.reviewIr.formattingParagraphs, ir.formattingParagraphs);
+});
+
+test('Rich table return uses Core visible coordinates across consecutive empty cell paragraphs without weakening integrity', async () => {
+  const { source } = await fixture();
+  const router = require('../../src/export/docx/fullManuscriptDocxReviewReturnRouter.js');
+  const capsule = source.localAuthorityCapsule, sceneId = 'roman/table.txt';
+  const base = { sceneId, baselineText: capsule.baselineFinalTextBySceneId[sceneId],
+    baselineContent: capsule.baselineObservableContentBySceneId[sceneId], exportMap: capsule.exportMap,
+    operations: [{ id: 'table-list-edit', anchor: { selectedText: 'nested repeated' } }] };
+  const blocks = base.exportMap.scenes[0].blocks;
+  assert.notEqual(blocks.map(b => b.formatIr.runs.map(r => r.text).join('')).join('\n'), base.baselineText);
+  const result = router.deriveFullManuscriptSceneExactAuthority(base);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority({ ...base, baselineContent: base.baselineContent + 'stale' }).code,
+    'FULL_MANUSCRIPT_EXACT_AUTHORITY_BASELINE_STALE');
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority({ ...base, baselineText: base.baselineText + 'stale' }).code,
+    'FULL_MANUSCRIPT_EXACT_AUTHORITY_VISIBLE_BASELINE_MISMATCH');
+  const altered = structuredClone(base.exportMap);
+  altered.scenes[0].blocks.find(b => b.formatIr.runs.length).formatIr.runs[0].text += 'changed';
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority({ ...base, exportMap: altered }).code,
+    'FULL_MANUSCRIPT_EXACT_AUTHORITY_VISIBLE_BASELINE_MISMATCH');
 });
 test('Word auto-fit grid recalculation binds only an implicit legacy table and grants no write', async () => {
   const { bridge, xml, parse, exportMap } = await fixture();

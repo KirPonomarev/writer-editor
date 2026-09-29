@@ -64,6 +64,43 @@ test('table editor: production trailing-node policy preserves a table-only docum
   heading=heading.applyTransaction(heading.tr.setMeta('focus',true)).state;assert.equal(heading.doc.childCount,1);assert.equal(heading.doc.lastChild.type.name,'heading');
 });
 
+test('table cell lists: real editor split, indent, undo, redo and reopen preserve cell ownership', async () => {
+  const [{getSchema},{default:StarterKit},{DocumentTables},{EditorState,TextSelection},{splitListItem,sinkListItem},{history,undo,redo,closeHistory},{TableMap,goToNextCell}]=await Promise.all([
+    import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),
+    import('@tiptap/pm/state'),import('@tiptap/pm/schema-list'),import('@tiptap/pm/history'),import('@tiptap/pm/tables')]);
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const schema=getSchema([StarterKit.configure({trailingNode:false}),DocumentTables]);
+  const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+  const item=text=>({type:'listItem',content:[p(text)]});
+  const doc=schema.nodeFromJSON({type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[
+    {type:'tableCell',content:[{type:'orderedList',attrs:{start:7},content:[item('first'),item('second')]},p('')]},
+    {type:'tableCell',content:[p('protected')]},
+  ]}]}]});doc.check();
+  let target;
+  doc.descendants((node,pos)=>{if(node.isText&&node.text==='second')target=pos+node.nodeSize;});
+  let state=EditorState.create({schema,doc,selection:TextSelection.create(doc,target),plugins:[history()]});
+  const original=state.doc.toJSON(),dispatch=tr=>{state=state.apply(tr);};
+  assert.equal(sinkListItem(schema.nodes.listItem)(state,dispatch),true);
+  const indented=state.doc.toJSON();dispatch(closeHistory(state.tr));
+  assert.equal(splitListItem(schema.nodes.listItem)(state,dispatch),true);
+  state.doc.check();
+  const authored=state.doc.toJSON();
+  assert.equal(authored.content[0].content[0].content[0].content[0].attrs.start,7);
+  assert.deepEqual(authored.content[0].content[0].content[1],original.content[0].content[0].content[1]);
+  assert.equal(TableMap.get(state.doc.firstChild).problems,null);
+  assert.equal(undo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),indented);
+  assert.equal(undo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),original);
+  assert.equal(redo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),indented);
+  assert.equal(redo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),authored);
+  const raw=envelope.composeObservablePayload({doc:authored});
+  for(let cycle=0;cycle<5;cycle++) {
+    const reopened=schema.nodeFromJSON(envelope.parseObservablePayload(raw).doc);reopened.check();
+    assert.deepEqual(reopened.toJSON(),authored);
+  }
+  assert.equal(goToNextCell(1)(state,dispatch),true);
+  assert.equal(state.selection.$from.parent.textContent,'protected');
+});
+
 for (const kind of ['heading','codeBlock','blockquote','bulletList','orderedList']) {
   test(`editor topology: ${kind} survives focus/reopen, explicit authoring and undo/redo`, async () => {
     const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
