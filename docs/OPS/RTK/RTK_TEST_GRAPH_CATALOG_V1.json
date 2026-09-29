@@ -163,6 +163,7 @@
     "rtk-word-saturation-c04-block-writer-binding.contract.test.js",
     "rtk-word-saturation-c05-block-range-writer.contract.test.js",
     "rtk-word-structural-transaction.contract.test.js",
+    "rtk-word-table-cell-lists.contract.test.js",
     "rtk-word-table-editor.contract.test.js",
     "rtk-word-table-properties.contract.test.js",
     "rtk-word-table-review.contract.test.js",

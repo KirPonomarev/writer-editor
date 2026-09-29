@@ -290,8 +290,15 @@ function buildFormatIrParagraphs(scene) {
     }
     if (node.type === 'table') {
       if (context.blockquoteDepth || context.listStack.length) throw makeError('FULL_MANUSCRIPT_TABLE_NESTING_UNSUPPORTED');
+      const listIds = new Map();
       for (const entry of tableParagraphs(node, `${scene.sceneId}:table-${nextTableId++}`)) {
-        appendTextBlock(entry.node, context);
+        const listStack = entry.listStack.map(list => {
+          if (list.start < 1 || list.start > 32767) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
+          if (!listIds.has(list.listId)) listIds.set(list.listId, nextListNumId++);
+          return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.start,
+            itemOrdinal: list.itemOrdinal, numId: listIds.get(list.listId) };
+        });
+        appendTextBlock(entry.node, { ...context, listStack });
         result.at(-1).formatIr.table = entry.table;
       }
       return;

@@ -53,7 +53,7 @@ function tableDecorations(doc) {
 // Reuse the installed ProseMirror schema and keyboard/selection behavior.
 // This adds document nodes, not a second persistence or command path.
 const names = { table: 'table', table_row: 'tableRow', table_cell: 'tableCell', table_header: 'tableHeader' };
-const specifications = tableNodes({ tableGroup: 'block', cellContent: '(paragraph | heading | codeBlock)+' });
+const specifications = tableNodes({ tableGroup: 'block', cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' });
 const nodes = Object.entries(specifications).map(([key, spec]) => Node.create({
   name: names[key],
   content: spec.content.replace(/table_row|table_cell|table_header/gu, name => names[name]),

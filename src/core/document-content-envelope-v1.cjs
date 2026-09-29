@@ -235,7 +235,14 @@ function canonicalizeDocumentJson(doc) {
     return buildParagraphDocumentFromText('');
   }
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
-  return canonicalizeJsonValue(cloneJsonValue(doc));
+  const copied = cloneJsonValue(doc);
+  const pending = [copied];
+  while (pending.length) {
+    const node = pending.pop();
+    if (node?.type === 'table') require('../io/documentTables.js').inspectTable(node);
+    else if (Array.isArray(node?.content)) for (const child of node.content) pending.push(child);
+  }
+  return canonicalizeJsonValue(copied);
 }
 
 function serializeDocumentJson(doc) {

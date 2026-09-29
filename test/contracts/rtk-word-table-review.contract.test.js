@@ -19,6 +19,11 @@ async function fixture() {
     { type: 'tableRow', content: [cell('cell sentinel alpha'), cell('repeated')] },
     { type: 'tableRow', content: [cell(''), cell('repeated')] },
   ] }, p('after')] };
+  doc.content[1].content[0].content[0].content = [{ type: 'orderedList', attrs: { start: 4 }, content: [
+    { type: 'listItem', content: [p('cell sentinel alpha'), { type: 'bulletList', content: [
+      { type: 'listItem', content: [p('nested repeated')] },
+    ] }] }, { type: 'listItem', content: [p('repeated')] },
+  ] }, p('')];
   const raw = envelope.composeObservablePayload({ doc });
   const scene = { sceneId: 'roman/table.txt', scenePath: '/synthetic/roman/table.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), observableContent: raw, order: 0 };
   const source = producer.buildFullManuscriptDocxReviewPacketSource({ projectId: 'table-review-test', projectRoot: '/synthetic', manifestPath: '/synthetic/manifest.json', scenes: [scene], expectedOrderedSceneIds: [scene.sceneId] },

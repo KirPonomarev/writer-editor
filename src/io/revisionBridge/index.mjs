@@ -9562,22 +9562,12 @@ function docxInlineCanonicalContent(paragraphs) {
   });
   const content = [];
   const stack = [];
-  groupTableParagraphs(paragraphs).forEach(group => {
-    if (group.table) {
-      needsRichContent = true; stack.length = 0;
-      for (const cell of group.cells) {
-        if (cell.paragraphs.some(p => paragraphs[p.index].list !== undefined)) throw new Error('DOCX_TABLE_LIST_UNSUPPORTED');
-        cell.node.content = cell.paragraphs.map(p => blocks[p.index]);
-      }
-      content.push(group.table);
-      return;
-    }
-    const { index } = group;
+  const append = (index, target, listStack) => {
     const block = blocks[index];
     const list = paragraphs[index].list;
     if (list === undefined) {
-      stack.length = 0;
-      content.push(block);
+      listStack.length = 0;
+      target.push(block);
       return;
     }
     if (!isPlainObject(list) || Object.keys(list).length !== 4
@@ -9586,24 +9576,37 @@ function docxInlineCanonicalContent(paragraphs) {
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
       || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
-      || block.type !== 'paragraph' || list.level > stack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
+      || block.type !== 'paragraph' || list.level > listStack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
     needsRichContent = true;
-    stack.length = Math.min(stack.length, list.level + 1);
-    let active = stack[list.level];
+    listStack.length = Math.min(listStack.length, list.level + 1);
+    let active = listStack[list.level];
     if (!active || active.numId !== list.numId || active.node.type !== list.kind
       || (list.kind === 'orderedList' && active.nextOrdinal !== list.ordinal)) {
       const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal } } : {}), content: [] };
-      if (list.level === 0) content.push(node);
+      if (list.level === 0) target.push(node);
       else {
-        const parentItem = stack[list.level - 1]?.node.content.at(-1);
+        const parentItem = listStack[list.level - 1]?.node.content.at(-1);
         if (!parentItem) throw new Error('DOCX_LIST_ORPHAN_LEVEL');
         parentItem.content.push(node);
       }
       active = { numId: list.numId, node };
-      stack[list.level] = active;
+      listStack[list.level] = active;
     }
     active.node.content.push({ type: 'listItem', content: [block] });
     active.nextOrdinal = list.ordinal + 1;
+  };
+  groupTableParagraphs(paragraphs).forEach(group => {
+    if (group.table) {
+      needsRichContent = true; stack.length = 0;
+      for (const cell of group.cells) {
+        // Numbering identities may be shared by Word, but a list node cannot
+        // own a paragraph in another cell or continue a parent outside it.
+        const cellStack = [];
+        cell.node.content = [];
+        for (const paragraph of cell.paragraphs) append(paragraph.index, cell.node.content, cellStack);
+      }
+      content.push(group.table);
+    } else append(group.index, content, stack);
   });
   return needsRichContent ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
