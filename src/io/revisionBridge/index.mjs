@@ -3833,6 +3833,7 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
   let xml = normalizeString(documentXml);
   let hasPendingRevisions = false;
   let hasParagraphBoundaries = false;
+  let cellShiftBookmarkRestored = false;
   try {
     if (options.allowPendingTableRows === true) {
       const cellOptions = { ...options, cryptoPort: options.cryptoPort || {
@@ -3844,9 +3845,15 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
       if (restored !== xml) {
         const formatting = extractReviewTransportFormattingRunsV2(restored, cellOptions);
         if (!formatting.ok) throw Error('PENDING_CELL_SHIFT_BOOKMARK_BINDING');
-        const topology = validateDocxReviewTableTopology(formatting.paragraphs, exportMap);
-        if (!topology.ok) throw Error(topology.code);
+        // Restoration has proved the unchanged source inventory and any appended
+        // tracked row. The pending-row route below revalidates reduced topology.
+        const restoredPending = extractPendingTextRevisionSourceV1(restored, cellOptions);
+        if (!restoredPending.revisions.some(r => r.structure?.kind === 'tableRow')) {
+          const topology = validateDocxReviewTableTopology(formatting.paragraphs, exportMap);
+          if (!topology.ok) throw Error(topology.code);
+        }
         xml = restored;
+        cellShiftBookmarkRestored = true;
       }
     }
     const pending = extractPendingTextRevisionSourceV1(xml, { ...options, cryptoPort: options.cryptoPort || {
@@ -3858,10 +3865,11 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     hasParagraphBoundaries = pending.revisions.some(revision => revision.boundary === 'paragraph');
     if (pending.revisions.some(revision => revision.structure?.kind === 'tableRow')) {
       if (hasParagraphBoundaries) throw Error('PENDING_TABLE_ROW_BOUNDARY_COMPOSITION_UNSUPPORTED');
-      return visiblePendingTableRows(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
+      const rowProjection = visiblePendingTableRows(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
         sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
         byteLength: text => new TextEncoder().encode(text).length,
       } });
+      return { ...rowProjection, ...(cellShiftBookmarkRestored ? { cellShiftBookmarkRestored: true } : {}) };
     }
     if (hasParagraphBoundaries && options.allowPendingParagraphSplits === true) {
       return visiblePendingParagraphReturn(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
@@ -3976,7 +3984,22 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_COUNT_MISMATCH' };
   }
   const sceneTexts = orderedSceneIds.map((sceneId) => blocksBySceneId.get(sceneId).join('\n'));
-  return { ok: true, sceneTexts };
+  return { ok: true, sceneTexts, ...(cellShiftBookmarkRestored ? { cellShiftBookmarkRestored: true } : {}) };
+}
+
+// Additional no-loss proof for authenticated cell-bookmark restoration only.
+// Core owns Original semantics; this query creates no persistence authority.
+export function validateShiftedCellReturnOriginalV1(currentDoc, incomingDoc) {
+  const original = doc => {
+    const ledger = pendingTextRevisions.readLedger(doc);
+    const normalized = pendingTextRevisions.normalizeNode(ledger ? pendingTextRevisions.materialize(ledger, 'original') : doc);
+    if (!normalized || normalized.type !== 'doc' || !Array.isArray(normalized.content)) throw Error('Original unavailable');
+    return normalized;
+  };
+  try {
+    if (hashCanonicalValue(original(currentDoc)) === hashCanonicalValue(original(incomingDoc))) return { ok: true };
+  } catch { /* Invalid or unavailable Core evidence cannot prove no-loss. */ }
+  return { ok: false, code: 'PENDING_CELL_SHIFT_ORIGINAL_RICH_MISMATCH' };
 }
 
 export function extractDocxReviewTransportPackagePartsFromZipBytes(input, options = {}) {
@@ -4194,6 +4217,7 @@ export function extractDocxReviewTransportWordDocumentProjection(input, options 
     status: extracted.status,
     code: extracted.code,
     documentXml: normalizeString(extracted.parts?.['word/document.xml']),
+    stylesXml: normalizeString(extracted.parts?.['word/styles.xml']),
     zipEntryCount: Array.isArray(extracted.zipInventory?.entries) ? extracted.zipInventory.entries.length : 0,
   };
 }

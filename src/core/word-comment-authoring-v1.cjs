@@ -1,9 +1,9 @@
 'use strict';
 
-const crypto = require('node:crypto');
+const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const SCHEMA = 'yalken.rtk.word.non-text-return-state.v1';
 const COMMAND_ID = 'cmd.project.review.editComment';
-const sha = value => crypto.createHash('sha256').update(value).digest('hex');
+const sha = value => sha256UpdateCompatible(value);
 const plain = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const clone = value => JSON.parse(JSON.stringify(value));
 const fail = code => { throw Object.assign(new Error(code), { code }); };

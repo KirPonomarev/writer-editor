@@ -5374,16 +5374,23 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
   const declared = starts.filter(t => /^YRTK_/u.test(attr(t, 'name', W_NS)));
   const inside = (outer, inner) => inner.openStart >= outer.openEnd && inner.closeEnd <= outer.closeStart;
   const paragraphOf = token => paragraphs.findIndex(p => inside(p, token));
-  // Leave ordinary, split and newly inserted row ownership to their existing guards.
-  if (!declared.some((s, i) => declared.slice(0, i).some(p => paragraphOf(p) === paragraphOf(s)))) return documentXml;
+  // Ordinary/split bookmarks retain their existing guards. Shifted ranges
+  // either share a recipient paragraph or change the authenticated name order.
+  const declaredNames = declared.map(t => attr(t, 'name', W_NS));
+  const duplicateParagraph = declared.some((s, i) => declared.slice(0, i).some(p => paragraphOf(p) === paragraphOf(s)));
+  const ordinaryNames = blocks.map(b => (b.wordSignals || []).filter(s => s.kind === 'bookmarkName'));
+  // Legacy/non-transport maps and unaffected ordinary returns stay on the
+  // caller's original validation path; restoration cannot manufacture a map.
+  if (!duplicateParagraph && (ordinaryNames.some(s => s.length !== 1 || !s[0].value?.name)
+    || declaredNames.every((name, i) => name === ordinaryNames[i]?.[0]?.value?.name))) return documentXml;
   const fail = () => { throw Error('PENDING_CELL_SHIFT_BOOKMARK_BINDING'); };
   const names = blocks.map(b => {
     const signals = (b.wordSignals || []).filter(s => s.kind === 'bookmarkName');
     if (signals.length !== 1 || !signals[0].value?.name) fail();
     return signals[0].value.name;
   });
-  if (!blocks.length || paragraphs.length !== blocks.length || declared.length !== names.length
-    || new Set(names).size !== names.length || new Set(declared.map(s => attr(s, 'name', W_NS))).size !== names.length) fail();
+  if (!blocks.length || declared.length !== names.length || new Set(names).size !== names.length
+    || new Set(declaredNames).size !== names.length) fail();
   const ranges = declared.map(start => {
     const ordinal = names.indexOf(attr(start, 'name', W_NS)), id = attr(start, 'id', W_NS);
     const paired = ends.filter(t => attr(t, 'id', W_NS) === id), p = paragraphOf(start);
@@ -5406,49 +5413,116 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
     .map(x => wordInlineTextValue(documentXml, x)).join('');
   const sourceText = b => (b.formatIr?.runs || []).map(r => r.text).join('');
   const plainCell = t => t && t.colspan === 1 && t.rowspan === 1 && t.paragraphCount === 1 && t.paragraphIndex === 0;
+  const actualTables = [...new Set(formatting.paragraphs.map(p => p.table?.tableId).filter(Boolean))];
+  const localTables = [...new Set(blocks.map(b => b.formatIr?.table?.tableId).filter(Boolean))];
+  if (actualTables.length !== localTables.length) fail();
+  // Native insert-cell-down appends one tracked row. Authenticate its complete
+  // geometry and native marker before removing it from the source inventory.
+  const added = new Set(), addedChanges = new Map();
+  const pending = extractPendingTextRevisionSourceV1(documentXml, options);
+  actualTables.forEach((id, tableIndex) => {
+    const observed = formatting.paragraphs.filter(p => p.table?.tableId === id);
+    const expected = blocks.filter(b => b.formatIr?.table?.tableId === localTables[tableIndex]);
+    const oldRows = expected[0]?.formatIr.table.rowCount, newRows = observed[0]?.table.rowCount;
+    if (newRows === oldRows) return;
+    if (!Number.isSafeInteger(oldRows) || newRows !== oldRows + 1) fail();
+    const row = oldRows, change = pending.revisions.find(r => r.structure?.kind === 'tableRow'
+      && r.structure.tableIndex === tableIndex && r.structure.rowIndex === row);
+    const members = formatting.paragraphs.flatMap((p, i) => p.table?.tableId === id && p.table.row === row ? [{ p, i }] : []);
+    if (change?.operation !== 'insert' || !change.author || !change.date || members.length !== expected[0].formatIr.table.columnCount
+      || members.some(({ p }, i) => !plainCell(p.table) || p.table.column !== i)) fail();
+    for (const { i } of members) { added.add(i); addedChanges.set(i, change); }
+  });
+  const sourceParagraphs = paragraphs.map((_, i) => i).filter(i => !added.has(i));
+  if (sourceParagraphs.length !== blocks.length) fail();
+  const reduced = sourceParagraphs.map(i => {
+    const p = formatting.paragraphs[i];
+    if (!p.table) return p;
+    const removed = added.size && [...added].some(j => formatting.paragraphs[j].table.tableId === p.table.tableId) ? 1 : 0;
+    return { ...p, table: { ...p.table, rowCount: p.table.rowCount - removed } };
+  });
+  if (!documentTables.compareTableParagraphTopology(reduced, blocks).ok) fail();
+  const originalFormatting = extractReviewTransportFormattingRunsV2(pending.originalXml, options);
+  const originalParagraphs = paragraphs.map((_, i) => i).filter(i => {
+    const t = formatting.paragraphs[i].table;
+    return !t || !pending.revisions.some(r => r.structure?.kind === 'tableRow' && r.operation === 'insert'
+      && r.structure.tableIndex === actualTables.indexOf(t.tableId) && r.structure.rowIndex === t.row);
+  });
+  if (!originalFormatting.ok || originalFormatting.paragraphs.length !== originalParagraphs.length) fail();
+  const styles = options.stylesXml ? parseXmlPart('word/styles.xml', options.stylesXml, budgets, cryptoPort,
+    createParserBudgetState(budgets, cryptoPort)) : { tokens: [], diagnostics: [] };
+  if (blockingReason(styles.diagnostics)) fail();
+  const defaultSize = reviewDefaultFontSize(styles);
+  const defaultStyleRoots = styles.tokens.filter(t => isWordToken(t, 'docDefaults')
+    || isWordToken(t, 'style') && ['1', 'true', 'on'].includes(attr(t, 'default', W_NS)));
+  const defaultSizeOnly = defaultStyleRoots.every(root => styles.tokens.filter(t => inside(root, t) && isWordToken(t, 'rPr'))
+    .every(pr => childTokensWithin(styles, pr).every(t => t.namespaceUri === W_NS && ['rFonts', 'sz', 'szCs', 'lang'].includes(t.localName)))
+    && !(isWordToken(root, 'style') && attr(root, 'type', W_NS) === 'table'
+      && styles.tokens.some(t => inside(root, t) && ['rPr', 'basedOn'].some(n => isWordToken(t, n)))));
+  if (styles.tokens.length && !defaultSizeOnly) fail();
+  const semanticRuns = (runs, observed, allowInheritedSize = false) => {
+    const result = [];
+    for (const r of runs || []) {
+      if (observed ? r.invalidSupportedValue || r.unsupportedNames?.length : r.preservedMarks?.length) fail();
+      const inline = { ...(observed ? r.inlineState || {} : r.inline || {}) };
+      if (observed && allowInheritedSize && !Object.hasOwn(inline, 'fontSize')) inline.fontSize = defaultSize;
+      const previous = result.at(-1);
+      if (previous && stableJson(previous.inline) === stableJson(inline)) previous.text += r.text;
+      else result.push({ text: r.text, inline });
+    }
+    return stableJson(result);
+  };
   const edits = [], usedDonors = new Set();
   for (const range of ranges) {
-    const outers = ranges.filter(r => r.p === range.p && r.start.openStart < range.start.openStart && r.end.closeEnd > range.end.closeEnd);
-    if (!outers.length) continue;
-    if (outers.length !== 1) fail();
-    const outer = outers[0], receiver = paragraphs[range.p];
-    if ([range.start, range.end, outer.start, outer.end].some(t => t.depth !== receiver.depth + 1)) fail();
+    const originIndex = sourceParagraphs[range.ordinal];
+    if (range.p === originIndex) continue;
+    const receiver = paragraphs[range.p], origin = blocks[range.ordinal];
+    if ([range.start, range.end].some(t => t.depth !== receiver.depth + 1)) fail();
     const between = direct(receiver).filter(t => t.openStart >= range.start.closeEnd && t.closeEnd <= range.end.openStart);
     if (between.length !== 1 || !isWordToken(between[0], 'ins') || between[0].selfClosing
       || !attr(between[0], 'author', W_NS) || !attr(between[0], 'date', W_NS)) fail();
-    const insertion = between[0], payload = text(insertion), origin = blocks[range.ordinal], destination = blocks[outer.ordinal];
+    const insertion = between[0], payload = text(insertion), a = origin.formatIr?.table;
     if (!payload || payload !== sourceText(origin) || origin.pendingRevisionSegments?.length
-      || origin.pendingRowRevision || origin.pendingBoundaryRevision || origin.pendingParagraphRevision) fail();
-    const a = origin.formatIr?.table, b = destination.formatIr?.table;
-    if (!plainCell(a) || !plainCell(b) || a.tableId !== b.tableId || origin.ownerSceneId !== destination.ownerSceneId
-      || a.column !== b.column || a.row !== b.row + 1) fail();
+      || origin.pendingRowRevision || origin.pendingBoundaryRevision || origin.pendingParagraphRevision || !plainCell(a)) fail();
+    const observedOrigin = formatting.paragraphs[originIndex].table, observedRecipient = formatting.paragraphs[range.p].table;
+    if (!plainCell(observedOrigin) || !plainCell(observedRecipient) || observedOrigin.tableId !== observedRecipient.tableId
+      || observedOrigin.column !== observedRecipient.column || Math.abs(observedOrigin.row - observedRecipient.row) !== 1) fail();
+    const destinationOrdinal = sourceParagraphs.indexOf(range.p), destination = blocks[destinationOrdinal];
     const recipientDeletes = direct(receiver).filter(t => isWordToken(t, 'del') && !t.selfClosing);
-    if (recipientDeletes.length !== 1 || text(recipientDeletes[0]) !== sourceText(destination)
-      || provenance(recipientDeletes[0]) !== provenance(insertion)) fail();
-    const candidates = paragraphs.flatMap((p, i) => {
-      if (ranges.some(r => r.p === i)) return [];
-      const content = direct(p).filter(t => !isWordToken(t, 'pPr'));
-      if (content.length !== 1 || !isWordToken(content[0], 'del') || content[0].selfClosing
-        || provenance(content[0]) !== provenance(insertion) || signature(content[0]) !== signature(insertion)) return [];
-      return [{ p, i, deletion: content[0] }];
-    });
-    if (candidates.length !== 1) fail();
-    const donor = candidates[0], observedDonor = formatting.paragraphs[donor.i].table, observedRecipient = formatting.paragraphs[range.p].table;
-    if (usedDonors.has(donor.i) || donor.i !== range.ordinal || range.p !== outer.ordinal
-      || !plainCell(observedDonor) || !plainCell(observedRecipient) || observedDonor.tableId !== observedRecipient.tableId
-      || observedDonor.row !== a.row || observedRecipient.row !== b.row
-      || observedDonor.column !== a.column || observedRecipient.column !== b.column) fail();
-    usedDonors.add(donor.i);
+    if (destination) {
+      const b = destination.formatIr?.table;
+      if (!plainCell(b) || a.tableId !== b.tableId || origin.ownerSceneId !== destination.ownerSceneId
+        || a.column !== b.column || Math.abs(a.row - b.row) !== 1
+        || recipientDeletes.length !== 1 || text(recipientDeletes[0]) !== sourceText(destination)
+        || provenance(recipientDeletes[0]) !== provenance(insertion)) fail();
+    } else {
+      const row = addedChanges.get(range.p);
+      if (!row || observedRecipient.row !== observedOrigin.row + 1 || recipientDeletes.length
+        || provenance(insertion) !== JSON.stringify([row.author, row.date, row.dateUtc])) fail();
+    }
+    const donor = paragraphs[originIndex], donorContent = direct(donor).filter(t => !['pPr', 'bookmarkStart', 'bookmarkEnd'].some(n => isWordToken(t, n)));
+    const donorDeletes = donorContent.filter(t => isWordToken(t, 'del') && !t.selfClosing);
+    if (usedDonors.has(originIndex) || donorDeletes.length !== 1 || donorContent.some(t => !['del', 'ins'].some(n => isWordToken(t, n)))
+      || provenance(donorDeletes[0]) !== provenance(insertion) || signature(donorDeletes[0]) !== signature(insertion)) fail();
+    const originalIndex = originalParagraphs.indexOf(originIndex);
+    const table = scan.tokens.find(t => isWordToken(t, 'tbl') && inside(t, donor));
+    const explicitStyle = scan.tokens.some(t => (inside(donor, t) && isWordToken(t, 'pStyle'))
+      || table && inside(table, t) && isWordToken(t, 'tblStyle'));
+    if (explicitStyle || originalIndex < 0 || semanticRuns(originalFormatting.paragraphs[originalIndex].formattedRuns, true,
+      Boolean(defaultSize && defaultSizeOnly)) !== semanticRuns(origin.formatIr?.runs, false)) fail();
+    usedDonors.add(originIndex);
+    const deletion = donorDeletes[0];
     edits.push({ from: range.start.openStart, to: range.start.closeEnd, text: '' },
       { from: range.end.openStart, to: range.end.closeEnd, text: '' },
-      { from: donor.deletion.openStart, to: donor.deletion.openStart, text: documentXml.slice(range.start.openStart, range.start.closeEnd) },
-      { from: donor.deletion.closeEnd, to: donor.deletion.closeEnd, text: documentXml.slice(range.end.openStart, range.end.closeEnd) });
+      { from: deletion.openStart, to: deletion.openStart, text: documentXml.slice(range.start.openStart, range.start.closeEnd) },
+      { from: deletion.closeEnd, to: deletion.closeEnd, text: documentXml.slice(range.end.openStart, range.end.closeEnd) });
   }
   if (!edits.length) fail();
   let xml = documentXml;
   for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
-  const ownership = extractTransportParagraphOwnershipV1(extractPendingTextRevisionSourceV1(xml, options).xml, names, options);
-  if (ownership.some((owners, i) => owners.length !== 1 || owners[0] !== i)) fail();
+  const ownership = extractTransportParagraphOwnershipV1(extractPendingTextRevisionSourceV1(xml, options).xml, names, { ...options, allowUnownedParagraphs: true });
+  if (ownership.some((owners, i) => added.has(i) ? owners.length !== 0
+    : owners.length !== 1 || owners[0] !== sourceParagraphs.indexOf(i))) fail();
   return xml;
 }
 

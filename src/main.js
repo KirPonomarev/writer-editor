@@ -1,7 +1,7 @@
 const pendingTextRevisions = require('./core/word-pending-text-revisions-v1.cjs');
 const pendingRecordingModel = require('./core/word-pending-recording-v1.cjs');
 const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
-const { createReviewSecretStore } = require('./core/review-secret-store-v1.cjs');
+const { createReviewSecretStore } = require('./io/review-secret-store-v1.cjs');
 const { performance } = require('perf_hooks');
 const { spawnSync } = require('child_process');
 const path = require('path');
@@ -5746,7 +5746,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), allowPendingParagraphSplits: true, allowPendingTableRows: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     if (intake.parserResult?.reviewIr?.commentThreads?.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)
@@ -5764,8 +5764,12 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const ledger = pendingTextRevisions.readLedger(current.parsed.doc);
     const replay = ledger?.returnReceipts?.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256);
     if (!replay && current.raw !== capsule.baselineObservableContentBySceneId[sceneId]) throw Error('PENDING_RETURN_BASELINE_CONFLICT');
+    if (!replay && mapped.cellShiftBookmarkRestored === true) {
+      const originalProof = revisionBridge.validateShiftedCellReturnOriginalV1(current.parsed.doc, incoming.doc);
+      if (!originalProof.ok) throw Error(originalProof.code);
+    }
     const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt,
-      mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(current.parsed.doc)?.source || current.parsed.doc).length
+      mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
         ? mapped.paragraphBindings : undefined));
     // Compare exact paragraph occurrences. The envelope's legacy display text
     // collapses consecutive empty blocks and cannot prove table-leaf identity.
@@ -23041,13 +23045,13 @@ async function handlePendingRevisionCommand(payload = {}) {
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       if (live.issue || !live.doc || !context.parsed.doc) throw Error('PENDING_REVISION_EDITOR_INVALID');
-      pendingTextRevisions.readLedger(live.doc);
+      const liveLedger = pendingTextRevisions.readLedger(live.doc);
+      const savedLedger = pendingTextRevisions.readLedger(context.parsed.doc);
       // Tiptap merges adjacent equal runs and materializes null schema defaults.
       // Compare the checked visible meaning plus the exact durable ledger.
       const visible = doc => envelope.canonicalizeDocumentJson(pendingTextRevisions.normalizeNode(doc));
       if (JSON.stringify(visible(live.doc)) !== JSON.stringify(visible(context.parsed.doc))
-        || JSON.stringify(envelope.canonicalizeDocumentJson(live.doc).attrs?.wordPendingRevisions)
-          !== JSON.stringify(envelope.canonicalizeDocumentJson(context.parsed.doc).attrs?.wordPendingRevisions)) throw Error('PENDING_REVISION_EDITOR_STALE');
+        || JSON.stringify(liveLedger) !== JSON.stringify(savedLedger)) throw Error('PENDING_REVISION_EDITOR_STALE');
       const revalidate = async () => {
         if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId

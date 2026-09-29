@@ -1,12 +1,12 @@
 'use strict';
 
-const { createHash } = require('node:crypto');
+const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { readState, exactAnchor } = require('./word-comment-authoring-v1.cjs');
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const clone = v => JSON.parse(JSON.stringify(v));
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]`
   : plain(v) ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
-const hash = v => createHash('sha256').update(v).digest('hex');
+const hash = v => sha256UpdateCompatible(v);
 const fail = code => { throw Object.assign(new Error(code), { code }); };
 const demand = (ok, code) => { if (!ok) fail(code); };
 const durable = v => {
