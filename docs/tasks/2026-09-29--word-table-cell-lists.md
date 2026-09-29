@@ -36,3 +36,11 @@ accessibility: existing list semantics and table keyboard navigation.
 Non-claims: nested tables, new numbering formats, arbitrary list continuation
 paragraphs, structural review operations and full macOS plan qualification.
 Rollback: revert this delivery while preserving scene envelopes and recovery.
+
+Native 50-percent zoom exposed zero-width nested list items: each browser-default
+list consumed 40px within a 74px cell. Retain existing inside markers, remove the
+redundant root indent and bound nested indentation to available cell width.
+This is a document-only clipping repair; existing shell and design tokens stay
+unchanged. UI Craft consulted; Lazyweb table-editor search returned Dropbox Paper
+and Slite references, without an exact nested-cell counterexample. Acceptance
+uses actual renderer widths and native captures, not a reference screenshot.

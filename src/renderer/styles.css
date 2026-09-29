@@ -9687,6 +9687,14 @@ body.dark-theme .manual-map-workspace__minimap {
   background: var(--selected-bg);
   font-weight: inherit;
 }
+/* Markers already live inside list items. Browser-default 40px padding can
+   consume an entire narrow cell, especially for nested lists at low zoom. */
+.tiptap :is(td, th) > :is(ol, ul) {
+  padding-inline-start: 0;
+}
+.tiptap :is(td, th) li > :is(ol, ul) {
+  padding-inline-start: min(1em, 10%);
+}
 .tiptap .selectedCell {
   outline: 2px solid var(--a11y-focus-outline);
   outline-offset: -2px;
