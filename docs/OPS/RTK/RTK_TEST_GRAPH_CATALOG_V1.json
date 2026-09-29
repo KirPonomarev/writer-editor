@@ -141,6 +141,7 @@
     "rtk-word-move-recording.contract.test.js",
     "rtk-word-pending-paragraph-boundaries.contract.test.js",
     "rtk-word-table-row-revisions.contract.test.js",
+    "rtk-word-table-cell-shift.contract.test.js",
     "rtk-word-pending-revisions-runtime.contract.test.js",
     "rtk-word-pending-text-revisions.contract.test.js",
     "rtk-word-release-audit-p0-500k-terminal-audit.contract.test.js",

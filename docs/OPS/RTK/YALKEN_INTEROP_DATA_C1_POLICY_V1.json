@@ -329,7 +329,10 @@
     "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
     "docs/tasks/2026-09-29--word-paragraph-boundaries.md",
     "test/contracts/rtk-word-table-row-revisions.contract.test.js",
-    "docs/tasks/2026-09-29--word-table-row-revisions.md"
+    "docs/tasks/2026-09-29--word-table-row-revisions.md",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/fixtures/word-table-cell-shift-native-v1.json",
+    "docs/tasks/2026-09-29--word-table-cell-shift.md"
   ],
   "protectedFiles": [
     {
@@ -1406,7 +1409,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b1ace53a714191a6a562e031261be6a4af9c25fa0cdefce800eafc1514513c84"
+        "sha256": "b124bceebe05385a0c796f8e40e392d5ad58bc4cc1804fdacf53c5aa55447dcd"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1499,6 +1502,14 @@
       {
         "path": "test/contracts/rtk-word-table-row-revisions.contract.test.js",
         "sha256": "792f9a1430a0751230a6cd1a28ba269416fec02acb704b3c568df445e7f059a4"
+      },
+      {
+        "path": "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+        "sha256": "943633d31b72e62ed7486b6f2a2cda74e16a7620755e3f8bc1e46a0dc42d84c4"
+      },
+      {
+        "path": "test/fixtures/word-table-cell-shift-native-v1.json",
+        "sha256": "19fcf9b165d2924b9504098fc35ab3707290ed702e874be126d3c62a1b9b756c"
       }
     ],
     "followupRepair": {
