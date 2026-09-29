@@ -954,6 +954,710 @@
           ]
         }
       ]
-    }
+    },
+    "stylesXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n<w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" xmlns:w16sdtfl=\"http://schemas.microsoft.com/office/word/2024/wordml/sdtformatlock\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:w16du=\"http://schemas.microsoft.com/office/word/2023/wordml/word16du\" mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh w16sdtfl w16du\"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:eastAsia=\"Times New Roman\" w:hAnsi=\"Times New Roman\" w:cs=\"Times New Roman\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/><w:lang w:val=\"ru-FI\" w:eastAsia=\"ru-RU\" w:bidi=\"ar-SA\"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after=\"160\" w:line=\"278\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault></w:docDefaults><w:latentStyles w:defLockedState=\"0\" w:defUIPriority=\"99\" w:defSemiHidden=\"0\" w:defUnhideWhenUsed=\"0\" w:defQFormat=\"0\" w:count=\"376\"><w:lsdException w:name=\"Normal\" w:uiPriority=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 1\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 2\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 3\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 4\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 5\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 6\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 7\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 8\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 9\" w:semiHidden=\"1\" w:uiPriority=\"9\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"index 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 6\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 7\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 8\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index 9\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 1\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 2\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 3\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 4\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 5\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 6\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 7\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 8\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toc 9\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Normal Indent\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"footnote text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"annotation text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"header\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"footer\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"index heading\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"caption\" w:semiHidden=\"1\" w:uiPriority=\"35\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"table of figures\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"envelope address\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"envelope return\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"footnote reference\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"annotation reference\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"line number\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"page number\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"endnote reference\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"endnote text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"table of authorities\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"macro\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"toa heading\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Bullet\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Number\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Bullet 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Bullet 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Bullet 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Bullet 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Number 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Number 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Number 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Number 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Title\" w:uiPriority=\"10\" w:qFormat=\"1\"/><w:lsdException w:name=\"Closing\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Signature\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Default Paragraph Font\" w:semiHidden=\"1\" w:uiPriority=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text Indent\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Continue\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Continue 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Continue 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Continue 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"List Continue 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Message Header\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Subtitle\" w:uiPriority=\"11\" w:qFormat=\"1\"/><w:lsdException w:name=\"Salutation\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Date\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text First Indent\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text First Indent 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Note Heading\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text Indent 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Body Text Indent 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Block Text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Hyperlink\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"FollowedHyperlink\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Strong\" w:uiPriority=\"22\" w:qFormat=\"1\"/><w:lsdException w:name=\"Emphasis\" w:uiPriority=\"20\" w:qFormat=\"1\"/><w:lsdException w:name=\"Document Map\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Plain Text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"E-mail Signature\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Top of Form\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Bottom of Form\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Normal (Web)\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Acronym\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Address\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Cite\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Code\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Definition\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Keyboard\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Preformatted\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Sample\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Typewriter\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"HTML Variable\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Normal Table\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"annotation subject\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"No List\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Outline List 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Outline List 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Outline List 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Simple 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Simple 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Simple 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Classic 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Classic 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Classic 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Classic 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Colorful 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Colorful 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Colorful 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Columns 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Columns 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Columns 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Columns 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Columns 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 6\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 7\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid 8\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 4\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 5\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 6\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 7\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table List 8\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table 3D effects 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table 3D effects 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table 3D effects 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Contemporary\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Elegant\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Professional\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Subtle 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Subtle 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Web 1\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Web 2\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Web 3\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Balloon Text\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Table Grid\" w:uiPriority=\"39\"/><w:lsdException w:name=\"Table Theme\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Placeholder Text\" w:semiHidden=\"1\"/><w:lsdException w:name=\"No Spacing\" w:uiPriority=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"Light Shading\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 1\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 1\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 1\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 1\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 1\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 1\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Revision\" w:semiHidden=\"1\"/><w:lsdException w:name=\"List Paragraph\" w:uiPriority=\"34\" w:qFormat=\"1\"/><w:lsdException w:name=\"Quote\" w:uiPriority=\"29\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Quote\" w:uiPriority=\"30\" w:qFormat=\"1\"/><w:lsdException w:name=\"Medium List 2 Accent 1\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 1\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 1\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 1\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 1\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 1\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 1\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 1\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 2\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 2\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 2\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 2\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 2\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 2\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2 Accent 2\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 2\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 2\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 2\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 2\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 2\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 2\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 2\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 3\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 3\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 3\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 3\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 3\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 3\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2 Accent 3\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 3\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 3\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 3\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 3\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 3\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 3\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 3\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 4\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 4\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 4\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 4\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 4\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 4\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2 Accent 4\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 4\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 4\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 4\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 4\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 4\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 4\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 4\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 5\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 5\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 5\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 5\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 5\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 5\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2 Accent 5\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 5\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 5\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 5\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 5\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 5\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 5\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 5\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Light Shading Accent 6\" w:uiPriority=\"60\"/><w:lsdException w:name=\"Light List Accent 6\" w:uiPriority=\"61\"/><w:lsdException w:name=\"Light Grid Accent 6\" w:uiPriority=\"62\"/><w:lsdException w:name=\"Medium Shading 1 Accent 6\" w:uiPriority=\"63\"/><w:lsdException w:name=\"Medium Shading 2 Accent 6\" w:uiPriority=\"64\"/><w:lsdException w:name=\"Medium List 1 Accent 6\" w:uiPriority=\"65\"/><w:lsdException w:name=\"Medium List 2 Accent 6\" w:uiPriority=\"66\"/><w:lsdException w:name=\"Medium Grid 1 Accent 6\" w:uiPriority=\"67\"/><w:lsdException w:name=\"Medium Grid 2 Accent 6\" w:uiPriority=\"68\"/><w:lsdException w:name=\"Medium Grid 3 Accent 6\" w:uiPriority=\"69\"/><w:lsdException w:name=\"Dark List Accent 6\" w:uiPriority=\"70\"/><w:lsdException w:name=\"Colorful Shading Accent 6\" w:uiPriority=\"71\"/><w:lsdException w:name=\"Colorful List Accent 6\" w:uiPriority=\"72\"/><w:lsdException w:name=\"Colorful Grid Accent 6\" w:uiPriority=\"73\"/><w:lsdException w:name=\"Subtle Emphasis\" w:uiPriority=\"19\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Emphasis\" w:uiPriority=\"21\" w:qFormat=\"1\"/><w:lsdException w:name=\"Subtle Reference\" w:uiPriority=\"31\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Reference\" w:uiPriority=\"32\" w:qFormat=\"1\"/><w:lsdException w:name=\"Book Title\" w:uiPriority=\"33\" w:qFormat=\"1\"/><w:lsdException w:name=\"Bibliography\" w:semiHidden=\"1\" w:uiPriority=\"37\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"TOC Heading\" w:semiHidden=\"1\" w:uiPriority=\"39\" w:unhideWhenUsed=\"1\" w:qFormat=\"1\"/><w:lsdException w:name=\"Plain Table 1\" w:uiPriority=\"41\"/><w:lsdException w:name=\"Plain Table 2\" w:uiPriority=\"42\"/><w:lsdException w:name=\"Plain Table 3\" w:uiPriority=\"43\"/><w:lsdException w:name=\"Plain Table 4\" w:uiPriority=\"44\"/><w:lsdException w:name=\"Plain Table 5\" w:uiPriority=\"45\"/><w:lsdException w:name=\"Grid Table Light\" w:uiPriority=\"40\"/><w:lsdException w:name=\"Grid Table 1 Light\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 1\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 1\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 1\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 1\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 1\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 1\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 1\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 2\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 2\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 2\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 2\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 2\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 2\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 2\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 3\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 3\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 3\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 3\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 3\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 3\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 3\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 4\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 4\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 4\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 4\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 4\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 4\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 4\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 5\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 5\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 5\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 5\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 5\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 5\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 5\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Grid Table 1 Light Accent 6\" w:uiPriority=\"46\"/><w:lsdException w:name=\"Grid Table 2 Accent 6\" w:uiPriority=\"47\"/><w:lsdException w:name=\"Grid Table 3 Accent 6\" w:uiPriority=\"48\"/><w:lsdException w:name=\"Grid Table 4 Accent 6\" w:uiPriority=\"49\"/><w:lsdException w:name=\"Grid Table 5 Dark Accent 6\" w:uiPriority=\"50\"/><w:lsdException w:name=\"Grid Table 6 Colorful Accent 6\" w:uiPriority=\"51\"/><w:lsdException w:name=\"Grid Table 7 Colorful Accent 6\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 1\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 1\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 1\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 1\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 1\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 1\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 1\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 2\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 2\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 2\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 2\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 2\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 2\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 2\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 3\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 3\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 3\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 3\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 3\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 3\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 3\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 4\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 4\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 4\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 4\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 4\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 4\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 4\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 5\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 5\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 5\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 5\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 5\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 5\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 5\" w:uiPriority=\"52\"/><w:lsdException w:name=\"List Table 1 Light Accent 6\" w:uiPriority=\"46\"/><w:lsdException w:name=\"List Table 2 Accent 6\" w:uiPriority=\"47\"/><w:lsdException w:name=\"List Table 3 Accent 6\" w:uiPriority=\"48\"/><w:lsdException w:name=\"List Table 4 Accent 6\" w:uiPriority=\"49\"/><w:lsdException w:name=\"List Table 5 Dark Accent 6\" w:uiPriority=\"50\"/><w:lsdException w:name=\"List Table 6 Colorful Accent 6\" w:uiPriority=\"51\"/><w:lsdException w:name=\"List Table 7 Colorful Accent 6\" w:uiPriority=\"52\"/><w:lsdException w:name=\"Mention\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Smart Hyperlink\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Hashtag\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Unresolved Mention\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/><w:lsdException w:name=\"Smart Link\" w:semiHidden=\"1\" w:unhideWhenUsed=\"1\"/></w:latentStyles><w:style w:type=\"paragraph\" w:default=\"1\" w:styleId=\"a\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style><w:style w:type=\"character\" w:default=\"1\" w:styleId=\"a0\"><w:name w:val=\"Default Paragraph Font\"/><w:uiPriority w:val=\"1\"/><w:semiHidden/><w:unhideWhenUsed/></w:style><w:style w:type=\"table\" w:default=\"1\" w:styleId=\"a1\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"numbering\" w:default=\"1\" w:styleId=\"a2\"><w:name w:val=\"No List\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/></w:style><w:style w:type=\"paragraph\" w:customStyle=\"1\" w:styleId=\"YalkenCodeBlock\"><w:name w:val=\"YalkenCodeBlock\"/><w:qFormat/><w:pPr><w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"F3F4F6\"/><w:spacing w:before=\"80\" w:after=\"80\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Menlo\" w:eastAsia=\"Menlo\" w:hAnsi=\"Menlo\" w:cs=\"Menlo\"/><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/></w:rPr></w:style><w:style w:type=\"character\" w:customStyle=\"1\" w:styleId=\"YalkenInlineCode\"><w:name w:val=\"Yalken Inline Code\"/><w:rPr><w:rFonts w:ascii=\"Menlo\" w:hAnsi=\"Menlo\"/><w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"F3F4F6\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"a3\"><w:name w:val=\"Revision\"/><w:hidden/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:rsid w:val=\"004131ED\"/><w:pPr><w:spacing w:after=\"0\" w:line=\"240\" w:lineRule=\"auto\"/></w:pPr></w:style></w:styles>"
+  },
+  "syntheticShiftChains": {
+    "origin": "Controlled synthetic authenticated bookmark transplantation using captured native run-replacement and appended-row shape; not native application execution evidence",
+    "exportMap": {
+      "exportMapId": "export-map-2047729c5516fd0f035eecde6dab329b",
+      "profileId": "word-mac-16.112-26081010-product-review-export-c5v2-full-manuscript",
+      "exportTypography": {
+        "schemaVersion": "yalken.review-docx.typography-defaults.v1",
+        "fontSize": "12pt"
+      },
+      "scope": "full-manuscript",
+      "roundId": "round-2047729c5516fd0f035eecde6dab329b",
+      "scenes": [
+        {
+          "sceneId": "roman/a.txt",
+          "sceneOrdinal": 0,
+          "sceneRevision": "sha256:427c68c6ae8c32f33c119688febe59ac8b7ca3d30a08e18cf89d6d62e5f2b6d6",
+          "rawSha256": "sha256:427c68c6ae8c32f33c119688febe59ac8b7ca3d30a08e18cf89d6d62e5f2b6d6",
+          "blocks": [
+            {
+              "blockId": "scene-01-block-0001-48765d14e7fd1c35",
+              "paragraphId": "yrtk-01-p-48765d14e7fd1c35",
+              "documentParagraphIndex": 0,
+              "canonicalTextSha256": "sha256:83381e388044b275a1ad24ce6549d5fcc0361d8fd11f411f674544a3073bbd50",
+              "canonicalMarksSha256": "sha256:d2829bada3b4af398559d4251f071237938753860cd5be8ffd485c3256be895b",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 22,
+                    "text": "Cell structural review",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ]
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "48765d14",
+                    "textId": "28c8aa82"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_4678d9ff136d3afea2d2e51be0f07505"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0002-d54110e9ffd39132",
+              "paragraphId": "yrtk-01-p-d54110e9ffd39132",
+              "documentParagraphIndex": 1,
+              "canonicalTextSha256": "sha256:4d4764ad397c3b3c9ef7900b24eee6aa2d6c3afa80a6b6a77660461d765ff674",
+              "canonicalMarksSha256": "sha256:ad3c5405e66f51921db558ca7a0bea8a64987501e2b5fe91a9fb0c5477c21f1a",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 7,
+                    "text": "First A",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 0,
+                  "column": 0,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "d54110e9",
+                    "textId": "725d8d91"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_3627ec2d826c3b9a6a67b6f7b39ae209"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0003-6c6c8253625d055f",
+              "paragraphId": "yrtk-01-p-6c6c8253625d055f",
+              "documentParagraphIndex": 2,
+              "canonicalTextSha256": "sha256:8adacf46bb14bb777c900677d84f2847e4983d19c915708b31b14bbae18f1ea3",
+              "canonicalMarksSha256": "sha256:7f4e5ee7f3fc9c684480c822b11af0137d6b77336795479ea6f93a7d19dabde5",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 7,
+                    "text": "First B",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 0,
+                  "column": 1,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "6c6c8253",
+                    "textId": "dd4dc82d"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_6ca8cd005dc5b596d0aa7b0f6c1e2b6b"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0004-7df1e0c2347cf8e4",
+              "paragraphId": "yrtk-01-p-7df1e0c2347cf8e4",
+              "documentParagraphIndex": 3,
+              "canonicalTextSha256": "sha256:3c490bd895a0c4a9a83677866cfae1cce9767484a5989eb68de9b59b3d0bbc36",
+              "canonicalMarksSha256": "sha256:fb771b52421fe12cdb561b9a2d222535dc078f35850dac3cda5813a2c4c93ec9",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 7,
+                    "text": "First C",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 0,
+                  "column": 2,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "7df1e0c2",
+                    "textId": "34245d85"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_9cf7fe958d0b5f73d2b520043fe78906"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0005-d7efe45758596e86",
+              "paragraphId": "yrtk-01-p-d7efe45758596e86",
+              "documentParagraphIndex": 4,
+              "canonicalTextSha256": "sha256:33ab40601c3438d222a5b07aa1567d65677bab4bb3551026bb545f73679104af",
+              "canonicalMarksSha256": "sha256:ecd197d2700d43fb9dc4412bb57dc01f882e6191802a901a42472aa3947bbdec",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 8,
+                    "text": "Middle A",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 1,
+                  "column": 0,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "d7efe457",
+                    "textId": "5827af9e"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_3abf69a62c6713316cd317225dde4f5d"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0006-8e422dc92a2704c6",
+              "paragraphId": "yrtk-01-p-8e422dc92a2704c6",
+              "documentParagraphIndex": 5,
+              "canonicalTextSha256": "sha256:f96b7dce4c9fdae02430a041d8858ed9d0b9a3e6ef2f8cbcf580c52c2381bbb5",
+              "canonicalMarksSha256": "sha256:9dc7f6e61dbe9596f86356587c565f0eb29236600452cd60506b270e4bd43ed4",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 8,
+                    "text": "Middle B",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 1,
+                  "column": 1,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "8e422dc9",
+                    "textId": "e2f9a5e9"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_c80997b6c0d260f2336ba7c0fc5461dd"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0007-739981c3898a6a36",
+              "paragraphId": "yrtk-01-p-739981c3898a6a36",
+              "documentParagraphIndex": 6,
+              "canonicalTextSha256": "sha256:72f7bdb017869d1b765ae9271f57fb455cec3d983ac51db6bf77935f27e2a5ac",
+              "canonicalMarksSha256": "sha256:ec29c8360b33de60cfa93f61d731de7e1c5f39e03e43140384ac19e94d996616",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 8,
+                    "text": "Middle C",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 1,
+                  "column": 2,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "739981c3",
+                    "textId": "d801e040"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_0b989f1fde0eb4e64ca2d8bde0b0b9fe"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0008-4757233a0ddebc72",
+              "paragraphId": "yrtk-01-p-4757233a0ddebc72",
+              "documentParagraphIndex": 7,
+              "canonicalTextSha256": "sha256:e90f4340b932de416827299f9e9ddd3f80aefed298fd66aa541c7dde02069c6e",
+              "canonicalMarksSha256": "sha256:b2e6e298ee9ccb2b466967dcfe700a201d78531ee293b9b6a366c396df105e85",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 6,
+                    "text": "Last A",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 2,
+                  "column": 0,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "4757233a",
+                    "textId": "128e7923"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_c51a38b00eb99ca0197ab9b849aa02f5"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0009-ac87f76c31441a9f",
+              "paragraphId": "yrtk-01-p-ac87f76c31441a9f",
+              "documentParagraphIndex": 8,
+              "canonicalTextSha256": "sha256:b29c4e548ca1f532898b6b1862279767c65a73b6f97a3cd1f69b29c65b38b4a0",
+              "canonicalMarksSha256": "sha256:223f665af50c5fb177ce25809567ccd8081a35603ff447d933f6c4012b461c11",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 6,
+                    "text": "Last B",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 2,
+                  "column": 1,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "ac87f76c",
+                    "textId": "1ba2945a"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_23de0d00783699e8029e2a78726dcf83"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0010-7bd6307cca30c3e0",
+              "paragraphId": "yrtk-01-p-7bd6307cca30c3e0",
+              "documentParagraphIndex": 9,
+              "canonicalTextSha256": "sha256:6581d18602b3a8501cb6425d891ffd10c575d6700d440a6ea3460fcd53411315",
+              "canonicalMarksSha256": "sha256:3493a60aac12004c3964168f453e54cdeeaa027e0b5b131c560107d2b6a6c01e",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 6,
+                    "text": "Last C",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ],
+                "table": {
+                  "tableId": "roman/a.txt:table-0",
+                  "row": 2,
+                  "column": 2,
+                  "rowCount": 3,
+                  "columnCount": 3,
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "header": false,
+                  "paragraphIndex": 0,
+                  "paragraphCount": 1,
+                  "wordTable": {
+                    "borders": {},
+                    "grid": [
+                      3000,
+                      3000,
+                      3000
+                    ],
+                    "layout": "fixed",
+                    "shading": null,
+                    "version": 1,
+                    "widthDxa": 9000
+                  }
+                }
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "7bd6307c",
+                    "textId": "b06b1378"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_f8ab8a2b80f6f470c50940ab899a6cf8"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            },
+            {
+              "blockId": "scene-01-block-0011-1eb7dfc635001603",
+              "paragraphId": "yrtk-01-p-1eb7dfc635001603",
+              "documentParagraphIndex": 10,
+              "canonicalTextSha256": "sha256:f91a05909369963559c41cc3a57b1c0c90d9debaff19068ddb3edfe36e784b8e",
+              "canonicalMarksSha256": "sha256:1b12f16c9204be1a250a2f23eaaa22fcc0a653599a0a82a583047de5843f34ee",
+              "formatIr": {
+                "schemaVersion": "yalken.rtk.format-ir.v1",
+                "paragraph": {
+                  "nodeType": "paragraph"
+                },
+                "runs": [
+                  {
+                    "from": 0,
+                    "to": 12,
+                    "text": "After table.",
+                    "inline": {
+                      "fontFamily": "Aptos",
+                      "fontSize": "12pt"
+                    },
+                    "preservedMarks": []
+                  }
+                ]
+              },
+              "wordSignals": [
+                {
+                  "kind": "w14ParaIdTextId",
+                  "value": {
+                    "paraId": "1eb7dfc6",
+                    "textId": "495df81c"
+                  },
+                  "applyAuthority": false
+                },
+                {
+                  "kind": "bookmarkName",
+                  "value": {
+                    "name": "YRTK_5b30b60dc871c339ecee1a7174cc381b"
+                  },
+                  "applyAuthority": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "insertDownXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n  <w:body>\n    <w:p w14:paraId=\"48765d14\" w14:textId=\"28c8aa82\"><w:bookmarkStart w:id=\"1\" w:name=\"YRTK_4678d9ff136d3afea2d2e51be0f07505\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Cell structural review</w:t></w:r><w:bookmarkEnd w:id=\"1\"/></w:p><w:tbl><w:tblPr><w:tblW w:w=\"9000\" w:type=\"dxa\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr><w:tblGrid><w:gridCol w:w=\"3000\"/><w:gridCol w:w=\"3000\"/><w:gridCol w:w=\"3000\"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"d54110e9\" w14:textId=\"725d8d91\"><w:bookmarkStart w:id=\"2\" w:name=\"YRTK_3627ec2d826c3b9a6a67b6f7b39ae209\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">First A</w:t></w:r><w:bookmarkEnd w:id=\"2\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"6c6c8253\" w14:textId=\"dd4dc82d\"><w:bookmarkStart w:id=\"3\" w:name=\"YRTK_6ca8cd005dc5b596d0aa7b0f6c1e2b6b\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">First B</w:t></w:r><w:bookmarkEnd w:id=\"3\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"7df1e0c2\" w14:textId=\"34245d85\"><w:ins w:id=\"201\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Inserted C</w:t></w:r></w:ins><w:del w:id=\"202\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">First C</w:delText></w:r></w:del></w:p></w:tc></w:tr><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"d7efe457\" w14:textId=\"5827af9e\"><w:bookmarkStart w:id=\"5\" w:name=\"YRTK_3abf69a62c6713316cd317225dde4f5d\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle A</w:t></w:r><w:bookmarkEnd w:id=\"5\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"8e422dc9\" w14:textId=\"e2f9a5e9\"><w:bookmarkStart w:id=\"6\" w:name=\"YRTK_c80997b6c0d260f2336ba7c0fc5461dd\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle B</w:t></w:r><w:bookmarkEnd w:id=\"6\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"739981c3\" w14:textId=\"d801e040\"><w:bookmarkStart w:id=\"4\" w:name=\"YRTK_9cf7fe958d0b5f73d2b520043fe78906\"/><w:ins w:id=\"203\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">First C</w:t></w:r></w:ins><w:bookmarkEnd w:id=\"4\"/><w:del w:id=\"204\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">Middle C</w:delText></w:r></w:del></w:p></w:tc></w:tr><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"4757233a\" w14:textId=\"128e7923\"><w:bookmarkStart w:id=\"8\" w:name=\"YRTK_c51a38b00eb99ca0197ab9b849aa02f5\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last A</w:t></w:r><w:bookmarkEnd w:id=\"8\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"ac87f76c\" w14:textId=\"1ba2945a\"><w:bookmarkStart w:id=\"9\" w:name=\"YRTK_23de0d00783699e8029e2a78726dcf83\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last B</w:t></w:r><w:bookmarkEnd w:id=\"9\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"7bd6307c\" w14:textId=\"b06b1378\"><w:bookmarkStart w:id=\"7\" w:name=\"YRTK_0b989f1fde0eb4e64ca2d8bde0b0b9fe\"/><w:ins w:id=\"205\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle C</w:t></w:r></w:ins><w:bookmarkEnd w:id=\"7\"/><w:del w:id=\"206\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">Last C</w:delText></w:r></w:del></w:p></w:tc></w:tr><w:tr><w:trPr><w:ins w:id=\"207\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"/></w:trPr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p/></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p/></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p><w:bookmarkStart w:id=\"10\" w:name=\"YRTK_f8ab8a2b80f6f470c50940ab899a6cf8\"/><w:ins w:id=\"208\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last C</w:t></w:r></w:ins><w:bookmarkEnd w:id=\"10\"/></w:p></w:tc></w:tr></w:tbl><w:p w14:paraId=\"1eb7dfc6\" w14:textId=\"495df81c\"><w:bookmarkStart w:id=\"11\" w:name=\"YRTK_5b30b60dc871c339ecee1a7174cc381b\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">After table.</w:t></w:r><w:bookmarkEnd w:id=\"11\"/></w:p>\n    <w:sectPr><w:pgSz w:w=\"11906\" w:h=\"16838\" w:orient=\"portrait\"/><w:pgMar w:top=\"1440\" w:right=\"1440\" w:bottom=\"1440\" w:left=\"1440\" w:header=\"720\" w:footer=\"720\" w:gutter=\"0\"/><w:cols w:num=\"1\" w:space=\"720\"/></w:sectPr>\n  </w:body>\n</w:document>",
+    "deleteUpXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n  <w:body>\n    <w:p w14:paraId=\"48765d14\" w14:textId=\"28c8aa82\"><w:bookmarkStart w:id=\"1\" w:name=\"YRTK_4678d9ff136d3afea2d2e51be0f07505\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Cell structural review</w:t></w:r><w:bookmarkEnd w:id=\"1\"/></w:p><w:tbl><w:tblPr><w:tblW w:w=\"9000\" w:type=\"dxa\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr><w:tblGrid><w:gridCol w:w=\"3000\"/><w:gridCol w:w=\"3000\"/><w:gridCol w:w=\"3000\"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"d54110e9\" w14:textId=\"725d8d91\"><w:bookmarkStart w:id=\"2\" w:name=\"YRTK_3627ec2d826c3b9a6a67b6f7b39ae209\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">First A</w:t></w:r><w:bookmarkEnd w:id=\"2\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"6c6c8253\" w14:textId=\"dd4dc82d\"><w:bookmarkStart w:id=\"3\" w:name=\"YRTK_6ca8cd005dc5b596d0aa7b0f6c1e2b6b\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">First B</w:t></w:r><w:bookmarkEnd w:id=\"3\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"7df1e0c2\" w14:textId=\"34245d85\"><w:bookmarkStart w:id=\"4\" w:name=\"YRTK_9cf7fe958d0b5f73d2b520043fe78906\"/><w:bookmarkStart w:id=\"7\" w:name=\"YRTK_0b989f1fde0eb4e64ca2d8bde0b0b9fe\"/><w:ins w:id=\"101\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle C</w:t></w:r></w:ins><w:bookmarkEnd w:id=\"7\"/><w:del w:id=\"102\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">First C</w:delText></w:r></w:del><w:bookmarkEnd w:id=\"4\"/></w:p></w:tc></w:tr><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"d7efe457\" w14:textId=\"5827af9e\"><w:bookmarkStart w:id=\"5\" w:name=\"YRTK_3abf69a62c6713316cd317225dde4f5d\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle A</w:t></w:r><w:bookmarkEnd w:id=\"5\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"8e422dc9\" w14:textId=\"e2f9a5e9\"><w:bookmarkStart w:id=\"6\" w:name=\"YRTK_c80997b6c0d260f2336ba7c0fc5461dd\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Middle B</w:t></w:r><w:bookmarkEnd w:id=\"6\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"739981c3\" w14:textId=\"d801e040\"><w:bookmarkStart w:id=\"10\" w:name=\"YRTK_f8ab8a2b80f6f470c50940ab899a6cf8\"/><w:ins w:id=\"103\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last C</w:t></w:r></w:ins><w:bookmarkEnd w:id=\"10\"/><w:del w:id=\"104\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">Middle C</w:delText></w:r></w:del></w:p></w:tc></w:tr><w:tr><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"4757233a\" w14:textId=\"128e7923\"><w:bookmarkStart w:id=\"8\" w:name=\"YRTK_c51a38b00eb99ca0197ab9b849aa02f5\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last A</w:t></w:r><w:bookmarkEnd w:id=\"8\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"ac87f76c\" w14:textId=\"1ba2945a\"><w:bookmarkStart w:id=\"9\" w:name=\"YRTK_23de0d00783699e8029e2a78726dcf83\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">Last B</w:t></w:r><w:bookmarkEnd w:id=\"9\"/></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w=\"3000\" w:type=\"dxa\"/></w:tcPr><w:p w14:paraId=\"7bd6307c\" w14:textId=\"b06b1378\"><w:del w:id=\"105\" w:author=\"Synthetic native-shape chain\" w:date=\"2026-09-29T12:00:00Z\"><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:delText xml:space=\"preserve\">Last C</w:delText></w:r></w:del></w:p></w:tc></w:tr></w:tbl><w:p w14:paraId=\"1eb7dfc6\" w14:textId=\"495df81c\"><w:bookmarkStart w:id=\"11\" w:name=\"YRTK_5b30b60dc871c339ecee1a7174cc381b\"/><w:r><w:rPr><w:rFonts w:ascii=\"Aptos\" w:hAnsi=\"Aptos\" w:eastAsia=\"Aptos\" w:cs=\"Aptos\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">After table.</w:t></w:r><w:bookmarkEnd w:id=\"11\"/></w:p>\n    <w:sectPr><w:pgSz w:w=\"11906\" w:h=\"16838\" w:orient=\"portrait\"/><w:pgMar w:top=\"1440\" w:right=\"1440\" w:bottom=\"1440\" w:left=\"1440\" w:header=\"720\" w:footer=\"720\" w:gutter=\"0\"/><w:cols w:num=\"1\" w:space=\"720\"/></w:sectPr>\n  </w:body>\n</w:document>"
   }
 }
