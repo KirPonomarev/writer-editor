@@ -253,3 +253,17 @@ test('Pending rich export binds cell preferred widths to the retained grid inclu
     assert.deepEqual(shape(await parse(bytes)), shape(doc));
   }
 });
+
+test('Native pending confirmation names all canonical paragraph leaves without exposing container objects', async () => {
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = main.indexOf('async function confirmLocalWordPendingReturn(');
+  let shown;
+  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, pendingTextRevisions: model,
+    dialog: { showMessageBox: async (_window, options) => { shown = options; return { response: 1 }; } } });
+  vm.runInContext(main.slice(start, main.indexOf('async function confirmLocalWordNoteDelta(', start)), context);
+  const doc = fixture();
+  assert.equal(await context.confirmLocalWordPendingReturn({ fileName: 'review.docx', changes: { before: doc, after: doc } }), true);
+  assert.doesNotMatch(shown.detail, /undefined|\[object Object\]/u);
+  assert.match(shown.detail, /Абзац 12 \(текст\):\n«protected»/u);
+  assert.equal((shown.detail.match(/^Абзац /gmu) || []).length, model.paragraphs(model.normalizeNode(doc)).length * 2);
+});
