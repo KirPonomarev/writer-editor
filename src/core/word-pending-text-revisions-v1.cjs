@@ -12,6 +12,8 @@ const object = value => value && typeof value === 'object' && !Array.isArray(val
 const exact = (value, keys) => object(value) && Object.keys(value).every(key => keys.includes(key));
 const status = value => ['pending', 'accepted', 'rejected'].includes(value);
 const textOf = node => node.type === 'hardBreak' ? '\n' : node.text;
+const paragraphProperties = node => ({ type: node.type, ...(node.attrs && Object.keys(node.attrs).length ? { attrs: clone(node.attrs) } : {}) });
+const isParagraphFormat = revision => revision.operation === 'format' && revision.format?.kind === 'paragraph';
 function assert(condition, code = 'PENDING_REVISIONS_INVALID') { if (!condition) fail(code); }
 function safeBoundary(text, offset) {
   return Number.isSafeInteger(offset) && offset >= 0 && offset <= text.length
@@ -109,19 +111,54 @@ function validateState(input, frame = false) {
   validateSource(input.source);
   const sourceParagraphs = paragraphs(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
-  const ids = new Set(), groups = new Map(); let previousParagraph = -1, previousEnd = 0;
+  const ids = new Set(), groups = new Map(), occupied = new Map(), paragraphFormats = new Set();
+  let previousParagraph = -1, previousFrom = 0;
   for (const r of input.revisions) {
-    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName']));
+    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName', 'format']));
     assert(/^revision-[1-9]\d{0,3}$/u.test(r.id) && !ids.has(r.id)); ids.add(r.id);
     assert(typeof r.nativeId === 'string' && r.nativeId.length <= 80 && typeof r.author === 'string' && r.author.length <= 1024);
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
     assert(![r.nativeId, r.author, r.date, r.dateUtc].some(value => /[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)));
-    assert(['insert', 'delete'].includes(r.operation) && status(r.state));
+    assert(['insert', 'delete', 'format'].includes(r.operation) && status(r.state));
     assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < sourceParagraphs.length);
     const p = sourceParagraphs[r.paragraphIndex], text = p.content.map(textOf).join('');
-    assert(safeBoundary(text, r.from) && safeBoundary(text, r.to) && r.to > r.from && (r.paragraphIndex !== previousParagraph || r.from >= previousEnd));
-    previousParagraph = r.paragraphIndex; previousEnd = r.to;
+    assert(safeBoundary(text, r.from) && safeBoundary(text, r.to)
+      && (isParagraphFormat(r) ? r.from === 0 && r.to === text.length : r.to > r.from)
+      && (r.paragraphIndex !== previousParagraph || r.from >= previousFrom));
+    previousParagraph = r.paragraphIndex; previousFrom = r.from;
+    if (isParagraphFormat(r)) {
+      assert(!paragraphFormats.has(r.paragraphIndex), 'PENDING_FORMAT_OVERLAP'); paragraphFormats.add(r.paragraphIndex);
+    } else {
+      const spans = occupied.get(r.paragraphIndex) || [];
+      assert(!spans.some(s => r.from < s.to && r.to > s.from), 'PENDING_FORMAT_OVERLAP');
+      spans.push(r); occupied.set(r.paragraphIndex, spans);
+    }
     assert(r.groupId === null || /^group-[1-9]\d{0,3}$/u.test(r.groupId));
+    if (r.operation === 'format') {
+      assert(r.groupId === null && r.moveName === undefined && exact(r.format, ['kind', 'before', 'after'])
+        && ['run', 'paragraph'].includes(r.format.kind), 'PENDING_FORMAT_INVALID');
+      const p = sourceParagraphs[r.paragraphIndex];
+      if (r.format.kind === 'run') {
+        for (const marks of [r.format.before, r.format.after]) {
+          assert(Array.isArray(marks), 'PENDING_FORMAT_INVALID');
+          validateSource({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks }] }] });
+        }
+        let offset = 0;
+        for (const n of p.content) {
+          const end = offset + textOf(n).length;
+          if (n.type === 'text' && r.from < end && r.to > offset)
+            assert(stable(n.marks || []) === stable(r.format.after), 'PENDING_FORMAT_SOURCE_MISMATCH');
+          offset = end;
+        }
+      } else {
+        for (const properties of [r.format.before, r.format.after]) {
+          assert(exact(properties, ['type', 'attrs']), 'PENDING_FORMAT_INVALID');
+          validateSource({ type: 'doc', content: [{ ...properties, content: [] }] });
+        }
+        assert(stable(paragraphProperties(p)) === stable(r.format.after), 'PENDING_FORMAT_SOURCE_MISMATCH');
+      }
+      assert(stable(r.format.before) !== stable(r.format.after), 'PENDING_FORMAT_NO_CHANGE');
+    } else assert(r.format === undefined, 'PENDING_FORMAT_INVALID');
     if (r.moveName !== undefined) assert(typeof r.moveName === 'string' && r.moveName.length > 0 && r.moveName.length <= 255
       && !/[\s\x00-\x1f\x7f]/u.test(r.moveName) && r.groupId !== null, 'PENDING_MOVE_NAME_INVALID');
     if (r.groupId) { const group = groups.get(r.groupId) || []; group.push(r); groups.set(r.groupId, group); }
@@ -165,8 +202,15 @@ function roundFrame(ledger) {
   return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
 }
 function revisionMeaning(sourceParagraphs, revision) {
-  const text = sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
-  return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text, Boolean(revision.moveName)]);
+  // A paragraph property's identity covers the paragraph, not its changing text.
+  const text = isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+  // Word preserves dateUtc to seconds, while rewriting legacy date at minute
+  // precision. Keep raw provenance, but use the authoritative UTC timestamp at
+  // Word's supported precision when matching an already-owned revision.
+  const date = revision.dateUtc || revision.date;
+  const time = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(date) && Number.isFinite(Date.parse(date))
+    ? Math.floor(Date.parse(date) / 1000) : [revision.date, revision.dateUtc];
+  return stable([revision.paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), revision.format || null]);
 }
 function preserveReturnedIdentities(before, proposed) {
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
@@ -238,6 +282,7 @@ function replaceFromReturn(doc, returnedDoc, receipt) {
   return { changed: true, replay: false, doc: bindLedger(after) };
 }
 function includeRevision(revision, mode) {
+  if (revision.operation === 'format') return true;
   if (mode === 'original') return revision.operation === 'delete';
   if (revision.state === 'rejected') return revision.operation === 'delete';
   return revision.operation === 'insert';
@@ -251,7 +296,7 @@ function exportSegments(ledger) {
   return paragraphs(ledger.source).map((p, index) => paragraphSegments(ledger, p, index, 'export'));
 }
 function paragraphSegments(ledger, p, paragraphIndex, mode) {
-  const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex);
+  const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex && !isParagraphFormat(r));
   const result = []; let offset = 0;
   for (const node of p.content) {
     const text = textOf(node), end = offset + text.length;
@@ -261,7 +306,12 @@ function paragraphSegments(ledger, p, paragraphIndex, mode) {
       const revision = changes.find(r => r.from <= from && r.to >= to);
       if (revision && mode !== 'export' && !includeRevision(revision, mode)) continue;
       if (revision && mode === 'export' && revision.state !== 'pending' && !includeRevision(revision, 'current')) continue;
-      result.push({ node: node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: text.slice(from - offset, to - offset) },
+      const outputNode = node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: text.slice(from - offset, to - offset) };
+      if (revision?.operation === 'format' && outputNode.type === 'text') {
+        const marks = revision.format[mode === 'original' || revision.state === 'rejected' ? 'before' : 'after'];
+        if (marks.length) outputNode.marks = clone(marks); else delete outputNode.marks;
+      }
+      result.push({ node: outputNode,
         revision: mode === 'export' && revision?.state === 'pending' ? clone(revision) : null });
     }
     offset = end;
@@ -273,7 +323,15 @@ function materialize(input, mode = 'current') {
   assert(['current', 'original'].includes(mode));
   const doc = clone(ledger.source);
   const sourceParagraphs = paragraphs(ledger.source);
-  paragraphs(doc).forEach((p, i) => { p.content = paragraphSegments(ledger, sourceParagraphs[i], i, mode).map(s => s.node); });
+  paragraphs(doc).forEach((p, i) => {
+    p.content = paragraphSegments(ledger, sourceParagraphs[i], i, mode).map(s => s.node);
+    const revision = ledger.revisions.find(r => r.paragraphIndex === i && isParagraphFormat(r));
+    if (revision) {
+      const properties = revision.format[mode === 'original' || revision.state === 'rejected' ? 'before' : 'after'];
+      p.type = properties.type; delete p.attrs;
+      if (properties.attrs) p.attrs = clone(properties.attrs);
+    }
+  });
   return doc;
 }
 function bindLedger(input) {
@@ -330,4 +388,4 @@ function projection(doc) {
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments };
+module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat };

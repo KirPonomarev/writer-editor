@@ -94,6 +94,23 @@ test('typing Undo after autosave restores original durable bytes without extra p
   h.type('Alpha beta'); assert.equal((await h.save()).success, true);
   assert.equal(fs.readFileSync(h.file, 'utf8'), before); assert.equal(model.readLedger(h.context().parsed.doc), null);
 });
+test('actual Kernel and atomic autosave persist rich formatting with main-owned provenance, Undo and restart', async t => {
+  const h = await harness(t), before = fs.readFileSync(h.file, 'utf8'); await h.start();
+  const working = doc('Alpha beta'); working.content[0].attrs = { textAlign: 'center' };
+  working.content[0].content[0].marks = [{ type: 'bold' }];
+  const edit = value => { h.type('Alpha beta'); h.editor = envelope.composeObservablePayload({ doc: value }); };
+  edit(working); assert.equal((await h.save()).success, true);
+  let ledger = model.readLedger(h.context().parsed.doc);
+  assert.deepEqual(ledger.revisions.map(r => [r.operation, r.author]), [['format', 'Yalken tester'], ['format', 'Yalken tester']]);
+  edit(doc('Alpha beta')); assert.equal((await h.save()).success, true);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), before);
+  edit(working); assert.equal((await h.save()).success, true);
+  assert.equal((await h.command('stop')).ok, true);
+  const reopened = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+  assert.deepEqual(model.normalizeNode(reopened), model.normalizeNode(working));
+  ledger = model.readLedger(reopened); assert.equal(ledger.roundUndo.length, 1);
+  assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'rejectAll' }).doc), model.normalizeNode(doc('Alpha beta')));
+});
 for (const kind of ['forgedLedger', 'unprepared', 'wrongTarget', 'sceneRace', 'projectRace', 'lifecycleRace', 'profile', 'entitlement', 'annotations', 'draft', 'writeFailure', 'oldGeneration', 'structure']) {
   test(`recording ${kind} cannot overwrite prior scene or clear the working buffer`, async t => {
     const h = await harness(t); await h.start(); h.type('Alpha beta!'); const before = fs.readFileSync(h.file, 'utf8');

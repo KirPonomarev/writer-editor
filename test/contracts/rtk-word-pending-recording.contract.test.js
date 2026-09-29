@@ -45,21 +45,33 @@ test('existing Word revisions retain IDs provenance and decision history outside
   assert.deepEqual(review.readLedger(review.decide(next, { action: 'undo' }).doc).revisions, review.readLedger(old).revisions);
   assert.throws(() => recording.derive(old, doc('A BD'), meta), /EXISTING_REVISION_OVERLAP/);
 });
-test('format-only and structure edits are typed failures; source and working buffer stay unchanged', () => {
+test('format-only edits become reversible decisions; structure failures preserve working state', () => {
   const base = doc('abc'), formatted = doc('abc'); formatted.content[0].content[0].marks = [{ type: 'bold' }];
   const frozen = JSON.stringify({ base, formatted });
-  assert.throws(() => recording.derive(base, formatted, meta), /FORMAT_UNSUPPORTED/);
+  const recorded = recording.derive(base, formatted, meta).doc;
+  assert.equal(review.projection(recorded).revisions[0].operation, 'format');
+  assert.deepEqual(review.normalizeNode(review.decide(recorded, { action: 'rejectAll' }).doc), review.normalizeNode(base));
+  assert.deepEqual(review.normalizeNode(review.decide(recorded, { action: 'acceptAll' }).doc), review.normalizeNode(formatted));
+  const unsupported = structuredClone(formatted); unsupported.content[0].content[0].marks = [{ type: 'link', attrs: { href: 'https://example.com' } }];
+  assert.throws(() => recording.derive(base, unsupported, meta), /MARK_UNSUPPORTED/);
   assert.equal(JSON.stringify({ base, formatted }), frozen);
   assert.throws(() => recording.derive(base, doc('a', 'bc'), meta), /STRUCTURE_UNSUPPORTED/);
   assert.throws(() => recording.derive(base, { type: 'doc', content: [{ type: 'table', content: [] }] }, meta), /PENDING_REVISIONS/);
 });
-test('source rich runs preserved, inserted rich text retained, unrelated formatting rejected', () => {
+test('source rich runs, inserted rich text and independent formatting have separate reversible decisions', () => {
   const base = doc('abc'); base.content[0].content[0].marks = [{ type: 'bold' }];
   const working = structuredClone(base); working.content[0].content.push({ type: 'text', text: '!', marks: [{ type: 'italic' }] });
   const result = recording.derive(base, working, meta);
   assert.deepEqual(review.materialize(review.readLedger(result.doc)), working);
   working.content[0].content[0].marks = [{ type: 'underline' }];
-  assert.throws(() => recording.derive(base, working, meta), /FORMAT_UNSUPPORTED/);
+  const mixed = recording.derive(base, working, meta).doc;
+  assert.deepEqual(review.normalizeNode(mixed), review.normalizeNode(working));
+  assert.deepEqual(review.readLedger(mixed).revisions.map(r => r.operation), ['format', 'insert']);
+  const format = review.readLedger(mixed).revisions.find(r => r.operation === 'format');
+  const rejected = review.decide(mixed, { action: 'reject', revisionId: format.id }).doc;
+  assert.equal(review.projection(rejected).current, 'abc!');
+  assert.deepEqual(rejected.content[0].content[0].marks, [{ type: 'bold' }]);
+  assert.deepEqual(review.normalizeNode(review.decide(mixed, { action: 'rejectAll' }).doc), review.normalizeNode(base));
 });
 test('renderer cannot inject a ledger, author controls or unbounded history', () => {
   const base = doc('A'), result = recording.derive(base, doc('AB'), meta);

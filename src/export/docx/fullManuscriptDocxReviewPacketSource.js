@@ -857,7 +857,8 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalTextSha256: sha256Text(text),
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
-        ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index] } : {}),
+        ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index],
+          pendingParagraphRevision: pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)) } : {}),
         wordSignals: [
           {
             kind: 'w14ParaIdTextId',

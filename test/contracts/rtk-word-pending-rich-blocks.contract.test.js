@@ -88,7 +88,7 @@ test('Five ordinary and authenticated Word cycles retain pending edits after ver
     }
   }
 });
-test('Recording inside a table list retains cell identity and rejects topology or formatting changes', () => {
+test('Recording inside a table list retains cell identity, records formatting and rejects topology changes', () => {
   const source = fixture(), prepared = recording.prepare(source), working = structuredClone(prepared.working);
   const leaf = model.paragraphs(working).find(n => text(n) === 'protected'); leaf.content[0].text = 'protected edit';
   const metadata = { author: 'Owner', date: '2026-09-29T01:00:00.000Z' };
@@ -96,10 +96,14 @@ test('Recording inside a table list retains cell identity and rejects topology o
   assert.equal(result.changed, true); assert.deepEqual(shape(result.doc), shape(source));
   assert.equal(model.projection(result.doc).revisions.at(-1).paragraphIndex, 11);
   assert.equal(model.projection(model.decide(result.doc, { action: 'undo' }).doc).current, model.projection(source).current);
+  const formatted = structuredClone(working); model.paragraphs(formatted)[0].content[0].marks = [{ type: 'bold' }];
+  const mixed = recording.derive(prepared.baseline, formatted, metadata).doc;
+  assert.equal(model.projection(mixed).revisions.filter(r => r.operation === 'format').length, 1);
+  assert.deepEqual(shape(mixed), shape(source));
+  assert.deepEqual(model.normalizeNode(model.decide(mixed, { action: 'undo' }).doc), model.normalizeNode(source));
   for (const change of [
     d => { d.content[1].content[0].content[0].content[0].attrs.start++; },
     d => { d.content[1].content[1].content.reverse(); },
-    d => { model.paragraphs(d)[0].content[0].marks = [{ type: 'bold' }]; },
   ]) {
     const bad = structuredClone(working); change(bad);
     assert.throws(() => recording.derive(prepared.baseline, bad, metadata), /RECORDING_(?:STRUCTURE|FORMAT)_UNSUPPORTED/u);
