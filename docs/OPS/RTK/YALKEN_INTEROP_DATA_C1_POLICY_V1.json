@@ -547,7 +547,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a5913bd2b957ea7aa936d80edbdbd79e47e405faf90d3578946d7eb8b0416569"
+        "sha256": "a253d5b176f32ce120797cbf592c865024f8c67f7616ea441b659e625657e739"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -559,7 +559,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "dc615daabb72a9d3e656b97d053b8ee0fcd34036c4921e41205a176428247592"
+        "sha256": "d0dc5c070b7f56429234c2a133e649880b65a3c372a6d516204cc382a4d9bf80"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -947,7 +947,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "0656f3e2b87bfed62c7e8b8c4b51d3c37505204db347d9c0a1f450617e13f1b6"
+        "sha256": "789ab30be6b5e96fa7e386c1a62b3045ec7dd4de57cc6e609a8643af4648d0c7"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -1087,7 +1087,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "30fcfc1113419d30b2fa0eee2cbe269c5ea417ceebdc5a66006370beaf9cd4cb"
+        "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea"
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -1467,7 +1467,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-        "sha256": "f90053f94b64d57ea211dbcee607165b6c6969a59fab28aa5982a18e1b063e40"
+        "sha256": "f0b2f4241e309da70ae517c5a85fa9d41fb1ba886fd90159639dac8904c27cd3"
       }
     ],
     "followupRepair": {

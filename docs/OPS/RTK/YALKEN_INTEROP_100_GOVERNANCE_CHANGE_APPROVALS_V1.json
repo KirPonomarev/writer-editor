@@ -1381,9 +1381,9 @@
     },
     {
       "filePath": "src/io/documentTables.js",
-      "sha256": "0656f3e2b87bfed62c7e8b8c4b51d3c37505204db347d9c0a1f450617e13f1b6",
+      "sha256": "789ab30be6b5e96fa7e386c1a62b3045ec7dd4de57cc6e609a8643af4648d0c7",
       "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1651,18 +1651,18 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "a5913bd2b957ea7aa936d80edbdbd79e47e405faf90d3578946d7eb8b0416569",
+      "sha256": "a253d5b176f32ce120797cbf592c865024f8c67f7616ea441b659e625657e739",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "dc615daabb72a9d3e656b97d053b8ee0fcd34036c4921e41205a176428247592",
+      "sha256": "d0dc5c070b7f56429234c2a133e649880b65a3c372a6d516204cc382a4d9bf80",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "0914583aef762567a56a8df0541ba83fc75f21109370b8ecd7f6b98f059b893a",
+      "sha256": "50a071ef3e678496cd5b2c7cc5729a5e98de8805f7e74697b03506fdb5a9e2df",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "5ecd53d8f4390be66869db42a88d9946e3b4677ba088f3545081d686978d81b4",
+      "sha256": "8635ab30edabb6fe22e2680a9aa0c13b4b13a3528cf9c55d5d45218334072e02",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "495a50ebfbdf8c7cf2011ce4b6166ced3dca210341228b65b523e7958e416b2f",
+      "sha256": "30ee3b3275ab4387b131266f4b35162de09a4140092c8405256dba046fd60002",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -1993,12 +1993,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
-      "sha256": "30fcfc1113419d30b2fa0eee2cbe269c5ea417ceebdc5a66006370beaf9cd4cb",
+      "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea",
       "approved": true,
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:54:43.021119Z",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "dbdd36463f426ff2145e39706b39606d075fac450e3680bbded6f4508a1bcd3c",
+      "sha256": "cef6f040d0eac8298284fdf88f10b7f8bb9be7d31995f9da709f4d74ad5e2a5f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "576b17afec4011f8c4571380b8a9f230793957c491a125b791a61cb6122c66e8",
+      "sha256": "48d17a9dcba90b4b869bb42ac4b032d1cc893d9a5782f4ad8bfbedbc1c5b3e87",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a7ea383361a28e3222fd4b848f002085666a2598e82c70903cf5baa7e5c8f43f",
+      "sha256": "de9290638a36dd770780d0734573f457572441fb50d4a5c4b8fedbae18545906",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
@@ -3046,8 +3046,8 @@
     },
     {
       "filePath": "docs/tasks/2026-09-29--word-pending-rich-blocks.md",
-      "sha256": "dbe29e214dcebbc4dbd8f1935f9b88d66535720835dbb16b9252a2ff327af2eb",
-      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "sha256": "0e6ad0d50a9d27a3a749970373eae2e9a90fed5188094d900799d31303f667ed",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
@@ -3055,8 +3055,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-      "sha256": "f90053f94b64d57ea211dbcee607165b6c6969a59fab28aa5982a18e1b063e40",
-      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "sha256": "f0b2f4241e309da70ae517c5a85fa9d41fb1ba886fd90159639dac8904c27cd3",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
@@ -17898,6 +17898,114 @@
       "filePath": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
       "sha256": "11aa3d0df3fa33c1198d936e68b1d849de07f888aba00ea8ef2aa6ed6d2869df",
       "approvedAtUtc": "2026-09-29T01:06:52.793257Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/documentTables.js",
+      "sha256": "0656f3e2b87bfed62c7e8b8c4b51d3c37505204db347d9c0a1f450617e13f1b6",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "a5913bd2b957ea7aa936d80edbdbd79e47e405faf90d3578946d7eb8b0416569",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "dc615daabb72a9d3e656b97d053b8ee0fcd34036c4921e41205a176428247592",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "0914583aef762567a56a8df0541ba83fc75f21109370b8ecd7f6b98f059b893a",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "5ecd53d8f4390be66869db42a88d9946e3b4677ba088f3545081d686978d81b4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "495a50ebfbdf8c7cf2011ce4b6166ced3dca210341228b65b523e7958e416b2f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
+      "sha256": "30fcfc1113419d30b2fa0eee2cbe269c5ea417ceebdc5a66006370beaf9cd4cb",
+      "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:54:43.021119Z",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "dbdd36463f426ff2145e39706b39606d075fac450e3680bbded6f4508a1bcd3c",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "576b17afec4011f8c4571380b8a9f230793957c491a125b791a61cb6122c66e8",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a7ea383361a28e3222fd4b848f002085666a2598e82c70903cf5baa7e5c8f43f",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-29--word-pending-rich-blocks.md",
+      "sha256": "dbe29e214dcebbc4dbd8f1935f9b88d66535720835dbb16b9252a2ff327af2eb",
+      "approvedAtUtc": "2026-09-29T01:05:58.808651Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
+      "sha256": "f90053f94b64d57ea211dbcee607165b6c6969a59fab28aa5982a18e1b063e40",
+      "approvedAtUtc": "2026-09-29T01:11:39.574347Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
       "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
       "approved": true,
