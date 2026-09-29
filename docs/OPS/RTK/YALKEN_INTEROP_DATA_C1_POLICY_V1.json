@@ -1061,7 +1061,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
-        "sha256": "91546d0c5a309a528c3fd4167c40ddbe18be22069074e3117d4598f48475d55b"
+        "sha256": "004c93d37b50c2502377d26bd5fcfd4d35101d2778603020a3e73c9c11bc8528"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
@@ -1105,7 +1105,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-review.contract.test.js",
-        "sha256": "23b0df00482db90001227765e5a0ac873a38fb150c5022576dac1acf1081eff1"
+        "sha256": "5bc9b64a91228b1c8c6bcf89e2577e112fb2470dfbbfcdc65a5bac61e628a142"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",

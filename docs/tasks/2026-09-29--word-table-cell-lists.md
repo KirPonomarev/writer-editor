@@ -44,3 +44,9 @@ This is a document-only clipping repair; existing shell and design tokens stay
 unchanged. UI Craft consulted; Lazyweb table-editor search returned Dropbox Paper
 and Slite references, without an exact nested-cell counterexample. Acceptance
 uses actual renderer widths and native captures, not a reference screenshot.
+
+Native tracked replacement also exposed a rich-baseline mismatch when adjacent
+empty cell paragraphs are normalized by Core. The return router now projects
+authenticated block text through the same Core visible-text rules, retaining
+exact raw-envelope and individual block hashes. Regression evidence covers the
+observed case plus stale raw bytes, stale visible text and altered block content.
