@@ -64,3 +64,75 @@ test('Unknown native cell markers cannot silently enter the supported shift prof
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(parts)).ok, false, marker);
   }
 });
+
+
+test('Authenticated native cell delete return retains the donor occurrence when Word moves its bookmark', async () => {
+  const [bridge] = await modules;
+  const { documentXml, exportMap } = fixtures.returnedShift;
+  const result = bridge.visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, { allowPendingTableRows: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const texts = [...expected.insert];
+  texts[1] = 'First A source authored'; texts[6] = 'Last C'; texts[9] = '';
+  assert.deepEqual(result.sceneTexts, [texts.join('\n')]);
+});
+
+test('Cell bookmark repair rejects altered provenance, content, rich formatting and transport identity', async () => {
+  const [bridge] = await modules;
+  const { documentXml, exportMap } = fixtures.returnedShift;
+  const del = documentXml.match(/<w:del w:id="17"[\s\S]*?<\/w:del>/u)[0];
+  const mutations = [
+    ['author', del.replace('Yalken C5V2 Canary', 'Other author')],
+    ['UTC', del.replace('2026-09-29T06:18:00Z', '2026-09-29T06:19:00Z')],
+    ['content', del.replace('Last C', 'Other C')],
+    ['format', del.replace('<w:rPr>', '<w:rPr><w:b/>')],
+    ['untracked', '<w:r><w:t>Last C</w:t></w:r>'],
+    ['two candidate deletions', del + del.replace('w:id="17"', 'w:id="999"')],
+  ];
+  for (const [label, replacement] of mutations) {
+    const result = bridge.visibleSceneTextsFromWordDocumentXml(documentXml.replace(del, replacement), exportMap, { allowPendingTableRows: true });
+    assert.equal(result.ok, false, label);
+    assert.equal(result.code, 'PENDING_CELL_SHIFT_BOOKMARK_BINDING', label);
+  }
+  const donorName = exportMap.scenes[0].blocks[9].wordSignals.find(s => s.kind === 'bookmarkName').value.name;
+  for (const xml of [documentXml.replace(donorName, 'YRTK_' + 'f'.repeat(32)), documentXml.replace('w:id="10"', 'w:id="9"')]) {
+    assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(xml, exportMap, { allowPendingTableRows: true }).ok, false);
+  }
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, exportMap).ok, false, 'not enabled outside authenticated pending route');
+});
+
+test('Cell bookmark repair cannot cross scene/table/column identity or rescue stale local text', async () => {
+  const [bridge] = await modules;
+  const { documentXml, exportMap } = fixtures.returnedShift;
+  for (const mutate of [
+    b => { b.formatIr.table.column = 1; },
+    b => { b.formatIr.table.tableId = 'another-table'; },
+    b => { b.formatIr.table.row = 3; },
+    b => { b.formatIr.table.rowspan = 2; },
+    b => { b.formatIr.runs[0].text = 'stale'; },
+    b => { b.pendingRevisionSegments = [{ operation: 'insert' }]; },
+  ]) {
+    const map = structuredClone(exportMap); mutate(map.scenes[0].blocks[9]);
+    assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, map, { allowPendingTableRows: true }).ok, false);
+  }
+  const map = structuredClone(exportMap), tail = map.scenes[0].blocks.splice(9);
+  map.scenes.push({ ...map.scenes[0], sceneId: 'other-scene', blocks: tail });
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, map, { allowPendingTableRows: true }).ok, false);
+});
+
+test('Cell bookmark normalization changes no content or revision semantics and is idempotent', async () => {
+  const { createHash } = require('node:crypto');
+  const parser = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const { documentXml, exportMap } = fixtures.returnedShift;
+  const cryptoPort = { sha256Text: t => 'sha256:' + createHash('sha256').update(t).digest('hex'),
+    sha256Json: t => 'sha256:' + createHash('sha256').update(JSON.stringify(t)).digest('hex'), byteLength: t => Buffer.byteLength(t) };
+  const blocks = exportMap.scenes.flatMap(s => s.blocks.map(b => ({ ...b, ownerSceneId: s.sceneId })));
+  const normalized = parser.restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, { cryptoPort });
+  const withoutTransport = xml => xml.replace(/<w:bookmark(?:Start|End)\b[^>]*\/>/gu, '');
+  assert.equal(withoutTransport(normalized), withoutTransport(documentXml));
+  assert.equal(parser.restoreShiftedCellBookmarkOwnershipV1(normalized, blocks, { cryptoPort }), normalized);
+  const before = parser.extractPendingTextRevisionSourceV1(documentXml, { cryptoPort });
+  const after = parser.extractPendingTextRevisionSourceV1(normalized, { cryptoPort });
+  assert.deepEqual(after.revisions, before.revisions);
+  assert.equal(withoutTransport(after.currentXml), withoutTransport(before.currentXml));
+  assert.equal(withoutTransport(after.originalXml), withoutTransport(before.originalXml));
+});

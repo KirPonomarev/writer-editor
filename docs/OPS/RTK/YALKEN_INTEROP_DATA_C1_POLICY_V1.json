@@ -597,7 +597,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "8e1cc7611b2f3275b57e394b1ed88e33430f78a504e833e01d5b817cf5b2c2ff"
+        "sha256": "1fac06f7efb08c4c3494a928dba51f41e7deaad66ae1e82e6385a81bdd831ccb"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -677,7 +677,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "1e1ad23815241e29e0aa26d82458c5b56929ab14e1f96a084f69112038be1764"
+        "sha256": "f0bdf875f016c703481f8cd2b9e4d8a0f6c285af330807a35d9dcce502dceb05"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1505,11 +1505,11 @@
       },
       {
         "path": "test/contracts/rtk-word-table-cell-shift.contract.test.js",
-        "sha256": "943633d31b72e62ed7486b6f2a2cda74e16a7620755e3f8bc1e46a0dc42d84c4"
+        "sha256": "a9eafd94c7a5209258cd3e8d1d7253a32923b051d3fff2250ce0eb11a4abe5c3"
       },
       {
         "path": "test/fixtures/word-table-cell-shift-native-v1.json",
-        "sha256": "19fcf9b165d2924b9504098fc35ab3707290ed702e874be126d3c62a1b9b756c"
+        "sha256": "1e8ea4e3cc9a9f243fab059073dca2422f783b56c8204e7be0eaeafad2152787"
       }
     ],
     "followupRepair": {

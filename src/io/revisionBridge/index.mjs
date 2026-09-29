@@ -16,6 +16,7 @@ import {
   extractReviewTransportFormattingRunsV2,
   extractPendingTextRevisionSourceV1,
   extractTransportParagraphOwnershipV1,
+  restoreShiftedCellBookmarkOwnershipV1,
   extractDocumentMediaReferencesV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
@@ -3833,6 +3834,21 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
   let hasPendingRevisions = false;
   let hasParagraphBoundaries = false;
   try {
+    if (options.allowPendingTableRows === true) {
+      const cellOptions = { ...options, cryptoPort: options.cryptoPort || {
+        sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+        byteLength: text => new TextEncoder().encode(text).length,
+      } };
+      const blocks = (exportMap?.scenes || []).flatMap(scene => (scene.blocks || []).map(block => ({ ...block, ownerSceneId: scene.sceneId })));
+      const restored = restoreShiftedCellBookmarkOwnershipV1(xml, blocks, cellOptions);
+      if (restored !== xml) {
+        const formatting = extractReviewTransportFormattingRunsV2(restored, cellOptions);
+        if (!formatting.ok) throw Error('PENDING_CELL_SHIFT_BOOKMARK_BINDING');
+        const topology = validateDocxReviewTableTopology(formatting.paragraphs, exportMap);
+        if (!topology.ok) throw Error(topology.code);
+        xml = restored;
+      }
+    }
     const pending = extractPendingTextRevisionSourceV1(xml, { ...options, cryptoPort: options.cryptoPort || {
       sha256Text: text => `sha256:${sha256Hex(text)}`,
       sha256Json: value => `sha256:${hashCanonicalValue(value)}`,

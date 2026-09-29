@@ -5359,6 +5359,99 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
 // Read-only occurrence ownership. A Word split can stretch one transport
 // bookmark over several paragraphs; the caller still validates revision and
 // section semantics against its local authenticated map.
+// Word's tracked Delete Cell / Shift Up can carry the donor bookmark into
+// the recipient insertion while retaining its deleted text in the donor cell.
+// Reconstruct only that proven transport range in a read-only XML view. The
+// caller must still validate full topology, authenticated revision/CAS and apply.
+export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
+  if (!cryptoPort.ok) throw Error('PENDING_REVISIONS_CRYPTO_REQUIRED');
+  const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+  if (blockingReason(scan.diagnostics)) throw Error('PENDING_RETURN_BOOKMARK_XML_INVALID');
+  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
+  const starts = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
+  const ends = scan.tokens.filter(t => isWordToken(t, 'bookmarkEnd'));
+  const declared = starts.filter(t => /^YRTK_/u.test(attr(t, 'name', W_NS)));
+  const inside = (outer, inner) => inner.openStart >= outer.openEnd && inner.closeEnd <= outer.closeStart;
+  const paragraphOf = token => paragraphs.findIndex(p => inside(p, token));
+  // Leave ordinary, split and newly inserted row ownership to their existing guards.
+  if (!declared.some((s, i) => declared.slice(0, i).some(p => paragraphOf(p) === paragraphOf(s)))) return documentXml;
+  const fail = () => { throw Error('PENDING_CELL_SHIFT_BOOKMARK_BINDING'); };
+  const names = blocks.map(b => {
+    const signals = (b.wordSignals || []).filter(s => s.kind === 'bookmarkName');
+    if (signals.length !== 1 || !signals[0].value?.name) fail();
+    return signals[0].value.name;
+  });
+  if (!blocks.length || paragraphs.length !== blocks.length || declared.length !== names.length
+    || new Set(names).size !== names.length || new Set(declared.map(s => attr(s, 'name', W_NS))).size !== names.length) fail();
+  const ranges = declared.map(start => {
+    const ordinal = names.indexOf(attr(start, 'name', W_NS)), id = attr(start, 'id', W_NS);
+    const paired = ends.filter(t => attr(t, 'id', W_NS) === id), p = paragraphOf(start);
+    if (ordinal < 0 || p < 0 || !id || !start.selfClosing || paired.length !== 1 || !paired[0].selfClosing
+      || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1
+      || paragraphOf(paired[0]) !== p || paired[0].openStart < start.closeEnd) fail();
+    return { ordinal, p, start, end: paired[0] };
+  });
+  const formatting = extractReviewTransportFormattingRunsV2(documentXml, options);
+  if (!formatting.ok || formatting.paragraphs.length !== paragraphs.length) fail();
+  const direct = p => scan.tokens.filter(t => inside(p, t) && t.depth === p.depth + 1);
+  const signature = wrapper => JSON.stringify(scan.tokens.filter(t => inside(wrapper, t)).map(t => [
+    t.namespaceUri, t.localName === 'delText' && t.namespaceUri === W_NS ? 't' : t.localName,
+    t.depth - wrapper.depth, t.selfClosing,
+    Object.entries(t.attrsByNs || {}).filter(([key]) => !key.startsWith(`${W_NS}|rsid`)).sort(([a], [b]) => a.localeCompare(b)),
+    ['t', 'delText'].includes(t.localName) && t.namespaceUri === W_NS ? wordInlineTextValue(documentXml, t) : '',
+  ]));
+  const provenance = t => JSON.stringify([attr(t, 'author', W_NS), attr(t, 'date', W_NS), attr(t, 'dateUtc', W16DU_NS)]);
+  const text = t => scan.tokens.filter(x => inside(t, x) && x.namespaceUri === W_NS && ['t', 'delText', 'tab', 'br'].includes(x.localName))
+    .map(x => wordInlineTextValue(documentXml, x)).join('');
+  const sourceText = b => (b.formatIr?.runs || []).map(r => r.text).join('');
+  const plainCell = t => t && t.colspan === 1 && t.rowspan === 1 && t.paragraphCount === 1 && t.paragraphIndex === 0;
+  const edits = [], usedDonors = new Set();
+  for (const range of ranges) {
+    const outers = ranges.filter(r => r.p === range.p && r.start.openStart < range.start.openStart && r.end.closeEnd > range.end.closeEnd);
+    if (!outers.length) continue;
+    if (outers.length !== 1) fail();
+    const outer = outers[0], receiver = paragraphs[range.p];
+    if ([range.start, range.end, outer.start, outer.end].some(t => t.depth !== receiver.depth + 1)) fail();
+    const between = direct(receiver).filter(t => t.openStart >= range.start.closeEnd && t.closeEnd <= range.end.openStart);
+    if (between.length !== 1 || !isWordToken(between[0], 'ins') || between[0].selfClosing
+      || !attr(between[0], 'author', W_NS) || !attr(between[0], 'date', W_NS)) fail();
+    const insertion = between[0], payload = text(insertion), origin = blocks[range.ordinal], destination = blocks[outer.ordinal];
+    if (!payload || payload !== sourceText(origin) || origin.pendingRevisionSegments?.length
+      || origin.pendingRowRevision || origin.pendingBoundaryRevision || origin.pendingParagraphRevision) fail();
+    const a = origin.formatIr?.table, b = destination.formatIr?.table;
+    if (!plainCell(a) || !plainCell(b) || a.tableId !== b.tableId || origin.ownerSceneId !== destination.ownerSceneId
+      || a.column !== b.column || a.row !== b.row + 1) fail();
+    const recipientDeletes = direct(receiver).filter(t => isWordToken(t, 'del') && !t.selfClosing);
+    if (recipientDeletes.length !== 1 || text(recipientDeletes[0]) !== sourceText(destination)
+      || provenance(recipientDeletes[0]) !== provenance(insertion)) fail();
+    const candidates = paragraphs.flatMap((p, i) => {
+      if (ranges.some(r => r.p === i)) return [];
+      const content = direct(p).filter(t => !isWordToken(t, 'pPr'));
+      if (content.length !== 1 || !isWordToken(content[0], 'del') || content[0].selfClosing
+        || provenance(content[0]) !== provenance(insertion) || signature(content[0]) !== signature(insertion)) return [];
+      return [{ p, i, deletion: content[0] }];
+    });
+    if (candidates.length !== 1) fail();
+    const donor = candidates[0], observedDonor = formatting.paragraphs[donor.i].table, observedRecipient = formatting.paragraphs[range.p].table;
+    if (usedDonors.has(donor.i) || donor.i !== range.ordinal || range.p !== outer.ordinal
+      || !plainCell(observedDonor) || !plainCell(observedRecipient) || observedDonor.tableId !== observedRecipient.tableId
+      || observedDonor.row !== a.row || observedRecipient.row !== b.row
+      || observedDonor.column !== a.column || observedRecipient.column !== b.column) fail();
+    usedDonors.add(donor.i);
+    edits.push({ from: range.start.openStart, to: range.start.closeEnd, text: '' },
+      { from: range.end.openStart, to: range.end.closeEnd, text: '' },
+      { from: donor.deletion.openStart, to: donor.deletion.openStart, text: documentXml.slice(range.start.openStart, range.start.closeEnd) },
+      { from: donor.deletion.closeEnd, to: donor.deletion.closeEnd, text: documentXml.slice(range.end.openStart, range.end.closeEnd) });
+  }
+  if (!edits.length) fail();
+  let xml = documentXml;
+  for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
+  const ownership = extractTransportParagraphOwnershipV1(extractPendingTextRevisionSourceV1(xml, options).xml, names, options);
+  if (ownership.some((owners, i) => owners.length !== 1 || owners[0] !== i)) fail();
+  return xml;
+}
+
 export function extractTransportParagraphOwnershipV1(documentXml, names, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
   if (!cryptoPort.ok) throw Error('PENDING_REVISIONS_CRYPTO_REQUIRED');
