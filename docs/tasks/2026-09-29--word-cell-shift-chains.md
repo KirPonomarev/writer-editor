@@ -31,7 +31,7 @@ native versus constructed fixture provenance.
 
 ## ARTIFACT
 
-Validated parser repair, existing contract/fixture extension and exact-byte companions.
+Validated parser repair, existing contract/fixture extension, prerequisite byte-identical ReviewSecretStorePort adapter relocation and exact-byte companions.
 
 ## ALLOWLIST
 
@@ -47,6 +47,9 @@ Validated parser repair, existing contract/fixture extension and exact-byte comp
 - test/fixtures/word-table-cell-shift-native-v1.json
 - docs/tasks/2026-09-29--word-cell-shift-chains.md
 - src/main.js
+- src/core/review-secret-store-v1.cjs
+- src/io/review-secret-store-v1.cjs
+- test/contracts/rtk-word-round-key-durability.contract.test.js
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 
@@ -59,7 +62,7 @@ No unsupported table geometry or whole-plan claim.
 
 Parser and authenticated return projection only. Extend the existing cell-shift
 contract and fixture; refresh only required exact-byte governance companions.
-No additional surface, command, dependency, schema migration or writer.
+No additional surface, command, dependency, schema migration or writer. The existing main-process ReviewSecretStorePort adapter moves byte-identically from Core to IO. Main and durability tests resolve the new module path; encrypted bytes, project binding, key directory, OS safeStorage and atomic persistence remain unchanged.
 
 The full trusted table topology must still match after the existing validated
 pending-row removal. Newly inserted rows may never provide source identity.
@@ -121,7 +124,8 @@ longer authenticated shift chains were explicitly left open
 
 1. Reproduce declared ownership failures.
 2. Bind moved ranges to unique validated source deletion and geometry.
-3. Verify, review and deliver through protected PR.
+3. Repair existing E0 placement prerequisites within this delivery chain without weakening the scanner or changing key persistence.
+4. Verify, review and deliver through protected PR.
 
 ## CHECKS
 
@@ -159,9 +163,7 @@ Retain exact failure, base, candidate, artifact hashes and expected versus obser
 outcome. After three identical failures, stop that loop and record one next
 hypothesis. No synthetic success, suppressed gate or skipped native oracle.
 
-OPEN_BLOCKER_E0: The unchanged base fails CORE_PURITY_VIOLATION at
-review-secret-store-v1.cjs line 3; platform filesystem code is currently under
-Core. This task does not weaken purity policy or broaden into adapter relocation.
+E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac Word plan. The existing filesystem adapter is relocated byte-identically to IO; seven durability tests pass. E0 now exposes four pre-existing Core domain modules importing node crypto for deterministic SHA256. Their repair is pending a fresh clean-head declaration; scanner policy remains unchanged.
 OPEN_BLOCKER_NATIVE: Electron native control was rejected despite explicit owner
 authorization. Word table-menu input repeated timeoutReached three times; no new
 tracked cell operation was completed. SOURCE and PACKAGED acceptance are unknown.

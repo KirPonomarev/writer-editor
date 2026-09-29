@@ -1,7 +1,7 @@
 const pendingTextRevisions = require('./core/word-pending-text-revisions-v1.cjs');
 const pendingRecordingModel = require('./core/word-pending-recording-v1.cjs');
 const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
-const { createReviewSecretStore } = require('./core/review-secret-store-v1.cjs');
+const { createReviewSecretStore } = require('./io/review-secret-store-v1.cjs');
 const { performance } = require('perf_hooks');
 const { spawnSync } = require('child_process');
 const path = require('path');

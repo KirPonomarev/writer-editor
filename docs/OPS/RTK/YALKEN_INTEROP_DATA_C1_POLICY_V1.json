@@ -333,7 +333,8 @@
     "test/contracts/rtk-word-table-cell-shift.contract.test.js",
     "test/fixtures/word-table-cell-shift-native-v1.json",
     "docs/tasks/2026-09-29--word-table-cell-shift.md",
-    "docs/tasks/2026-09-29--word-cell-shift-chains.md"
+    "docs/tasks/2026-09-29--word-cell-shift-chains.md",
+    "src/io/review-secret-store-v1.cjs"
   ],
   "protectedFiles": [
     {
@@ -562,7 +563,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "5cfc96997f7fedabfff860822170505e145a9fdad1e2e8282cdc79b1ebc9e596"
+        "sha256": "8372add197bc05f778798c9b516ecbae56aeef9fea55aeb537497aed5de9af18"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1166,10 +1167,10 @@
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
-        "sha256": "402a67659a0b65b2b259323327caa04652c725491ee41b3a89c3cca6e8e1d51d"
+        "sha256": "9d3621f17a2849db748b895f27c8695fe66638362165b0f523acc83f03dbd4fb"
       },
       {
-        "path": "src/core/review-secret-store-v1.cjs",
+        "path": "src/io/review-secret-store-v1.cjs",
         "sha256": "921197484566d73926e95b88cd08fa29c31894d7a94d4923b072e3115b750231"
       },
       {

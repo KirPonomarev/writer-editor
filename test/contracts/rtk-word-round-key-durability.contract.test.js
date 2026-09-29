@@ -6,7 +6,7 @@ const path=require('node:path');
 const crypto=require('node:crypto');
 const {spawnSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
-const {createReviewSecretStore}=require('../../src/core/review-secret-store-v1.cjs');
+const {createReviewSecretStore}=require('../../src/io/review-secret-store-v1.cjs');
 const bridgePath=path.resolve(__dirname,'../../src/io/revisionBridge/reviewTransportRoundStoreV3.mjs');
 // Test-only encryption port; production receives Electron OS safeStorage.
 function testEncryption() {
@@ -16,7 +16,7 @@ function testEncryption() {
 function roots(t) {const root=fs.mkdtempSync(path.join(os.tmpdir(),'rtk-key-'));const project=path.join(root,'project');fs.mkdirSync(project);t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return{root,project};}
 function port(r,extra={}) {return createReviewSecretStore({userDataRoot:r.root,projectRoot:r.project,safeStorage:testEncryption(),...extra});}
 function file(r,ref) {return path.join(fs.realpathSync(r.root),'review-round-keys-v1',crypto.createHash('sha256').update(fs.realpathSync(r.project)).digest('hex'),ref+'.key');}
-const childCode=`const fs=require('node:fs'),crypto=require('node:crypto');const {createReviewSecretStore}=require(${JSON.stringify(path.resolve(__dirname,'../../src/core/review-secret-store-v1.cjs'))});const testEncryption=${testEncryption.toString()};(async()=>{const q=JSON.parse(fs.readFileSync(0,'utf8'));const b=await import(${JSON.stringify(pathToFileURL(bridgePath).href)});const persistence=createReviewSecretStore({userDataRoot:q.root,projectRoot:q.project,safeStorage:testEncryption()});let k=q.key;if(q.op==='create')k=b.createRoundKey({roundId:'round-1',persistence});let h=b.resolveRoundKey(k.keyRef,{persistence,roundId:'round-1',keyIdHex:k.keyIdHex,roundIdHex:k.roundIdHex});if(q.op==='revoke')b.revokeRoundKey(k.keyRef);if(q.op==='lose')b.markRoundKeyLost(k.keyRef);process.stdout.write(JSON.stringify({key:k,state:h?.state||null,signature:h?.sign({text:'same payload'})||null,verified:h?.verify({text:'same payload'},q.signature)||false,secretAvailable:!!h?.hmacSecret()}));})().catch(e=>{process.stderr.write(e.message);process.exitCode=1;});`;
+const childCode=`const fs=require('node:fs'),crypto=require('node:crypto');const {createReviewSecretStore}=require(${JSON.stringify(path.resolve(__dirname,'../../src/io/review-secret-store-v1.cjs'))});const testEncryption=${testEncryption.toString()};(async()=>{const q=JSON.parse(fs.readFileSync(0,'utf8'));const b=await import(${JSON.stringify(pathToFileURL(bridgePath).href)});const persistence=createReviewSecretStore({userDataRoot:q.root,projectRoot:q.project,safeStorage:testEncryption()});let k=q.key;if(q.op==='create')k=b.createRoundKey({roundId:'round-1',persistence});let h=b.resolveRoundKey(k.keyRef,{persistence,roundId:'round-1',keyIdHex:k.keyIdHex,roundIdHex:k.roundIdHex});if(q.op==='revoke')b.revokeRoundKey(k.keyRef);if(q.op==='lose')b.markRoundKeyLost(k.keyRef);process.stdout.write(JSON.stringify({key:k,state:h?.state||null,signature:h?.sign({text:'same payload'})||null,verified:h?.verify({text:'same payload'},q.signature)||false,secretAvailable:!!h?.hmacSecret()}));})().catch(e=>{process.stderr.write(e.message);process.exitCode=1;});`;
 function child(r,q){const c=spawnSync(process.execPath,['-e',childCode],{input:JSON.stringify({...r,...q}),encoding:'utf8'});assert.equal(c.status,0,c.stderr);return JSON.parse(c.stdout);}
 
 test('key survives a real new process; encrypted bytes contain no secret and cross-project resolve fails',async t=>{
