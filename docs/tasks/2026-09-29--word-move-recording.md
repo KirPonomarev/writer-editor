@@ -46,3 +46,8 @@ The focused main-window native Cut adapter now forwards that exact gesture once
 into the authoring buffer. Wrong key/modifiers, repeat, unfocused/destroyed
 windows and other platforms are untouched; save capability and CAS remain the
 only persistence route. No clipboard contents or renderer code are evaluated.
+
+Native changed Word return moves an authenticated paragraph bookmark endpoint
+between moveTo and moveToRangeEnd. Parsing admits this text-free endpoint only
+with a unique balanced same-paragraph transport bookmark pair. Orphan,
+duplicate, foreign-namespace, user bookmark and extra range text remain blocked.

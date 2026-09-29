@@ -5105,8 +5105,22 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     const wrappers = tokens.filter(t => t.localName === side && t.openStart >= start.closeEnd && t.closeEnd <= finish.openStart);
     if (wrappers.length !== 1 || moveOwner.has(wrappers[0])) throw Error('PENDING_MOVE_RANGE_BODY_UNSUPPORTED');
     const wrapper = wrappers[0];
+    // Word may put the enclosing transport bookmark endpoint beside the move
+    // wrapper. It is text-free, but only a unique balanced pair in this same
+    // paragraph is admissible; arbitrary markers cannot hide range content.
+    const isTransportBookmark = t => {
+      if (!isWordToken(t, 'bookmarkStart') && !isWordToken(t, 'bookmarkEnd')) return false;
+      const id = attr(t, 'id', W_NS);
+      if (!id) return false;
+      const starts = bookmarks.filter(b => attr(b, 'id', W_NS) === id);
+      const ends = scan.tokens.filter(b => isWordToken(b, 'bookmarkEnd') && attr(b, 'id', W_NS) === id);
+      return starts.length === 1 && ends.length === 1 && starts[0].closeEnd <= ends[0].openStart
+        && [starts[0], ends[0]].every(b => b.selfClosing && b.depth === p.depth + 1
+          && b.openStart >= p.openEnd && b.closeEnd <= p.closeStart);
+    };
     if (scan.tokens.some(t => t.openStart >= start.closeEnd && t.closeEnd <= finish.openStart
-      && !(t.openStart >= wrapper.openStart && t.closeEnd <= wrapper.closeEnd))) throw Error('PENDING_MOVE_RANGE_BODY_UNSUPPORTED');
+      && !(t.openStart >= wrapper.openStart && t.closeEnd <= wrapper.closeEnd)
+      && !isTransportBookmark(t))) throw Error('PENDING_MOVE_RANGE_BODY_UNSUPPORTED');
     if (attr(start, 'author', W_NS) !== attr(wrapper, 'author', W_NS)
       || attr(start, 'date', W_NS) !== attr(wrapper, 'date', W_NS)) throw Error('PENDING_MOVE_PROVENANCE_MISMATCH');
     const pair = movePairs.get(name) || {};

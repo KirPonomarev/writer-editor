@@ -670,7 +670,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "b2b25e4f88b065513804b32bfd7283013639f66f6a4ef3b81d6826d0a2d49e43"
+        "sha256": "4eb53d4bdc65e01aca9dc844ffdcbcea9abbe236b1732411aa6eaf70e02ae4c6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1478,7 +1478,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-moves.contract.test.js",
-        "sha256": "97b393cf80114235c42a2aea6898e4cdbc6ee043168b37676a4229ce040a0693"
+        "sha256": "b2eb88cd603edd053bb62506d3cc4778ad79b2f6d2c8d68421130db99b32e464"
       },
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
