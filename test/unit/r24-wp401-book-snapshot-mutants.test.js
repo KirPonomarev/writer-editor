@@ -125,6 +125,7 @@ async function loadMutant(source, mutant) {
   const coreDir = path.join(dir, 'core');
   fs.mkdirSync(coreDir, { recursive: true });
   fs.copyFileSync(path.join(ROOT, 'src/core/browser-safe-hash.mjs'), path.join(coreDir, 'browser-safe-hash.mjs'));
+  fs.copyFileSync(path.join(ROOT, 'src/core/browser-safe-hash.cjs'), path.join(coreDir, 'browser-safe-hash.cjs'));
   const target = path.join(coreDir, 'atlas-book-snapshot-v1.mjs');
   fs.writeFileSync(target, source.replace(mutant.find, mutant.replace));
   return { dir, module: await import(`${pathToFileURL(target).href}?mutant=${encodeURIComponent(mutant.id)}`) };

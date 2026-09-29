@@ -185,7 +185,7 @@ async function loadMutant(source, mutant) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-wp402-mutant-'));
   const coreDir = path.join(dir, 'core');
   fs.mkdirSync(coreDir, { recursive: true });
-  for (const basename of ['browser-safe-hash.mjs', 'atlas-book-snapshot-v1.mjs']) {
+  for (const basename of ['browser-safe-hash.mjs', 'browser-safe-hash.cjs', 'atlas-book-snapshot-v1.mjs']) {
     fs.copyFileSync(path.join(ROOT, 'src/core', basename), path.join(coreDir, basename));
   }
   const target = path.join(coreDir, 'atlas-projector-kernel-v1.mjs');

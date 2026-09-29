@@ -59,7 +59,7 @@ const mutants = [
 function copyDependencyTree(dir) {
   fs.mkdirSync(path.join(dir, 'io'), { recursive: true });
   for (const basename of [
-    'browser-safe-hash.mjs',
+    'browser-safe-hash.mjs', 'browser-safe-hash.cjs',
     'textCoordinateAlgebra.mjs',
     'textTransformAlgebra.mjs',
     'text-fold-tape-v1.mjs',

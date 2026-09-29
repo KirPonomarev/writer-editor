@@ -104,7 +104,7 @@ async function oracle(module, snapshotModule, hashModule) {
 async function loadMutant(source, mutant) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-wp501-mutant-'));
   const core = path.join(dir, 'core'); fs.mkdirSync(core, { recursive: true });
-  for (const name of ['browser-safe-hash.mjs', 'atlas-book-snapshot-v1.mjs']) {
+  for (const name of ['browser-safe-hash.mjs', 'browser-safe-hash.cjs', 'atlas-book-snapshot-v1.mjs']) {
     fs.copyFileSync(path.join(ROOT, 'src/core', name), path.join(core, name));
   }
   const target = path.join(core, 'atlas-time-knowledge-v1.mjs');

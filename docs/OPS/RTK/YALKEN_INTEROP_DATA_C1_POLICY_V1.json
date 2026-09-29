@@ -337,7 +337,22 @@
     "src/io/review-secret-store-v1.cjs",
     "src/core/browser-safe-hash.mjs",
     "src/core/browser-safe-hash.cjs",
-    "test/contracts/rtk-word-core-hash-parity.contract.test.js"
+    "test/contracts/rtk-word-core-hash-parity.contract.test.js",
+    "test/unit/r24-wp501-time-knowledge-mutants.test.js",
+    "test/unit/r24-wp503-atlas-surface-mutants.test.js",
+    "test/unit/r24-wp401-book-snapshot-mutants.test.js",
+    "test/unit/r24-wp500-associations-mutants.test.js",
+    "test/unit/r24-wp805-local-history-mutants.test.js",
+    "test/unit/r24-wp502-threads-causality-mutants.test.js",
+    "test/unit/r24-wp507-atlas-product-claim-mutants.test.js",
+    "test/unit/r24-wp400-anchor-lineage-mutants.test.js",
+    "test/unit/r24-t0-fold-mutants.test.js",
+    "test/unit/r24-wp402-projector-kernel-mutants.test.js",
+    "test/unit/r24-wp504-dossier-layout-links-mutants.test.js",
+    "test/unit/r24-wp403-decision-substrate-mutants.test.js",
+    "test/unit/r24-wp505-register-ask-mutants.test.js",
+    "test/unit/r24-wp205-path-and-text-mutants.test.mjs",
+    "test/unit/r24-wp404-atlas-foundation-claim-mutants.test.js"
   ],
   "protectedFiles": [
     {
@@ -1278,7 +1293,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "33b2c3fe5a89949a72a243aa48feadbf5f4bd19d55f3fc8dfa340796acff5c84"
+        "sha256": "3cf57028e6bac70abda11f18fed2817bfc30afa2cf8673578f6078669a9dbdeb"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1527,6 +1542,66 @@
       {
         "path": "test/contracts/rtk-word-core-hash-parity.contract.test.js",
         "sha256": "561914f53f79ece0afcd76dd3732cff9a2bc40f7a35dc954d67ce9b0f0fc171c"
+      },
+      {
+        "path": "test/unit/r24-wp501-time-knowledge-mutants.test.js",
+        "sha256": "f8aec3c410a18083826fb7a6481c92d20239d4f2081240d410e4a83969bb67a8"
+      },
+      {
+        "path": "test/unit/r24-wp503-atlas-surface-mutants.test.js",
+        "sha256": "049518ee4c1a569fa3718b0a4b4b92d0afa3c83a7f0765fc2afc90f219500906"
+      },
+      {
+        "path": "test/unit/r24-wp401-book-snapshot-mutants.test.js",
+        "sha256": "a280047d160327c98f5c2ae528a87c555ec890c74a9b00d0004e18e6c3683aa3"
+      },
+      {
+        "path": "test/unit/r24-wp500-associations-mutants.test.js",
+        "sha256": "826787273b8023a803707c6e9aa0ac8439c11873b4d1bb77dc6f7b8f56c2f8b6"
+      },
+      {
+        "path": "test/unit/r24-wp805-local-history-mutants.test.js",
+        "sha256": "c705ad36d028b261276dc527b4ca9c3e7de416fbbc0d4f071172fa47a287d2b5"
+      },
+      {
+        "path": "test/unit/r24-wp502-threads-causality-mutants.test.js",
+        "sha256": "2eb4b5bd3ffca085ee5736fe2860fdb8c978441dd08e7c021759f8b3865fc242"
+      },
+      {
+        "path": "test/unit/r24-wp507-atlas-product-claim-mutants.test.js",
+        "sha256": "e3bd88eb24416792b55e864be47555ce11cedb9a3f18824ce1ff07e1a4de427a"
+      },
+      {
+        "path": "test/unit/r24-wp400-anchor-lineage-mutants.test.js",
+        "sha256": "769add244e351c2685fc4f987f027a573a790d88ec3371ed07abe0caa277aa40"
+      },
+      {
+        "path": "test/unit/r24-t0-fold-mutants.test.js",
+        "sha256": "b0e5a2303bf9fcaec7aedeba0de3c04defaf4ebacf9284f302ad7143240b8e49"
+      },
+      {
+        "path": "test/unit/r24-wp402-projector-kernel-mutants.test.js",
+        "sha256": "88fb393db419570766c629ed6a86fd669a141361561fee2d592a79ec334c5e6b"
+      },
+      {
+        "path": "test/unit/r24-wp504-dossier-layout-links-mutants.test.js",
+        "sha256": "9f520651144edc27dd73c741b52844f4ae4ea085945e732b293ad6b15e46e579"
+      },
+      {
+        "path": "test/unit/r24-wp403-decision-substrate-mutants.test.js",
+        "sha256": "af3038736e1fdabee756962c5ef48ac46e8ef198a63feecfbc53df4545ede113"
+      },
+      {
+        "path": "test/unit/r24-wp505-register-ask-mutants.test.js",
+        "sha256": "e952bd22bdd0fb8bba61ee9619c2205e437d891815b774f626eb98b56addca7d"
+      },
+      {
+        "path": "test/unit/r24-wp205-path-and-text-mutants.test.mjs",
+        "sha256": "42be0c9f2262984adbb805d28401ed1259671b5681df4a31a9c127bb3e9300e7"
+      },
+      {
+        "path": "test/unit/r24-wp404-atlas-foundation-claim-mutants.test.js",
+        "sha256": "430868bb101815414af13d8095cc427d835f2c2992e10bf2ae0bcb8211c7b360"
       }
     ],
     "followupRepair": {

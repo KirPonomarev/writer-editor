@@ -62,6 +62,23 @@ Validated parser repair, existing contract/fixture extension, prerequisite byte-
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 
+- test/unit/r24-wp501-time-knowledge-mutants.test.js
+- test/unit/r24-wp503-atlas-surface-mutants.test.js
+- test/unit/r24-wp401-book-snapshot-mutants.test.js
+- test/unit/r24-wp500-associations-mutants.test.js
+- test/unit/r24-wp805-local-history-mutants.test.js
+- test/unit/r24-wp502-threads-causality-mutants.test.js
+- test/unit/r24-wp507-atlas-product-claim-mutants.test.js
+- test/unit/r24-wp400-anchor-lineage-mutants.test.js
+- test/unit/r24-t0-fold-mutants.test.js
+- test/unit/r24-wp402-projector-kernel-mutants.test.js
+- test/unit/r24-wp504-dossier-layout-links-mutants.test.js
+- test/unit/r24-wp403-decision-substrate-mutants.test.js
+- test/unit/r24-wp505-register-ask-mutants.test.js
+- test/unit/r24-wp205-path-and-text-mutants.test.mjs
+- test/unit/r24-wp404-atlas-foundation-claim-mutants.test.js
+- test/unit/r24-wp204-lifecycle-recovery-mutants.test.js
+
 ## DENYLIST
 
 No dependency, runtime network, UI, alternate writer or weakened admission.
@@ -176,3 +193,5 @@ E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac 
 NATIVE_PROGRESS: Native Word tracked delete-cell-up at First C completed and saved. Independent raw XML has two insertions and three deletions with transported source bookmarks. Word system-menu failure is avoided through existing ribbon commands. This discovery fixture is not SOURCE/PACK qualification: application return, restart/history and exported rich readback remain mandatory. Electron access now succeeds. Genuine SOURCE native dialog import and authenticated full-manuscript export completed at 775b8a09; native Word tracked First C delete-up saved on that exported file. Application return, restart/history and PACKAGED proof remain mandatory.
 NATIVE_NO_LEDGER_REPAIR: Actual imported SOURCE return reached native confirmation and then PENDING_REVISION_EDITOR_STALE without write. Normalized rich documents agree; missing source ledger and Tiptap null ledger were incorrectly distinguished. Fresh clean8c623553 preflight binds comparison through validated Core readLedger values plus real main-seam positive and changed-rich, changed-ledger and malformed-ledger negatives. All source CAS, generation, identity, capability and atomic writer checks remain required. A separate saved-root null default reaches fallback paragraph counting before confirmation; a fresh ba5227de preflight binds pure normalization for that derived count, preserving authenticated raw source and Core validation.
 DELIVERY_STATE: Draft candidate until mandatory native proof and required delivery pass.
+
+MUTANT_FIXTURE_DEPENDENCY_REPAIR: CI inventory identifies thirteen isolated fixture imports omitting the new CJS hash dependency. Fresh clean c70d347e preflight binds only fixture dependency copy lists; all mutations, kill oracles and assertion counts remain mandatory. Production bytes stay unchanged.
