@@ -214,6 +214,7 @@ test('New tracked split inside an authenticated bookmark rebinds sections and re
   const sectionInput = { expected, returned, signedDigest: expected.protectedDigest, allowOfficeDefaultOmissions: true };
   assert.equal(validateSections(sectionInput).ok, false);
   assert.equal(validateSections({ ...sectionInput, paragraphBindings: mapped.paragraphBindings }).ok, true);
+  assert.equal(validateSections({ ...sectionInput, allowOfficeDefaultOmissions: false, paragraphBindings: mapped.paragraphBindings }).ok, true);
   returned.protectedSections[0].properties.pageSize.widthTwips++; digest();
   assert.equal(validateSections({ ...sectionInput, paragraphBindings: mapped.paragraphBindings }).ok, false);
   const incoming = await parse(buildStoredZip(Object.entries({ ...parts, 'word/document.xml': returnedXml }).map(([name, data]) => ({name, data}))));

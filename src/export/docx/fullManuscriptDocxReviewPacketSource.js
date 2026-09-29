@@ -733,7 +733,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   if (returned.applicable !== true) mismatches.push('applicable');
   if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
   if (JSON.stringify(normalizedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
-  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true
+  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.paragraphBindings !== undefined
     ? sha256Text(canonicalWordBookmarkIdentityJson(returnedProjection)) : expectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
   if (mismatches.length > 0) {

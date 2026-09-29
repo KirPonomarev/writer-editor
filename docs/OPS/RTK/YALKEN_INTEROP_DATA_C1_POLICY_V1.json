@@ -556,7 +556,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f61f477c664a3314c6a84b1f856dc32a5ad817eda61d69135f6c99af3268fe9d"
+        "sha256": "e128efddd2f60d81ccff09d3fb980cbf9cc68f9446a618a73c313cbdcf197148"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -692,7 +692,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "027f4627c2af4a336b0e112527accfb4e4942bcb91525e7813375abbfd1a0e8f"
+        "sha256": "4ea30eba1296a6c84fcb134c8d668450064124b78624cc65d6421194daba0a60"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1492,7 +1492,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
-        "sha256": "bf5bbdcc15db677828ddfe60e08bf5df3295eecbe1f3260a956d530364d3def3"
+        "sha256": "1283ce46862dba208dec855d3172bd69fb1b30b051458de79f6c4927ccf7a506"
       }
     ],
     "followupRepair": {

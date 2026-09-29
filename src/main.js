@@ -9724,8 +9724,7 @@ async function inspectDocxReviewReturnIntakeV2({
     signedDigest: payload.documentSectionsDigest,
     allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
   });
-  if (!documentSectionsBinding.ok && localAuthority.officeModeTransport === true
-    && localAuthority.exportMap?.scenes?.length === 1) {
+  if (!documentSectionsBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
     const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
@@ -9733,7 +9732,7 @@ async function inspectDocxReviewReturnIntakeV2({
     if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
       documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
         expected: localAuthority.documentSections, returned: verifiedParserResult.reviewIr?.documentSections,
-        signedDigest: payload.documentSectionsDigest, allowOfficeDefaultOmissions: true,
+        signedDigest: payload.documentSectionsDigest, allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
         paragraphBindings: ownership.paragraphBindings,
       });
     }
