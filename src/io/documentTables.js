@@ -311,7 +311,10 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         active.seen.add(name);
         const styleId = property(attribute('val'));
         loss('borders', `w:tblStyle=${styleId || 'unspecified'}`, 'table style inheritance is not retained; only explicit literal table/cell properties are retained');
-      } else if (!closing && ['w:tblW', 'w:tcW', 'w:tblLayout', 'w:shd', 'w:tblBorders', 'w:tcBorders'].includes(name)) {
+      } else if (!closing && ['w:tblW', 'w:tcW', 'w:tblLayout', 'w:shd', 'w:tblBorders', 'w:tcBorders'].includes(name)
+        && !(name === 'w:shd' && parent === 'w:rPr')) {
+        // Run shading belongs to the inline grammar, including explicit resets
+        // emitted with pending text. It cannot mutate table or cell properties.
         const isCell = ['w:tcW', 'w:tcBorders'].includes(name) || name === 'w:shd' && parent === 'w:tcPr';
         const owner = isCell ? cell : active;
         if (!owner || parent !== (isCell ? 'w:tcPr' : 'w:tblPr') || !isCell && row || isCell && paragraphs.length !== cell.start) fail('PROPERTY_OWNER_INVALID');

@@ -104,6 +104,57 @@ test('Recording inside a table list retains cell identity and rejects topology o
     assert.throws(() => recording.derive(prepared.baseline, bad, metadata), /RECORDING_(?:STRUCTURE|FORMAT)_UNSUPPORTED/u);
   }
 });
+test('Returned rich rounds retain stable revision ownership through five durable undo and redo steps', async () => {
+  let doc = fixture(); const expected = model.projection(doc), expectedShape = shape(doc);
+  for (let round = 1; round <= 5; round++) {
+    const returned = await parse(await exportDoc(doc, 'full'));
+    doc = model.replaceFromReturn(doc, returned, { roundId: 'rich-round-' + round, artifactSha256: String(round).padStart(64, '0') }).doc;
+    doc = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc })).doc;
+    assert.equal(model.readLedger(doc).roundUndo.length, round);
+    assert.deepEqual(shape(doc), expectedShape);
+    assert.deepEqual(model.projection(doc).revisions.map(r => [r.id, r.paragraphIndex, r.text]),
+      expected.revisions.map(r => [r.id, r.paragraphIndex, r.text]));
+  }
+  for (let i = 0; i < 5; i++) doc = model.decide(doc, { action: 'undo' }).doc;
+  assert.equal(model.readLedger(doc).roundUndo.length, 0);
+  for (let i = 0; i < 5; i++) doc = model.decide(doc, { action: 'redo' }).doc;
+  assert.equal(model.readLedger(doc).roundUndo.length, 5);
+  assert.equal(model.projection(doc).current, expected.current);
+  assert.deepEqual(shape(doc), expectedShape);
+});
+test('Malformed list/cell trees and orphan paragraph coordinates fail before a pending projection exists', () => {
+  const ledger = model.readLedger(fixture());
+  for (const mutate of [
+    x => { x.source.content[1].content[0].content[0].attrs.rowspan = 3; },
+    x => { x.source.content[1].content[0].content[0].content[0].content[0].content.push(p('ambiguous continuation')); },
+    x => { x.revisions[2].paragraphIndex = x.revisions[3].paragraphIndex = 1000; },
+    x => { x.source.content[1].content[0].content[0].content[0].attrs.start = -1; },
+    x => { x.source.content[1].content[0].content[0].content.push(structuredClone(x.source.content[1])); },
+  ]) {
+    const bad = structuredClone(ledger); mutate(bad);
+    assert.throws(() => model.bindLedger(bad), /PENDING_REVISIONS/u);
+  }
+});
+test('Pending rich paragraph, list and nesting budgets enforce boundary minus one, boundary and overflow', () => {
+  const ledger = source => ({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+  for (const count of [9999, 10000, 10001]) {
+    const value = ledger({ type: 'doc', content: [ordered(1, ...Array.from({ length: count }, () => item('')))] });
+    if (count <= 10000) assert.doesNotThrow(() => model.validateLedger(value));
+    else assert.throws(() => model.validateLedger(value), /PENDING_REVISIONS_BUDGET/u);
+  }
+  for (const count of [2047, 2048, 2049]) {
+    const value = ledger({ type: 'doc', content: Array.from({ length: count }, () => bullet(item(''))) });
+    if (count <= 2048) assert.doesNotThrow(() => model.validateLedger(value));
+    else assert.throws(() => model.validateLedger(value), /PENDING_REVISIONS_BUDGET/u);
+  }
+  for (const depth of [7, 8, 9]) {
+    let nested = bullet(item(''));
+    for (let i = 0; i < depth; i++) nested = bullet(item('', nested));
+    const value = ledger({ type: 'doc', content: [nested] });
+    if (depth <= 8) assert.doesNotThrow(() => model.validateLedger(value));
+    else assert.throws(() => model.validateLedger(value), /PENDING_REVISIONS_BUDGET/u);
+  }
+});
 test('Tracked table mutations and text revisions targeting a continuation cell cannot inherit text authority', async () => {
   const [bridge] = await modules;
   const bytes = await exportDoc(fixture(), 'full');
