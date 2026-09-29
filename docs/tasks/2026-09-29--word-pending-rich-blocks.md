@@ -38,3 +38,9 @@ accessibility: unchanged product controls and native list/table semantics.
 Non-claims: nested tables, tracked structural edits, hyperlinks/media and mixed
 comments/notes with pending revisions. Full macOS qualification remains separate.
 Rollback: revert this delivery while retaining rich envelopes and backups.
+
+Native follow-up: exact empty-leaf comparison protects return coordinates;
+legacy envelope display normalization cannot serve that proof. Explicit table
+grids now also emit matching preferred cell widths, including spans and merge
+continuations, so Word does not receive an auto-width cell against a retained
+grid. The strict unchanged-geometry return guard remains intact.

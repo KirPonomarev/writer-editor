@@ -5752,7 +5752,11 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const replay = ledger?.returnReceipts?.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256);
     if (!replay && current.raw !== capsule.baselineObservableContentBySceneId[sceneId]) throw Error('PENDING_RETURN_BASELINE_CONFLICT');
     const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt);
-    if (envelope.deriveVisibleTextFromDocument(incoming.doc) !== mapped.sceneTexts[0]) throw Error('PENDING_RETURN_PROJECTION_MISMATCH');
+    // Compare exact paragraph occurrences. The envelope's legacy display text
+    // collapses consecutive empty blocks and cannot prove table-leaf identity.
+    const incomingText = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(incoming.doc))
+      .map(paragraph => (paragraph.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')).join('\n');
+    if (incomingText !== mapped.sceneTexts[0]) throw Error('PENDING_RETURN_PROJECTION_MISMATCH');
     let consumed = false;
     const apply = async () => {
       if (consumed) throw Error('PENDING_RETURN_PREPARED_CONSUMED');

@@ -179,11 +179,15 @@ function compareTableParagraphTopology(actual, expected) {
 
 function tableGroupXml(group, renderParagraph) {
   const byNode = new Map(group.cells.map(cell => [cell.node, cell]));
+  const explicit = group.table.attrs?.wordTable;
   const rows = group.layout.grid.map((row, y) => {
     const cells = [];
     for (let x = 0; x < group.layout.columns;) {
       const cell = row[x], entry = byNode.get(cell.node), continuation = cell.row < y;
-      const properties = `${cell.colspan > 1 ? `<w:gridSpan w:val="${cell.colspan}"/>` : ''}`
+      const widths = explicit?.grid.slice(x, x + cell.colspan);
+      const cellWidth = widths?.every(w => Number.isSafeInteger(w) && w > 0)
+        ? `<w:tcW w:w="${widths.reduce((sum, w) => sum + w, 0)}" w:type="dxa"/>` : '';
+      const properties = cellWidth + `${cell.colspan > 1 ? `<w:gridSpan w:val="${cell.colspan}"/>` : ''}`
         + (cell.rowspan > 1 ? `<w:vMerge w:val="${continuation ? 'continue' : 'restart'}"/>` : '')
         + (cell.node.attrs?.wordCell ? borderXml(cell.node.attrs.wordCell.borders, 'tcBorders') + shadingXml(cell.node.attrs.wordCell.shading) : '');
       cells.push(`<w:tc><w:tcPr>${properties}</w:tcPr>${continuation ? '<w:p/>' : entry.paragraphs.map(p => renderParagraph(p.item, p.index)).join('')}</w:tc>`);
@@ -191,7 +195,6 @@ function tableGroupXml(group, renderParagraph) {
     }
     return `<w:tr>${row[0].header ? '<w:trPr><w:tblHeader/></w:trPr>' : ''}${cells.join('')}</w:tr>`;
   });
-  const explicit = group.table.attrs?.wordTable;
   const props = explicit || legacyTableProperties(group.layout.columns);
   const width = props.widthDxa === null ? (explicit ? '' : '<w:tblW w:w="0" w:type="auto"/>') : `<w:tblW w:w="${props.widthDxa}" w:type="dxa"/>`;
   const layout = props.layout === 'fixed' ? '<w:tblLayout w:type="fixed"/>' : '';

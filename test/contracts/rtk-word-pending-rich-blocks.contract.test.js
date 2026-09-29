@@ -199,3 +199,57 @@ test('Tracked table mutations and text revisions targeting a continuation cell c
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bad).ok, false);
   }
 });
+
+test('Actual authenticated pending return preserves exact empty-block positions and rejects mismatched or stale input', async () => {
+  const doc = fixture(), raw = envelope.composeObservablePayload({ doc }), bytes = await exportDoc(doc, 'full');
+  const [bridge] = await modules;
+  const incoming = await parse(bytes), exactText = model.paragraphs(model.normalizeNode(incoming)).map(text).join('\n');
+  assert.notEqual(envelope.deriveVisibleTextFromDocument(incoming), exactText);
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = main.indexOf('async function prepareAuthenticatedPendingReturn(');
+  const source = main.slice(start, main.indexOf('// Only an object retained', start));
+  const file = '/synthetic/scene.txt', sceneId = 'scene.txt', root = '/synthetic';
+  const capsule = { projectRoot: root, exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication',
+    returnedArtifactExportMapAccepted: false, exportMap: { scenes: [{ sceneId }] }, scenePathBySceneId: { [sceneId]: file },
+    baselineObservableContentBySceneId: { [sceneId]: raw }, roundId: 'rich-return' };
+  const context = { projectRoot: root, projectId: 'rich', reviewTransportAuthorityCapsule: capsule,
+    reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes), parserResult: {} } };
+  const sandbox = vm.createContext({ Buffer, loadDocumentContentEnvelopeModule: async () => envelope, pendingTextRevisions: model,
+    activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life', lastSignaledEditGeneration: 1,
+    currentFilePath: file, isDirty: false, autoSaveInProgress: false, getProjectRootPath: () => root,
+    computeHash: hash, createRtkReviewTransportCryptoPort: () => ({}), docxReviewReturnIntakeProductBudgets: () => ({}),
+    readCommentAuthoringContext: async () => ({ projectId: 'rich', projectRoot: root, sceneId, raw, parsed: { doc } }),
+  });
+  vm.runInContext(source, sandbox);
+  let mappedText = exactText, prepared;
+  const adapter = { ...bridge, extractDocxReviewTransportWordDocumentProjection: () => ({ ok: true, documentXml: '' }),
+    visibleSceneTextsFromWordDocumentXml: () => ({ ok: true, sceneTexts: [mappedText] }) };
+  const run = (isCurrent = () => true) => sandbox.prepareAuthenticatedPendingReturn({ context, docxBytes: bytes,
+    revisionBridge: adapter, isCurrent, onPrepared: value => { prepared = value; } });
+  assert.equal((await run()).code, 'PENDING_RETURN_EXPLICIT_APPLY_REQUIRED');
+  assert.deepEqual(shape(prepared.changes.after), shape(doc));
+  mappedText = exactText.replace('before', 'different');
+  assert.equal((await run()).code, 'PENDING_RETURN_PROJECTION_MISMATCH');
+  mappedText = exactText;
+  assert.equal((await run(() => false)).code, 'PENDING_RETURN_CONTEXT_STALE');
+  context.reviewTransportReturnIntake.returnedArtifactSha256 = 'sha256:' + '0'.repeat(64);
+  assert.equal((await run()).code, 'PENDING_RETURN_AUTHORITY_REQUIRED');
+});
+
+test('Pending rich export binds cell preferred widths to the retained grid including both merge axes', async () => {
+  const source = model.normalizeNode(fixture());
+  source.content[1].attrs = { wordTable: { version: 1, grid: [4359, 2781, 1627], layout: null,
+    widthDxa: null, shading: null, borders: {} } };
+  const original = model.readLedger(fixture()); original.source.content[1].attrs = source.content[1].attrs;
+  const doc = model.bindLedger(original), [bridge] = await modules;
+  const cryptoPort = { sha256Text: value => crypto.createHash('sha256').update(value).digest('hex'),
+    sha256Json: value => 'sha256:' + crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex'), byteLength: value => Buffer.byteLength(value) };
+  for (const profile of ['minimum', 'full']) {
+    const bytes = await exportDoc(doc, profile);
+    const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }, { cryptoPort }).parts;
+    const widths = [...parts['word/document.xml'].matchAll(/<w:tcW w:w="(\d+)" w:type="dxa"\/>/gu)].map(m => Number(m[1]));
+    assert.deepEqual(widths, [4359, 4408, 4359, 2781, 1627]);
+    assert.deepEqual(shape(await parse(bytes)), shape(doc));
+  }
+});
