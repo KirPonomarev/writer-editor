@@ -578,7 +578,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "2ad8e001adbaa0fce69fb0e6cd910a6ab3317af1ba195d96674618f2edb35c42"
+        "sha256": "938c00970637963eb00ed5e1a41430d8f9d5417113efaa36eb5af7c7161c001f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",

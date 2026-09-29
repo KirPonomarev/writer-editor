@@ -50,6 +50,7 @@ Validated parser repair, existing contract/fixture extension, prerequisite byte-
 - src/core/review-secret-store-v1.cjs
 - src/io/review-secret-store-v1.cjs
 - test/contracts/rtk-word-round-key-durability.contract.test.js
+- src/renderer/editor.bundle.js
 - src/core/browser-safe-hash.mjs
 - src/core/browser-safe-hash.cjs
 - src/core/word-comment-anchor-save-v1.cjs
@@ -170,6 +171,6 @@ Retain exact failure, base, candidate, artifact hashes and expected versus obser
 outcome. After three identical failures, stop that loop and record one next
 hypothesis. No synthetic success, suppressed gate or skipped native oracle.
 
-E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac Word plan. The existing filesystem adapter is relocated byte-identically to IO; seven durability tests pass. E0 now exposes four pre-existing Core domain modules importing node crypto for deterministic SHA256. Their repair is now bound to a fresh clean-head preflight at 8b006811: the existing pure SHA256 algorithm is reused through one CJS implementation and an unchanged ESM facade. Identical hashes, canonical serialization, former raw byteview support and domain identities are mandatory; no platform effect import is added to Core; scanner policy remains unchanged.
-NATIVE_PROGRESS: Native Word tracked delete-cell-up at First C completed and saved. Independent raw XML has two insertions and three deletions with transported source bookmarks. Word system-menu failure is avoided through existing ribbon commands. This discovery fixture is not SOURCE/PACK qualification: application return, restart/history and exported rich readback remain mandatory. Prior Electron access denial remains an unresolved tool condition until a supported retry succeeds.
+E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac Word plan. The existing filesystem adapter is relocated byte-identically to IO; seven durability tests pass. E0 now exposes four pre-existing Core domain modules importing node crypto for deterministic SHA256. Their repair is now bound to a fresh clean-head preflight at 8b006811: the existing pure SHA256 algorithm is reused through one CJS implementation and an unchanged ESM facade. Identical hashes, canonical serialization, former raw byteview support and domain identities are mandatory; no platform effect import is added to Core; scanner policy remains unchanged. The pinned renderer builder regenerates the existing tracked artifact after the shared hash extraction; two builds yield identical bytes with unchanged preload, dependencies and visual contract.
+NATIVE_PROGRESS: Native Word tracked delete-cell-up at First C completed and saved. Independent raw XML has two insertions and three deletions with transported source bookmarks. Word system-menu failure is avoided through existing ribbon commands. This discovery fixture is not SOURCE/PACK qualification: application return, restart/history and exported rich readback remain mandatory. Electron access now succeeds. Genuine SOURCE native dialog import and authenticated full-manuscript export completed at 775b8a09; native Word tracked First C delete-up saved on that exported file. Application return, restart/history and PACKAGED proof remain mandatory.
 DELIVERY_STATE: Draft candidate only until both mandatory blockers are resolved.
