@@ -5069,11 +5069,14 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const budgets = normalizeBudgets(options.budgets);
   const budgetState = createParserBudgetState(budgets, cryptoPort);
   const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
-  const tokens = scan.tokens.filter(t => isWordToken(t, 'ins') || isWordToken(t, 'del'));
+  const tokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName));
+  const moveMarkers = scan.tokens.filter(t => t.namespaceUri === W_NS
+    && ['moveFromRangeStart', 'moveFromRangeEnd', 'moveToRangeStart', 'moveToRangeEnd'].includes(t.localName));
+  if (!tokens.length && moveMarkers.length) throw Error('PENDING_MOVE_RANGE_ORPHAN');
   if (!tokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
-  const unsupported = new Set(['moveFrom', 'moveTo', 'moveFromRangeStart', 'moveToRangeStart', 'rPrChange', 'pPrChange',
+  const unsupported = new Set(['rPrChange', 'pPrChange',
     'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
     'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
     'commentRangeStart', 'commentRangeEnd', 'commentReference', 'ruby', 'sym', 'ptab']);
@@ -5082,6 +5085,39 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
   const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
   const edits = [], revisions = [], ids = new Set();
+  // Word pairs source/destination range names, not revision-wrapper IDs. Each
+  // admitted range owns exactly one inline wrapper in one existing paragraph.
+  const moveOwner = new Map(), movePairs = new Map(), rangeIds = new Set(), usedMarkers = new Set(), ranges = [];
+  for (const start of moveMarkers.filter(t => t.localName.endsWith('Start'))) {
+    const side = start.localName.startsWith('moveFrom') ? 'moveFrom' : 'moveTo';
+    const rangeId = attr(start, 'id', W_NS), name = attr(start, 'name', W_NS);
+    const end = moveMarkers.filter(t => t.localName === side + 'RangeEnd' && attr(t, 'id', W_NS) === rangeId);
+    if (!rangeId || rangeIds.has(rangeId) || end.length !== 1 || !start.selfClosing || !end[0].selfClosing
+      || !name || name.length > 255 || /[\s\x00-\x1f\x7f]/u.test(name)) throw Error('PENDING_MOVE_RANGE_INVALID');
+    rangeIds.add(rangeId);
+    const finish = end[0];
+    const p = paragraphs.find(p => p.openEnd <= start.openStart && p.closeStart >= finish.closeEnd);
+    if (!p || start.depth !== p.depth + 1 || finish.depth !== start.depth || finish.openStart <= start.closeEnd)
+      throw Error('PENDING_MOVE_RANGE_UNSUPPORTED');
+    if (ranges.some(r => start.openStart < r.to && finish.closeEnd > r.from)) throw Error('PENDING_MOVE_RANGE_OVERLAP');
+    ranges.push({ from: start.openStart, to: finish.closeEnd });
+    const wrappers = tokens.filter(t => t.localName === side && t.openStart >= start.closeEnd && t.closeEnd <= finish.openStart);
+    if (wrappers.length !== 1 || moveOwner.has(wrappers[0])) throw Error('PENDING_MOVE_RANGE_BODY_UNSUPPORTED');
+    const wrapper = wrappers[0];
+    if (scan.tokens.some(t => t.openStart >= start.closeEnd && t.closeEnd <= finish.openStart
+      && !(t.openStart >= wrapper.openStart && t.closeEnd <= wrapper.closeEnd))) throw Error('PENDING_MOVE_RANGE_BODY_UNSUPPORTED');
+    if (attr(start, 'author', W_NS) !== attr(wrapper, 'author', W_NS)
+      || attr(start, 'date', W_NS) !== attr(wrapper, 'date', W_NS)) throw Error('PENDING_MOVE_PROVENANCE_MISMATCH');
+    const pair = movePairs.get(name) || {};
+    if (pair[side]) throw Error('PENDING_MOVE_PAIR_DUPLICATE');
+    pair[side] = wrapper; movePairs.set(name, pair); moveOwner.set(wrapper, name);
+    usedMarkers.add(start); usedMarkers.add(finish);
+  }
+  if (usedMarkers.size !== moveMarkers.length || tokens.some(t => ['moveFrom', 'moveTo'].includes(t.localName) && !moveOwner.has(t)))
+    throw Error('PENDING_MOVE_RANGE_ORPHAN');
+  for (const pair of movePairs.values()) if (!pair.moveFrom || !pair.moveTo
+    || attr(pair.moveFrom, 'author', W_NS) !== attr(pair.moveTo, 'author', W_NS)) throw Error('PENDING_MOVE_PAIR_INVALID');
+  for (const token of moveMarkers) edits.push({ from: token.openStart, to: token.closeEnd, text: '' });
   const allowed = new Set(['r', 'rPr', 't', 'delText', 'tab', 'br', 'cr', 'noBreakHyphen', 'softHyphen', 'lastRenderedPageBreak',
     'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
   for (const token of tokens.sort((a, b) => a.openStart - b.openStart)) {
@@ -5093,19 +5129,24 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     const inside = scan.tokens.filter(t => t.openStart >= token.openEnd && t.closeEnd <= token.closeStart);
     if (inside.some(t => t.namespaceUri !== W_NS || !allowed.has(t.localName))) throw Error('PENDING_REVISIONS_BODY_UNSUPPORTED');
     if (inside.some(t => isWordToken(t, 'br') && ['page', 'column'].includes(attr(t, 'type')))) throw Error('PENDING_REVISIONS_BREAK_UNSUPPORTED');
-    if (inside.some(t => token.localName === 'ins' && isWordToken(t, 'delText') || token.localName === 'del' && isWordToken(t, 't'))) throw Error('PENDING_REVISIONS_TEXT_KIND_INVALID');
+    if (inside.some(t => token.localName !== 'del' && isWordToken(t, 'delText') || token.localName === 'del' && isWordToken(t, 't'))) throw Error('PENDING_REVISIONS_TEXT_KIND_INVALID');
     const sourceText = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, token)).replaceAll('\r', '\n');
     if (!sourceText) throw Error('PENDING_REVISIONS_EMPTY_UNSUPPORTED');
     const from = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, { ...p, closeStart: token.openStart })).replaceAll('\r', '\n').length;
-    revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: token.localName === 'ins' ? 'insert' : 'delete',
+    revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: ['ins', 'moveTo'].includes(token.localName) ? 'insert' : 'delete',
       author: attr(token, 'author', W_NS), date: attr(token, 'date', W_NS), dateUtc: attr(token, 'dateUtc', W16DU_NS),
-      groupId: null, paragraphIndex, from, to: from + sourceText.length, state: 'pending' });
+      groupId: null, paragraphIndex, from, to: from + sourceText.length, state: 'pending',
+      ...(moveOwner.has(token) ? { moveName: moveOwner.get(token) } : {}) });
     edits.push({ from: token.openStart, to: token.openEnd, text: '' }, { from: token.closeStart, to: token.closeEnd, text: '' });
   }
   let group = 0;
+  for (const name of movePairs.keys()) {
+    const groupId = `group-${++group}`;
+    revisions.filter(r => r.moveName === name).forEach(r => { r.groupId = groupId; });
+  }
   for (let i = 0; i < revisions.length - 1; i++) {
     const a = revisions[i], b = revisions[i + 1];
-    if (a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
+    if (!a.moveName && !b.moveName && a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
       a.groupId = b.groupId = `group-${++group}`; i++;
     }
   }
@@ -5117,9 +5158,10 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   let xml = documentXml;
   for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
   let currentXml = documentXml;
-  const currentEdits = tokens.flatMap(token => token.localName === 'del'
+  const currentEdits = tokens.flatMap(token => ['del', 'moveFrom'].includes(token.localName)
     ? [{ from: token.openStart, to: token.closeEnd }]
     : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
+  currentEdits.push(...moveMarkers.map(token => ({ from: token.openStart, to: token.closeEnd })));
   for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
   return { xml, currentXml, revisions, paragraphCount: paragraphs.length };
 }

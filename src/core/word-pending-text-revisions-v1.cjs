@@ -111,7 +111,7 @@ function validateState(input, frame = false) {
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
   const ids = new Set(), groups = new Map(); let previousParagraph = -1, previousEnd = 0;
   for (const r of input.revisions) {
-    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state']));
+    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName']));
     assert(/^revision-[1-9]\d{0,3}$/u.test(r.id) && !ids.has(r.id)); ids.add(r.id);
     assert(typeof r.nativeId === 'string' && r.nativeId.length <= 80 && typeof r.author === 'string' && r.author.length <= 1024);
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
@@ -122,11 +122,20 @@ function validateState(input, frame = false) {
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to) && r.to > r.from && (r.paragraphIndex !== previousParagraph || r.from >= previousEnd));
     previousParagraph = r.paragraphIndex; previousEnd = r.to;
     assert(r.groupId === null || /^group-[1-9]\d{0,3}$/u.test(r.groupId));
+    if (r.moveName !== undefined) assert(typeof r.moveName === 'string' && r.moveName.length > 0 && r.moveName.length <= 255
+      && !/[\s\x00-\x1f\x7f]/u.test(r.moveName) && r.groupId !== null, 'PENDING_MOVE_NAME_INVALID');
     if (r.groupId) { const group = groups.get(r.groupId) || []; group.push(r); groups.set(r.groupId, group); }
   }
-  for (const group of groups.values()) assert(group.length === 2 && group[0].operation !== group[1].operation
-    && group[0].paragraphIndex === group[1].paragraphIndex && group[0].to === group[1].from
-    && group[0].author === group[1].author && group[0].state === group[1].state, 'PENDING_REVISIONS_GROUP_INVALID');
+  const moveNames = new Set();
+  for (const group of groups.values()) {
+    assert(group.length === 2 && group[0].operation !== group[1].operation
+      && group[0].author === group[1].author && group[0].state === group[1].state, 'PENDING_REVISIONS_GROUP_INVALID');
+    if (group.some(r => r.moveName !== undefined)) {
+      assert(group[0].moveName && group[0].moveName === group[1].moveName
+        && !moveNames.has(group[0].moveName), 'PENDING_MOVE_PAIR_INVALID');
+      moveNames.add(group[0].moveName);
+    } else assert(group[0].paragraphIndex === group[1].paragraphIndex && group[0].to === group[1].from, 'PENDING_REVISIONS_GROUP_INVALID');
+  }
   for (const history of [input.undo, input.redo]) {
     assert(Array.isArray(history) && history.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
     for (const row of history) {
@@ -157,7 +166,7 @@ function roundFrame(ledger) {
 }
 function revisionMeaning(sourceParagraphs, revision) {
   const text = sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
-  return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text]);
+  return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text, Boolean(revision.moveName)]);
 }
 function preserveReturnedIdentities(before, proposed) {
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));

@@ -329,7 +329,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
       }
       const text = node.type === 'hardBreak' ? '\n' : node.text;
       return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks }] } }, hyperlinkByHref);
-    }, revisionCounter);
+    }, revisionCounter, block.sceneId || '');
   }
   // Google Office drops an otherwise empty paragraph carrying a section
   // break. A word joiner is visually empty but keeps the authored paragraph
