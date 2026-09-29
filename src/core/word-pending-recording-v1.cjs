@@ -202,6 +202,87 @@ function deriveParagraphBoundaries(doc, before, working, metadata) {
   return { changed: true, doc: result };
 }
 
+// Row ownership is carried by exact table position and source node identity.
+// Content is used only to derive a local recording delta, never return authority.
+function deriveTableRows(doc, before, working, metadata) {
+  const current = review.materialize(before);
+  if (equal(current, working)) return { changed: false, doc: clone(doc) };
+  if (before.revisions.some(review.isParagraphBoundary) || current.content.length !== working.content.length
+    || before.source.content.length !== current.content.length) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+  const after = clone(before), previousLeaves = review.paragraphs(after.source), fresh = [];
+  const oldRows = review.tableRows(after.source);
+  let nextId = 1;
+  for (const state of [before, ...before.roundUndo, ...before.roundRedo]) for (const r of state.revisions)
+    nextId = Math.max(nextId, Number(r.id.slice(9)) + 1);
+  const included = r => !r || r.operation === (r.state === 'rejected' ? 'delete' : 'insert');
+  let tableIndex = 0;
+  for (let block = 0; block < current.content.length; block++) {
+    const existing = current.content[block], desired = working.content[block], source = after.source.content[block];
+    if (existing.type !== 'table' || desired.type !== 'table') {
+      if (!equal(existing, desired)) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+      continue;
+    }
+    const owners = oldRows.filter(row => row.tableIndex === tableIndex); tableIndex++;
+    if (stable(existing.attrs || {}) !== stable(desired.attrs || {})
+      || owners.some(row => row.node.content.some(cell => (cell.attrs?.rowspan || 1) !== 1))) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+    const revisionFor = owner => after.revisions.find(r => review.isTableRow(r) && r.paragraphIndex === owner.paragraphIndex);
+    const visible = owners.filter(owner => included(revisionFor(owner)));
+    if (visible.length !== existing.content.length) fail('RECORDING_TABLE_ROW_BINDING');
+    const a = existing.content.map(row => stable(review.normalizeNode(row))), b = desired.content.map(row => stable(review.normalizeNode(row)));
+    const matrix = Array.from({ length: a.length + 1 }, () => new Uint16Array(b.length + 1));
+    for (let x = a.length - 1; x >= 0; x--) for (let y = b.length - 1; y >= 0; y--)
+      matrix[x][y] = a[x] === b[y] ? 1 + matrix[x + 1][y + 1] : Math.max(matrix[x + 1][y], matrix[x][y + 1]);
+    const matches = []; let x = 0, y = 0;
+    while (x < a.length && y < b.length) {
+      if (a[x] === b[y]) { matches.push([x++, y++]); }
+      else if (matrix[x + 1][y] >= matrix[x][y + 1]) x++; else y++;
+    }
+    matches.push([a.length, b.length]);
+    const rows = []; let sourceAt = 0, desiredAt = 0;
+    const keep = new Set(matches.filter(([i]) => i < visible.length).map(([i]) => visible[i]));
+    for (const [i, j] of matches) {
+      const stop = i < visible.length ? owners.indexOf(visible[i]) : owners.length;
+      while (sourceAt < stop) {
+        const owner = owners[sourceAt++]; rows.push(owner.node);
+        if (!included(revisionFor(owner))) continue;
+        if (keep.has(owner)) fail('RECORDING_TABLE_ROW_BINDING');
+        if (after.revisions.some(r => r.paragraphIndex >= owner.paragraphIndex && r.paragraphIndex < owner.paragraphIndex + owner.paragraphCount))
+          fail('RECORDING_EXISTING_REVISION_OVERLAP');
+        fresh.push({ node: owner.node, operation: 'delete' });
+      }
+      while (desiredAt < j) {
+        const node = clone(desired.content[desiredAt++]); rows.push(node); fresh.push({ node, operation: 'insert' });
+      }
+      if (i < visible.length) { rows.push(owners[sourceAt++].node); desiredAt++; }
+    }
+    source.content = rows;
+  }
+  const leaves = review.paragraphs(after.source), rows = review.tableRows(after.source);
+  for (const r of after.revisions) {
+    const node = previousLeaves[r.paragraphIndex]; r.paragraphIndex = leaves.indexOf(node);
+    if (r.paragraphIndex < 0) fail('RECORDING_TABLE_ROW_BINDING');
+    if (review.isTableRow(r)) {
+      const owner = rows.find(row => row.paragraphIndex === r.paragraphIndex);
+      r.structure = { kind: 'tableRow', tableIndex: owner.tableIndex, rowIndex: owner.rowIndex };
+    }
+  }
+  for (const change of fresh) {
+    if (nextId > 9999) fail('PENDING_REVISIONS_ID_BUDGET');
+    const owner = rows.find(row => row.node === change.node), id = nextId++;
+    after.revisions.push({ id: `revision-${id}`, nativeId: `yalken-${id}`, operation: change.operation,
+      author: metadata.author, date: metadata.date, dateUtc: metadata.date, groupId: null, state: 'pending',
+      paragraphIndex: owner.paragraphIndex, from: 0, to: 0,
+      structure: { kind: 'tableRow', tableIndex: owner.tableIndex, rowIndex: owner.rowIndex } });
+  }
+  after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
+  const previous = frame(before); previous.redo = [];
+  after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
+  const result = review.bindLedger(after);
+  if (!equal(result, working)) fail('RECORDING_CURRENT_PROJECTION_MISMATCH');
+  if (!equal(review.materialize(after, 'original'), review.materialize(before, 'original'))) fail('RECORDING_ORIGINAL_PROJECTION_MISMATCH');
+  return { changed: true, doc: result };
+}
+
 // Pure derivation from a stable session baseline, not from the last autosave.
 // The caller supplies main-owned author/time and owns all save authority.
 function derive(doc, workingDoc, metadata) {
@@ -218,7 +299,18 @@ function derive(doc, workingDoc, metadata) {
   const changedBoundariesOnly = [current, working].every(d => d.content.every(p => ['paragraph', 'heading'].includes(p.type)))
     && oldLeaves.map(text).join('') === newLeaves.map(text).join('')
     && stable(oldLeaves.map(text)) !== stable(newLeaves.map(text));
-  if (changedBoundariesOnly || !equal(shape(current), shape(working)) || oldLeaves.length !== review.paragraphs(before.source).length)
+  const sameShape = equal(shape(current), shape(working));
+  if (!sameShape && current.content.some(n => n.type === 'table')) return deriveTableRows(doc, before, working, metadata);
+  const sourceIndexes = review.paragraphs(before.source).map((_, i) => i);
+  if (before.revisions.some(review.isTableRow)) {
+    const hidden = review.tableRows(before.source).filter(row => {
+      const r = before.revisions.find(r => review.isTableRow(r) && r.paragraphIndex === row.paragraphIndex);
+      return r && r.operation !== (r.state === 'rejected' ? 'delete' : 'insert');
+    });
+    for (let i = sourceIndexes.length - 1; i >= 0; i--)
+      if (hidden.some(row => i >= row.paragraphIndex && i < row.paragraphIndex + row.paragraphCount)) sourceIndexes.splice(i, 1);
+  }
+  if (changedBoundariesOnly || !sameShape || oldLeaves.length !== sourceIndexes.length)
     return deriveParagraphBoundaries(doc, before, working, metadata);
   const after = clone(before); let nextId = 1, nextGroup = 1, changed = false;
   const currentParagraphs = review.paragraphs(current), workingParagraphs = review.paragraphs(working);
@@ -258,9 +350,12 @@ function derive(doc, workingDoc, metadata) {
     }
     return intervals;
   };
-  for (let index = 0; index < workingParagraphs.length; index++) {
-    const old = currentParagraphs[index], next = workingParagraphs[index];
+  for (let visibleIndex = 0; visibleIndex < workingParagraphs.length; visibleIndex++) {
+    const index = sourceIndexes[visibleIndex];
+    const old = currentParagraphs[visibleIndex], next = workingParagraphs[visibleIndex];
     if (equal(old, next)) continue;
+    const row = review.tableRows(before.source).find(row => index >= row.paragraphIndex && index < row.paragraphIndex + row.paragraphCount);
+    if (row && before.revisions.some(r => review.isTableRow(r) && r.paragraphIndex === row.paragraphIndex)) fail('RECORDING_EXISTING_REVISION_OVERLAP');
     const a = text(old), b = text(next), p = afterParagraphs[index];
     const oldRevisions = after.revisions.filter(r => r.paragraphIndex === index);
     let insertionAt = Infinity, addedLength = 0;

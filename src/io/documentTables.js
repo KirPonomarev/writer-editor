@@ -177,7 +177,7 @@ function compareTableParagraphTopology(actual, expected) {
   } catch (error) { return { ok: false, code: 'DOCX_TABLE_TOPOLOGY_INVALID', reason: error.message }; }
 }
 
-function tableGroupXml(group, renderParagraph) {
+function tableGroupXml(group, renderParagraph, renderRowProperties) {
   const byNode = new Map(group.cells.map(cell => [cell.node, cell]));
   const explicit = group.table.attrs?.wordTable;
   const rows = group.layout.grid.map((row, y) => {
@@ -195,7 +195,9 @@ function tableGroupXml(group, renderParagraph) {
       cells.push(`<w:tc><w:tcPr>${properties}</w:tcPr>${continuation ? '<w:p/>' : entry.paragraphs.map(p => renderParagraph(p.item, p.index)).join('')}</w:tc>`);
       x += cell.colspan;
     }
-    return `<w:tr>${row[0].header ? '<w:trPr><w:tblHeader/></w:trPr>' : ''}${cells.join('')}</w:tr>`;
+    const properties = (row[0].header ? '<w:tblHeader/>' : '')
+      + (renderRowProperties?.(group.cells.filter(cell => cell.meta.row === y).flatMap(cell => cell.paragraphs)) || '');
+    return `<w:tr>${properties ? `<w:trPr>${properties}</w:trPr>` : ''}${cells.join('')}</w:tr>`;
   });
   const props = explicit || legacyTableProperties(group.layout.columns);
   const width = props.widthDxa === null ? (explicit ? '' : '<w:tblW w:w="0" w:type="auto"/>') : `<w:tblW w:w="${props.widthDxa}" w:type="dxa"/>`;
@@ -204,9 +206,9 @@ function tableGroupXml(group, renderParagraph) {
   return `<w:tbl><w:tblPr>${width}${borderXml(props.borders, 'tblBorders')}${shadingXml(props.shading)}${layout}</w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rows.join('')}</w:tbl>`;
 }
 
-function renderTableParagraphs(items, metadata, renderParagraph) {
+function renderTableParagraphs(items, metadata, renderParagraph, renderRowProperties) {
   return groupTableParagraphs(items, metadata).map(group => group.table
-    ? tableGroupXml(group, renderParagraph) : renderParagraph(group.item, group.index)).join('');
+    ? tableGroupXml(group, renderParagraph, renderRowProperties) : renderParagraph(group.item, group.index)).join('');
 }
 
 // Consumes only namespace-resolved events from the existing bounded XML parser.

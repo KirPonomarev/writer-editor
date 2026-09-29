@@ -140,3 +140,26 @@ for (const kind of ['heading','codeBlock','blockquote','bulletList','orderedList
     assert.deepEqual(reopened.applyTransaction(reopened.tr.setMeta('focus',true)).state.doc.toJSON(),authored,'Explicitly authored empty paragraphs must survive');
   });
 }
+
+test('Last-cell Tab adds a row as one undoable edit and recording preserves its whole body', async () => {
+  const [{getSchema},{default:StarterKit},{DocumentTables,nextTableCell},{EditorState,TextSelection},{history,undo,redo}]=await Promise.all([
+    import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),
+    import('@tiptap/pm/state'),import('@tiptap/pm/history')]);
+  const recording=require('../../src/core/word-pending-recording-v1.cjs'), review=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const schema=getSchema([StarterKit.configure({trailingNode:false}),DocumentTables]);
+  const initial={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:['A','B'].map(text=>({type:'tableCell',content:[{type:'paragraph',content:[{type:'text',text}]}]}))}]}]};
+  const doc=schema.nodeFromJSON(initial);let pos;doc.descendants((n,p)=>{if(n.isText&&n.text==='B')pos=p+1;});
+  let state=EditorState.create({schema,doc,selection:TextSelection.create(doc,pos),plugins:[history()]}),writes=0;
+  const dispatch=tr=>{writes++;state=state.apply(tr);};
+  assert.equal(nextTableCell(state),true);assert.equal(writes,0);assert.deepEqual(state.doc,doc);
+  assert.equal(nextTableCell(state,dispatch),true);assert.equal(writes,1);assert.equal(state.doc.firstChild.childCount,2);
+  assert.equal(state.selection.$from.node(1).type.name,'table');assert.equal(state.selection.$from.index(1),1);
+  const added=state.doc.toJSON();assert.equal(undo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),doc.toJSON());
+  assert.equal(redo(state,dispatch),true);assert.deepEqual(state.doc.toJSON(),added);
+  state=state.apply(state.tr.insertText('Written in new row'));
+  const result=recording.derive(doc.toJSON(),state.doc.toJSON(),{author:'Mac author',date:'2026-09-29T05:40:00.000Z'}).doc;
+  assert.equal(review.readLedger(result).revisions.length,1);assert.equal(review.readLedger(result).revisions[0].structure.kind,'tableRow');
+  assert.deepEqual(review.normalizeNode(review.materialize(review.readLedger(result),'original')),review.normalizeNode(doc.toJSON()));
+  const outside=EditorState.create({schema,doc:schema.node('doc',null,[schema.node('paragraph',null,schema.text('Outside'))])});
+  assert.equal(nextTableCell(outside,()=>{throw Error('Unexpected write');}),false);
+});

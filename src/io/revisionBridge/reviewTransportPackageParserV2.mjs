@@ -5063,6 +5063,76 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
 // Generic Word intake only: flatten supported run wrappers for the existing
 // rich-text reader, while retaining an exact, namespace-aware revision map.
 // The flattened XML is an internal parse view, never an accepted document.
+function extractPendingTableRowsV1(documentXml, scan, markers, options) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
+  const tables = scan.tokens.filter(t => isWordToken(t, 'tbl'));
+  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
+  const revisionTokens = scan.tokens.filter(t => t.namespaceUri === W_NS
+    && ['ins', 'del', 'moveFrom', 'moveTo', 'rPrChange', 'pPrChange', 'tblPrChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge'].includes(t.localName));
+  if (blockingReason(scan.diagnostics) || revisionTokens.length > 1024) throw Error('PENDING_TABLE_ROW_XML_INVALID');
+  const ids = new Set();
+  for (const token of revisionTokens) {
+    const id = attr(token, 'id', W_NS);
+    if (!id || ids.has(id)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(id);
+  }
+  const edits = [], revisions = [], owners = new Set();
+  for (const marker of markers) {
+    const row = scan.tokens.find(t => isWordToken(t, 'tr') && t.openEnd <= marker.openStart && t.closeStart >= marker.closeEnd && marker.depth === t.depth + 2);
+    const properties = row && scan.tokens.filter(t => isWordToken(t, 'trPr') && t.depth === row.depth + 1 && t.openEnd <= marker.openStart && t.closeStart >= marker.closeEnd);
+    const table = row && tables.find(t => t.depth + 1 === row.depth && t.openEnd <= row.openStart && t.closeStart >= row.closeEnd);
+    if (!row || properties.length !== 1 || !table || owners.has(row.openStart)
+      || table.path.filter(name => name === 'tbl').length !== 1) throw Error('PENDING_TABLE_ROW_OWNER');
+    owners.add(row.openStart);
+    const tableIndex = tables.indexOf(table), rows = scan.tokens.filter(t => isWordToken(t, 'tr') && t.depth === row.depth && t.openStart > table.openStart && t.closeEnd < table.closeEnd);
+    const rowIndex = rows.indexOf(row), paragraphIndex = paragraphs.findIndex(p => p.openStart > row.openStart && p.closeEnd < row.closeEnd);
+    if (paragraphIndex < 0) throw Error('PENDING_TABLE_ROW_EMPTY');
+    const children = revisionTokens.filter(t => t.openStart >= row.openEnd && t.closeEnd <= row.closeStart);
+    // Word may omit dateUtc from the row marker when resaving exported rows,
+    // while retaining it on the same-author, same-date paragraph/run carriers.
+    const utcDates = [...new Set(children.map(t => attr(t, 'dateUtc', W16DU_NS)).filter(Boolean))];
+    if (utcDates.length > 1) throw Error('PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
+    for (const child of children) {
+      if (child.localName !== marker.localName || ['author', 'date'].some(name => attr(child, name, W_NS) !== attr(marker, name, W_NS))) throw Error('PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
+      if (child === marker) edits.push({ from: child.openStart, to: child.closeEnd, text: '' });
+      else if (child.selfClosing && child.path.slice(-4).join('/') === 'p/pPr/rPr/' + child.localName)
+        edits.push({ from: child.openStart, to: child.closeEnd, text: '' });
+      else if (!child.selfClosing && child.path.slice(-2).join('/') === 'p/' + child.localName) {
+        edits.push({ from: child.openStart, to: child.openEnd, text: '' }, { from: child.closeStart, to: child.closeEnd, text: '' });
+      } else throw Error('PENDING_TABLE_ROW_CHILD_OWNER');
+    }
+    for (const token of scan.tokens.filter(t => isWordToken(t, 'delText') && t.openStart >= row.openEnd && t.closeEnd <= row.closeStart)) {
+      if (marker.localName !== 'del' || !children.some(t => !t.selfClosing && token.openStart > t.openStart && token.closeEnd < t.closeEnd)) throw Error('PENDING_REVISIONS_ORPHAN_DELETION');
+      edits.push({ from: token.openStart, to: token.openEnd, text: documentXml.slice(token.openStart, token.openEnd).replace(/delText/u, 't') },
+        { from: token.closeStart, to: token.closeEnd, text: documentXml.slice(token.closeStart, token.closeEnd).replace(/delText/u, 't') });
+    }
+    revisions.push({ id: '', nativeId: attr(marker, 'id', W_NS), operation: marker.localName === 'ins' ? 'insert' : 'delete',
+      author: attr(marker, 'author', W_NS), date: attr(marker, 'date', W_NS), dateUtc: utcDates[0] || '',
+      groupId: null, paragraphIndex, from: 0, to: 0, state: 'pending', structure: { kind: 'tableRow', tableIndex, rowIndex } });
+  }
+  let xml = documentXml;
+  for (const edit of edits.sort((a, b) => b.from - a.from)) xml = xml.slice(0, edit.from) + edit.text + xml.slice(edit.to);
+  const nested = extractPendingTextRevisionSourceV1(xml, options);
+  const project = (value, removedOperation) => {
+    const parsed = parseXmlPart('word/document.xml', value, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+    if (blockingReason(parsed.diagnostics)) throw Error('PENDING_TABLE_ROW_XML_INVALID');
+    const changes = [];
+    parsed.tokens.filter(t => isWordToken(t, 'tbl')).forEach((table, tableIndex) => {
+      const rows = parsed.tokens.filter(t => isWordToken(t, 'tr') && t.depth === table.depth + 1 && t.openStart > table.openStart && t.closeEnd < table.closeEnd);
+      const removed = rows.filter((row, rowIndex) => revisions.some(r => r.operation === removedOperation && r.structure.tableIndex === tableIndex && r.structure.rowIndex === rowIndex));
+      if (removed.length && removed.length === rows.length) changes.push(table);
+      else changes.push(...removed);
+    });
+    for (const change of changes.sort((a, b) => b.openStart - a.openStart)) value = value.slice(0, change.openStart) + value.slice(change.closeEnd);
+    return value;
+  };
+  const currentXml = project(nested.currentXml, 'delete'), originalXml = project(nested.originalXml || nested.xml, 'insert');
+  const all = [...nested.revisions, ...revisions].sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
+  all.forEach((r, i) => r.id = `revision-${i + 1}`);
+  const originalScan = parseXmlPart('word/document.xml', originalXml, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+  return { ...nested, xml: nested.xml, currentXml, originalXml, revisions: all, paragraphCount: paragraphs.length,
+    originalParagraphCount: originalScan.tokens.filter(t => isWordToken(t, 'p')).length };
+}
+
 export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) throw Error('PENDING_REVISIONS_CRYPTO_REQUIRED');
@@ -5070,6 +5140,9 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const budgetState = createParserBudgetState(budgets, cryptoPort);
   const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   const allRevisionTokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName));
+  const rowMarkers = allRevisionTokens.filter(t => ['ins', 'del'].includes(t.localName) && t.selfClosing
+    && t.path.slice(-3).join('/') === 'tr/trPr/' + t.localName);
+  if (rowMarkers.length) return extractPendingTableRowsV1(documentXml, scan, rowMarkers, options);
   const boundaryTokens = allRevisionTokens.filter(t => ['ins', 'del'].includes(t.localName) && t.selfClosing
     && t.path.slice(-4).join('/') === 'p/pPr/rPr/' + t.localName);
   const tokens = allRevisionTokens.filter(t => !boundaryTokens.includes(t));
@@ -5311,7 +5384,7 @@ export function extractTransportParagraphOwnershipV1(documentXml, names, options
   if (ranges.some((r, i) => i && r.start < ranges[i - 1].end)) throw Error('PENDING_RETURN_BOOKMARK_OVERLAP');
   return paragraphs.map((p, i) => {
     const owners = ranges.filter(r => r.first <= i && r.last >= i).map(r => r.ordinal);
-    if (!owners.length) throw Error('PENDING_RETURN_BOOKMARK_UNOWNED');
+    if (!owners.length && options.allowUnownedParagraphs !== true) throw Error('PENDING_RETURN_BOOKMARK_UNOWNED');
     return owners;
   });
 }

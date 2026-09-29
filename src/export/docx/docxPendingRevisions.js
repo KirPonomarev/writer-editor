@@ -25,6 +25,20 @@ function buildPendingParagraphBoundaryXml(propertiesXml, revision, counter) {
   const mark = `<w:rPr><w:${revision.operation === 'insert' ? 'ins' : 'del'}${revisionAttributes(revision, counter)}/></w:rPr>`;
   return `<w:pPr>${body}${mark}</w:pPr>`;
 }
+function buildPendingRowPropertiesXml(revisions, counter) {
+  const revision = revisions.find(Boolean);
+  if (!revision) return '';
+  if (revisions.some(r => !r || JSON.stringify(r) !== JSON.stringify(revision))
+    || revision.structure?.kind !== 'tableRow' || revision.state !== 'pending'
+    || !['insert', 'delete'].includes(revision.operation)) throw Error('PENDING_TABLE_ROW_EXPORT_INVALID');
+  return `<w:${revision.operation === 'insert' ? 'ins' : 'del'}${revisionAttributes(revision, counter)}/>`;
+}
+function buildPendingRowParagraphXml(xml, revision, counter) {
+  if (!revision) return xml;
+  const mark = buildPendingRowPropertiesXml([revision], counter);
+  return xml.includes('</w:pPr>') ? xml.replace('</w:pPr>', `<w:rPr>${mark}</w:rPr></w:pPr>`)
+    : `<w:pPr><w:rPr>${mark}</w:rPr></w:pPr>${xml}`;
+}
 // Export segments have already been validated against canonical scene truth.
 // One native wrapper per revision, even when its body has several rich runs.
 function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
@@ -67,4 +81,4 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
   }
   flush(); return output;
 }
-module.exports = { buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
+module.exports = { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };

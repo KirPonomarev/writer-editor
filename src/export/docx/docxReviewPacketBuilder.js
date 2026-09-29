@@ -1,4 +1,4 @@
-const { buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
+const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage } = require('./docxMedia.js');
@@ -115,6 +115,7 @@ function normalizeReviewPacketBlocks(input = {}) {
       sceneOrdinal: Number.isInteger(block.sceneOrdinal) && block.sceneOrdinal >= 0 ? block.sceneOrdinal : null,
       sceneTitle: normalizeString(block.sceneTitle),
       sceneBoundary: block.sceneBoundary === true,
+      ...(block.pendingRowRevision ? { pendingRowRevision: JSON.parse(JSON.stringify(block.pendingRowRevision)) } : {}),
       ...(block.pendingBoundaryRevision ? { pendingBoundaryRevision: JSON.parse(JSON.stringify(block.pendingBoundaryRevision)) } : {}),
       ...(block.pendingParagraphRevision ? { pendingParagraphRevision: JSON.parse(JSON.stringify(block.pendingParagraphRevision)) } : {}),
       ...(Array.isArray(block.pendingRevisionSegments) ? { pendingRevisionSegments: JSON.parse(JSON.stringify(block.pendingRevisionSegments)) } : {}),
@@ -321,7 +322,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     : buildFormatIrRunsXml(block, hyperlinkByHref);
   if (block.pendingRevisionSegments) {
     if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
-    textRun = buildPendingRunsXml(block.pendingRevisionSegments, node => {
+    textRun = buildPendingRunsXml(block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments, node => {
       const inline = {}, preservedMarks = [];
       for (const mark of node.marks || []) {
         if (['bold', 'italic', 'underline', 'strike'].includes(mark.type)) inline[mark.type] = true;
@@ -371,9 +372,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
   if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));
-  const paragraphProperties = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(paragraphPropertyParts.length > 0
+  const paragraphProperties = buildPendingRowParagraphXml(buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(paragraphPropertyParts.length > 0
     ? `<w:pPr>${paragraphPropertyParts.join('')}</w:pPr>`
-    : '', block.pendingParagraphRevision, revisionCounter), block.pendingBoundaryRevision, revisionCounter);
+    : '', block.pendingParagraphRevision, revisionCounter), block.pendingBoundaryRevision, revisionCounter), block.pendingRowRevision, revisionCounter);
   return [
     `<w:p w14:paraId="${escapeXml(block.paraId)}" w14:textId="${escapeXml(block.textId)}">`,
     paragraphProperties,
@@ -401,7 +402,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     officeModeTransport,
     mediaPackage,
     revisionCounter,
-  ));
+  ), row => buildPendingRowPropertiesXml(row.map(p => p.item.pendingRowRevision), revisionCounter));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
     ? buildSectionPropertiesXml(finalSection, { final: true })
