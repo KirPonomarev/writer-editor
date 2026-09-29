@@ -77,7 +77,7 @@ async function oracle(module, snapshotModule, timeModule, hashModule) {
 async function loadMutant(source, mutant) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-wp502-mutant-'));
   const core = path.join(dir, 'core'); fs.mkdirSync(core, { recursive: true });
-  for (const name of ['browser-safe-hash.mjs', 'browser-safe-hash.cjs', 'atlas-book-snapshot-v1.mjs', 'atlas-time-knowledge-v1.mjs']) fs.copyFileSync(path.join(ROOT, 'src/core', name), path.join(core, name));
+  for (const name of ['browser-safe-hash.mjs', 'atlas-book-snapshot-v1.mjs', 'atlas-time-knowledge-v1.mjs']) fs.copyFileSync(path.join(ROOT, 'src/core', name), path.join(core, name));
   const target = path.join(core, 'atlas-threads-causality-v1.mjs');
   fs.writeFileSync(target, source.replace(mutant.find, mutant.replace));
   return { dir, module: await import(`${pathToFileURL(target).href}?mutant=${encodeURIComponent(mutant.id)}`), snapshotModule: await import(pathToFileURL(path.join(core, 'atlas-book-snapshot-v1.mjs')).href), timeModule: await import(pathToFileURL(path.join(core, 'atlas-time-knowledge-v1.mjs')).href), hashModule: await import(pathToFileURL(path.join(core, 'browser-safe-hash.mjs')).href) };

@@ -30,23 +30,26 @@ function nativeOracleModules() {
   return Object.fromEntries(names.map(name => [name, load(name)]));
 }
 
-test('Shared pure CJS and unchanged ESM API preserve known SHA256 and UTF8/canonical hashes', async () => {
+test('Pure CJS and unchanged standalone ESM API preserve independent SHA256 and UTF8/canonical hashes', async () => {
   const esm = await import('../../src/core/browser-safe-hash.mjs');
   assert.deepEqual(Object.keys(esm).sort(), ['canonicalSerialize', 'hashCanonicalValue', 'sha256Hex']);
-  assert.equal(esm.sha256Hex, hashing.sha256Hex);
   assert.equal(hashing.sha256Hex(''), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
   assert.equal(hashing.sha256Hex('abc'), 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
   assert.equal(hashing.sha256Hex('a'.repeat(1000000)), 'cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0');
   for (const text of ['', 'Ялкен Word 世界 😀 e\u0301', 'a\0b\r\n\t', '\ud800', '\udc00', '\ud800a\udc00',
     ...[55,56,63,64,65,127,128,129].map(length => 'x'.repeat(length)), 'x'.repeat(8 * 1024 * 1024)]) {
-    assert.equal(hashing.sha256Hex(text), native(text));
-    assert.equal(hashing.sha256UpdateCompatible(text), native(text));
+    const expected = native(text);
+    assert.equal(esm.sha256Hex(text), expected);
+    assert.equal(hashing.sha256Hex(text), expected);
+    assert.equal(hashing.sha256UpdateCompatible(text), expected);
   }
   for (const input of [undefined, null, false, 3, Symbol('symbol'), { toString: () => 'coerced' }])
     assert.equal(esm.sha256Hex(input), native(String(input)), 'existing ESM coercion remains unchanged');
   const value = { z: [null, false, Infinity, '😀'], a: { y: 2, x: 'e\u0301' } };
   assert.equal(esm.canonicalSerialize(value), '{"a":{"x":"é","y":2},"z":[null,false,null,"😀"]}');
   assert.equal(esm.hashCanonicalValue(value), native(esm.canonicalSerialize(value)));
+  assert.equal(hashing.canonicalSerialize(value), esm.canonicalSerialize(value));
+  assert.equal(hashing.hashCanonicalValue(value), native(esm.canonicalSerialize(value)));
 });
 
 test('Former Node.update public byteview API hashes exact raw slice and rejects unsupported types', () => {

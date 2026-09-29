@@ -194,7 +194,7 @@ async function loadMutant(source, mutant) {
   const coreDir = path.join(dir, 'core');
   fs.mkdirSync(coreDir, { recursive: true });
   for (const basename of [
-    'browser-safe-hash.mjs', 'browser-safe-hash.cjs',
+    'browser-safe-hash.mjs',
     'atlas-book-snapshot-v1.mjs',
     'atlas-projector-kernel-v1.mjs',
   ]) {

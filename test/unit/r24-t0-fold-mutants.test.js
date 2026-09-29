@@ -79,7 +79,6 @@ test('T0 fold tape law: all implementation mutants are executed and killed', asy
     fs.writeFileSync(target, source.replace(mutant.find, mutant.replace));
     fs.copyFileSync(path.join(__dirname, '..', '..', 'src', 'core', 'textTransformAlgebra.mjs'), path.join(dir, 'textTransformAlgebra.mjs'));
     fs.copyFileSync(path.join(__dirname, '..', '..', 'src', 'core', 'browser-safe-hash.mjs'), path.join(dir, 'browser-safe-hash.mjs'));
-    fs.copyFileSync(path.join(__dirname, '..', '..', 'src', 'core', 'browser-safe-hash.cjs'), path.join(dir, 'browser-safe-hash.cjs'));
     fs.copyFileSync(path.join(__dirname, '..', '..', 'src', 'core', 'textCoordinateAlgebra.mjs'), path.join(dir, 'textCoordinateAlgebra.mjs'));
     let killed = false;
     let detail = '';
