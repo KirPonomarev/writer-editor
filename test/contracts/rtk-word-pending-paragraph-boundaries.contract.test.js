@@ -155,3 +155,30 @@ test('Recording merge retains editor properties as a separate paragraph-format d
   const format = ledger.revisions.find(r => r.operation === 'format');
   assert.equal(model.decide(result, { action: 'reject', revisionId: format.id }).doc.content[0].attrs.textAlign, 'right');
 });
+
+test('Full publication binds union identities before projecting merged paragraph bookmarks', async () => {
+  const [bridge] = await modules, doc = await parse(pack(body));
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'boundaries', projectRoot: '/synthetic', scenes: [
+    { sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), order: 0 },
+  ] });
+  const bytes = buildDocxReviewPacketBuffer(source);
+  const extracted = bridge.extractDocxReviewTransportPackagePartsFromZipBytes(bytes);
+  assert.equal(extracted.ok, true, JSON.stringify(extracted));
+  const documentXml = extracted.parts['word/document.xml'];
+  const map = source.localAuthorityCapsule.exportMap;
+  assert.deepEqual(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, map),
+    { ok: true, sceneTexts: ['Split 😀 \nhere.\nMerge.Next.'] });
+  const names = [...documentXml.matchAll(/w:bookmarkStart[^>]+w:name="([^"]+)"/g)].map(m => m[1]);
+  assert.equal(names.length, 4);
+  for (const xml of [documentXml.replace(names[2], names[1]),
+    documentXml.replace(names[2], 'UNDECLARED'),
+    documentXml.replace(names[2], 'PLACEHOLDER').replace(names[3], names[2]).replace('PLACEHOLDER', names[3])]) {
+    assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(xml, map).ok, false);
+  }
+  const splitScenes = structuredClone(map);
+  const first = splitScenes.scenes[0];
+  splitScenes.scenes.push({ ...first, sceneId: 'roman/b.txt', blocks: first.blocks.slice(3) });
+  first.blocks = first.blocks.slice(0, 3);
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, splitScenes).code,
+    'RTK_V4_PUBLICATION_GATE_PROVISIONAL_BOOKMARK_AMBIGUOUS');
+});

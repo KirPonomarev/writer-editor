@@ -592,7 +592,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "70e818bf916794ce402ca2e06a2c5eec38bf1b77cb9337279904b263888282bb"
+        "sha256": "3917a642fe00f83c16cbc6c5f5edeb7d173c157685ebb712227e2bceab07735e"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1492,7 +1492,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
-        "sha256": "94d56d6d2cf7ae80dc7d7f1464bc3d003d2fed8d07c65d31244bc13f353e8e5d"
+        "sha256": "322a117efa963a837b5a6785878c66845b0b5b9f3dd66d6ccbb05771bcded585"
       }
     ],
     "followupRepair": {

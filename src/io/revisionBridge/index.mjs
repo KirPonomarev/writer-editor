@@ -3726,6 +3726,7 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   let xml = normalizeString(documentXml);
   let hasPendingRevisions = false;
+  let hasParagraphBoundaries = false;
   try {
     const pending = extractPendingTextRevisionSourceV1(xml, { ...options, cryptoPort: options.cryptoPort || {
       sha256Text: text => `sha256:${sha256Hex(text)}`,
@@ -3733,6 +3734,13 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
       byteLength: text => new TextEncoder().encode(text).length,
     } });
     hasPendingRevisions = pending.revisions.length > 0;
+    hasParagraphBoundaries = pending.revisions.some(revision => revision.boundary === 'paragraph');
+    if (hasParagraphBoundaries) {
+      // First bind every union paragraph to the local map. Current can merge
+      // adjacent paragraphs, but cannot invent, reorder or cross scene identity.
+      const union = visibleSceneTextsFromWordDocumentXml(pending.xml, exportMap, options);
+      if (!union.ok) return union;
+    }
     xml = pending.currentXml;
   } catch (error) { return { ok: false, code: error.message }; }
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
@@ -3782,17 +3790,19 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     paragraphText: [...match[0].matchAll(/<w:(?:t|delText)\b[^>]*>([\s\S]*?)<\/w:(?:t|delText)>/gu)].map(m => decodeXmlTextEntities(m[1])).join(''),
   })) };
   if (!scanned.ok) return { ok: false, code: scanned.code };
-  const tableTopology = validateDocxReviewTableTopology(scanned.paragraphs, exportMap);
+  const tableTopology = hasParagraphBoundaries ? { ok: true }
+    : validateDocxReviewTableTopology(scanned.paragraphs, exportMap);
   if (!tableTopology.ok) return tableTopology;
   const blocksBySceneId = new Map();
   for (const sceneId of orderedSceneIds) blocksBySceneId.set(sceneId, []);
   for (const paragraph of scanned.paragraphs) {
     const bookmarkNames = paragraph.bookmarkNames;
     const declared = bookmarkNames.filter((name) => sceneIdByBookmarkName.has(name.toLowerCase()));
-    if (declared.length !== 1 || declared[0].toLowerCase() !== orderedBookmarks[paragraphOrdinal]) {
+    if (!declared.length || (!hasParagraphBoundaries && declared.length !== 1)
+      || declared.some((name, index) => name.toLowerCase() !== orderedBookmarks[paragraphOrdinal + index])) {
       return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_ORDER_MISMATCH' };
     }
-    paragraphOrdinal += 1;
+    paragraphOrdinal += declared.length;
     const paragraphText = paragraph.paragraphText;
     let resolvedSceneId = null;
     let ambiguous = false;
