@@ -5087,9 +5087,12 @@ function extractPendingTableRowsV1(documentXml, scan, markers, options) {
     const rowIndex = rows.indexOf(row), paragraphIndex = paragraphs.findIndex(p => p.openStart > row.openStart && p.closeEnd < row.closeEnd);
     if (paragraphIndex < 0) throw Error('PENDING_TABLE_ROW_EMPTY');
     const children = revisionTokens.filter(t => t.openStart >= row.openEnd && t.closeEnd <= row.closeStart);
+    // Word may omit dateUtc from the row marker when resaving exported rows,
+    // while retaining it on the same-author, same-date paragraph/run carriers.
+    const utcDates = [...new Set(children.map(t => attr(t, 'dateUtc', W16DU_NS)).filter(Boolean))];
+    if (utcDates.length > 1) throw Error('PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
     for (const child of children) {
-      if (child.localName !== marker.localName || ['author', 'date'].some(name => attr(child, name, W_NS) !== attr(marker, name, W_NS))
-        || attr(child, 'dateUtc', W16DU_NS) !== attr(marker, 'dateUtc', W16DU_NS)) throw Error('PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
+      if (child.localName !== marker.localName || ['author', 'date'].some(name => attr(child, name, W_NS) !== attr(marker, name, W_NS))) throw Error('PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
       if (child === marker) edits.push({ from: child.openStart, to: child.closeEnd, text: '' });
       else if (child.selfClosing && child.path.slice(-4).join('/') === 'p/pPr/rPr/' + child.localName)
         edits.push({ from: child.openStart, to: child.closeEnd, text: '' });
@@ -5103,7 +5106,7 @@ function extractPendingTableRowsV1(documentXml, scan, markers, options) {
         { from: token.closeStart, to: token.closeEnd, text: documentXml.slice(token.closeStart, token.closeEnd).replace(/delText/u, 't') });
     }
     revisions.push({ id: '', nativeId: attr(marker, 'id', W_NS), operation: marker.localName === 'ins' ? 'insert' : 'delete',
-      author: attr(marker, 'author', W_NS), date: attr(marker, 'date', W_NS), dateUtc: attr(marker, 'dateUtc', W16DU_NS),
+      author: attr(marker, 'author', W_NS), date: attr(marker, 'date', W_NS), dateUtc: utcDates[0] || '',
       groupId: null, paragraphIndex, from: 0, to: 0, state: 'pending', structure: { kind: 'tableRow', tableIndex, rowIndex } });
   }
   let xml = documentXml;

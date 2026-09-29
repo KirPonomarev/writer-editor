@@ -147,3 +147,12 @@ test('Both export profiles declare modern Word layout to prevent legacy row-grid
   assert.match(parts['word/settings.xml'], /w:name="compatibilityMode"[^>]*w:val="15"/);
   assert.match(parts['word/_rels/document.xml.rels'], /relationships\/settings" Target="settings.xml"/);
 });
+test('Word omission of row UTC recovers only from consistent same-date subordinate carriers', async () => {
+  const [bridge] = await modules;
+  const child = `<w:p><w:del w:id="90" ${provenance} xmlns:w16du="http://schemas.microsoft.com/office/word/2023/wordml/word16du" w16du:dateUtc="2026-09-29T00:52:00Z"><w:r><w:delText>Delete A</w:delText></w:r></w:del></w:p>`;
+  const xml = body.replace(p('Delete A'), child), doc = await parse(pack(xml));
+  assert.equal(model.readLedger(doc).revisions[0].dateUtc, '2026-09-29T00:52:00Z');
+  for (const profile of ['minimum', 'full']) assert.equal(model.readLedger(await cycle(doc, profile)).revisions[0].dateUtc, '2026-09-29T00:52:00Z');
+  const conflict = xml.replace(p('Delete B'), child.replace('w:id="90"','w:id="91"').replace('00:52:00Z','01:52:00Z').replace('Delete A','Delete B'));
+  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(conflict)).ok, false);
+});
