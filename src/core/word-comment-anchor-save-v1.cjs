@@ -1,10 +1,10 @@
 'use strict';
 
-const { createHash } = require('node:crypto');
+const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
-const sha = text => createHash('sha256').update(text).digest('hex');
+const sha = text => sha256UpdateCompatible(text);
 const fail = code => { throw Object.assign(new Error(code), { code }); };
 const edges = text => new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
   { granularity: 'grapheme' }).segment(text), x => x.index)]);

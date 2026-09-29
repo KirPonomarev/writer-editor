@@ -334,7 +334,10 @@
     "test/fixtures/word-table-cell-shift-native-v1.json",
     "docs/tasks/2026-09-29--word-table-cell-shift.md",
     "docs/tasks/2026-09-29--word-cell-shift-chains.md",
-    "src/io/review-secret-store-v1.cjs"
+    "src/io/review-secret-store-v1.cjs",
+    "src/core/browser-safe-hash.mjs",
+    "src/core/browser-safe-hash.cjs",
+    "test/contracts/rtk-word-core-hash-parity.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1231,7 +1234,7 @@
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
-        "sha256": "490172ae36fcf0a4a0a0f08068542343d718c75684da5340c5ac7db3cbd7249b"
+        "sha256": "cded386863863585478d4b5b06044cb4b525967b5b5a8f66e1c411bf96b6f079"
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
@@ -1263,7 +1266,7 @@
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "e8cdcd3b8bb06de1e723603a5bc5d8597379db5777a17236fafbce317e013bbd"
+        "sha256": "61234c49e2642087a87ddf22965cdb6760288708a7b3e21763aa698ecf34edca"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1287,7 +1290,7 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "9adabbf8b8010c042f1f0b5a01a201cbf5c5abd81b141076075f969451be673e"
+        "sha256": "037b2c1b9bdb5282ac11aa6dc97c9c873088eaaffb7e1654b04c226c86293c95"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
@@ -1379,7 +1382,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "3ecc2d5affdadc1c1328b13c345afd23546f0a5ef1895af6359ebf504a32e3ed"
+        "sha256": "a0775e2ff220c791549add92010f7ef2664e490fed3b11e92951478830702780"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1411,7 +1414,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b124bceebe05385a0c796f8e40e392d5ad58bc4cc1804fdacf53c5aa55447dcd"
+        "sha256": "25ff130de97206ae4d613d8c180a97b07990cb7bfec327843410d72227548afc"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1512,6 +1515,18 @@
       {
         "path": "test/fixtures/word-table-cell-shift-native-v1.json",
         "sha256": "85da228cedfc148435c64437f3115432b560e52cdc77607c76d7095306787565"
+      },
+      {
+        "path": "src/core/browser-safe-hash.cjs",
+        "sha256": "136cf2940facf5c404e448a12c19638cb281a90d3e63e32b23c3025cf0827dce"
+      },
+      {
+        "path": "src/core/browser-safe-hash.mjs",
+        "sha256": "aa86951db13cdc25de3b1fa55f5c2460b951394a93d7692bc396391b3fc9e6c9"
+      },
+      {
+        "path": "test/contracts/rtk-word-core-hash-parity.contract.test.js",
+        "sha256": "561914f53f79ece0afcd76dd3732cff9a2bc40f7a35dc954d67ce9b0f0fc171c"
       }
     ],
     "followupRepair": {

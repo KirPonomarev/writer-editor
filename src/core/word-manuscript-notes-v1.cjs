@@ -1,6 +1,6 @@
 'use strict';
 
-const { createHash } = require('node:crypto');
+const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
 const { normalizeDocxHttpHref } = require('../io/docxHyperlinks.cjs');
 const { normalizeFontFamily, normalizeFontSize } = require('../io/inlineTypography.cjs');
@@ -9,7 +9,7 @@ const MODE = 'MANUSCRIPT_POINT_REBASE_V1';
 const LIMITS = Object.freeze({ notes: 256, paragraphs: 128, text: 200000, bytes: 1024 * 1024 });
 const plain = value => value && typeof value === 'object' && !Array.isArray(value);
 const clone = value => JSON.parse(JSON.stringify(value));
-const sha = value => createHash('sha256').update(value).digest('hex');
+const sha = value => sha256UpdateCompatible(value);
 const fail = code => { throw Object.assign(new Error(code), { code }); };
 const need = (ok, code) => { if (!ok) fail(code); };
 const keys = (value, allowed) => plain(value) && Object.keys(value).every(key => allowed.includes(key));

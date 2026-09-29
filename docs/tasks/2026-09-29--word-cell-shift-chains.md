@@ -8,7 +8,7 @@ CLAIM_BOUNDARY: Simple same-column tracked cell shifts on Mac only
 CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BASE_SHA: 3eb4f453250c82020eff7f08889212f874f32675
-DESIGN_TOOL_ROUTER: NOT_APPLICABLE
+DESIGN_SCOPE: BACKEND_EXISTING_SEAM; NO_VISUAL_CHANGE
 
 ## MICRO_GOAL
 
@@ -50,6 +50,13 @@ Validated parser repair, existing contract/fixture extension, prerequisite byte-
 - src/core/review-secret-store-v1.cjs
 - src/io/review-secret-store-v1.cjs
 - test/contracts/rtk-word-round-key-durability.contract.test.js
+- src/core/browser-safe-hash.mjs
+- src/core/browser-safe-hash.cjs
+- src/core/word-comment-anchor-save-v1.cjs
+- src/core/word-comment-authoring-v1.cjs
+- src/core/word-comment-return-delta-v1.cjs
+- src/core/word-manuscript-notes-v1.cjs
+- test/contracts/rtk-word-core-hash-parity.contract.test.js
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 
@@ -163,8 +170,6 @@ Retain exact failure, base, candidate, artifact hashes and expected versus obser
 outcome. After three identical failures, stop that loop and record one next
 hypothesis. No synthetic success, suppressed gate or skipped native oracle.
 
-E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac Word plan. The existing filesystem adapter is relocated byte-identically to IO; seven durability tests pass. E0 now exposes four pre-existing Core domain modules importing node crypto for deterministic SHA256. Their repair is pending a fresh clean-head declaration; scanner policy remains unchanged.
-OPEN_BLOCKER_NATIVE: Electron native control was rejected despite explicit owner
-authorization. Word table-menu input repeated timeoutReached three times; no new
-tracked cell operation was completed. SOURCE and PACKAGED acceptance are unknown.
+E0_PREREQUISITE_REPAIR: Owner authorized autonomous completion of the whole Mac Word plan. The existing filesystem adapter is relocated byte-identically to IO; seven durability tests pass. E0 now exposes four pre-existing Core domain modules importing node crypto for deterministic SHA256. Their repair is now bound to a fresh clean-head preflight at 8b006811: the existing pure SHA256 algorithm is reused through one CJS implementation and an unchanged ESM facade. Identical hashes, canonical serialization, former raw byteview support and domain identities are mandatory; no platform effect import is added to Core; scanner policy remains unchanged.
+NATIVE_PROGRESS: Native Word tracked delete-cell-up at First C completed and saved. Independent raw XML has two insertions and three deletions with transported source bookmarks. Word system-menu failure is avoided through existing ribbon commands. This discovery fixture is not SOURCE/PACK qualification: application return, restart/history and exported rich readback remain mandatory. Prior Electron access denial remains an unresolved tool condition until a supported retry succeeds.
 DELIVERY_STATE: Draft candidate only until both mandatory blockers are resolved.
