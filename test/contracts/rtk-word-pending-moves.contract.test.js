@@ -159,3 +159,18 @@ test('Full-manuscript export scopes duplicate local move group IDs by scene', as
   const returned = await parse(bytes);
   assert.equal(new Set(model.projection(returned).revisions.filter(r => r.moveName).map(r => r.groupId)).size, 2);
 });
+
+test('Word may place a paired transport bookmark endpoint beside a move wrapper without changing its body', async () => {
+  const start = '<w:bookmarkStart w:id="90" w:name="YRTK_0123456789abcdef0123456789abcdef"/>';
+  const end = '<w:bookmarkEnd w:id="90"/>';
+  const native = body.replace('<w:p>' + run('Second.'), '<w:p>' + start + run('Second.'))
+    .replace('</w:moveTo>', '</w:moveTo>' + end);
+  const imported = await parse(pack(native)), baseline = await parse(pack());
+  assert.deepEqual(model.projection(imported), model.projection(baseline));
+  const [bridge] = await modules;
+  for (const bad of [native.replace(start, ''), native.replace(end, end + end), native.replace(start, start + start),
+    native.replace('YRTK_0123456789abcdef0123456789abcdef', 'UserBookmark'),
+    native.replace(end, end + run('unowned')), native.replace(end, '<q:bookmarkEnd xmlns:q="urn:foreign" w:id="90"/>')]) {
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(bad)).ok, false);
+  }
+});

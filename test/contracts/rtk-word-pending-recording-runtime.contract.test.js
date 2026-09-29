@@ -111,6 +111,30 @@ test('actual Kernel and atomic autosave persist rich formatting with main-owned 
   ledger = model.readLedger(reopened); assert.equal(ledger.roundUndo.length, 1);
   assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'rejectAll' }).doc), model.normalizeNode(doc('Alpha beta')));
 });
+test('actual Kernel pairs cut and paste across intervening atomic autosave, stop and durable reopen', async t => {
+  const h = await harness(t);
+  const multi = (...values) => ({ type: 'doc', content: values.map(text => doc(text).content[0]) });
+  const original = multi('Start. Migrating words. End.', 'Destination. ');
+  h.editor = envelope.composeObservablePayload({ doc: original }); fs.writeFileSync(h.file, h.editor);
+  await h.start();
+  const edit = value => { h.type('generation'); h.editor = envelope.composeObservablePayload({ doc: value }); };
+  edit(multi('Start. End.', 'Destination. ')); assert.equal((await h.save()).success, true);
+  assert.deepEqual(model.readLedger(h.context().parsed.doc).revisions.map(r => r.operation), ['delete']);
+  const changed = multi('Start. End.', 'Destination. Migrating words. ');
+  edit(changed); assert.equal((await h.save()).success, true);
+  assert.equal((await h.command('stop')).ok, true);
+  const reopened = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+  const ledger = model.readLedger(reopened);
+  assert.deepEqual(ledger.revisions.map(r => r.operation), ['delete', 'insert']);
+  assert.ok(ledger.revisions[0].moveName);
+  assert.equal(ledger.revisions[0].moveName, ledger.revisions[1].moveName);
+  assert.equal(ledger.revisions[0].groupId, ledger.revisions[1].groupId);
+  assert.ok(ledger.revisions.every(r => r.author === 'Yalken tester'));
+  assert.equal(ledger.roundUndo.length, 1);
+  assert.deepEqual(model.normalizeNode(reopened), model.normalizeNode(changed));
+  assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'reject', revisionId: ledger.revisions[1].id }).doc), model.normalizeNode(original));
+  assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'undo' }).doc), model.normalizeNode(original));
+});
 for (const kind of ['forgedLedger', 'unprepared', 'wrongTarget', 'sceneRace', 'projectRace', 'lifecycleRace', 'profile', 'entitlement', 'annotations', 'draft', 'writeFailure', 'oldGeneration', 'structure']) {
   test(`recording ${kind} cannot overwrite prior scene or clear the working buffer`, async t => {
     const h = await harness(t); await h.start(); h.type('Alpha beta!'); const before = fs.readFileSync(h.file, 'utf8');

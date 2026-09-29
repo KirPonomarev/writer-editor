@@ -163,6 +163,29 @@ function derive(doc, workingDoc, metadata) {
     }
   }
   if (!changed) return { changed: false, doc: clone(doc) };
+  // Exact relocation is a property of this admitted authoring delta, not an
+  // authority inferred from a quote. Only new, ungrouped changes participate;
+  // repeated candidates and differing rich marks retain ordinary text review.
+  const previousIds = new Set(before.revisions.map(r => r.id)), relocations = new Map();
+  for (const revision of after.revisions) {
+    if (previousIds.has(revision.id) || revision.groupId || !['insert', 'delete'].includes(revision.operation)) continue;
+    const nodes = slice(afterParagraphs[revision.paragraphIndex].content, revision.from, revision.to);
+    if (!nodes.some(n => n.type === 'text' && /\S/u.test(n.text))) continue;
+    const key = stable(review.normalizeNode({ type: 'paragraph', content: nodes }));
+    const candidates = relocations.get(key) || { insert: [], delete: [] };
+    candidates[revision.operation].push(revision); relocations.set(key, candidates);
+  }
+  const usedNames = new Set(before.revisions.map(r => r.moveName).filter(Boolean));
+  for (const candidates of relocations.values()) {
+    if (candidates.insert.length !== 1 || candidates.delete.length !== 1) continue;
+    const [destination] = candidates.insert, [origin] = candidates.delete;
+    if (origin.paragraphIndex === destination.paragraphIndex) continue;
+    while (usedNames.has(`YalkenRecordedMove${nextGroup}`)) nextGroup++;
+    if (nextGroup > 9999) fail('PENDING_REVISIONS_ID_BUDGET');
+    const groupId = `group-${nextGroup}`, moveName = `YalkenRecordedMove${nextGroup++}`;
+    usedNames.add(moveName);
+    for (const revision of [origin, destination]) { revision.groupId = groupId; revision.moveName = moveName; }
+  }
   after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
   const previous = frame(before); previous.redo = [];
   after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
