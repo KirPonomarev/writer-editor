@@ -198,3 +198,14 @@ test('Native Word timestamp precision preserves owned formatting IDs without con
     assert.equal(rows[0].date, '2026-09-29T02:59:00Z');
   }
 });
+test('An independent Word text edit does not replace the identity of an unchanged paragraph-format revision', () => {
+  const base = { type: 'doc', content: [p('original text')] }, working = structuredClone(base);
+  working.content[0].attrs = { textAlign: 'right' };
+  const doc = recording.derive(base, working, meta).doc, next = recording.prepare(doc).working;
+  next.content[0].content[0].text += ' changed';
+  const incoming = recording.derive(doc, next, { ...meta, author: 'Word' }).doc;
+  const returned = model.replaceFromReturn(doc, incoming, { roundId: 'text-change', artifactSha256: 'b'.repeat(64) }).doc;
+  assert.equal(model.readLedger(returned).revisions.find(model.isParagraphFormat).id, 'revision-1');
+  assert.equal(model.projection(returned).current, 'original text changed');
+  assert.deepEqual(materialized(returned, 'original'), canonical(base));
+});

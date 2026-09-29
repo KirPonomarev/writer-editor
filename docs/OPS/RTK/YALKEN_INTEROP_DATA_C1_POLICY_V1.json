@@ -563,7 +563,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "0a1935c523c283bec62268149c5effcdff478308dc7a1e589f7e2c680f2d1aa6"
+        "sha256": "606cd42fccee0179e1a6942f5dbae5218c3ddc806851d168a7f81c17bcf91070"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1419,7 +1419,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "491dace1b64c7281a4dd46488d953f562dfe557abe608e3b206f3db0cef50750"
+        "sha256": "faa964ac077f84d5ff8dad1fc9950fcdd3e5367350814692cff2651c79f19dc3"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -1479,7 +1479,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-        "sha256": "185c22a09649c4d25be1243693b86b5f163e330822f83fb50836b42285a378db"
+        "sha256": "f6fd4bb6ba140530068db743469de4b3cf050b6720b035424a3a6ab67deb68e7"
       }
     ],
     "followupRepair": {

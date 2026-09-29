@@ -202,7 +202,8 @@ function roundFrame(ledger) {
   return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
 }
 function revisionMeaning(sourceParagraphs, revision) {
-  const text = sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+  // A paragraph property's identity covers the paragraph, not its changing text.
+  const text = isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
   // Word preserves dateUtc to seconds, while rewriting legacy date at minute
   // precision. Keep raw provenance, but use the authoritative UTC timestamp at
   // Word's supported precision when matching an already-owned revision.
