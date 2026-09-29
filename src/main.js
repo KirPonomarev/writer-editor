@@ -5746,7 +5746,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), allowPendingParagraphSplits: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     if (intake.parserResult?.reviewIr?.commentThreads?.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)
@@ -5765,8 +5765,8 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const replay = ledger?.returnReceipts?.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256);
     if (!replay && current.raw !== capsule.baselineObservableContentBySceneId[sceneId]) throw Error('PENDING_RETURN_BASELINE_CONFLICT');
     const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt,
-      mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(current.parsed.doc)?.source || current.parsed.doc).length
-        ? mapped.paragraphBindings : undefined);
+      mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(current.parsed.doc)?.source || current.parsed.doc).length
+        ? mapped.paragraphBindings : undefined));
     // Compare exact paragraph occurrences. The envelope's legacy display text
     // collapses consecutive empty blocks and cannot prove table-leaf identity.
     const incomingText = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(incoming.doc))
@@ -9682,9 +9682,21 @@ async function inspectDocxReviewReturnIntakeV2({
   if (!localBinding.ok) return localBinding;
   // Only a verified return and the main-owned current export map can account
   // for unchanged tables. The immutable worker packet remains raw evidence.
-  const tableBinding = revisionBridge.bindDocxReviewTableTopology(
+  let tableBinding = revisionBridge.bindDocxReviewTableTopology(
     verifiedParserResult.reviewIr, localAuthority.exportMap,
   );
+  if (!tableBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
+    const cryptoPort = createRtkReviewTransportCryptoPort();
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
+      localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingTableRows: true }) : null;
+    const preview = ownership?.ok && ownership.sourceParagraphBindings ? revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes) : null;
+    if (preview?.ok && preview.contentPreview?.pendingRevisionDocument) {
+      tableBinding = { ok: true, applicable: true, reviewIr: verifiedParserResult.reviewIr,
+        proof: { kind: 'CHECKED_NATIVE_PENDING_TABLE_ROWS', sourceParagraphBindings: ownership.sourceParagraphBindings,
+          automaticApplyAuthority: false } };
+    }
+  }
   if (!tableBinding.ok) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_TABLE_TOPOLOGY_MISMATCH', {
     reason: tableBinding.code,
   });
@@ -9728,7 +9740,7 @@ async function inspectDocxReviewReturnIntakeV2({
     const cryptoPort = createRtkReviewTransportCryptoPort();
     const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
-      localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingParagraphSplits: true }) : null;
+      localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingParagraphSplits: true, allowPendingTableRows: true }) : null;
     if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
       documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
         expected: localAuthority.documentSections, returned: verifiedParserResult.reviewIr?.documentSections,
@@ -10537,7 +10549,7 @@ async function confirmLocalWordPendingReturn({ fileName, changes }) {
       (p.content || []).map(n => n.type === 'hardBreak' ? '[перенос строки]' : `«${n.text}» — ${(n.marks || []).map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычный'}`).join('\n'));
     const formatDescription = value => Array.isArray(value) ? value.map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычное'
       : (value.type === 'heading' ? 'заголовок' : 'абзац') + (attrs(value.attrs) ? ', ' + attrs(value.attrs) : ', выравнивание по умолчанию');
-    const revisions = (ledger?.revisions || []).map(r => `${r.boundary === 'paragraph' ? (r.operation === 'insert' ? 'Разделение абзаца' : 'Объединение абзацев') : r.operation === 'format' ? (r.format.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}${r.format ? `; было: ${formatDescription(r.format.before)}; стало: ${formatDescription(r.format.after)}` : ''}`);
+    const revisions = (ledger?.revisions || []).map(r => `${r.structure?.kind === 'tableRow' ? (r.operation === 'insert' ? 'Вставка строки таблицы' : 'Удаление строки таблицы') : r.boundary === 'paragraph' ? (r.operation === 'insert' ? 'Разделение абзаца' : 'Объединение абзацев') : r.operation === 'format' ? (r.format.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}${r.format ? `; было: ${formatDescription(r.format.before)}; стало: ${formatDescription(r.format.after)}` : ''}`);
     const view = ledger ? pendingTextRevisions.projection(doc) : null;
     return paragraphs.join('\n') + '\nИсправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
   };

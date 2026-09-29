@@ -851,7 +851,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
   const blocks = [];
   for (const scene of scenes) {
     const pendingLedger = pendingTextRevisions.readLedger(scene.doc);
-    const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isParagraphBoundary) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+    const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isStructural) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
     const currentParagraphs = buildFormatIrParagraphs(scene);
     const paragraphs = pendingExport ? buildFormatIrParagraphs({ ...scene, doc: pendingExport.doc,
       text: normalizeVisibleDocumentText(pendingTextRevisions.paragraphs(pendingExport.doc)
@@ -881,6 +881,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         formatIr,
         ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index],
           pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)),
+          ...(pendingExport?.paragraphs[index].rowRevision ? { pendingRowRevision: pendingExport.paragraphs[index].rowRevision } : {}),
           ...(pendingExport?.paragraphs[index].boundaryRevision ? { pendingBoundaryRevision: pendingExport.paragraphs[index].boundaryRevision } : {}) } : {}),
         wordSignals: [
           {
@@ -1181,7 +1182,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     const ledger = pendingTextRevisions.readLedger(scene.doc);
     // Transport blocks retain the union. The publication digest binds the
     // visible Current, whose paragraph boundaries can differ from that union.
-    if (ledger?.revisions.some(pendingTextRevisions.isParagraphBoundary)) {
+    if (ledger?.revisions.some(pendingTextRevisions.isStructural)) {
       return buildFormatIrParagraphs(scene).map(paragraph => paragraph.text).join('\n');
     }
     return blocks.filter((block) => block.sceneId === scene.sceneId)

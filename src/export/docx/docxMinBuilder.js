@@ -1,5 +1,5 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
-const { buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
+const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
@@ -319,7 +319,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
-  const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isParagraphBoundary) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+  const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isStructural) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
   const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
   const semanticBlocks = buildSemanticBlocksFromDocument(pendingExport?.doc || snapshot.doc, pageBreakToken);
@@ -356,7 +356,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
       const paragraphRevision = pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
-      const styleXml = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter), pendingExport?.paragraphs[index].boundaryRevision, revisionCounter);
+      let styleXml = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter), pendingExport?.paragraphs[index].boundaryRevision, revisionCounter);
+      const rowRevision = pendingExport?.paragraphs[index].rowRevision;
+      styleXml = buildPendingRowParagraphXml(styleXml, rowRevision, revisionCounter);
       const runs = semanticBlocks?.[index]?.runs;
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
@@ -376,7 +378,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
       if (pendingLedger) {
         if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
-        runsXml = buildPendingRunsXml(pendingSegments[index],
+        runsXml = buildPendingRunsXml(rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index],
           node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter);
       }
       if (markers.size) {
@@ -398,7 +400,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         runsXml = parts.join('');
       }
       return `<w:p>${styleXml}${runsXml}</w:p>`;
-    })
+    }, row => buildPendingRowPropertiesXml(row.map(p => pendingExport?.paragraphs[p.index].rowRevision), revisionCounter))
     : '<w:p/>';
 
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -406,6 +408,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>${media.contentTypes}${notes.contentTypes}
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
 ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -431,8 +434,9 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     const instances = [...numberings.keys()].map((numId) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
     styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
   }
-  if (headingLevels.size || blockStyles.size || numberings.size || media.parts.length || hyperlinks.size || notes.entries.length) {
-    const relationships = (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
+  { // Both exports use modern Word layout; legacy compatibility rewrites table grids on row edits.
+    const relationships = '<Relationship Id="settings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'
+      + (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
       + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships + notes.relationships
       + [...hyperlinks].map(([href, id]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('');
     styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
@@ -441,6 +445,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: '[Content_Types].xml', data: contentTypes },
     { name: '_rels/.rels', data: rootRels },
     { name: 'word/document.xml', data: documentXml },
+    { name: 'word/settings.xml', data: '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>' },
     ...styleParts,
     ...media.parts,
     ...notes.entries,

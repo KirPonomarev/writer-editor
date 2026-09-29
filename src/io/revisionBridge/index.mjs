@@ -3724,6 +3724,77 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
     opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
 }
 
+function visiblePendingTableRows(pending, exportMap, options) {
+  const scenes = exportMap?.scenes || [];
+  if (!scenes.length || new Set(scenes.map(scene => scene.sceneId)).size !== scenes.length) throw Error('PENDING_TABLE_ROW_SCENE_BINDING');
+  const blocks = scenes.flatMap(scene => scene.blocks.map(block => ({ ...block, ownerSceneId: scene.sceneId })));
+  const names = blocks.map(block => {
+    const signals = block.wordSignals.filter(signal => signal.kind === 'bookmarkName');
+    if (signals.length !== 1) throw Error('PENDING_RETURN_BOOKMARK_MAP');
+    return signals[0].value.name;
+  });
+  const union = extractTransportParagraphOwnershipV1(pending.xml, names, { ...options, allowUnownedParagraphs: true });
+  const formatting = extractReviewTransportFormattingRunsV2(pending.xml, options);
+  if (!formatting.ok || formatting.paragraphs.length !== union.length) throw Error('PENDING_TABLE_ROW_PARAGRAPH_BINDING');
+  const tables = [...new Set(formatting.paragraphs.map(p => p.table?.tableId).filter(Boolean))];
+  const rowKey = table => `${table.tableId}:${table.row}`;
+  const rowChange = table => table && pending.revisions.find(r => r.structure?.kind === 'tableRow'
+    && r.structure.tableIndex === tables.indexOf(table.tableId) && r.structure.rowIndex === table.row);
+  const addedRows = new Set();
+  union.forEach((owners, i) => {
+    const table = formatting.paragraphs[i].table;
+    if (owners.length > 1) throw Error('PENDING_TABLE_ROW_BOOKMARK_OWNER');
+    if (!owners.length) {
+      if (!table || rowChange(table)?.operation !== 'insert' || options.allowPendingTableRows !== true)
+        throw Error('PENDING_TABLE_ROW_UNOWNED');
+      addedRows.add(rowKey(table));
+    }
+  });
+  // A new row must be entirely new; it cannot absorb an old paragraph identity.
+  const checked = formatting.paragraphs.filter((p, i) => {
+    if (p.table && addedRows.has(rowKey(p.table))) {
+      if (union[i].length) throw Error('PENDING_TABLE_ROW_PARTIAL_IDENTITY');
+      return false;
+    }
+    return true;
+  }).map(p => {
+    if (!p.table) return p;
+    const removed = [...new Set(formatting.paragraphs.filter(q => q.table?.tableId === p.table.tableId && addedRows.has(rowKey(q.table))).map(q => q.table.row))];
+    return { ...p, table: { ...p.table, rowCount: p.table.rowCount - removed.length, row: p.table.row - removed.filter(row => row < p.table.row).length } };
+  });
+  if (checked.length !== blocks.length) throw Error('PENDING_TABLE_ROW_SOURCE_COUNT');
+  const topology = validateDocxReviewTableTopology(checked, exportMap);
+  if (!topology.ok) throw Error(topology.code);
+  const sourceBindings = union.map(owners => owners[0] ?? null);
+  const known = sourceBindings.filter(value => value !== null);
+  if (known.length !== blocks.length || known.some((value, i) => value !== i)) throw Error('PENDING_TABLE_ROW_SOURCE_ORDER');
+  const rowScenes = new Map();
+  formatting.paragraphs.forEach((p, i) => {
+    if (!p.table || sourceBindings[i] === null) return;
+    const scene = blocks[sourceBindings[i]].ownerSceneId, existing = rowScenes.get(p.table.tableId);
+    if (existing && existing !== scene) throw Error('PENDING_TABLE_ROW_CROSS_SCENE');
+    rowScenes.set(p.table.tableId, scene);
+  });
+  const retained = formatting.paragraphs.map((p, i) => ({ p, source: sourceBindings[i] }))
+    .filter(({ p }) => rowChange(p.table)?.operation !== 'delete');
+  const retainedNames = retained.filter(p => p.source !== null).map(p => names[p.source]);
+  const ownership = extractTransportParagraphOwnershipV1(pending.currentXml, retainedNames, { ...options, allowUnownedParagraphs: true });
+  const current = extractReviewTransportFormattingRunsV2(pending.currentXml, options);
+  if (!current.ok || current.paragraphs.length !== retained.length || ownership.length !== retained.length)
+    throw Error('PENDING_TABLE_ROW_CURRENT_BINDING');
+  const texts = new Map(scenes.map(scene => [scene.sceneId, []])); let ordinal = 0;
+  retained.forEach(({ p, source }, i) => {
+    const expected = source === null ? [] : [ordinal++];
+    if (JSON.stringify(ownership[i]) !== JSON.stringify(expected)) throw Error('PENDING_TABLE_ROW_CURRENT_OWNER');
+    const scene = source === null ? rowScenes.get(p.table.tableId) : blocks[source].ownerSceneId;
+    if (!scene) throw Error('PENDING_TABLE_ROW_SCENE_BINDING');
+    texts.get(scene).push(current.paragraphs[i].paragraphText);
+  });
+  const paragraphBindings = sourceBindings.map((value, i) => value ?? sourceBindings.slice(0, i).findLast(v => v !== null) ?? 0);
+  return { ok: true, sceneTexts: scenes.map(scene => texts.get(scene.sceneId).join('\n')),
+    ...(addedRows.size ? { paragraphBindings, sourceParagraphBindings: sourceBindings } : {}) };
+}
+
 function visiblePendingParagraphReturn(pending, exportMap, options) {
   const scenes = exportMap?.scenes || [], blocks = scenes.flatMap(scene => (scene.blocks || []).map(block => ({ ...block, ownerSceneId: scene.sceneId })));
   const names = blocks.map(block => {
@@ -3769,6 +3840,13 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     } });
     hasPendingRevisions = pending.revisions.length > 0;
     hasParagraphBoundaries = pending.revisions.some(revision => revision.boundary === 'paragraph');
+    if (pending.revisions.some(revision => revision.structure?.kind === 'tableRow')) {
+      if (hasParagraphBoundaries) throw Error('PENDING_TABLE_ROW_BOUNDARY_COMPOSITION_UNSUPPORTED');
+      return visiblePendingTableRows(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
+        sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+        byteLength: text => new TextEncoder().encode(text).length,
+      } });
+    }
     if (hasParagraphBoundaries && options.allowPendingParagraphSplits === true) {
       return visiblePendingParagraphReturn(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
         sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
@@ -7754,7 +7832,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
   ].map(reason => [reason, 'CONTENT_INVALID']),
  ]);
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
-for (const code of ['PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
+for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 'PENDING_TABLE_ROW_EMPTY', 'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED', 'PENDING_TABLE_ROW_CHILD_OWNER', 'PENDING_TABLE_ROW_INVALID', 'PENDING_TABLE_ROW_OVERLAP', 'PENDING_TABLE_ROW_VERTICAL_MERGE_UNSUPPORTED', 'PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
