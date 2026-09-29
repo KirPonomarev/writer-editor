@@ -566,6 +566,7 @@ export function initTiptap(mountEl, options = {}) {
     content: '<p></p>',
     onUpdate: () => {
       currentIpcSession?.handleUpdate()
+      options.onDocumentUpdate?.()
       notifyFormattingStateChange()
     },
     onSelectionUpdate: () => {

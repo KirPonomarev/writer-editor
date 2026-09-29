@@ -19,7 +19,8 @@ function safeBoundary(text, offset) {
 function normalizeNode(node) {
   const out = { type: node.type };
   if (node.text !== undefined) out.text = node.text;
-  const attrs = Object.fromEntries(Object.entries(node.attrs || {}).filter(([key, value]) => key !== KEY && value !== null && value !== undefined));
+  const attrs = Object.fromEntries(Object.entries(node.attrs || {}).filter(([key, value]) => key !== KEY && value !== null && value !== undefined
+    && !(node.type === 'textStyle' && key === 'color' && value === '')));
   if (Object.keys(attrs).length) out.attrs = attrs;
   if (node.marks?.length) out.marks = node.marks.map(normalizeNode).sort((a, b) => a.type.localeCompare(b.type));
   if (node.content?.length) {

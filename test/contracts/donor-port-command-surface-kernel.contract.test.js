@@ -21,6 +21,7 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     'cmd.project.review.editComment',
     'cmd.project.review.decidePendingRevision',
+    'cmd.project.review.recordTextRevisions',
     'cmd.project.releaseClaim.admit',
     'cmd.project.releaseClaim.execute',
     'cmd.rtk.reviewSession.importComments',
