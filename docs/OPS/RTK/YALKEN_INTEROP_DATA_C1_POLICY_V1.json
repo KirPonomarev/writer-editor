@@ -692,7 +692,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "7c0a3017952a273251935edac6bfb61ecba09b0c8b41ba9545a08e9f9770748a"
+        "sha256": "f39f49051b21d00be60a820bca3bb7ac57c794002fb40696ff037680048b984a"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1492,7 +1492,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
-        "sha256": "322a117efa963a837b5a6785878c66845b0b5b9f3dd66d6ccbb05771bcded585"
+        "sha256": "2268031189d86734a6762e918440ac2f7158cbe4dd39b842f3ba87f6b3059b1d"
       }
     ],
     "followupRepair": {

@@ -1159,9 +1159,16 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
-  const sceneText = scenes.map((scene) => blocks
-    .filter((block) => block.sceneId === scene.sceneId)
-    .map((block) => block.text).join('\n')).join('\n\n');
+  const sceneText = scenes.map((scene) => {
+    const ledger = pendingTextRevisions.readLedger(scene.doc);
+    // Transport blocks retain the union. The publication digest binds the
+    // visible Current, whose paragraph boundaries can differ from that union.
+    if (ledger?.revisions.some(pendingTextRevisions.isParagraphBoundary)) {
+      return buildFormatIrParagraphs(scene).map(paragraph => paragraph.text).join('\n');
+    }
+    return blocks.filter((block) => block.sceneId === scene.sceneId)
+      .map((block) => block.text).join('\n');
+  }).join('\n\n');
   const sceneSnapshots = scenes.map((scene) => ({
     sceneId: scene.sceneId,
     sceneOrdinal: scene.sceneOrdinal,

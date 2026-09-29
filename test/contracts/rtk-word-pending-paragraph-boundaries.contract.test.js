@@ -168,6 +168,9 @@ test('Full publication binds union identities before projecting merged paragraph
   const map = source.localAuthorityCapsule.exportMap;
   assert.deepEqual(bridge.visibleSceneTextsFromWordDocumentXml(documentXml, map),
     { ok: true, sceneTexts: ['Split 😀 \nhere.\nMerge.Next.'] });
+  assert.equal(source.sceneText, 'Split 😀 \nhere.\nMerge.Next.');
+  const digest = require('node:crypto').createHash('sha256').update(JSON.stringify({ sceneText: source.sceneText })).digest('hex');
+  assert.equal(source.provisionalSelfParseArtifact.expectedDocumentTextSha256, 'sha256:' + digest);
   const names = [...documentXml.matchAll(/w:bookmarkStart[^>]+w:name="([^"]+)"/g)].map(m => m[1]);
   assert.equal(names.length, 4);
   for (const xml of [documentXml.replace(names[2], names[1]),
