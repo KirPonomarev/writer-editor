@@ -417,6 +417,19 @@ function handlePrimaryPasteShortcut(event, input, win) {
   return true;
 }
 
+function handlePrimaryCutShortcut(event, input, win) {
+  // macOS requires an explicit native Cut route when the governed menu omits
+  // edit roles. This edits the focused working buffer; save authority is unchanged.
+  if (process.platform !== 'darwin' || !input || input.type !== 'keyDown') return false;
+  if (String(input.key || '').toLowerCase() !== 'x' || !input.meta || input.control || input.alt || input.shift || input.isAutoRepeat) return false;
+  if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) return false;
+  if (typeof win.isFocused === 'function' && !win.isFocused()) return false;
+  if (isEditorPasteTargetFocused !== true) return false;
+  event.preventDefault();
+  win.webContents.cut();
+  return true;
+}
+
 function resolveRepoRootForAbout() {
   return path.resolve(__dirname, '..');
 }
@@ -30828,6 +30841,7 @@ function createWindow() {
       return;
     }
 
+    if (handlePrimaryCutShortcut(event, input, mainWindow)) return;
     handlePrimaryPasteShortcut(event, input, mainWindow);
   });
   mainWindow.on('blur', () => {

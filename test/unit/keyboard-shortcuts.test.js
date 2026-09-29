@@ -66,3 +66,30 @@ test('main process keeps primary paste bridge gated by renderer focus signal', a
   assert.doesNotMatch(handlerBody, /isContentEditable/);
   assert.doesNotMatch(handlerBody, /event\.preventDefault\(\)/);
 });
+
+test('native Mac Cut edits only a live focused authoring target once; other keys and contexts remain untouched', async () => {
+  const vm = require('node:vm');
+  const content = await readFile(join(process.cwd(), 'src', 'main.js'), 'utf8');
+  const body = extractFunctionBody(content, 'handlePrimaryCutShortcut');
+  let cut = 0, prevented = 0;
+  const context = { process: { platform: 'darwin' }, isEditorPasteTargetFocused: true };
+  vm.createContext(context);
+  vm.runInContext('function handlePrimaryCutShortcut(event,input,win) {' + body + '}', context);
+  const input = { type: 'keyDown', key: 'x', meta: true };
+  const event = { preventDefault() { prevented++; } };
+  const win = { isDestroyed: () => false, isFocused: () => true,
+    webContents: { isDestroyed: () => false, cut() { cut++; } } };
+  assert.equal(context.handlePrimaryCutShortcut(event, input, win), true);
+  assert.equal(cut, 1); assert.equal(prevented, 1);
+  for (const override of [{ type: 'keyUp' }, { key: 'v' }, { meta: false }, { control: true }, { alt: true }, { shift: true }, { isAutoRepeat: true }]) {
+    assert.equal(context.handlePrimaryCutShortcut(event, { ...input, ...override }, win), false);
+  }
+  for (const target of [null, { ...win, isDestroyed: () => true }, { ...win, isFocused: () => false }, { ...win, webContents: { isDestroyed: () => true } }]) {
+    assert.equal(context.handlePrimaryCutShortcut(event, input, target), false);
+  }
+  context.isEditorPasteTargetFocused = false;
+  assert.equal(context.handlePrimaryCutShortcut(event, input, win), false);
+  context.isEditorPasteTargetFocused = true; context.process.platform = 'linux';
+  assert.equal(context.handlePrimaryCutShortcut(event, input, win), false);
+  assert.equal(cut, 1); assert.equal(prevented, 1);
+});

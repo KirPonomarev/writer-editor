@@ -40,3 +40,9 @@ changed formatting and same-paragraph edits remain ordinary pending text edits.
 These rows are not claimed as native moves. Structural changes, mixed
 annotations and final full-plan Mac qualification remain separate open work.
 Rollback: revert this bounded classifier while preserving envelopes and history.
+
+Native SOURCE exposed missing macOS Cmd+X when the governed menu omits Cut.
+The focused main-window native Cut adapter now forwards that exact gesture once
+into the authoring buffer. Wrong key/modifiers, repeat, unfocused/destroyed
+windows and other platforms are untouched; save capability and CAS remain the
+only persistence route. No clipboard contents or renderer code are evaluated.
