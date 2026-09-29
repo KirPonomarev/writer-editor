@@ -17,10 +17,11 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false } = {}) {
+async function harness(t, { clean = false, savedDefaults = false } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
   const initial = clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
+  if (savedDefaults) initial.attrs = { wordPendingRevisions: null };
   fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
   const h = { writes: 0, opens: 0, snapshot: null, race: null };
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
@@ -173,9 +174,36 @@ test('first authenticated return accepts absent imported ledger and Tiptap null 
   assert.equal(model.projection(h.context().parsed.doc).current, 'new');
 });
 
-for (const kind of ['text', 'marks', 'differentValidLedger', 'malformedLedger']) {
-  test(`first authenticated return blocks ${kind} despite null schema defaults before any write`, async t => {
-    const h = await harness(t, { clean: true }), before = fs.readFileSync(h.file, 'utf8');
+test('saved null-ledger source with unbound export map prepares and applies exactly once', async t => {
+  const h = await harness(t, { clean: true, savedDefaults: true }), before = fs.readFileSync(h.file, 'utf8');
+  assert.equal(h.context().parsed.doc.attrs.wordPendingRevisions, null);
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const ex = bridge.extractDocxReviewTransportWordDocumentProjection({ bytes: h.input.docxBytes },
+    { cryptoPort: h.c.createRtkReviewTransportCryptoPort() });
+  const mapped = bridge.visibleSceneTextsFromWordDocumentXml(ex.documentXml,
+    h.input.context.reviewTransportAuthorityCapsule.exportMap,
+    { cryptoPort: h.c.createRtkReviewTransportCryptoPort(), stylesXml: ex.stylesXml,
+      allowPendingParagraphSplits: true, allowPendingTableRows: true });
+  assert.equal(mapped.ok, true);
+  assert.equal(mapped.sourceParagraphBindings, undefined);
+  assert.equal(mapped.paragraphBindings, undefined);
+  const prepared = await h.prepare();
+  assert.equal(prepared.status, 'preview-ready', JSON.stringify(prepared));
+  assert.equal(h.writes, 0);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), before);
+  assert.equal((await h.prepared.apply()).ok, true);
+  assert.equal(h.writes, 1);
+  assert.equal(h.opens, 1);
+  assert.equal(h.reset, 1);
+  assert.equal(model.projection(h.context().parsed.doc).original, 'oldnew');
+  assert.equal(model.projection(h.context().parsed.doc).current, 'new');
+  await assert.rejects(h.prepared.apply(), /PENDING_RETURN_PREPARED_CONSUMED/);
+  assert.equal(h.writes, 1);
+});
+
+for (const savedDefaults of [false, true]) for (const kind of ['text', 'marks', 'differentValidLedger', 'malformedLedger']) {
+  test(`${savedDefaults ? 'saved null-ledger' : 'first authenticated'} return blocks ${kind} despite null schema defaults before any write`, async t => {
+    const h = await harness(t, { clean: true, savedDefaults }), before = fs.readFileSync(h.file, 'utf8');
     const live = structuredClone(h.context().parsed.doc);
     live.attrs = { wordPendingRevisions: null };
     live.content[0].attrs = { textAlign: null };
@@ -201,3 +229,33 @@ for (const kind of ['text', 'marks', 'differentValidLedger', 'malformedLedger'])
     assert.equal(fs.readFileSync(h.file, 'utf8'), before);
   });
 }
+
+test('saved null-ledger return rejects stale authenticated baseline without changing owner content', async t => {
+  const h = await harness(t, { clean: true, savedDefaults: true });
+  const owner = structuredClone(h.context().parsed.doc); owner.content[0].content[0].text += ' owner edit';
+  const content = envelope.composeObservablePayload({ doc: owner }); fs.writeFileSync(h.file, content);
+  const result = await h.prepare();
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'PENDING_RETURN_BASELINE_CONFLICT');
+  assert.equal(h.writes, 0);
+  assert.equal(h.opens, 0);
+  assert.equal(h.reset || 0, 0);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), content);
+});
+
+test('saved null-ledger source rejects inconsistent returned projection before preparing a writer', async t => {
+  const h = await harness(t, { clean: true, savedDefaults: true }), before = fs.readFileSync(h.file, 'utf8');
+  const bridge = h.input.revisionBridge;
+  h.input.revisionBridge = { ...bridge, visibleSceneTextsFromWordDocumentXml(...args) {
+    const mapped = bridge.visibleSceneTextsFromWordDocumentXml(...args);
+    return { ...mapped, sceneTexts: mapped.sceneTexts.map(text => text + ' inconsistent projection') };
+  } };
+  const result = await h.prepare();
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'PENDING_RETURN_PROJECTION_MISMATCH');
+  assert.equal(h.prepared, undefined);
+  assert.equal(h.writes, 0);
+  assert.equal(h.opens, 0);
+  assert.equal(h.reset || 0, 0);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), before);
+});

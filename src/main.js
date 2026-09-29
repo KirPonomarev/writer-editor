@@ -5769,7 +5769,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       if (!originalProof.ok) throw Error(originalProof.code);
     }
     const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt,
-      mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(current.parsed.doc)?.source || current.parsed.doc).length
+      mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
         ? mapped.paragraphBindings : undefined));
     // Compare exact paragraph occurrences. The envelope's legacy display text
     // collapses consecutive empty blocks and cannot prove table-leaf identity.
