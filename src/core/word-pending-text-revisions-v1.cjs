@@ -13,6 +13,7 @@ const exact = (value, keys) => object(value) && Object.keys(value).every(key => 
 const status = value => ['pending', 'accepted', 'rejected'].includes(value);
 const textOf = node => node.type === 'hardBreak' ? '\n' : node.text;
 const paragraphProperties = node => ({ type: node.type, ...(node.attrs && Object.keys(node.attrs).length ? { attrs: clone(node.attrs) } : {}) });
+const isParagraphBoundary = revision => revision.boundary === 'paragraph';
 const isParagraphFormat = revision => revision.operation === 'format' && revision.format?.kind === 'paragraph';
 function assert(condition, code = 'PENDING_REVISIONS_INVALID') { if (!condition) fail(code); }
 function safeBoundary(text, offset) {
@@ -75,6 +76,54 @@ function paragraphs(doc) {
   for (const node of doc.content) visit(node);
   return result;
 }
+function paragraphSibling(doc, wanted) {
+  let found = null;
+  const visit = node => {
+    const children = node.content || [], index = children.indexOf(wanted);
+    if (index >= 0) { const next = children[index + 1]; found = ['paragraph', 'heading'].includes(next?.type) ? next : null; return; }
+    for (const child of children) if (!['paragraph', 'heading'].includes(child.type)) visit(child);
+  };
+  visit(doc); return found;
+}
+// Source occurrence indexes remain attached to the following paragraph while
+// previous content is merged into it; properties belong to its surviving mark.
+function collapseParagraphBoundaries(doc, remove, onMerge = () => {}) {
+  const indexes = new Map(paragraphs(doc).map((p, i) => [p, i]));
+  const visit = node => {
+    const children = node.content || [];
+    for (let i = 0; i < children.length; i++) {
+      const p = children[i];
+      if (!indexes.has(p)) { visit(p); continue; }
+      if (!remove(indexes.get(p))) continue;
+      const next = children[i + 1];
+      assert(indexes.has(next), 'PENDING_PARAGRAPH_BOUNDARY_OWNER');
+      onMerge(p, next);
+      next.content = [...p.content, ...next.content]; children.splice(i--, 1);
+    }
+  };
+  visit(doc); return doc;
+}
+function exportDocument(ledger) {
+  validateLedger(ledger);
+  const doc = clone(ledger.source), records = new Map();
+  paragraphs(doc).forEach((p, i) => {
+    const segments = paragraphSegments(ledger, p, i, 'export');
+    const format = ledger.revisions.find(r => r.paragraphIndex === i && isParagraphFormat(r));
+    const boundary = ledger.revisions.find(r => r.paragraphIndex === i && isParagraphBoundary(r));
+    if (format) {
+      const properties = format.format[format.state === 'rejected' ? 'before' : 'after'];
+      p.type = properties.type; delete p.attrs; if (properties.attrs) p.attrs = clone(properties.attrs);
+    }
+    p.content = segments.map(s => s.node);
+    records.set(p, { segments, paragraphRevision: format?.state === 'pending' ? clone(format) : null,
+      boundaryRevision: boundary?.state === 'pending' ? clone(boundary) : null });
+  });
+  collapseParagraphBoundaries(doc, index => {
+    const r = ledger.revisions.find(r => r.paragraphIndex === index && isParagraphBoundary(r));
+    return r && r.state !== 'pending' && !includeRevision(r, 'current');
+  }, (a, b) => { records.get(b).segments = [...records.get(a).segments, ...records.get(b).segments]; });
+  return { doc, paragraphs: paragraphs(doc).map(p => records.get(p)) };
+}
 function validateSource(doc) {
   for (const p of paragraphs(doc)) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
@@ -111,10 +160,10 @@ function validateState(input, frame = false) {
   validateSource(input.source);
   const sourceParagraphs = paragraphs(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
-  const ids = new Set(), groups = new Map(), occupied = new Map(), paragraphFormats = new Set();
+  const ids = new Set(), groups = new Map(), occupied = new Map(), paragraphFormats = new Set(), boundaries = new Set();
   let previousParagraph = -1, previousFrom = 0;
   for (const r of input.revisions) {
-    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName', 'format']));
+    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName', 'format', 'boundary']));
     assert(/^revision-[1-9]\d{0,3}$/u.test(r.id) && !ids.has(r.id)); ids.add(r.id);
     assert(typeof r.nativeId === 'string' && r.nativeId.length <= 80 && typeof r.author === 'string' && r.author.length <= 1024);
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
@@ -123,12 +172,22 @@ function validateState(input, frame = false) {
     assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < sourceParagraphs.length);
     const p = sourceParagraphs[r.paragraphIndex], text = p.content.map(textOf).join('');
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to)
-      && (isParagraphFormat(r) ? r.from === 0 && r.to === text.length : r.to > r.from)
+      && (isParagraphBoundary(r) ? r.from === text.length && r.to === text.length
+        : isParagraphFormat(r) ? r.from === 0 && r.to === text.length : r.to > r.from)
       && (r.paragraphIndex !== previousParagraph || r.from >= previousFrom));
     previousParagraph = r.paragraphIndex; previousFrom = r.from;
+    if (isParagraphBoundary(r)) {
+      assert(['insert', 'delete'].includes(r.operation) && r.groupId === null && r.moveName === undefined && r.format === undefined
+        && !boundaries.has(r.paragraphIndex), 'PENDING_PARAGRAPH_BOUNDARY_INVALID');
+      const sibling = paragraphSibling(input.source, p);
+      assert(sibling && sibling === sourceParagraphs[r.paragraphIndex + 1], 'PENDING_PARAGRAPH_BOUNDARY_OWNER');
+      boundaries.add(r.paragraphIndex);
+    } else {
+      assert(r.boundary === undefined, 'PENDING_PARAGRAPH_BOUNDARY_INVALID');
+    }
     if (isParagraphFormat(r)) {
       assert(!paragraphFormats.has(r.paragraphIndex), 'PENDING_FORMAT_OVERLAP'); paragraphFormats.add(r.paragraphIndex);
-    } else {
+    } else if (!isParagraphBoundary(r)) {
       const spans = occupied.get(r.paragraphIndex) || [];
       assert(!spans.some(s => r.from < s.to && r.to > s.from), 'PENDING_FORMAT_OVERLAP');
       spans.push(r); occupied.set(r.paragraphIndex, spans);
@@ -203,7 +262,7 @@ function roundFrame(ledger) {
 }
 function revisionMeaning(sourceParagraphs, revision) {
   // A paragraph property's identity covers the paragraph, not its changing text.
-  const text = isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+  const text = isParagraphBoundary(revision) ? '\n' : isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
   // Word preserves dateUtc to seconds, while rewriting legacy date at minute
   // precision. Keep raw provenance, but use the authoritative UTC timestamp at
   // Word's supported precision when matching an already-owned revision.
@@ -296,7 +355,7 @@ function exportSegments(ledger) {
   return paragraphs(ledger.source).map((p, index) => paragraphSegments(ledger, p, index, 'export'));
 }
 function paragraphSegments(ledger, p, paragraphIndex, mode) {
-  const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex && !isParagraphFormat(r));
+  const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex && !isParagraphFormat(r) && !isParagraphBoundary(r));
   const result = []; let offset = 0;
   for (const node of p.content) {
     const text = textOf(node), end = offset + text.length;
@@ -331,6 +390,10 @@ function materialize(input, mode = 'current') {
       p.type = properties.type; delete p.attrs;
       if (properties.attrs) p.attrs = clone(properties.attrs);
     }
+  });
+  collapseParagraphBoundaries(doc, index => {
+    const revision = ledger.revisions.find(r => r.paragraphIndex === index && isParagraphBoundary(r));
+    return revision && !includeRevision(revision, mode);
   });
   return doc;
 }
@@ -386,6 +449,6 @@ function projection(doc) {
   const text = value => paragraphs(value).map(p => (p.content || []).map(textOf).join('')).join('\n');
   return { original: text(materialize(ledger, 'original')), current: text(materialize(ledger)),
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
-    revisions: ledger.revisions.map(r => ({ ...clone(r), text: sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
+    revisions: ledger.revisions.map(r => ({ ...clone(r), text: isParagraphBoundary(r) ? '\n' : sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat };
+module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

@@ -5069,14 +5069,17 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const budgets = normalizeBudgets(options.budgets);
   const budgetState = createParserBudgetState(budgets, cryptoPort);
   const scan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
-  const tokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName));
+  const allRevisionTokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName));
+  const boundaryTokens = allRevisionTokens.filter(t => ['ins', 'del'].includes(t.localName) && t.selfClosing
+    && t.path.slice(-4).join('/') === 'p/pPr/rPr/' + t.localName);
+  const tokens = allRevisionTokens.filter(t => !boundaryTokens.includes(t));
   const moveMarkers = scan.tokens.filter(t => t.namespaceUri === W_NS
     && ['moveFromRangeStart', 'moveFromRangeEnd', 'moveToRangeStart', 'moveToRangeEnd'].includes(t.localName));
   if (!tokens.length && moveMarkers.length) throw Error('PENDING_MOVE_RANGE_ORPHAN');
   const propertyTokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['rPrChange', 'pPrChange'].includes(t.localName));
-  if (!tokens.length && !propertyTokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
+  if (!tokens.length && !propertyTokens.length && !boundaryTokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
-  if (tokens.length + propertyTokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
+  if (allRevisionTokens.length + propertyTokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
   const unsupported = new Set(['numPrChange',
     'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
     'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
@@ -5086,6 +5089,26 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
   const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
   const edits = [], revisions = [], ids = new Set();
+  const boundaryOwners = new Map();
+  for (const token of boundaryTokens) {
+    const index = paragraphs.findIndex(p => p.openEnd <= token.openStart && p.closeStart >= token.closeEnd);
+    const p = paragraphs[index], next = paragraphs[index + 1];
+    const props = p && scan.tokens.find(t => isWordToken(t, 'pPr') && t.depth === p.depth + 1
+      && t.openEnd <= token.openStart && t.closeStart >= token.closeEnd);
+    const runProps = props && scan.tokens.filter(t => isWordToken(t, 'rPr') && t.depth === props.depth + 1
+      && t.openStart >= props.openEnd && t.closeEnd <= props.closeStart);
+    if (!p || !next || !props || runProps.length !== 1 || token.depth !== p.depth + 3
+      || p.depth !== next.depth || documentXml.slice(p.closeEnd, next.openStart).trim()
+      || boundaryOwners.has(index)) throw Error('PENDING_PARAGRAPH_BOUNDARY_OWNER');
+    const nativeId = attr(token, 'id', W_NS);
+    if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
+    const length = semanticAtomsToText(extractSemanticAtoms(documentXml, scan, p)).replaceAll('\r', '\n').length;
+    revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: token.localName === 'ins' ? 'insert' : 'delete',
+      author: attr(token, 'author', W_NS), date: attr(token, 'date', W_NS), dateUtc: attr(token, 'dateUtc', W16DU_NS),
+      groupId: null, paragraphIndex: index, from: length, to: length, state: 'pending', boundary: 'paragraph' });
+    boundaryOwners.set(index, token.localName);
+    edits.push({ from: token.openStart, to: token.closeEnd, text: '' });
+  }
   // Word pairs source/destination range names, not revision-wrapper IDs. Each
   // admitted range owns exactly one inline wrapper in one existing paragraph.
   const moveOwner = new Map(), movePairs = new Map(), rangeIds = new Set(), usedMarkers = new Set(), ranges = [];
@@ -5199,7 +5222,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   }
   for (let i = 0; i < revisions.length - 1; i++) {
     const a = revisions[i], b = revisions[i + 1];
-    if (a.operation !== 'format' && b.operation !== 'format' && !a.moveName && !b.moveName && a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
+    if (a.operation !== 'format' && b.operation !== 'format' && !a.moveName && !b.moveName && !a.boundary && !b.boundary && a.paragraphIndex === b.paragraphIndex && a.to === b.from && a.operation !== b.operation && a.author === b.author) {
       a.groupId = b.groupId = `group-${++group}`; i++;
     }
   }
@@ -5220,7 +5243,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const currentEdits = tokens.flatMap(token => ['del', 'moveFrom'].includes(token.localName)
     ? [{ from: token.openStart, to: token.closeEnd }]
     : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
-  currentEdits.push(...propertyRemovals);
+  currentEdits.push(...propertyRemovals, ...boundaryTokens.map(t => ({ from: t.openStart, to: t.closeEnd })));
   currentEdits.push(...moveMarkers.map(token => ({ from: token.openStart, to: token.closeEnd })));
   for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
   const originalEdits = tokens.flatMap(token => ['ins', 'moveTo'].includes(token.localName)
@@ -5228,6 +5251,34 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
   originalEdits.push(...edits.filter(e => !tokens.some(t => ['ins', 'moveTo'].includes(t.localName) && e.from >= t.openStart && e.to <= t.closeEnd)
     && !tokens.some(t => e.from === t.openStart || e.from === t.closeStart)));
-  const originalXml = applyEdits(beforeProperties(originalEdits));
-  return { xml, currentXml, originalXml, formatBeforeXml, revisions, paragraphCount: paragraphs.length };
+  let originalXml = applyEdits(beforeProperties(originalEdits));
+  const projectBoundaries = (value, removedKind) => {
+    if (!boundaryOwners.size) return value;
+    const parsed = parseXmlPart('word/document.xml', value, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+    if (blockingReason(parsed.diagnostics)) throw Error('PENDING_PARAGRAPH_BOUNDARY_INVALID');
+    const ps = parsed.tokens.filter(t => isWordToken(t, 'p'));
+    if (ps.length !== paragraphs.length) throw Error('PENDING_PARAGRAPH_BOUNDARY_INVALID');
+    const replacements = [];
+    for (let first = 0; first < ps.length; first++) {
+      let last = first;
+      while (boundaryOwners.get(last) === removedKind) last++;
+      if (last === first) continue;
+      let body = '', properties = '';
+      for (let i = first; i <= last; i++) {
+        const p = ps[i], pr = parsed.tokens.find(t => isWordToken(t, 'pPr') && t.depth === p.depth + 1
+          && t.openStart >= p.openEnd && t.closeEnd <= p.closeStart);
+        body += pr ? value.slice(p.openEnd, pr.openStart) + value.slice(pr.closeEnd, p.closeStart) : value.slice(p.openEnd, p.closeStart);
+        if (i === last && pr) properties = value.slice(pr.openStart, pr.closeEnd);
+      }
+      replacements.push({ from: ps[first].openStart, to: ps[last].closeEnd,
+        text: value.slice(ps[first].openStart, ps[first].openEnd) + properties + body + value.slice(ps[first].closeStart, ps[first].closeEnd) });
+      first = last;
+    }
+    for (const edit of replacements.reverse()) value = value.slice(0, edit.from) + edit.text + value.slice(edit.to);
+    return value;
+  };
+  currentXml = projectBoundaries(currentXml, 'del'); originalXml = projectBoundaries(originalXml, 'ins');
+  return { xml, currentXml, originalXml, formatBeforeXml, revisions, paragraphCount: paragraphs.length,
+    originalParagraphCount: paragraphs.length - [...boundaryOwners.values()].filter(v => v === 'ins').length };
+
 }

@@ -7704,7 +7704,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
   ].map(reason => [reason, 'CONTENT_INVALID']),
  ]);
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
-for (const code of ['PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
+for (const code of ['PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
@@ -10335,9 +10335,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
       const source = pendingTextRevisions.normalizeNode(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n')));
       pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
-      const canonicalParse = xml => {
+      const canonicalParse = (xml, expectedCount = pendingSource.paragraphCount) => {
         const result = docxContentPreviewParseMainDocumentXml(xml, inlineStyles, docxNumberingCatalog(bytes));
-        if (!supported(result) || result.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
+        if (!supported(result) || result.sourceParagraphCount !== expectedCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
         const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs);
         return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
       };
@@ -10383,7 +10383,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
         : buildParagraphDocumentFromText(currentParsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
       if (hashCanonicalValue(pendingTextRevisions.normalizeNode(currentDoc)) !== hashCanonicalValue(pendingTextRevisions.normalizeNode(current))) throw Error('PENDING_REVISIONS_CURRENT_BINDING');
-      if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml)))
+      if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml, pendingSource.originalParagraphCount)))
         !== hashCanonicalValue(pendingTextRevisions.normalizeNode(pendingTextRevisions.materialize(ledger, 'original'))))
         throw Error('PENDING_REVISIONS_ORIGINAL_BINDING');
       parsed = currentParsed;

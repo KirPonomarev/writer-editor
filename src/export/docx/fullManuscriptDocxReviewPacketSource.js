@@ -832,9 +832,13 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
     : deriveWordBookmarkNameV1Fallback;
   const blocks = [];
   for (const scene of scenes) {
-    const paragraphs = buildFormatIrParagraphs(scene);
     const pendingLedger = pendingTextRevisions.readLedger(scene.doc);
-    const pendingSegments = pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
+    const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isParagraphBoundary) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+    const currentParagraphs = buildFormatIrParagraphs(scene);
+    const paragraphs = pendingExport ? buildFormatIrParagraphs({ ...scene, doc: pendingExport.doc,
+      text: normalizeVisibleDocumentText(pendingTextRevisions.paragraphs(pendingExport.doc)
+        .map(p => p.content.map(n => n.type === 'hardBreak' ? '\n' : n.text).join('')).join('\n')) }) : currentParagraphs;
+    const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
     for (let index = 0; index < paragraphs.length; index += 1) {
       const { text, formatIr } = paragraphs[index];
       const seed = `${scene.sceneId}\n${scene.sceneOrdinal}\n${index}\n${text}`;
@@ -858,7 +862,8 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
         ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index],
-          pendingParagraphRevision: pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)) } : {}),
+          pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)),
+          ...(pendingExport?.paragraphs[index].boundaryRevision ? { pendingBoundaryRevision: pendingExport.paragraphs[index].boundaryRevision } : {}) } : {}),
         wordSignals: [
           {
             kind: 'w14ParaIdTextId',

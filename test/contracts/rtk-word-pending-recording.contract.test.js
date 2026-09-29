@@ -55,7 +55,7 @@ test('format-only edits become reversible decisions; structure failures preserve
   const unsupported = structuredClone(formatted); unsupported.content[0].content[0].marks = [{ type: 'link', attrs: { href: 'https://example.com' } }];
   assert.throws(() => recording.derive(base, unsupported, meta), /MARK_UNSUPPORTED/);
   assert.equal(JSON.stringify({ base, formatted }), frozen);
-  assert.throws(() => recording.derive(base, doc('a', 'bc'), meta), /STRUCTURE_UNSUPPORTED/);
+  assert.throws(() => recording.derive(base, { type: 'doc', content: [{ type: 'bulletList', content: [{ type: 'listItem', content: doc('abc').content }] }] }, meta), /STRUCTURE_UNSUPPORTED/);
   assert.throws(() => recording.derive(base, { type: 'doc', content: [{ type: 'table', content: [] }] }, meta), /PENDING_REVISIONS/);
 });
 test('source rich runs, inserted rich text and independent formatting have separate reversible decisions', () => {
