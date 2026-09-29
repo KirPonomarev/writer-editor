@@ -10507,7 +10507,7 @@ async function confirmLocalWordPendingReturn({ fileName, changes }) {
     const attrs = value => Object.entries(value || {}).map(([key, val]) => `${names[key] || key}: ${val}`).join(', ');
     const paragraphs = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(source)).map((p, index) => `Абзац ${index + 1} (${p.type === 'heading' ? 'заголовок' : 'текст'}${attrs(p.attrs) ? ', ' + attrs(p.attrs) : ''}):\n` +
       (p.content || []).map(n => n.type === 'hardBreak' ? '[перенос строки]' : `«${n.text}» — ${(n.marks || []).map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычный'}`).join('\n'));
-    const revisions = (ledger?.revisions || []).map(r => `${r.operation === 'insert' ? 'Вставка' : 'Удаление'}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}`);
+    const revisions = (ledger?.revisions || []).map(r => `${r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}`);
     const view = ledger ? pendingTextRevisions.projection(doc) : null;
     return paragraphs.join('\n') + '\nИсправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
   };
