@@ -3,6 +3,7 @@
 // Canonical scene-owned review state. The displayed document is a checked
 // projection, never a second source of truth for a pending change.
 const KEY = 'wordPendingRevisions';
+const { inspectTable } = require('../io/documentTables.js');
 const MAX_BYTES = 4 * 1024 * 1024;
 const stable = value => Array.isArray(value) ? '[' + value.map(stable).join(',') + ']' : object(value) ? '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}' : JSON.stringify(value);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -33,9 +34,47 @@ function normalizeNode(node) {
   }
   return out;
 }
-function validateSource(doc) {
+// One paragraph occurrence order for text revisions, independent of repeated
+// text, list nesting and table coordinates. Returns references into this doc.
+function paragraphs(doc) {
   assert(exact(doc, ['type', 'content']) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
-  for (const p of doc.content) {
+  const result = []; let lists = 0;
+  const visit = (node, depth = 0, inCell = false) => {
+    assert(exact(node, ['type', 'attrs', 'content']));
+    if (['paragraph', 'heading'].includes(node.type)) {
+      assert(result.length < 10000, 'PENDING_REVISIONS_BUDGET'); result.push(node); return;
+    }
+    if (node.type === 'table' && !inCell) {
+      let layout;
+      try { layout = inspectTable(node); } catch (error) { fail(`PENDING_REVISIONS_${error.message}`); }
+      for (const row of node.content) assert(exact(row, ['type', 'attrs', 'content']));
+      for (const cell of layout.cells) {
+        assert(exact(cell.node, ['type', 'attrs', 'content']));
+        for (const child of cell.node.content) visit(child, 0, true);
+      }
+      return;
+    }
+    assert(['bulletList', 'orderedList'].includes(node.type), 'PENDING_REVISIONS_BLOCK_UNSUPPORTED');
+    assert(depth <= 8 && ++lists <= 2048, 'PENDING_REVISIONS_BUDGET');
+    assert(Array.isArray(node.content) && node.content.length > 0);
+    assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type'] : []));
+    const start = node.attrs?.start ?? 1;
+    assert(Number.isSafeInteger(start) && start >= 0 && start + node.content.length - 1 <= 2147483647
+      && (node.attrs?.type == null || node.attrs.type === '1'));
+    for (const item of node.content) {
+      assert(exact(item, ['type', 'attrs', 'content']) && item.type === 'listItem'
+        && (!item.attrs || exact(item.attrs, [])) && Array.isArray(item.content)
+        && item.content[0]?.type === 'paragraph'
+        && item.content.slice(1).every(n => ['bulletList', 'orderedList'].includes(n?.type)));
+      visit(item.content[0], depth, inCell);
+      for (const child of item.content.slice(1)) visit(child, depth + 1, inCell);
+    }
+  };
+  for (const node of doc.content) visit(node);
+  return result;
+}
+function validateSource(doc) {
+  for (const p of paragraphs(doc)) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
     assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level'])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
@@ -68,6 +107,7 @@ function validateState(input, frame = false) {
   assert([1, 2].includes(input.schemaVersion));
   assert(exact(input, input.schemaVersion === 2 && !frame ? [...baseKeys, 'roundUndo', 'roundRedo', 'returnReceipts'] : baseKeys));
   validateSource(input.source);
+  const sourceParagraphs = paragraphs(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
   const ids = new Set(), groups = new Map(); let previousParagraph = -1, previousEnd = 0;
   for (const r of input.revisions) {
@@ -77,8 +117,8 @@ function validateState(input, frame = false) {
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
     assert(![r.nativeId, r.author, r.date, r.dateUtc].some(value => /[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)));
     assert(['insert', 'delete'].includes(r.operation) && status(r.state));
-    assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < input.source.content.length);
-    const p = input.source.content[r.paragraphIndex], text = p.content.map(textOf).join('');
+    assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < sourceParagraphs.length);
+    const p = sourceParagraphs[r.paragraphIndex], text = p.content.map(textOf).join('');
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to) && r.to > r.from && (r.paragraphIndex !== previousParagraph || r.from >= previousEnd));
     previousParagraph = r.paragraphIndex; previousEnd = r.to;
     assert(r.groupId === null || /^group-[1-9]\d{0,3}$/u.test(r.groupId));
@@ -115,12 +155,13 @@ function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
   return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
 }
-function revisionMeaning(ledger, revision) {
-  const text = ledger.source.content[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+function revisionMeaning(sourceParagraphs, revision) {
+  const text = sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
   return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text]);
 }
 function preserveReturnedIdentities(before, proposed) {
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
+  const oldParagraphs = paragraphs(before.source), newParagraphs = paragraphs(proposed.source);
   let nextRevision = 1, nextGroup = 1;
   // A clean returned source may have no current revisions. Older and undone
   // rounds still own their IDs; a new revision cannot impersonate that history.
@@ -131,12 +172,12 @@ function preserveReturnedIdentities(before, proposed) {
     }
   }
   for (const revision of before.revisions.filter(r => r.state === 'pending')) {
-    const key = revisionMeaning(before, revision), rows = occurrences.get(key) || [];
+    const key = revisionMeaning(oldParagraphs, revision), rows = occurrences.get(key) || [];
     rows.push(revision); occurrences.set(key, rows);
   }
   const incomingCounts = new Map();
   for (const revision of proposed.revisions) {
-    const key = revisionMeaning(proposed, revision);
+    const key = revisionMeaning(newParagraphs, revision);
     incomingCounts.set(key, (incomingCounts.get(key) || 0) + 1);
   }
   for (const [key, rows] of occurrences) {
@@ -146,7 +187,7 @@ function preserveReturnedIdentities(before, proposed) {
   const groups = new Map();
   for (const revision of proposed.revisions) {
     assert(revision.state === 'pending', 'PENDING_RETURN_STATE_INVALID');
-    const previous = occurrences.get(revisionMeaning(proposed, revision))?.shift();
+    const previous = occurrences.get(revisionMeaning(newParagraphs, revision))?.shift();
     assert(previous || nextRevision <= 9999, 'PENDING_REVISIONS_ID_BUDGET');
     revision.id = previous?.id || `revision-${nextRevision++}`;
     if (revision.groupId) { const rows = groups.get(revision.groupId) || []; rows.push(revision); groups.set(revision.groupId, rows); }
@@ -166,7 +207,7 @@ function asRoundLedger(doc) {
     roundUndo: clone(existing.roundUndo || []), roundRedo: clone(existing.roundRedo || []), returnReceipts: clone(existing.returnReceipts || []) };
   const source = normalizeNode(doc);
   assert(source?.type === 'doc' && !source.attrs, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
-  source.content?.forEach(p => { p.content ||= []; });
+  paragraphs(source).forEach(p => { p.content ||= []; });
   return validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 }
 function replaceFromReturn(doc, returnedDoc, receipt) {
@@ -193,7 +234,14 @@ function includeRevision(revision, mode) {
   return revision.operation === 'insert';
 }
 function segments(ledger, paragraphIndex, mode = 'current') {
-  const p = ledger.source.content[paragraphIndex];
+  const p = paragraphs(ledger.source)[paragraphIndex];
+  return paragraphSegments(ledger, p, paragraphIndex, mode);
+}
+function exportSegments(ledger) {
+  validateLedger(ledger);
+  return paragraphs(ledger.source).map((p, index) => paragraphSegments(ledger, p, index, 'export'));
+}
+function paragraphSegments(ledger, p, paragraphIndex, mode) {
   const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex);
   const result = []; let offset = 0;
   for (const node of p.content) {
@@ -214,7 +262,10 @@ function segments(ledger, paragraphIndex, mode = 'current') {
 function materialize(input, mode = 'current') {
   const ledger = validateLedger(input);
   assert(['current', 'original'].includes(mode));
-  return { type: 'doc', content: ledger.source.content.map((p, i) => ({ ...clone(p), content: segments(ledger, i, mode).map(s => s.node) })) };
+  const doc = clone(ledger.source);
+  const sourceParagraphs = paragraphs(ledger.source);
+  paragraphs(doc).forEach((p, i) => { p.content = paragraphSegments(ledger, sourceParagraphs[i], i, mode).map(s => s.node); });
+  return doc;
 }
 function bindLedger(input) {
   const ledger = clone(validateLedger(input));
@@ -264,9 +315,10 @@ function decide(doc, input) {
 }
 function projection(doc) {
   const ledger = readLedger(doc); if (!ledger) return null;
-  const text = value => value.content.map(p => (p.content || []).map(textOf).join('')).join('\n');
+  const sourceParagraphs = paragraphs(ledger.source);
+  const text = value => paragraphs(value).map(p => (p.content || []).map(textOf).join('')).join('\n');
   return { original: text(materialize(ledger, 'original')), current: text(materialize(ledger)),
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
-    revisions: ledger.revisions.map(r => ({ ...clone(r), text: ledger.source.content[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
+    revisions: ledger.revisions.map(r => ({ ...clone(r), text: sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn };
+module.exports = { KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments };

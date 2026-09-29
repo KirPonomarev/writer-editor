@@ -163,7 +163,10 @@ x=json.load(sys.stdin);root=E.fromstring(zipfile.ZipFile(io.BytesIO(base64.b64de
 expected=m.canonical_graphs([x['doc']]);assert m.parse_body(root)[1]==expected
 for kind in ['width','shading','border','layout','cell-override']:
  r=copy.deepcopy(root);t=r.find('.//'+m.W+'tbl')
- if kind=='width':t.find('./'+m.W+'tblGrid/'+m.W+'gridCol').set(m.W+'w','721')
+ if kind=='width':
+  t.find('./'+m.W+'tblGrid/'+m.W+'gridCol').set(m.W+'w','721')
+  for cw in t.findall('.//'+m.W+'tcW'):
+   if cw.get(m.W+'w')=='720':cw.set(m.W+'w','721')
  elif kind=='shading':t.find('.//'+m.W+'shd').set(m.W+'fill','00FF00')
  elif kind=='border':t.find('./'+m.W+'tblPr/'+m.W+'tblBorders/'+m.W+'top').set(m.W+'sz','8')
  elif kind=='layout':t.find('./'+m.W+'tblPr').remove(t.find('./'+m.W+'tblPr/'+m.W+'tblLayout'))
@@ -183,7 +186,7 @@ test('W5: conflicting vertical continuation properties fail closed and matching 
   const t=table(row(cell('vertical',1,2),cell('A')),row(cell('B')));
   t.attrs={wordTable:{version:1,grid:[720,4320],layout:'fixed',widthDxa:null,shading:null,borders:{}}};
   const doc={type:'doc',content:[t]},bytes=await exported(doc),[bridge]=await modules;
-  const matching=await mutate(bytes,x=>x.replace('<w:tcPr>','<w:tcPr><w:tcW w:w="720" w:type="dxa"/>'));
+  const matching=await mutate(bytes,x=>x.replace('<w:tcW w:w="720" w:type="dxa"/>','<w:tcW w:type="dxa" w:w="720"/>'));
   const ok=await imported(matching);assert.deepEqual(ok.doc,doc);assert.equal(ok.plan.lossReport.items.some(x=>x.feature==='table.widths'),false);
   const mismatch=await mutate(bytes,x=>x.replace('<w:vMerge w:val="continue"/>','<w:vMerge w:val="continue"/><w:shd w:val="clear" w:fill="FF0000"/>'));
   const report=bridge.buildDocxContentPreviewFromZipBytes(mismatch);assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_TABLE_MERGED_CELL_PROPERTIES_CONFLICT');

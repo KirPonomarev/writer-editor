@@ -319,6 +319,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
+  const pendingSegments = pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
   const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
@@ -373,7 +374,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
       if (pendingLedger) {
         if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
-        runsXml = buildPendingRunsXml(pendingTextRevisions.segments(pendingLedger, index, 'export'),
+        runsXml = buildPendingRunsXml(pendingSegments[index],
           node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter);
       }
       if (markers.size) {

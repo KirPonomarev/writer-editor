@@ -135,6 +135,7 @@
     "rtk-word-pending-return-runtime.contract.test.js",
     "rtk-word-pending-return.contract.test.js",
     "rtk-word-pending-revisions-package.contract.test.js",
+    "rtk-word-pending-rich-blocks.contract.test.js",
     "rtk-word-pending-revisions-runtime.contract.test.js",
     "rtk-word-pending-text-revisions.contract.test.js",
     "rtk-word-release-audit-p0-500k-terminal-audit.contract.test.js",
