@@ -13,7 +13,7 @@ function baseline(doc) {
     roundRedo: clone(ledger.roundRedo || []), returnReceipts: clone(ledger.returnReceipts || []) };
   const source = review.normalizeNode(doc);
   if (source.attrs) fail('RECORDING_DOCUMENT_ATTRIBUTES_UNSUPPORTED');
-  source.content?.forEach(p => { p.content ||= []; });
+  review.paragraphs(source).forEach(p => { p.content ||= []; });
   return review.validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [],
     roundUndo: [], roundRedo: [], returnReceipts: [] });
 }
@@ -27,8 +27,8 @@ function slice(nodes, from, to) {
   }
   return out;
 }
-function visibleOffsetToSource(ledger, index, wanted) {
-  const length = text(ledger.source.content[index]).length;
+function visibleOffsetToSource(ledger, index, wanted, paragraph) {
+  const length = text(paragraph).length;
   const changes = ledger.revisions.filter(r => r.paragraphIndex === index);
   const cuts = [...new Set([0, length, ...changes.flatMap(r => [r.from, r.to])])].sort((a, b) => a - b);
   let visible = 0;
@@ -61,14 +61,17 @@ function derive(doc, workingDoc, metadata) {
   if (workingDoc?.attrs?.[review.KEY]) fail('RECORDING_RENDERER_LEDGER_FORBIDDEN');
   const before = baseline(doc), working = baseline(workingDoc).source;
   const current = review.materialize(before);
-  if (current.content.length !== working.content.length) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+  const shape = document => { const result = clone(document); review.paragraphs(result).forEach(p => { p.content = []; }); return result; };
+  if (!equal(shape(current), shape(working))) fail('RECORDING_STRUCTURE_UNSUPPORTED');
   const after = clone(before); let nextId = 1, nextGroup = 1, changed = false;
+  const currentParagraphs = review.paragraphs(current), workingParagraphs = review.paragraphs(working);
+  const sourceParagraphs = review.paragraphs(before.source), afterParagraphs = review.paragraphs(after.source);
   for (const row of [before, ...before.roundUndo, ...before.roundRedo]) for (const r of row.revisions) {
     nextId = Math.max(nextId, Number(r.id.slice(9)) + 1);
     nextGroup = Math.max(nextGroup, Number(r.groupId?.slice(6) || 0) + 1);
   }
-  for (let index = 0; index < working.content.length; index++) {
-    const old = current.content[index], next = working.content[index];
+  for (let index = 0; index < workingParagraphs.length; index++) {
+    const old = currentParagraphs[index], next = workingParagraphs[index];
     if (!equal({ ...old, content: [] }, { ...next, content: [] })) fail('RECORDING_STRUCTURE_UNSUPPORTED');
     if (equal(old, next)) continue;
     const a = text(old), b = text(next);
@@ -84,11 +87,11 @@ function derive(doc, workingDoc, metadata) {
       if (!equal({ type: 'paragraph', content: slice(old.content, ...oldRange) },
         { type: 'paragraph', content: slice(next.content, ...newRange) })) fail('RECORDING_FORMAT_UNSUPPORTED');
     }
-    const from = visibleOffsetToSource(before, index, start), to = visibleOffsetToSource(before, index, oldEnd);
+    const from = visibleOffsetToSource(before, index, start, sourceParagraphs[index]), to = visibleOffsetToSource(before, index, oldEnd, sourceParagraphs[index]);
     const oldRevisions = after.revisions.filter(r => r.paragraphIndex === index);
     if (oldRevisions.some(r => from === to ? r.from < from && r.to > from : r.from < to && r.to > from)) fail('RECORDING_EXISTING_REVISION_OVERLAP');
     const inserted = slice(next.content, start, newEnd), addedLength = newEnd - start;
-    const p = after.source.content[index], originalLength = text(p).length;
+    const p = afterParagraphs[index], originalLength = text(p).length;
     p.content = [...slice(p.content, 0, to), ...inserted, ...slice(p.content, to, originalLength)];
     for (const r of oldRevisions) if (r.from >= to) { r.from += addedLength; r.to += addedLength; }
     let groupId = null;

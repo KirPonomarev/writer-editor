@@ -9727,6 +9727,10 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       ...loss, severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
     }));
   });
+  // Internal occurrence map survives the removal of empty vertical-merge
+  // continuations. It is not transport authority or a public locator.
+  const paragraphOccurrences = new WeakMap();
+  let sourceParagraphCount = 0;
   const elementStack = [];
   let rootSeen = false;
   let rootTagName = '';
@@ -10013,6 +10017,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         activeListNumbering = null;
         activeParagraphMetadata = {
           sourceParagraphIndex: activeParagraphIndex,
+          sourceOccurrence: sourceParagraphCount++,
           inlineRuns: [],
           bookmarkStartIds: new Set(),
           zeroLengthBookmarkCount: 0,
@@ -10021,6 +10026,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (selfClosing) {
         const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
         if (pushed.failure) return pushed;
+        paragraphOccurrences.set(paragraphs.at(-1), activeParagraphMetadata.sourceOccurrence);
         insideParagraph = false;
         paragraphText = '';
         activeParagraphIndex = -1;
@@ -10031,6 +10037,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (activeParagraphMetadata.currentHref || complexFieldStack.some(frame => docxContentPreviewFieldInstructionHasHyperlink(frame.instructionText))) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
       if (pushed.failure) return pushed;
+      paragraphOccurrences.set(paragraphs.at(-1), activeParagraphMetadata.sourceOccurrence);
       insideParagraph = false;
       paragraphText = '';
       activeParagraphIndex = -1;
@@ -10126,6 +10133,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   tableReader.complete();
   const joinedText = paragraphs.map((paragraph) => paragraph.text).join('\n');
   return {
+    sourceParagraphCount,
+    paragraphSourceIndexes: paragraphs.map(p => paragraphOccurrences.get(p)),
     diagnostics,
     contentPreview: {
       sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
@@ -10318,20 +10327,32 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure && pendingSource.revisions.length) {
-      if (parsed.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd'].includes(d.tagName)) || parsed.contentPreview.paragraphs.some(p => p.table || p.list || p.blockKind || p.blockquoteDepth || p.sectionBreakType)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
+      const supported = result => !result.failure
+        && !result.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd'].includes(d.tagName))
+        && !result.contentPreview.paragraphs.some(p => p.blockKind || p.blockquoteDepth || p.sectionBreakType);
+      if (!supported(parsed) || parsed.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
       const source = rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
-      source.content.forEach(p => { p.content ||= []; });
-      const ledger = { schemaVersion: 1, source, revisions: pendingSource.revisions, undo: [], redo: [] };
-      const doc = pendingTextRevisions.bindLedger(ledger);
-      parsed.contentPreview.pendingRevisionDocument = doc;
-      const current = pendingTextRevisions.materialize(ledger);
-      parsed.contentPreview.paragraphs = current.content.map((p, i) => {
-        const text = (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('');
-        return { order: i, text, textHash: docxContentPreviewStableHash(text), charCount: text.length };
+      pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
+      const occurrenceToLeaf = new Map(parsed.paragraphSourceIndexes.map((occurrence, index) => [occurrence, index]));
+      const revisions = pendingSource.revisions.map(revision => {
+        const paragraphIndex = occurrenceToLeaf.get(revision.paragraphIndex);
+        if (paragraphIndex === undefined) throw Error('PENDING_REVISIONS_PARAGRAPH_REMOVED');
+        return { ...revision, paragraphIndex };
       });
-      const text = parsed.contentPreview.paragraphs.map(p => p.text).join('\n');
-      parsed.contentPreview.textLength = text.length; parsed.contentPreview.textHash = docxContentPreviewStableHash(text);
+      const ledger = { schemaVersion: 1, source, revisions, undo: [], redo: [] };
+      const doc = pendingTextRevisions.bindLedger(ledger);
+      const current = pendingTextRevisions.materialize(ledger);
+      // Parse native Current independently, retaining list/table metadata and
+      // rich runs. A ledger never substitutes for a checked content projection.
+      const currentParsed = docxContentPreviewParseMainDocumentXml(pendingSource.currentXml, inlineStyles, docxNumberingCatalog(bytes));
+      if (!supported(currentParsed)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
+      const currentRich = docxInlineCanonicalContent(currentParsed.contentPreview.paragraphs);
+      const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
+        : buildParagraphDocumentFromText(currentParsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
+      if (hashCanonicalValue(pendingTextRevisions.normalizeNode(currentDoc)) !== hashCanonicalValue(pendingTextRevisions.normalizeNode(current))) throw Error('PENDING_REVISIONS_CURRENT_BINDING');
+      parsed = currentParsed;
+      parsed.contentPreview.pendingRevisionDocument = doc;
     }
     allDocumentRelationshipsPreserved = !parsed.failure && inlineStyles.hyperlinks.onlyHyperlinks
       && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;

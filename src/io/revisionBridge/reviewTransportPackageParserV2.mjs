@@ -5074,8 +5074,9 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   if (tokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
   const unsupported = new Set(['moveFrom', 'moveTo', 'moveFromRangeStart', 'moveToRangeStart', 'rPrChange', 'pPrChange',
-    'tbl', 'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
-    'commentRangeStart', 'commentRangeEnd', 'commentReference', 'numPr', 'ruby', 'sym', 'ptab']);
+    'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
+    'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
+    'commentRangeStart', 'commentRangeEnd', 'commentReference', 'ruby', 'sym', 'ptab']);
   if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
   const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
   if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
@@ -5120,5 +5121,5 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     ? [{ from: token.openStart, to: token.closeEnd }]
     : [{ from: token.openStart, to: token.openEnd }, { from: token.closeStart, to: token.closeEnd }]);
   for (const edit of currentEdits.sort((a, b) => b.from - a.from)) currentXml = currentXml.slice(0, edit.from) + currentXml.slice(edit.to);
-  return { xml, currentXml, revisions };
+  return { xml, currentXml, revisions, paragraphCount: paragraphs.length };
 }
