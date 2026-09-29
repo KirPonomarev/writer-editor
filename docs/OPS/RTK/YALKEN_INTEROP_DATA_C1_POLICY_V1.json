@@ -329,7 +329,10 @@
     "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
     "docs/tasks/2026-09-29--word-paragraph-boundaries.md",
     "test/contracts/rtk-word-table-row-revisions.contract.test.js",
-    "docs/tasks/2026-09-29--word-table-row-revisions.md"
+    "docs/tasks/2026-09-29--word-table-row-revisions.md",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/fixtures/word-table-cell-shift-native-v1.json",
+    "docs/tasks/2026-09-29--word-table-cell-shift.md"
   ],
   "protectedFiles": [
     {
@@ -594,7 +597,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "8e1cc7611b2f3275b57e394b1ed88e33430f78a504e833e01d5b817cf5b2c2ff"
+        "sha256": "1fac06f7efb08c4c3494a928dba51f41e7deaad66ae1e82e6385a81bdd831ccb"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -674,7 +677,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "1e1ad23815241e29e0aa26d82458c5b56929ab14e1f96a084f69112038be1764"
+        "sha256": "f0bdf875f016c703481f8cd2b9e4d8a0f6c285af330807a35d9dcce502dceb05"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1406,7 +1409,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b1ace53a714191a6a562e031261be6a4af9c25fa0cdefce800eafc1514513c84"
+        "sha256": "b124bceebe05385a0c796f8e40e392d5ad58bc4cc1804fdacf53c5aa55447dcd"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1499,6 +1502,14 @@
       {
         "path": "test/contracts/rtk-word-table-row-revisions.contract.test.js",
         "sha256": "792f9a1430a0751230a6cd1a28ba269416fec02acb704b3c568df445e7f059a4"
+      },
+      {
+        "path": "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+        "sha256": "a9eafd94c7a5209258cd3e8d1d7253a32923b051d3fff2250ce0eb11a4abe5c3"
+      },
+      {
+        "path": "test/fixtures/word-table-cell-shift-native-v1.json",
+        "sha256": "1e8ea4e3cc9a9f243fab059073dca2422f783b56c8204e7be0eaeafad2152787"
       }
     ],
     "followupRepair": {
