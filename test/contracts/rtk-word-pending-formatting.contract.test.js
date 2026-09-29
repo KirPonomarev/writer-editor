@@ -180,3 +180,21 @@ test('Cell list formatting keeps numbering and table topology while a separate c
     for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode));
   }
 });
+test('Native Word timestamp precision preserves owned formatting IDs without conflating different authors or times', () => {
+  const base = { type: 'doc', content: [p('one'), p('two')] }, working = structuredClone(base);
+  working.content.forEach(n => { n.content[0].marks = [{ type: 'bold' }]; });
+  const doc = recording.derive(base, working, { author: 'Mac Source Author', date: '2026-09-29T02:59:12.651Z' }).doc;
+  for (const mutation of ['precision', 'author', 'time']) {
+    const incoming = structuredClone(model.readLedger(doc));
+    incoming.revisions.forEach((r, i) => {
+      r.id = `revision-${i + 8}`; r.nativeId = String(i);
+      r.date = '2026-09-29T02:59:00Z'; r.dateUtc = '2026-09-29T02:59:12Z';
+      if (mutation === 'author') r.author = 'Different';
+      if (mutation === 'time') r.dateUtc = '2026-09-29T02:59:13Z';
+    });
+    const returned = model.replaceFromReturn(doc, model.bindLedger(incoming), { roundId: mutation, artifactSha256: 'a'.repeat(64) }).doc;
+    const rows = model.readLedger(returned).revisions;
+    assert.deepEqual(rows.map(r => r.id), mutation === 'precision' ? ['revision-1', 'revision-2'] : ['revision-3', 'revision-4']);
+    assert.equal(rows[0].date, '2026-09-29T02:59:00Z');
+  }
+});

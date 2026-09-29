@@ -203,7 +203,13 @@ function roundFrame(ledger) {
 }
 function revisionMeaning(sourceParagraphs, revision) {
   const text = sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
-  return JSON.stringify([revision.paragraphIndex, revision.operation, revision.author, revision.date, revision.dateUtc, text, Boolean(revision.moveName), revision.format || null]);
+  // Word preserves dateUtc to seconds, while rewriting legacy date at minute
+  // precision. Keep raw provenance, but use the authoritative UTC timestamp at
+  // Word's supported precision when matching an already-owned revision.
+  const date = revision.dateUtc || revision.date;
+  const time = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(date) && Number.isFinite(Date.parse(date))
+    ? Math.floor(Date.parse(date) / 1000) : [revision.date, revision.dateUtc];
+  return stable([revision.paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), revision.format || null]);
 }
 function preserveReturnedIdentities(before, proposed) {
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
