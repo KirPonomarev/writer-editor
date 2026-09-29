@@ -708,6 +708,24 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
       }
     }
   }
+  if (input.paragraphBindings !== undefined) {
+    const bindings = input.paragraphBindings;
+    if (!Array.isArray(bindings) || !bindings.length || bindings.some((v, i) => !Number.isSafeInteger(v) || v < 0
+      || (i === 0 ? v !== 0 : v !== bindings[i - 1] && v !== bindings[i - 1] + 1))
+      || bindings.at(-1) !== expectedSections.at(-1)?.endParagraphIndex) {
+      mismatches.push('paragraphBindings');
+    } else {
+      for (const section of normalizedSections) {
+        if (!Number.isSafeInteger(section.startParagraphIndex) || !Number.isSafeInteger(section.endParagraphIndex)
+          || section.startParagraphIndex < 0 || section.endParagraphIndex >= bindings.length) {
+          mismatches.push('paragraphBindings'); continue;
+        }
+        section.startParagraphIndex = bindings[section.startParagraphIndex];
+        section.endParagraphIndex = bindings[section.endParagraphIndex];
+      }
+      providerNormalizedFields.push('native-pending-paragraph-occurrence-binding');
+    }
+  }
   const normalizedProjection = { schemaVersion: returned.schemaVersion, protectedSections: normalizedSections };
   const expectedDigest = normalizeString(expected.protectedDigest);
   const signedDigest = normalizeString(input.signedDigest);
@@ -715,7 +733,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   if (returned.applicable !== true) mismatches.push('applicable');
   if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
   if (JSON.stringify(normalizedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
-  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true
+  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.paragraphBindings !== undefined
     ? sha256Text(canonicalWordBookmarkIdentityJson(returnedProjection)) : expectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
   if (mismatches.length > 0) {
@@ -832,9 +850,13 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
     : deriveWordBookmarkNameV1Fallback;
   const blocks = [];
   for (const scene of scenes) {
-    const paragraphs = buildFormatIrParagraphs(scene);
     const pendingLedger = pendingTextRevisions.readLedger(scene.doc);
-    const pendingSegments = pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
+    const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isParagraphBoundary) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+    const currentParagraphs = buildFormatIrParagraphs(scene);
+    const paragraphs = pendingExport ? buildFormatIrParagraphs({ ...scene, doc: pendingExport.doc,
+      text: normalizeVisibleDocumentText(pendingTextRevisions.paragraphs(pendingExport.doc)
+        .map(p => p.content.map(n => n.type === 'hardBreak' ? '\n' : n.text).join('')).join('\n')) }) : currentParagraphs;
+    const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
     for (let index = 0; index < paragraphs.length; index += 1) {
       const { text, formatIr } = paragraphs[index];
       const seed = `${scene.sceneId}\n${scene.sceneOrdinal}\n${index}\n${text}`;
@@ -858,7 +880,8 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
         ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index],
-          pendingParagraphRevision: pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)) } : {}),
+          pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)),
+          ...(pendingExport?.paragraphs[index].boundaryRevision ? { pendingBoundaryRevision: pendingExport.paragraphs[index].boundaryRevision } : {}) } : {}),
         wordSignals: [
           {
             kind: 'w14ParaIdTextId',
@@ -1154,9 +1177,16 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
-  const sceneText = scenes.map((scene) => blocks
-    .filter((block) => block.sceneId === scene.sceneId)
-    .map((block) => block.text).join('\n')).join('\n\n');
+  const sceneText = scenes.map((scene) => {
+    const ledger = pendingTextRevisions.readLedger(scene.doc);
+    // Transport blocks retain the union. The publication digest binds the
+    // visible Current, whose paragraph boundaries can differ from that union.
+    if (ledger?.revisions.some(pendingTextRevisions.isParagraphBoundary)) {
+      return buildFormatIrParagraphs(scene).map(paragraph => paragraph.text).join('\n');
+    }
+    return blocks.filter((block) => block.sceneId === scene.sceneId)
+      .map((block) => block.text).join('\n');
+  }).join('\n\n');
   const sceneSnapshots = scenes.map((scene) => ({
     sceneId: scene.sceneId,
     sceneOrdinal: scene.sceneOrdinal,

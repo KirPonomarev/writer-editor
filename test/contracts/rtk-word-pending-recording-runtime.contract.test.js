@@ -135,12 +135,25 @@ test('actual Kernel pairs cut and paste across intervening atomic autosave, stop
   assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'reject', revisionId: ledger.revisions[1].id }).doc), model.normalizeNode(original));
   assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'undo' }).doc), model.normalizeNode(original));
 });
+test('actual Kernel records Enter plus typing across autosaves and durable reopen, then restores the exact baseline', async t => {
+  const h = await harness(t), original = fs.readFileSync(h.file, 'utf8'); await h.start();
+  const edit = values => { h.type('generation'); h.editor = envelope.composeObservablePayload({ doc: { type: 'doc', content: values.map(text => doc(text).content[0]) } }); };
+  edit(['Alpha', ' beta']); assert.equal((await h.save()).success, true);
+  assert.equal(model.readLedger(h.context().parsed.doc).revisions[0].boundary, 'paragraph');
+  edit(['Alpha', 'new beta']); assert.equal((await h.save()).success, true);
+  assert.equal((await h.command('stop')).ok, true);
+  const reopened = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+  assert.equal(model.projection(reopened).current, 'Alpha\nnew beta');
+  assert.equal(model.projection(reopened).original, 'Alpha beta');
+  assert.equal(model.readLedger(reopened).roundUndo.length, 1);
+  assert.deepEqual(model.normalizeNode(model.decide(reopened, { action: 'undo' }).doc), model.normalizeNode(envelope.parseObservablePayload(original).doc));
+});
 for (const kind of ['forgedLedger', 'unprepared', 'wrongTarget', 'sceneRace', 'projectRace', 'lifecycleRace', 'profile', 'entitlement', 'annotations', 'draft', 'writeFailure', 'oldGeneration', 'structure']) {
   test(`recording ${kind} cannot overwrite prior scene or clear the working buffer`, async t => {
     const h = await harness(t); await h.start(); h.type('Alpha beta!'); const before = fs.readFileSync(h.file, 'utf8');
     if (kind === 'forgedLedger') h.editor = envelope.composeObservablePayload({ doc: recording.derive(doc('Alpha beta'), doc('evil'), { author: 'forged', date: new Date().toISOString() }).doc });
     if (kind === 'draft') h.draft = true;
-    if (kind === 'structure') h.editor = envelope.composeObservablePayload({ doc: { type: 'doc', content: [...doc('a').content, ...doc('b').content] } });
+    if (kind === 'structure') h.editor = envelope.composeObservablePayload({ doc: { type: 'doc', content: [{ type: 'bulletList', content: [{ type: 'listItem', content: doc('Alpha beta').content }] }] } });
     const buffer = h.editor; let result;
     try {
       const snap = await h.capture();

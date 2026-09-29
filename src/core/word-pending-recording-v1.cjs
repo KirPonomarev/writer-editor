@@ -52,6 +52,156 @@ function prepare(doc) {
   return { working: review.materialize(ledger), baseline: review.bindLedger(ledger) };
 }
 
+// Structural authoring keeps paragraph marks as explicit tokens in the same
+// union source as text. This is a bounded flat-paragraph path; container edits
+// still go through their own structural contract.
+function deriveParagraphBoundaries(doc, before, working, metadata) {
+  const current = review.materialize(before);
+  if (equal(current, working)) return { changed: false, doc: clone(doc) };
+  if (![before.source, working].every(d => d.content.every(p => ['paragraph', 'heading'].includes(p.type))))
+    fail('RECORDING_STRUCTURE_UNSUPPORTED');
+  let nextId = 1;
+  for (const row of [before, ...before.roundUndo, ...before.roundRedo]) for (const r of row.revisions)
+    nextId = Math.max(nextId, Number(r.id.slice(9)) + 1);
+  const tokens = (document, ledger) => document.content.flatMap((p, index) => {
+    const changes = ledger?.revisions.filter(r => r.paragraphIndex === index) || [];
+    const result = []; let offset = 0;
+    for (const node of p.content || []) for (const ch of node.type === 'hardBreak' ? ['\n'] : [...node.text]) {
+      const revision = changes.find(r => !review.isParagraphFormat(r) && !review.isParagraphBoundary(r) && r.from <= offset && r.to > offset);
+      const scalar = node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: ch };
+      const visible = clone(scalar);
+      if (revision?.operation === 'format' && visible.type === 'text') {
+        delete visible.marks;
+        const marks = revision.format[revision.state === 'rejected' ? 'before' : 'after'];
+        if (marks.length) visible.marks = clone(marks);
+      }
+      result.push({ kind: 'char', node: scalar, visible, oldP: index, oldOffset: offset, revision });
+      offset += ch.length;
+    }
+    const format = changes.find(review.isParagraphFormat), properties = review.paragraphProperties(p);
+    result.push({ kind: 'boundary', properties, visible: format ? format.format[format.state === 'rejected' ? 'before' : 'after'] : properties,
+      oldP: index, oldOffset: offset, terminal: index === document.content.length - 1, formatRevision: format,
+      revision: changes.find(review.isParagraphBoundary) });
+    return result;
+  });
+  const original = tokens(before.source, before), desired = tokens(working);
+  const included = t => !t.revision || t.revision.operation === 'format'
+    || t.revision.operation === (t.revision.state === 'rejected' ? 'delete' : 'insert');
+  const visible = original.filter(included);
+  const same = (a, b) => a.kind === b.kind && Boolean(a.terminal) === Boolean(b.terminal)
+    && (a.kind === 'boundary' || stable(review.normalizeNode(a.visible)) === stable(review.normalizeNode(b.visible)));
+  const retain = (old, next) => {
+    if (old.kind !== 'boundary' || stable(old.visible) === stable(next.visible)) return;
+    if (old.formatRevision) fail('RECORDING_EXISTING_REVISION_OVERLAP');
+    old.propertyAfter = clone(next.properties);
+  };
+  // Matching rich characters allow multiple Enter/Delete gestures to retain
+  // the intervening text instead of manufacturing text replacement revisions.
+  const oldChars = visible.filter(t => t.kind === 'char'), newChars = desired.filter(t => t.kind === 'char');
+  let union;
+  const append = (list, values, operation) => {
+    for (const token of values) {
+      if (token.terminal) fail('RECORDING_STRUCTURE_FORMAT_UNSUPPORTED');
+      if (operation === 'delete' && token.revision) fail('RECORDING_EXISTING_REVISION_OVERLAP');
+      list.push(operation === 'insert' ? { ...clone(token), revision: undefined, fresh: operation } : Object.assign(token, { fresh: operation }));
+    }
+  };
+  if (oldChars.length === newChars.length && oldChars.every((t, i) => same(t, newChars[i]))) {
+    const newAt = new Map(); let offset = 0;
+    for (const t of desired) {
+      if (t.kind === 'char') { offset++; continue; }
+      const list = newAt.get(offset) || []; list.push(t); newAt.set(offset, list);
+    }
+    union = []; offset = 0; let i = 0;
+    while (i < original.length) {
+      const group = [];
+      while (i < original.length && (!included(original[i]) || original[i].kind === 'boundary')) group.push(original[i++]);
+      const previous = group.filter(t => included(t) && t.kind === 'boundary'), wanted = newAt.get(offset) || [];
+      let matched = 0;
+      while (matched < previous.length && matched < wanted.length && same(previous[matched], wanted[matched])) matched++;
+      let suffix = 0;
+      while (suffix < previous.length - matched && suffix < wanted.length - matched
+        && same(previous[previous.length - 1 - suffix], wanted[wanted.length - 1 - suffix])) suffix++;
+      for (let j = 0; j < matched; j++) retain(previous[j], wanted[j]);
+      for (let j = 1; j <= suffix; j++) retain(previous[previous.length - j], wanted[wanted.length - j]);
+      const added = wanted.slice(matched, wanted.length - suffix); let inserted = false;
+      for (const token of group) {
+        const at = previous.indexOf(token);
+        if (suffix && at === previous.length - suffix) { append(union, added, 'insert'); inserted = true; }
+        if (!included(token) || at < matched || at >= previous.length - suffix) union.push(token);
+        else append(union, [token], 'delete');
+      }
+      if (!inserted) append(union, added, 'insert');
+      if (i < original.length) { union.push(original[i++]); offset++; }
+    }
+  } else {
+    let left = 0, right = 0;
+    while (left < visible.length && left < desired.length && same(visible[left], desired[left])) left++;
+    while (right < visible.length - left && right < desired.length - left
+      && same(visible[visible.length - 1 - right], desired[desired.length - 1 - right])) right++;
+    for (let j = 0; j < left; j++) retain(visible[j], desired[j]);
+    for (let j = 1; j <= right; j++) retain(visible[visible.length - j], desired[desired.length - j]);
+    const removed = visible.slice(left, visible.length - right), added = desired.slice(left, desired.length - right);
+    if (!removed.length && visible[left - 1]?.revision && visible[left - 1].revision === visible[left]?.revision)
+      fail('RECORDING_EXISTING_REVISION_OVERLAP');
+    const end = removed.length ? original.indexOf(removed.at(-1)) + 1 : left < visible.length ? original.indexOf(visible[left]) : original.length;
+    append([], removed, 'delete');
+    const inserted = []; append(inserted, added, 'insert');
+    union = [...original.slice(0, end), ...inserted, ...original.slice(end)];
+  }
+  const after = clone(before), source = { type: 'doc', content: [] }, locations = new Map(), boundaryLocations = new Map();
+  const fresh = []; let nodes = [], offset = 0, paragraphIndex = 0, active = null;
+  const finish = () => { if (active) { fresh.push(active); active = null; } };
+  for (const token of union) {
+    if (token.kind === 'boundary') {
+      finish();
+      if (token.fresh) fresh.push({ operation: token.fresh, paragraphIndex, from: offset, to: offset, boundary: 'paragraph' });
+      else boundaryLocations.set(token.oldP, { paragraphIndex, offset });
+      if (token.propertyAfter) fresh.push({ operation: 'format', paragraphIndex, from: 0, to: offset,
+        format: { kind: 'paragraph', before: clone(token.visible), after: clone(token.propertyAfter) } });
+      source.content.push({ ...clone(token.propertyAfter || token.properties), content: nodes }); nodes = []; offset = 0; paragraphIndex++; continue;
+    }
+    const length = token.node.type === 'hardBreak' ? 1 : token.node.text.length;
+    if (token.fresh) {
+      if (!active || active.operation !== token.fresh) { finish(); active = { operation: token.fresh, paragraphIndex, from: offset, to: offset }; }
+      active.to += length;
+    } else {
+      finish();
+      if (token.revision) {
+        const positions = locations.get(token.revision.id) || [];
+        positions.push({ paragraphIndex, from: offset, to: offset + length }); locations.set(token.revision.id, positions);
+      }
+    }
+    nodes.push(clone(token.node)); offset += length;
+  }
+  if (nodes.length) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+  after.source = source;
+  for (const r of after.revisions) {
+    if (review.isParagraphBoundary(r) || review.isParagraphFormat(r)) {
+      const location = boundaryLocations.get(r.paragraphIndex);
+      if (!location) fail('RECORDING_EXISTING_REVISION_OVERLAP');
+      r.paragraphIndex = location.paragraphIndex; r.from = review.isParagraphFormat(r) ? 0 : location.offset; r.to = location.offset;
+    } else {
+      const positions = locations.get(r.id) || [];
+      if (!positions.length || positions.some(p => !p || p.paragraphIndex !== positions[0].paragraphIndex)) fail('RECORDING_EXISTING_REVISION_OVERLAP');
+      r.paragraphIndex = positions[0].paragraphIndex; r.from = positions[0].from; r.to = positions.at(-1).to;
+    }
+  }
+  for (const r of fresh) {
+    if (nextId > 9999) fail('PENDING_REVISIONS_ID_BUDGET');
+    const id = nextId++;
+    after.revisions.push({ ...r, id: `revision-${id}`, nativeId: `yalken-${id}`, author: metadata.author, date: metadata.date,
+      dateUtc: metadata.date, groupId: null, state: 'pending' });
+  }
+  after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
+  const previous = frame(before); previous.redo = [];
+  after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
+  const result = review.bindLedger(after);
+  if (!equal(result, working)) fail('RECORDING_CURRENT_PROJECTION_MISMATCH');
+  if (!equal(review.materialize(after, 'original'), review.materialize(before, 'original'))) fail('RECORDING_ORIGINAL_PROJECTION_MISMATCH');
+  return { changed: true, doc: result };
+}
+
 // Pure derivation from a stable session baseline, not from the last autosave.
 // The caller supplies main-owned author/time and owns all save authority.
 function derive(doc, workingDoc, metadata) {
@@ -64,7 +214,12 @@ function derive(doc, workingDoc, metadata) {
   const before = baseline(doc), working = baseline(workingDoc).source;
   const current = review.materialize(before);
   const shape = document => { const result = clone(document); review.paragraphs(result).forEach(p => { p.content = []; p.type = 'paragraph'; delete p.attrs; }); return result; };
-  if (!equal(shape(current), shape(working))) fail('RECORDING_STRUCTURE_UNSUPPORTED');
+  const oldLeaves = review.paragraphs(current), newLeaves = review.paragraphs(working);
+  const changedBoundariesOnly = [current, working].every(d => d.content.every(p => ['paragraph', 'heading'].includes(p.type)))
+    && oldLeaves.map(text).join('') === newLeaves.map(text).join('')
+    && stable(oldLeaves.map(text)) !== stable(newLeaves.map(text));
+  if (changedBoundariesOnly || !equal(shape(current), shape(working)) || oldLeaves.length !== review.paragraphs(before.source).length)
+    return deriveParagraphBoundaries(doc, before, working, metadata);
   const after = clone(before); let nextId = 1, nextGroup = 1, changed = false;
   const currentParagraphs = review.paragraphs(current), workingParagraphs = review.paragraphs(working);
   const sourceParagraphs = review.paragraphs(before.source), afterParagraphs = review.paragraphs(after.source);

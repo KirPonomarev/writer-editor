@@ -15,6 +15,7 @@ import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs
 import {
   extractReviewTransportFormattingRunsV2,
   extractPendingTextRevisionSourceV1,
+  extractTransportParagraphOwnershipV1,
   extractDocumentMediaReferencesV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
@@ -3723,9 +3724,43 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
     opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
 }
 
+function visiblePendingParagraphReturn(pending, exportMap, options) {
+  const scenes = exportMap?.scenes || [], blocks = scenes.flatMap(scene => (scene.blocks || []).map(block => ({ ...block, ownerSceneId: scene.sceneId })));
+  const names = blocks.map(block => {
+    const signals = (block.wordSignals || []).filter(signal => signal.kind === 'bookmarkName');
+    if (signals.length !== 1 || !signals[0].value?.name) throw Error('PENDING_RETURN_BOOKMARK_MAP');
+    return signals[0].value.name;
+  });
+  if (!blocks.length || new Set(scenes.map(scene => scene.sceneId)).size !== scenes.length) throw Error('PENDING_RETURN_BOOKMARK_MAP');
+  const union = extractTransportParagraphOwnershipV1(pending.xml, names, options);
+  const current = extractTransportParagraphOwnershipV1(pending.currentXml, names, options);
+  const inserted = new Set(pending.revisions.filter(r => r.boundary === 'paragraph' && r.operation === 'insert').map(r => r.paragraphIndex));
+  const bindings = union.map((owners, i) => {
+    if (owners.length !== 1) throw Error('PENDING_RETURN_BOOKMARK_UNION_OWNER');
+    if (i && owners[0] === union[i - 1][0] && !inserted.has(i - 1)) throw Error('PENDING_RETURN_UNTRACKED_PARAGRAPH_SPLIT');
+    return owners[0];
+  });
+  const unionFormatting = extractReviewTransportFormattingRunsV2(pending.xml, options);
+  const currentFormatting = extractReviewTransportFormattingRunsV2(pending.currentXml, options);
+  if (!unionFormatting.ok || !currentFormatting.ok) throw Error('PENDING_RETURN_PARAGRAPH_FORMAT');
+  // Table topology remains exact; expanding a bookmark inside a cell requires
+  // a separate cell occurrence binding and is not admitted by this route.
+  const topology = validateDocxReviewTableTopology(unionFormatting.paragraphs, exportMap);
+  if (!topology.ok) throw Error(topology.code);
+  if (currentFormatting.paragraphs.length !== current.length) throw Error('PENDING_RETURN_PARAGRAPH_COUNT');
+  const texts = new Map(scenes.map(scene => [scene.sceneId, []]));
+  for (const [i, owners] of current.entries()) {
+    const ids = new Set(owners.map(owner => blocks[owner].ownerSceneId));
+    if (ids.size !== 1) throw Error('PENDING_RETURN_CROSS_SCENE_BOUNDARY');
+    texts.get([...ids][0]).push(currentFormatting.paragraphs[i].paragraphText);
+  }
+  return { ok: true, sceneTexts: scenes.map(scene => texts.get(scene.sceneId).join('\n')), paragraphBindings: bindings };
+}
+
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   let xml = normalizeString(documentXml);
   let hasPendingRevisions = false;
+  let hasParagraphBoundaries = false;
   try {
     const pending = extractPendingTextRevisionSourceV1(xml, { ...options, cryptoPort: options.cryptoPort || {
       sha256Text: text => `sha256:${sha256Hex(text)}`,
@@ -3733,6 +3768,19 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
       byteLength: text => new TextEncoder().encode(text).length,
     } });
     hasPendingRevisions = pending.revisions.length > 0;
+    hasParagraphBoundaries = pending.revisions.some(revision => revision.boundary === 'paragraph');
+    if (hasParagraphBoundaries && options.allowPendingParagraphSplits === true) {
+      return visiblePendingParagraphReturn(pending, exportMap, { ...options, cryptoPort: options.cryptoPort || {
+        sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+        byteLength: text => new TextEncoder().encode(text).length,
+      } });
+    }
+    if (hasParagraphBoundaries) {
+      // First bind every union paragraph to the local map. Current can merge
+      // adjacent paragraphs, but cannot invent, reorder or cross scene identity.
+      const union = visibleSceneTextsFromWordDocumentXml(pending.xml, exportMap, options);
+      if (!union.ok) return union;
+    }
     xml = pending.currentXml;
   } catch (error) { return { ok: false, code: error.message }; }
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
@@ -3782,17 +3830,19 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
     paragraphText: [...match[0].matchAll(/<w:(?:t|delText)\b[^>]*>([\s\S]*?)<\/w:(?:t|delText)>/gu)].map(m => decodeXmlTextEntities(m[1])).join(''),
   })) };
   if (!scanned.ok) return { ok: false, code: scanned.code };
-  const tableTopology = validateDocxReviewTableTopology(scanned.paragraphs, exportMap);
+  const tableTopology = hasParagraphBoundaries ? { ok: true }
+    : validateDocxReviewTableTopology(scanned.paragraphs, exportMap);
   if (!tableTopology.ok) return tableTopology;
   const blocksBySceneId = new Map();
   for (const sceneId of orderedSceneIds) blocksBySceneId.set(sceneId, []);
   for (const paragraph of scanned.paragraphs) {
     const bookmarkNames = paragraph.bookmarkNames;
     const declared = bookmarkNames.filter((name) => sceneIdByBookmarkName.has(name.toLowerCase()));
-    if (declared.length !== 1 || declared[0].toLowerCase() !== orderedBookmarks[paragraphOrdinal]) {
+    if (!declared.length || (!hasParagraphBoundaries && declared.length !== 1)
+      || declared.some((name, index) => name.toLowerCase() !== orderedBookmarks[paragraphOrdinal + index])) {
       return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_ORDER_MISMATCH' };
     }
-    paragraphOrdinal += 1;
+    paragraphOrdinal += declared.length;
     const paragraphText = paragraph.paragraphText;
     let resolvedSceneId = null;
     let ambiguous = false;
@@ -7704,7 +7754,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
   ].map(reason => [reason, 'CONTENT_INVALID']),
  ]);
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
-for (const code of ['PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
+for (const code of ['PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
@@ -10335,9 +10385,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
       const source = pendingTextRevisions.normalizeNode(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n')));
       pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
-      const canonicalParse = xml => {
+      const canonicalParse = (xml, expectedCount = pendingSource.paragraphCount) => {
         const result = docxContentPreviewParseMainDocumentXml(xml, inlineStyles, docxNumberingCatalog(bytes));
-        if (!supported(result) || result.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
+        if (!supported(result) || result.sourceParagraphCount !== expectedCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
         const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs);
         return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
       };
@@ -10383,7 +10433,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
         : buildParagraphDocumentFromText(currentParsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
       if (hashCanonicalValue(pendingTextRevisions.normalizeNode(currentDoc)) !== hashCanonicalValue(pendingTextRevisions.normalizeNode(current))) throw Error('PENDING_REVISIONS_CURRENT_BINDING');
-      if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml)))
+      if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml, pendingSource.originalParagraphCount)))
         !== hashCanonicalValue(pendingTextRevisions.normalizeNode(pendingTextRevisions.materialize(ledger, 'original'))))
         throw Error('PENDING_REVISIONS_ORIGINAL_BINDING');
       parsed = currentParsed;

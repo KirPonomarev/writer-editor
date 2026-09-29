@@ -1,5 +1,5 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
-const { buildPendingRunsXml, buildPendingParagraphPropertiesXml } = require('./docxPendingRevisions.js');
+const { buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
@@ -319,9 +319,10 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
-  const pendingSegments = pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
+  const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isParagraphBoundary) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+  const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
-  const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
+  const semanticBlocks = buildSemanticBlocksFromDocument(pendingExport?.doc || snapshot.doc, pageBreakToken);
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
     semanticBlocks
       ? { sourceId: 'docx-export', blocks: semanticBlocks }
@@ -354,8 +355,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
-      const paragraphRevision = pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
-      const styleXml = buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter);
+      const paragraphRevision = pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
+      const styleXml = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter), pendingExport?.paragraphs[index].boundaryRevision, revisionCounter);
       const runs = semanticBlocks?.[index]?.runs;
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();

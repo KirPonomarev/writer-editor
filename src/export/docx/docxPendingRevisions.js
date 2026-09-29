@@ -17,6 +17,14 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
     + protectedProperties;
   return `<w:pPr>${body}<w:pPrChange${revisionAttributes(revision, counter)}><w:pPr>${old}</w:pPr></w:pPrChange></w:pPr>`;
 }
+function buildPendingParagraphBoundaryXml(propertiesXml, revision, counter) {
+  if (!revision) return propertiesXml;
+  if (revision.boundary !== 'paragraph' || revision.state !== 'pending' || !['insert', 'delete'].includes(revision.operation))
+    throw Error('PENDING_PARAGRAPH_BOUNDARY_INVALID');
+  const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
+  const mark = `<w:rPr><w:${revision.operation === 'insert' ? 'ins' : 'del'}${revisionAttributes(revision, counter)}/></w:rPr>`;
+  return `<w:pPr>${body}${mark}</w:pPr>`;
+}
 // Export segments have already been validated against canonical scene truth.
 // One native wrapper per revision, even when its body has several rich runs.
 function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
@@ -59,4 +67,4 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
   }
   flush(); return output;
 }
-module.exports = { buildPendingRunsXml, buildPendingParagraphPropertiesXml };
+module.exports = { buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
