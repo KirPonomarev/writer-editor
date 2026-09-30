@@ -1,4 +1,5 @@
 const WORKSPACE_QUERY_IDS = Object.freeze({
+  USER_BOOKMARKS: 'query.project.userBookmarks',
   PROJECT_TREE: 'query.projectTree',
   PROJECT_LIBRARY: 'query.projectLibrary',
   SELECTED_SCENES_TXT_EXPORT_SCOPE: 'query.selectedScenesTxtExportScope',
@@ -40,6 +41,7 @@ const ATLAS_WORKSPACE_QUERY_IDS = Object.freeze([
 ]);
 
 const WORKSPACE_QUERY_RECORDS = Object.freeze([
+  Object.freeze({ id: WORKSPACE_QUERY_IDS.USER_BOOKMARKS, owner: 'main', projection: 'user-bookmarks' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.PROJECT_TREE, owner: 'main', projection: 'project-tree' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.PROJECT_LIBRARY, owner: 'main', projection: 'project-library' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.SELECTED_SCENES_TXT_EXPORT_SCOPE, owner: 'main', projection: 'selected-scenes-txt-export-scope' }),

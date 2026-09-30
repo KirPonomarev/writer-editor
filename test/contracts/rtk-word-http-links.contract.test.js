@@ -59,9 +59,22 @@ test('P1a missing, duplicate, spoofed and unsupported referenced relationships n
  for(const rel of ['',`<Relationship Id="link1" Type="${O}/image" Target="a.png"/>`,`<Relationship Id="link1" Type="${O}/hyperlink" Target="https://example.invalid/" TargetMode="External"/>`.repeat(2),`<Relationship Id="link1" Type="${O}/hyperlink" Target="mailto:x@y" TargetMode="External"/>`]){
   const p=b.buildDocxContentPreviewFromZipBytes(pack(`<w:p><w:hyperlink r:id="link1">${run('label')}</w:hyperlink></w:p>`,rel));assert.equal(b.buildDocxImportPreviewPlanFromContentPreview(p).ok,false,JSON.stringify(p));
  }
- for(const attrs of ['w:anchor="bookmark"','xmlns:r="urn:spoof" r:id="link1"','r:id="link1" w:tooltip="meaning"']){
+ for(const attrs of ['xmlns:r="urn:spoof" r:id="link1"','r:id="link1" w:tooltip="meaning"']){
   const p=b.buildDocxContentPreviewFromZipBytes(pack(`<w:p><w:hyperlink ${attrs}>${run('label')}</w:hyperlink></w:p>`));assert.equal(b.buildDocxImportPreviewPlanFromContentPreview(p).ok,false,JSON.stringify(p));
  }
+});
+
+test('P2c standalone broken internal anchor retains label and receives a fresh local tombstone identity',async()=>{
+ const result=await read(pack(`<w:p><w:hyperlink w:anchor="bookmark">${run('label')}</w:hyperlink></w:p>`,''));
+ const core=require('../../src/core/word-user-bookmarks-v1.cjs');
+ const registry=core.readRegistry(result.doc);
+ assert.equal(result.text,'label');assert.equal(registry.bookmarks.length,1);
+ const target=registry.bookmarks[0];assert.equal(target.name,'bookmark');assert.equal(target.state,'deleted');
+ assert.match(target.id,/^ubm-[a-f0-9]{32}$/);assert.equal(Object.hasOwn(target,'start'),false);assert.equal(Object.hasOwn(target,'end'),false);
+ const mark=result.doc.content[0].content[0].marks.find(m=>m.type==='link');
+ assert.deepEqual(mark.attrs,{href:'#bookmark',wordBookmarkId:target.id,wordBookmarkName:'bookmark'});
+ const independent=await read(pack(`<w:p><w:hyperlink w:anchor="bookmark">${run('label plus')}</w:hyperlink></w:p>`,''));
+ assert.notEqual(core.readRegistry(independent.doc).bookmarks[0].id,target.id);
 });
 
 test('P1a malformed link fields and nested links reject without a partial successful label',async()=>{

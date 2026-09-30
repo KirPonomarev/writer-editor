@@ -171,6 +171,29 @@ function buildRunContentXml(text) {
   return buildDocxRunContentXml(normalizeDocxXmlText(text), { allowFormFeedPageBreak: true });
 }
 
+function wrapTypedInternalHyperlink(attrs, xml) {
+  const name=attrs?.wordBookmarkName;
+  if (!/^ubm-[a-f0-9]{32}$/u.test(attrs?.wordBookmarkId) || typeof name!=='string' || name.length>40
+    || !/^\p{L}[\p{L}\p{N}_]*$/u.test(name) || attrs.href!==`#${name}` || /^YRTK_/iu.test(name)) throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+  return `<w:hyperlink w:anchor="${escapeXml(name)}" w:history="1">${xml}</w:hyperlink>`;
+}
+
+function userBookmarkMarkersForBlock(block, ids) {
+  const markers=new Map();let afterParagraph='';
+  for(const marker of block.formatIr?.userBookmarks||[]) {
+    const id=ids.get(marker.id);
+    if(!id||!['start','end'].includes(marker.kind)||!Number.isSafeInteger(marker.offsetUtf16)||marker.offsetUtf16<0||marker.offsetUtf16>block.text.length
+      || !['text','afterParagraph'].includes(marker.edge)
+      || (marker.offsetUtf16>0&&/[\ud800-\udbff]/u.test(block.text[marker.offsetUtf16-1])&&/[\udc00-\udfff]/u.test(block.text[marker.offsetUtf16]||'')))throw Error('DOCX_USER_BOOKMARK_ENDPOINT_INVALID');
+    const xml=marker.kind==='start'?`<w:bookmarkStart w:id="${id}" w:name="${escapeXml(marker.name)}"/>`:`<w:bookmarkEnd w:id="${id}"/>`;
+    if(marker.edge==='afterParagraph') {
+      if(marker.kind!=='end'||marker.offsetUtf16!==block.text.length||block.formatIr?.table)throw Error('DOCX_USER_BOOKMARK_PARAGRAPH_EDGE_UNSUPPORTED');
+      afterParagraph+=xml;
+    }else markers.set(marker.offsetUtf16,(markers.get(marker.offsetUtf16)||'')+xml);
+  }
+  return {markers,afterParagraph};
+}
+
 function buildFormatIrRunsXml(block, hyperlinkByHref) {
   const runs = Array.isArray(block.formatIr?.runs) ? block.formatIr.runs : [];
   if (runs.length === 0) {
@@ -189,6 +212,9 @@ function buildFormatIrRunsXml(block, hyperlinkByHref) {
     const link = preservedMarks.find((mark) => mark?.type === 'link');
     if (!link) return runXml;
     const href = normalizeString(link.attrs?.href);
+    if (link.attrs?.wordBookmarkId) {
+      return wrapTypedInternalHyperlink(link.attrs,runXml);
+    }
     const relationshipId = hyperlinkByHref.get(href);
     if (!relationshipId) throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_LINK_RELATIONSHIP_MISSING');
     return `<w:hyperlink r:id="${escapeXml(relationshipId)}">${runXml}</w:hyperlink>`;
@@ -308,10 +334,12 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map()) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
+  const {markers:userMarkers,afterParagraph}=userBookmarkMarkersForBlock(block,userBookmarkIds);
+  for(const [offset,xml] of userMarkers)markers.set(offset,(markers.get(offset)||'')+xml);
   for (const [offset, xml] of noteMarkersForBlock(documentNotes, block)) {
     markers.set(offset, (markers.get(offset) || '') + xml);
   }
@@ -383,10 +411,26 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     sectionCarrier,
     `<w:bookmarkEnd w:id="${bookmarkId}"/>`,
     '</w:p>',
+    afterParagraph,
   ].join('');
 }
 
 function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null) {
+  const userBookmarkIds=new Map(), opened=new Set(), closed=new Set(), names=new Set(), identities=new Map();
+  for (const block of blocks) for (const marker of block.formatIr?.userBookmarks || []) {
+    if (!/^ubm-[a-f0-9]{32}$/u.test(marker.id) || typeof marker.name!=='string' || marker.name.length>40 || !/^\p{L}[\p{L}\p{N}_]*$/u.test(marker.name) || /^YRTK_/iu.test(marker.name) || !['start','end'].includes(marker.kind)) throw Error('DOCX_USER_BOOKMARK_MARKER_INVALID');
+    if(identities.has(marker.id)&&identities.get(marker.id)!==marker.name)throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+    identities.set(marker.id,marker.name);
+    if (!userBookmarkIds.has(marker.id)) userBookmarkIds.set(marker.id,String(blocks.length+userBookmarkIds.size+1));
+    if (marker.kind==='start') {
+      if (opened.has(marker.id) || names.has(marker.name.toLowerCase())) throw Error('DOCX_USER_BOOKMARK_DUPLICATE');
+      opened.add(marker.id); names.add(marker.name.toLowerCase());
+    } else {
+      if (!opened.has(marker.id) || closed.has(marker.id)) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+      closed.add(marker.id);
+    }
+  }
+  if (opened.size!==closed.size) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
   const normalizedSections = normalizeDocumentSections(documentSections, blocks.length);
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
@@ -402,6 +446,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     officeModeTransport,
     mediaPackage,
     revisionCounter,
+    userBookmarkIds,
   ), row => buildPendingRowPropertiesXml(row.map(p => p.item.pendingRowRevision), revisionCounter));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -624,6 +669,7 @@ function collectDocumentHyperlinks(blocks) {
     for (const run of Array.isArray(block.formatIr?.runs) ? block.formatIr.runs : []) {
       for (const mark of Array.isArray(run?.preservedMarks) ? run.preservedMarks : []) {
         if (mark?.type !== 'link') continue;
+        if (mark.attrs?.wordBookmarkId) continue;
         const href = normalizeString(mark.attrs?.href);
         if (href && !hrefs.includes(href)) hrefs.push(href);
       }
@@ -790,4 +836,6 @@ module.exports = {
   validateDocxReviewPacketModernMode15,
   deriveWordBookmarkNameV1,
   readDeclaredBookmarkName,
+  wrapTypedInternalHyperlink,
+  userBookmarkMarkersForBlock,
 };

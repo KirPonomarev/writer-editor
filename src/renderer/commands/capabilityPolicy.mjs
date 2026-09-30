@@ -7,6 +7,7 @@ export const CAPABILITY_BINDING = Object.freeze({
   'project.create': 'cap.core.project.create',
   'project.applyTextEdit': 'cap.core.project.applyTextEdit',
   ...PRODUCT_COMMAND_CAPABILITY_BINDING,
+  ...Object.fromEntries(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => [`cmd.project.bookmarks.${action}`, 'cap.project.bookmarks.authoring'])),
   'cmd.project.new': 'cap.project.new',
   'cmd.project.lifecycle.create': 'cap.project.lifecycle.create',
   'cmd.project.lifecycle.open': 'cap.project.lifecycle.open',
@@ -113,6 +114,7 @@ export const CAPABILITY_BINDING = Object.freeze({
 
 export const CAPABILITY_MATRIX = Object.freeze({
   node: Object.freeze({
+    'cap.project.bookmarks.authoring': true,
     'cap.core.project.create': true,
     'cap.core.project.applyTextEdit': true,
     'cap.atlas.entity.create': true,

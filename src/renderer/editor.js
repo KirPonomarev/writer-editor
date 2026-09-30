@@ -1,4 +1,5 @@
 import {
+  applyTiptapUserBookmarkPublication,
   applyTiptapCharacterStyle,
   applyTiptapParagraphStyle,
   focusTiptapSurface,
@@ -21955,6 +21956,42 @@ function handleTiptapFormatCommand(commandName, payload = {}) {
   return result;
 }
 
+async function handleUserBookmarkManage() {
+  if (!isTiptapMode) return { performed: false, reason: 'EDITOR_MODE_UNSUPPORTED' };
+  const admission = await invokeWorkspaceQueryBridge('query.project.userBookmarks', { admissionOnly: true });
+  if (!admission?.ok || !admission.available) return { performed: false, reason: admission?.reason || 'UNAVAILABLE' };
+  const saved = await invokePreloadUiCommandBridge('cmd.project.save');
+  if (!saved?.ok) return { performed: false, reason: 'SAVE_REQUIRED' };
+  const identity = { projectId: currentProjectId, documentId: currentDocumentId,
+    generation: localEditGeneration, content: composeDocumentContent() };
+  const selection = getTiptapSelectionOffsets();
+  const inventory = await invokeWorkspaceQueryBridge('query.project.userBookmarks');
+  if (!inventory?.ok || !inventory.available) {
+    updateStatusText('Закладки недоступны: ' + (inventory?.reason || 'нет открытой сцены'));
+    return { performed: false, reason: inventory?.reason || 'UNAVAILABLE' };
+  }
+  const response = await openLinkDialog({ title: 'Закладки', initialValue: '', canRemove: false,
+    bookmarks: inventory.bookmarks, manageBookmarks: true, fieldLabel: 'Имя', inputMode: 'text',
+    submitLabel: 'Сохранить', cancelLabel: 'Отмена',
+    errorMessage: 'Имя должно начинаться с буквы и содержать до 40 букв, цифр или _.',
+    normalize: value => ({ ok: typeof value === 'string' && /^[\p{L}][\p{L}\p{N}_]{0,39}$/u.test(value) }) });
+  if (!response) return { performed: false, reason: 'USER_CANCELLED' };
+  if (currentProjectId !== identity.projectId || currentDocumentId !== identity.documentId
+    || localEditGeneration !== identity.generation || composeDocumentContent() !== identity.content) {
+    return { performed: false, reason: 'STALE_DOCUMENT' };
+  }
+  const result = await invokePreloadUiCommandBridge(`cmd.project.bookmarks.${response.action}`, {
+    requestId: `bookmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    projectId: inventory.projectId, sceneId: inventory.sceneId, subjectId: inventory.subjectId,
+    expectedSceneSha256: inventory.expectedSceneSha256, registryRevision: inventory.registryRevision,
+    ...(response.bookmarkId ? { bookmarkId: response.bookmarkId } : {}),
+    ...(response.action !== 'delete' ? { name: response.name } : {}),
+    ...(response.action === 'create' ? { selectionStart: selection.start, selectionEnd: selection.end } : {}),
+  });
+  updateStatusText(result?.ok ? 'Закладка сохранена' : 'Закладка не применена: ' + (result?.reason || result?.error?.reason || 'конфликт'));
+  return result;
+}
+
 async function handleInsertLinkPrompt(payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_MODE_UNSUPPORTED' };
@@ -21970,11 +22007,15 @@ async function handleInsertLinkPrompt(payload = {}) {
     generation: localEditGeneration, content: composeDocumentContent(),
   };
   const selection = getTiptapSelectionOffsets();
+  const inventory = typeof window.electronAPI?.invokeWorkspaceQueryBridge === 'function'
+    ? await invokeWorkspaceQueryBridge('query.project.userBookmarks') : null;
+  const bookmarks = inventory?.ok && inventory.available ? inventory.bookmarks : [];
   const response = await openLinkDialog({
     title: LINK_PROMPT_TITLE,
     initialValue: readToolbarLinkPromptInitialValue(payload, state),
     canRemove: state.link,
     normalize: normalizeToolbarLinkPromptValue,
+    bookmarks,
   });
   if (response === null) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'USER_CANCELLED' };
@@ -21992,6 +22033,12 @@ async function handleInsertLinkPrompt(payload = {}) {
   const restored = setTiptapSelectionOffsets(selection.start, selection.end);
   if (restored.performed !== true) return restored;
 
+  if (response && typeof response === 'object') {
+    const record = bookmarks.find(item => item.id === response.bookmarkId && item.state === 'active');
+    if (!record) return { performed: false, reason: 'BOOKMARK_TARGET_INVALID' };
+    return handleTiptapFormatCommand('setLink', { href: '#' + record.name,
+      wordBookmarkId: record.id, wordBookmarkName: record.name });
+  }
   const normalized = normalizeToolbarLinkPromptValue(response);
   if (!normalized.ok) {
     syncToolbarFormattingState(state);
@@ -23307,6 +23354,10 @@ window.addEventListener('resize', () => {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.userBookmarkAuthoringPublication === true) {
+      if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload);
+      return;
+    }
     cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';
@@ -23621,6 +23672,7 @@ if (window.electronAPI) {
       formatTextColorPicker: (_commandId, payload = {}) => handleFormatTextColorPicker(payload),
       formatHighlightColorPicker: (_commandId, payload = {}) => handleFormatHighlightColorPicker(payload),
       insertLinkPrompt: (_commandId, payload = {}) => handleInsertLinkPrompt(payload),
+      userBookmarkManage: () => handleUserBookmarkManage(),
       listToggleBullet: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
       },

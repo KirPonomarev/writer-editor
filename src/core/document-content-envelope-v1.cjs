@@ -9,6 +9,7 @@ const DEFAULT_META = Object.freeze({
 
 const DOC_V2_HEADER_PATTERN = /^\[doc-v2 length=(\d+)\]/i;
 const DOC_V2_ALLOWED_BLOCK_TYPES = new Set(['doc', 'paragraph', 'heading', 'text', 'hardBreak']);
+const SCENE_DOCUMENT_V3_DECLARATION = '{"format":"yalken.scene-document","version":3,"requiredFeatures":["word-user-bookmarks.v1"]}';
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -234,6 +235,18 @@ function canonicalizeDocumentJson(doc) {
   if (!isPlainObject(doc)) {
     return buildParagraphDocumentFromText('');
   }
+  // Optional domain state is validated raw before JSON normalization. Keep the
+  // absent/null historical path dependency-identical for isolated sandboxes.
+  const attrsDescriptor = Object.getOwnPropertyDescriptor(doc, 'attrs');
+  const bookmarkDescriptor = attrsDescriptor?.value
+    && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordUserBookmarks');
+  if ((attrsDescriptor && !Object.hasOwn(attrsDescriptor, 'value'))
+    || (bookmarkDescriptor && !Object.hasOwn(bookmarkDescriptor, 'value'))) {
+    throw Object.assign(new Error('USER_BOOKMARK_SHAPE_INVALID'), { code: 'USER_BOOKMARK_SHAPE_INVALID' });
+  }
+  if (bookmarkDescriptor?.value != null) {
+    require('./word-user-bookmarks-v1.cjs').readRegistry(doc, { checkBounds: false });
+  }
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
   const copied = cloneJsonValue(doc);
   const pending = [copied];
@@ -247,6 +260,51 @@ function canonicalizeDocumentJson(doc) {
 
 function serializeDocumentJson(doc) {
   return JSON.stringify(canonicalizeDocumentJson(doc), null, 2);
+}
+
+// Retain the readable rich JSON and existing length frame. A separate feature
+// declaration deliberately prevents older single-JSON readers from accepting
+// a scene whose semantic registry they cannot preserve.
+function encodeSceneDocument(doc) {
+  const json = serializeDocumentJson(doc);
+  return doc.attrs?.wordUserBookmarks != null ? `${SCENE_DOCUMENT_V3_DECLARATION}\n${json}` : json;
+}
+
+function decodeSceneDocument(serializedDoc) {
+  const fail = code => { throw Object.assign(new Error(code), { code }); };
+  const isDeclaration = value => isPlainObject(value) && ['format', 'version', 'requiredFeatures']
+    .some(key => Object.hasOwn(value, key));
+  const newline = serializedDoc.indexOf('\n');
+  const firstLine = newline < 0 ? serializedDoc : serializedDoc.slice(0, newline);
+  let declaration;
+  try { declaration = JSON.parse(firstLine); } catch { declaration = null; }
+  const declared = isDeclaration(declaration);
+  if (!declared) {
+    const rawDoc = JSON.parse(serializedDoc);
+    // A pretty or single-record declaration is not a legacy document. Never
+    // let canonicalizeDocumentJson turn an unsupported header into blank text.
+    if (isDeclaration(rawDoc)) {
+      if (rawDoc.format !== 'yalken.scene-document' || rawDoc.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
+      fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
+    }
+    if (!isPlainObject(rawDoc) || rawDoc.type !== 'doc' || !Array.isArray(rawDoc.content)) fail('DOC_BLOCK_DOCUMENT_INVALID');
+    if (rawDoc.attrs?.wordUserBookmarks != null) {
+      require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
+      fail('DOC_BLOCK_REQUIRED_DECLARATION_MISSING');
+    }
+    return { doc: canonicalizeDocumentJson(rawDoc), payloadVersion: 2 };
+  }
+  if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
+  if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
+  if (!Array.isArray(declaration.requiredFeatures) || declaration.requiredFeatures.length !== 1
+    || declaration.requiredFeatures[0] !== 'word-user-bookmarks.v1') fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+  if (firstLine !== SCENE_DOCUMENT_V3_DECLARATION || newline < 0) fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
+  // JSON.parse requires exactly one complete record and rejects trailing JSON.
+  const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));
+  if (!isPlainObject(rawDoc) || rawDoc.type !== 'doc' || !Array.isArray(rawDoc.content)
+    || !isPlainObject(rawDoc.attrs) || rawDoc.attrs.wordUserBookmarks == null) fail('DOC_BLOCK_REQUIRED_FEATURE_MISSING');
+  require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
+  return { doc: canonicalizeDocumentJson(rawDoc), payloadVersion: 3 };
 }
 
 function createDocumentPayloadIssue(code, reason, userMessage, details = {}) {
@@ -311,9 +369,11 @@ function extractDocBlock(rawContent) {
   const serializedDoc = content.slice(docStart, docEnd);
   const restContent = `${content.slice(0, headerStart)}${content.slice(docEnd)}`;
   try {
+    const decoded = decodeSceneDocument(serializedDoc);
     return {
       found: true,
-      doc: canonicalizeDocumentJson(JSON.parse(serializedDoc)),
+      doc: decoded.doc,
+      payloadVersion: decoded.payloadVersion,
       restContent,
       issue: null,
     };
@@ -324,7 +384,7 @@ function extractDocBlock(rawContent) {
       restContent,
       issue: createDocumentPayloadIssue(
         'E_DOC_PAYLOAD_INVALID',
-        'DOC_BLOCK_JSON_INVALID',
+        error?.code?.startsWith('DOC_BLOCK_') ? error.code : 'DOC_BLOCK_JSON_INVALID',
         'Document payload JSON is invalid.',
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       ),
@@ -464,6 +524,7 @@ function parseObservablePayload(rawText = '') {
 
   return {
     version: docBlock.doc ? 2 : 1,
+    payloadVersion: docBlock.doc ? docBlock.payloadVersion : 1,
     text: docBlock.doc ? deriveVisibleTextFromDocument(docBlock.doc) : legacyText,
     doc: docBlock.doc,
     meta,
@@ -488,7 +549,7 @@ function composeObservablePayload({
   }
 
   if (isPlainObject(doc)) {
-    const serializedDoc = serializeDocumentJson(doc);
+    const serializedDoc = encodeSceneDocument(doc);
     parts.push(`[doc-v2 length=${serializedDoc.length}]\n${serializedDoc}`);
   } else {
     const legacyText = trimLegacyTextContent(text);

@@ -1,8 +1,8 @@
-import { WordPendingRevisions, setCheckedDocument } from './wordPendingRevisions.mjs'
+import { WordPendingRevisions, setCheckedDocument as setCheckedReviewDocument } from './wordPendingRevisions.mjs'
+import { UserBookmarks, UserBookmarkLink, applyUserBookmarkPublication } from './userBookmarks.mjs'
 import { Editor } from '@tiptap/core'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
-import Link from '@tiptap/extension-link'
 import { DocumentTextStyle } from './documentTextStyle.mjs'
 import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
 import { DocumentTables } from './documentTables.mjs'
@@ -30,6 +30,22 @@ let currentFormattingStateHandler = null
 let unloadHookBound = false
 let runtimeCommandListenerAttached = false
 let recoveryRestoredListenerAttached = false
+let userBookmarkManageHandler = null
+
+function setCheckedDocument(editor, doc) {
+  const result = setCheckedReviewDocument(editor, doc)
+  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null)
+    .setMeta('preventUpdate', true).setMeta('addToHistory', false))
+  return result
+}
+
+export function applyTiptapUserBookmarkPublication(payload) {
+  if (!currentEditorInstance || !currentIpcSession
+    || currentIpcSession.readObservablePayload() !== payload.expectedContent) return false
+  const checked = parseObservablePayload(payload.content)
+  return !checked.issue && Boolean(checked.doc)
+    && applyUserBookmarkPublication(currentEditorInstance, checked.doc, payload.affectedBookmarkId || null)
+}
 
 function readEditorText(editor) {
   if (!editor || typeof editor.getText !== 'function') {
@@ -62,7 +78,7 @@ function readEditorDocument(editor) {
   try {
     return canonicalizeDocumentJson(editor.getJSON())
   } catch (error) {
-    if (editor.getJSON()?.attrs?.wordPendingRevisions) throw error
+    if (editor.getJSON()?.attrs?.wordPendingRevisions || editor.getJSON()?.attrs?.wordUserBookmarks) throw error
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
 }
@@ -419,6 +435,12 @@ function createIpcSession(editor, options = {}) {
       })
     },
     applyIncomingPayload(payload) {
+      if (payload?.userBookmarkAuthoringPublication === true) {
+        if (this.readObservablePayload() !== payload.expectedContent) return
+        const checked = parseObservablePayload(payload.content)
+        if (!checked.issue && checked.doc) applyUserBookmarkPublication(editor, checked.doc, payload.affectedBookmarkId || null)
+        return
+      }
       const hasObjectPayload = payload && typeof payload === 'object'
       const content = typeof payload === 'string'
         ? payload
@@ -475,6 +497,9 @@ function ensureRuntimeListenersAttached() {
 
   if (!runtimeCommandListenerAttached && typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
+      if (payload?.commandId === 'cmd.project.bookmarks.managePrompt') {
+        userBookmarkManageHandler?.(); return
+      }
       currentRuntimeBridge?.handleRuntimeCommand(payload)
     })
     runtimeCommandListenerAttached = true
@@ -552,12 +577,13 @@ export function initTiptap(mountEl, options = {}) {
       DocumentMedia,
       ManuscriptNoteReferences,
       WordPendingRevisions,
+      UserBookmarks,
       Color,
       Highlight.configure({
         multicolor: true,
       }),
       Underline,
-      Link.configure({
+      UserBookmarkLink.configure({
         autolink: false,
         linkOnPaste: false,
         openOnClick: false,
@@ -607,6 +633,7 @@ export function destroyTiptap() {
   destroyCurrentEditor()
 }
 export function setTiptapRuntimeHandlers(runtimeHandlers = {}) {
+  userBookmarkManageHandler = runtimeHandlers.userBookmarkManage || null
   if (!currentRuntimeBridge || typeof currentRuntimeBridge.setRuntimeHandlers !== 'function') {
     return
   }
@@ -866,8 +893,10 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
       return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
     }
     const performed = chain && typeof chain.setLink === 'function' && typeof chain.run === 'function'
-      ? Boolean(chain.setLink({ href }).run())
-      : Boolean(currentEditorInstance.commands.setLink({ href }))
+      ? Boolean(chain.setLink({ href, wordBookmarkId: linkPayload.wordBookmarkId || null,
+        wordBookmarkName: linkPayload.wordBookmarkName || null }).run())
+      : Boolean(currentEditorInstance.commands.setLink({ href, wordBookmarkId: linkPayload.wordBookmarkId || null,
+        wordBookmarkName: linkPayload.wordBookmarkName || null }))
     notifyFormattingStateChange()
     return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
   }

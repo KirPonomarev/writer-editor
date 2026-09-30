@@ -305,14 +305,25 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   const media = buildMediaPackage(snapshot.doc);
   const notes = notePackageParts(deps.documentNotes);
+  // Historical text-only exports need no new domain dependency. Present
+  // registry bytes are validated before any payload receives export meaning.
+  const bookmarkCore=snapshot.doc?.attrs?.wordUserBookmarks!=null?require('../../core/word-user-bookmarks-v1.cjs'):null;
+  const bookmarkRegistry=bookmarkCore?bookmarkCore.readRegistry(snapshot.doc):null;
+  const bookmarkHelpers=bookmarkCore?require('./docxReviewPacketBuilder.js'):null;
   const hyperlinks = new Map();
   const readHref = run => {
     const links = (Array.isArray(run.marks) ? run.marks : []).filter(mark => mark?.type === 'link');
     if (links.length > 1) throw new Error('DOCX_LINK_MARK_CONFLICT');
+    if(links[0]?.attrs?.href?.startsWith('#')||links[0]?.attrs?.wordBookmarkId!=null||links[0]?.attrs?.wordBookmarkName!=null){
+      if(!bookmarkCore)throw Error('DOCX_USER_BOOKMARK_REGISTRY_REQUIRED');
+      const record=bookmarkCore.inspectInternalLink(links[0],bookmarkRegistry);
+      return bookmarkCore.linkAttrs(record);
+    }
     return links.length ? normalizeDocxHttpHref(links[0].attrs?.href) : null;
   };
   const wrapLink = (xml, href) => {
     if (!href) return xml;
+    if(typeof href==='object')return bookmarkHelpers.wrapTypedInternalHyperlink(href,xml);
     if (!hyperlinks.has(href)) hyperlinks.set(href, `yalkenLink${hyperlinks.size + 1}`);
     return `<w:hyperlink r:id="${hyperlinks.get(href)}">${xml}</w:hyperlink>`;
   };
@@ -323,6 +334,16 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
   const semanticBlocks = buildSemanticBlocksFromDocument(pendingExport?.doc || snapshot.doc, pageBreakToken);
+  const bookmarkIds=new Map();
+  if(bookmarkRegistry){
+    const leaves=bookmarkCore.paragraphs(snapshot.doc);
+    if(!semanticBlocks||semanticBlocks.length!==leaves.length||semanticBlocks.some((block,index)=>block.text!==bookmarkCore.textOf(leaves[index])))throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
+    bookmarkRegistry.bookmarks.filter(record=>record.state==='active').forEach(record=>bookmarkIds.set(record.id,String(bookmarkIds.size+1)));
+    for(const [index,block] of semanticBlocks.entries())block.userBookmarks=bookmarkRegistry.bookmarks.filter(record=>record.state==='active').flatMap(record=>[
+      ...(record.start.paragraphIndex===index?[{kind:'start',id:record.id,name:record.name,offsetUtf16:record.start.offsetUtf16,edge:record.start.edge}]:[]),
+      ...(record.end.paragraphIndex===index?[{kind:'end',id:record.id,name:record.name,offsetUtf16:record.end.offsetUtf16,edge:record.end.edge}]:[]),
+    ]);
+  }
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
     semanticBlocks
       ? { sourceId: 'docx-export', blocks: semanticBlocks }
@@ -362,6 +383,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const runs = semanticBlocks?.[index]?.runs;
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
+      const {markers:userMarkers,afterParagraph}=bookmarkHelpers?bookmarkHelpers.userBookmarkMarkersForBlock({text,formatIr:{userBookmarks:semanticBlocks?.[index]?.userBookmarks,table:semanticBlocks?.[index]?.table}},bookmarkIds):{markers:new Map(),afterParagraph:''};
+      for(const [offset,xml] of userMarkers)markers.set(offset,(markers.get(offset)||'')+xml);
       const hasMedia = Array.isArray(runs) && runs.some(run => run.image);
       if (!text && !hasMedia && !markers.size && !pendingLedger) {
         return `<w:p>${styleXml}</w:p>`;
@@ -399,7 +422,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         if (markers.size) throw new Error('DOCX_NOTE_ANCHOR_UNEMITTED');
         runsXml = parts.join('');
       }
-      return `<w:p>${styleXml}${runsXml}</w:p>`;
+      return `<w:p>${styleXml}${runsXml}</w:p>${afterParagraph}`;
     }, row => buildPendingRowPropertiesXml(row.map(p => pendingExport?.paragraphs[p.index].rowRevision), revisionCounter))
     : '<w:p/>';
 

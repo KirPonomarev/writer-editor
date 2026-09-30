@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "SURFACE_MANIFEST_V1",
+  "surfaceId": "surface.editor.userBookmarks",
+  "featureId": "WORD_USER_BOOKMARKS_MAC_20260930",
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "host": "Existing Commands inspector button -> existing Command Palette -> existing dialog host",
+  "slotId": "Existing command contribution and dialog content",
+  "newVisualLanguage": false,
+  "contributionKind": "Intent controls plus immutable revision-bound inventory",
+  "commands": [
+    "cmd.project.bookmarks.managePrompt",
+    "cmd.project.bookmarks.create",
+    "cmd.project.bookmarks.rename",
+    "cmd.project.bookmarks.delete",
+    "cmd.project.bookmarks.copy",
+    "cmd.project.insert.linkPrompt"
+  ],
+  "projection": "query.project.userBookmarks",
+  "activation": {
+    "explicitOpenRequired": true,
+    "backgroundRefresh": false,
+    "typingHotPath": false
+  },
+  "states": [
+    "empty",
+    "ready",
+    "loading",
+    "invalidName",
+    "brokenTarget",
+    "conflict",
+    "unavailable"
+  ],
+  "authority": {
+    "rendererIntentOnly": true,
+    "productMutation": false,
+    "storageMutation": false,
+    "pathAuthority": false,
+    "networkMutation": false
+  },
+  "accessibility": {
+    "nativeControls": true,
+    "labelledInputs": true,
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Escape"
+    ],
+    "initialFocus": true,
+    "restoreTriggerFocus": true,
+    "errorsInline": true,
+    "statusUsesText": true
+  },
+  "tokens": "Reuse existing Yalken CSS variables and palette/dialog classes; no global style or typography changes",
+  "fallback": "Unavailable capability explains why; no guessed target or silent unlink",
+  "performance": "Load bounded immutable inventory only on explicit open; no XML parsing while typing"
+}
