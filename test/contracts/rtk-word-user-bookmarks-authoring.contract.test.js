@@ -6,7 +6,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 function handlerHarness() {
   let respond; const effects = [];
   const record = { id: 'ubm-' + '1'.repeat(32), name: 'Цель_Ω', state: 'active' };
-  const c = vm.createContext({ URL, Date, Math, isTiptapMode: true, currentProjectId: 'p', currentDocumentId: 'd', localEditGeneration: 1,
+  const c = vm.createContext({ URL, Date, Math, crypto: require('node:crypto').webcrypto, isTiptapMode: true, currentProjectId: 'p', currentDocumentId: 'd', localEditGeneration: 1,
     content: 'captured', state: { selectionEmpty: false, link: true, linkHref: 'https://example.invalid' }, allowed: true,
     window: { electronAPI: { invokeWorkspaceQueryBridge() {} } }, LINK_PROMPT_TITLE: 'Link', EXTRA_COMMAND_IDS: { INSERT_LINK_PROMPT: 'link' },
     composeDocumentContent: () => c.content, getTiptapSelectionOffsets: () => ({ start: 2, end: 5 }),

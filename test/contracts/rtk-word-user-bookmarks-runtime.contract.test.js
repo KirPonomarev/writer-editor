@@ -455,6 +455,38 @@ test('full product export retained transport self-return and clean target/delete
   }
 });
 
+function installActualRendererPublication(h, editor, api) {
+  const tiptap = fs.readFileSync(path.join(__dirname, '../../src/renderer/tiptap/index.js'), 'utf8');
+  const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  assert.match(renderer, /initTiptap\(editor, \{\s*attachIpc: false/);
+  editor.getJSON = () => editor.state.doc.toJSON();
+  editor.getText = () => editor.state.doc.textBetween(0, editor.state.doc.content.size, '\n');
+  const r = vm.createContext({ currentEditorInstance: editor, currentIpcSession: null,
+    applyUserBookmarkPublication: api.applyUserBookmarkPublication, ...envelope,
+    isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false,
+    metaEnabled: false, currentMeta: envelope.createDefaultDocumentMeta(), currentCards: [],
+    localEditGeneration: h.generation,
+    window: { electronAPI: { onEditorSetText(fn) { r.onEditorSetText = fn; } } },
+  });
+  const slice = (source, from, to) => source.slice(source.indexOf(from), source.indexOf(to)).replace(/^export /, '');
+  vm.runInContext(slice(tiptap, 'function readEditorText(', 'function notifyDirtyState('), r);
+  vm.runInContext(slice(tiptap, 'function readEditorDocument(', 'function normalizeFormattingColor('), r);
+  vm.runInContext(slice(tiptap, 'export function getTiptapDocumentSnapshot(', 'export function setTiptapDocumentSnapshot('), r);
+  vm.runInContext(slice(tiptap, 'export function applyTiptapUserBookmarkPublication(', 'function readEditorText('), r);
+  vm.runInContext(slice(renderer, 'function composeDocumentContent(', 'function composeEditorSnapshot('), r);
+  const callbackStart = renderer.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  const callbackEnd = renderer.indexOf('    cancelLinkDialog();', callbackStart);
+  vm.runInContext(renderer.slice(callbackStart, callbackEnd) + '});', r);
+  h.renderer = r;
+  h.capture = () => { h.working = r.composeDocumentContent(); };
+  h.c.mainWindow.webContents.send = (channel, payload) => {
+    assert.equal(channel, 'editor:set-text'); h.publications.push(payload);
+    r.localEditGeneration = h.generation;
+    r.onEditorSetText(payload); h.capture();
+  };
+  return r;
+}
+
 async function linkedPmHarness(t) {
   const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
   const { EditorState } = await import('@tiptap/pm/state'), { history, undo, redo } = await import('@tiptap/pm/history');
@@ -467,14 +499,7 @@ async function linkedPmHarness(t) {
   editor.view = { dispatch: tr => { editor.state = editor.state.apply(tr); } };
   const h = await harness(t, editor.state.doc.toJSON());
   h.pm = editor; h.record = record;
-  h.capture = () => { h.working = envelope.composeObservablePayload({ doc: editor.state.doc.toJSON() }); };
-  h.c.mainWindow.webContents.send = (channel, payload) => {
-    assert.equal(channel, 'editor:set-text'); h.publications.push(payload);
-    if (payload.expectedContent !== h.working || payload.expectedGeneration !== h.generation) return;
-    const parsed = envelope.parseObservablePayload(payload.content);
-    assert.equal(api.applyUserBookmarkPublication(editor, parsed.doc, payload.affectedBookmarkId), true);
-    h.capture();
-  };
+  installActualRendererPublication(h, editor, api);
   h.undo = () => { assert.equal(undo(editor.state, editor.view.dispatch), true); h.generation++; h.capture(); };
   h.redo = () => { assert.equal(redo(editor.state, editor.view.dispatch), true); h.generation++; h.capture(); };
   h.deleteCharacter = () => { editor.view.dispatch(editor.state.tr.delete(2, 3)); h.generation++; h.capture(); };
@@ -821,4 +846,107 @@ test('actual full bookmark query leaves missing-defaults manifest and scene byte
   assert.equal(h.writes, 0); assert.equal(h.publications.length, 0);
   assert.equal(fs.readFileSync(h.manifestPath, 'utf8'), manifest); assert.equal(fs.readFileSync(h.file, 'utf8'), scene);
   assert.deepEqual(fs.readdirSync(path.dirname(h.file)).sort(), tree);
+});
+
+
+test('first native-shaped bookmark create publishes through actual renderer with attachIpc false', async t => {
+  const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
+  const { EditorState } = await import('@tiptap/pm/state');
+  const api = await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const { WordPendingRevisions } = await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
+  const schema = getSchema([StarterKit.configure({ link: false, undoRedo: false }), WordPendingRevisions, api.UserBookmarks, api.UserBookmarkLink]);
+  const initial = { type: 'doc', content: ['Mac bookmark source', 'Alpha target unique', 'Link destination', 'Tail text']
+    .map(text => ({ type: 'paragraph', content: [{ type: 'text', text }] })) };
+  const editor = { schema, state: EditorState.create({ schema, doc: schema.nodeFromJSON(initial) }) };
+  editor.view = { dispatch: tr => { editor.state = editor.state.apply(tr); } };
+  const h = await harness(t, editor.state.doc.toJSON()); installActualRendererPublication(h, editor, api); h.capture();
+  const created = await h.command('create', { name: 'MacSourceRange', selectionStart: 20, selectionEnd: 39 });
+  assert.equal(created.ok, true, JSON.stringify(created)); assert.equal(h.writes, 1); assert.equal(h.dirty, false);
+  assert.equal(h.working, fs.readFileSync(h.file, 'utf8'));
+  const record = core.readRegistry(editor.state.doc.toJSON()).bookmarks[0];
+  assert.deepEqual(record.start, { paragraphIndex: 1, offsetUtf16: 0, edge: 'text' });
+  assert.deepEqual(record.end, { paragraphIndex: 1, offsetUtf16: 19, edge: 'text' });
+  assert.equal((await h.c.handleUserBookmarkQuery()).available, true);
+  for (const kind of ['content', 'generation', 'rich']) {
+    const before = editor.state.doc.toJSON(), beforeContent = h.working, next = clone(before);
+    next.attrs.wordUserBookmarks.revision++;
+    if (kind === 'rich') next.content[0].content[0].text = 'FORGED';
+    h.renderer.onEditorSetText({ userBookmarkAuthoringPublication: true,
+      content: envelope.composeObservablePayload({ doc: next }),
+      expectedContent: kind === 'content' ? 'forged source bytes' : beforeContent,
+      expectedGeneration: kind === 'generation' ? h.generation + 1 : h.generation });
+    assert.deepEqual(editor.state.doc.toJSON(), before);
+  }
+});
+
+
+async function actualNativeImportHarness(t, bytes) {
+  const h = await harness(t, doc('existing scene'));
+  const root = path.dirname(h.file), roman = path.join(root, 'roman'); fs.mkdirSync(roman);
+  const inputFile = path.join(root, 'native-input.docx'); fs.writeFileSync(inputFile, bytes);
+  const local = require('../../src/utils/docxImportLocalFilePreview.js');
+  const safe = require('../../src/utils/docxImportSafeCreate.js');
+  const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
+  const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, '.test-authority'), useLeaseHeartbeatWorker: false });
+  Object.assign(h.c, {
+    ...local, ...safe, createDocxImportPreviewReferences: require('../../src/utils/docxImportPreviewReferences.js').createDocxImportPreviewReferences,
+    dialog: { showOpenDialog: async () => ({ canceled: false, filePaths: [inputFile] }) },
+    fileManager: { getDocumentsPath: () => root }, mainWindow: null,
+    readExternalFileBounded: async (file, options) => {
+      assert.equal(file, inputFile); const value = await fs.promises.readFile(file);
+      assert.ok(value.length <= options.maxBytes); return { bytes: value };
+    },
+    loadRevisionBridgeModule: () => import('../../src/io/revisionBridge/index.mjs'),
+    ensureProjectStructure: async () => {}, getProjectSectionPath: () => roman,
+    getMainProjectManifestAuthority: async () => authority,
+    resolveProjectBindingForFile: async file => {
+      assert.equal(file, roman); return { projectId: 'p', manifestPath: h.manifestPath, manifestRaw: fs.readFileSync(h.manifestPath, 'utf8') };
+    },
+  });
+  for (const [start, end] of [
+    ['// DOCX_IMPORT_PREVIEW_REFERENCES_START', '// DOCX_IMPORT_PREVIEW_REFERENCES_END'],
+    ['// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_START', '// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END'],
+    ['// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_START', '// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_END'],
+    ['// DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_START', '// DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END'],
+  ]) vm.runInContext(main.slice(main.indexOf(start), main.indexOf(end)), h.c);
+  h.createdFiles = () => fs.existsSync(path.join(roman, 'Imported')) ? fs.readdirSync(path.join(roman, 'Imported')).filter(file => file.endsWith('.txt')) : [];
+  return h;
+}
+
+for (const kind of ['G17', 'zeroActive']) test(`actual native-local private content and plan references preserve ${kind} through real SafeCreate writer`, async t => {
+  const sample = kind === 'G17' ? fixture.snapshots.find(value => value.name.startsWith('17-')) : fixture.zeroActiveTargets;
+  const h = await actualNativeImportHarness(t, bytesOf({ ...fixture.sharedParts, ...sample.parts }));
+  const local = await h.c.handleDocxImportLocalFilePreviewCommandSurface({ requestId: 'native-local' });
+  assert.equal(local.contentPreviewOk, true, JSON.stringify(local).slice(0, 400));
+  assert.ok(local.docxContentPreviewReport.contentPreview.userBookmarkInventory);
+  const preview = await h.c.handleDocxImportPreviewCommandSurface({ requestId: 'native-plan', docxContentPreviewRef: local.docxContentPreviewRef });
+  assert.equal(preview.importPreviewOk, true, JSON.stringify(preview).slice(0, 400));
+  const planned = envelope.parseObservablePayload(preview.docxImportPreviewPlan.candidateCreatePlan.entries[0].content).doc;
+  const created = await h.c.handleDocxImportSafeCreateCommandSurface({ requestId: 'native-create', docxImportPreviewRef: preview.docxImportPreviewRef });
+  assert.equal(created.ok, true, JSON.stringify(created)); assert.equal(h.createdFiles().length, 1);
+  const persisted = envelope.parseObservablePayload(fs.readFileSync(path.join(path.dirname(h.file), 'roman', 'Imported', h.createdFiles()[0]), 'utf8'));
+  assert.equal(persisted.payloadVersion, 3); assert.deepEqual(persisted.doc, planned);
+  assert.equal(core.readRegistry(persisted.doc).bookmarks.filter(record => record.state === 'active').length, kind === 'G17' ? 7 : 0);
+  if (kind === 'zeroActive') assert.equal(core.readRegistry(persisted.doc).bookmarks.filter(record => record.state === 'deleted').length, 2);
+  assert.match(JSON.stringify(persisted.doc), /wordBookmarkId/);
+  assert.equal((await h.c.handleDocxImportSafeCreateCommandSurface({ requestId: 'forged', docxImportPreviewPlan: { ...clone(preview.docxImportPreviewPlan), previewHash: 'f'.repeat(64) } })).ok, false);
+  h.c.invalidateDocxImportPreviewReferences();
+  assert.equal((await h.c.handleDocxImportSafeCreateCommandSurface({ requestId: 'stale', docxImportPreviewRef: preview.docxImportPreviewRef })).ok, false);
+  assert.equal(h.createdFiles().length, 1);
+});
+
+test('Main raw inventory validation rejects unknown shape and accessors before interpretation or clone', async t => {
+  const sample = fixture.snapshots.find(value => value.name.startsWith('17-'));
+  const h = await actualNativeImportHarness(t, bytesOf({ ...fixture.sharedParts, ...sample.parts }));
+  const { io } = await wordHarness(), report = io.buildDocxContentPreviewFromZipBytes(bytesOf({ ...fixture.sharedParts, ...sample.parts }));
+  for (const kind of ['path', 'bounds', 'getter']) {
+    const changed = clone(report); let reads = 0;
+    if (kind === 'path') changed.contentPreview.userBookmarkInventory.projectRoot = 'foreign';
+    if (kind === 'bounds') changed.contentPreview.userBookmarkInventory.bookmarks[0].end.offsetUtf16 = 999999;
+    if (kind === 'getter') Object.defineProperty(changed.contentPreview.userBookmarkInventory, 'bookmarks', {
+      enumerable: true, get() { reads++; throw Error('getter must not run'); },
+    });
+    const result = await h.c.handleDocxImportPreviewCommandSurface({ requestId: 'hostile', docxContentPreviewReport: changed });
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(reads, 0); assert.equal(h.createdFiles().length, 0);
+  }
 });

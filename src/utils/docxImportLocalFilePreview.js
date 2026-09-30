@@ -145,7 +145,48 @@ function sanitizeEvidence(items) {
     .filter(isPlainObject);
 }
 
+// Semantic validation only: the temporary Core document/IDs are discarded.
+// Actual generic-import identity is still minted by the existing plan builder.
+function copyValidatedDocxUserBookmarkInventory(contentPreview) {
+  if (!contentPreview || typeof contentPreview !== 'object') return null;
+  const field = Object.getOwnPropertyDescriptor(contentPreview, 'userBookmarkInventory');
+  const fail = () => { throw Object.assign(new Error('DOCX_USER_BOOKMARK_INVENTORY_INVALID'), {code:'DOCX_USER_BOOKMARK_INVENTORY_INVALID'}); };
+  if (field && !Object.hasOwn(field, 'value')) fail();
+  if (!field || field.value == null) return null;
+  const inventory = field.value;
+  let nodes = 0, characters = 0;
+  const raw = (value, depth = 0) => {
+    if (++nodes > 100000 || depth > 12) fail();
+    if (value === null || typeof value === 'boolean' || typeof value === 'number' && Number.isFinite(value)) return;
+    if (typeof value === 'string') { characters += value.length; if (characters > DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES) fail(); return; }
+    if (!value || typeof value !== 'object'
+      || ![Object.prototype, Array.prototype, null].includes(Object.getPrototypeOf(value))) fail();
+    const descriptors = Object.getOwnPropertyDescriptors(value);
+    for (const key of Reflect.ownKeys(value)) {
+      if (Array.isArray(value) && key === 'length') continue;
+      if (typeof key !== 'string' || !Object.hasOwn(descriptors[key], 'value') || !descriptors[key].enumerable) fail();
+      raw(descriptors[key].value, depth + 1);
+    }
+  };
+  raw(inventory);
+  const paragraphField = Object.getOwnPropertyDescriptor(contentPreview, 'paragraphs');
+  if (!paragraphField || !Object.hasOwn(paragraphField, 'value')
+    || !Array.isArray(paragraphField.value) || paragraphField.value.length > 10000) fail();
+  const content = [];
+  for (let index = 0; index < paragraphField.value.length; index++) {
+    const item = Object.getOwnPropertyDescriptor(paragraphField.value, String(index));
+    if (!item || !Object.hasOwn(item, 'value') || !item.value || typeof item.value !== 'object') fail();
+    const text = Object.getOwnPropertyDescriptor(item.value, 'text');
+    if (!text || !Object.hasOwn(text, 'value') || typeof text.value !== 'string') fail();
+    content.push({type:'paragraph', content:text.value ? [{type:'text',text:text.value}] : []});
+  }
+  require('../core/word-user-bookmarks-v1.cjs').importInventory({type:'doc',content}, inventory,
+    'docx-import-preview-inventory-validation');
+  return cloneJsonSafe(inventory);
+}
+
 function sanitizeContentPreviewReport(report) {
+  const userBookmarkInventory = copyValidatedDocxUserBookmarkInventory(report?.contentPreview);
   if (!isPlainObject(report)) return null;
   return {
     ok: report.ok === true,
@@ -180,6 +221,7 @@ function sanitizeContentPreviewReport(report) {
     contentPreview: isPlainObject(report.contentPreview)
       ? {
           sourcePart: report.contentPreview.sourcePart,
+          ...(userBookmarkInventory ? {userBookmarkInventory} : {}),
           ...(isPlainObject(report.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(report.contentPreview.pendingRevisionDocument) } : {}),
           ...(Array.isArray(report.contentPreview.manuscriptNotes) ? { manuscriptNotes: cloneJsonSafe(report.contentPreview.manuscriptNotes) } : {}),
           ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),
@@ -620,6 +662,12 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
       DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.CONTENT_REPORT_INVALID,
     );
   }
+  try {
+    const previewField = Object.getOwnPropertyDescriptor(contentPreviewReport, 'contentPreview');
+    if (previewField && !Object.hasOwn(previewField, 'value')) throw Error('DOCX_USER_BOOKMARK_INVENTORY_INVALID');
+    copyValidatedDocxUserBookmarkInventory(previewField?.value);
+  } catch { return buildError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
+    DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.CONTENT_REPORT_INVALID); }
   const contentForbiddenKey = findForbiddenKey(contentPreviewReport);
   if (contentForbiddenKey) {
     return buildError(
@@ -629,7 +677,10 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
     );
   }
 
-  const sanitizedContentPreviewReport = sanitizeContentPreviewReport(contentPreviewReport);
+  let sanitizedContentPreviewReport;
+  try { sanitizedContentPreviewReport = sanitizeContentPreviewReport(contentPreviewReport); }
+  catch { return buildError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
+    DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.CONTENT_REPORT_INVALID); }
   if (!sanitizedContentPreviewReport) {
     return buildError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
@@ -682,4 +733,5 @@ module.exports = {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES,
   createDocxImportLocalFilePreview,
+  copyValidatedDocxUserBookmarkInventory,
 };

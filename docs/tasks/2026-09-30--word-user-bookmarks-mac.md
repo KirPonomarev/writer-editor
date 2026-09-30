@@ -9,7 +9,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BASE_SHA: 9a8922d54e60169ea820c159b1d8ec56a8ec9f7c
 DESIGN_SCOPE: EXISTING_MENU_AND_DIALOG_CONTRIBUTION; NO_GLOBAL_VISUAL_CHANGE
-DIFF_BUDGET: 41 exact paths, at most 4600 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
+DIFF_BUDGET: 42 exact paths, at most 4600 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
 
 ## MICRO_GOAL
 
@@ -60,6 +60,7 @@ Bounded Core registry, typed internal links, existing command/UI/transaction int
 - src/command/commandSurfaceKernel.js
 - src/shared/productCommandRegistry.cjs
 - src/shared/workspaceQueryRegistry.cjs
+- src/utils/docxImportLocalFilePreview.js
 - test/contracts/rtk-word-user-bookmarks.contract.test.js
 - test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js
 - test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js
@@ -137,3 +138,5 @@ POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED: true
 ## FAIL_PROTOCOL
 
 Preserve original artifacts and receipt hashes. Typed conflict or unsupported outcome is never PASS for a promised positive operation. Cross-scene copy/transfer, arbitrary structural anchor transforms, REF fields, tracked bookmark/link composites and final frozen Mac feature qualification remain explicit plan obligations.
+
+Native bridge correction admitted by fresh clean9a89 PRE42 before sanitizer edits: actual local-file preview and Main private-reference sanitizers preserve validated userBookmarkInventory; actual native dialog -> private preview references -> create-only transaction must preserve user endpoints and typed target IDs. Full raw inventory validation precedes interpretation, and all local-file budgets/private-path/forbidden-key checks remain mandatory. The actual renderer runs with attachIpc:false: publication must validate the renderer-owned complete captured content and generation through its existing channel, then apply only checked metadata without resetting PM history. No second IPC listener or mutation authority is introduced.

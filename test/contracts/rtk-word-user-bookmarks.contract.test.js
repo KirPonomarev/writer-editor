@@ -622,3 +622,66 @@ test('lineage repair matches PM fragmented Undo bytes by merging only complete e
   const noRepair = model.planSave({ beforeDoc: current.doc, workingDoc: unchanged });
   assert.deepEqual(noRepair.doc.content[1].content, unchanged.content[1].content);
 });
+
+// Literal native XML replay through the real local-file sanitizer and planner.
+// This portable contract does not replace SOURCE/PACKAGED native qualification.
+async function bookmarkLocalFilePipeline(bytes, bridge) {
+  const local = require('../../src/utils/docxImportLocalFilePreview.js');
+  return local.createDocxImportLocalFilePreview({requestId:'bookmark-local-file'}, {
+    pickLocalFile:async()=>({name:'native-bookmarks.docx',size:bytes.length}),
+    readLocalFileBytes:async()=>bytes, loadRevisionBridgeModule:async()=>bridge,
+  });
+}
+function nativeBookmarkPackage() {
+  const fixture = require('../fixtures/word-user-bookmarks-native-v1.json');
+  const snapshot = fixture.snapshots.find(item => item.name.startsWith('17-'));
+  assert.ok(snapshot); return {parts:{...fixture.sharedParts,...snapshot.parts},expected:snapshot.expected};
+}
+test('actual local-file sanitizer and plan preserve native17 literal endpoints and typed link identities', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const {buildStoredZip} = require('../../src/export/docx/docxMinBuilder.js');
+  const {parts,expected} = nativeBookmarkPackage();
+  const result = await bookmarkLocalFilePipeline(buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),bridge);
+  assert.equal(result.ok,true,JSON.stringify(result)); assert.equal(result.docxImportPreviewPlan.ok,true,JSON.stringify(result));
+  const imported = envelope.parseObservablePayload(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content);
+  assert.equal(imported.payloadVersion,3); assert.equal(imported.issue,null);
+  const registry = model.readRegistry(imported.doc);
+  assert.deepEqual(model.paragraphs(imported.doc).map(model.textOf),expected.paragraphTexts);
+  assert.deepEqual(registry.bookmarks.filter(item=>item.state==='active').map(({name,start,end})=>({name,start,end})),expected.bookmarks);
+  let links=0;for(const p of model.paragraphs(imported.doc))for(const node of p.content||[])for(const mark of node.marks||[]) {
+    if(mark.type==='link'&&mark.attrs.href.startsWith('#')){assert.ok(model.inspectInternalLink(mark,registry));links++;}
+  }assert.equal(links,expected.links.length);
+});
+test('local-file plan preserves links after removal of every target as distinct tombstones', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const {buildStoredZip} = require('../../src/export/docx/docxMinBuilder.js');
+  const {parts,expected} = nativeBookmarkPackage();
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:bookmarkStart\b[^>]*\/>/gu,'').replace(/<w:bookmarkEnd\b[^>]*\/>/gu,'');
+  const result = await bookmarkLocalFilePipeline(buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),bridge);
+  assert.equal(result.ok,true,JSON.stringify(result)); assert.equal(result.docxImportPreviewPlan.ok,true,JSON.stringify(result));
+  const imported=envelope.parseObservablePayload(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content),registry=model.readRegistry(imported.doc);
+  assert.equal(imported.payloadVersion,3);assert.deepEqual(model.paragraphs(imported.doc).map(model.textOf),expected.paragraphTexts);
+  assert.deepEqual(registry.bookmarks.map(item=>[item.name,item.state]),[['UserTwinB','deleted'],['UserTwinSecond','deleted']]);
+  const ids=new Set();for(const p of model.paragraphs(imported.doc))for(const node of p.content||[])for(const mark of node.marks||[])if(mark.type==='link') {
+    const target=model.inspectInternalLink(mark,registry);assert.equal(target.state,'deleted');ids.add(target.id);
+  }assert.equal(ids.size,2);
+});
+test('local-file inventory validation rejects raw accessors and hostile geometry before cloning or plan execution', async () => {
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const {parts}=nativeBookmarkPackage();const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const original=bridge.buildDocxContentPreviewFromZipBytes(bytes);let reads=0;
+  for(const mutate of [
+    preview=>Object.defineProperty(preview,'userBookmarkInventory',{enumerable:true,get(){reads++;throw Error('GETTER_RAN');}}),
+    preview=>Object.defineProperty(preview.userBookmarkInventory.bookmarks[0],'name',{enumerable:true,get(){reads++;throw Error('GETTER_RAN');}}),
+    preview=>{preview.userBookmarkInventory.bookmarks[0].start.offsetUtf16=999999;preview.userBookmarkInventory.bookmarks[0].end.offsetUtf16=999999;},
+    preview=>{preview.userBookmarkInventory.bookmarks.push(copy(preview.userBookmarkInventory.bookmarks[0]));},
+    preview=>{preview.userBookmarkInventory.links[0].to=999999;},
+    preview=>{preview.userBookmarkInventory.bookmarks[0].sourceXmlProvenance={covert:()=>{}};},
+  ]) {
+    const report=copy(original);mutate(report.contentPreview);let planned=0;
+    const result=await bookmarkLocalFilePipeline(bytes,{buildDocxContentPreviewFromZipBytes:()=>report,
+      buildDocxImportPreviewPlanFromContentPreview:()=>{planned++;throw Error('PLAN_MUST_NOT_RUN');}});
+    assert.equal(result.ok,false);assert.equal(result.error.reason,'DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID');assert.equal(planned,0);
+  }assert.equal(reads,0);
+});

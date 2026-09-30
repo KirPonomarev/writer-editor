@@ -39,9 +39,9 @@ function setCheckedDocument(editor, doc) {
   return result
 }
 
-export function applyTiptapUserBookmarkPublication(payload) {
-  if (!currentEditorInstance || !currentIpcSession
-    || currentIpcSession.readObservablePayload() !== payload.expectedContent) return false
+export function applyTiptapUserBookmarkPublication(payload, currentContent) {
+  if (!currentEditorInstance || typeof currentContent !== 'string'
+    || currentContent !== payload.expectedContent) return false
   const checked = parseObservablePayload(payload.content)
   return !checked.issue && Boolean(checked.doc)
     && applyUserBookmarkPublication(currentEditorInstance, checked.doc, payload.affectedBookmarkId || null)

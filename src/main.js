@@ -30,6 +30,7 @@ const { createDocxImportPreviewReferences } = require('./utils/docxImportPreview
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
   createDocxImportLocalFilePreview,
+  copyValidatedDocxUserBookmarkInventory,
 } = require('./utils/docxImportLocalFilePreview');
 const {
   TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
@@ -11374,9 +11375,13 @@ function canonicalizeDocxImportPreviewEvidence(evidence) {
 }
 
 function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
+  const userBookmarkInventory = isPlainObjectValue(sourceReport.contentPreview)
+    && Object.prototype.hasOwnProperty.call(sourceReport.contentPreview, 'userBookmarkInventory')
+    ? copyValidatedDocxUserBookmarkInventory(sourceReport.contentPreview) : null;
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(userBookmarkInventory !== null ? { userBookmarkInventory } : {}),
         ...(isPlainObjectValue(sourceReport.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(sourceReport.contentPreview.pendingRevisionDocument) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
           ? { manuscriptNotes: cloneJsonSafe(sourceReport.contentPreview.manuscriptNotes) } : {}),
@@ -11538,6 +11543,15 @@ function validateDocxImportPreviewPayload(payload = {}) {
       'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
       'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_TYPE_INVALID',
     );
+  }
+
+  if (isPlainObjectValue(payload.docxContentPreviewReport.contentPreview)
+    && Object.prototype.hasOwnProperty.call(payload.docxContentPreviewReport.contentPreview, 'userBookmarkInventory')) {
+    try { copyValidatedDocxUserBookmarkInventory(payload.docxContentPreviewReport.contentPreview); }
+    catch (error) {
+      return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+        'DOCX_IMPORT_PREVIEW_USER_BOOKMARK_INVENTORY_INVALID', { sourceCode: error.code || error.message });
+    }
   }
 
   const depthState = inspectDocxImportPreviewPayloadDepth(payload);

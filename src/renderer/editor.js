@@ -21981,7 +21981,7 @@ async function handleUserBookmarkManage() {
     return { performed: false, reason: 'STALE_DOCUMENT' };
   }
   const result = await invokePreloadUiCommandBridge(`cmd.project.bookmarks.${response.action}`, {
-    requestId: `bookmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    requestId: 'bookmark-' + crypto.randomUUID(),
     projectId: inventory.projectId, sceneId: inventory.sceneId, subjectId: inventory.subjectId,
     expectedSceneSha256: inventory.expectedSceneSha256, registryRevision: inventory.registryRevision,
     ...(response.bookmarkId ? { bookmarkId: response.bookmarkId } : {}),
@@ -23355,7 +23355,7 @@ window.addEventListener('resize', () => {
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
     if (payload?.userBookmarkAuthoringPublication === true) {
-      if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload);
+      if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
       return;
     }
     cancelLinkDialog();

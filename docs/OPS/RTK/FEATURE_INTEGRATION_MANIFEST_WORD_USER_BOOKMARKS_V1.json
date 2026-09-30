@@ -303,5 +303,11 @@
     "requiredProof": "Actual IPC -> actual dispatch -> guarded handler -> atomic positive; denied capability/profile, stale lifecycle/source and malformed payload zero-write; native Command Palette first create",
     "publicationSurface": "Palette-only Manage contribution; raw and normalized native menu artifacts/locks unchanged"
   },
-  "queryPurity": "Validated saved-scene read-only context; no ensureProjectManifest or normalization persistence. Legacy missing-defaults, raw future schema and untitled/non-scene sources require zero writes. Mutation preparation checks raw future version at the real manifest writer seam."
+  "queryPurity": "Validated saved-scene read-only context; no ensureProjectManifest or normalization persistence. Legacy missing-defaults, raw future schema and untitled/non-scene sources require zero writes. Mutation preparation checks raw future version at the real manifest writer seam.",
+  "nativeBridgeQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "sanitizers": "Native local-file report and Main private-reference sanitizer preserve validated bounded userBookmarkInventory; no parser report creates path/command authority",
+    "rendererPublication": "Actual attachIpc:false configuration; existing renderer-owned complete content plus generation guard before checked PM metadata publication; ordinary history survives",
+    "requiredProof": "Actual native palette first create and native Word17/zero-active file-dialog import -> private refs -> atomic create; independent durable scene and DOCX readback; hostile inventory/stale/forged zero-write"
+  }
 }
