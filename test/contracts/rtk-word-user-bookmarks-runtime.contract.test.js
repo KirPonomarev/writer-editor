@@ -66,7 +66,7 @@ async function harness(t, initial = seed()) {
     sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
   c.readCommentAuthoringContext = async () => { const current = source(); if (current.parsed.issue) throw Error('COMMENT_SCENE_INVALID'); return current; };
   vm.runInContext(slice('async function readProjectManifestRawAtPath(', 'function isProjectBindingFutureSchema('), c);
-  vm.runInContext(slice('function userBookmarkCapability(', 'let activePendingRecording ='), c);
+  vm.runInContext(slice('function userBookmarkEnvelopeMetadataEqual(', 'let activePendingRecording ='), c);
   Object.assign(c, {
     COMMAND_BUS_ROUTE: 'command.bus', PRODUCT_COMMAND_ID_SET: require('../../src/shared/productCommandRegistry.cjs').PRODUCT_COMMAND_ID_SET,
     UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`)),
@@ -461,10 +461,11 @@ function installActualRendererPublication(h, editor, api) {
   assert.match(renderer, /initTiptap\(editor, \{\s*attachIpc: false/);
   editor.getJSON = () => editor.state.doc.toJSON();
   editor.getText = () => editor.state.doc.textBetween(0, editor.state.doc.content.size, '\n');
+  const observable = envelope.parseObservablePayload(h.working);
   const r = vm.createContext({ currentEditorInstance: editor, currentIpcSession: null,
     applyUserBookmarkPublication: api.applyUserBookmarkPublication, ...envelope,
     isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false,
-    metaEnabled: false, currentMeta: envelope.createDefaultDocumentMeta(), currentCards: [],
+    metaEnabled: observable.hasMetaBlock, currentMeta: observable.meta, currentCards: observable.cards,
     localEditGeneration: h.generation,
     window: { electronAPI: { onEditorSetText(fn) { r.onEditorSetText = fn; } } },
   });
@@ -849,20 +850,32 @@ test('actual full bookmark query leaves missing-defaults manifest and scene byte
 });
 
 
-test('first native-shaped bookmark create publishes through actual renderer with attachIpc false', async t => {
+for (const withMetadata of [false, true]) test(`first native-shaped bookmark create preserves envelope metadata=${withMetadata} through actual renderer with attachIpc false`, async t => {
   const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
   const { EditorState } = await import('@tiptap/pm/state');
   const api = await import('../../src/renderer/tiptap/userBookmarks.mjs');
   const { WordPendingRevisions } = await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
-  const schema = getSchema([StarterKit.configure({ link: false, undoRedo: false }), WordPendingRevisions, api.UserBookmarks, api.UserBookmarkLink]);
+  const { DocumentParagraphAlignment } = await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const schema = getSchema([StarterKit.configure({ link: false, undoRedo: false }), DocumentParagraphAlignment, WordPendingRevisions, api.UserBookmarks, api.UserBookmarkLink]);
   const initial = { type: 'doc', content: ['Mac bookmark source', 'Alpha target unique', 'Link destination', 'Tail text']
     .map(text => ({ type: 'paragraph', content: [{ type: 'text', text }] })) };
   const editor = { schema, state: EditorState.create({ schema, doc: schema.nodeFromJSON(initial) }) };
   editor.view = { dispatch: tr => { editor.state = editor.state.apply(tr); } };
-  const h = await harness(t, editor.state.doc.toJSON()); installActualRendererPublication(h, editor, api); h.capture();
+  const h = await harness(t, editor.state.doc.toJSON());
+  if (withMetadata) {
+    h.working = envelope.composeObservablePayload({ doc: editor.state.doc.toJSON(), metaEnabled: true,
+      meta: { status: 'готово', synopsis: 'Synopsis\nSecond line', tags: { pov: 'Alpha', line: 'Main', place: 'Mac' } },
+      cards: [{ title: 'Card', text: 'Kept\nVerbatim', tags: 'native' }] });
+    fs.writeFileSync(h.file, h.working);
+  }
+  const before = envelope.parseObservablePayload(h.working);
+  installActualRendererPublication(h, editor, api); h.capture();
   const created = await h.command('create', { name: 'MacSourceRange', selectionStart: 20, selectionEnd: 39 });
   assert.equal(created.ok, true, JSON.stringify(created)); assert.equal(h.writes, 1); assert.equal(h.dirty, false);
   assert.equal(h.working, fs.readFileSync(h.file, 'utf8'));
+  const savedEnvelope = envelope.parseObservablePayload(h.working);
+  assert.equal(savedEnvelope.hasMetaBlock, withMetadata);
+  assert.deepEqual(savedEnvelope.meta, before.meta); assert.deepEqual(savedEnvelope.cards, before.cards);
   const record = core.readRegistry(editor.state.doc.toJSON()).bookmarks[0];
   assert.deepEqual(record.start, { paragraphIndex: 1, offsetUtf16: 0, edge: 'text' });
   assert.deepEqual(record.end, { paragraphIndex: 1, offsetUtf16: 19, edge: 'text' });
@@ -950,3 +963,50 @@ test('Main raw inventory validation rejects unknown shape and accessors before i
     assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(reads, 0); assert.equal(h.createdFiles().length, 0);
   }
 });
+
+for (const operation of ['mappedSave', 'backup', 'cleanR']) test(`bookmark ${operation} preserves metadata and cards without changing ordinary envelope semantics`, async t => {
+  const h = await harness(t);
+  const raw = envelope.composeObservablePayload({ doc: seed(), metaEnabled: true,
+    meta: { status: 'готово', synopsis: 'Keep synopsis\nSecond line', tags: { pov: 'POV', line: 'Line', place: 'Place' } },
+    cards: [{ title: 'Keep title', text: 'Keep card\nSecond line', tags: 'tag' }] });
+  fs.writeFileSync(h.file, raw); h.working = raw;
+  const baseline = envelope.parseObservablePayload(raw);
+  let actual;
+  if (operation === 'mappedSave') {
+    h.working = envelope.composeObservablePayload({ ...baseline, metaEnabled: true, doc: edit(seed(), 'XABCDEF') });
+    h.generation = 1; h.c.lastSignaledEditGeneration = 1;
+    const saved = await h.save(); assert.equal(saved.receipt.success, true, saved.receipt.error); assert.equal(saved.ack.kind, 'SAVED');
+    actual = fs.readFileSync(h.file, 'utf8');
+  } else if (operation === 'backup') {
+    backupHarness(h); await h.c.createBackup(); assert.equal(h.backupWrites, 1, h.backupError);
+    const directory = path.join(path.dirname(h.file), 'backups', hash(h.file));
+    actual = fs.readFileSync(path.join(directory, fs.readdirSync(directory).find(file => file !== 'meta.json')), 'utf8');
+    assert.equal(fs.readFileSync(h.file, 'utf8'), raw); assert.equal(h.writes, 0);
+  } else {
+    const r = returnHarness(h), result = await r.apply(); assert.equal(result.ok, true, JSON.stringify(result));
+    actual = fs.readFileSync(h.file, 'utf8');
+  }
+  const saved = envelope.parseObservablePayload(actual); assert.equal(saved.hasMetaBlock, true);
+  assert.deepEqual(saved.meta, baseline.meta); assert.deepEqual(saved.cards, baseline.cards);
+});
+
+for (const operation of ['create', 'cleanR']) for (const drift of ['meta', 'cards', 'presence']) {
+  test(`bookmark ${operation} rejects unsaved ${drift} drift with zero writes and publications`, async t => {
+    const h = await harness(t, operation === 'create' ? doc('ABCDEF') : seed());
+    const raw = envelope.composeObservablePayload({ doc: envelope.parseObservablePayload(h.working).doc, metaEnabled: true,
+      meta: { status: 'готово', synopsis: 'Trusted synopsis', tags: { pov: 'POV', line: 'Line', place: 'Place' } },
+      cards: [{ title: 'Trusted', text: 'Trusted card', tags: 'tag' }] });
+    fs.writeFileSync(h.file, raw); h.working = raw; const trusted = envelope.parseObservablePayload(raw);
+    const r = operation === 'cleanR' ? returnHarness(h) : null;
+    const changed = clone(trusted);
+    if (drift === 'meta') changed.meta.synopsis = 'Unsaved synopsis';
+    if (drift === 'cards') changed.cards[0].text = 'Unsaved card';
+    h.working = envelope.composeObservablePayload({ ...changed, metaEnabled: drift !== 'presence' });
+    const result = r ? await r.apply() : await h.command('create', { name: 'First', selectionStart: 2, selectionEnd: 5 });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.code || result.reason, operation === 'create' ? 'USER_BOOKMARK_EDITOR_STALE' : 'RTK_USER_BOOKMARK_SOURCE_STALE');
+    assert.equal(h.writes, 0); assert.equal(h.publications.length, 0);
+    assert.equal(fs.readFileSync(h.file, 'utf8'), raw);
+    assert.equal(envelope.parseObservablePayload(h.working).meta.synopsis, drift === 'meta' ? 'Unsaved synopsis' : drift === 'presence' ? '' : 'Trusted synopsis');
+  });
+}

@@ -1790,7 +1790,7 @@ export const R24_INTEROP_WORD_USER_BOOKMARKS_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a7527b05dc6700fe0af0692714c9665b8dbd1710060fc55bea9b3c486fc68824"
+      "sha256": "6061ae0eceee4825a95986abc64e766556c78df64b1d157223feafa239320219"
     }
   ]
 });

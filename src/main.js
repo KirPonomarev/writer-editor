@@ -21629,7 +21629,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               const plan = userBookmarkModel.planSave({ beforeDoc: continued ? continuation.beforeDoc : beforeDoc,
                 workingDoc: continued ? continueUserBookmarkWorkingDocument(continuation, workingDoc) : workingDoc,
                 renameLineage: bookmarkAliases });
-              content = envelope.composeObservablePayload({ ...afterDocument, doc: plan.doc });
+              content = envelope.composeObservablePayload({ ...afterDocument, metaEnabled: afterDocument.hasMetaBlock, doc: plan.doc });
               afterDocument = envelope.parseObservablePayload(content);
               if (content !== capturedContent) bookmarkPublication = { capturedContent, savedContent: content,
                 generation: revision, filePath, subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId,
@@ -23124,6 +23124,11 @@ async function readCommentAuthoringProjection() {
   } catch (error) { return { available: false, reason: error.message, threads: [] }; }
 }
 
+function userBookmarkEnvelopeMetadataEqual(left, right) {
+  return JSON.stringify([left.hasMetaBlock, left.meta, left.cards])
+    === JSON.stringify([right.hasMetaBlock, right.meta, right.cards]);
+}
+
 function userBookmarkCapability(commandId) {
   if (evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId,
     productCommandRecord: getProductCommandRecord(commandId) }).allowed !== true
@@ -23204,7 +23209,8 @@ async function handleUserBookmarkMutation(action, payload = {}) {
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       const review = await loadRtkNonTextReturnModule();
-      if (live.issue || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+      if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)
+        || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
         || !review.commentSceneSnapshotsEqual(live.doc || live.text, source.parsed.doc || source.parsed.text)) {
         throw Error('USER_BOOKMARK_EDITOR_STALE');
       }
@@ -23219,7 +23225,7 @@ async function handleUserBookmarkMutation(action, payload = {}) {
         ...(action === 'create' ? { start: userBookmarkModel.endpointForOffset(liveDoc, payload.selectionStart),
           end: userBookmarkModel.endpointForOffset(liveDoc, payload.selectionEnd) } : {}) });
       if (!plan.changed) return { ok: true, changed: false, bookmarkId: plan.bookmarkId };
-      const content = envelope.composeObservablePayload({ ...source.parsed, doc: plan.doc });
+      const content = envelope.composeObservablePayload({ ...source.parsed, metaEnabled: source.parsed.hasMetaBlock, doc: plan.doc });
       const beforeScenePublish = async () => {
         const projectBinding = await readUserBookmarkProjectBinding(source.filePath);
         const currentRaw = await fs.readFile(source.filePath, 'utf8');
@@ -24157,14 +24163,15 @@ async function applyPrivateUserBookmarksReturn(input) {
   const snapshot = await requestEditorSnapshot();
   const live = envelope.parseObservablePayload(snapshot.content);
   const nonText = await loadRtkNonTextReturnModule();
-  if (live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+  if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+    || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
     || lastSignaledEditGeneration > snapshot.generation
     || !nonText.commentSceneSnapshotsEqual(live.doc || live.text, candidate.beforeDoc)
     || await fs.readFile(scenePath, 'utf8') !== candidate.raw) return blocked('RTK_USER_BOOKMARK_SOURCE_STALE');
   const plan = userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
   if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
-  const content = envelope.composeObservablePayload({ ...candidate.parsed, doc: plan.doc });
+  const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
     const fresh = await revalidateCleanLinkLabelApplyInput(input);
     const currentRaw = await fs.readFile(scenePath, 'utf8');
@@ -31657,7 +31664,7 @@ async function prepareUserBookmarkBackup(filePath, snapshot) {
   if (before.issue || !before.doc) throw Error('USER_BOOKMARK_BACKUP_DOCUMENT_INVALID');
   const plan = userBookmarkModel.planSave({ beforeDoc: before.doc, workingDoc: working.doc,
     renameLineage: boundUserBookmarkRenameLineage(filePath, prepared.projectId, raw) });
-  const content = envelope.composeObservablePayload({ ...working, doc: plan.doc });
+  const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: plan.doc });
   const guard = async () => {
     const currentRaw = await fs.readFile(filePath, 'utf8');
     userBookmarkCapability('cmd.project.save');
