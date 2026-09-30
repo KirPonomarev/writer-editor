@@ -173,7 +173,17 @@ test('main quit joins saves and renderer false-clean signals have no authority',
   assert.doesNotMatch(main, /isDirty = payload\.state;/);
   assert.match(main, /guardedOn\('dirty-changed', \(_, state\) => \{\n  if \(state === true\) isDirty = true;/);
   assert.match(main, /function acknowledgeMainOwnedSave\(saveReceipt, capturedContent, capturedGeneration\)/);
-  assert.equal((main.match(/acknowledgeMainOwnedSave\(/g) || []).length, 7);
+  const ackCalls = [...main.matchAll(/acknowledgeMainOwnedSave\(([^)]*)\)/g)]
+    .map(match => match[1].replace(/\s/g, '').replace(/,$/, '')).sort();
+  assert.deepEqual(ackCalls, [
+    'saveReceipt,capturedContent,capturedGeneration',
+    'saveReceipt,content,snapshot.generation',
+    'sameContentResult,content,snapshot.generation',
+    'autosaveResult,content,snapshot.generation',
+    ...Array(3).fill('saveResult,content,snapshot.generation'),
+    'receipt,snapshot.content,snapshot.generation',
+    'durable,bound.savedContent,generation',
+  ].sort());
   assert.match(main, /wasUntitled && saveAck\.kind === SAVE_ACK_KINDS\.SAVED/);
   assert.match(main, /result\.subjectId !== subjectId/);
   assert.equal((main.match(/const saveSubjectId = currentLifecycleSubjectId\(\);/g) || []).length, 2);

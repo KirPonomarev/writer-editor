@@ -2460,7 +2460,8 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
     );
   }
 
-  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')) {
+  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')
+    || String(selected.value.textChange.changeId).startsWith('docx-user-bookmarks-')) {
     return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
       requestId:normalizedPayload.value.requestId, changeIds:[selected.value.textChange.changeId],
     }, options);
@@ -3522,6 +3523,26 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
   const sessionToken = readReviewExactTextUiPlanSessionToken(activeSession);
   const revisionSession = readReviewExactTextRevisionSession(activeSession);
   const textChanges = readReviewExactTextChangeCollections(revisionSession).textChanges;
+  if (textChanges.some(change => String(change.changeId).startsWith('docx-user-bookmarks-'))) {
+    const store = activeRtkCleanLinkLabelApplyStore, subject = currentLifecycleSubjectId();
+    const generation = lastSignaledEditGeneration, authoringSession = commentAuthoringSessionId;
+    let preview = await buildPrivateUserBookmarksUiPlan(textChanges);
+    if (preview.status === 'ready') {
+      try {
+        userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+        if (activePendingRecording || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
+          || subject !== currentLifecycleSubjectId() || authoringSession !== commentAuthoringSessionId
+          || generation !== lastSignaledEditGeneration
+          || fsSync.readFileSync(store.input.scenePath, 'utf8') !== store.userBookmarksCandidate.raw) {
+          throw Error('RTK_USER_BOOKMARK_SOURCE_STALE');
+        }
+      } catch (error) {
+        preview = buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(error.code || error.message)]);
+      }
+    }
+    const reviewSurface = attachReviewExactTextUiPlanPreview(preview, sessionToken);
+    return { ok: true, refreshed: true, status: preview.status, reviewSurface };
+  }
   if (textChanges.length === 0) {
     return {
       ok: true,
@@ -10091,6 +10112,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
     );
   }
+  let cleanUserBookmarksUiPreview = null;
   if (cleanLabel?.ok === true) {
     const capsule = returnIntake.localAuthorityCapsule;
     const input = cloneJsonSafe(capsule.writerContext);
@@ -10103,6 +10125,10 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       sessionToken:readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore),
       intakeGeneration:activeDocxReviewIntakeGeneration,
     };
+    if (capsule.userBookmarksCandidate) {
+      cleanUserBookmarksUiPreview = await refreshActiveReviewExactTextUiPlan({ requestId });
+      if (!isCurrent()) return superseded();
+    }
   }
   const commentShadowPayload = buildDocxReviewPreviewSessionCommentShadowPayload(activeContext, candidate, requestId, revisionBridge);
   let commentShadowResult = null;
@@ -10199,7 +10225,9 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
     budgets: docxReviewReturnIntakeProductBudgets(options),
   });
-  const reviewSurface = isPlainObjectValue(formattingProductPath?.reviewSurface)
+  const reviewSurface = isPlainObjectValue(cleanUserBookmarksUiPreview?.reviewSurface)
+    ? cleanUserBookmarksUiPreview.reviewSurface
+    : isPlainObjectValue(formattingProductPath?.reviewSurface)
     && Object.keys(formattingProductPath.reviewSurface).length > 0
     ? formattingProductPath.reviewSurface
     : isPlainObjectValue(structuralProductPath?.reviewSurface)
@@ -10215,7 +10243,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     requestId,
     activated: true,
     diagnosticOnly: isDiagnosticEvidenceCandidate,
-    session: importResult.session,
+    session: cleanUserBookmarksUiPreview ? cloneActiveReviewSessionStore() : importResult.session,
     reviewSurface,
     commentShadowSession: isPlainObjectValue(commentShadowResult?.session)
       ? cloneJsonSafe(commentShadowResult.session)
@@ -23139,10 +23167,10 @@ function userBookmarkEnvelopeMetadataEqual(left, right) {
     === JSON.stringify([right.hasMetaBlock, right.meta, right.cards]);
 }
 
-function userBookmarkCapability(commandId) {
-  if (evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId,
-    productCommandRecord: getProductCommandRecord(commandId) }).allowed !== true
-    || decideCommandEntitlement(commandId, getProductEntitlementTier()).available !== true) {
+function userBookmarkCapability(id) {
+  if (evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: id,
+    productCommandRecord: getProductCommandRecord(id) }).allowed !== true
+    || decideCommandEntitlement(id, getProductEntitlementTier()).available !== true) {
     throw Error('USER_BOOKMARK_CAPABILITY_DENIED');
   }
 }
@@ -23219,9 +23247,11 @@ async function handleUserBookmarkMutation(action, payload = {}) {
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       const review = await loadRtkNonTextReturnModule();
+      const materialize = value => value && typeof value === 'object'
+        ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
       if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)
         || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
-        || !review.commentSceneSnapshotsEqual(live.doc || live.text, source.parsed.doc || source.parsed.text)) {
+        || !review.commentSceneSnapshotsEqual(materialize(live.doc || live.text), materialize(source.parsed.doc || source.parsed.text))) {
         throw Error('USER_BOOKMARK_EDITOR_STALE');
       }
       const liveDoc = live.doc || envelope.buildParagraphDocumentFromText(live.text);
@@ -24092,6 +24122,64 @@ function buildCleanLinkLabelApplyInput(changes) {
   return {ok:true,input:cloneJsonSafe(store.input)};
 }
 
+async function buildPrivateUserBookmarksUiPlan(changes) {
+  const blocked = reason => buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(reason)]);
+  if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
+  const store = activeRtkCleanLinkLabelApplyStore, candidate = store?.userBookmarksCandidate;
+  const selected = buildCleanLinkLabelApplyInput(changes);
+  if (!selected.ok || !candidate || changes.length !== 1 || changes[0].changeId !== candidate.changeId) {
+    return blocked('RTK_USER_BOOKMARK_PRIVATE_CANDIDATE_REQUIRED');
+  }
+  try {
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    const envelope = await loadDocumentContentEnvelopeModule(), snapshot = await requestEditorSnapshot();
+    const live = envelope.parseObservablePayload(snapshot.content), nonText = await loadRtkNonTextReturnModule();
+    const keyGate = await revalidateCleanLinkLabelApplyInput(selected.input);
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    if (activePendingRecording || !keyGate.ok || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
+      || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+      || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+      || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+      || lastSignaledEditGeneration > snapshot.generation
+      || fsSync.readFileSync(selected.input.scenePath, 'utf8') !== candidate.raw
+      || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc))) {
+      return blocked(keyGate.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
+    }
+    const plan = userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
+    if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
+    const prior = userBookmarkModel.readRegistry(candidate.beforeDoc), next = plan.registry;
+    const before = [], after = [];
+    const position = record => {
+      if (record?.state !== 'active') return 'Закладка удалена';
+      const point = value => `абзац ${value.paragraphIndex + 1}, символ ${value.offsetUtf16}${value.edge === 'afterParagraph' ? ', после знака абзаца' : ''}`;
+      return `${record.name}: ${point(record.start)} → ${point(record.end)}`;
+    };
+    for (const record of next?.bookmarks || []) {
+      const old = prior?.bookmarks.find(item => item.id === record.id);
+      if (!old || old.name !== record.name || old.state !== record.state
+        || JSON.stringify(old.start) !== JSON.stringify(record.start) || JSON.stringify(old.end) !== JSON.stringify(record.end)) {
+        before.push(old ? position(old) : 'Нет закладки');
+        after.push(position(record));
+      }
+    }
+    const oldBlocks = userBookmarkModel.paragraphs(candidate.beforeDoc), newBlocks = userBookmarkModel.paragraphs(plan.doc);
+    const links = p => (p.content || []).flatMap(node => (node.marks || []).filter(mark => mark.type === 'link')
+      .map(mark => `${node.text || ''} → ${mark.attrs.wordBookmarkName || mark.attrs.href}`)).join('; ');
+    for (let index = 0; index < oldBlocks.length; index++) {
+      const old = links(oldBlocks[index]), current = links(newBlocks[index]);
+      if (old !== current) { before.push(old || 'Нет ссылки'); after.push(current || 'Ссылка удалена'); }
+    }
+    return { ok: true, type: 'revisionBridge.exactTextApplyPlanNoDiskPreview', status: 'ready',
+      code: 'RTK_USER_BOOKMARK_PREVIEW_READY', reason: 'RTK_USER_BOOKMARK_PREVIEW_READY', reasons: [],
+      plan: { schemaVersion: REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA, projectId: store.input.projectSnapshot.projectId,
+        sessionId: store.sessionToken.sessionId, sceneId: candidate.sceneId, canApply: false, noDisk: true,
+        safeWriteCandidate: false, userBookmarkReturn: true, blockedReasons: [], preconditions: [],
+        applyOps: [{ kind: 'userBookmarks', changeId: candidate.changeId, sceneId: candidate.sceneId,
+          expectedText: before.join('\n'), replacementText: after.join('\n') }] } };
+  } catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_PREVIEW_BLOCKED'); }
+}
+
 async function revalidateCleanLinkLabelApplyInput(input) {
   const store = activeRtkCleanLinkLabelApplyStore;
   const blocked = reason => ({ok:false,status:'blocked',reason,code:reason,applied:false,writerCalled:false});
@@ -24165,6 +24253,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   const gate = await revalidateCleanLinkLabelApplyInput(input);
   if (!gate.ok) return gate;
   const blocked = reason => ({ ok: false, applied: false, code: reason, reason });
+  if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
   if (!candidate || input.reviewItems?.length !== 1 || input.reviewItems[0].changeId !== candidate.changeId) {
     return blocked('RTK_USER_BOOKMARK_PRIVATE_CANDIDATE_REQUIRED');
   }
@@ -24173,20 +24262,32 @@ async function applyPrivateUserBookmarksReturn(input) {
   const snapshot = await requestEditorSnapshot();
   const live = envelope.parseObservablePayload(snapshot.content);
   const nonText = await loadRtkNonTextReturnModule();
-  if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+  let richSourceEqual = false;
+  if (!live.issue) {
+    try {
+      richSourceEqual = nonText.commentSceneSnapshotsEqual(
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc),
+      );
+    } catch { return blocked('RTK_USER_BOOKMARK_SOURCE_STALE'); }
+  }
+  if (activePendingRecording || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
     || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
     || lastSignaledEditGeneration > snapshot.generation
-    || !nonText.commentSceneSnapshotsEqual(live.doc || live.text, candidate.beforeDoc)
+    || !richSourceEqual
     || await fs.readFile(scenePath, 'utf8') !== candidate.raw) return blocked('RTK_USER_BOOKMARK_SOURCE_STALE');
   const plan = userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
   if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
+  // Schema materialization follows semantic admission; it cannot create an
+  // effect or revision, and preserves every explicitly stored link attribute.
+  plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
   const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
     const fresh = await revalidateCleanLinkLabelApplyInput(input);
-    const currentRaw = await fs.readFile(scenePath, 'utf8');
+    const currentRaw = fsSync.readFileSync(scenePath, 'utf8');
     userBookmarkCapability('cmd.project.review.applyExactTextChangesBatch');
-    if (!fresh.ok || activeRtkCleanLinkLabelApplyStore !== store || !cleanLinkLabelStoreMatches(store)
+    if (activePendingRecording || !fresh.ok || activeRtkCleanLinkLabelApplyStore !== store || !cleanLinkLabelStoreMatches(store)
       || currentFilePath !== scenePath || isDirty || autoSaveInProgress
       || lastSignaledEditGeneration > snapshot.generation || currentRaw !== candidate.raw) {
       throw Error(fresh.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
@@ -32134,7 +32235,11 @@ const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   ...PRODUCT_COMMAND_ID_LIST,
-  ...['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`),
+  'cmd.project.bookmarks.managePrompt',
+  'cmd.project.bookmarks.create',
+  'cmd.project.bookmarks.copy',
+  'cmd.project.bookmarks.rename',
+  'cmd.project.bookmarks.delete',
   'cmd.project.new',
   'cmd.project.open',
   PROJECT_LIFECYCLE_CREATE_COMMAND_ID,

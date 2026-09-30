@@ -9,7 +9,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BASE_SHA: 9a8922d54e60169ea820c159b1d8ec56a8ec9f7c
 DESIGN_SCOPE: EXISTING_MENU_AND_DIALOG_CONTRIBUTION; NO_GLOBAL_VISUAL_CHANGE
-DIFF_BUDGET: 45 exact paths, at most 5100 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
+DIFF_BUDGET: 48 exact paths, at most 5600 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
 
 ## MICRO_GOAL
 
@@ -71,6 +71,12 @@ Bounded Core registry, typed internal links, existing command/UI/transaction int
 - test/contracts/rtk-word-link-authoring.contract.test.js
 - test/contracts/rtk-word-http-links.contract.test.js
 - test/contracts/rtk-release01-terminal-claims.contract.test.js
+
+- test/unit/r24-r5-lifecycle-physics.test.js
+
+- test/unit/r24-wp200-durable-save-physics.test.js
+
+- test/unit/sector-m-tiptap-runtime-bridge.test.js
 
 ## DENYLIST
 
@@ -149,3 +155,11 @@ Native metadata counterexample at candidate11cda: the actual renderer applied th
 Current-project full-export blocker admitted by fresh clean exact9a PRE43 before source edits. Actual native export in a nondefault project failed because the existing scope builder read DEFAULT_PROJECT_NAME. This promised positive blocks closure of the current bookmark/full-export package. Capture the active project identity before scope enumeration and revalidate it after asynchronous reads and before publication; unrelated default project state supplies no source or identity. Remove the cross-project default manifest fallback. The new actual Main scope contract preserves historical full-export oracles and tests unrelated empty/populated default projects plus lifecycle/capability races. Genuine nondefault SOURCE/PACKAGED export and Word return are mandatory; default-only native success cannot substitute. This is a correction of the current export outcome, not a second write contour.
 
 Native Word field correction admitted by fresh clean exact9a PRE45 before edits. Actual Word16.112 ordinary Save converted exported w:hyperlink internal anchor to a balanced complex HYPERLINK local field. Complete literal XML disproved the preliminary lost-start hypothesis: Word moved the paired technical start to a body sibling immediately before the original paragraph; names and semantic endpoints remain exact. Preserve existing strict literal leading-body ownership; do not rescue malformed or genuinely orphan endpoints through text/IDs. Admit only bounded inert local field grammar. Actual native saved artifact and fresh SOURCE/PACKAGED exports must prove authenticated intake and selected apply. Canonical-comment reexport VM must load actual new private binding dependencies and fixture identities without weakening existing source/comment/lifecycle rejection assertions. Budget5100 for observed blockers; generated bundle and exact-byte companions remain separate.
+
+Reopened-link compatibility admitted by fresh clean exact9a PRE45 before edits. Actual c8b8 native reopened source d3a223ff retains text, registry and IDs but pinned Tiptap adds absent target, rel, class and title defaults; the unchanged private source is incorrectly rejected as stale. A pure Core helper validates raw registry and typed links before filling only absent pinned defaults. The bookmark-specific Main comparison applies that representation to both snapshots; global comment comparison, metadata, raw disk CAS, unsaved-state, lifecycle and capability guards remain exact. IO identity updates preserve explicit attrs from the trusted exact source piece. Materialize durable candidate only after semantic effect classification, without inventing revision/effects. Meaningful negatives must retain custom attr differences, forged identity, label/extra marks and zero writes. Fresh native second exchange after reopen and five changed SOURCE/PACKAGED exchanges remain required. Budget5600 on unchanged45 paths covers this observed compatibility defect and tests; prior failed exchange has zero acceptance credit.
+
+Maintained CI compatibility admitted by fresh clean exact9a PRE48. Three unit files extend the superseded static ACK denominator and direct Link import expectation to the actual new bookmark ACK paths and inherited UserBookmarkLink; preserve original six callsites, durable captured-byte/generation binding, dirty/lifecycle laws and all inert options. Historical ENT0/WP100 oracles remain byte-exact. Five new bridge commands are explicit literal IDs; repeated handler entitlement remains through the same product-owned law. No dead imports, no removed enforcement or hidden failure. Actual broad npm test is now mandatory alongside RTK/OPS and native qualification because the earlier local partial checks missed these CI failures.
+
+Native review-card correction admitted by fresh clean exact9a PRE48 before edits. Actual c8b8 card cannot offer Apply: generic planner compares full visible quote to rich-frame bytes; renderer also routes only the HTTP private prefix to batch. Derive a no-write semantic preview only from the exact privately authenticated bookmark candidate/changeId after key/source/project/lifecycle/capability revalidation. Display bookmark/link names and semantic deltas in the existing card; no fictitious text replacement or authority from renderer. Existing Apply routes to the private batch path; single-command entry must also enforce this route and refuse generic fallback. Actual refresh -> renderer view/click -> Main private apply and forged/missing/stale/race zero-write tests plus native visible Apply click are mandatory. Tokens, composition and menu stay fixed. Harness command success alone gives no native UI acceptance.
+
+The same reopened-link compatibility is admitted for bookmark CRUD by fresh clean exact9a PRE48 after actual Main bridge plus pinned-schema red reproduces imported minimal typed-link rename refusal USER_BOOKMARK_EDITOR_STALE, writes0. Only this bookmark saved/live comparison applies the validated missing-default helper; raw registry equality, disk CAS, metadata, unsaved-state, lifecycle/generation/capability remain exact. Generic-import reopen CRUD positive and explicit attr/identity/label/race negatives are required. Query stays pure with no new normalization or writer.

@@ -17,7 +17,18 @@ test('main save paths consume durable receipts and never use generic atomic succ
   const main = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'main.js'), 'utf8');
   assert.match(main, /function acknowledgeMainOwnedSave\(saveReceipt, capturedContent, capturedGeneration\)/);
   assert.match(main, /bindSaveReceiptToAck\(\{/);
-  assert.equal((main.match(/acknowledgeMainOwnedSave\(/g) || []).length, 7);
+  const ackCalls = [...main.matchAll(/acknowledgeMainOwnedSave\(([^)]*)\)/g)]
+    .map(match => match[1].replace(/\s/g, '').replace(/,$/, '')).sort();
+  assert.deepEqual(ackCalls, [
+    'saveReceipt,capturedContent,capturedGeneration',
+    'saveReceipt,content,snapshot.generation',
+    'sameContentResult,content,snapshot.generation',
+    'autosaveResult,content,snapshot.generation',
+    ...Array(3).fill('saveResult,content,snapshot.generation'),
+    'receipt,snapshot.content,snapshot.generation',
+    'durable,bound.savedContent,generation',
+  ].sort());
+  assert.match(main, /const \{ bookmarkPublication, \.\.\.durable \} = receipt;/);
   assert.match(main, /commitWriterProjectSnapshot\(/);
   assert.match(main, /return await durableSaveTransaction\(\{ filePath, content, revision \}\);/);
   assert.doesNotMatch(main, /fileManager\.writeFileAtomic\(saveTargetPath, content\)/);

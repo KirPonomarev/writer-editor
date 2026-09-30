@@ -37,6 +37,7 @@ async function harness(t, initial = seed()) {
     getMainProjectManifestAuthority: async () => ({ withProjectLease: (id, fn) => fn({ publish: fn => fn() }) }),
     getDocumentContextFromPath: () => ({ kind: 'scene' }), getProjectRelativeFilePath: () => 'a.txt',
     loadProRoundtripPreservationModule: async () => ({ applyFreeEditProDataInvalidation: m => ({ ok: true, manifest: m }) }),
+    activePendingRecording: null,
     isPlainObjectValue: value => value && typeof value === 'object' && !Array.isArray(value),
     loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ text: null }),
       commentSceneSnapshotsEqual: (a,b) => JSON.stringify(pending.normalizeNode(a)) === JSON.stringify(pending.normalizeNode(b)) }),
@@ -69,7 +70,8 @@ async function harness(t, initial = seed()) {
   vm.runInContext(slice('function userBookmarkEnvelopeMetadataEqual(', 'let activePendingRecording ='), c);
   Object.assign(c, {
     COMMAND_BUS_ROUTE: 'command.bus', PRODUCT_COMMAND_ID_SET: require('../../src/shared/productCommandRegistry.cjs').PRODUCT_COMMAND_ID_SET,
-    UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`)),
+    UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`)
+      .concat(['cmd.project.review.applyExactTextChange', 'cmd.project.review.applyExactTextChangesBatch'])),
     getProductCommandRecord: require('../../src/shared/productCommandRegistry.cjs').getProductCommandRecord,
     decideCommandEntitlement: require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement,
     getProductEntitlementTier: () => 'free',
@@ -87,7 +89,9 @@ async function harness(t, initial = seed()) {
   });
   const menuStart = main.indexOf('const MENU_COMMAND_HANDLERS = Object.freeze({');
   const menuEnd = main.indexOf("  'cmd.project.new':", menuStart);
-  vm.runInContext(main.slice(menuStart, menuEnd) + '});', c);
+  const reviewMenuStart = main.indexOf("  'cmd.project.review.applyExactTextChange': async");
+  const reviewMenuEnd = main.indexOf("  'cmd.project.review.applyFullManuscriptExactTextReturn':", reviewMenuStart);
+  vm.runInContext(main.slice(menuStart, menuEnd) + main.slice(reviewMenuStart, reviewMenuEnd) + '});', c);
   vm.runInContext(slice('function dispatchMenuCommand(', 'function buildCommandClickHandler('), c);
   vm.runInContext(slice("guardedProtocolHandle('ui:command-bridge'", 'const WORKSPACE_QUERY_BRIDGE_HANDLERS ='), c);
   h.dispatch = (commandId, payload) => h.ipc(null, { v: 1, correlationId: 'bookmark-actual-ipc', issuedAt: new Date().toISOString(),
@@ -1010,3 +1014,253 @@ for (const operation of ['create', 'cleanR']) for (const drift of ['meta', 'card
     assert.equal(envelope.parseObservablePayload(h.working).meta.synopsis, drift === 'meta' ? 'Unsaved synopsis' : drift === 'presence' ? '' : 'Trusted synopsis');
   });
 }
+
+async function reopenedMinimalLinkedReturn(t, persisted) {
+  const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
+  const { EditorState } = await import('@tiptap/pm/state');
+  const api = await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const { WordPendingRevisions } = await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
+  const { DocumentParagraphAlignment } = await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const actual = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+  const initial = persisted || seed();
+  if (!persisted) {
+    initial.attrs.wordPendingRevisions = null; initial.content[0].attrs = { textAlign: null };
+    initial.content[0].content[0].marks = [{ type: 'link', attrs: core.linkAttrs(core.readRegistry(initial).bookmarks[0]) }];
+  }
+  const h = await harness(t, initial);
+  const schema = getSchema([StarterKit.configure({ link: false, undoRedo: false }), DocumentParagraphAlignment,
+    WordPendingRevisions, api.UserBookmarks, api.UserBookmarkLink.configure({ autolink: false, linkOnPaste: false, openOnClick: false })]);
+  const editor = { schema, state: EditorState.create({ schema, doc: schema.nodeFromJSON(initial) }) };
+  editor.view = { dispatch: tr => { editor.state = editor.state.apply(tr); } };
+  h.c.loadRtkNonTextReturnModule = async () => ({ readCommentAuthoringState: async () => ({ text: null }),
+    commentSceneSnapshotsEqual: actual.commentSceneSnapshotsEqual });
+  installActualRendererPublication(h, editor, api); h.capture();
+  const r = returnHarness(h), before = r.store.userBookmarksCandidate.beforeDoc;
+  const record = core.readRegistry(before).bookmarks[0];
+  const candidate = core.planMutation({ doc: before, action: 'rename', bookmarkId: record.id,
+    name: record.name === 'anchor' ? 'ANCHOR' : 'anchor' }).doc;
+  r.store.userBookmarksCandidate.plan = core.planReturn({ beforeDoc: before, candidateDoc: candidate });
+  return { h, r, editor, actual };
+}
+
+test('actual schema reopen of a minimal signed-return link admits a second changed return and persists stable defaults', async t => {
+  const { h, r, actual } = await reopenedMinimalLinkedReturn(t);
+  const before = r.store.userBookmarksCandidate.beforeDoc, live = envelope.parseObservablePayload(h.working).doc;
+  assert.equal(actual.commentSceneSnapshotsEqual(live, before), false, 'real pinned schema reproduces the native mismatch');
+  const result = await r.apply(); assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(h.writes, 1);
+  const saved = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+  const attrs = saved.content[0].content[0].marks[0].attrs;
+  assert.equal(attrs.target, '_blank'); assert.equal(attrs.rel, 'noopener noreferrer nofollow');
+  assert.equal(attrs.class, null); assert.equal(attrs.title, null);
+  const reopened = await reopenedMinimalLinkedReturn(t, saved);
+  assert.equal(reopened.actual.commentSceneSnapshotsEqual(envelope.parseObservablePayload(reopened.h.working).doc, saved), true);
+  assert.equal((await reopened.r.apply()).ok, true); assert.equal(reopened.h.writes, 1);
+});
+
+for (const drift of ['rel', 'target', 'extraMark', 'label', 'forgedIdentity']) {
+  test(`actual reopened-link compatibility rejects unsaved ${drift} with no write`, async t => {
+    const { h, r } = await reopenedMinimalLinkedReturn(t), changed = envelope.parseObservablePayload(h.working).doc;
+    const node = changed.content[0].content[0], attrs = node.marks[0].attrs;
+    if (drift === 'rel') attrs.rel = 'nofollow';
+    if (drift === 'target') attrs.target = '_self';
+    if (drift === 'extraMark') node.marks.push({ type: 'bold' });
+    if (drift === 'label') node.text = 'ABCXEF';
+    if (drift === 'forgedIdentity') attrs.wordBookmarkId = 'ubm-' + 'f'.repeat(32);
+    const raw = fs.readFileSync(h.file, 'utf8'); h.working = envelope.composeObservablePayload({ doc: changed });
+    const working = h.working;
+    let result; try { result = await r.apply(); } catch (error) { result = { ok: false, code: error.code || error.message }; }
+    assert.equal(result.ok, false); assert.match(result.code || result.reason, /SOURCE_STALE|USER_BOOKMARK_LINK_TARGET_INVALID/);
+    assert.equal(h.writes, 0); assert.equal(h.publications.length, 0);
+    assert.equal(fs.readFileSync(h.file, 'utf8'), raw); assert.equal(h.working, working);
+  });
+}
+
+test('actual imported minimal link can be renamed after schema reopen without a preliminary save', async t => {
+  const { h } = await reopenedMinimalLinkedReturn(t);
+  const record = core.readRegistry(h.source().parsed.doc).bookmarks[0];
+  const result = await h.command('rename', { bookmarkId: record.id, name: 'AfterImport' });
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(h.writes, 1);
+  assert.equal(h.working, fs.readFileSync(h.file, 'utf8'));
+  assert.equal(core.readRegistry(h.source().parsed.doc).bookmarks[0].name, 'AfterImport');
+});
+
+for (const drift of ['rel', 'target', 'extraMark', 'label', 'identity', 'disk']) {
+  test(`actual imported-link CRUD compatibility refuses ${drift} drift without a write`, async t => {
+    const { h } = await reopenedMinimalLinkedReturn(t), record = core.readRegistry(h.source().parsed.doc).bookmarks[0];
+    const changed = envelope.parseObservablePayload(h.working).doc, node = changed.content[0].content[0];
+    if (drift === 'rel') node.marks[0].attrs.rel = 'nofollow';
+    if (drift === 'target') node.marks[0].attrs.target = '_self';
+    if (drift === 'extraMark') node.marks.push({ type: 'italic' });
+    if (drift === 'label') node.text = 'ABCXEF';
+    if (drift === 'identity') node.marks[0].attrs.wordBookmarkId = 'ubm-' + 'f'.repeat(32);
+    h.working = envelope.composeObservablePayload({ doc: changed });
+    if (drift === 'disk') fs.writeFileSync(h.file, envelope.composeObservablePayload({ doc: edit(h.source().parsed.doc, 'ABCXEF') }));
+    const disk = fs.readFileSync(h.file, 'utf8'), working = h.working;
+    const result = await h.command('rename', { bookmarkId: record.id, name: 'AfterImport' });
+    assert.equal(result.ok, false); assert.equal(h.writes, 0); assert.equal(h.publications.length, 0);
+    assert.equal(fs.readFileSync(h.file, 'utf8'), disk); assert.equal(h.working, working);
+  });
+}
+
+function loadNamedFunctions(source, names, context) {
+  vm.runInContext(names.map(name => {
+    const match = source.match(new RegExp('(?:async )?function ' + name + '\\([^]*?\\n}(?=\\n|$)'));
+    assert.ok(match, name); return match[0];
+  }).join('\n'), context);
+}
+async function bookmarkReviewUiHarness(t) {
+  const { h, r } = await reopenedMinimalLinkedReturn(t), c = h.c;
+  const change = { ...r.store.input.reviewItems[0], targetScope: { type: 'scene', id: 'a.txt' }, match: { kind: 'exact', quote: 'ABCDEF' } };
+  r.store.input.reviewItems = [change]; r.store.input.projectSnapshot = { projectId: 'p' };
+  c.activeReviewSessionStore.revisionSession = { projectId: 'p', sessionId: 'review', reviewGraph: { textChanges: [change] } };
+  c.activeReviewSessionStore.reviewSurface = { revisionSession: clone(c.activeReviewSessionStore.revisionSession) };
+  c.hasReviewSurfacePayload = value => value && typeof value === 'object' && Object.keys(value).length > 0;
+  vm.runInContext(main.slice(main.indexOf('const REVIEW_EXACT_TEXT_APPLY_COMMAND_ID ='), main.indexOf('function normalizeReviewExactTextApplyPayload(')), c);
+  Object.assign(c, { REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA: 'revision-bridge.exact-text-ui-plan.v1',
+    REVIEW_EXACT_TEXT_UI_PLAN_BLOCKED_CODE: 'E_REVISION_BRIDGE_EXACT_TEXT_UI_PLAN_BLOCKED',
+    currentReviewSurfacePayload: {}, currentReviewSurfacePayloadSource: '', currentReviewSurfacePayloadContentHash: '',
+    activeReviewSessionDirtyImportBlocked: false, activeRtkNonOverlapTrackedReplacementApplyStore: null,
+    buildReviewExactTextApplyBatchInputFromMainState: async () => { throw Error('GENERIC_TEXT_INPUT_FORBIDDEN'); },
+    buildReviewExactTextApplyInputFromMainState: async () => { h.genericPlans = (h.genericPlans || 0) + 1; throw Error('REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH'); },
+    loadExactTextMinSafeWriteModule: async () => import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs'),
+    runRtkNonOverlapTrackedReplacementProductApplyFromMainState: async () => null,
+  });
+  loadNamedFunctions(main, ['cloneActiveReviewSessionStore', 'readActiveReviewSessionReviewSurface',
+    'normalizeReviewExactTextApplyPayload', 'normalizeReviewExactTextApplyBatchPayload',
+    'readReviewExactTextRevisionSession', 'readReviewExactTextReviewGraph', 'readReviewExactTextChangeCollections',
+    'selectReviewExactTextChange', 'selectReviewExactTextChangesBatch', 'rtkNonOverlapTrackedReplacementDetailString', 'reviewExactTextChangeRequiresRtkNonOverlapProductPath',
+    'deriveReviewExactTextApplyOperationId', 'summarizeReviewExactTextBatchSafeWriteResult', 'attachReviewExactTextApplyBatchResult',
+    'makeReviewExactTextApplyBatchResponseFromSafeWrite', 'handleReviewSurfaceApplyExactTextChangeCommandSurface',
+    'handleReviewSurfaceApplyExactTextChangesBatchCommandSurface', 'makeReviewExactTextUiPlanReason',
+    'buildReviewExactTextUiBlockedPreview', 'readReviewExactTextUiPlanSessionToken', 'reviewExactTextUiPlanSessionTokenMatchesCurrent',
+    'attachReviewExactTextUiPlanPreview', 'refreshActiveReviewExactTextUiPlan'], c);
+  const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  class Element {} class HTMLElement extends Element { contains() { return true; } }
+  class HTMLButtonElement extends HTMLElement { closest(selector) { return selector === '[data-review-apply-exact-change]' ? this : null; } }
+  const view = vm.createContext({ Element, HTMLElement, HTMLButtonElement, Date, console,
+    reviewSurfaceHost: new HTMLElement(), reviewSurfaceExactTextApplyTransientState: null,
+    REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES: ['applying', 'applied', 'blocked', 'failed'],
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID: 'cmd.project.review.applyExactTextChange',
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID: 'cmd.project.review.applyExactTextChangesBatch',
+    REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON: 'PREVIEW_BLOCKED',
+    REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON: 'CHANGE_ID_REQUIRED',
+    renderReviewSurface: () => {}, setReviewSurfaceState: () => {}, loadReviewSurfaceFromQuery: async () => {},
+    invokePreloadUiCommandBridge: async (id, payload) => { h.clickedCommand = id; h.clickedPayload = payload;
+      return h.clickedResult = await h.dispatch(id, payload); },
+  });
+  loadNamedFunctions(renderer, ['reviewSurfaceText', 'reviewSurfaceArray', 'reviewSurfaceIsPlainObject',
+    'reviewSurfaceNormalizeExactTextApplyState', 'reviewSurfaceTokenizeDisplayText', 'reviewSurfaceBuildBoundedDisplayDiff', 'reviewSurfacePresentExactApplyState',
+    'reviewSurfaceBuildExactTextPreview', 'reviewSurfaceBuildReviewItems', 'setReviewSurfaceExactTextApplyTransientState',
+    'reviewSurfaceCreateExactTextApplyRequestId', 'reviewSurfaceBuildExactTextApplyPayload', 'reviewSurfaceBuildExactTextApplyBatchPayload',
+    'reviewSurfaceUnwrapCommandResult', 'reviewSurfaceExtractCommandFailureReason', 'reviewSurfaceIsExactApplyBlockedReason',
+    'reviewSurfaceIsExactApplyAmbiguousReason', 'handleReviewSurfaceExactTextApplyClick'], view);
+  const button = new HTMLButtonElement(); button.dataset = { changeId: change.changeId }; button.disabled = false;
+  return { h, r, c, view, button, change };
+}
+
+test('private semantic preview feeds the existing view and actual click-to-IPC batch writer', async t => {
+  const { h, c, view, button } = await bookmarkReviewUiHarness(t);
+  const refreshed = await c.refreshActiveReviewExactTextUiPlan();
+  assert.equal(refreshed.status, 'ready', JSON.stringify(refreshed)); assert.equal(h.genericPlans || 0, 0);
+  const preview = refreshed.reviewSurface.exactTextPlanPreview;
+  assert.equal(preview.plan.canApply, false); assert.equal(preview.plan.safeWriteCandidate, false);
+  const displayed = view.reviewSurfaceBuildExactTextPreview(refreshed.reviewSurface);
+  assert.equal(displayed.ops[0].applyDisabled, false); assert.equal(displayed.ops[0].userBookmarkReturn, true);
+  assert.match(displayed.ops[0].expectedText, /Anchor.*абзац 1/); assert.match(displayed.ops[0].replacementText, /anchor.*абзац 1/);
+  assert.equal(view.reviewSurfaceBuildReviewItems(refreshed.reviewSurface)[0].title, 'Закладки и внутренние ссылки');
+  await view.handleReviewSurfaceExactTextApplyClick({ target: button });
+  assert.equal(h.clickedCommand, 'cmd.project.review.applyExactTextChangesBatch'); assert.equal(h.writes, 1, JSON.stringify(h.clickedResult));
+  assert.deepEqual(Object.keys(h.clickedPayload).sort(), ['changeIds', 'requestId']);
+  assert.equal(core.readRegistry(h.source().parsed.doc).bookmarks[0].name, 'anchor');
+});
+
+test('private semantic preview describes a newly created paragraph-mark point without granting endpoint relocation', async t => {
+  const { r, c } = await bookmarkReviewUiHarness(t), before = r.store.userBookmarksCandidate.beforeDoc;
+  const point = { paragraphIndex: 0, offsetUtf16: 6, edge: 'afterParagraph' };
+  const candidateDoc = core.planMutation({ doc: before, action: 'create', name: 'BoundaryPoint', start: point, end: point,
+    requestId: 'boundary-point', projectId: 'p', sceneId: 'a.txt' }).doc;
+  r.store.userBookmarksCandidate.plan = core.planReturn({ beforeDoc: before, candidateDoc });
+  const result = await c.refreshActiveReviewExactTextUiPlan(); assert.equal(result.status, 'ready');
+  const op = result.reviewSurface.exactTextPlanPreview.plan.applyOps[0];
+  assert.equal(op.expectedText, 'Нет закладки'); assert.match(op.replacementText, /BoundaryPoint.*после знака абзаца/);
+});
+
+for (const drift of ['missingStore', 'forgedCard', 'disk', 'capability', 'typingDuringKey', 'typingAfterHelper', 'pendingRecording', 'endpointOnly']) {
+  test(`private bookmark UI preview and actual batch refuse ${drift} without a writer`, async t => {
+    const { h, r, c, view, button, change } = await bookmarkReviewUiHarness(t), original = h.working;
+    if (drift === 'missingStore') c.activeRtkCleanLinkLabelApplyStore = null;
+    if (drift === 'forgedCard') { c.activeReviewSessionStore.revisionSession.reviewGraph.textChanges[0].changeId += '-forged'; button.dataset.changeId += '-forged'; }
+    if (drift === 'disk') fs.writeFileSync(h.file, 'EXTERNAL');
+    if (drift === 'capability') h.allowed = false;
+    if (drift === 'typingDuringKey') h.afterKey = () => { h.generation++; c.lastSignaledEditGeneration++; h.working = 'OWNER UNSAVED'; };
+    if (drift === 'typingAfterHelper') {
+      const build = c.buildPrivateUserBookmarksUiPlan;
+      c.buildPrivateUserBookmarksUiPlan = async changes => { const result = await build(changes);
+        h.generation++; c.lastSignaledEditGeneration++; h.working = 'OWNER UNSAVED'; return result; };
+    }
+    const recording = { state: 'active', filePath: h.file }; if (drift === 'pendingRecording') c.activePendingRecording = recording;
+    if (drift === 'endpointOnly') { const changed = clone(r.store.userBookmarksCandidate.beforeDoc); changed.attrs.wordUserBookmarks.bookmarks[0].start.offsetUtf16 = 1;
+      changed.attrs.wordUserBookmarks.revision++; r.store.userBookmarksCandidate.plan = { doc: changed }; }
+    const disk = fs.readFileSync(h.file, 'utf8');
+    const preview = await c.refreshActiveReviewExactTextUiPlan(); assert.equal(preview.status, 'blocked');
+    if (drift === 'endpointOnly') assert.equal(preview.reviewSurface.exactTextPlanPreview.reason, 'USER_BOOKMARK_RETURN_ENDPOINT_RELOCATED');
+    if (drift.startsWith('typing')) c.isDirty = true;
+    await view.handleReviewSurfaceExactTextApplyClick({ target: button });
+    assert.equal(h.writes, 0); assert.equal(fs.readFileSync(h.file, 'utf8'), disk);
+    assert.equal(h.working, drift.startsWith('typing') ? 'OWNER UNSAVED' : original);
+    if (drift === 'pendingRecording') assert.equal(c.activePendingRecording, recording);
+  });
+}
+
+for (const superseded of [false, true]) test(`actual activation installs its private candidate before refreshing and returning the semantic surface; superseded=${superseded}`, async t => {
+  const { h, r, c, change } = await bookmarkReviewUiHarness(t);
+  const capsule = { ...r.store.keyAuthority, projectRoot: path.dirname(h.file),
+    authenticatedFullManuscriptExportMap: r.store.keyAuthority.exportMap,
+    exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication', returnedArtifactExportMapAccepted: false,
+    userBookmarksCandidate: clone(r.store.userBookmarksCandidate), cleanLinkLabel: { ok: true, change },
+    writerContext: { ...clone(r.store.input), revisionSession: clone(c.activeReviewSessionStore.revisionSession) } };
+  Object.assign(c, { DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID: 'cmd.project.review.activateDocxReviewPreviewSession',
+    activeRtkFormattingReturnApplyStore: null, activeRtkStructuralReturnApplyStore: null,
+    activeDocxActivationRequestDigestGuard: { check: () => ({ ok: true }), remember: () => {} },
+    decodeDocxIntakeGateBufferSource: () => ({ ok: true, bytes: Buffer.from('controlled upstream intake') }),
+    normalizeDocxIntakeGateRequestId: value => value,
+    buildDocxReviewPreviewSessionMainContext: async () => ({ ok: true, projectId: 'p', baselineHash: hash(h.working) }),
+    loadRevisionBridgeModule: async () => ({ buildDocxReviewPreviewSessionCandidateFromZipBytes: () => {} }),
+    // Authentication belongs to its separately tested intake port; this case
+    // exercises the real downstream activation ordering with a controlled result.
+    inspectDocxReviewReturnIntakeV2: async () => ({ ok: true, authenticated: true, localAuthorityCapsule: capsule,
+      legacyCandidate: { status: 'ready', reviewPacket: {}, canAutoApply: false, canImportMutate: false,
+        canWriteStorage: false, canOpenReviewSession: true } }),
+    prepareAuthenticatedPendingReturn: async () => null,
+    makeDocxReviewPreviewSessionTypedError: (code, reason) => ({ ok: false, error: { code, reason } }),
+    handleReviewSurfaceImportPacketCommandSurface: async payload => {
+      c.activeReviewSessionLifecycle = 'active'; c.activeReviewSessionStore = { ...payload,
+        revisionSession: { ...clone(capsule.writerContext.revisionSession), reviewGraph: clone(payload.reviewPacket) },
+        reviewSurface: { revisionSession: { ...clone(capsule.writerContext.revisionSession), reviewGraph: clone(payload.reviewPacket) } } };
+      h.importPreview = await c.refreshActiveReviewExactTextUiPlan();
+      return { ok: true, session: clone(c.activeReviewSessionStore), reviewSurface: clone(h.importPreview.reviewSurface) };
+    },
+    buildDocxReviewPreviewSessionCommentShadowPayload: () => null,
+    prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProductPath: async () => null,
+    prepareAuthenticatedNoteDelta: async () => null,
+    prepareAuthenticatedDocxFormattingReturnProductPath: () => null,
+    prepareAuthenticatedDocxStructuralReturnProductPath: () => null,
+    sanitizeDocxReviewReturnIntakeForResult: () => ({ authenticated: true }),
+  });
+  loadNamedFunctions(main, ['docxReviewPreviewSessionDetailString', 'buildDocxReviewPreviewSessionImportPayload',
+    'buildCleanLinkLabelPreviewPacket', 'summarizeDocxReviewPreviewSessionCandidate',
+    'docxReviewReturnIntakeProductBudgets', 'assertDocxReviewPreviewSessionActivationResult', 'handleDocxReviewPreviewSessionActivationCommandSurface'], c);
+  const budgets = main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object\.freeze\(\{[^]*?\}\);/);
+  assert.ok(budgets); vm.runInContext(budgets[0], c);
+  if (superseded) h.afterKey = () => { c.activeDocxReviewIntakeGeneration++; };
+  const result = await c.handleDocxReviewPreviewSessionActivationCommandSurface({ requestId: 'activation-order' });
+  assert.equal(h.importPreview.status, 'blocked', 'first import refresh has no private candidate yet');
+  assert.equal(h.writes, 0); assert.equal(h.genericPlans || 0, 0);
+  if (superseded) { assert.equal(result.ok, false); assert.equal(result.error.reason, 'RTK_DOCX_ACTIVATION_SUPERSEDED'); }
+  else {
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.activated, true);
+    assert.equal(result.reviewSurface.exactTextPlanPreview.status, 'ready');
+    assert.equal(result.session.reviewSurface.exactTextPlanPreview.status, 'ready');
+    assert.equal(c.activeReviewSessionStore.reviewSurface.exactTextPlanPreview.status, 'ready');
+  }
+});

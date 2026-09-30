@@ -232,6 +232,25 @@ function protectLinkedDeletedNames(doc, registry) {
   });
 }
 function validateLinks(doc, registry) { visitLinks(doc, mark => inspectInternalLink(mark, registry)); }
+// Comparison projection for the pinned editor schema, never registry authority.
+// Explicit attributes retain their meaning; only absent inert defaults expand.
+function materializeInternalLinkSchemaDefaults(doc) {
+  const registry = readRegistry(doc);
+  validateLinks(doc, registry);
+  visitLinks(doc, mark => {
+    if (inspectInternalLink(mark, registry)
+      && Object.keys(mark.attrs).some(key => mark.attrs[key] === undefined)) fail('USER_BOOKMARK_LINK_INVALID');
+  });
+  const out = clone(doc);
+  const defaults = { target: '_blank', rel: 'noopener noreferrer nofollow', class: null, title: null };
+  visitLinks(out, mark => {
+    if (!inspectInternalLink(mark, registry)) return;
+    for (const [key, value] of Object.entries(defaults)) {
+      if (!own(mark.attrs, key)) mark.attrs[key] = value;
+    }
+  });
+  return out;
+}
 function bindRegistry(doc, registry) {
   const out = clone(doc);
   if (registry) out.attrs = { ...(out.attrs || {}), [KEY]: clone(registry) };
@@ -592,4 +611,5 @@ module.exports = { KEY, SCHEMA, MAX_BOOKMARKS, readRegistry, validateRegistry,
   validateName: validName,
   nameKey,
   paragraphs, textOf, endpointOffset, endpointForOffset, linkAttrs,
-  inspectInternalLink, importInventory, planMutation, planSave, planReturn, planHistoryRestore };
+  inspectInternalLink, materializeInternalLinkSchemaDefaults,
+  importInventory, planMutation, planSave, planReturn, planHistoryRestore };

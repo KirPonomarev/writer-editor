@@ -89,7 +89,9 @@ function replaceLinks(p,runs,registry) {
       if(run.link){
         if(run.link.startsWith('#')){
           const record=registry.bookmarks.find(item=>key(item.name)===key(run.link.slice(1)));
-          if(!record)throw Error('link-target-unbound');marks.push({type:'link',attrs:core.linkAttrs(record)});
+          if(!record)throw Error('link-target-unbound');
+          const old=(node.marks||[]).find(mark=>mark.type==='link'&&mark.attrs?.href?.startsWith('#'));
+          marks.push({type:'link',attrs:{...(old?clone(old.attrs):{}),...core.linkAttrs(record)}});
         }else {
           const old=(node.marks||[]).find(mark=>mark.type==='link');
           if(old?.attrs?.href!==run.link)throw Error('external-target-change');marks.push(clone(old));

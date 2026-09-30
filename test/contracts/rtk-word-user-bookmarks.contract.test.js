@@ -763,3 +763,68 @@ test('clean local-field return requires exact one-to-one instruction provenance 
   const orphan=xml.replace(/<w:bookmarkStart w:id="\d+" w:name="YRTK_[^"]+"\/>/u,'');assert.notEqual(orphan,xml);
   const rejected=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':orphan})},{cryptoPort});assert.equal(rejected.ok,false);assert.equal(rejected.code,'RTK_WORD_USER_BOOKMARK_INVALID');
 });
+
+test('authenticated native label, retarget and case-only rename retain exact trusted internal link attrs', async () => {
+  const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const fixture=require('../fixtures/word-user-bookmarks-native-v1.json'),sample=fixture.snapshots.find(s=>s.name.startsWith('04-'));
+  const bytesOf=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const imported=io.buildDocxImportPreviewPlanFromContentPreview(io.buildDocxContentPreviewFromZipBytes(bytesOf({...fixture.sharedParts,...sample.parts})));
+  assert.equal(imported.ok,true);const baselineDoc=envelope.parseObservablePayload(imported.candidateCreatePlan.entries[0].content).doc;
+  const attrs=[{target:'_self',rel:'author rel',class:'first-link',title:null},{target:null,rel:'',class:null,title:null}];
+  let count=0;for(const p of model.paragraphs(baselineDoc))for(const n of p.content||[])for(const m of n.marks||[])if(m.type==='link')Object.assign(m.attrs,attrs[count++]);assert.equal(count,2);
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'attrs-synthetic',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-09-30T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
+  for(const action of ['unchanged','label','retarget','case-rename']) {
+    let xml=parts['word/document.xml'];
+    if(action==='label')xml=xml.replace('Link One','Edited One');
+    if(action==='retarget')xml=xml.replace('w:anchor="UserTwinA"','w:anchor="UserTwinB"');
+    if(action==='case-rename')xml=xml.replace('w:name="UserTwinA"','w:name="usertwina"').replace('w:anchor="UserTwinA"','w:anchor="usertwina"');
+    if(action!=='unchanged')assert.notEqual(xml,parts['word/document.xml']);
+    xml=xml.replace(/<w:hyperlink\b[^>]*w:anchor="([^"]+)"[^>]*>([\s\S]*?)<\/w:hyperlink>/gu,(_,name,result)=>asNativeLocalField(name,result));
+    const analysis=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':xml})},{cryptoPort});assert.equal(analysis.ok,true);
+    const result=analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:analysis.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});assert.equal(result.ok,true,JSON.stringify(result));
+    let index=0;for(const p of model.paragraphs(result.doc))for(const n of p.content||[])for(const m of n.marks||[])if(m.type==='link') {
+      assert.deepEqual(Object.fromEntries(['target','rel','class','title'].map(k=>[k,m.attrs[k]])),attrs[index++],action);
+      assert.ok(model.inspectInternalLink(m,result.registry));
+    }assert.equal(index,2);assert.equal(result.changed,action!=='unchanged');
+    assert.equal(model.planReturn({beforeDoc:baselineDoc,candidateDoc:result.doc}).changed,action!=='unchanged');
+  }
+});
+
+test('Core typed defaults match the actual pinned editor schema without changing explicit attrs or identity', async () => {
+  const {getSchema}=await import('@tiptap/core'),{default:StarterKit}=await import('@tiptap/starter-kit');
+  const {UserBookmarks,UserBookmarkLink}=await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const {WordPendingRevisions}=await import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),{DocumentParagraphAlignment}=await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const schema=getSchema([StarterKit.configure({link:false,undoRedo:false}),DocumentParagraphAlignment,WordPendingRevisions,UserBookmarks,UserBookmarkLink]);
+  const first=create(doc('target','label'),'Target',ep(0),ep(6));
+  first.doc.attrs.wordPendingRevisions=null;first.doc.content[1].content[0].marks.push({type:'link',attrs:model.linkAttrs(first.registry.bookmarks[0])});
+  const input=JSON.parse(JSON.stringify(schema.nodeFromJSON(first.doc).toJSON()));
+  const internal=input.content[1].content[0].marks.find(m=>m.type==='link');for(const k of ['target','rel','class','title'])delete internal.attrs[k];
+  const rawInput=copy(input),materialized=model.materializeInternalLinkSchemaDefaults(input),reopened=JSON.parse(JSON.stringify(schema.nodeFromJSON(input).toJSON()));
+  assert.deepEqual(materialized,reopened);assert.deepEqual(input,rawInput);assert.deepEqual(materialized.attrs.wordUserBookmarks,first.registry);
+  for(const attrs of [{target:null,rel:null,class:null,title:null},{target:'_self',rel:'author rel',class:'author-class',title:null}]) {
+    const custom=copy(first.doc);Object.assign(custom.content[1].content[0].marks[1].attrs,attrs);
+    custom.content[1].content.push({type:'text',text:' outside',marks:[{type:'link',attrs:{href:'https://example.invalid/',target:'_parent',rel:'external rel',class:'external-class',title:'external title',custom:'retained'}}]});
+    const result=model.materializeInternalLinkSchemaDefaults(custom);
+    assert.deepEqual(result,custom);assert.deepEqual(result.content[1].content[1],custom.content[1].content[1]);
+    assert.notDeepEqual(result.content[1].content[0].marks[1].attrs,materialized.content[1].content[0].marks.find(m=>m.type==='link').attrs);
+  }
+  assert.deepEqual(model.materializeInternalLinkSchemaDefaults(materialized),materialized);
+});
+test('typed schema defaults validate raw bounds, identities and attrs before copying', () => {
+  const first=create(doc('target','label'),'Target',ep(0),ep(6));
+  first.doc.content[1].content[0].marks.push({type:'link',attrs:model.linkAttrs(first.registry.bookmarks[0])});let getterReads=0;
+  for(const mutate of [
+    d=>d.attrs.wordUserBookmarks.bookmarks[0].end.offsetUtf16=999,
+    d=>d.content[1].content[0].marks[1].attrs.wordBookmarkId='ubm-'+'f'.repeat(32),
+    d=>d.content[1].content[0].marks[1].attrs.wordBookmarkName='Other',
+    d=>d.content[1].content[0].marks[1].attrs.unknown='covert',
+    d=>d.content[1].content[0].marks[1].attrs.title='unsupported title',
+    d=>d.content[1].content[0].marks[1].attrs.target=undefined,
+    d=>Object.defineProperty(d.content[1].content[0].marks[1].attrs,'rel',{enumerable:true,get(){getterReads++;throw Error('GETTER_RAN');}}),
+  ]) {const forged=copy(first.doc);mutate(forged);typed(()=>model.materializeInternalLinkSchemaDefaults(forged));}
+  assert.equal(getterReads,0);assert.deepEqual(model.materializeInternalLinkSchemaDefaults(doc('legacy')),doc('legacy'));
+});

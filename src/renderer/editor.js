@@ -2186,10 +2186,12 @@ function reviewSurfaceBuildReviewItems(state) {
     const replacementText = reviewSurfaceText(change?.replacementText);
     const previewReady = exactPreview.status === 'ready'
       && reviewSurfaceArray(exactPreview.plan?.applyOps).some((op) => reviewSurfaceText(op?.changeId) === changeId);
+    const bookmarkOp = exactPreview.plan?.userBookmarkReturn === true
+      ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'userBookmarks' && op.changeId === changeId) : null;
     items.push({
       itemId: `text:${changeId}`,
-      title: `Текстовая правка ${changeId}`,
-      body: expectedText || replacementText
+      title: bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
+      body: bookmarkOp ? `${reviewSurfaceText(bookmarkOp.expectedText)} → ${reviewSurfaceText(bookmarkOp.replacementText)}` : expectedText || replacementText
         ? `"${expectedText}" -> "${replacementText}"`
         : 'Кандидат на точную текстовую замену',
       meta: [sceneId ? `Сцена ${sceneId}` : '', previewReady ? 'Предпросмотр готов' : 'Предпросмотр заблокирован'].filter(Boolean),
@@ -2501,11 +2503,13 @@ function reviewSurfaceBuildExactTextPreview(state) {
       itemId: reviewSurfaceText(op?.opId),
       sceneId: reviewSurfaceText(op?.sceneId),
       changeId,
+      userBookmarkReturn: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks',
       from: Number.isFinite(op?.from) ? op.from : null,
       to: Number.isFinite(op?.to) ? op.to : null,
       expectedText: reviewSurfaceText(op?.expectedText),
       replacementText: reviewSurfaceText(op?.replacementText),
-      displayDiff: reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
+      displayDiff: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks'
+        ? [] : reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
       applyState,
       applyLabel: applyState === 'ready' ? 'Применить' : reviewSurfacePresentExactApplyState(applyState),
       applyDisabled: applyState !== 'ready',
@@ -3012,14 +3016,14 @@ function renderReviewSurfaceMarkup(viewModel) {
       ${reviewSurfaceRenderList(exactPreview.ops, (op) => `
         <article class="right-rail-review-item right-rail-review-item--preview">
           <div class="right-rail-review-item-head">
-            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.changeId || op.itemId)}</div>
+            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
             <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
           </div>
           <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
-          ${reviewSurfaceRenderDisplayDiff(op.displayDiff)}
+          ${op.userBookmarkReturn ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
           <div class="right-rail-review-item-meta">
             <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
-            <span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>
+            ${op.userBookmarkReturn ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
           </div>
           <div class="right-rail-review-actions">
             <button
@@ -19076,7 +19080,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;

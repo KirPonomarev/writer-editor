@@ -369,7 +369,9 @@
     "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
     "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
     "test/fixtures/word-user-bookmarks-native-v1.json",
-    "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js"
+    "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
+    "test/unit/r24-r5-lifecycle-physics.test.js",
+    "test/unit/r24-wp200-durable-save-physics.test.js"
   ],
   "protectedFiles": [
     {
@@ -598,7 +600,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a7c381f1ed08628258d08a2a94bbdd8c78eb846cb79b17d19711e5b70e293d3c"
+        "sha256": "1dd6091009dda0ab8f66f30b225dba5025c12c0021f7d2a0d32211ff83424435"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -610,7 +612,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "86ea21c060600d2457db0399fee1d6270519c456e1cd367606255e2361ec3ad0"
+        "sha256": "d3f2362282f531d8826d3c6a2cec92bc17e156b247b5975c402c2e3beba3a305"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -754,7 +756,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
+        "sha256": "6980d702856627f1b19c8dbe04800c5041fe0b5eedeafdd41db743d990c1f6b2"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -774,7 +776,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fac02f7e84526ad89521503847f0d2dc2a9cd5d8842f91706bbde5d4caaa7501"
+        "sha256": "48f4ddbbcc45bcf934b76e5f91bfacbdb756570a27482595c42075d3d1852469"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1561,16 +1563,24 @@
         "sha256": "9d0a8445f20ddd1449baf0e3a363f44e802bf218e774daccb34ee38ff2c65001"
       },
       {
+        "path": "test/unit/r24-r5-lifecycle-physics.test.js",
+        "sha256": "0a0969120611ae04d5c59a07dccdac2271f7aa0c7f09e6708454236ec5001780"
+      },
+      {
+        "path": "test/unit/r24-wp200-durable-save-physics.test.js",
+        "sha256": "a640b438a173fe26936026f9d5e830fdec0dfc3fbc023e60ff9fba85962f6cb5"
+      },
+      {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
         "sha256": "3beafa51f038c5abc6bcab3ea090a0fb6f2d3ccee452ede552b6efb72ef52163"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "2dcb25a9be87095fc6e3420b45dc520f2e8db5aedadf76b0b8d0456d969085f9"
+        "sha256": "6c7e08b9a756852528e656ff3ab55b4a7686339f74f48c42d5c19647c4ecd391"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
-        "sha256": "4d84d4647207628203ea0012163cd6702c5dc8f4d91c80ce8dbf6a18317f803e"
+        "sha256": "d59ded49d26625d8cba6526ddb564131222cadaf748ff63cfecd1be6c36f986c"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
@@ -1578,11 +1588,11 @@
       },
       {
         "path": "src/core/word-user-bookmarks-v1.cjs",
-        "sha256": "fbd59367855566dd285bf3664fb9d16b540758d4d587b057c0dcdc713cb545b7"
+        "sha256": "201d171be11dc0cba10d7f02dcb5e5b349ff5ff814e2347767b612a71397ee61"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "ff7bba7c89af0080db826ecc6ce928bfaed5476457d96aee4aaf03716e811992"
+        "sha256": "0d69e8125496982e926e0145fb3fbe4b560e658afd23fba265a0981309a30efb"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1590,11 +1600,11 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-        "sha256": "7b041f7e199fd9e2ade71500e3c4ab6b9a322e171d704d99646c8a6976a32f4c"
+        "sha256": "03b9ba109fbac0901399450803ceee77465d71707973f569466aec0c2a70ce38"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "c3e36068e2f75b0a677f97c83a742ccc6ed52544c968a41fdc5c48850d841c07"
+        "sha256": "c347385ade095cda3fcd3130c10793950e609544708bea5abafd5c9e2f5e4b13"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",

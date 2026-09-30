@@ -205,7 +205,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
@@ -697,12 +697,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
-      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
+      "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
+      "sha256": "6980d702856627f1b19c8dbe04800c5041fe0b5eedeafdd41db743d990c1f6b2"
     },
     {
       "approved": true,
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "5c07afbaccacdd65f72e0e5d56997cb975774a91388396900416b1b59c82d79e",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1590,7 +1590,7 @@
       "filePath": "src/export/docx/docxMinBuilder.js",
       "sha256": "0528cb47e6b1ddbd105c6bbca06905c20abd0287cf50ed31ce9c0dd45742f426",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "6cbf572947ef4e465f785d8bd182556b3765487b5c53e5a1f2e8f64e4f76600c",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1608,7 +1608,7 @@
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
       "sha256": "d3aceb5d1323676dea1d1d20fb121930a0b697b6fcb3cfe3b9b36532b12c331a",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "84b8731a567de959ccf57c2ebc0d713a0df8108c2a8951181e7a56710ec8dd56",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1644,34 +1644,34 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "d774238eaf13f5710f2324a23471c81485309999f2a604a8e2e692fa0d404d5d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "a7c381f1ed08628258d08a2a94bbdd8c78eb846cb79b17d19711e5b70e293d3c",
+      "sha256": "1dd6091009dda0ab8f66f30b225dba5025c12c0021f7d2a0d32211ff83424435",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "86ea21c060600d2457db0399fee1d6270519c456e1cd367606255e2361ec3ad0",
+      "sha256": "d3f2362282f531d8826d3c6a2cec92bc17e156b247b5975c402c2e3beba3a305",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "fac02f7e84526ad89521503847f0d2dc2a9cd5d8842f91706bbde5d4caaa7501",
+      "sha256": "48f4ddbbcc45bcf934b76e5f91bfacbdb756570a27482595c42075d3d1852469",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "f7bfc6d70a76003c137c02bd2bf786aeb4f9a5ccddcd0fb9139b7ab3ee4d63a3",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1698,7 +1698,7 @@
       "filePath": "src/utils/docxImportLocalFilePreview.js",
       "sha256": "0733a2ce8e8b8d6ab1c863f7e50e919f2775998aec40af5d75a45439172924c7",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1725,7 +1725,7 @@
       "filePath": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
       "sha256": "2355201e30c40ef6b8f863a3c5eecbf36fd06d7b21fc7bd6bed0e4504304bf49",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "14e6b41e791213bed39b5124cc872eb22af3f8a6062d0e1d1d615cc69cb12e07",
+      "sha256": "1b7032ec3c9eb6dafb2e201e08f279953e7d5d3c6ea47c090f40c7e915102281",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "2a6e2d427cb7abf8ca817ff2c55e9fa34b5198de374a30e2f5ecbcb3e4447d59",
+      "sha256": "d2eff91a3728d73a0b67bbbad51bc4d64c16da1fb1328e9c805bd7ddb39e05d4",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "29d5b8f3652af09abca0b83dc438f6921cab3c342aa7262868f88b8617597dec",
+      "sha256": "e408f3e3d0b6f83fa1abf1313a8c5f1cfa5fa2b5e05a0b21379904dacb04adda",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -2102,7 +2102,7 @@
     {
       "filePath": "test/contracts/rtk-word-http-links.contract.test.js",
       "sha256": "122878bf2bf2da9e847166aa7a9b7907e8a4e1a69a8dcca189edbaab99c82542",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -2120,7 +2120,7 @@
     {
       "filePath": "src/io/docxHyperlinks.cjs",
       "sha256": "14a5660ac8192bd134a2411f5bf6943209c9e1708f9d45a3aa18278fbf445473",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -2129,7 +2129,7 @@
     {
       "filePath": "src/renderer/linkDialog.mjs",
       "sha256": "a9e9768181df27dd327359558399d5006c1ed167ebf69f9d886e2e723e20faa6",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -2390,7 +2390,7 @@
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
       "sha256": "90f1fbd10d2eb1ad131dd8ff7ff7b806344790e6c6b64c0bc3724145c8e913ac",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -2462,7 +2462,7 @@
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
       "sha256": "74b92fbe6b46d968fe169d65c3732d21468515cbd69f037d3202d362d70cb457",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b93ea6b9cec70d42bd3870c1586869488b1bb6cdfb8a3a4dc5e9f492724be61e",
+      "sha256": "a0f5462581fb0d3d758724acf0e80845b1ef25cb99a73a5edc1400685adf1205",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "cd5e6b2ba838d366bf7db630410f1d7316810c938392801a6774e5c8a2ad2a5e",
+      "sha256": "146b19b1b2c5f625b779d8dd691f66fc3447051930d3d64e126cc1510a088134",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b855515d60db016841a86d54909ff16847d3caf9321e84d23a17ed80caf1cad7",
+      "sha256": "4bddbadf1722e71e348fcd1cf97e05c02ffccf48fec79562f280fd8ccb6936b2",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim."
@@ -3216,9 +3216,27 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
+      "filePath": "test/unit/r24-r5-lifecycle-physics.test.js",
+      "sha256": "0a0969120611ae04d5c59a07dccdac2271f7aa0c7f09e6708454236ec5001780",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
+      "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
+      "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/r24-wp200-durable-save-physics.test.js",
+      "sha256": "a640b438a173fe26936026f9d5e830fdec0dfc3fbc023e60ff9fba85962f6cb5",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
+      "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
+      "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
       "sha256": "3beafa51f038c5abc6bcab3ea090a0fb6f2d3ccee452ede552b6efb72ef52163",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3226,8 +3244,8 @@
     },
     {
       "filePath": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-      "sha256": "2dcb25a9be87095fc6e3420b45dc520f2e8db5aedadf76b0b8d0456d969085f9",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "6c7e08b9a756852528e656ff3ab55b4a7686339f74f48c42d5c19647c4ecd391",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3235,8 +3253,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
-      "sha256": "4d84d4647207628203ea0012163cd6702c5dc8f4d91c80ce8dbf6a18317f803e",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "d59ded49d26625d8cba6526ddb564131222cadaf748ff63cfecd1be6c36f986c",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3245,7 +3263,7 @@
     {
       "filePath": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
       "sha256": "10daa04ea6f9e7b3853ab6ba7b0706ec37e4b1d6b964fdb86e8db340375c57b1",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3253,8 +3271,8 @@
     },
     {
       "filePath": "src/core/word-user-bookmarks-v1.cjs",
-      "sha256": "fbd59367855566dd285bf3664fb9d16b540758d4d587b057c0dcdc713cb545b7",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "201d171be11dc0cba10d7f02dcb5e5b349ff5ff814e2347767b612a71397ee61",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3262,8 +3280,8 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-      "sha256": "ff7bba7c89af0080db826ecc6ce928bfaed5476457d96aee4aaf03716e811992",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "0d69e8125496982e926e0145fb3fbe4b560e658afd23fba265a0981309a30efb",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3272,7 +3290,7 @@
     {
       "filePath": "src/renderer/tiptap/userBookmarks.mjs",
       "sha256": "7671f49de33df54cb1d75e1caf2f273e23cbd6b9f72ee24216be900e2f7a0eb9",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3280,8 +3298,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-      "sha256": "7b041f7e199fd9e2ade71500e3c4ab6b9a322e171d704d99646c8a6976a32f4c",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "03b9ba109fbac0901399450803ceee77465d71707973f569466aec0c2a70ce38",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3289,8 +3307,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-      "sha256": "c3e36068e2f75b0a677f97c83a742ccc6ed52544c968a41fdc5c48850d841c07",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "sha256": "c347385ade095cda3fcd3130c10793950e609544708bea5abafd5c9e2f5e4b13",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3299,7 +3317,7 @@
     {
       "filePath": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
       "sha256": "92b4f73d5fe8b6ea289b51ecb6439f9971f0b64583aef856f79cdfa80ece6654",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -3308,7 +3326,7 @@
     {
       "filePath": "test/fixtures/word-user-bookmarks-native-v1.json",
       "sha256": "6063829a6ebea6ec7ff28b22bc34fea419128858845e1aec0947e11f5b7b495c",
-      "approvedAtUtc": "2026-09-30T04:16:57.213045Z",
+      "approvedAtUtc": "2026-09-30T05:23:44.783576Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930",
       "rationale": "Owner-authorized same-scene Mac user bookmark and internal-link vertical slice, validated Core registry with version-discriminated readable payload and N-1 zero-write refusal, canonical Kernel commands/query, existing atomic save with generation-bound metadata ACK, strict G/Y0/authenticated cleanR import/export. Genuine native Word endpoint/name/broken-link discovery exists; final candidate SOURCE and packaged proof remains mandatory and pending. Scope excludes tracked composites, arbitrary structural transforms and cross-scene transfer. Companion updates bind exact changed implementation bytes; historical oracles, carriers, gate strengths and acceptance counts remain unchanged. No whole-plan acceptance claim.",
       "approved": true,
@@ -20440,6 +20458,15 @@
       "filePath": "src/renderer/commands/projectCommands.mjs",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "sha256": "5a472e55dfaee07b2226a7dd42cf946a7b2187050169dde1e77ef9faed5323cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
