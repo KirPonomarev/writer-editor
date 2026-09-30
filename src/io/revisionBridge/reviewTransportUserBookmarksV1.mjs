@@ -124,7 +124,30 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const required='application/xml';
       return expected.length===1&&expected[0].contentType===required&&item.contentType===required&&/^sha256:[a-f0-9]{64}$/u.test(item.partSha256||'')&&expected[0].partSha256===item.partSha256;
     };
-    if((reviewIr.structureChanges||[]).some(item=>item.writerAuthorityImpact!=='inventory-only')||(reviewIr.opaqueUnsupported||[]).some(item=>item.writerAuthorityImpact!=='inventory-only'&&!admitTechnical(item)))return reject('unsupported-composite');
+    const instructionKey=p=>p?.partName==='word/document.xml'&&p.elementName==='instrText'
+      &&p.namespaceUri==='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+      &&Number.isSafeInteger(p.openStart)&&Number.isSafeInteger(p.closeEnd)&&p.openStart>=0&&p.closeEnd>p.openStart
+      ?`${p.openStart}:${p.closeEnd}`:null;
+    const fields=new Set();
+    for(const paragraph of observed)for(const proof of paragraph.inertHyperlinkInstructions||[]) {
+      if(!proof.href?.startsWith('#'))continue;
+      const k=instructionKey(proof);
+      if(!k||fields.has(k)||!paragraph.formattedRuns?.some(r=>r.inlineState?.link===proof.href))return reject('local-field-proof');
+      key(proof.href.slice(1));
+      const inventoryProofs=(reviewIr.userBookmarkInventory?.links||[]).filter(link=>link.name===proof.href.slice(1))
+        .flatMap(link=>link.sourceXmlProvenance?.instructions||[]);
+      if(inventoryProofs.filter(p=>instructionKey(p)===k).length!==1)return reject('local-field-inventory');
+      fields.add(k);
+    }
+    if((reviewIr.structureChanges||[]).some(item=>item.writerAuthorityImpact!=='inventory-only'))return reject('unsupported-composite');
+    for(const item of reviewIr.opaqueUnsupported||[]) {
+      if(item.writerAuthorityImpact==='inventory-only'||admitTechnical(item))continue;
+      const k=instructionKey(item.sourceXmlProvenance);
+      if(item.kind!=='unsupported-element'||item.elementName!=='instrText'
+        ||item.typedDiagnostic!=='RTK_STRUCTURAL_OR_FORMAT_ELEMENT_MANUAL'||!k||!fields.has(k))return reject('unsupported-composite');
+      fields.delete(k);
+    }
+    if(fields.size)return reject('local-field-inventory-mismatch');
     const seen=new Set();
     for(const block of allBlocks) {
       const p=observed[block.documentParagraphIndex];

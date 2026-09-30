@@ -235,6 +235,8 @@ function mainHarness(names, globals={}) {
     'buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText',
     'extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml',
     'extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding'];
+  if(names.includes('revalidateFullManuscriptDocxReviewPacketExportSource')) helpers.push(
+    'captureFullManuscriptProjectBinding','revalidateFullManuscriptProjectBinding','userBookmarkCapability');
   const declarations=[...new Set([...helpers,...names])].map(name=>{
     const match=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}(?=\\n|$)'));
     assert.ok(match,name);return match[0];
@@ -338,6 +340,13 @@ test('production publication revalidation rejects changed scenes, canonical comm
   assert.equal(expected.rawSha256,'sha256:'+sha(raw));
   const ctx=mainHarness(['revalidateFullManuscriptDocxReviewPacketExportSource'],{
     isDirty:false,autoSaveInProgress:false,activeStage10ApplicationBootstrap:owner,getProjectRootPath:()=>input.projectRoot,
+    currentProjectName:'Comment reexport',commentAuthoringSessionId:'reexport-session',currentLifecycleSubjectId:()=> 'reexport-document',
+    getProjectManifestPath:()=>path.join(input.projectRoot,'project.craftsman.json'),getProjectSectionPath:()=>path.join(input.projectRoot,'roman'),
+    REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID:'cmd.project.review.exportFullManuscriptDocxReviewPacket',
+    evaluateWriterLocalCommandAccess:require('../../src/core/writer-local-profile-v1.cjs').evaluateWriterLocalCommandAccess,
+    getWriterLocalRuntimeProfile:()=>require('../../src/core/writer-local-profile-v1.cjs').createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),
+    getProductCommandRecord:require('../../src/shared/productCommandRegistry.cjs').getProductCommandRecord,
+    decideCommandEntitlement:require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement,getProductEntitlementTier:()=> 'free',
     buildFullManuscriptDocxReviewExportScope:async()=>({projectId:input.projectId,projectRoot:input.projectRoot,
       projectName:expectedMetadata.title,projectCreatedAtUtc:expectedMetadata.createdAtUtc,
       sceneCandidates:[{sceneId:input.scenes[0].sceneId}]}),
@@ -345,6 +354,7 @@ test('production publication revalidation rejects changed scenes, canonical comm
     verifyDocxMediaAssetFiles:require('../../src/utils/docxImportSafeCreate.js').verifyDocxMediaAssetFiles,
     loadRevisionBridgeModule:async()=>({createRtkNonTextReturnFilePort:()=>({readCanonical:async()=>state})}),
   });
+  source.fullManuscriptProjectBinding=ctx.captureFullManuscriptProjectBinding();
   await ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source);
   raw+=' changed';await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/SCENE_STALE/);
   raw=input.scenes[0].text;state={...state,revision:state.revision+1};

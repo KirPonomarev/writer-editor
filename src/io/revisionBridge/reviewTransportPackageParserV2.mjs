@@ -2313,6 +2313,7 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
       if (/\bHYPERLINK\b/iu.test(instruction)) {
         if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
         href = parseDocxHyperlinkInstruction(instruction);
+        if (href.startsWith('#')) throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       }
     }
     if (isWordToken(token,'fldChar')) {
@@ -2435,6 +2436,38 @@ export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
     const text=semanticAtomsToText(extractSemanticAtoms(documentXml,scan,token)).replaceAll('\r','\n');
     if (!text) throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
     links.push({name,paragraphIndex,from,to:from+text.length,sourceXmlProvenance:provenance(token)});
+  }
+  // Field controls remain flat Word runs. Take only the balanced local field's
+  // result atoms, preserving instruction provenance separately from its label.
+  for (const [paragraphIndex,record] of records.entries()) {
+    const atoms=extractSemanticAtoms(documentXml,scan,record.token);
+    let field=null;const orphanInstructions=[];
+    for (const token of record.tokens) {
+      if (isWordToken(token,'fldChar')) {
+        const kind=attr(token,'fldCharType',W_NS);
+        if(kind==='begin'&&!field) field={phase:'instruction',instruction:'',instructions:[],begin:token};
+        else if(kind==='separate'&&field?.phase==='instruction') {
+          field.phase='result';field.separate=token;
+          if(/\bHYPERLINK\b/iu.test(field.instruction)) field.href=parseDocxHyperlinkInstruction(field.instruction);
+        } else if(kind==='end'&&field?.phase==='result') {
+          if(field.href?.startsWith('#')) {
+            const resultAtoms=atoms.filter(a=>a.order>field.separate.closeEnd&&a.order<token.openStart);
+            const from=semanticAtomsToText(atoms.filter(a=>a.order<field.separate.openStart)).replaceAll('\r','\n').length;
+            const text=semanticAtomsToText(resultAtoms).replaceAll('\r','\n');
+            if(!text||links.length>=4096)throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+            links.push({name:field.href.slice(1),paragraphIndex,from,to:from+text.length,
+              sourceXmlProvenance:{begin:provenance(field.begin),end:provenance(token),instructions:field.instructions.map(provenance)}});
+          }
+          field=null;
+        } else throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      } else if(isWordToken(token,'instrText')&&field) {
+        if(field.phase!=='instruction')throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field.instruction+=tokenText(documentXml,token);field.instructions.push(token);
+        if(field.instruction.length>4096)throw Error('DOCX_LINK_FIELD_UNSUPPORTED');
+      } else if(isWordToken(token,'instrText'))orphanInstructions.push(tokenText(documentXml,token));
+      else if(field&&['ins','del','moveFrom','moveTo','hyperlink','fldSimple'].some(n=>isWordToken(token,n)))throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+    }
+    if(field||/\bHYPERLINK\s+\\l(?=\s|$)/iu.test(orphanInstructions.join('')))throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
   }
   return {schemaVersion:'yalken.word-user-bookmark-inventory.v1',bookmarks,links,
     ...(unresolvedEndpoints.length ? {unresolvedEndpoints} : {})};

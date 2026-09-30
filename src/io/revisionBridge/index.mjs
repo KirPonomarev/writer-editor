@@ -10161,6 +10161,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
           if (selfClosing || activeParagraphMetadata.currentHref || complexFieldStack.length) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
           activeParagraphMetadata.currentHref = parseDocxHyperlinkInstruction(instruction);
+          if (activeParagraphMetadata.currentHref.startsWith('#')) throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
           activeParagraphMetadata.simpleLink = true;
         }
       }
@@ -10542,7 +10543,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure && !pendingSource.revisions.length
-      && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd'].includes(item.tagName))
+      && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
         || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
       const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
       if (inventory.bookmarks.length || inventory.links.length) {

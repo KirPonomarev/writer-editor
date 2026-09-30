@@ -685,3 +685,81 @@ test('local-file inventory validation rejects raw accessors and hostile geometry
     assert.equal(result.ok,false);assert.equal(result.error.reason,'DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID');assert.equal(planned,0);
   }assert.equal(reads,0);
 });
+
+function asNativeLocalField(name, result) {
+  return `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>HYPERLINK \\l &quot;${name}&quot;</w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>${result}<w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+}
+test('native local HYPERLINK field grammar preserves Unicode spelling without extending external grammar', () => {
+  const {parseDocxHyperlinkInstruction:parse}=require('../../src/io/docxHyperlinks.cjs');
+  assert.equal(parse(' HYPERLINK \\l "Цель_Кириллица_Ω" '),'#Цель_Кириллица_Ω');
+  for(const instruction of ['HYPERLINK \\l "YRTK_bad"','HYPERLINK \\l "Target" \\o "tooltip"','HYPERLINK \\l "Target" \\l "Other"','HYPERLINK \\l "Target" junk','HYPERLINK \\l "a b"','HYPERLINK \\l "Target" \\h \\h'])assert.throws(()=>parse(instruction));
+});
+test('native complex local fields preserve result styling, literal spans and fresh bound identities through real G', async () => {
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const {buildStoredZip,buildDocxMinBuffer}=require('../../src/export/docx/docxMinBuilder.js');
+  const {parts,expected}=nativeBookmarkPackage();
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:hyperlink\b[^>]*w:anchor="([^"]+)"[^>]*>([\s\S]*?)<\/w:hyperlink>/gu,(_,name,result)=>asNativeLocalField(name,result));
+  assert.ok(parts['word/document.xml'].includes('HYPERLINK'));
+  const result=await bookmarkLocalFilePipeline(buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),bridge);
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.docxImportPreviewPlan.ok,true,JSON.stringify(result));
+  const parsed=envelope.parseObservablePayload(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content),registry=model.readRegistry(parsed.doc);
+  assert.equal(parsed.issue,null);assert.equal(parsed.payloadVersion,3);assert.deepEqual(model.paragraphs(parsed.doc).map(model.textOf),expected.paragraphTexts);
+  assert.deepEqual(registry.bookmarks.filter(b=>b.state==='active').map(({name,start,end})=>({name,start,end})),expected.bookmarks);
+  let count=0;for(const p of model.paragraphs(parsed.doc))for(const n of p.content||[])for(const m of n.marks||[])if(m.type==='link'){assert.ok(model.inspectInternalLink(m,registry));count++;}assert.equal(count,2);
+  const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+  const exported=buildDocxMinBuffer({doc:parsed.doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+  const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported}).parts['word/document.xml'];
+  assert.ok(xml.includes('<w:hyperlink'));assert.ok(xml.includes('w:anchor='));
+});
+
+test('split local field instructions preserve styled labels and broken targets; hostile controls never grant a plan', async () => {
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const {parts}=nativeBookmarkPackage();
+  const base=parts['word/document.xml'];
+  const local=asNativeLocalField('MissingTarget','<w:r><w:rPr><w:b/></w:rPr><w:t>Link </w:t></w:r><w:r><w:rPr><w:i/></w:rPr><w:t>One</w:t></w:r>');
+  const first=/<w:hyperlink\b[^>]*w:anchor="UserTwinB"[^>]*>[\s\S]*?<\/w:hyperlink>/u;assert.ok(first.test(base));
+  const run=async xml=>bookmarkLocalFilePipeline(buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data}))),bridge);
+  const split=local.replace('HYPERLINK \\l','HYPER</w:instrText></w:r><w:r><w:instrText>LINK \\l');
+  const accepted=await run(base.replace(first,split));assert.equal(accepted.docxImportPreviewPlan?.ok,true,JSON.stringify(accepted));
+  const parsed=envelope.parseObservablePayload(accepted.docxImportPreviewPlan.candidateCreatePlan.entries[0].content),registry=model.readRegistry(parsed.doc);
+  const label=model.paragraphs(parsed.doc)[3].content;assert.equal(model.textOf(model.paragraphs(parsed.doc)[3]),'Link One');
+  assert.ok(label[0].marks.some(m=>m.type==='bold'));assert.ok(label[1].marks.some(m=>m.type==='italic'));
+  const target=registry.bookmarks.find(b=>b.name==='MissingTarget');assert.equal(target.state,'deleted');
+  for(const [caseIndex,xml] of [
+    local.replace('\\l &quot;MissingTarget&quot;','\\l &quot;MissingTarget&quot; \\l &quot;Other&quot;'),
+    local.replace('\\l &quot;MissingTarget&quot;','\\l &quot;MissingTarget&quot; \\o &quot;tooltip&quot;'),
+    local.replace('<w:r><w:fldChar w:fldCharType="separate"/></w:r>',''),
+    local.replace('<w:r><w:fldChar w:fldCharType="end"/></w:r>',''),
+    local.replace('<w:r><w:fldChar w:fldCharType="separate"/></w:r>',asNativeLocalField('Other','<w:r><w:t>x</w:t></w:r>')),
+    local.replace('<w:r><w:fldChar w:fldCharType="separate"/></w:r>','<w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:instrText> HYPERLINK \\l &quot;Other&quot; </w:instrText></w:r>'),
+    '<w:r><w:instrText>HYPERLINK \\l &quot;MissingTarget&quot;</w:instrText></w:r><w:r><w:t>Link One</w:t></w:r>',
+    '<w:fldSimple w:instr="HYPERLINK \\l &quot;MissingTarget&quot;"><w:r><w:t>Link One</w:t></w:r></w:fldSimple>',
+  ].entries()) {const rejected=await run(base.replace(first,xml));assert.notEqual(rejected.docxImportPreviewPlan?.ok,true,`hostile local field ${caseIndex}`); }
+});
+
+test('clean local-field return requires exact one-to-one instruction provenance and authenticated scene locators', async () => {
+  const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const fixture=require('../fixtures/word-user-bookmarks-native-v1.json'),sample=fixture.snapshots.find(s=>s.name.startsWith('04-'));
+  const bytesOf=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const g=io.buildDocxImportPreviewPlanFromContentPreview(io.buildDocxContentPreviewFromZipBytes(bytesOf({...fixture.sharedParts,...sample.parts})));
+  assert.equal(g.ok,true);const baselineDoc=envelope.parseObservablePayload(g.candidateCreatePlan.entries[0].content).doc;
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'local-field-synthetic',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-09-30T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
+  const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  const xml=parts['word/document.xml'].replace(/<w:hyperlink\b[^>]*w:anchor="([^"]+)"[^>]*>([\s\S]*?)<\/w:hyperlink>/gu,(_,name,result)=>asNativeLocalField(name,result));assert.notEqual(xml,parts['word/document.xml']);
+  const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
+  const analysis=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':xml})},{cryptoPort});assert.equal(analysis.ok,true);
+  const check=reviewIr=>analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  const unchanged=check(analysis.reviewIr);assert.equal(unchanged.ok,true,JSON.stringify(unchanged));assert.equal(unchanged.changed,false);
+  for(const mutate of [
+    ir=>ir.formattingParagraphs.find(p=>p.inertHyperlinkInstructions?.length).inertHyperlinkInstructions[0].openStart++,
+    ir=>ir.formattingParagraphs.find(p=>p.inertHyperlinkInstructions?.length).inertHyperlinkInstructions.push(copy(ir.formattingParagraphs.find(p=>p.inertHyperlinkInstructions?.length).inertHyperlinkInstructions[0])),
+    ir=>ir.userBookmarkInventory.links.find(l=>l.sourceXmlProvenance.instructions).sourceXmlProvenance.instructions=[],
+    ir=>{ir.opaqueUnsupported=ir.opaqueUnsupported.filter(x=>x.elementName!=='instrText');},
+    ir=>ir.opaqueUnsupported.find(x=>x.elementName==='instrText').sourceXmlProvenance.namespaceUri='urn:spoof',
+  ]){const forged=copy(analysis.reviewIr);mutate(forged);assert.equal(check(forged).ok,false);}
+  const orphan=xml.replace(/<w:bookmarkStart w:id="\d+" w:name="YRTK_[^"]+"\/>/u,'');assert.notEqual(orphan,xml);
+  const rejected=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':orphan})},{cryptoPort});assert.equal(rejected.ok,false);assert.equal(rejected.code,'RTK_WORD_USER_BOOKMARK_INVALID');
+});

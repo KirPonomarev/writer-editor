@@ -4868,14 +4868,14 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
 }
 
 async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
-  revalidateFullManuscriptProjectBinding(source?.fullManuscriptProjectBinding);
-  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const capsule = source?.localAuthorityCapsule;
   if (!capsule || !source.commentExport || isDirty || autoSaveInProgress
     || source.publicationOwner !== activeStage10ApplicationBootstrap
     || capsule.projectRoot !== getProjectRootPath()) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SOURCE_STALE');
   }
+  revalidateFullManuscriptProjectBinding(source.fullManuscriptProjectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const scope = await buildFullManuscriptDocxReviewExportScope();
   if (scope.projectId !== source.commentExport.projectId || scope.projectRoot !== capsule.projectRoot) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');

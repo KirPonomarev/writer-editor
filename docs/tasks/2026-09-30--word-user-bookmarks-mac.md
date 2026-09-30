@@ -9,7 +9,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BASE_SHA: 9a8922d54e60169ea820c159b1d8ec56a8ec9f7c
 DESIGN_SCOPE: EXISTING_MENU_AND_DIALOG_CONTRIBUTION; NO_GLOBAL_VISUAL_CHANGE
-DIFF_BUDGET: 43 exact paths, at most 4600 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
+DIFF_BUDGET: 45 exact paths, at most 5100 authored added lines plus generated bundle and exact-byte governance companions; widen only via clean-base preflight
 
 ## MICRO_GOAL
 
@@ -61,6 +61,8 @@ Bounded Core registry, typed internal links, existing command/UI/transaction int
 - src/shared/productCommandRegistry.cjs
 - src/shared/workspaceQueryRegistry.cjs
 - src/utils/docxImportLocalFilePreview.js
+- src/io/docxHyperlinks.cjs
+- test/contracts/rtk-word-canonical-comment-reexport.contract.test.js
 - test/contracts/rtk-word-full-manuscript-current-project.contract.test.js
 - test/contracts/rtk-word-user-bookmarks.contract.test.js
 - test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js
@@ -145,3 +147,5 @@ Native bridge correction admitted by fresh clean9a89 PRE42 before sanitizer edit
 Native metadata counterexample at candidate11cda: the actual renderer applied the bookmark registry correctly, but its complete snapshot retained the scene meta block while Main CRUD had dropped it by spreading parsed.hasMetaBlock into a composer expecting metaEnabled. The preserved failure has zero first-create acceptance credit; 2139 passing tests do not replace that native outcome. All newly introduced bookmark composers explicitly preserve parsed metadata enablement and cards. CRUD/authenticated cleanR compare live metadata/cards with the trusted captured source before writes, while mapped ordinary save and backup preserve their validated working envelope. No exact-content ACK relaxation, duplicate IPC listener or renderer reset is admitted. The existing unrelated pending-recording composer has the same pre-existing pattern and remains a separate whole-plan obligation. Native SOURCE/PACKAGED replay on the corrected final candidate is mandatory.
 
 Current-project full-export blocker admitted by fresh clean exact9a PRE43 before source edits. Actual native export in a nondefault project failed because the existing scope builder read DEFAULT_PROJECT_NAME. This promised positive blocks closure of the current bookmark/full-export package. Capture the active project identity before scope enumeration and revalidate it after asynchronous reads and before publication; unrelated default project state supplies no source or identity. Remove the cross-project default manifest fallback. The new actual Main scope contract preserves historical full-export oracles and tests unrelated empty/populated default projects plus lifecycle/capability races. Genuine nondefault SOURCE/PACKAGED export and Word return are mandatory; default-only native success cannot substitute. This is a correction of the current export outcome, not a second write contour.
+
+Native Word field correction admitted by fresh clean exact9a PRE45 before edits. Actual Word16.112 ordinary Save converted exported w:hyperlink internal anchor to a balanced complex HYPERLINK local field. Complete literal XML disproved the preliminary lost-start hypothesis: Word moved the paired technical start to a body sibling immediately before the original paragraph; names and semantic endpoints remain exact. Preserve existing strict literal leading-body ownership; do not rescue malformed or genuinely orphan endpoints through text/IDs. Admit only bounded inert local field grammar. Actual native saved artifact and fresh SOURCE/PACKAGED exports must prove authenticated intake and selected apply. Canonical-comment reexport VM must load actual new private binding dependencies and fixture identities without weakening existing source/comment/lifecycle rejection assertions. Budget5100 for observed blockers; generated bundle and exact-byte companions remain separate.
