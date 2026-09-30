@@ -14946,7 +14946,22 @@ async function migrateProjectNotesStorage(options = {}) {
 }
 
 async function getProjectNotesContext(payload = {}) {
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const projectName = currentProjectName;
+  const projectRoot = getProjectRootPath();
+  const owner = activeStage10ApplicationBootstrap;
+  const lifecycle = currentLifecycleSubjectId();
+  const session = commentAuthoringSessionId;
+  const refusal = reason => ({ ok: false, code: `E_${reason}`, reason });
+  if (typeof projectName !== 'string' || !projectName.trim()) return refusal('NOTES_PROJECT_REQUIRED');
+  const isCurrent = () => projectName === currentProjectName && projectRoot === getProjectRootPath()
+    && owner === activeStage10ApplicationBootstrap && lifecycle === currentLifecycleSubjectId()
+    && session === commentAuthoringSessionId;
+  // Context lookup cannot create a default project or normalize its manifest on disk.
+  const record = await readProjectManifest(projectName);
+  if (!isCurrent()) return refusal('NOTES_PROJECT_STALE');
+  const manifest = record?.manifest;
+  if (!manifest || record.sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION
+    || !normalizeStableProjectId(manifest.projectId)) return refusal('NOTES_PROJECT_BINDING_INVALID');
   const expectedProjectId = normalizeStableProjectId(payload.projectId);
   if (expectedProjectId && expectedProjectId !== manifest.projectId) {
     return {
@@ -14956,7 +14971,7 @@ async function getProjectNotesContext(payload = {}) {
     };
   }
   const notesStorage = await loadNotesStorageModule();
-  const projectRoot = path.dirname(manifestPath);
+  if (!isCurrent()) return refusal('NOTES_PROJECT_STALE');
   return {
     ok: true,
     projectRoot,

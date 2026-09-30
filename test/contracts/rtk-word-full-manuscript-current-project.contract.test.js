@@ -126,3 +126,51 @@ test('shared formatting and structural scopes inherit exact active project bindi
     assert.equal(scope.scenePathBySceneId['roman/scene.txt'], '/owned/Active project/roman/scene.txt');
   }
 });
+
+function notesContextHarness() {
+  const h = harness(true);
+  h.preparationWrites = 0; h.storageLoads = 0;
+  Object.assign(h.c, {
+    normalizeStableProjectId: value => typeof value === 'string' ? value.trim() : '',
+    ensureProjectManifest: async () => { h.preparationWrites++; throw Error('context lookup must be read-only'); },
+    loadNotesStorageModule: async () => { h.storageLoads++; h.phase?.('storage'); return { marker: 'notes-storage' }; },
+  });
+  vm.runInContext(main.slice(main.indexOf('async function getProjectNotesContext('),
+    main.indexOf('function makeNotesCommandError(')), h.c);
+  return h;
+}
+test('actual notes context reads nondefault active project without manifest preparation', async () => {
+  const h = notesContextHarness();
+  const result = await h.c.getProjectNotesContext({ projectId: 'active-id' });
+  assert.equal(result.ok, true); assert.equal(result.projectId, 'active-id');
+  assert.equal(result.projectRoot, '/owned/Active project');
+  assert.equal(result.notesStorage.marker, 'notes-storage');
+  assert.deepEqual(h.reads, ['Active project']); assert.equal(h.preparationWrites, 0);
+});
+for (const phase of ['manifest', 'storage']) for (const mutation of ['project', 'lifecycle', 'session', 'owner']) {
+  test(`actual notes context rejects ${mutation} switch during ${phase} without preparation writes`, async () => {
+    const h = notesContextHarness(); h.phase = actual => {
+      if (actual !== phase) return;
+      if (mutation === 'project') h.c.currentProjectName = 'Other project';
+      if (mutation === 'lifecycle') h.subject = 'document:other';
+      if (mutation === 'session') h.c.commentAuthoringSessionId = 'other';
+      if (mutation === 'owner') h.c.activeStage10ApplicationBootstrap = {};
+    };
+    const result = await h.c.getProjectNotesContext({ projectId: 'active-id' });
+    assert.equal(result.ok, false); assert.equal(result.reason, 'NOTES_PROJECT_STALE');
+    assert.equal(h.preparationWrites, 0);
+    if (phase === 'manifest') assert.equal(h.storageLoads, 0);
+  });
+}
+for (const invalid of ['future', 'missing', 'projectId', 'inactive', 'mismatched']) {
+  test(`actual notes context rejects ${invalid} project without storage access or writes`, async () => {
+    const h = notesContextHarness();
+    if (invalid === 'inactive') h.c.currentProjectName = '';
+    else if (invalid !== 'mismatched') h.c.readProjectManifest = async () => invalid === 'missing' ? null : {
+      sourceSchemaVersion: invalid === 'future' ? 2 : 1,
+      manifest: { projectId: invalid === 'projectId' ? '' : 'active-id' },
+    };
+    const result = await h.c.getProjectNotesContext({ projectId: invalid === 'mismatched' ? 'default-id' : 'active-id' });
+    assert.equal(result.ok, false); assert.equal(h.preparationWrites, 0); assert.equal(h.storageLoads, 0);
+  });
+}
