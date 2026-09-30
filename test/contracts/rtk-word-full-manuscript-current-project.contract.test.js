@@ -141,11 +141,21 @@ function notesContextHarness() {
 }
 test('actual notes context reads nondefault active project without manifest preparation', async () => {
   const h = notesContextHarness();
-  const result = await h.c.getProjectNotesContext({ projectId: 'active-id' });
+  const result = await h.c.getProjectNotesContext({ projectId: 'active-id' }, { readOnlyActive: true });
   assert.equal(result.ok, true); assert.equal(result.projectId, 'active-id');
   assert.equal(result.projectRoot, '/owned/Active project');
   assert.equal(result.notesStorage.marker, 'notes-storage');
   assert.deepEqual(h.reads, ['Active project']); assert.equal(h.preparationWrites, 0);
+});
+test('public notes payload cannot select the private active-project lookup option', async () => {
+  const h = notesContextHarness();
+  h.c.ensureProjectManifest = async name => {
+    assert.equal(name, 'Роман'); h.preparationWrites++;
+    return { manifestPath: '/owned/Роман/project.craftsman.json', manifest: { projectId: 'default-id' } };
+  };
+  const result = await h.c.getProjectNotesContext({ projectId: 'default-id', readOnlyActive: true });
+  assert.equal(result.ok, true); assert.equal(result.projectRoot, '/owned/Роман');
+  assert.equal(h.preparationWrites, 1); assert.deepEqual(h.reads, []);
 });
 for (const phase of ['manifest', 'storage']) for (const mutation of ['project', 'lifecycle', 'session', 'owner']) {
   test(`actual notes context rejects ${mutation} switch during ${phase} without preparation writes`, async () => {
@@ -156,7 +166,7 @@ for (const phase of ['manifest', 'storage']) for (const mutation of ['project', 
       if (mutation === 'session') h.c.commentAuthoringSessionId = 'other';
       if (mutation === 'owner') h.c.activeStage10ApplicationBootstrap = {};
     };
-    const result = await h.c.getProjectNotesContext({ projectId: 'active-id' });
+    const result = await h.c.getProjectNotesContext({ projectId: 'active-id' }, { readOnlyActive: true });
     assert.equal(result.ok, false); assert.equal(result.reason, 'NOTES_PROJECT_STALE');
     assert.equal(h.preparationWrites, 0);
     if (phase === 'manifest') assert.equal(h.storageLoads, 0);
@@ -170,7 +180,7 @@ for (const invalid of ['future', 'missing', 'projectId', 'inactive', 'mismatched
       sourceSchemaVersion: invalid === 'future' ? 2 : 1,
       manifest: { projectId: invalid === 'projectId' ? '' : 'active-id' },
     };
-    const result = await h.c.getProjectNotesContext({ projectId: invalid === 'mismatched' ? 'default-id' : 'active-id' });
+    const result = await h.c.getProjectNotesContext({ projectId: invalid === 'mismatched' ? 'default-id' : 'active-id' }, { readOnlyActive: true });
     assert.equal(result.ok, false); assert.equal(h.preparationWrites, 0); assert.equal(h.storageLoads, 0);
   });
 }

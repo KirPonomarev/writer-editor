@@ -5897,7 +5897,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       checkIdentity();
     };
     await revalidateScenes();
-    const notesContext = await getProjectNotesContext({ projectId: context.projectId });
+    const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
     if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
     const before = await readProjectNotesDocument(notesContext);
     if (!before.ok) throw rejected(before.reason);
@@ -14945,7 +14945,16 @@ async function migrateProjectNotesStorage(options = {}) {
   });
 }
 
-async function getProjectNotesContext(payload = {}) {
+async function getProjectNotesContext(payload = {}, options = {}) {
+  if (options.readOnlyActive !== true) {
+    const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+    const expectedProjectId = normalizeStableProjectId(payload.projectId);
+    if (expectedProjectId && expectedProjectId !== manifest.projectId) {
+      return { ok: false, code: 'E_NOTES_PROJECT_MISMATCH', reason: 'NOTES_PROJECT_MISMATCH' };
+    }
+    return { ok: true, projectRoot: path.dirname(manifestPath), projectId: manifest.projectId,
+      notesStorage: await loadNotesStorageModule() };
+  }
   const projectName = currentProjectName;
   const projectRoot = getProjectRootPath();
   const owner = activeStage10ApplicationBootstrap;

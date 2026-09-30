@@ -600,7 +600,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ae3a8e2c85c31a9ece87bb707ffddcdd875199f203faf139cff125015fdbe23c"
+        "sha256": "374c53b787389940bca7370d6b668e950187894be42de78cc2fea7e95d3b07da"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1572,11 +1572,11 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
-        "sha256": "c21786020703da9e5cefb30504fbb04b2c3e865aa4bd50b0fa1555f85b883811"
+        "sha256": "3c509a2093e9b3b3d2430762445c376302bcea2f921a62292daeb144fb89d859"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "603b46f46e5c85593202324700f58aef298f4f045333b52045e27b09e1f6e25b"
+        "sha256": "9b34cfc5bdbbb5d815e97f11fd889a5f3db9f2fcab8279ba3c515bdfdb10789b"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
