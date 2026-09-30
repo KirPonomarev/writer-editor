@@ -96,6 +96,7 @@
     "rtk-word-comment-return-delta.contract.test.js",
     "rtk-word-composite-fidelity.contract.test.js",
     "rtk-word-core-hash-parity.contract.test.js",
+    "rtk-word-full-manuscript-current-project.contract.test.js",
     "rtk-word-full-manuscript-volume.contract.test.js",
     "rtk-word-generic-comments.contract.test.js",
     "rtk-word-hostile.contract.test.js",

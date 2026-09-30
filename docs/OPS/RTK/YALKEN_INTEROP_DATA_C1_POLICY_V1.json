@@ -368,7 +368,8 @@
     "test/contracts/rtk-word-user-bookmarks.contract.test.js",
     "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
     "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
-    "test/fixtures/word-user-bookmarks-native-v1.json"
+    "test/fixtures/word-user-bookmarks-native-v1.json",
+    "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -597,7 +598,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "97493de79041d02f5b2e52687ccf66fc91a4fe45b6e5f4212d90c93e24b4d32d"
+        "sha256": "9ab94667733671d3285b90e0f471aa917f0f8db9fbc15a1130343af1ef1790c3"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1445,7 +1446,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "63ec6138cdcd27bb2b31f07961085a44062dc4fb18a11e5c78ad4c7c3de98605"
+        "sha256": "5c07afbaccacdd65f72e0e5d56997cb975774a91388396900416b1b59c82d79e"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1560,12 +1561,16 @@
         "sha256": "9d0a8445f20ddd1449baf0e3a363f44e802bf218e774daccb34ee38ff2c65001"
       },
       {
+        "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
+        "sha256": "3beafa51f038c5abc6bcab3ea090a0fb6f2d3ccee452ede552b6efb72ef52163"
+      },
+      {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "66bb4babe5b9a3f0a0d6811919b3aef536890dbf4766ea0150b2d6edead8b828"
+        "sha256": "2c9381fec6904926064626c09f2fe1610a1739e87bc2382d8d19f3296e9e0cbc"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
-        "sha256": "a24a591a49f3c82998b07c5bc7c5974fb912740c4e9ac674b8db4be1d2dc7f2c"
+        "sha256": "00e8bb85c50528a504711813206997e35513b02b8439ab2ad75cef6e3fb0876e"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_USER_BOOKMARKS_V1.json",

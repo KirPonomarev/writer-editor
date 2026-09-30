@@ -4767,6 +4767,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const scope = await buildFullManuscriptDocxReviewExportScope();
   const sceneCandidates = Array.isArray(scope?.sceneCandidates) ? scope.sceneCandidates : [];
   if (sceneCandidates.length < 1) {
@@ -4776,9 +4777,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   if (!projectId) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_ID_REQUIRED');
   }
-  const projectRoot = docxReviewPreviewSessionDetailString(scope.projectRoot) || getProjectRootPath();
-  const manifestPath = docxReviewPreviewSessionDetailString(scope.manifestPath)
-    || getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const projectRoot = scope.projectBinding.projectRoot;
+  const manifestPath = scope.projectBinding.manifestPath;
   const scenes = [];
   for (let index = 0; index < sceneCandidates.length; index += 1) {
     const candidate = sceneCandidates[index];
@@ -4807,6 +4807,9 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   }
   const documentNoteSelections = normalizeDocumentNoteSelections(payload.options?.documentNotes);
   const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, documentNoteSelections.length === 0);
+  const nonTextReturnState = await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot });
+  revalidateFullManuscriptProjectBinding(scope.projectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const source = buildFullManuscriptDocxReviewPacketSource({
     documentNoteSelections,
     notesDocument: notesDocument || { schemaVersion: 1, projectId, notes: [] },
@@ -4816,12 +4819,13 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     projectRoot,
     manifestPath,
     scenes,
-    nonTextReturnState: await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot }),
+    nonTextReturnState,
     expectedOrderedSceneIds: scenes.map((scene) => scene.sceneId),
   }, {
     revisionBridge,
     cryptoPort: createRtkReviewTransportCryptoPort(),
   });
+  source.fullManuscriptProjectBinding = scope.projectBinding;
   source.officeModeTransport = payload.options?.officeModeTransport === true;
   source.notesSourceDigest = notesDocument ? notesStateDigest(notesDocument) : '';
   source.localAuthorityCapsule.officeModeTransport = source.officeModeTransport;
@@ -4834,6 +4838,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     projectRoot,
     secret: typeof source.forbiddenSecret === 'string' ? source.forbiddenSecret : '',
   });
+  revalidateFullManuscriptProjectBinding(scope.projectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   source.localAuthorityCapsule.keyRef = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.keyRef);
   source.localAuthorityCapsule.keyIdHex = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.keyIdHex);
   source.localAuthorityCapsule.roundIdHex = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.roundIdHex);
@@ -4862,6 +4868,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
 }
 
 async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
+  revalidateFullManuscriptProjectBinding(source?.fullManuscriptProjectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const capsule = source?.localAuthorityCapsule;
   if (!capsule || !source.commentExport || isDirty || autoSaveInProgress
     || source.publicationOwner !== activeStage10ApplicationBootstrap
@@ -4916,6 +4924,8 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   }
   const bridge = await loadRevisionBridgeModule();
   const state = await bridge.createRtkNonTextReturnFilePort().readCanonical({ projectId: scope.projectId, projectRoot: scope.projectRoot });
+  revalidateFullManuscriptProjectBinding(source.fullManuscriptProjectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   if (commentStateDigest(state) !== source.commentExport.stateDigest || isDirty || autoSaveInProgress
     || source.publicationOwner !== activeStage10ApplicationBootstrap || capsule.projectRoot !== getProjectRootPath()) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_COMMENT_STATE_STALE');
@@ -25526,12 +25536,37 @@ async function buildSelectedScenesTxtExportScope() {
   };
 }
 
+function captureFullManuscriptProjectBinding() {
+  const projectName = currentProjectName;
+  if (typeof projectName !== 'string' || !projectName.trim()) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_REQUIRED');
+  }
+  return Object.freeze({ projectName, projectRoot: getProjectRootPath(projectName),
+    manifestPath: getProjectManifestPath(projectName), romanPath: getProjectSectionPath('roman', projectName),
+    subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId,
+    publicationOwner: activeStage10ApplicationBootstrap });
+}
+
+function revalidateFullManuscriptProjectBinding(binding) {
+  if (!binding || binding.projectName !== currentProjectName
+    || binding.projectRoot !== getProjectRootPath(currentProjectName)
+    || binding.manifestPath !== getProjectManifestPath(currentProjectName)
+    || binding.subjectId !== currentLifecycleSubjectId() || binding.sessionId !== commentAuthoringSessionId
+    || binding.publicationOwner !== activeStage10ApplicationBootstrap) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
+  }
+}
+
 async function buildFullManuscriptDocxReviewExportScope() {
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const projectBinding = captureFullManuscriptProjectBinding();
+  const { manifestPath, projectRoot, romanPath } = projectBinding;
+  const manifestRecord = await readProjectManifest(projectBinding.projectName);
+  revalidateFullManuscriptProjectBinding(projectBinding);
   const manifest = manifestRecord ? manifestRecord.manifest : null;
-  const projectRoot = path.dirname(manifestPath);
-  const romanPath = getProjectSectionPath('roman', DEFAULT_PROJECT_NAME);
+  if (!manifest || typeof manifest.projectId !== 'string' || !manifest.projectId.trim()
+    || manifestRecord.sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_BINDING_INVALID');
+  }
   const nodeIdsByBindingKey = new Map();
   const identityNodes = manifest?.treeIdentity?.nodes;
   if (identityNodes && typeof identityNodes === 'object' && !Array.isArray(identityNodes)) {
@@ -25548,7 +25583,9 @@ async function buildFullManuscriptDocxReviewExportScope() {
     }
   }
   const sceneCandidates = [];
-  if (await fileExists(romanPath)) {
+  const romanExists = await fileExists(romanPath);
+  revalidateFullManuscriptProjectBinding(projectBinding);
+  if (romanExists) {
     await collectFullManuscriptDocxReviewExportCandidates(
       romanPath,
       { manifestPath, nodeIdsByBindingKey },
@@ -25556,12 +25593,14 @@ async function buildFullManuscriptDocxReviewExportScope() {
     );
   }
 
+  revalidateFullManuscriptProjectBinding(projectBinding);
   const rawProjectCreatedAtUtc = manifest && typeof manifest.createdAtUtc === 'string'
     ? manifest.createdAtUtc.trim()
     : '';
   const projectCreatedAtMilliseconds = Date.parse(rawProjectCreatedAtUtc);
 
   return {
+    projectBinding,
     projectId: manifest && typeof manifest.projectId === 'string' ? manifest.projectId : '',
     projectName: manifest && typeof manifest.projectName === 'string' ? manifest.projectName : '',
     projectCreatedAtUtc: Number.isFinite(projectCreatedAtMilliseconds)
