@@ -1336,7 +1336,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "a2f7b26c1af888be1ca4993570381e9f08a847abe1c3b376514a431551ac2ff7"
+        "sha256": "9c49ccc336be5b512520aa7c20aa76503c58a37b64b5c0310ced170170dd5547"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1720,7 +1720,7 @@
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_MEDIA_V1.json",
-        "sha256": "d53f53d7d9d27e519fc2843a55e328271204ab109278d725ac99e2c6b918051e"
+        "sha256": "f6261a91e16aca6e7bd645e1d005ba39cb9e8538e800e1a66d4c180c5cab4b95"
       }
     ],
     "followupRepair": {

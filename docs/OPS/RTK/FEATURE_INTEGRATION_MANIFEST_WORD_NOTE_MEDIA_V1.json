@@ -28,7 +28,8 @@
     "test/contracts/rtk-word-note-media.contract.test.js",
     "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_MEDIA_V1.json",
-    "docs/tasks/2026-10-01--word-note-media-mac.md"
+    "docs/tasks/2026-10-01--word-note-media-mac.md",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
   ],
   "scopeOut": [
     "package.json",

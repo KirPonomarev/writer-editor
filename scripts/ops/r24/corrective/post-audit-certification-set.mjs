@@ -1979,7 +1979,7 @@ export const R24_INTEROP_WORD_NOTE_MEDIA_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "780603257f3b001c00d7d3dd4bd48349c1a52d7e18aba694962f9c4b3fdd602e"
+      "sha256": "fb2bf749bd7715fce134ab2edb3e4347347b5221240d6208eb485a9b71fd0973"
     }
   ]
 });
