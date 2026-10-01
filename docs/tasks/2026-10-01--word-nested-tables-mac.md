@@ -169,3 +169,10 @@ and preserved two nested tables and one insertion. Native Microsoft Word opened
 it and its review pane displayed one insertion with the original author and
 text. Narrow actual publication/handler/C2/note-list tests: 39 passed, no failures,
 skips or todos. Final candidate CI and merged-head checks remain required.
+
+CI source-contract amendment before edit: inventory-baseline has one failure in
+sector-m-preload-workspace-query-bridge.test.js. Its literal const assignment
+check predates the admitted try/catch query failure guard; the query still uses
+the same bridge and id. Update only this source assertion to preserve bridge-only
+routing and assert the typed failure guard. Production bytes remain frozen.
+No skipped assertion, bypass, or runtime behavior change is authorized.

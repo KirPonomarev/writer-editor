@@ -1330,7 +1330,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
-        "sha256": "4c2c7916687e3cddce0c656b06f1eb4dc4b3647bdaf3173f81971419f6e91772"
+        "sha256": "f9d34d662cdbc61721364ba8befa725fcbeaa058f61f369e7bd24f0327e37f7f"
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
@@ -1802,7 +1802,7 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
-        "sha256": "db87d1769c0c6e0b41e1cd837535db491e5dcf2b12f9877d2a5b74b32a3ae376"
+        "sha256": "706dafa11a9ae5d02299b1706237345a06599736a1432f9520f17ed1f88ae92a"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json",
