@@ -26,7 +26,8 @@
     "src/renderer/tiptap/index.js",
     "src/renderer/tiptap/runtimeBridge.js",
     "src/renderer/editor.js",
-    "src/main.js"
+    "src/main.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
   ],
   "scopeOut": [
     "package.json",
