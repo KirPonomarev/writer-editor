@@ -132,7 +132,7 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   assert.equal((await restore()).ok, true);assert.equal(writes, 2);assert.equal(document.notes[0].deleted, false);
 });
 
-test('actual editor offset mapping stops at the matched paragraph and counts hard breaks', () => {
+test('actual editor offset mapping stops at the matched paragraph and counts hard breaks', async () => {
   const fs = require('node:fs'), path = require('node:path');
   const { Schema } = require('@tiptap/pm/model');
   const schema = new Schema({ nodes: { doc: { content: 'paragraph+' }, paragraph: { content: '(text|hardBreak)*', group: 'block' }, text: { group: 'inline' }, hardBreak: { inline: true, group: 'inline' } } });
@@ -140,7 +140,8 @@ test('actual editor offset mapping stops at the matched paragraph and counts har
     schema.node('paragraph', null, [schema.text('abc'), schema.node('hardBreak'), schema.text('def')])]);
   const text = fs.readFileSync(path.join(__dirname, '../../src/renderer/tiptap/index.js'), 'utf8');
   const section = text.slice(text.indexOf('function getDocumentPositionForTextOffset('), text.indexOf('function runFocusedChainCommand('));
-  const resolve = new Function('getTiptapDocumentContentSize', section + ';return getDocumentPositionForTextOffset;')(editor => editor.state.doc.content.size);
+  const { positionForTextOffset } = await import('../../src/renderer/tiptap/textCoordinates.mjs');
+  const resolve = new Function('positionForTextOffset', section + ';return getDocumentPositionForTextOffset;')(positionForTextOffset);
   const editor = { state: { doc } };
   assert.equal(resolve(editor, 8), 9);
   assert.equal(resolve(editor, 0), 1);

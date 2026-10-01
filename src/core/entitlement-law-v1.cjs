@@ -59,6 +59,7 @@ const FREE_PRO_COMPLEXITY_COMMAND_IDS = Object.freeze([
 ]);
 
 const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
+  'cmd.project.media.insertLocal',
   'project.create',
   'project.applyTextEdit',
   ...PRODUCT_COMMAND_ID_LIST,

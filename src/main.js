@@ -21423,6 +21423,7 @@ function normalizeEditorSnapshotPayload(payload) {
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
     selectionRange: normalizeSelectionRangeForSettings(source.selectionRange),
+    imageInsertionPosition: Number.isSafeInteger(source.imageInsertionPosition) && source.imageInsertionPosition >= 1 ? source.imageInsertionPosition : null,
     commentAuthoringPending: source.commentAuthoringPending === true,
     manuscriptNoteAuthoringPending: source.manuscriptNoteAuthoringPending === true,
     generation: Number.isSafeInteger(source.generation) && source.generation >= 0
@@ -23570,6 +23571,92 @@ async function handleUserBookmarkMutation(action, payload = {}) {
   } catch (error) {
     return makeReviewMutateTypedError(commandId, error.code || error.message, error.message);
   }
+}
+
+let localImageInsertionPending = false;
+async function handleLocalImageInsertion(payload = {}) {
+  const commandId = 'cmd.project.media.insertLocal';
+  if (localImageInsertionPending) return makeReviewMutateTypedError(commandId, 'LOCAL_IMAGE_BUSY', 'LOCAL_IMAGE_BUSY');
+  localImageInsertionPending = true;
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'editorMode')
+      || (payload.editorMode !== undefined && payload.editorMode !== 'tiptap')) throw Error('LOCAL_IMAGE_INPUT_INVALID');
+    userBookmarkCapability(commandId);
+    const binding = await readUserBookmarkProjectBinding(currentFilePath);
+    if (activePendingRecording) throw Error('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
+    const admission = await requestEditorSnapshot();
+    if (admission.commentAuthoringPending || admission.manuscriptNoteAuthoringPending) throw Error('LOCAL_IMAGE_ANNOTATION_DRAFT_PENDING');
+    if (await handleSave() !== true) throw Error('LOCAL_IMAGE_SAVE_REQUIRED');
+    const source = await readUserBookmarkContext(), snapshot = await requestEditorSnapshot();
+    const envelope = await loadDocumentContentEnvelopeModule(), live = envelope.parseObservablePayload(snapshot.content);
+    if (source.projectId !== binding.projectId || source.subjectId !== binding.subjectId + ':' + binding.sessionId
+      || live.issue || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+      || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+      || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)) throw Error('LOCAL_IMAGE_EDITOR_STALE');
+    const liveDoc = live.doc || envelope.buildParagraphDocumentFromText(live.text);
+    if (!wordMediaReturnModel.mediaSourceEqual(liveDoc, source.doc)) throw Error('LOCAL_IMAGE_EDITOR_STALE');
+    const planner = require('./core/word-local-image-v1.cjs');
+    planner.insertionPoint(liveDoc, snapshot.imageInsertionPosition);
+    const assertCurrent = async () => {
+      const fresh = await readUserBookmarkProjectBinding(source.filePath);
+      const raw = await fs.readFile(source.filePath, 'utf8');
+      userBookmarkCapability(commandId);
+      if (fresh.projectId !== source.projectId || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+        || currentFilePath !== source.filePath || isDirty || autoSaveInProgress || activePendingRecording
+        || lastSignaledEditGeneration > snapshot.generation || raw !== source.raw) throw Error('LOCAL_IMAGE_SOURCE_STALE');
+    };
+    await assertCurrent();
+    const selected = await dialog.showOpenDialog(mainWindow, { title: 'Вставить изображение',
+      properties: ['openFile'], filters: [{ name: 'Изображения PNG и JPEG', extensions: ['png', 'jpg', 'jpeg'] }] });
+    if (selected.canceled) return { ok: true, changed: false, canceled: true };
+    await assertCurrent();
+    if (!Array.isArray(selected.filePaths) || selected.filePaths.length !== 1) throw Error('LOCAL_IMAGE_SELECTION_INVALID');
+    const attrs = await require('./io/localImageFile.cjs').readLocalImageFile(selected.filePaths[0]);
+    await assertCurrent();
+    const plan = planner.planLocalImage({ beforeDoc: liveDoc, position: snapshot.imageInsertionPosition, attrs });
+    const content = envelope.composeObservablePayload({ ...source.parsed, metaEnabled: source.parsed.hasMetaBlock, doc: plan.doc });
+    return await queueDiskOperation(async () => {
+      await assertCurrent();
+      const observed = await requestEditorSnapshot();
+      if (observed.content !== snapshot.content || observed.generation !== snapshot.generation
+        || observed.commentAuthoringPending || observed.manuscriptNoteAuthoringPending) throw Error('LOCAL_IMAGE_EDITOR_STALE');
+      const receipt = await commitWriterProjectSnapshot(source.filePath, content, snapshot.generation,
+        snapshot.bookProfile, 'local image authoring', { expectedSceneContent: source.raw,
+          beforeScenePublish: assertCurrent, mediaReturnPlan: plan, mediaReturnCapturedContent: snapshot.content });
+      if (!receipt.success) throw Error(receipt.code || receipt.error || 'LOCAL_IMAGE_WRITE_FAILED');
+      const ack = await publishLocalImageSaveReceipt(receipt, snapshot.content, snapshot.generation, plan.position);
+      const ok = ack.kind === SAVE_ACK_KINDS.SAVED;
+      updateStatus(ok ? 'Изображение вставлено' : 'Изображение сохранено; проверьте открытый текст');
+      return { ok, changed: true, storageWritten: true, reason: ok ? null : 'LOCAL_IMAGE_PUBLICATION_STALE' };
+    }, 'local image authoring');
+  } catch (error) {
+    logDevError('handleLocalImageInsertion', error);
+    updateStatus('Изображение не вставлено: ' + error.message);
+    return makeReviewMutateTypedError(commandId, error.code || error.message, error.message);
+  } finally { localImageInsertionPending = false; }
+}
+
+async function publishLocalImageSaveReceipt(receipt, capturedContent, generation, position) {
+  const bound = receipt.mediaReturnPublication;
+  const current = () => {
+    try { userBookmarkCapability('cmd.project.media.insertLocal'); } catch { return false; }
+    return bound && bound.filePath === currentFilePath && bound.subjectId === currentLifecycleSubjectId()
+      && bound.sessionId === commentAuthoringSessionId && !isDirty && !autoSaveInProgress
+      && lastSignaledEditGeneration <= generation;
+  };
+  const stale = () => { setDirtyState(true); return { kind: 'NOT_SAVED', reason: 'LOCAL_IMAGE_PUBLICATION_STALE' }; };
+  if (!current() || bound.capturedContent !== capturedContent || bound.generation !== generation) return stale();
+  const raw = await fs.readFile(bound.filePath, 'utf8');
+  if (!current() || raw !== bound.savedContent) return stale();
+  mainWindow.webContents.send('editor:set-text', { content: bound.savedContent, expectedContent: capturedContent,
+    expectedGeneration: generation, position, localImageAuthoringPublication: true });
+  const observed = await requestEditorSnapshot(), savedRaw = await fs.readFile(bound.filePath, 'utf8');
+  if (!current() || observed.content !== bound.savedContent || observed.generation !== generation
+    || observed.commentAuthoringPending || observed.manuscriptNoteAuthoringPending || savedRaw !== bound.savedContent) return stale();
+  userBookmarkSaveContinuation = null;
+  lastAutosaveHash = computeHash(bound.savedContent);
+  const { mediaReturnPublication, bookmarkPublication, ...durable } = receipt;
+  return acknowledgeMainOwnedSave(durable, bound.savedContent, generation);
 }
 
 let activePendingRecording = null;
@@ -32542,6 +32629,7 @@ const MENU_RUNTIME_ARTIFACT_ENV_PATH = 'MENU_RUNTIME_ARTIFACT_PATH';
 const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
+  'cmd.project.media.insertLocal',
   ...PRODUCT_COMMAND_ID_LIST,
   'cmd.project.bookmarks.managePrompt',
   'cmd.project.bookmarks.create',
@@ -32652,6 +32740,7 @@ const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   moveMenuSectionLater: MENU_CUSTOMIZATION_COMMAND_MOVE_LATER,
 });
 const MENU_COMMAND_HANDLERS = Object.freeze({
+  'cmd.project.media.insertLocal': payload => handleLocalImageInsertion(payload),
   'cmd.project.bookmarks.managePrompt': async () => {
     await readUserBookmarkProjectBinding(currentFilePath);
     userBookmarkCapability('cmd.project.bookmarks.managePrompt');

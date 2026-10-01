@@ -427,10 +427,10 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     controlKind: 'dialogTrigger',
     bindKey: 'insert-image',
     actionAlias: null,
-    commandId: null,
-    implementationState: 'blocked',
+    commandId: 'cmd.project.media.insertLocal',
+    implementationState: 'live',
     uiGroup: 'insert',
-    blockerReason: 'offline-first image asset pipeline not selected',
+    blockerReason: null,
   },
   {
     id: 'toolbar.proofing.spellcheck',

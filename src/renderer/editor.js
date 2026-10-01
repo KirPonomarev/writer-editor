@@ -1,5 +1,7 @@
 import {
   applyTiptapUserBookmarkPublication,
+  applyTiptapLocalImagePublication,
+  getTiptapImageInsertionPosition,
   applyTiptapCharacterStyle,
   applyTiptapParagraphStyle,
   focusTiptapSurface,
@@ -8483,6 +8485,7 @@ function composeEditorSnapshot() {
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
     selectionRange: getSelectionOffsets(),
+    imageInsertionPosition: isTiptapMode ? getTiptapImageInsertionPosition() : null,
     generation: localEditGeneration,
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
     manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending),
@@ -23363,6 +23366,10 @@ window.addEventListener('resize', () => {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.localImageAuthoringPublication === true) {
+      if (payload.expectedGeneration === localEditGeneration) applyTiptapLocalImagePublication(payload, composeDocumentContent());
+      return;
+    }
     if (payload?.userBookmarkAuthoringPublication === true) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
       return;
