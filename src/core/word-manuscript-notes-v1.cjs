@@ -33,7 +33,7 @@ function validateNoteBody(body) {
         continue;
       }
       if (block?.type === 'table') {
-        need(!stack.length && !tableCursor && keys(block, ['type', 'attrs', 'content'])
+        need(!stack.length && keys(block, ['type', 'attrs', 'content'])
           && Array.isArray(block.content) && block.content.length > 0
           && (block.attrs === undefined || keys(block.attrs, ['wordTable'])), 'NOTE_BODY_TABLE');
         for (const row of block.content) {
@@ -42,13 +42,17 @@ function validateNoteBody(body) {
           for (const cell of row.content) need(keys(cell, ['type', 'attrs', 'content'])
             && (cell.attrs === undefined || keys(cell.attrs, ['colspan', 'rowspan', 'colwidth', 'wordCell'])), 'NOTE_BODY_TABLE_CELL');
         }
-        let leaves;
-        try { leaves = tableParagraphs(block, `note-table-${nextTableId++}`); }
-        catch (error) { fail(`NOTE_BODY_TABLE:${error.message}`); }
-        need(paragraphs.length + leaves.length <= LIMITS.paragraphs, 'NOTE_BODY_BUDGET');
-        let index = 0;
-        for (const row of block.content) for (const cell of row.content) visit(cell.content, [], () => leaves[index++].table);
-        need(index === leaves.length, 'NOTE_BODY_TABLE_BINDING');
+        if (tableCursor) {
+          for (const row of block.content) for (const cell of row.content) visit(cell.content, [], tableCursor);
+        } else {
+          let leaves;
+          try { leaves = tableParagraphs(block, `note-table-${nextTableId++}`); }
+          catch (error) { fail(`NOTE_BODY_TABLE:${error.message}`); }
+          need(paragraphs.length + leaves.length <= LIMITS.paragraphs, 'NOTE_BODY_BUDGET');
+          let index = 0;
+          for (const row of block.content) for (const cell of row.content) visit(cell.content, [], () => leaves[index++].table);
+          need(index === leaves.length, 'NOTE_BODY_TABLE_BINDING');
+        }
         continue;
       }
       need(keys(block, ['type', 'attrs', 'content']) && ['bulletList', 'orderedList'].includes(block.type), 'NOTE_BODY_BLOCK');
@@ -127,18 +131,45 @@ function noteSceneSchemaDefaults(value) {
   return { ...value, attrs: { wordPendingRevisions: null, wordUserBookmarks: null, ...(value.attrs || {}) } };
 }
 
+// The same leaf occurrence order used by DOCX export. Empty and repeated
+// paragraphs retain their position; table/container boundaries add no text.
+function sceneParagraphs(doc) {
+  const paragraphs = []; let lists = 0;
+  const append = block => {
+    need(['paragraph', 'heading', 'codeBlock'].includes(block?.type), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    need((block.content || []).every(node => ['text', 'hardBreak', 'image'].includes(node.type)), 'NOTE_SCENE_INLINE_UNSUPPORTED');
+    need(paragraphs.length < 50000, 'NOTE_SCENE_BUDGET');
+    paragraphs.push(deriveVisibleTextFromDocument({ type: 'doc', content: [block] }));
+  };
+  const visit = (block, depth = 0) => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(block?.type)) { append(block); return; }
+    if (block?.type === 'table') {
+      for (const leaf of tableParagraphs(block, 'note-scene')) append(leaf.node);
+      return;
+    }
+    need(['bulletList', 'orderedList'].includes(block?.type) && depth <= 8 && ++lists <= 2048
+      && Array.isArray(block.content) && block.content.length > 0, 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    const start = block.attrs?.start ?? 1;
+    need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647
+      && (block.attrs?.type == null || block.attrs.type === '1'), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    for (const item of block.content) {
+      need(item?.type === 'listItem' && Array.isArray(item.content) && item.content[0]?.type === 'paragraph'
+        && item.content.slice(1).every(child => ['bulletList', 'orderedList'].includes(child?.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+      append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1);
+    }
+  };
+  doc.content.forEach(block => visit(block));
+  documentMedia(doc);
+  return paragraphs;
+}
 function sceneText(content) {
   need(typeof content === 'string' && Buffer.byteLength(content) <= 8 * LIMITS.bytes, 'NOTE_SCENE_BUDGET');
   const parsed = parseObservablePayload(content);
   need(!parsed.issue, 'NOTE_SCENE_INVALID');
   if (!parsed.doc) return parsed.text;
   need(parsed.doc.type === 'doc' && Array.isArray(parsed.doc.content), 'NOTE_SCENE_INVALID');
-  // The initial point grammar uses the same paragraph separators as the editor.
-  // Nested structural coordinates are a separate qualification, never flattened.
-  need(parsed.doc.content.every(block => ['paragraph', 'heading', 'codeBlock'].includes(block.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
-  need(parsed.doc.content.every(block => (block.content || []).every(node => ['text', 'hardBreak', 'image'].includes(node.type))), 'NOTE_SCENE_INLINE_UNSUPPORTED');
-  documentMedia(parsed.doc);
-  return parsed.doc.content.map(block => deriveVisibleTextFromDocument({ type: 'doc', content: [block] })).join('\n');
+  return sceneParagraphs(parsed.doc).join('\n');
 }
 
 function validateManuscriptPayload(value) {
@@ -274,7 +305,7 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
 function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId, importOperationId, beforeText, createdAt = '1970-01-01T00:00:00.000Z' }) {
   need(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= LIMITS.notes, 'NOTE_IMPORT_COUNT');
   const text = sceneText(sceneContent), parsed = parseObservablePayload(sceneContent);
-  const paragraphs = parsed.doc ? parsed.doc.content.map(block => deriveVisibleTextFromDocument({ type: 'doc', content: [block] })) : parsed.text.split('\n');
+  const paragraphs = parsed.doc ? sceneParagraphs(parsed.doc) : parsed.text.split('\n');
   const before = beforeText === null ? { schemaVersion: 1, projectId, notes: [] } : JSON.parse(beforeText);
   validateManuscriptDocument(before, projectId);
   const after = clone(before), ids = new Set(before.notes.map(n => n.id));

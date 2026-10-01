@@ -85,7 +85,7 @@ const {
   readPendingProjectTransactionBinding,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
-const { planCommentAnchorSave } = require('./core/word-comment-anchor-save-v1.cjs');
+const { planCommentAnchorSave, paragraphs: commentSceneParagraphs } = require('./core/word-comment-anchor-save-v1.cjs');
 const manuscriptNoteModel = require('./core/word-manuscript-notes-v1.cjs');
 const userBookmarkModel = require('./core/word-user-bookmarks-v1.cjs');
 const wordMediaReturnModel = require('./core/word-media-return-v1.cjs');
@@ -4356,10 +4356,20 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
   const deriveWordBookmarkNameV1 = typeof options.deriveWordBookmarkNameV1 === 'function'
     ? options.deriveWordBookmarkNameV1
     : deriveWordBookmarkNameV1Cjs;
-  const paragraphs = options.doc || options.formatPlainText === true
-    ? buildFormatIrParagraphs({ sceneId, text: options.doc ? sceneText : String(sceneText || '').replace(/\r\n?/g, '\n'), doc: options.doc })
+  const pendingLedger = pendingTextRevisions.readLedger(options.doc);
+  const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isStructural)
+    ? pendingTextRevisions.exportDocument(pendingLedger) : null;
+  const exportDoc = pendingExport ? pendingExport.doc : options.doc;
+  const exportText = pendingExport ? pendingTextRevisions.paragraphs(exportDoc)
+    .map(paragraph => paragraph.content.map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')).join('\n')
+    .replace(/\r\n?/gu, '\n').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/gu, '')
+    .replace(/\n{3,}/gu, '\n\n').replace(/^\n+|\n+$/gu, '') : sceneText;
+  const paragraphs = exportDoc || options.formatPlainText === true
+    ? buildFormatIrParagraphs({ sceneId, text: exportDoc ? exportText : String(sceneText || '').replace(/\r\n?/g, '\n'), doc: exportDoc })
     : String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
       .map((text) => ({ text, formatIr: null }));
+  const pendingSegments = pendingExport ? pendingExport.paragraphs.map(paragraph => paragraph.segments)
+    : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   return paragraphs.map(({ text, formatIr }, index) => {
     const seed = `${sceneId}\n${index}\n${text}`;
     const seedHash = computeHash(seed);
@@ -4376,6 +4386,13 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
       canonicalTextSha256: `sha256:${computeHash(text)}`,
       canonicalMarksSha256: cryptoPort.sha256Json(formatIr || { marks: [] }),
       ...(formatIr ? { formatIr } : {}),
+      ...(pendingLedger ? {
+        pendingRevisionSegments: pendingSegments[index],
+        pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision
+          : pendingLedger.revisions.find(revision => revision.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(revision)),
+        ...(pendingExport?.paragraphs[index].rowRevision ? { pendingRowRevision: pendingExport.paragraphs[index].rowRevision } : {}),
+        ...(pendingExport?.paragraphs[index].boundaryRevision ? { pendingBoundaryRevision: pendingExport.paragraphs[index].boundaryRevision } : {}),
+      } : {}),
       wordSignals: [
         {
           kind: 'w14ParaIdTextId',
@@ -4993,6 +5010,55 @@ async function revalidateSceneNoteReviewExportSource(source) {
   check();
 }
 
+function scenePendingExportSemantics(ledger, exportTypography) {
+  const exported = pendingTextRevisions.exportDocument(ledger);
+  const groups = new Map(), revisions = new Map();
+  const effectiveMarks = marks => {
+    const result = cloneJsonSafe(marks || []);
+    if (exportTypography?.schemaVersion === 'yalken.review-docx.typography-defaults.v1' && exportTypography.fontSize) {
+      let style = result.find(mark => mark.type === 'textStyle');
+      if (!style) { style = { type: 'textStyle', attrs: {} }; result.push(style); }
+      style.attrs ||= {};
+      if (!style.attrs.fontSize) style.attrs.fontSize = exportTypography.fontSize;
+    }
+    return result.sort((a, b) => a.type.localeCompare(b.type));
+  };
+  const revisionMeaning = revision => {
+    if (!revision) return null;
+    if (!revisions.has(revision.id)) revisions.set(revision.id, revisions.size);
+    if (revision.groupId && !groups.has(revision.groupId)) groups.set(revision.groupId, groups.size);
+    return { occurrence: revisions.get(revision.id), operation: revision.operation, state: revision.state, author: revision.author,
+      date: revision.date, dateUtc: revision.dateUtc, group: revision.groupId ? groups.get(revision.groupId) : null,
+      move: Boolean(revision.moveName), format: revision.format?.kind === 'run'
+        ? { kind: 'run', before: effectiveMarks(revision.format.before), after: effectiveMarks(revision.format.after) }
+        : revision.format || null, boundary: revision.boundary || null,
+      structure: revision.structure || null };
+  };
+  const shape = pendingTextRevisions.normalizeNode(exported.doc);
+  const clearLeaves = node => {
+    // Geometry is checked separately against the signed export map, including
+    // the existing distinction between implicit and explicit Word defaults.
+    if (node.type === 'table' || node.type === 'tableCell' || node.type === 'tableHeader') delete node.attrs;
+    if (node.type === 'paragraph' || node.type === 'heading') node.content = [];
+    else for (const child of node.content || []) clearLeaves(child);
+  };
+  clearLeaves(shape);
+  return { shape, paragraphs: exported.paragraphs.map(paragraph => {
+    const segments = [];
+    for (const segment of paragraph.segments) {
+      const node = pendingTextRevisions.normalizeNode(segment.node), revision = revisionMeaning(segment.revision);
+      if (node.type === 'text') node.marks = effectiveMarks(node.marks);
+      const last = segments.at(-1);
+      if (last?.node.type === 'text' && node.type === 'text'
+        && stableRtkReviewTransportJson(last.node.marks || []) === stableRtkReviewTransportJson(node.marks || [])
+        && stableRtkReviewTransportJson(last.revision) === stableRtkReviewTransportJson(revision)) last.node.text += node.text;
+      else segments.push({ node, revision });
+    }
+    return { segments, paragraph: revisionMeaning(paragraph.paragraphRevision),
+      row: revisionMeaning(paragraph.rowRevision), boundary: revisionMeaning(paragraph.boundaryRevision) };
+  }) };
+}
+
 async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge) {
   const cryptoPort = createRtkReviewTransportCryptoPort();
   const finalArtifactSha256 = `sha256:${computeHash(documentBuffer)}`;
@@ -5005,6 +5071,24 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const notesBinding = validateDocumentNotesReturn({ expected: source.documentNotes,
     returned: parsed.reviewIr?.documentNotes, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest });
   if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const baselineDocument = envelope.parseObservablePayload(source.sceneNoteBinding.raw);
+  if (baselineDocument.issue) throw Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
+  const ledger = pendingTextRevisions.readLedger(baselineDocument.doc);
+  if (ledger?.revisions.some(revision => revision.state === 'pending')
+    && source.documentNotes.notes.length === 0 && source.documentNotes.sourceBindings.length === 0
+    && (parsed.reviewIr.documentNotes?.notes || []).length === 0 && (parsed.reviewIr.commentThreads || []).length === 0) {
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    const returnedDoc = preview?.contentPreview?.pendingRevisionDocument;
+    const returnedLedger = returnedDoc && pendingTextRevisions.readLedger(returnedDoc);
+    const topology = revisionBridge.validateDocxReviewTableTopology(parsed.reviewIr.formattingParagraphs,
+      source.localAuthorityCapsule.exportMap);
+    if (!preview.ok || !returnedLedger || !topology.ok
+      || stableRtkReviewTransportJson(scenePendingExportSemantics(ledger, source.localAuthorityCapsule.exportMap.exportTypography))
+        !== stableRtkReviewTransportJson(scenePendingExportSemantics(returnedLedger, source.localAuthorityCapsule.exportMap.exportTypography)))
+      throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
+    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256 };
+  }
   const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
   const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
     roundId: source.localAuthorityCapsule.roundId, artifactSha256: finalArtifactSha256, baseline: source.documentNotes,
@@ -6891,6 +6975,27 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
         actualTextSha256,
       });
     }
+  }
+  // Authenticated scene returns with native revisions use the reversible
+  // pending ledger. The legacy accepted-text lane below accepts one replacement
+  // only; it must not reject (or flatten) a standalone or multi-block revision.
+  // This is a route restriction, not write authority: pending preparation still
+  // validates exact returned ownership, original text, ledger and annotations.
+  let baselinePending = false;
+  if (baselineFinalText.includes('wordPendingRevisions')) {
+    const envelope = await loadDocumentContentEnvelopeModule();
+    const parsed = envelope.parseObservablePayload(baselineFinalText);
+    if (parsed.issue) return docxReviewReturnIntakeBlocked('PENDING_RETURN_BASELINE_INVALID');
+    baselinePending = !!pendingTextRevisions.readLedger(parsed.doc);
+  }
+  const retainedRaw = localAuthority?.baselineObservableContentBySceneId?.[sceneId];
+  if (typeof retainedRaw === 'string' && retainedRaw !== baselineFinalText)
+    return docxReviewReturnIntakeBlocked('PENDING_RETURN_BASELINE_CONFLICT');
+  if (typeof retainedRaw === 'string' && (baselinePending || parserResult?.reviewIr?.textRevisions?.length)) {
+    return { ok: true, applicable: true, pendingReturnOnly: true,
+      expectedAuthority: cloneJsonSafe(expectedAuthority),
+      scenePathBySceneId: { [sceneId]: scenePath },
+      baselineFinalTextBySceneId: { [sceneId]: baselineFinalText } };
   }
   const paragraphAuthority = buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult, paragraphTexts);
   if (paragraphAuthority.ok === false) return paragraphAuthority;
@@ -9205,6 +9310,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
   const sceneAuthorityFields = sceneAuthority.applicable === true
     ? {
       expectedAuthority: sceneAuthority.expectedAuthority,
+      ...(sceneAuthority.pendingReturnOnly === true ? { pendingReturnOnly: true } : {}),
       scenePathBySceneId: sceneAuthority.scenePathBySceneId,
       baselineFinalTextBySceneId: sceneAuthority.baselineFinalTextBySceneId,
       localBaseline: sceneAuthority.localBaseline,
@@ -10153,6 +10259,10 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     // Never let older accepted-text apply lanes flatten the durable ledger.
     return { ok: true, commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID, requestId,
       activated: false, pendingProductPath };
+  }
+  if (returnIntake.localAuthorityCapsule?.pendingReturnOnly === true) {
+    return makeDocxReviewPreviewSessionTypedError('E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',
+      'PENDING_RETURN_DOCUMENT_REQUIRED');
   }
   const authenticatedFullManuscriptReturn = returnIntake.authenticated === true
     && returnIntake.localAuthorityCapsule?.scope === 'full-manuscript';
@@ -23438,11 +23548,12 @@ async function readCommentAuthoringContext({ pendingRichBlocks = false, userBook
   const parsed = envelope.parseObservablePayload(raw);
   if (parsed.issue) throw new Error('COMMENT_SCENE_INVALID');
   const nodes = parsed.doc && (userBookmarks ? userBookmarkModel.paragraphs(parsed.doc) : pendingRichBlocks
-    ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(parsed.doc)) : parsed.doc.content);
-  const paragraphs = parsed.doc ? nodes.map(node => {
+    ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(parsed.doc))
+      : parsed.doc.content.every(node => ['paragraph', 'heading', 'codeBlock'].includes(node.type)) ? parsed.doc.content : null);
+  const paragraphs = nodes ? nodes.map(node => {
     if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('COMMENT_STORY_UNSUPPORTED');
     return envelope.deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
-  }) : parsed.text.split('\n');
+  }) : parsed.doc ? commentSceneParagraphs(raw).map(block => block.text) : parsed.text.split('\n');
   if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
     || isDirty || autoSaveInProgress) throw new Error('COMMENT_SCENE_CHANGED');
   const module = await loadRtkNonTextReturnModule();

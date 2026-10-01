@@ -48,7 +48,11 @@ test('preload workspace query bridge: editor tree collab and review surface read
   assert.ok(source.includes('result.ok === true'))
   assert.ok(source.includes('result.value === true'))
   assert.ok(source.includes('const REVIEW_SURFACE_QUERY_ID = WORKSPACE_QUERY_IDS.REVIEW_SURFACE;'))
-  assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(REVIEW_SURFACE_QUERY_ID);'))
+  const reviewQuery = source.match(/async function loadReviewSurfaceFromQuery\b[\s\S]*?\n}/)?.[0]
+  assert.ok(reviewQuery, 'review surface query loader exists')
+  assert.match(reviewQuery, /result\s*=\s*await invokeWorkspaceQueryBridge\(REVIEW_SURFACE_QUERY_ID\)/)
+  assert.match(reviewQuery, /catch\s*\{[\s\S]*?if \(!current\(\)\) return null;/)
+  assert.match(reviewQuery, /catch\s*\{[\s\S]*?return setReviewSurfaceState\(\{ commentAuthoring: \{\s*available: false, reason: 'COMMENT_PROJECTION_QUERY_FAILED', threads: \[\]/)
   assert.ok(source.includes('return setReviewSurfaceState(result.reviewSurface);'))
   assert.ok(source.includes('const METADATA_INSPECTOR_QUERY_ID = WORKSPACE_QUERY_IDS.METADATA_INSPECTOR;'))
   assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {'))

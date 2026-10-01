@@ -160,7 +160,7 @@ test('Pending rich paragraph, list and nesting budgets enforce boundary minus on
     else assert.throws(() => model.validateLedger(value), /PENDING_REVISIONS_BUDGET/u);
   }
 });
-test('Actual committed-context reader admits bounded pending leaves while keeping comment and dirty-scene restrictions', async t => {
+test('Actual committed-context reader admits bounded authoring and pending leaves while keeping lifecycle guards', async t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-rich-context-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const file = path.join(root, 'scene.txt'), doc = fixture();
@@ -173,11 +173,13 @@ test('Actual committed-context reader admits bounded pending leaves while keepin
     isAllowedFilePath: value => value === file, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot: root, projectId: 'rich-context' }),
     loadDocumentContentEnvelopeModule: async () => envelope, pendingTextRevisions: model,
+    commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,
     computeHash: value => crypto.createHash('sha256').update(value).digest('hex'),
     loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ state: { threads: [] } }) }),
   });
   vm.runInContext(source, context);
-  await assert.rejects(context.readCommentAuthoringContext(), /COMMENT_STORY_UNSUPPORTED/u);
+  const authoring = await context.readCommentAuthoringContext();
+  assert.deepEqual(Array.from(authoring.paragraphs), model.paragraphs(model.normalizeNode(doc)).map(text));
   const result = await context.readCommentAuthoringContext({ pendingRichBlocks: true });
   assert.deepEqual(Array.from(result.paragraphs), model.paragraphs(model.normalizeNode(doc)).map(text));
   assert.equal(result.sceneId, 'scene.txt'); assert.equal(result.projectId, 'rich-context');

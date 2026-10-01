@@ -21,6 +21,7 @@ import {
   undoTiptap,
 } from './tiptap/index.js';
 import { createManuscriptBodyEditor } from './tiptap/manuscriptNotes.mjs';
+import { tableParagraphs } from '../io/documentTables.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
@@ -1978,14 +1979,35 @@ function wordCommentSelectionIntent() {
   const selection = getSelectionOffsets();
   const parsed = parseObservablePayload(composeDocumentContent());
   if (parsed.issue || selection.start === selection.end) throw new Error('Выделите текст в сцене.');
-  const paragraphs = parsed.doc ? parsed.doc.content.map(node => {
-    if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('Сейчас доступно выделение в обычном абзаце.');
-    return deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
-  }) : parsed.text.split('\n');
+  const paragraphs = [];
+  let lists = 0;
+  const append = node => {
+    if (paragraphs.length >= 10000 || !['paragraph', 'heading', 'codeBlock'].includes(node?.type))
+      throw new Error('Слишком сложная структура сцены.');
+    paragraphs.push(deriveVisibleTextFromDocument({ type: 'doc', content: [node] }));
+  };
+  const visit = (node, depth = 0) => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node?.type)) { append(node); return; }
+    if (node?.type === 'table') { tableParagraphs(node, 'selection').forEach(leaf => append(leaf.node)); return; }
+    if (!['bulletList', 'orderedList'].includes(node?.type) || depth > 8 || ++lists > 2048
+      || !Array.isArray(node.content)) throw new Error('Неподдерживаемая структура выделения.');
+    for (const item of node.content) {
+      if (item?.type !== 'listItem' || item.content?.[0]?.type !== 'paragraph')
+        throw new Error('Неподдерживаемая структура выделения.');
+      append(item.content[0]);
+      for (const child of item.content.slice(1)) visit(child, depth + 1);
+    }
+  };
+  if (parsed.doc) parsed.doc.content.forEach(node => visit(node));
+  else paragraphs.push(...parsed.text.split('\n'));
   let offset = 0;
   for (let index = 0; index < paragraphs.length; index++) {
     const text = paragraphs[index];
     if (selection.start >= offset && selection.end <= offset + text.length) {
+      const edges = new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
+        { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
+      if (!edges.has(selection.start - offset) || !edges.has(selection.end - offset))
+        throw new Error('Выделите целые символы внутри одного абзаца.');
       return { paragraphIndex: index, startUtf16: selection.start - offset, selectedText: text.slice(selection.start - offset, selection.end - offset) };
     }
     offset += text.length + 1;
@@ -7843,7 +7865,11 @@ async function invokeSaveLifecycleSignalBridge(signalId, payload = {}) {
   if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
     return { ok: false, error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_UNAVAILABLE' };
   }
-  return window.electronAPI.invokeSaveLifecycleSignalBridge({ signalId, payload });
+  const result = await window.electronAPI.invokeSaveLifecycleSignalBridge({ signalId, payload });
+  // The SAVED push can precede main's autosave-finally cleanup. Refresh again
+  // only at this completed lifecycle boundary, never by retrying a timer.
+  if (signalId === 'signal.autoSave.request') void refreshVisibleCommentProjection();
+  return result;
 }
 
 function resolveSceneFromImportResult(importResult) {
@@ -18699,9 +18725,24 @@ async function loadStage10ProductStateFromQuery() {
   return stage10ProductState;
 }
 
-async function loadReviewSurfaceFromQuery() {
-  const result = await invokeWorkspaceQueryBridge(REVIEW_SURFACE_QUERY_ID);
-  await loadStage10ProductStateFromQuery();
+let reviewSurfaceQueryGeneration = 0;
+async function loadReviewSurfaceFromQuery({ visibleOnly = false } = {}) {
+  const request = ++reviewSurfaceQueryGeneration;
+  const projectId = currentProjectId, documentId = currentDocumentId, generation = localEditGeneration;
+  const current = () => request === reviewSurfaceQueryGeneration && projectId === currentProjectId
+    && documentId === currentDocumentId && generation === localEditGeneration
+    && (!visibleOnly || currentMode === 'review' && currentRightTab === 'comments' && !localDirty);
+  let result;
+  try { result = await invokeWorkspaceQueryBridge(REVIEW_SURFACE_QUERY_ID); }
+  catch {
+    if (!current()) return null;
+    return setReviewSurfaceState({ commentAuthoring: {
+      available: false, reason: 'COMMENT_PROJECTION_QUERY_FAILED', threads: [],
+    } });
+  }
+  if (!current()) return null;
+  if (!visibleOnly) await loadStage10ProductStateFromQuery();
+  if (!current()) return null;
   if (!result || result.ok === false) {
     return setReviewSurfaceState({});
   }
@@ -18709,6 +18750,15 @@ async function loadReviewSurfaceFromQuery() {
     reviewSurfaceHost.dataset.reviewSurfaceLoadedFrom = REVIEW_SURFACE_QUERY_ID;
   }
   return setReviewSurfaceState(result.reviewSurface);
+}
+
+function refreshVisibleCommentProjection() {
+  // Invalidate even when hidden or dirty: an old scene's in-flight query must
+  // never re-enable comment authoring after a replacement or newer edit.
+  reviewSurfaceQueryGeneration++;
+  if (currentMode !== 'review' || currentRightTab !== 'comments' || localDirty
+    || !currentProjectId || !currentDocumentId) return;
+  return loadReviewSurfaceFromQuery({ visibleOnly: true });
 }
 
 function setReviewSurfaceExactTextApplyTransientState(nextState = null) {
@@ -23490,6 +23540,7 @@ if (window.electronAPI) {
     activeDocumentRevealRequested = shouldRevealActiveDocument && !revealResult.found;
     updateSaveStateText('loaded');
     void refreshManuscriptNoteReferences();
+    void refreshVisibleCommentProjection();
     updatePerfHintText('normal');
     updateInspectorSnapshot();
     refreshMetadataInspector();
@@ -23989,6 +24040,7 @@ if (window.electronAPI) {
     }
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
     if (!localDirty) void refreshManuscriptNoteReferences();
+    void refreshVisibleCommentProjection();
     updateInspectorSnapshot();
   });
 }

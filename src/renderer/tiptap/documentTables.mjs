@@ -46,17 +46,17 @@ function tableDecorations(doc) {
         return false;
       });
     }
-    return false;
+    return true;
   });
   return DecorationSet.create(doc, decorations);
 }
 // Reuse the installed ProseMirror schema and keyboard/selection behavior.
 // This adds document nodes, not a second persistence or command path.
 const names = { table: 'table', table_row: 'tableRow', table_cell: 'tableCell', table_header: 'tableHeader' };
-const specifications = tableNodes({ tableGroup: 'block', cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' });
+const specifications = tableNodes({ tableGroup: 'block', cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList | table)+' });
 const nodes = Object.entries(specifications).map(([key, spec]) => Node.create({
   name: names[key],
-  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' }; },
+  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList | table)+' }; },
   content() { return ['table_cell', 'table_header'].includes(key) ? this.options.cellContent
     : spec.content.replace(/table_row|table_cell|table_header/gu, name => names[name]); },
   group: spec.group,
@@ -96,7 +96,7 @@ export function nextTableCell(state, dispatch) {
 
 export const DocumentTables = Extension.create({
   name: 'documentTables',
-  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' }; },
+  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList | table)+' }; },
   addExtensions() { return nodes.map(node => node.configure({ cellContent: this.options.cellContent })); },
   extendNodeSchema(extension) {
     const key = Object.keys(names).find(key => names[key] === extension.name);

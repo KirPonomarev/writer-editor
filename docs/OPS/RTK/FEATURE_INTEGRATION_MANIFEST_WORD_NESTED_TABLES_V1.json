@@ -1,0 +1,104 @@
+{
+  "featureId": "WORD_NESTED_TABLES_MAC_20261001",
+  "featureVersion": 1,
+  "status": "TARGET_NOT_ACCEPTED",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "db0b4662b3cd5fe3b866a77467609713ba7bf137",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Canonical scene document envelope, comment anchors and manuscript note bodies with recursive table nodes",
+  "derivedData": "Bounded DOCX leaf projections, previews and immutable review candidates",
+  "commandIds": [
+    "cmd.project.importDocxV1",
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.review.applyExactTextChangesBatch",
+    "cmd.project.notes.update",
+    "cmd.project.review.editComment",
+    "cmd.project.review.decidePendingRevision"
+  ],
+  "eventTypes": [
+    "Existing scene-saved and review-applied events; no new event bus"
+  ],
+  "queryIds": [
+    "Existing DOCX content preview and review session queries"
+  ],
+  "productProjectionIds": [
+    "Bounded ordered leaf projection with complete nested table ancestry; existing revision-bound preview and review candidates."
+  ],
+  "capabilityIds": [
+    "Existing import/export, editor save and review Apply capabilities"
+  ],
+  "authorityMap": {
+    "product": "Owner-authorized complete macOS Word plan P3c: canonical recursive document table nodes, notes and annotations remain Core truth.",
+    "command": "Existing DOCX content preview/safe-create, native editor save, authenticated DOCX review and explicit batch Apply through Command Kernel.",
+    "design": "Existing editor table representation; mechanical grammar/decorations extension only, no composition, styles or new surface."
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "sourceRevision",
+    "generation",
+    "tableId",
+    "cell ancestry",
+    "paragraphIndex"
+  ],
+  "revisionPolicy": "Reuse existing exact source and lifecycle guards before publication",
+  "writePath": [
+    "Validated content import -> existing safe-create scene writer; editor transaction -> existing save/autosave; authenticated Word return -> existing atomic scene/notes transaction."
+  ],
+  "readPath": [
+    "Canonical document envelope and bounded shared table IR -> DOCX exporter; bounded namespace-resolved parser -> recursive table projection -> preview/review planner.",
+    "Validated Core leaf projection supplies current comment context; note point hashes and offsets preserve identical empty/repeated leaf order.",
+    "Authenticated scene return may enter the existing pending-ledger route only after exact scene map, raw and table topology checks; old accepted-text restrictions remain.",
+    "Scene-scoped immutable return evidence is rebound against the Main-owned authenticated formatting map before Stage01; unchanged tables are not fabricated structural edits.",
+    "Single-scene export retains validated Core pending revision segments and existing signed block identities; empty-note pending publication requires semantic readback before atomic publication."
+  ],
+  "requiredProductPorts": [
+    "Existing local DOCX reader/exporter, safe-create, scene atomic writer and notes storage."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing document projection and intent-only editor command dispatch; no new port."
+  ],
+  "adapterRequirements": "Existing bounded local DOCX and atomic project adapters; no new adapter",
+  "surfaceManifests": "NOT_APPLICABLE: existing editor/table and note editor; no new visual surface",
+  "slotRequirements": "NOT_APPLICABLE: mechanical table content grammar only",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS SOURCE and PACKAGED proof required; no Windows claim",
+  "accessibilityRequirements": "Existing semantic nested table DOM and keyboard cell traversal; native authoring checks",
+  "fallbacks": [
+    "Reject malformed/deeper-than-four-level/over-budget topology before mutation; nested structural row revisions remain explicit unsupported until independently proven; never flatten."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "persistenceClass": "Existing document and notes atomic persistence; shell/transient state unchanged",
+  "migrations": "Existing node kinds, flat documents unchanged; nested content refused by prior readers without silent flattening",
+  "recovery": "Existing safe-create and atomic Apply recovery; malformed topology produces zero-write refusal",
+  "rollback": "Revert this bounded recursive-table extension; prior flat documents unchanged. Preserve new documents and refuse unsupported nested content on older reader without flattening.",
+  "performanceBudget": "Four table levels, 256 tables, aggregate 65536 slots and 50000 leaf paragraphs per tree, existing list bounds",
+  "securityBoundary": "Untrusted DOCX retains existing ZIP/XML/namespace/carrier bounds; recursive shared validator bounds depth/count/slots and preserves strict properties. No input-provided authority.",
+  "lifecycle": "Existing revision/project/lifecycle/generation revalidation before publication",
+  "negativeBypassChecks": [
+    "Corpus roundtrips, repeated/empty leaves, lists/marks/annotations, wrong ancestry and duplicate/noncontiguous identity.",
+    "Aggregate 256 table, 65536 slot, 50000 paragraph bounds, four table levels, cycle/deep/malformed input and prior-reader refusal.",
+    "Early native SOURCE and PACKAGED import/edit/save/reopen/export/Word return; frozen candidate CI and exact merged-head focused regression.",
+    "Wrong note property namespace, non-neutral ligatures and extra attributes refuse; stale comments and changed cell topology cannot relocate anchors.",
+    "Note publication retains exact leading/trailing empty leaf coordinates; text projection is never reinterpreted as a legacy content envelope.",
+    "Scene candidate reaches actual Stage01 only with matching authenticated topology; forged maps and removed table observations refuse without mutating evidence. Visible comment queries discard switched, dirty, hidden, superseded and failed responses.",
+    "Single-scene pending re-export must preserve actual insertion/deletion metadata, accepted/rejected states and table ownership; signed empty-note baselines never bypass pending semantic readback or admit real note composites."
+  ],
+  "evidenceBindings": [
+    "rtk-word-nested-tables.contract.test.js",
+    "rtk-word-table-cell-lists.contract.test.js",
+    "External exact-candidate SOURCE/PACKAGED native proofs and CI",
+    "rtk-word-pending-rich-blocks.contract.test.js",
+    "rtk-word-c2-rich-scene-reexport.contract.test.js"
+  ],
+  "currentReality": [
+    "db0b4662 shared table model rejects nested tables, importer/exporter flattening assumptions and renderer grammar restrict cells to paragraphs and lists."
+  ]
+}

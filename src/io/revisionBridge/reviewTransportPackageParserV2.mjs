@@ -3759,6 +3759,15 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
               requireNote(token.namespaceUri === W_NS && noteLinks.has(attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships')), 'NOTE_LINK_RELATIONSHIP');
             } else if (['r', 'rPr', 'pPr', 'proofErr', 'bookmarkStart', 'bookmarkEnd'].includes(token.localName)) {
               requireNote(token.namespaceUri === W_NS, 'NOTE_ELEMENT_NAMESPACE');
+            } else if (token.namespaceUri === W14_NS && token.localName === 'ligatures') {
+              // Word emits this explicit neutral reset in native note text.
+              // Admit only the empty run property; other values/effects remain blocked.
+              requireNote(token.path.at(-2) === 'rPr' && ['r', 'pPr'].includes(token.path.at(-3))
+                && !childTokensWithin(scan, token).length
+                && (token.selfClosing || !xml.slice(token.openEnd, token.closeStart).trim())
+                && token.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
+                  || a.namespaceUri === W14_NS && a.localName === 'val' && a.value === 'none')
+                && attr(token, 'val', W14_NS) === 'none', 'NOTE_LIGATURES_UNSUPPORTED');
             } else if (property && token.namespaceUri === W_NS) {
               formatting.push({ kind, elementName: token.localName });
             } else {

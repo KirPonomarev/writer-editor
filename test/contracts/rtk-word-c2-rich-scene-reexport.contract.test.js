@@ -43,7 +43,7 @@ async function harness(raw, changes = {}) {
     buildDocxReviewPacketBufferCore: builder.buildDocxReviewPacketBuffer,
     REVIEW_DOCX_TYPOGRAPHY_DEFAULTS: builder.REVIEW_DOCX_TYPOGRAPHY_DEFAULTS,
     deriveWordBookmarkNameV1Cjs: builder.deriveWordBookmarkNameV1,
-    buildFormatIrParagraphs,
+    buildFormatIrParagraphs, pendingTextRevisions: require('../../src/core/word-pending-text-revisions-v1.cjs'),
     importDocxReviewRoundKey: async ({ roundId }) => { keyImports++; return { keyRef: 'opaque-key', keyIdHex: 'a'.repeat(32), roundIdHex: roundId.slice(6) }; },
     activeReviewDocxExportAuthorityStore: null,
     readDurableDocxReviewReturnAuthorityStore: () => null,

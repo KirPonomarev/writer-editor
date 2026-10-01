@@ -2,7 +2,7 @@
 
 // Pure document data: no DOM, I/O, provider or mutation authority.
 const { EDGES, MAX_DXA, validateTableProperties, validateCellProperties, legacyTableProperties, propertiesEqual, borderXml, shadingXml } = require('./documentTableProperties.js');
-const TABLE_LIMITS = Object.freeze({ rows: 512, columns: 128, slots: 65536, paragraphs: 50000, lists: 2048, listDepth: 8 });
+const TABLE_LIMITS = Object.freeze({ rows: 512, columns: 128, slots: 65536, paragraphs: 50000, lists: 2048, listDepth: 8, tableDepth: 4, tables: 256 });
 const META_KEYS = ['tableId', 'row', 'column', 'rowCount', 'columnCount', 'colspan', 'rowspan', 'header', 'paragraphIndex', 'paragraphCount'];
 const fail = code => { throw new Error(`DOCX_TABLE_${code}`); };
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
@@ -14,7 +14,7 @@ function integer(value, min, max) { return Number.isSafeInteger(value) && value 
 
 // Leaf addresses retain list ownership as well as cell ownership. Empty and
 // repeated paragraphs are real leaves, never inferred from their text.
-function cellParagraphs(content, budget) {
+function cellParagraphs(content, budget, depth) {
   if (!Array.isArray(content) || !content.length) fail('CELL_CONTENT_UNSUPPORTED');
   const result = [];
   const append = (node, listStack) => {
@@ -41,18 +41,23 @@ function cellParagraphs(content, budget) {
   for (const node of content) {
     if (['paragraph', 'heading', 'codeBlock'].includes(node?.type)) append(node, []);
     else if (['bulletList', 'orderedList'].includes(node?.type)) visitList(node, []);
-    else fail('CELL_CONTENT_UNSUPPORTED');
+    else if (node?.type === 'table') {
+      const layout = inspectTable(node, budget, depth + 1);
+      result.push({ table: node, layout });
+    } else fail('CELL_CONTENT_UNSUPPORTED');
   }
+  if (content.some(node => node?.type === 'table') && content.at(-1)?.type !== 'paragraph') fail('CELL_TRAILING_PARAGRAPH_REQUIRED');
   return result;
 }
 
-function inspectTable(table) {
+function inspectTable(table, budget = { paragraphs: 0, lists: 0, tables: 0, slots: 0 }, depth = 0) {
+  if (depth >= TABLE_LIMITS.tableDepth) fail('DEPTH_LIMIT');
+  if (++budget.tables > TABLE_LIMITS.tables) fail('COUNT_LIMIT');
   if (!object(table) || table.type !== 'table' || !Array.isArray(table.content)
     || !integer(table.content.length, 1, TABLE_LIMITS.rows)) fail('SHAPE_INVALID');
   attrsOnly(table, ['wordTable']);
   const rows = table.content.length, grid = Array.from({ length: rows }, () => []), cells = [];
   let width = 0;
-  const budget = { paragraphs: 0, lists: 0 };
   table.content.forEach((row, y) => {
     if (row?.type !== 'tableRow' || !Array.isArray(row.content)) fail('ROW_INVALID');
     attrsOnly(row, []);
@@ -66,9 +71,10 @@ function inspectTable(table) {
         || x + colspan > TABLE_LIMITS.columns || y + rowspan > rows) fail('SPAN_INVALID');
       // Column resizing is not in this transport profile. Never discard it.
       if (node.attrs?.colwidth != null) fail('COLUMN_WIDTH_UNSUPPORTED');
-      const paragraphs = cellParagraphs(node.content, budget);
+      const blocks = cellParagraphs(node.content, budget, depth);
+      const paragraphs = blocks.flatMap(block => block.table ? block.layout.cells.flatMap(c => c.paragraphs) : [block]);
       validateCellProperties(node.attrs?.wordCell);
-      const cell = { node, paragraphs, row: y, column: x, colspan, rowspan, header: node.type === 'tableHeader' };
+      const cell = { node, paragraphs, blocks, row: y, column: x, colspan, rowspan, header: node.type === 'tableHeader' };
       for (let yy = y; yy < y + rowspan; yy++) for (let xx = x; xx < x + colspan; xx++) {
         if (grid[yy][xx]) fail('OVERLAP');
         grid[yy][xx] = cell;
@@ -76,7 +82,7 @@ function inspectTable(table) {
       cells.push(cell); x += colspan; width = Math.max(width, x);
     }
   });
-  if (!width || width * rows > TABLE_LIMITS.slots) fail('GRID_LIMIT');
+  if (!width || (budget.slots += width * rows) > TABLE_LIMITS.slots) fail('GRID_LIMIT');
   for (const row of grid) {
     if (row.length !== width || Array.from({ length: width }, (_, x) => row[x]).some(x => !x)) fail('RAGGED_GRID');
     if (row.some(c => c.header) && row.some(c => !c.header)) fail('MIXED_HEADER_ROW_UNSUPPORTED');
@@ -86,19 +92,27 @@ function inspectTable(table) {
 }
 
 function tableParagraphs(table, tableId) {
-  const layout = inspectTable(table);
-  return layout.cells.flatMap(cell => cell.paragraphs.map(({ node, listStack }, paragraphIndex) => ({
-    node, listStack,
-    table: { tableId, row: cell.row, column: cell.column, rowCount: layout.rows, columnCount: layout.columns,
-      colspan: cell.colspan, rowspan: cell.rowspan, header: cell.header,
-      paragraphIndex, paragraphCount: cell.paragraphs.length,
-      ...(table.attrs?.wordTable ? { wordTable: table.attrs.wordTable } : {}),
-      ...(cell.node.attrs?.wordCell ? { wordCell: cell.node.attrs.wordCell } : {}) },
-  })));
+  const layout = inspectTable(table); let nextId = 0;
+  const project = (node, grid, id) => grid.cells.flatMap(cell => {
+    const leaves = cell.blocks.flatMap(block => block.table
+      ? project(block.table, block.layout, `${tableId}:nested-${++nextId}`).map(leaf => ({ ...leaf, nested: leaf.table }))
+      : [block]);
+    return leaves.map(({ node: paragraph, listStack, nested }, paragraphIndex) => ({
+      node: paragraph, listStack,
+      table: { tableId: id, row: cell.row, column: cell.column, rowCount: grid.rows, columnCount: grid.columns,
+        colspan: cell.colspan, rowspan: cell.rowspan, header: cell.header,
+        paragraphIndex, paragraphCount: leaves.length,
+        ...(node.attrs?.wordTable ? { wordTable: node.attrs.wordTable } : {}),
+        ...(cell.node.attrs?.wordCell ? { wordCell: cell.node.attrs.wordCell } : {}),
+        ...(nested ? { nested } : {}) },
+    }));
+  });
+  return project(table, layout, tableId);
 }
 
-function validateMetadata(m) {
-  if (!object(m) || META_KEYS.some(k => !Object.hasOwn(m, k)) || Object.keys(m).some(k => ![...META_KEYS, 'wordTable', 'wordCell'].includes(k))
+function validateMetadata(m, depth = 0) {
+  if (depth >= TABLE_LIMITS.tableDepth) fail('DEPTH_LIMIT');
+  if (!object(m) || META_KEYS.some(k => !Object.hasOwn(m, k)) || Object.keys(m).some(k => ![...META_KEYS, 'wordTable', 'wordCell', 'nested'].includes(k))
     || !(typeof m.tableId === 'string' && m.tableId.length > 0 && m.tableId.length <= 512)
     || !integer(m.rowCount, 1, TABLE_LIMITS.rows) || !integer(m.columnCount, 1, TABLE_LIMITS.columns)
     || !integer(m.row, 0, m.rowCount - 1) || !integer(m.column, 0, m.columnCount - 1)
@@ -106,57 +120,66 @@ function validateMetadata(m) {
     || !integer(m.paragraphCount, 1, TABLE_LIMITS.paragraphs) || !integer(m.paragraphIndex, 0, m.paragraphCount - 1)
     || typeof m.header !== 'boolean') fail('PROJECTION_INVALID');
   validateTableProperties(m.wordTable, m.columnCount); validateCellProperties(m.wordCell);
+  if (Object.hasOwn(m, 'nested')) validateMetadata(m.nested, depth + 1);
 }
 
 // Group by explicit ownership, never by text (empty/repeated text is legal).
 function groupTableParagraphs(items, metadata = item => item.table) {
-  const groups = [], seen = new Set();
-  for (let i = 0; i < items.length;) {
-    const m = metadata(items[i], i);
-    if (m === undefined || m === null) { groups.push({ item: items[i], index: i++ }); continue; }
-    validateMetadata(m);
-    if (seen.has(m.tableId)) fail('NONCONTIGUOUS_TABLE');
-    seen.add(m.tableId);
-    const table = { type: 'table', content: Array.from({ length: m.rowCount }, () => ({ type: 'tableRow', content: [] })) };
-    if (m.wordTable) table.attrs = { wordTable: m.wordTable };
-    const entries = [];
-    let previousPosition = -1;
-    while (i < items.length && metadata(items[i], i)?.tableId === m.tableId) {
-      const first = metadata(items[i], i); validateMetadata(first);
-      if (first.rowCount !== m.rowCount || first.columnCount !== m.columnCount || first.paragraphIndex !== 0 || !propertiesEqual(first.wordTable, m.wordTable)) fail('PROJECTION_ORDER');
-      const position = first.row * m.columnCount + first.column;
-      if (position <= previousPosition) fail('CELL_ORDER');
-      previousPosition = position;
-      const cell = { type: first.header ? 'tableHeader' : 'tableCell', attrs: { colspan: first.colspan, rowspan: first.rowspan, colwidth: null }, content: [] };
-      if (first.wordCell) cell.attrs.wordCell = first.wordCell;
-      const paragraphs = [];
-      for (let n = 0; n < first.paragraphCount; n++, i++) {
-        const current = metadata(items[i], i); validateMetadata(current);
-        if ([...META_KEYS, 'wordTable', 'wordCell'].some(k => k !== 'paragraphIndex' && !propertiesEqual(current[k], first[k])) || current.paragraphIndex !== n) fail('CELL_PARAGRAPH_BINDING');
-        paragraphs.push({ item: items[i], index: i }); cell.content.push({ type: 'paragraph' });
+  const seen = new Set(); let slots = 0;
+  const group = (rows, address, depth = 0) => {
+    const groups = [];
+    for (let i = 0; i < rows.length;) {
+      const m = address(rows[i]);
+      if (m === undefined || m === null) { groups.push(rows[i++]); continue; }
+      validateMetadata(m, depth);
+      if (seen.has(m.tableId)) fail('NONCONTIGUOUS_TABLE');
+      seen.add(m.tableId);
+      if (seen.size > TABLE_LIMITS.tables) fail('COUNT_LIMIT');
+      if ((slots += m.rowCount * m.columnCount) > TABLE_LIMITS.slots) fail('GRID_LIMIT');
+      const table = { type: 'table', content: Array.from({ length: m.rowCount }, () => ({ type: 'tableRow', content: [] })) };
+      if (m.wordTable) table.attrs = { wordTable: m.wordTable };
+      const entries = []; let previousPosition = -1;
+      while (i < rows.length && address(rows[i])?.tableId === m.tableId) {
+        const first = address(rows[i]); validateMetadata(first, depth);
+        if (first.rowCount !== m.rowCount || first.columnCount !== m.columnCount || first.paragraphIndex !== 0 || !propertiesEqual(first.wordTable, m.wordTable)) fail('PROJECTION_ORDER');
+        const position = first.row * m.columnCount + first.column;
+        if (position <= previousPosition) fail('CELL_ORDER');
+        previousPosition = position;
+        const cell = { type: first.header ? 'tableHeader' : 'tableCell', attrs: { colspan: first.colspan, rowspan: first.rowspan, colwidth: null }, content: [] };
+        if (first.wordCell) cell.attrs.wordCell = first.wordCell;
+        const paragraphs = [];
+        for (let n = 0; n < first.paragraphCount; n++, i++) {
+          const current = address(rows[i]); validateMetadata(current, depth);
+          if ([...META_KEYS, 'wordTable', 'wordCell'].some(k => k !== 'paragraphIndex' && !propertiesEqual(current[k], first[k])) || current.paragraphIndex !== n) fail('CELL_PARAGRAPH_BINDING');
+          paragraphs.push(rows[i]);
+        }
+        const children = group(paragraphs, row => address(row)?.nested, depth + 1);
+        cell.content = children.map(child => child.table || { type: 'paragraph' });
+        table.content[first.row].content.push(cell);
+        entries.push({ meta: first, paragraphs, groups: children, node: cell });
       }
-      table.content[first.row].content.push(cell);
-      entries.push({ meta: first, paragraphs, node: cell });
+      const layout = inspectTable(table);
+      if (layout.columns !== m.columnCount || layout.cells.some((cell, n) => cell.column !== entries[n].meta.column)) fail('GRID_BINDING');
+      groups.push({ table, layout, cells: entries });
     }
-    const layout = inspectTable(table);
-    if (layout.columns !== m.columnCount || layout.cells.some((cell, n) => cell.column !== entries[n].meta.column)) fail('GRID_BINDING');
-    groups.push({ table, layout, cells: entries });
-  }
-  return groups;
+    return groups;
+  };
+  return group(items.map((item, index) => ({ item, index })), row => row && metadata(row.item, row.index));
 }
 
 function compareTableParagraphTopology(actual, expected) {
   const projection = (items, metadata) => {
-    const result = []; let tableOrdinal = 0;
-    for (const group of groupTableParagraphs(items, metadata)) {
-      if (!group.table) continue;
-      for (const cell of group.cells) for (const paragraph of cell.paragraphs) {
-        const { tableId, ...shape } = metadata(paragraph.item, paragraph.index);
-        result.push({ documentParagraphIndex: paragraph.index, tableOrdinal, ...shape });
-      }
-      tableOrdinal++;
-    }
-    return result;
+    groupTableParagraphs(items, metadata);
+    const ordinals = new Map();
+    const shape = value => {
+      const { tableId, nested, ...rest } = value;
+      if (!ordinals.has(tableId)) ordinals.set(tableId, ordinals.size);
+      return { tableOrdinal: ordinals.get(tableId), ...rest, ...(nested ? { nested: shape(nested) } : {}) };
+    };
+    return items.flatMap((item, index) => {
+      const value = metadata(item, index);
+      return value ? [{ documentParagraphIndex: index, ...shape(value) }] : [];
+    });
   };
   try {
     const left = projection(actual, item => item.table), right = projection(expected, item => item.formatIr?.table);
@@ -164,20 +187,23 @@ function compareTableParagraphTopology(actual, expected) {
     // layout hint which Word recomputes after edits. Only the authenticated
     // local map may establish this case. Explicit grids and every other table
     // or cell property remain part of the strict comparison below.
-    for (let i = 0; i < left.length; i++) {
-      const returned = left[i].wordTable;
-      if (right[i] && right[i].wordTable === undefined && returned) {
-        const implicit = legacyTableProperties(left[i].columnCount);
+    const normalize = (returnedShape, expectedShape) => {
+      const returned = returnedShape?.wordTable;
+      if (expectedShape && expectedShape.wordTable === undefined && returned) {
+        const implicit = legacyTableProperties(returnedShape.columnCount);
         if (returned.grid.every(w => Number.isSafeInteger(w) && w > 0)
-          && propertiesEqual({ ...returned, grid: implicit.grid }, implicit)) delete left[i].wordTable;
+          && propertiesEqual({ ...returned, grid: implicit.grid }, implicit)) delete returnedShape.wordTable;
       }
-    }
+      if (returnedShape?.nested) normalize(returnedShape.nested, expectedShape?.nested);
+    };
+    left.forEach((value, i) => normalize(value, right[i]));
     return { ok: propertiesEqual(left, right),
       code: propertiesEqual(left, right) ? 'DOCX_TABLE_TOPOLOGY_EQUAL' : 'DOCX_TABLE_TOPOLOGY_MISMATCH' };
   } catch (error) { return { ok: false, code: 'DOCX_TABLE_TOPOLOGY_INVALID', reason: error.message }; }
 }
 
-function tableGroupXml(group, renderParagraph, renderRowProperties) {
+function tableGroupXml(group, renderParagraph, renderRowProperties, nestedTree = false) {
+  nestedTree ||= group.cells.some(cell => cell.groups.some(child => child.table));
   const byNode = new Map(group.cells.map(cell => [cell.node, cell]));
   const explicit = group.table.attrs?.wordTable;
   const rows = group.layout.grid.map((row, y) => {
@@ -193,7 +219,7 @@ function tableGroupXml(group, renderParagraph, renderRowProperties) {
       const properties = cellWidth + `${cell.colspan > 1 ? `<w:gridSpan w:val="${cell.colspan}"/>` : ''}`
         + (cell.rowspan > 1 ? `<w:vMerge w:val="${continuation ? 'continue' : 'restart'}"/>` : '')
         + (cell.node.attrs?.wordCell ? borderXml(cell.node.attrs.wordCell.borders, 'tcBorders') + shadingXml(cell.node.attrs.wordCell.shading) : '');
-      cells.push(`<w:tc><w:tcPr>${properties}</w:tcPr>${continuation ? '<w:p/>' : entry.paragraphs.map(p => renderParagraph(p.item, p.index)).join('')}</w:tc>`);
+      cells.push(`<w:tc><w:tcPr>${properties}</w:tcPr>${continuation ? '<w:p/>' : entry.groups.map(child => child.table ? tableGroupXml(child, renderParagraph, renderRowProperties, nestedTree) : renderParagraph(child.item, child.index)).join('')}</w:tc>`);
       x += cell.colspan;
     }
     const properties = (row[0].header ? '<w:tblHeader/>' : '')
@@ -203,8 +229,12 @@ function tableGroupXml(group, renderParagraph, renderRowProperties) {
   const props = explicit || legacyTableProperties(group.layout.columns);
   const width = props.widthDxa === null ? (explicit ? '' : '<w:tblW w:w="0" w:type="auto"/>') : `<w:tblW w:w="${props.widthDxa}" w:type="dxa"/>`;
   const layout = props.layout === 'fixed' ? '<w:tblLayout w:type="fixed"/>' : '';
+  // The supported nested-table grammar has zero cell margins. Omitting them
+  // lets Word inject defaults and shrink an inner auto-fit grid on save even
+  // when only a footnote was edited. Keep the actual stored geometry strict.
+  const margins = nestedTree ? '<w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar>' : '';
   const grid = props.grid.map(w => w === null ? '<w:gridCol/>' : `<w:gridCol w:w="${w}"/>`).join('');
-  return `<w:tbl><w:tblPr>${width}${borderXml(props.borders, 'tblBorders')}${shadingXml(props.shading)}${layout}</w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rows.join('')}</w:tbl>`;
+  return `<w:tbl><w:tblPr>${width}${borderXml(props.borders, 'tblBorders')}${shadingXml(props.shading)}${layout}${margins}</w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rows.join('')}</w:tbl>`;
 }
 
 function renderTableParagraphs(items, metadata, renderParagraph, renderRowProperties) {
@@ -216,16 +246,17 @@ function renderTableParagraphs(items, metadata, renderParagraph, renderRowProper
 // It does not tokenize XML or trust names/attributes before namespace validation.
 function createTableReader(paragraphs, onLoss = () => {}) {
   let active = null, row = null, cell = null, nextId = 0, zeroMargins = null;
+  const parents = [];
   const property = value => {
     if (typeof value !== 'string' || value.length > 128 || /[\u0000-\u001f\u007f]/u.test(value)) fail('PROPERTY_INVALID');
     return value;
   };
   const loss = (feature, sourceProperty, transformation, columnIndex) => {
-    const location = { tableIndex: nextId };
+    const location = { tableIndex: active.id };
     if (row) location.rowIndex = active.rows.length - 1;
     if (columnIndex !== undefined) location.columnIndex = columnIndex;
     else if (cell) location.columnIndex = row.cells.slice(0, -1).reduce((sum, item) => sum + item.colspan, 0);
-    const place = `Table ${nextId + 1}${location.rowIndex !== undefined ? ` row ${location.rowIndex + 1}` : ''}${location.columnIndex !== undefined ? ` column ${location.columnIndex + 1}` : ''}`;
+    const place = `Table ${active.id + 1}${location.rowIndex !== undefined ? ` row ${location.rowIndex + 1}` : ''}${location.columnIndex !== undefined ? ` column ${location.columnIndex + 1}` : ''}`;
     onLoss({ feature: `table.${feature}`, location, sourceProperty, transformation,
       message: `${place}: ${sourceProperty}; ${transformation}.` });
   };
@@ -256,7 +287,7 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         } else {
           const node = { type: sourceRow.header ? 'tableHeader' : 'tableCell',
             attrs: { colspan: source.colspan, rowspan: 1, colwidth: null },
-            content: source.paragraphs.map(() => ({ type: 'paragraph' })) };
+            content: source.blocks };
           if (source.properties.shading !== null || Object.keys(source.properties.borders).length || source.properties.widthDxa !== undefined) node.attrs.wordCell = source.properties;
           targetRow.content.push(node);
           origin = { node, properties: source.properties, column: x, span: source.colspan, merge: source.merge === 'restart' };
@@ -268,9 +299,17 @@ function createTableReader(paragraphs, onLoss = () => {}) {
       if (x !== active.gridColumns) fail('RAGGED_GRID');
       previous.splice(0, previous.length, ...current); table.content.push(targetRow);
     }
-    const records = tableParagraphs(table, `table-${nextId++}`);
+    const records = tableParagraphs(table, `table-${active.id}`);
     if (records.length !== sources.length) fail('PARAGRAPH_BINDING');
-    records.forEach((record, i) => { sources[i].table = record.table; });
+    if (!parents.length) {
+      // Keep XML occurrence IDs, including nested table style ownership.
+      // IDs are assigned in first leaf occurrence order by the projection.
+      const seenIds = new Map();
+      const rename = value => { if (!seenIds.has(value.tableId)) seenIds.set(value.tableId, `table-${active.id + seenIds.size}`); value.tableId = seenIds.get(value.tableId); if (value.nested) rename(value.nested); };
+      records.forEach(record => rename(record.table));
+      records.forEach((record, i) => { sources[i].table = record.table; });
+    }
+    return table;
   };
   return {
     tag(name, parent, closing, selfClosing, attribute) {
@@ -299,10 +338,23 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         return;
       }
       if (name === 'w:tbl') {
-        if (closing) { if (!active || row || cell) fail('NESTING_INVALID'); finish(); active = null; }
+        if (closing) {
+          if (!active || row || cell) fail('NESTING_INVALID');
+          const finished = finish();
+          if (parents.length) {
+            ({ active, row, cell, zeroMargins } = parents.pop());
+            cell.blocks.push(finished); cell.cursor = paragraphs.length;
+          } else active = null;
+        }
         else {
-          if (active || parent !== 'w:body' || selfClosing) fail('NESTING_UNSUPPORTED');
-          active = { rows: [], gridColumns: 0, gridSeen: false, seen: new Set(),
+          if (selfClosing || (active ? !cell || parent !== 'w:tc' : parent !== 'w:body')) fail('NESTING_UNSUPPORTED');
+          if (parents.length + 1 >= TABLE_LIMITS.tableDepth && active) fail('DEPTH_LIMIT');
+          if (nextId >= TABLE_LIMITS.tables) fail('COUNT_LIMIT');
+          if (active) {
+            cell.blocks.push(...paragraphs.slice(cell.cursor).map(() => ({ type: 'paragraph' })));
+            parents.push({ active, row, cell, zeroMargins }); row = null; cell = null; zeroMargins = null;
+          }
+          active = { id: nextId++, rows: [], gridColumns: 0, gridSeen: false, seen: new Set(),
             properties: { version: 1, grid: [], layout: null, widthDxa: null, shading: null, borders: {} } };
         }
         return;
@@ -379,15 +431,17 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         if (closing) {
           if (!cell) fail('CELL_INVALID');
           cell.paragraphs = paragraphs.slice(cell.start);
+          cell.blocks.push(...paragraphs.slice(cell.cursor).map(() => ({ type: 'paragraph' })));
+          if (cell.blocks.some(node => node.type === 'table') && cell.blocks.at(-1)?.type !== 'paragraph') fail('CELL_TRAILING_PARAGRAPH_REQUIRED');
           if (!cell.paragraphs.length) fail('EMPTY_CELL_STRUCTURE');
           if (cell.merge === 'continue') {
-            if (cell.paragraphs.length !== 1 || cell.paragraphs[0].text !== '' || cell.paragraphs[0].continuationEmpty === false) fail('MERGE_CONTINUATION_CONTENT');
+            if (cell.blocks.some(node => node.type === 'table') || cell.paragraphs.length !== 1 || cell.paragraphs[0].text !== '' || cell.paragraphs[0].continuationEmpty === false) fail('MERGE_CONTINUATION_CONTENT');
             paragraphs.splice(cell.start); cell.paragraphs = [];
           }
           cell = null;
         } else {
           if (parent !== 'w:tr' || !row || cell || selfClosing || row.cells.length >= TABLE_LIMITS.columns) fail('CELL_INVALID');
-          cell = { start: paragraphs.length, colspan: 1, merge: '', paragraphs: [], seen: new Set(), properties: { version: 1, shading: null, borders: {} } }; row.cells.push(cell);
+          cell = { start: paragraphs.length, cursor: paragraphs.length, blocks: [], colspan: 1, merge: '', paragraphs: [], seen: new Set(), properties: { version: 1, shading: null, borders: {} } }; row.cells.push(cell);
         }
       } else if ((name === 'w:gridSpan' || name === 'w:vMerge') && !closing) {
         if (parent !== 'w:tcPr' || !cell || paragraphs.length !== cell.start) fail('PROPERTY_OWNER_INVALID');
@@ -406,7 +460,7 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         fail('PARAGRAPH_OWNER_INVALID');
       }
     },
-    complete() { if (active || row || cell || zeroMargins) fail('UNCLOSED'); },
+    complete() { if (active || row || cell || zeroMargins || parents.length) fail('UNCLOSED'); },
   };
 }
 
