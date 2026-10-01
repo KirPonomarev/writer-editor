@@ -39,7 +39,7 @@ function compareRuns(before, after, text) {
 
 // Pure analysis of already bounded parser output. Authentication and current
 // source acquisition remain Main's responsibility; this result grants no write.
-export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryParts }) {
+export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryParts, mediaAssets }) {
   try {
     const scenes = exportMap?.scenes, ps = reviewIr?.formattingParagraphs;
     if (!Array.isArray(scenes) || !scenes.length || new Set(scenes.map(s => s.sceneId)).size !== scenes.length
@@ -53,7 +53,7 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
     if (binaryParts === undefined) {
       // Bytes travel once in the immutable bounded worker packet, deduplicated
       // by package part. Revalidate them here; the packet still grants no write.
-      const assets = reviewIr.documentMedia?.assets || [];
+      const assets = mediaAssets || [];
       if (!Array.isArray(assets) || assets.length > media.MEDIA_LIMITS.assets) return reject('media-assets');
       const expected = new Set(placements.map(p => p.partName));
       binaryParts = Object.create(null); let total = 0;

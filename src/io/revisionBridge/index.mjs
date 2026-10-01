@@ -4193,11 +4193,16 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     mediaBytes += bytes.length;
     if (mediaBytes > documentMediaData.MEDIA_LIMITS.totalBytes || mediaCache.size >= documentMediaData.MEDIA_LIMITS.assets) throw Error('DOCUMENT_MEDIA_BYTES');
     const { sha256, width, height, mimeType } = createImageAttrs(bytes);
-    const result = Object.freeze({ sha256, width, height, mimeType, dataBase64: bytes.toString('base64') }); mediaCache.set(name, result); return result;
+    const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
   };
   return {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
+    // Private adapter attachment, never part of semantic ReviewIR. The worker
+    // signs it in the evidence packet and bounds the complete emitted result.
+    privateMediaAssets: [...mediaCache].map(([partName, facts]) => ({
+      partName, ...facts, dataBase64: extracted.binaryParts[partName].toString('base64'),
+    })),
     packagePartsFromZipBytes: {
       status: extracted.status,
       code: extracted.code,

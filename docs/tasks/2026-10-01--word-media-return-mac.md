@@ -4,7 +4,7 @@ TASK_ID: WORD_MEDIA_RETURN_MAC_20261001
 STATUS: TARGET_NOT_ACCEPTED
 BASE_SHA: a14de854369352994478ebeefd3e4b8b9fe3b892
 DESIGN_TOOL_ROUTER: NOT_APPLICABLE_MECHANICAL_EXISTING_REVIEW_CONTRIBUTION
-DIFF_BUDGET: 27 exact declared paths, 2500 authored added lines plus generated renderer bundle and exact-byte governance companions.
+DIFF_BUDGET: 30 exact declared paths, 2500 authored added lines plus generated renderer bundle and exact-byte governance companions.
 
 O: A user adds, deletes, replaces or resizes admitted inline PNG/JPEG in Word and explicitly applies that media delta to the active Yalken scene; save/reopen/reexport retains bytes, placement and dimensions.
 T: Bounded literal package inventory -> private authenticated export map -> Core media-only plan -> existing Kernel and project lease -> atomic scene/manifest/new-resource journal -> revision-bound editor publication.
@@ -36,3 +36,5 @@ Discovery repairs: note-free packets bypass the unrelated notes mutation precond
 Word ordinary insertion emits useLocalDpi. Preserve its boolean through canonical data, PM schema, generic/return intake and reexport with exact extension namespace, URI, nesting and cardinality checks. Microsoft MS-ODRAWXML sections2.3.1.13 and2.3.3.42 define this BLIP property; no arbitrary extension admission. Source: https://officeprotocoldoc.z19.web.core.windows.net/files/MS-ODRAWXML/%5BMS-ODRAWXML%5D-121008.pdf . Both booleans and malformed URI/value/duplicate/nested/unknown-child cases are exercised. Native evidence remains in the external task evidence directory.
 
 Focused evidence at this stage:48 media Core/IO/Main contracts,16 transaction tests,0fail/skip; real filesystem interruptions before scene, before commit and after commit recover to the corresponding complete state. Substituted resource bytes block destructive rollback. Complete RTK, mandatory CI, final stable SOURCE/PACKAGED, history/reopen and merge remain outstanding. No entire-plan acceptance or percentage claim.
+
+Full RTK on fda5214f:2279 tests,2275 passed,4 failed,0 skipped. The failures exposed a Main ZIP reparse and missing raw-scene revalidation in the note-free path; both are corrected without weakening those contracts. The two C2 export failures were a VM harness omission; it now loads the actual current-project authority reader. Preflight passed on cf0589f5 for30paths. Private media bytes travel once in a digest-covered optional packet attachment, outside ReviewIR and renderer projections; final worker output remains bounded and legacy packet digests remain compatible. Tests exercise actual worker output, privacy, tampering, missing/duplicate attachments and output-budget refusal. Candidate still requires full RTK, exact SOURCE/PACKAGED acceptance and delivery.

@@ -9262,7 +9262,7 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
     sources[scene.sceneId] = { raw, parsed };
   }
   const analysis = module.analyzeMediaReturn({ beforeDocs, exportMap: authority.exportMap,
-    reviewIr: parserResult.reviewIr, binaryParts });
+    reviewIr: parserResult.reviewIr, binaryParts, mediaAssets: parserResult.privateMediaAssets });
   if (!analysis.ok || !analysis.changed) return analysis;
   const candidate = { ...analysis.candidate, ...sources[analysis.candidate.sceneId] };
   const scenePath = authority.scenePathBySceneId?.[candidate.sceneId]
@@ -9539,6 +9539,7 @@ function resolveReturnEvidencePacketFromProbe(probe, {
       packageInventoryDigest: `sha256:${computeHash(stableJsonString(parserResult.packageInventory || {}))}`,
       unverifiedCarrierEvidence,
       returnedProjection: { ...returnedProjection, yrtk2Evidence },
+      mediaAttachments: parserResult.privateMediaAssets,
       projectionDigest: docxReviewPreviewSessionDetailString(
         parserResult.supportedSemanticDigest || parserResult.analysisDigest,
       ),
@@ -9621,6 +9622,7 @@ function upgradePacketToVerifiedParserResult(packet, {
     authorityCarrier: verifiedCarrier,
     exactAuthority: verifiedCarrier.exactAuthority,
     reviewIr: baseProjection,
+    privateMediaAssets: packet.mediaAttachments,
     packageInventory: cloneJsonSafe(packet?.packageInventory) || {},
     supportedSemanticDigest: docxReviewPreviewSessionDetailString(packet?.projectionDigest),
     parserProfileDigest: docxReviewPreviewSessionDetailString(packet?.workerBuildDigest),

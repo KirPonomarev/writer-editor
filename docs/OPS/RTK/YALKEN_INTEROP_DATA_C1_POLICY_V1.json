@@ -378,7 +378,8 @@
     "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
     "test/contracts/rtk-word-media-return.contract.test.js",
     "test/contracts/rtk-word-media-return-runtime.contract.test.js",
-    "test/unit/r24-wp201-project-transaction.test.js"
+    "test/unit/r24-wp201-project-transaction.test.js",
+    "src/io/revisionBridge/reviewTransportReturnEvidenceV1.mjs"
   ],
   "protectedFiles": [
     {
@@ -607,7 +608,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "5a0a331e02af29d1f8700b7e3bde2181b151294ca6a68a17dcf3ef4ec3f9e20d"
+        "sha256": "ad1b41c9541976a3290c0a400d20a008923b45987257277832ff2c1d64d718ec"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -643,7 +644,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "6591b15041807faa85d7fe1581ce91c4884025230df0c10c165fed1159d7614b"
+        "sha256": "10b2ad90779dd6107b36df7c0c26027f839381b28c339dfc3a3785eeb7641d0d"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -827,7 +828,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "c71f813bf6342743912aa1712fc0a835c37e8c6c9ee11c510f67b474bd6854a0"
+        "sha256": "197ab9fdfd659852b3f12af684187f1ed055e2afb4c6218383d2e1f130275e8f"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -979,7 +980,7 @@
       },
       {
         "path": "src/main/rtkDocxReturnIntakeWorker.cjs",
-        "sha256": "3cc1766f1f0e6a48fd8bb217a6d5ce36ae9fbca84eeba81e937182797bf8f0e1"
+        "sha256": "35d7868c9d01f0e7501a57dc3184f6ac6a9f5f099c42b3a3575c7fb26afdfcc9"
       },
       {
         "path": "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
@@ -1623,11 +1624,11 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-media-return-mac.md",
-        "sha256": "c0fecd247d5e98bf8a2e8ed1a97466c54855e5e4acc072aadf9d064b2e1ed8ff"
+        "sha256": "4f925d2d685db438a684a4d9be6044cff05e152f118bc5afb5fa209902ffd251"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
-        "sha256": "0075082dadf8e2ffcf7cb94c6bf44b8f090f5d144b819eb88ce0c9850e179adc"
+        "sha256": "96fd47660ce6daa4324486561a2d5ff7d81f384eb3eb49571ea1bc52a9b86b9c"
       },
       {
         "path": "src/core/word-media-return-v1.cjs",
@@ -1635,11 +1636,11 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
-        "sha256": "c27387a446174f948cd9c61e0c4718a497f5bac09de699a26620b92cec1cc76a"
+        "sha256": "d2d7631bd7296c3b2bbdc67b87af1d1633a04a6b1ea1700dea2349135c778922"
       },
       {
         "path": "test/contracts/rtk-word-media-return.contract.test.js",
-        "sha256": "aac1704856e20e3137e387251998314d3188f9134c979ab07e97ae9c4cde15a7"
+        "sha256": "fd4f30b77ad9de6f44ef125213910c98928669ba14847f2ce24b8b87fed3eb91"
       },
       {
         "path": "test/contracts/rtk-word-media-return-runtime.contract.test.js",

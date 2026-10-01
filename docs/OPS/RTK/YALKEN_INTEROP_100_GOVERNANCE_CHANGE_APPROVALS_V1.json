@@ -796,12 +796,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
-      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
+      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
-      "sha256": "c71f813bf6342743912aa1712fc0a835c37e8c6c9ee11c510f67b474bd6854a0"
+      "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
+      "sha256": "197ab9fdfd659852b3f12af684187f1ed055e2afb4c6218383d2e1f130275e8f"
     },
     {
       "approved": true,
@@ -913,7 +913,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1075,12 +1075,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
+      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main/rtkDocxReturnIntakeWorker.cjs",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "3cc1766f1f0e6a48fd8bb217a6d5ce36ae9fbca84eeba81e937182797bf8f0e1"
+      "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
+      "sha256": "35d7868c9d01f0e7501a57dc3184f6ac6a9f5f099c42b3a3575c7fb26afdfcc9"
     },
     {
       "approved": true,
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "50e9b8fe8dd156553ef8125c6de8cb5c13d35bec4d00feac5f7d3bfecd7e2d54",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1581,7 +1581,7 @@
       "filePath": "src/export/docx/docxMedia.js",
       "sha256": "57a86332b457bb05f96b77f2549b54087f486ff7f6b5b02c33d4cf292342f143",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1617,7 +1617,7 @@
       "filePath": "src/io/documentMedia.js",
       "sha256": "5414af1f1e08444b5efe722c7e573de988cbc634c0dada8aafffcf35cb4f9d31",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1633,9 +1633,9 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "6591b15041807faa85d7fe1581ce91c4884025230df0c10c165fed1159d7614b",
+      "sha256": "10b2ad90779dd6107b36df7c0c26027f839381b28c339dfc3a3785eeb7641d0d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1644,16 +1644,16 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "dd121a5c46a6e9d4dd23efa7a5a867bc383070e66a194818fc911c99cea919a4",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "5a0a331e02af29d1f8700b7e3bde2181b151294ca6a68a17dcf3ef4ec3f9e20d",
+      "sha256": "ad1b41c9541976a3290c0a400d20a008923b45987257277832ff2c1d64d718ec",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "634989f530ef093d9f9816b6c37bcb037d5f250aa021c6d0d9058cd810b7bef5",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "d18f7c0e768e0c9b8791e6edd30209d41cae87acaad0c4f88f0c529efa26f129",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1680,7 +1680,7 @@
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
       "sha256": "e2863ac1bec413ba679b747a23086473e5a4eab6d2c7430eb63b988233a37a3d",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1743,7 +1743,7 @@
       "filePath": "test/contracts/rtk-word-media.contract.test.js",
       "sha256": "255d29a5c60451c6e11db467dda97e2871f780d8966857b757883536c792cd19",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "4a0fbfdccad6a04e66aa4fb1e0e47d12cf07bd46d81e00e092a3f8b82373e3b3",
+      "sha256": "6cd9fd5af1a7fa411e73cf7e02c9806a5678f6c30d0c59179e73ac01357a886d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "d49fdd4ef2c81736dd0f216f50f897908eb330f0fcb08afc69534d2e2b007310",
+      "sha256": "07098b083684f752eb76d20f204099d730e33457883f324a4900c98945ce91b9",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "d0733234cce30f48e5ee16570d4d4b924f5d9e4109573be9aae633803493c29f",
+      "sha256": "cfe73fd4354618290d4c44a8cf7dacad0e0a8a255d228ea5bd44f4cec13dccb4",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f55f4a2d4531d35f23480ac985c73211643b2ef78e0fc647d9b167d81a596001",
+      "sha256": "064448eed570b9aa331ce0f7c45e4a6ea26fcc33596274bfffdda88ceab4fd17",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "8dd9cb9166cb5d5836030ae252bf7b1afe78372890975d193276aaee83fa9ea1",
+      "sha256": "38164605ed4f9ac721991da7b772325851d1edf67563e143ceea951cef1079ea",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "8e2e2b650ee9abb94d0d7d8a30a206a8dac75d5c9a656ab196a85d43ef251b2a",
+      "sha256": "dc059796a120523a594895f347e4eb29384f7611804b37cacc0e6849d6c6a7a6",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
@@ -3236,7 +3236,7 @@
     {
       "filePath": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
       "sha256": "4fdfd98076d8cf048412722ba8852da16f99d6ac1078d8911cb4c0a428b36faf",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3334,8 +3334,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-01--word-media-return-mac.md",
-      "sha256": "c0fecd247d5e98bf8a2e8ed1a97466c54855e5e4acc072aadf9d064b2e1ed8ff",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "sha256": "4f925d2d685db438a684a4d9be6044cff05e152f118bc5afb5fa209902ffd251",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3343,8 +3343,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
-      "sha256": "0075082dadf8e2ffcf7cb94c6bf44b8f090f5d144b819eb88ce0c9850e179adc",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "sha256": "96fd47660ce6daa4324486561a2d5ff7d81f384eb3eb49571ea1bc52a9b86b9c",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3353,7 +3353,7 @@
     {
       "filePath": "src/core/word-media-return-v1.cjs",
       "sha256": "f79ca41fa933b50699aa07d570f39ebb832457de3cd46a0cd39111812acbc382",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3361,8 +3361,8 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
-      "sha256": "c27387a446174f948cd9c61e0c4718a497f5bac09de699a26620b92cec1cc76a",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "sha256": "d2d7631bd7296c3b2bbdc67b87af1d1633a04a6b1ea1700dea2349135c778922",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3370,8 +3370,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-media-return.contract.test.js",
-      "sha256": "aac1704856e20e3137e387251998314d3188f9134c979ab07e97ae9c4cde15a7",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "sha256": "fd4f30b77ad9de6f44ef125213910c98928669ba14847f2ce24b8b87fed3eb91",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -3380,7 +3380,7 @@
     {
       "filePath": "test/contracts/rtk-word-media-return-runtime.contract.test.js",
       "sha256": "d5d46534ad11c9e73d29b8142247c7e79d86cf7cac0410fb5c5fb38a55b30e21",
-      "approvedAtUtc": "2026-10-01T03:50:10.370744Z",
+      "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
       "approved": true,
@@ -20731,12 +20731,30 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "c71f813bf6342743912aa1712fc0a835c37e8c6c9ee11c510f67b474bd6854a0"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-28T01:34:35.229915Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
       "rationale": "Owner-authorized macOS Word plan P1d-G manuscript notes: bounded rich-body model, atomic point/import cohort, canonical authoring and native DOCX export. Exact source/test/companion bindings only; no P1d-R acceptance, qualification count or oracle changes.",
       "sha256": "cd0c99388aee71d24835fc566b9419e58f9965669065f7850b7c4d33d43c6ae9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
+      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "src/main/rtkDocxReturnIntakeWorker.cjs",
+      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
+      "sha256": "3cc1766f1f0e6a48fd8bb217a6d5ce36ae9fbca84eeba81e937182797bf8f0e1"
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",

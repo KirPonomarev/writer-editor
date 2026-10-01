@@ -63,6 +63,24 @@ test('media return IO: actual product package admits changed size and rejects no
   const original = buildDocxReviewPacketBuffer(product);
   const map = io.bindUserBookmarkExportTransportPartsV1(product.localAuthorityCapsule.exportMap, original);
   const extracted = io.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: original });
+  const worker = require('../../src/main/rtkDocxReturnIntakeWorker.cjs');
+  const request = { bytes: original, returnedArtifactSha256: crypto.createHash('sha256').update(original).digest('hex'),
+    effectiveBudgets: { maxWorkerOutputBytes: 16 * 1024 * 1024 } };
+  const emitted = await worker.run(request);
+  assert.equal(emitted.ok, true, JSON.stringify(emitted).slice(0, 500));
+  assert.equal(emitted.packet.mediaAttachments.length, 1);
+  assert.equal(emitted.parserResult.privateMediaAssets, undefined);
+  assert.equal(JSON.stringify(emitted.packet.returnedProjection).includes(attrs().dataBase64), false);
+  assert.equal(JSON.stringify(emitted.parserResult).includes(attrs().dataBase64), false);
+  assert.equal(io.verifyReturnEvidencePacketV1(emitted.packet, { expectedArtifactSha256: request.returnedArtifactSha256 }).ok, true);
+  for (const mutate of [p => { p.mediaAttachments[0].dataBase64 = jpeg.gray.toString('base64'); },
+    p => { delete p.mediaAttachments; }, p => { p.mediaAttachments.push(p.mediaAttachments[0]); }]) {
+    const forged = structuredClone(emitted.packet); mutate(forged);
+    assert.equal(io.verifyReturnEvidencePacketV1(forged, { expectedArtifactSha256: request.returnedArtifactSha256 }).ok, false);
+  }
+  const overBudget = await worker.run({ ...request,
+    effectiveBudgets: { maxWorkerOutputBytes: Math.floor(Buffer.byteLength(JSON.stringify(emitted)) / 2) } });
+  assert.equal(overBudget.ok, false); assert.equal(overBudget.code, 'RTK_BUDGET_EXCEEDED');
   for (const mode of ['same', 'resize', 'text', 'bold', 'owner', 'foreign-part', 'bad-bytes', 'missing-assets', 'duplicate-assets', 'forged-assets']) {
     const parts = { ...extracted.parts, ...extracted.binaryParts };
     let xml = parts['word/document.xml'];
@@ -78,11 +96,11 @@ test('media return IO: actual product package admits changed size and rejects no
     assert.equal(parsed.ok, true, mode + ': ' + JSON.stringify(parsed).slice(0, 500));
     const binaryParts = { ...extracted.binaryParts };
     if (mode === 'bad-bytes') binaryParts[Object.keys(binaryParts)[0]] = jpeg.gray;
-    if (mode === 'missing-assets') delete parsed.reviewIr.documentMedia.assets;
-    if (mode === 'duplicate-assets') parsed.reviewIr.documentMedia.assets.push(parsed.reviewIr.documentMedia.assets[0]);
-    if (mode === 'forged-assets') parsed.reviewIr.documentMedia.assets[0].dataBase64 = jpeg.gray.toString('base64');
+    if (mode === 'missing-assets') delete parsed.privateMediaAssets;
+    if (mode === 'duplicate-assets') parsed.privateMediaAssets.push(parsed.privateMediaAssets[0]);
+    if (mode === 'forged-assets') parsed.privateMediaAssets[0].dataBase64 = jpeg.gray.toString('base64');
     const packetProjection = JSON.parse(JSON.stringify(parsed.reviewIr));
-    const result = analyzeMediaReturn({ beforeDocs: { 'a.txt': beforeDoc }, exportMap: map, reviewIr: packetProjection,
+    const result = analyzeMediaReturn({ beforeDocs: { 'a.txt': beforeDoc }, exportMap: map, reviewIr: packetProjection, mediaAssets: JSON.parse(JSON.stringify(parsed.privateMediaAssets || [])),
       ...(mode === 'bad-bytes' ? { binaryParts } : {}) });
     assert.equal(result.ok, ['same', 'resize'].includes(mode), mode + ': ' + JSON.stringify(result).slice(0, 700));
     if (result.ok) {

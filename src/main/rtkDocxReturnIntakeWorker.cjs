@@ -163,7 +163,7 @@ function buildPacketFromParserResult(message, parserResult, port) {
   const artifactSha256 = String(message?.returnedArtifactSha256 || '');
   // resourceReceipt: the actual/limit budget fact observed by the parser.
   const resourceReceipt = {
-    actualWorkerOutputBytes: port.byteLength(parserResult),
+    actualWorkerOutputBytes: port.byteLength(stableJson(parserResult)),
     maxWorkerOutputBytes: Number.isSafeInteger(effectiveBudgets.maxWorkerOutputBytes)
       ? effectiveBudgets.maxWorkerOutputBytes
       : null,
@@ -207,6 +207,7 @@ function buildPacketFromParserResult(message, parserResult, port) {
     // yrtk2Evidence rides inside the projection provenance so main can verify
     // the carrier from the packet (V3: YRTK2 from packet, not main re-extract).
     returnedProjection: { ...returnedProjection, yrtk2Evidence },
+    mediaAttachments: parserResult.privateMediaAssets,
     projectionDigest,
     diagnostics,
     workerBuildDigest,
@@ -255,12 +256,13 @@ async function run(message = {}) {
     );
   }
   const packet = buildPacketFromParserResult(message, parserResult, port);
+  const { privateMediaAssets, ...publicParserResult } = parserResult;
   return enforceWorkerOutputBudget({
     ok: true,
     packet,
     // Compat: keep the legacy parserResult alongside the packet so consumers
     // can migrate incrementally. The production chain MUST consume the packet.
-    parserResult,
+    parserResult: publicParserResult,
   }, message);
 }
 

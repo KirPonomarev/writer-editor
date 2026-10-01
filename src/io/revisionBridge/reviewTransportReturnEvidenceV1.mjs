@@ -99,6 +99,9 @@ export function packetDigestFor(unsignedBody) {
       canonical[field] = unsignedBody[field];
     }
   }
+  if (Object.prototype.hasOwnProperty.call(unsignedBody || {}, 'mediaAttachments')) {
+    canonical.mediaAttachments = unsignedBody.mediaAttachments;
+  }
   return `sha256:${sha256Hex(stableJson(canonical))}`;
 }
 
@@ -157,6 +160,12 @@ export function buildReturnEvidencePacketV1(input = {}) {
     diagnostics,
     workerBuildDigest,
   };
+  // Optional private byte carrier. Legacy packets retain their exact digest;
+  // bytes never enter returnedProjection or create mutation authority.
+  if (input.mediaAttachments !== undefined) {
+    if (!Array.isArray(input.mediaAttachments)) throw new TypeError('mediaAttachments must be an array');
+    unsignedBody.mediaAttachments = input.mediaAttachments;
+  }
   const packetDigest = packetDigestFor(unsignedBody);
   return Object.freeze({
     schemaVersion: RTK_RETURN_EVIDENCE_V1_SCHEMA,
@@ -215,6 +224,9 @@ export function verifyReturnEvidencePacketV1(packet = {}, options = {}) {
     if (Object.prototype.hasOwnProperty.call(packet, field)) {
       unsignedBody[field] = packet[field];
     }
+  }
+  if (Object.prototype.hasOwnProperty.call(packet, 'mediaAttachments')) {
+    unsignedBody.mediaAttachments = packet.mediaAttachments;
   }
   const expectedPacketDigest = packetDigestFor(unsignedBody);
   const actualPacketDigest = normalizeString(packet.packetDigest);
