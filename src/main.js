@@ -9304,12 +9304,35 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     } } };
 }
 
-async function prepareCleanMediaReturnCapsule(authority, parserResult, context, binaryParts) {
+async function prepareCleanMediaReturnCapsule(authority, parserResult, context, binaryParts, docxBytes) {
   const comments = parserResult.reviewIr?.commentThreads || [];
-  if ((authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
-    || authority.documentNotes?.notes?.length || authority.documentNotes?.sourceBindings?.length
-    || parserResult.reviewIr?.documentNotes?.notes?.length) {
+  if (authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0) {
     return { ok: false, code: 'RTK_MEDIA_ANNOTATION_COMPOSITE_UNSUPPORTED' };
+  }
+  let noteSourceGuard = null;
+  if (authority.documentNotes?.notes?.length || authority.documentNotes?.sourceBindings?.length
+    || parserResult.reviewIr?.documentNotes?.notes?.length) {
+    try {
+      if (authority.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+        || authority.projectRoot !== context.projectRoot || authority.documentNotes.projectId !== context.projectId
+        || !Buffer.isBuffer(docxBytes)
+        || parserResult.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))) {
+        throw Error('RTK_MEDIA_NOTES_PROOF_REQUIRED');
+      }
+      const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
+      if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw Error('RTK_MEDIA_NOTES_PROJECT_MISMATCH');
+      const saved = await readProjectNotesDocument(notesContext);
+      if (!saved.ok || typeof saved.current?.sourceText !== 'string') throw Error('RTK_MEDIA_NOTES_SOURCE_REQUIRED');
+      const bridge = await loadRevisionBridgeModule();
+      const delta = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
+        document: saved.current.document, projectId: context.projectId, roundId: authority.roundId,
+        artifactSha256: computeHash(docxBytes), baseline: authority.documentNotes, exportMap: authority.exportMap,
+        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes),
+        returnedParagraphs: parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString(),
+      });
+      if (delta.unchanged !== true || delta.changes?.length) throw Error('RTK_MEDIA_NOTES_CHANGED');
+      noteSourceGuard = { projectId: context.projectId, projectRoot: context.projectRoot, sourceText: saved.current.sourceText };
+    } catch (error) { return { ok: false, code: 'RTK_MEDIA_ANNOTATION_COMPOSITE_UNSUPPORTED', detail: error.code || error.message }; }
   }
   const envelope = await loadDocumentContentEnvelopeModule();
   const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportMediaReturnV1.mjs')).href);
@@ -9340,7 +9363,7 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
     sourceAuthority: 'authenticated-media-return-v1', rtkProductPath: 'mediaReturn', paragraphIndex: 0,
     documentParagraphIndex: authority.exportMap.scenes.find(scene => scene.sceneId === candidate.sceneId).blocks[0].documentParagraphIndex };
   const { projectId, baselineHash } = context;
-  return { ok: true, changed: true, fields: { mediaReturnCandidate: { ...candidate, changeId },
+  return { ok: true, changed: true, fields: { mediaReturnCandidate: { ...candidate, changeId, noteSourceGuard },
     cleanLinkLabel: { ok: true, change }, writerContext: {
       projectRoot: authority.projectRoot, scenePath, scenePathBySceneId: { [candidate.sceneId]: scenePath },
       projectSnapshot: { projectId, baselineHash, scenes: [{ sceneId: candidate.sceneId, text: candidate.raw }] },
@@ -9924,7 +9947,7 @@ async function inspectDocxReviewReturnIntakeV2({
   let mediaBinding = revisionBridge.bindDocxReviewMedia(verifiedParserResult.reviewIr, localAuthority.exportMap);
   let mediaReturnFields = null;
   if (!mediaBinding.ok) {
-    const media = await prepareCleanMediaReturnCapsule(localAuthority, verifiedParserResult, context);
+    const media = await prepareCleanMediaReturnCapsule(localAuthority, verifiedParserResult, context, undefined, docxBytes);
     if (!media.ok || !media.changed) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_MEDIA_MISMATCH', {
       reason: media.code || mediaBinding.code, detail: media.detail });
     mediaReturnFields = media.fields;
@@ -24678,6 +24701,15 @@ async function applyPrivateUserBookmarksReturn(input) {
   plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
   const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
+    if (isMedia && candidate.noteSourceGuard) {
+      const guard = candidate.noteSourceGuard;
+      if (guard.projectId !== input.projectSnapshot?.projectId || guard.projectRoot !== input.projectRoot
+        || typeof guard.sourceText !== 'string') throw Error('RTK_MEDIA_NOTES_SOURCE_STALE');
+      const notesContext = await getProjectNotesContext({ projectId: guard.projectId }, { readOnlyActive: true });
+      if (!notesContext.ok || notesContext.projectRoot !== guard.projectRoot) throw Error('RTK_MEDIA_NOTES_SOURCE_STALE');
+      const saved = await readProjectNotesDocument(notesContext);
+      if (!saved.ok || saved.current?.sourceText !== guard.sourceText) throw Error('RTK_MEDIA_NOTES_SOURCE_STALE');
+    }
     const fresh = await revalidateCleanLinkLabelApplyInput(input);
     const currentRaw = fsSync.readFileSync(scenePath, 'utf8');
     userBookmarkCapability('cmd.project.review.applyExactTextChangesBatch');

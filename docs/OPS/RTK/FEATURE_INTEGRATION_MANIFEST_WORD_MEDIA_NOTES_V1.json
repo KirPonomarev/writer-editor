@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_MEDIA_NOTES_MAC_20261001",
+  "objective": "Return main-text image edits from Word while proving manuscript notes unchanged and retaining stale-state protection on macOS.",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "cc7a5f812c3e648ad56354e3b3dc39fdf3b5af70",
+  "scopeIn": [
+    "src/main.js",
+    "test/contracts/rtk-word-media-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-media-notes-return.contract.test.js",
+    "docs/tasks/2026-10-01--word-media-notes-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_NOTES_V1.json",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs"
+  ],
+  "scopeOut": [
+    "src/renderer",
+    "package.json",
+    "package-lock.json",
+    ".github/workflows"
+  ],
+  "productAuthority": "Owner authorized complete macOS Word interoperability including local image authoring.",
+  "commandAuthority": "Existing authenticated DOCX review intake and explicit cmd.project.review.applyExactTextChangesBatch through Command Kernel.",
+  "designAuthority": "NOT_APPLICABLE_BACKEND: existing review surface and Apply command remain unchanged.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Existing Main commitWriterProjectSnapshot -> atomic project transaction; media-only delta, notes remain byte-preserved."
+  ],
+  "readPaths": [
+    "Authenticated local export authority, exact returned DOCX bytes, rich note parser, current read-only notes document and scene snapshot."
+  ],
+  "productPorts": [
+    "Existing return parser, notes storage read port, Command Kernel and atomic project transaction."
+  ],
+  "designOsPorts": [
+    "NOT_APPLICABLE_BACKEND: no interface change."
+  ],
+  "readProjections": [
+    "Existing immutable Main-owned return candidate with note-state digest guard."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Verify authenticated export notes, returned rich body/kind/reference and private note rules using existing note delta planner; require unchanged result.",
+    "Revalidate current note source, scene revision, lifecycle, project, generation, capability and candidate before atomic publication."
+  ],
+  "capabilityRevalidation": "Existing Command Kernel dispatch and beforeScenePublish checks; no new capability.",
+  "fallbacks": [
+    "Changed, deleted, missing, malformed or stale notes refuse the media-only candidate; retain existing explicit note mutation lane."
+  ],
+  "recoveryAndNegativeChecks": [
+    "Real exporter/parser images plus ordinary/endnotes including rich note images; changed/missing/reanchored notes rejected.",
+    "Actual Main intake and Apply stale-note state, pending annotation draft, wrong project and recovery checks.",
+    "Native early SOURCE/PACKAGED scenario then frozen candidate; focused regression and mandatory full exact-head CI; relevant merged-head checks."
+  ],
+  "securityAndInputBoundary": "Returned bytes remain untrusted until existing carrier and local binding verification; rich notes confer no write authority.",
+  "performanceAndAccessibility": "No new UI; bounded existing parser and notes planner; no new dependency or worker.",
+  "currentReality": [
+    "cc7a5f81 delivered local image authoring; media analyzer supports notes in parser output but Main intake unconditionally rejects them.",
+    "Read-only four-case probe: both note kinds with and without rich image bodies preserve main media analysis."
+  ],
+  "targetOnly": [
+    "Composite media with unchanged notes is TARGET until observed and delivered; full Mac plan remains incomplete."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert bounded media-note admission and guards; existing stored assets and note format unchanged.",
+  "status": "TARGET_NOT_ACCEPTED"
+}
