@@ -716,7 +716,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "d774238eaf13f5710f2324a23471c81485309999f2a604a8e2e692fa0d404d5d"
+        "sha256": "dc8f704ddc8f28d829997e92f05ab55f1d57d52f77c873e1b9b2c5b9abdbe443"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1576,7 +1576,7 @@
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "9b34cfc5bdbbb5d815e97f11fd889a5f3db9f2fcab8279ba3c515bdfdb10789b"
+        "sha256": "a3f4e2132f6165724a0e18c525ccf8c7fcf4134ac6a7c84be877e56de1299842"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
@@ -1600,7 +1600,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-        "sha256": "03b9ba109fbac0901399450803ceee77465d71707973f569466aec0c2a70ce38"
+        "sha256": "f67b1ccb74c79f8354b487cd560aa4dff4ae9f6d7982242b14bf3702b3d19e0a"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",

@@ -625,6 +625,32 @@ test('lineage repair matches PM fragmented Undo bytes by merging only complete e
 
 // Literal native XML replay through the real local-file sanitizer and planner.
 // This portable contract does not replace SOURCE/PACKAGED native qualification.
+test('body-level bookmark starts own the adjacent paragraph with half-open XML boundaries', async () => {
+  const { extractUserBookmarkInventoryV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const hash = s => require('node:crypto').createHash('sha256').update(s).digest('hex');
+  const cryptoPort = { sha256Text: hash, sha256Json: v => 'sha256:' + hash(JSON.stringify(v)), byteLength: Buffer.byteLength };
+  const wrap = body => `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:x="urn:foreign"><w:body>${body}</w:body></w:document>`;
+  const start = '<w:bookmarkStart w:id="4" w:name="FinalRangeCopy"/>';
+  const paragraph = '<w:p><w:r><w:t>Alpha LABEL updated</w:t></w:r><w:bookmarkEnd w:id="4"/></w:p>';
+  const tail = '<w:p><w:r><w:t>Tail</w:t></w:r></w:p>';
+  for (const gap of ['', '\n', ' ']) {
+    const inventory = extractUserBookmarkInventoryV1(wrap(start + gap + paragraph + tail), { cryptoPort });
+    assert.deepEqual(inventory.bookmarks.map(({ name, start, end }) => ({ name, start, end })),
+      [{ name: 'FinalRangeCopy', start: ep(0), end: ep(19) }]);
+  }
+  const stacked = '<w:bookmarkStart w:id="2" w:name="Original"/><w:bookmarkStart w:id="3" w:name="YRTK_test"/>' + start
+    + paragraph.replace('<w:bookmarkEnd w:id="4"/>', '<w:bookmarkEnd w:id="2"/><w:bookmarkEnd w:id="3"/><w:bookmarkEnd w:id="4"/>');
+  const inventory = extractUserBookmarkInventoryV1(wrap(stacked + tail), { cryptoPort });
+  assert.deepEqual(inventory.bookmarks.map(({ start, end }) => ({ start, end })), [
+    { start: ep(0), end: ep(19) }, { start: ep(0), end: ep(19) },
+  ]);
+  for (const barrier of ['<w:altChunk/>', '<x:foreign/>', '<w:sectPr/>']) {
+    for (const gap of ['', '\n']) assert.throws(() => extractUserBookmarkInventoryV1(
+      wrap(start + gap + barrier + gap + paragraph + tail), { cryptoPort }), /DOCX_USER_BOOKMARK_ENDPOINT_OWNER/);
+  }
+  assert.throws(() => extractUserBookmarkInventoryV1(wrap(start + '<x:bookmarkStart/>' + paragraph), { cryptoPort }),
+    /DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE/);
+});
 async function bookmarkLocalFilePipeline(bytes, bridge) {
   const local = require('../../src/utils/docxImportLocalFilePreview.js');
   return local.createDocxImportLocalFilePreview({requestId:'bookmark-local-file'}, {

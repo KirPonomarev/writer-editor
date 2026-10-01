@@ -2379,9 +2379,10 @@ export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
       return { paragraphIndex:index, offsetUtf16:semanticAtomsToText(atoms).replaceAll('\r','\n').length, edge:'text' };
     }
     if (token.path?.length !== 3 || token.path[1] !== 'body') throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
-    const following = records.findIndex(record => record.token.openStart > token.closeEnd);
+    // XML spans are half-open: Word may put the next tag exactly at closeEnd.
+    const following = records.findIndex(record => record.token.openStart >= token.closeEnd);
     if (token.localName === 'bookmarkStart' && following >= 0 && records[following].token.path?.length === 3) {
-      const between = scan.tokens.filter(t => t.path?.length === 3 && t.openStart > token.closeEnd && t.closeEnd < records[following].token.openStart);
+      const between = scan.tokens.filter(t => t.path?.length === 3 && t.openStart >= token.closeEnd && t.closeEnd <= records[following].token.openStart);
       if (between.some(t => !['bookmarkStart','bookmarkEnd'].includes(t.localName) || t.namespaceUri !== W_NS)) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
       return { paragraphIndex:following, offsetUtf16:0, edge:'text' };
     }
