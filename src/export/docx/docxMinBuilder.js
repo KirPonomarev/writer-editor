@@ -304,7 +304,6 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   const media = buildMediaPackage(snapshot.doc);
-  const notes = notePackageParts(deps.documentNotes);
   // Historical text-only exports need no new domain dependency. Present
   // registry bytes are validated before any payload receives export meaning.
   const bookmarkCore=snapshot.doc?.attrs?.wordUserBookmarks!=null?require('../../core/word-user-bookmarks-v1.cjs'):null;
@@ -426,6 +425,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
     }, row => buildPendingRowPropertiesXml(row.map(p => pendingExport?.paragraphs[p.index].rowRevision), revisionCounter))
     : '<w:p/>';
 
+  const notes = notePackageParts(deps.documentNotes, { firstNumId: Math.max(0, ...numberings.keys()) + 1 });
+  for (const numbering of notes.numberings) numberings.set(numbering.numId, numbering);
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>

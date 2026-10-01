@@ -110,7 +110,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     return { noteId, kind, selectionOrdinal, scope: note.scope, attachment: clone(note.attachment || {}),
       sceneId: block.sceneId, blockId: block.blockId, documentParagraphIndex: block.documentParagraphIndex,
       offsetUtf16, blockTextSha256: sha(block.text),
-      paragraphs: richBody ? richBody.content.map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : [note.title, note.body],
+      paragraphs: richBody ? manuscriptModel.validateNoteBody(richBody).paragraphs.map(({ paragraph }) => (paragraph.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : [note.title, note.body],
       ...(richBody ? { richBody, ...(options.editableReturn === true ? { transportIdentity: `_YALKEN_NOTE_${sha(projectId + "\n" + noteId).slice(0, 24)}` } : {}) } : {}) };
   }).sort((a, b) => a.documentParagraphIndex - b.documentParagraphIndex || a.offsetUtf16 - b.offsetUtf16
     || a.selectionOrdinal - b.selectionOrdinal);
@@ -136,10 +136,12 @@ function noteMarkersForBlock(projection, block) {
   return markers;
 }
 
-function notePackageParts(projection) {
-  if (!projection) return { entries: [], contentTypes: '', relationships: '' };
+function notePackageParts(projection, { firstNumId = 1 } = {}) {
+  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [] };
   demand(projection.schemaVersion === DOCUMENT_NOTES_SCHEMA, 'DOCX_NOTES_EXPORT_SCHEMA_INVALID');
-  const entries = [], types = [], relationships = [];
+  const entries = [], types = [], relationships = [], numberings = [];
+  demand(Number.isSafeInteger(firstNumId) && firstNumId > 0 && firstNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');
+  let nextNumId = firstNumId;
   for (const kind of ['footnote', 'endnote']) {
     const bindings = projection.sourceBindings.filter(binding => binding.kind === kind);
     if (!bindings.length) continue;
@@ -147,8 +149,18 @@ function notePackageParts(projection) {
     const links = new Map();
     const separator = `<w:${kind} w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:${kind}>`
       + `<w:${kind} w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:${kind}>`;
-    const body = bindings.map(binding => `<w:${kind} w:id="${binding.nativeId}">${binding.paragraphs.map((value, index) => {
-      const paragraph = binding.richBody?.content[index];
+    const body = bindings.map(binding => {
+      const rows = binding.richBody ? manuscriptModel.validateNoteBody(binding.richBody).paragraphs : [];
+      const ids = new Map();
+      for (const { list } of rows) {
+        if (!list || ids.has(list.numId)) continue;
+        demand(nextNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');
+        ids.set(list.numId, nextNumId);
+        numberings.push({ ...list, numId: nextNumId++ });
+      }
+      return `<w:${kind} w:id="${binding.nativeId}">${binding.paragraphs.map((value, index) => {
+      const { paragraph, list } = rows[index] || {};
+      const numPr = list ? `<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${ids.get(list.numId)}"/></w:numPr>` : '';
       const runs = paragraph ? (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return '<w:r><w:br/></w:r>';
         const xml = require('./docxMinBuilder.js').buildDocxMarkedRunXml(node, true, true);
@@ -158,15 +170,15 @@ function notePackageParts(projection) {
         return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
       }).join('') : `<w:r>${buildDocxRunContentXml(value)}</w:r>`;
       const align = paragraph?.attrs?.textAlign;
-      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
-    }).join('')}</w:${kind}>`).join('');
+      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${numPr}${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
+    }).join('')}</w:${kind}>`; }).join('');
     const name = `${kind}s.xml`;
     entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });
     if (links.size) entries.push({ name: `word/_rels/${name}.rels`, data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href, id]) => `<Relationship Id="${id}" Type="${REL_NS}hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('')}</Relationships>` });
     types.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>`);
     relationships.push(`<Relationship Id="rIdYalken${style}s" Type="${REL_NS}${kind}s" Target="${name}"/>`);
   }
-  return { entries, contentTypes: types.join(''), relationships: relationships.join('') };
+  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings };
 }
 
 function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) {

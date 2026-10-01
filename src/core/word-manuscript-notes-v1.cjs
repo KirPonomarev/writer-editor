@@ -20,7 +20,34 @@ function validateNoteBody(body) {
   need(keys(body, ['type', 'content']) && body.type === 'doc' && Array.isArray(body.content)
     && body.content.length > 0 && body.content.length <= LIMITS.paragraphs, 'NOTE_BODY_STRUCTURE');
   let size = 0;
-  const text = body.content.map(block => {
+  const paragraphs = [];
+  let nextListId = 1;
+  const visit = (blocks, stack = []) => {
+    for (const block of blocks) {
+      if (block?.type === 'paragraph') {
+        need(paragraphs.length < LIMITS.paragraphs, 'NOTE_BODY_BUDGET');
+        paragraphs.push({ paragraph: block, list: stack.at(-1) || null });
+        continue;
+      }
+      need(keys(block, ['type', 'attrs', 'content']) && ['bulletList', 'orderedList'].includes(block.type), 'NOTE_BODY_BLOCK');
+      need(stack.length <= 8 && Array.isArray(block.content) && block.content.length > 0
+        && block.content.length <= LIMITS.paragraphs, 'NOTE_BODY_LIST_STRUCTURE');
+      need(block.attrs === undefined || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_BODY_LIST_ATTRIBUTES');
+      need(block.attrs?.type == null || block.attrs.type === '1', 'NOTE_BODY_LIST_FORMAT');
+      const start = block.type === 'orderedList' ? (block.attrs?.start ?? 1) : 1;
+      need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647, 'NOTE_BODY_LIST_START');
+      const list = { numId: nextListId++, level: stack.length, kind: block.type, start };
+      for (const item of block.content) {
+        need(keys(item, ['type', 'content']) && item.type === 'listItem' && Array.isArray(item.content)
+          && item.content.length > 0 && item.content.length <= LIMITS.paragraphs
+          && item.content[0]?.type === 'paragraph'
+          && item.content.slice(1).every(child => ['bulletList', 'orderedList'].includes(child?.type)), 'NOTE_BODY_LIST_ITEM');
+        visit(item.content, [...stack, list]);
+      }
+    }
+  };
+  visit(body.content);
+  const text = paragraphs.map(({ paragraph: block }) => {
     need(keys(block, ['type', 'attrs', 'content']) && block.type === 'paragraph', 'NOTE_BODY_BLOCK');
     if (block.attrs !== undefined) need(keys(block.attrs, ['textAlign'])
       && [null, undefined, 'left', 'center', 'right', 'justify'].includes(block.attrs.textAlign), 'NOTE_BODY_PARAGRAPH_ATTRIBUTES');
@@ -62,7 +89,14 @@ function validateNoteBody(body) {
     }).join('');
   }).join('\n');
   need(size <= LIMITS.text && Buffer.byteLength(JSON.stringify(body)) <= LIMITS.bytes, 'NOTE_BODY_BUDGET');
-  return { body: clone(body), text };
+  return { body: clone(body), text, paragraphs };
+}
+
+// Read-only comparison projection for the pinned main editor schema. Never
+// erase non-null domain state or use this projection as a persistence writer.
+function noteSceneSchemaDefaults(value) {
+  if (!plain(value) || value.type !== 'doc' || (value.attrs !== undefined && !plain(value.attrs))) return value;
+  return { ...value, attrs: { wordPendingRevisions: null, wordUserBookmarks: null, ...(value.attrs || {}) } };
 }
 
 function sceneText(content) {
@@ -209,6 +243,6 @@ function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId
   return { ...result, imported };
 }
 
-module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, sceneText,
+module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, sceneText, noteSceneSchemaDefaults,
   validateManuscriptPayload, bindManuscriptPayload, validateManuscriptDocument,
   mapPoint, planManuscriptNoteAnchorSave, validateNoteCohort, materializeImportedNotes };

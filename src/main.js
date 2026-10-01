@@ -5897,7 +5897,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true || snapshot.manuscriptNoteAuthoringPending === true) throw rejected('NOTE_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
-      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('NOTE_SAVE_SCENE_FIRST');
+      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(saved.doc || saved.text))) throw rejected('NOTE_SAVE_SCENE_FIRST');
       checkIdentity();
     };
     // No exported or returned notes means this independent mutation lane is
@@ -10740,7 +10740,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
     if (!value) return '—';
     const alignments = { left: 'по левому краю', center: 'по центру', right: 'по правому краю', justify: 'по ширине' };
     const marks = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание' };
-    return value.body.content.map((paragraph, index) => {
+    return manuscriptNoteModel.validateNoteBody(value.body).paragraphs.map(({ paragraph, list }, index) => {
       const runs = (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return 'Перенос строки';
         const properties = (node.marks || []).flatMap(mark => {
@@ -10752,7 +10752,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
         });
         return `«${node.text}»: ${properties.join(', ') || 'обычное, параметры абзаца'}`;
       });
-      return `Абзац ${index + 1}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
+      return `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
     }).join('\n');
   };
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
@@ -15067,6 +15067,8 @@ async function getProjectNotesContext(payload = {}, options = {}) {
 }
 
 function makeNotesCommandError(commandId, code, reason, details = {}) {
+  // Typed diagnostics only: never log note text, paths, payloads or exception prose.
+  if (typeof code === 'string' && /^[A-Z][A-Z0-9_]{1,100}$/u.test(code)) console.warn(`[notes-command] ${code}`);
   return {
     ok: false,
     code,
@@ -15200,7 +15202,7 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       const review = await loadRtkNonTextReturnModule();
-      if (live.issue || !review.commentSceneSnapshotsEqual(live.doc || live.text, source.parsed.doc || source.parsed.text)) throw Error('NOTE_SAVE_SCENE_FIRST');
+      if (live.issue || !review.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(source.parsed.doc || source.parsed.text))) throw Error('NOTE_SAVE_SCENE_FIRST');
       const authority = await getMainProjectManifestAuthority();
       return authority.withProjectLease(context.projectId, lease => lease.publish(async () => {
         const fresh = await readProjectNotesDocument(context, options);

@@ -791,7 +791,8 @@ function buildDocxReviewPacketBuffer(input = {}) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
   }
   const comments = commentPackageParts(input.commentExport);
-  const notes = notePackageParts(input.documentNotes);
+  const notes = notePackageParts(input.documentNotes, { firstNumId: Math.max(0, ...numberingDefinitions.map(n => n.numId)) + 1 });
+  numberingDefinitions.push(...notes.numberings.map(n => ({ ...n, kind: n.kind === 'orderedList' ? 'ordered' : 'bullet' })));
   if (customProperties.length === 0) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_REQUIRED');
   }
