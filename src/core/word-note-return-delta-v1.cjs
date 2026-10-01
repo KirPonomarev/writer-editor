@@ -102,7 +102,13 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
     const body = binding && equivalentBody(binding.richBody, note.body, exportMap.exportTypography)
       ? binding.richBody : note.body;
-    const manuscript = model.bindManuscriptPayload({ kind: note.kind, body, sceneId: block.sceneId, offsetUtf16, sceneContent });
+    // sceneContent is already the validated canonical leaf projection. Parsing
+    // it again as a legacy scene file would trim empty edge paragraphs or treat
+    // literal envelope-looking text as metadata and change anchor coordinates.
+    need(Buffer.byteLength(sceneContent, 'utf8') <= 8 * model.LIMITS.bytes
+      && model.boundary(sceneContent, offsetUtf16), 'NOTE_RETURN_POINT_INVALID');
+    const manuscript = model.validateManuscriptPayload({ schemaVersion: 1, kind: note.kind, body,
+      reference: { sceneId: block.sceneId, offsetUtf16, sourceTextSha256: model.sha(sceneContent), affinity: 'after' } });
     candidates.push({ noteId: binding?.noteId || `note-${model.sha(projectId + '\n' + roundId + '\n' + artifactSha256 + '\n' + index).slice(0, 32)}`,
       created: !binding, manuscript, body: model.validateNoteBody(note.body).text });
   }

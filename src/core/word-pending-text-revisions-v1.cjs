@@ -49,7 +49,7 @@ function paragraphs(doc) {
     if (['paragraph', 'heading'].includes(node.type)) {
       assert(result.length < 10000, 'PENDING_REVISIONS_BUDGET'); result.push(node); return;
     }
-    if (node.type === 'table' && !inCell) {
+    if (node.type === 'table') {
       let layout;
       try { layout = inspectTable(node); } catch (error) { fail(`PENDING_REVISIONS_${error.message}`); }
       for (const row of node.content) assert(exact(row, ['type', 'attrs', 'content']));
@@ -192,6 +192,12 @@ function validateState(input, frame = false) {
   validateSource(input.source);
   const sourceParagraphs = paragraphs(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
+  // Row ledgers still address root tables only. Never reinterpret a nested
+  // XML table ordinal as another root table's row.
+  if (input.revisions.some(isTableRow)) {
+    const nested = node => (node.content || []).some(child => child.type === 'table' || nested(child));
+    assert(!input.source.content.some(node => node.type === 'table' && nested(node)), 'PENDING_NESTED_TABLE_ROW_UNSUPPORTED');
+  }
   const ids = new Set(), groups = new Map(), occupied = new Map(), paragraphFormats = new Set(), boundaries = new Set();
   let previousParagraph = -1, previousFrom = 0;
   for (const r of input.revisions) {

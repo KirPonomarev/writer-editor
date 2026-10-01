@@ -1,3 +1,4 @@
+import documentTables from '../documentTables.js';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 
 // Ordinary import has no return authority. Native IDs are retained only as
@@ -50,6 +51,9 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     // Ordinary import retains their existing typed losses; they confer no IDs.
     return !item.field?.startsWith('opaque.') || /^opaque\.word\/(comments|people)/u.test(item.field);
   }), 'INCOMPLETE');
+  // The canonical import writer uses this same validated recursive leaf order.
+  // Malformed ownership may not be rescued by a matching comment quote.
+  try { documentTables.groupTableParagraphs(paragraphs); } catch { demand(false, 'TOPOLOGY'); }
   const nativeIds = new Set();
   const candidates = ir.commentThreads.map(thread => {
     demand(['ANCHORED', 'RESOLVED'].includes(thread.status)
@@ -59,9 +63,8 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     const index = thread.paragraphIndex, paragraph = paragraphs[index];
     demand(Number.isSafeInteger(index) && index >= 0 && plain(range)
       && plain(paragraph) && typeof paragraph.text === 'string', 'ANCHOR');
-    // Flattening a table, list, or section can change canonical block ordinals.
-    // Admit those structures only once their explicit topology mapping exists.
-    demand(!paragraph.table && !paragraph.list && !paragraph.media?.length, 'TOPOLOGY');
+    // Images still require their separate annotation coordinate qualification.
+    demand(!paragraph.media?.length, 'TOPOLOGY');
     const text = paragraph.text, boundaries = edges(text);
     demand(Number.isSafeInteger(range.startUtf16) && Number.isSafeInteger(range.endUtf16)
       && range.startUtf16 < range.endUtf16 && boundaries.has(range.startUtf16)

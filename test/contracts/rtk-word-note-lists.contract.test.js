@@ -133,7 +133,9 @@ function mainFunctions(names, globals = {}) {
   const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
   const { createRequire } = require('node:module');
   const file = path.join(__dirname, '../../src/main.js'), source = fs.readFileSync(file, 'utf8');
-  const context = vm.createContext({ Buffer, require: createRequire(file), isPlainObjectValue: v => !!v && typeof v === 'object' && !Array.isArray(v), ...globals });
+  const context = vm.createContext({ Buffer, require: createRequire(file),
+    loadDocumentContentEnvelopeModule: async () => require('../../src/core/document-content-envelope-v1.cjs'),
+    pendingTextRevisions: require('../../src/core/word-pending-text-revisions-v1.cjs'), isPlainObjectValue: v => !!v && typeof v === 'object' && !Array.isArray(v), ...globals });
   for (const name of names) {
     const match = source.match(new RegExp('(?:async )?function ' + name + '\\([^]*?\\n}(?=\\n|$)'));
     assert.ok(match, name); vm.runInContext(match[0], context);
@@ -153,6 +155,7 @@ test('scene note publication parses signed bytes and refuses lost structure befo
     scenes: [{ sceneId: f.block.sceneId, scenePath: '/synthetic/roman/a.txt', text: 'Text', doc: doc(p('Text')), order: 0 }] },
   { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
   source.notesDocument = f.document;
+  source.sceneNoteBinding = { raw: require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({ doc: doc(p('Text')) }) };
   const valid = await ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer(source), bridge);
   assert.equal(valid.publishAllowed, true);
   const altered = structuredClone(source.documentNotes);
@@ -237,6 +240,7 @@ test('empty scene note publication is verified and missing-versus-present state 
     scenes: [{ sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', text: 'Text', doc: doc(p('Text')), order: 0 }] },
   { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
   source.notesDocument = document;
+  source.sceneNoteBinding = { raw: require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({ doc: doc(p('Text')) }) };
   assert.equal((await ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer(source), bridge)).publishAllowed, true);
   for (const [before, after, allowed] of [[undefined, undefined, true], [document, document, true], [undefined, document, false], [document, undefined, false]]) {
     const binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, raw: 'Text', notesDigest: before ? notesStateDigest(before) : '' };

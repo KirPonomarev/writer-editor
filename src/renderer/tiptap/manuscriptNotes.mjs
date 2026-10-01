@@ -62,7 +62,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
     extensions: [StarterKit.configure({ heading: false,
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
     DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
-    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList)+' }),
+    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' }),
     Highlight.configure({ multicolor: true }), Underline,
     Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })],
     content: { type: 'doc', content: [{ type: 'paragraph' }] },

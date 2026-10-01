@@ -3607,7 +3607,16 @@ export function bindDocxReviewTableTopology(reviewIr, exportMap) {
   if (!paragraphs.some(p => p?.table)) return { ok: false, code: 'DOCX_TABLE_PROJECTION_REQUIRED' };
   const structures = Array.isArray(reviewIr.structureChanges) ? reviewIr.structureChanges : [];
   const unsupported = Array.isArray(reviewIr.opaqueUnsupported) ? reviewIr.opaqueUnsupported : [];
-  const tableCount = new Set(paragraphs.filter(p => p.table).map(p => p.table.tableId)).size;
+  const tableParents = new Map();
+  for (const paragraph of paragraphs) {
+    let parent = null;
+    for (let table = paragraph.table; table; table = table.nested) {
+      if (tableParents.has(table.tableId) && tableParents.get(table.tableId) !== parent)
+        return { ok: false, applicable: true, code: 'DOCX_TABLE_OCCURRENCE_BINDING_MISMATCH' };
+      tableParents.set(table.tableId, parent); parent = table.tableId;
+    }
+  }
+  const tableIds = [...tableParents.keys()], tableCount = tableIds.length;
   const occurrenceKey = item => {
     const p = item?.sourceXmlProvenance;
     return p?.elementName === 'tbl'
@@ -3624,9 +3633,16 @@ export function bindDocxReviewTableTopology(reviewIr, exportMap) {
   const keys = tableStructures.map(occurrenceKey).sort();
   const opaqueKeys = tableUnsupported.map(occurrenceKey).sort();
   const ranges = tableStructures.map(item => item.sourceXmlProvenance).sort((a, b) => a.openStart - b.openStart);
+  const rangeParents = [], rangeStack = []; let malformedRanges = false;
+  ranges.forEach((range, i) => {
+    while (rangeStack.length && range.openStart > rangeStack.at(-1).closeEnd) rangeStack.pop();
+    const parent = rangeStack.at(-1);
+    if (parent && (range.openStart <= parent.openStart || range.closeEnd >= parent.closeEnd)) malformedRanges = true;
+    rangeParents.push(parent ? parent.ordinal : null); rangeStack.push({ ...range, ordinal: i });
+  });
   if (keys.length !== tableCount || new Set(keys).size !== tableCount
     || JSON.stringify(keys) !== JSON.stringify(opaqueKeys)
-    || ranges.some((range, i) => i > 0 && range.openStart <= ranges[i - 1].closeEnd)) {
+    || malformedRanges || rangeParents.some((parent, i) => parent !== (tableParents.get(tableIds[i]) === null ? null : tableIds.indexOf(tableParents.get(tableIds[i]))))) {
     return { ok: false, applicable: true, code: 'DOCX_TABLE_OCCURRENCE_BINDING_MISMATCH' };
   }
   const proof = {
@@ -3745,6 +3761,7 @@ function visiblePendingTableRows(pending, exportMap, options) {
   const union = extractTransportParagraphOwnershipV1(pending.xml, names, { ...options, allowUnownedParagraphs: true });
   const formatting = extractReviewTransportFormattingRunsV2(pending.xml, options);
   if (!formatting.ok || formatting.paragraphs.length !== union.length) throw Error('PENDING_TABLE_ROW_PARAGRAPH_BINDING');
+  if (formatting.paragraphs.some(p => p.table?.nested)) throw Error('PENDING_NESTED_TABLE_ROW_UNSUPPORTED');
   const tables = [...new Set(formatting.paragraphs.map(p => p.table?.tableId).filter(Boolean))];
   const rowKey = table => `${table.tableId}:${table.row}`;
   const rowChange = table => table && pending.revisions.find(r => r.structure?.kind === 'tableRow'
@@ -7092,15 +7109,17 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   const fullManuscriptExportMap = isPlainObject(options.fullManuscriptExportMap)
     ? options.fullManuscriptExportMap
     : null;
-  if (fullManuscriptExportMap) {
+  const topologyExportMap = fullManuscriptExportMap
+    || (isPlainObject(options.formattingExportMap) ? options.formattingExportMap : null);
+  if (topologyExportMap) {
     // Recompute from the immutable evidence and locally authenticated map;
     // never consume a packet-carried table proof or grant writer authority.
-    const tableBinding = bindDocxReviewTableTopology(projection, fullManuscriptExportMap);
+    const tableBinding = bindDocxReviewTableTopology(projection, topologyExportMap);
     if (!tableBinding.ok) return docxReviewPreviewSessionResult({
       ok: false, status: 'blocked', code: tableBinding.code,
       reason: tableBinding.code, decision: 'diagnostics-only', bounds,
     });
-    const mediaBinding = bindDocxReviewMedia(tableBinding.reviewIr, fullManuscriptExportMap);
+    const mediaBinding = bindDocxReviewMedia(tableBinding.reviewIr, topologyExportMap);
     if (!mediaBinding.ok) return docxReviewPreviewSessionResult({
       ok: false, status: 'blocked', code: mediaBinding.code,
       reason: mediaBinding.code, decision: 'diagnostics-only', bounds,
@@ -7761,6 +7780,9 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_TABLE_LIST_UNSUPPORTED',
     'DOCX_TABLE_MIXED_HEADER_ROW_UNSUPPORTED',
     'DOCX_TABLE_NESTING_UNSUPPORTED',
+    'DOCX_TABLE_CELL_TRAILING_PARAGRAPH_REQUIRED',
+    'DOCX_TABLE_DEPTH_LIMIT',
+    'DOCX_TABLE_COUNT_LIMIT',
     'DOCX_TABLE_ROW_EXCEPTION_UNSUPPORTED',
     'DOCX_TABLE_STRUCTURE_UNSUPPORTED',
   ].map(reason => [reason, 'UNSUPPORTED_FEATURE']),
@@ -9815,19 +9837,20 @@ function docxInlineCanonicalContent(paragraphs) {
     active.node.content.push({ type: 'listItem', content: [block] });
     active.nextOrdinal = list.ordinal + 1;
   };
-  groupTableParagraphs(paragraphs).forEach(group => {
-    if (group.table) {
-      needsRichContent = true; stack.length = 0;
-      for (const cell of group.cells) {
-        // Numbering identities may be shared by Word, but a list node cannot
-        // own a paragraph in another cell or continue a parent outside it.
-        const cellStack = [];
-        cell.node.content = [];
-        for (const paragraph of cell.paragraphs) append(paragraph.index, cell.node.content, cellStack);
-      }
-      content.push(group.table);
-    } else append(group.index, content, stack);
-  });
+  const appendGroups = (groups, target, listStack) => {
+    for (const group of groups) {
+      if (group.table) {
+        needsRichContent = true; listStack.length = 0;
+        for (const cell of group.cells) {
+          cell.node.content = [];
+          appendGroups(cell.groups, cell.node.content, []);
+        }
+        target.push(group.table);
+      } else append(group.index, target, listStack);
+    }
+  };
+  appendGroups(groupTableParagraphs(paragraphs), content, stack);
+
   return needsRichContent ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
 
@@ -10439,9 +10462,10 @@ function docxNoteTableStyleCatalog(bytes) {
 function resolveNoteTableStyleLosses(bytes, parsed) {
   const tables = new Map();
   for (const row of parsed.contentPreview.paragraphs) {
-    if (!row.table) continue;
-    const rows = tables.get(row.table.tableId) || [];
-    rows.push(row); tables.set(row.table.tableId, rows);
+    for (let table = row.table; table; table = table.nested) {
+      const rows = tables.get(table.tableId) || [];
+      rows.push(table); tables.set(table.tableId, rows);
+    }
   }
   if (!tables.size) return;
   const explicit = new Map();
@@ -10457,8 +10481,8 @@ function resolveNoteTableStyleLosses(bytes, parsed) {
     if (!styleId) continue;
     const properties = catalog.resolve(styleId);
     for (const row of rows) {
-      const own = row.table.wordTable || documentTableProperties.legacyTableProperties(row.table.columnCount);
-      row.table = { ...row.table, wordTable: { ...own, borders: { ...properties.borders, ...own.borders }, shading: own.shading ?? properties.shading } };
+      const own = row.wordTable || documentTableProperties.legacyTableProperties(row.columnCount);
+      row.wordTable = { ...own, borders: { ...properties.borders, ...own.borders }, shading: own.shading ?? properties.shading };
     }
   }
   parsed.diagnostics = parsed.diagnostics.filter(item => !losses.includes(item));
@@ -10761,7 +10785,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           const ref = notes.references[index];
           const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
           const paragraph = parsed.contentPreview.paragraphs[note.paragraphIndex];
-          if (!source || !paragraph || paragraph.table || paragraph.list
+          if (!source || !paragraph
             || !Number.isSafeInteger(note.offsetUtf16) || note.offsetUtf16 < 0 || note.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
           return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
             body: richNotes[index].body };

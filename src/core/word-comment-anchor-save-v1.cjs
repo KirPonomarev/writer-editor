@@ -2,6 +2,7 @@
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
+const { tableParagraphs } = require('../io/documentTables.js');
 const { readState } = require('./word-comment-authoring-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
 const sha = text => sha256UpdateCompatible(text);
@@ -17,10 +18,27 @@ function paragraphs(content) {
   if (!parsed.doc) return parsed.text.split('\n').map(text => ({ type: 'paragraph', text }));
   if (parsed.doc.type !== 'doc' || !Array.isArray(parsed.doc.content)
     || parsed.doc.content.length > 10000) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
-  return parsed.doc.content.map(block => {
-    if (!block || !['paragraph', 'heading', 'codeBlock'].includes(block.type)) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
-    return { type: block.type, text: deriveVisibleTextFromDocument({ type: 'doc', content: [block] }) };
-  });
+  const result = []; let lists = 0, nextTable = 0;
+  const append = (block, table) => {
+    if (!block || !['paragraph', 'heading', 'codeBlock'].includes(block.type) || result.length >= 10000) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+    result.push({ type: block.type, text: deriveVisibleTextFromDocument({ type: 'doc', content: [block] }), ...(table ? { table } : {}) });
+  };
+  const visit = (block, depth = 0) => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(block?.type)) { append(block); return; }
+    if (block?.type === 'table') {
+      for (const leaf of tableParagraphs(block, `comment-table-${nextTable++}`)) append(leaf.node, leaf.table);
+      return;
+    }
+    if (!['bulletList', 'orderedList'].includes(block?.type) || depth > 8 || ++lists > 2048
+      || !Array.isArray(block.content) || !block.content.length) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+    for (const item of block.content) {
+      if (item?.type !== 'listItem' || !Array.isArray(item.content) || item.content[0]?.type !== 'paragraph'
+        || item.content.slice(1).some(child => !['bulletList', 'orderedList'].includes(child?.type))) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+      append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1);
+    }
+  };
+  parsed.doc.content.forEach(block => visit(block));
+  return result;
 }
 
 // Keep only ranges outside every minimum contiguous edit envelope. In repeated
@@ -64,6 +82,10 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   const before = readState(beforeText, projectId);
   if (!before.threads.some(t => t.sceneId === sceneId && t.status !== 'deleted')) return null;
   const old = paragraphs(beforeContent), next = paragraphs(afterContent);
+  // A local text edit may move an anchor within its leaf. A changed cell
+  // topology cannot silently reassign a repeated paragraph to another owner.
+  const topology = blocks => JSON.stringify(blocks.filter(block => block.table).map(block => block.table));
+  if (topology(old) !== topology(next)) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
   const structureChanged = old.length !== next.length;
   if (!structureChanged && old.some((b, i) => b.type !== next[i].type)) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
   const oldMap = structureChanged ? sceneMap(old) : null, newMap = structureChanged ? sceneMap(next) : null;
@@ -104,4 +126,4 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   return { mode: MODE, beforeText, afterText };
 }
 
-module.exports = { MODE, planCommentAnchorSave };
+module.exports = { MODE, paragraphs, planCommentAnchorSave };

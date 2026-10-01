@@ -796,12 +796,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
-      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only.",
-      "sha256": "b89ab9ed9cd6ce21365f261d32b90e43026094c7dee562f558c526bc52c4f27d"
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
+      "sha256": "7b38bbb7827c509c9ba4c8122899f18bb4ad740d18e8330517e0f049e13019d0"
     },
     {
       "approved": true,
@@ -1300,10 +1300,10 @@
     },
     {
       "filePath": "src/renderer/tiptap/documentTables.mjs",
-      "sha256": "6a431951efbcbc01c4afdbaa70c38cc895da4137474ebc59da5cb6827afb4f3d",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
-      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
+      "sha256": "8d34bc2c71c30a20b459c73029eae30ac4c28ee3932f7d5284b4d74cbd7412f6",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1381,10 +1381,10 @@
     },
     {
       "filePath": "src/io/documentTables.js",
-      "sha256": "6685e609708604e60e3e0f05f6f7b0bc20909473c12324d76b5ab889d00954bd",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:26:47.075934Z",
-      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
+      "sha256": "d739a046888c3c18bd43037fe5f15cf5303588ab39ec6260673a0895ca583a54",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1507,12 +1507,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "e28bc4fc4a5c4e24c53d1a293bd3096e361bec411e87d68b80b0b1934f109cb6",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "835b0a804428df4f50272993fa0b8913f82815c42114f675cd6d50b5b6665f12",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1633,48 +1633,48 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "1426490355fbc3d05b1194f836d2142b47442c5ef0f847e572f5f2f891639b4d",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "sha256": "b3dbd553f5c01bb5ad2726e1b76ff9fce70ad8a962393e3e98ae6df915f3e3dd",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "314e529b9db52337a79923abeec15d0435ad0cd7554b950656a881055d12289b",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "sha256": "14f421407dd8186c2f45449f758c33d04975697f082652a6448bf7536dbbed23",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "508afb50458c8af11160e1ab0b0d9569bd20687e6e99c1f40d758421a17cb990",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "fbf4011c7216931afbc055bad76598ca4b55156ed1a8164f9aa2530b88144b92",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "8333f0e973016e8109f03eb006f591bcd4651aa10c082958f566c3ced421f2f9",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
+      "sha256": "939b1dd5670a1f4b85a5d0f678fd5fa5d058545cefa842021aaf0ae2f7666f22",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "99656873ab6cca53b5162e4420b6396b1b7aada018ed07d9bc6234b8db596297",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
+      "sha256": "726165df8a47d75e20c500ff1f795ae9b49f31be64ceaa1e1dba411fc49bb8c7",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "8d6ac64fcccf07241d139801ea30198c2f1f2a2e6c4c676ca7c1b23e06be5911",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "bfc0fa6a0a4c77117a06ccc661ff4c931f813200077ab96bd1934f291594ddba",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "21405625d819c2161cbd1d7f644168bc8de4563ef33a0b4fcd860044673a328e",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "662dfe7aebccfe359099da990016bcbaf92bf354774ac347a60044ec56ec09bc",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e7cac47d16f1a9ad7eb659847398e6889f8f71bcfa91b7462dbb1355ae6c8631",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "e03475eba831015cfc782772345082e613a08d49d1b2b5788dbf401b84847f60",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2353,10 +2353,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
-      "sha256": "f222c83aabd591dbf471f204c33187435e5096abb3952c04019bf8f77628ebdc",
-      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
-      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "646f340f2020fc124aece729ced6e859a59aaa461aabfc1f2773561f4840ee1c",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2452,10 +2452,10 @@
     },
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
-      "sha256": "61234c49e2642087a87ddf22965cdb6760288708a7b3e21763aa698ecf34edca",
-      "approvedAtUtc": "2026-09-29T23:07:00.241123Z",
-      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929",
-      "rationale": "Owner-authorized bounded cell-shift parser and authenticated return repair with constructed chain and hostile formatting tests. Existing native adjacent-shift fixture retained. c70 SOURCE and PACKAGED native delete-up return, decisions, restart and independent exports executed; native PACKAGED insert-down return and independent exports executed; final restored-ESM candidate native identity remains pending; Encrypted ReviewSecretStorePort adapter is relocated byte-identically from Core to IO to repair mandatory E0; four existing deterministic domain hashes use equivalent bounded pure CJS SHA256 compatibility; original standalone ESM bytes are preserved to avoid modifying historical module boundaries; independent Nodecrypto proves both APIs and byteview semantics; differential tests are required. Pinned renderer bundle is regenerated deterministically after the shared hash extraction. Native missing-versus-null no-ledger stale rejection is repaired by validated Core ledger comparison; saved root schema defaults are normalized only for derived fallback paragraph count while exact rich equality and all authority guards remain mandatory. WP204 isolated fixture copies the genuine CJS dependency. Historical mutant test bytes are restored; terminal carriers and verifiers stay unchanged. E0 and final native SOURCE/PACK qualification remain mandatory. No acceptance or full-plan completion claim. Exact source and test companion bindings only; no oracle or acceptance-count changes.",
+      "sha256": "d12d6bdf393ccdeed5ca494dc6240b7534a4a4c4b919c07f1a1145d997b3bc67",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9fcedab61c29b66157dcc0b1aa811579858148e4f3d62cf70d0df0e03e93d727",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "3095b9b2c18c176bf99ac6a83f15666cd2884a11eb7c167f80981a65d0e89254",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b877448ba9a974688560404ee2e13307039abc013d3eb9076f122adad10ac7a6",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "db183ed4d2b63fd904703e5635d582c33f9bd97b608ecf665031460c24115902",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "7559f42e02c6271b02d058bf01881492b13362d6250f8d44538246a735629d7e",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "sha256": "bc4a84022aa88d65aaaff441f3658c3752d78cf3e24e00d47b33d0f46c629deb",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2776,19 +2776,19 @@
     },
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
-      "sha256": "6c91a14be3efd10d2081c482bf6a0c64a36daa1192817762e2c2623b652743f6",
-      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
-      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "sha256": "23b45c125cbfa8c975b1e005c9ef56533339117e1806b6e326f5b897b2db1e05",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "src/renderer/tiptap/manuscriptNotes.mjs",
-      "sha256": "17a0d4dcd8a6c67d409434418a9a142bcbb373c4fdeb7946825a6a508f694732",
-      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
-      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
-      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "sha256": "3f09831ac9fc463578dddad5d988e4cc2bc9a2ca697a87017abdf2c873896134",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2848,10 +2848,10 @@
     },
     {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
-      "sha256": "5f9a52b28ba00d820310e59f21818f85a3e4d22881f60f121744c092d798b4c1",
-      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
-      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
-      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "sha256": "c45176577fce13a3c548569caf652b175a1e5f8f377d2930689ab6e85e8025cf",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2893,10 +2893,10 @@
     },
     {
       "filePath": "src/core/word-pending-text-revisions-v1.cjs",
-      "sha256": "1b042eee1cc302dc7810298451b06a6e105f4802a82bea1e5df96f7af769bd93",
-      "approvedAtUtc": "2026-09-29T05:29:10.532703Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929",
-      "rationale": "Owner-authorized pending table-row revisions and authoring: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "af802884d0e9ea2351557d3ecddaba4a16fef7de796acc7bfce643669663cfd0",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3055,10 +3055,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-      "sha256": "68d80b8dfd556fad7dd87d7c3cd9167e097a28510c9e07e13c0eec2c6a896908",
-      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
-      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "55e4d120b8f25843c00a36120969b627c47168ba77acd7417eb8b15ba8db87b4",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3406,10 +3406,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-lists.contract.test.js",
-      "sha256": "a0c4708a7279e94a80af0ce70d3c5bbe08d46689f37cd04aff9b351913bb790b",
-      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
-      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only.",
+      "sha256": "d6c062ebb32e1b7838bb7d05c6a507d1846fa96a7bbbb75e2335408e8128a3ea",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3626,6 +3626,33 @@
       "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
       "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-nested-tables.contract.test.js",
+      "sha256": "4e31399079ae40d2d6fb7df4676f008382ec14589ad8261b6723a6a41a62cc27",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
+      "sha256": "db87d1769c0c6e0b41e1cd837535db491e5dcf2b12f9877d2a5b74b32a3ae376",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json",
+      "sha256": "34734b005b296698e794ddd9aaf8329533559247c4360ff44da7b80dbec8076e",
+      "approvedAtUtc": "2026-10-01T15:34:37.852284Z",
+      "approvedBy": "owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded nested table interoperability on macOS; shared recursive table validation and projection preserve cell ownership through existing import, export, editor and guarded return routes. No new writer, dependency or runtime network. Exact-byte governance binding is not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -22202,6 +22229,213 @@
       "approvedAtUtc": "2026-10-01T04:08:14.946820Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
+      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only.",
+      "sha256": "b89ab9ed9cd6ce21365f261d32b90e43026094c7dee562f558c526bc52c4f27d"
+    },
+    {
+      "filePath": "src/renderer/tiptap/documentTables.mjs",
+      "sha256": "6a431951efbcbc01c4afdbaa70c38cc895da4137474ebc59da5cb6827afb4f3d",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/documentTables.js",
+      "sha256": "6685e609708604e60e3e0f05f6f7b0bc20909473c12324d76b5ab889d00954bd",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:26:47.075934Z",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "e28bc4fc4a5c4e24c53d1a293bd3096e361bec411e87d68b80b0b1934f109cb6",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "1426490355fbc3d05b1194f836d2142b47442c5ef0f847e572f5f2f891639b4d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "314e529b9db52337a79923abeec15d0435ad0cd7554b950656a881055d12289b",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "508afb50458c8af11160e1ab0b0d9569bd20687e6e99c1f40d758421a17cb990",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "8333f0e973016e8109f03eb006f591bcd4651aa10c082958f566c3ced421f2f9",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "99656873ab6cca53b5162e4420b6396b1b7aada018ed07d9bc6234b8db596297",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "8d6ac64fcccf07241d139801ea30198c2f1f2a2e6c4c676ca7c1b23e06be5911",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "21405625d819c2161cbd1d7f644168bc8de4563ef33a0b4fcd860044673a328e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "e7cac47d16f1a9ad7eb659847398e6889f8f71bcfa91b7462dbb1355ae6c8631",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "src/io/revisionBridge/genericWordComments.mjs",
+      "sha256": "f222c83aabd591dbf471f204c33187435e5096abb3952c04019bf8f77628ebdc",
+      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/core/word-comment-anchor-save-v1.cjs",
+      "sha256": "61234c49e2642087a87ddf22965cdb6760288708a7b3e21763aa698ecf34edca",
+      "approvedAtUtc": "2026-09-29T23:07:00.241123Z",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929",
+      "rationale": "Owner-authorized bounded cell-shift parser and authenticated return repair with constructed chain and hostile formatting tests. Existing native adjacent-shift fixture retained. c70 SOURCE and PACKAGED native delete-up return, decisions, restart and independent exports executed; native PACKAGED insert-down return and independent exports executed; final restored-ESM candidate native identity remains pending; Encrypted ReviewSecretStorePort adapter is relocated byte-identically from Core to IO to repair mandatory E0; four existing deterministic domain hashes use equivalent bounded pure CJS SHA256 compatibility; original standalone ESM bytes are preserved to avoid modifying historical module boundaries; independent Nodecrypto proves both APIs and byteview semantics; differential tests are required. Pinned renderer bundle is regenerated deterministically after the shared hash extraction. Native missing-versus-null no-ledger stale rejection is repaired by validated Core ledger comparison; saved root schema defaults are normalized only for derived fallback paragraph count while exact rich equality and all authority guards remain mandatory. WP204 isolated fixture copies the genuine CJS dependency. Historical mutant test bytes are restored; terminal carriers and verifiers stay unchanged. E0 and final native SOURCE/PACK qualification remain mandatory. No acceptance or full-plan completion claim. Exact source and test companion bindings only; no oracle or acceptance-count changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9fcedab61c29b66157dcc0b1aa811579858148e4f3d62cf70d0df0e03e93d727",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b877448ba9a974688560404ee2e13307039abc013d3eb9076f122adad10ac7a6",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "7559f42e02c6271b02d058bf01881492b13362d6250f8d44538246a735629d7e",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T12:34:20.722307Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized media-only Word return beside unchanged rich manuscript notes; existing Core note delta proves identity/body/reference equality and Main revalidates exact notes source before atomic publication. No new writer, dependency, UI or runtime network. Exact-byte governance binding is not acceptance."
+    },
+    {
+      "filePath": "src/core/word-manuscript-notes-v1.cjs",
+      "sha256": "6c91a14be3efd10d2081c482bf6a0c64a36daa1192817762e2c2623b652743f6",
+      "approvedAtUtc": "2026-10-01T12:00:25.673268Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
+      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/tiptap/manuscriptNotes.mjs",
+      "sha256": "17a0d4dcd8a6c67d409434418a9a142bcbb373c4fdeb7946825a6a508f694732",
+      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
+      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/core/word-note-return-delta-v1.cjs",
+      "sha256": "5f9a52b28ba00d820310e59f21818f85a3e4d22881f60f121744c092d798b4c1",
+      "approvedAtUtc": "2026-10-01T10:38:56.541771Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001",
+      "rationale": "Owner-authorized bounded PNG/JPEG manuscript note support via existing media validator and project transaction. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/core/word-pending-text-revisions-v1.cjs",
+      "sha256": "1b042eee1cc302dc7810298451b06a6e105f4802a82bea1e5df96f7af769bd93",
+      "approvedAtUtc": "2026-09-29T05:29:10.532703Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929",
+      "rationale": "Owner-authorized pending table-row revisions and authoring: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
+      "sha256": "68d80b8dfd556fad7dd87d7c3cd9167e097a28510c9e07e13c0eec2c6a896908",
+      "approvedAtUtc": "2026-09-29T02:56:54.201544Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929",
+      "rationale": "Owner-authorized pending native run and paragraph formatting: checked Original and Current, main-owned recording, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-note-lists.contract.test.js",
+      "sha256": "a0c4708a7279e94a80af0ce70d3c5bbe08d46689f37cd04aff9b351913bb790b",
+      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
+      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
