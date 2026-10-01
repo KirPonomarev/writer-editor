@@ -2201,7 +2201,7 @@ function tableDocumentParagraphs(documentXml, documentScan) {
       record.continuationEmpty = !record.tokens.some(t => [
         'ins', 'del', 'moveFrom', 'moveTo', 'bookmarkStart', 'bookmarkEnd',
         'commentRangeStart', 'commentRangeEnd', 'commentReference',
-        'footnoteReference', 'endnoteReference', 'drawing', 'object', 'pict',
+        'footnoteReference', 'endnoteReference', 'footnoteRef', 'endnoteRef', 'drawing', 'object', 'pict',
         'fldSimple', 'instrText', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen',
       ].includes(t.localName));
       paragraphs.push(record);
@@ -3727,10 +3727,21 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
           requireNote(ends.length === 1 && ends[0].openStart >= marker.closeEnd, 'NOTE_TRANSPORT_ID_UNPAIRED');
           transportIdentity = name;
         }
-        const ps = directChildTokensWithin(scan, entry);
-        requireNote(ps.length > 0 && ps.length <= 128 && ps.every(token => isWordToken(token, 'p')), 'NOTE_PARAGRAPH_STRUCTURE');
+        const blocks = directChildTokensWithin(scan, entry);
+        requireNote(blocks.length > 0 && blocks.length <= 128
+          && blocks.every(token => isWordToken(token, 'p') || isWordToken(token, 'tbl')), 'NOTE_PARAGRAPH_STRUCTURE');
+        const ps = childTokensWithin(scan, entry).filter(token => isWordToken(token, 'p'));
+        requireNote(ps.length > 0 && ps.length <= documentTables.TABLE_LIMITS.slots + 128, 'NOTE_PARAGRAPH_STRUCTURE');
+        const tableElements = new Set(['tbl', 'tblPr', 'tblGrid', 'gridCol', 'tr', 'trPr', 'tc', 'tcPr',
+          'tblW', 'tcW', 'tblLayout', 'tblBorders', 'tcBorders', 'shd', 'tblHeader', 'gridSpan', 'vMerge',
+          'tblPrEx', 'tblCellMar', 'tcMar', 'top', 'bottom', 'left', 'right', 'start', 'end', 'insideH', 'insideV',
+          'tblStyle', 'tblLook', 'tblInd', 'jc', 'cantSplit', 'trHeight', 'vAlign', 'textDirection', 'cnfStyle', 'hideMark', 'noWrap']);
+        for (const token of childTokensWithin(scan, entry)) {
+          if (token.path.includes('p')) continue;
+          requireNote(token.namespaceUri === W_NS && tableElements.has(token.localName), 'NOTE_TABLE_CONTENT_UNSUPPORTED');
+        }
         let markCount = 0;
-        const body = ps.map(paragraph => {
+        let body = ps.map(paragraph => {
           for (const token of childTokensWithin(scan, paragraph)) {
             const property = token.path.includes('pPr') || token.path.includes('rPr');
             if (['t', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen', `${kind}Ref`].includes(token.localName)) {
@@ -3756,7 +3767,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
         requireNote(markCount === 1, 'NOTE_REFERENCE_MARK');
         const root = roots[0], prefix = root.prefix ? `${root.prefix}:` : '';
         const opening = xml.slice(root.openStart, root.openEnd).replace(`<${root.qName}`, `<${prefix}document`);
-        const paragraphsXml = ps.map(paragraph => {
+        const paragraphsXml = blocks.map(paragraph => {
           let value = xml.slice(paragraph.openStart, paragraph.closeEnd);
           const markers = childTokensWithin(scan, paragraph).filter(token => isWordToken(token, `${kind}Ref`)
             || transportIdentity && (isWordToken(token, 'bookmarkStart') && attr(token, 'name', W_NS) === transportIdentity
@@ -3766,8 +3777,18 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
             + value.slice(marker.closeEnd - paragraph.openStart);
           return value;
         }).join('');
-        bodySources.push({ kind, nativeId: id, transportIdentity, relationshipPart: noteRelationshipPart,
-          documentXml: `${opening}<${prefix}body>${paragraphsXml}</${prefix}body></${prefix}document>` });
+        const bodyXml = `${opening}<${prefix}body>${paragraphsXml}</${prefix}body></${prefix}document>`;
+        if (blocks.some(token => isWordToken(token, 'tbl'))) {
+          // Keep the table XML intact. Only the existing validated topology reader
+          // may exclude empty vertical-merge continuation paragraphs.
+          const unstrippedXml = `${opening}<${prefix}body>${blocks.map(block => xml.slice(block.openStart, block.closeEnd)).join('')}</${prefix}body></${prefix}document>`;
+          const bodyScan = parseXmlPart(partName, unstrippedXml, budgets, cryptoPort, budgetState);
+          reasons.push(...bodyScan.diagnostics);
+          const logical = tableDocumentParagraphs(unstrippedXml, bodyScan);
+          requireNote(logical && logical.length <= 128, 'NOTE_PARAGRAPH_STRUCTURE');
+          body = logical.map(record => tokenTextSemantic(unstrippedXml, bodyScan, record.token));
+        } else requireNote(ps.length <= 128, 'NOTE_PARAGRAPH_STRUCTURE');
+        bodySources.push({ kind, nativeId: id, transportIdentity, relationshipPart: noteRelationshipPart, documentXml: bodyXml });
         noteByKey.set(`${kind}:${id}`, body);
         requireNote(noteByKey.size <= 256, 'NOTE_COUNT');
       }

@@ -244,6 +244,7 @@ function notifyEditorPasteFocusState() {
 
 if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState === 'function') {
   document.addEventListener('focusin', notifyEditorPasteFocusState);
+  window.addEventListener('focus', notifyEditorPasteFocusState);
   document.addEventListener('focusout', () => {
     window.requestAnimationFrame(notifyEditorPasteFocusState);
   });

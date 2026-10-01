@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_NOTE_TABLES_MAC_20261001",
+  "objective": "Preserve bounded flat tables and cell lists within native footnotes and endnotes through Mac import, local cell editing, explicit Word return, save/reopen and all DOCX exports.",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "dfdf6645daf91c1ef43438de58b04c0d93a08edf",
+  "scopeIn": [
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/renderer/tiptap/documentTables.mjs",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "test/contracts/rtk-word-note-tables.contract.test.js",
+    "docs/tasks/2026-10-01--word-note-tables-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/runtimeBridge.js",
+    "src/renderer/editor.js",
+    "src/main.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "productAuthority": "Owner authorized entire Mac Word plan; bounded rich-note table slice through existing canonical notes and explicit import/return/save.",
+  "commandAuthority": "Existing note-save/import/return Kernel and authoring working-state transactions.",
+  "designAuthority": "Reuse existing note editor and existing table nodes/keyboard behavior; no new toolbar, screen, CSS or shell contract.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Existing scene export signed capsule and artifact via export port",
+    "Existing explicit note return atomic notes transaction"
+  ],
+  "readPaths": [
+    "Existing canonical notes state, scene snapshot, private export baseline"
+  ],
+  "productPorts": [
+    "Existing NotesStorage persistence, project transaction, DOCX export and review ports"
+  ],
+  "designOsPorts": [
+    "Existing read-only notes projection"
+  ],
+  "readProjections": [
+    "Existing native note return confirmation"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Existing project/lifecycle/entity/generation/source and notes digest guards remain mandatory.",
+    "Provider table XML must pass bounded existing table topology parser and strict note grammar before explicit write.",
+    "Private and other-scene notes unchanged; no payload grants authority."
+  ],
+  "capabilityRevalidation": "Existing notes/import/return Kernel and source/lifecycle/generation guards remain unchanged.",
+  "fallbacks": [
+    "Stale, malformed or unbound notes/source fail without writing; no implicit private-note export"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Literal independent Word table package import/export semantic topology; cell lists, spans, empty and repeated text.",
+    "Reject nested tables, malformed/ragged/overlapping topology, unsupported atoms, over-budget leaves and forged/stale/replayed returns.",
+    "SOURCE and PACKAGED Word table edit -> explicit Apply -> local cell edit/save -> all three exports -> restart.",
+    "Native and executable tests: focused note undo/redo never changes scene; empty history or read-only note never falls through; switching note/project cannot undo a prior entity body."
+  ],
+  "securityAndInputBoundary": "Reuse bounded namespace-resolved XML parser and pure table topology validation; no relationships/media authority extension.",
+  "performanceAndAccessibility": "Keep existing 128 paragraph and 1 MiB note limits; existing accessible table schema, cell selection and Tab/Shift-Tab; no new surface.",
+  "currentReality": [
+    "dfdf6645 notes support paragraphs/lists but reject native table bodies. Existing main-document table parser/model/export/editor available.",
+    "17 focused tests passed; native route and final delivery pending. Generated renderer bundle must be refreshed from changed renderer sources before copy verification.",
+    "Early native table note import succeeded. Cmd+Z with note focus incorrectly changes main scene; route existing history commands to focused note working state, clear note history on entity replacement, retain existing capability/persistence path. Native paste under investigation; no acceptance claim.",
+    "Native changed note-table exchange now succeeds. Paste focus signal is cleared on window blur and not refreshed on window focus; refresh existing signal on focus without broadening target or platform authority.",
+    "Frozen bb4c SOURCE and PACKAGED changed native returns succeeded; PACKAGED added a table row. Existing confirmation enumerates paragraphs but omits table ownership and geometry. Extend its existing bounded text description with table/cell structure and literal properties before final acceptance. No visual composition change."
+  ],
+  "targetOnly": [
+    "Native flat note table content, cell lists and merge topology remain TARGET until both Mac runtime proofs.",
+    "Nested tables, note media and local table toolbar composition remain separate work."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert one bounded note-table delivery; preserve isolated profiles, inputs and atomic note backups.",
+  "status": "CANDIDATE_NATIVE_QUALIFICATION_PENDING"
+}

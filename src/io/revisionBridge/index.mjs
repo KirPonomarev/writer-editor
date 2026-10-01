@@ -6,6 +6,7 @@ const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFr
 import documentMediaData from '../documentMedia.js';
 const { createImageAttrs, validateImageAttrs } = documentMediaData;
 import documentTables from '../documentTables.js';
+import documentTableProperties from '../documentTableProperties.js';
 const { groupTableParagraphs, createTableReader, compareTableParagraphTopology } = documentTables;
 import { composeObservablePayload, parseObservablePayload, buildParagraphDocumentFromText } from '../../renderer/documentContentEnvelope.mjs';
 import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
@@ -9165,7 +9166,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
     const rootNamespaceAllowed = parsed.namespaceUri === rootNamespace || (allowUnqualifiedRoot && parsed.namespaceUri === '');
     if (!stack.length && (++roots !== 1 || !rootNamespaceAllowed || parsed.localName !== rootName)) throw new Error('DOCX_FONT_PART_ROOT');
     const attributes = docxFontAttributes(token, parsed.namespaceMap);
-    visitor(parsed, stack, (name, ns = '') => attributes.get(`${ns}\u0000${name}`));
+    visitor(parsed, stack, (name, ns = '') => attributes.get(`${ns}\u0000${name}`), attributes);
     if (!parsed.selfClosing) stack.push(parsed);
   }
   if (stack.length || roots !== 1) throw new Error('DOCX_FONT_PART_INVALID');
@@ -10372,13 +10373,105 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   };
 }
 
+// Resolve only unconditional table border/fill inheritance into the existing
+// literal model. Conditional formatting and text-style effects remain no-write.
+function docxNoteTableStyleCatalog(bytes) {
+  const styles = new Map(), owners = new WeakMap();
+  let defaultId = '';
+  const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  docxFontVisitPart(bytes, 'word/styles.xml', W, 'styles', (node, stack, attr, attributes) => {
+    const only = names => [...attributes.keys()].every(key => names.some(name => key === `${W}\u0000${name}`));
+    if (stack.length === 1 && node.namespaceUri === W && node.localName === 'style') {
+      if (attr('type', W) !== 'table') return;
+      const id = attr('styleId', W);
+      if (!id || id.length > 256 || styles.has(id) || styles.size >= DOCX_INLINE_MAX_STYLES) throw Error('NOTE_TABLE_STYLE_ID');
+      const style = { basedOn: '', events: [], unsupported: !only(['type', 'styleId', 'default', 'customStyle']), seen: new Set() };
+      if (['1', 'true', 'on'].includes(attr('default', W))) {
+        if (defaultId) throw Error('NOTE_TABLE_STYLE_DEFAULT_DUPLICATE');
+        defaultId = id;
+      }
+      styles.set(id, style); owners.set(node, style); return;
+    }
+    const owner = stack.find(frame => owners.has(frame)), style = owner && owners.get(owner);
+    if (!style) return;
+    const path = [...stack.slice(stack.indexOf(owner) + 1), node].map(frame => frame.localName).join('/');
+    if (node.namespaceUri !== W || style.seen.has(path)) { style.unsupported = true; return; }
+    style.seen.add(path);
+    if (path === 'basedOn' && only(['val'])) { style.basedOn = attr('val', W) || ''; return; }
+    if (['name', 'uiPriority', 'semiHidden', 'unhideWhenUsed', 'rsid', 'qFormat', 'tblPr', 'pPr', 'tblPr/tblCellMar'].includes(path)) return;
+    // The existing table profile normalizes default cell padding and paragraph
+    // spacing; admit these exact neutral Word defaults, not arbitrary geometry.
+    if (path === 'tblPr/tblInd' && only(['w', 'type']) && attr('w', W) === '0' && attr('type', W) === 'dxa') return;
+    if (/^tblPr\/tblCellMar\/(top|bottom|left|right)$/u.test(path)
+      && only(['w', 'type']) && attr('type', W) === 'dxa' && attr('w', W) === (['left', 'right'].includes(node.localName) ? '108' : '0')) return;
+    if (path === 'pPr/spacing' && only(['after', 'before', 'line', 'lineRule']) && ['0', undefined].includes(attr('after', W))
+      && ['0', undefined].includes(attr('before', W)) && ['240', undefined].includes(attr('line', W))
+      && ['auto', undefined].includes(attr('lineRule', W))) return;
+    if (['tblPr/tblBorders', 'tblPr/shd'].includes(path) || /^tblPr\/tblBorders\/(top|bottom|left|right|insideH|insideV)$/u.test(path)) {
+      const names = ['val', 'sz', 'color', 'fill', 'space', 'shadow', 'frame', 'themeColor', 'themeTint', 'themeShade', 'themeFill', 'themeFillTint', 'themeFillShade'];
+      if (!only(names)) { style.unsupported = true; return; }
+      style.events.push({ name: `w:${node.localName}`, parent: `w:${stack.at(-1).localName}`,
+        attributes: Object.fromEntries(names.map(name => [name, attr(name, W) || ''])) });
+      return;
+    }
+    style.unsupported = true;
+  });
+  const resolve = (id, seen = new Set()) => {
+    if (seen.has(id) || seen.size >= 64) throw Error('NOTE_TABLE_STYLE_CYCLE');
+    seen.add(id);
+    const style = styles.get(id);
+    if (!style || style.unsupported) throw Error('NOTE_TABLE_STYLE_UNSUPPORTED');
+    const inherited = style.basedOn ? resolve(style.basedOn, seen) : { borders: {}, shading: null };
+    const paragraphs = [], reader = createTableReader(paragraphs, () => { throw Error('NOTE_TABLE_STYLE_PROPERTY_LOSS'); });
+    const tag = (name, parent, closing = false, self = false, attrs = {}) => reader.tag(name, parent, closing, self, key => attrs[key] || '');
+    tag('w:tbl', 'w:body'); tag('w:tblPr', 'w:tbl');
+    for (const event of style.events) tag(event.name, event.parent, false, true, event.attributes);
+    tag('w:tblPr', 'w:tbl', true); tag('w:tblGrid', 'w:tbl'); tag('w:gridCol', 'w:tblGrid', false, true, { w: '1440' });
+    tag('w:tblGrid', 'w:tbl', true); tag('w:tr', 'w:tbl'); tag('w:tc', 'w:tr');
+    paragraphs.push({ text: '', continuationEmpty: true });
+    tag('w:tc', 'w:tr', true); tag('w:tr', 'w:tbl', true); tag('w:tbl', 'w:body', true); reader.complete();
+    const own = paragraphs[0].table.wordTable || documentTableProperties.legacyTableProperties(1);
+    return { borders: { ...inherited.borders, ...(own?.borders || {}) }, shading: own?.shading ?? inherited.shading };
+  };
+  return { resolve, defaultId };
+}
+
+function resolveNoteTableStyleLosses(bytes, parsed) {
+  const tables = new Map();
+  for (const row of parsed.contentPreview.paragraphs) {
+    if (!row.table) continue;
+    const rows = tables.get(row.table.tableId) || [];
+    rows.push(row); tables.set(row.table.tableId, rows);
+  }
+  if (!tables.size) return;
+  const explicit = new Map();
+  const losses = parsed.diagnostics.filter(item => item.code === 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS'
+    && /^w:tblStyle=/u.test(item.sourceProperty || ''));
+  for (const item of losses) explicit.set(`table-${item.location?.tableIndex}`, item.sourceProperty.slice('w:tblStyle='.length));
+  const hasStyles = docxHostileFileGateCentralEntries(bytes).entries?.some(entry => entry.entryId === 'word/styles.xml');
+  if (!hasStyles && !losses.length) return;
+  const catalog = docxNoteTableStyleCatalog(bytes);
+  for (const id of explicit.keys()) if (!tables.has(id)) throw Error('NOTE_TABLE_STYLE_BINDING');
+  for (const [id, rows] of tables) {
+    const styleId = explicit.get(id) || catalog.defaultId;
+    if (!styleId) continue;
+    const properties = catalog.resolve(styleId);
+    for (const row of rows) {
+      const own = row.table.wordTable || documentTableProperties.legacyTableProperties(row.table.columnCount);
+      row.table = { ...row.table, wordTable: { ...own, borders: { ...properties.borders, ...own.borders }, shading: own.shading ?? properties.shading } };
+    }
+  }
+  parsed.diagnostics = parsed.diagnostics.filter(item => !losses.includes(item));
+}
+
 // Shared bounded body grammar for generic import and authenticated return.
 function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
   const inlineStyles = docxInlineStyleCatalog(bytes);
   const styles = { ...inlineStyles, hyperlinks };
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
+  if (!body.failure) resolveNoteTableStyleLosses(bytes, body);
   if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
-    || body.contentPreview.paragraphs.some(p => p.table || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
+    || body.contentPreview.paragraphs.some(p => p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
   if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
   const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
