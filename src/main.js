@@ -5867,7 +5867,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
         || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
         || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw rejected('NOTE_RETURN_CONTEXT_STALE');
     };
-    const revalidateScenes = async () => {
+    const revalidateScenes = async (checkEditor = true) => {
       checkIdentity();
       const root = await fs.realpath(context.projectRoot);
       const scenes = capsule.exportMap?.scenes;
@@ -5876,7 +5876,8 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       for (const scene of scenes) {
         const target = capsule.scenePathBySceneId?.[scene.sceneId];
         const baseline = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
-          ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId];
+          ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId]
+          ?? (scene.rawSha256 === `sha256:${computeHash('')}` ? '' : undefined);
         if (typeof target !== 'string' || typeof baseline !== 'string') throw rejected('NOTE_RETURN_SCENE_BINDING_REQUIRED');
         const relative = path.relative(path.resolve(context.projectRoot), target);
         if (!relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
@@ -5891,6 +5892,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
         if (target === file) openRaw = raw;
       }
       if (openRaw === null) throw rejected('NOTE_RETURN_OPEN_SCENE_REQUIRED');
+      if (!checkEditor) { checkIdentity(); return; }
       const snapshot = await requestEditorSnapshot();
       if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true || snapshot.manuscriptNoteAuthoringPending === true) throw rejected('NOTE_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
@@ -5904,7 +5906,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
     if (Array.isArray(capsule.documentNotes.sourceBindings)
       && capsule.documentNotes.sourceBindings.length === 0
       && Array.isArray(input.returnedNotes) && input.returnedNotes.length === 0) {
-      checkIdentity();
+      await revalidateScenes(false);
       return null;
     }
     await revalidateScenes();
@@ -9856,10 +9858,7 @@ async function inspectDocxReviewReturnIntakeV2({
   let mediaBinding = revisionBridge.bindDocxReviewMedia(verifiedParserResult.reviewIr, localAuthority.exportMap);
   let mediaReturnFields = null;
   if (!mediaBinding.ok) {
-    const extracted = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: docxBytes,
-      budgets: docxReviewReturnIntakeProductBudgets(options) });
-    if (!extracted.ok) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_MEDIA_BYTES_INVALID');
-    const media = await prepareCleanMediaReturnCapsule(localAuthority, verifiedParserResult, context, extracted.binaryParts);
+    const media = await prepareCleanMediaReturnCapsule(localAuthority, verifiedParserResult, context);
     if (!media.ok || !media.changed) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_MEDIA_MISMATCH', {
       reason: media.code || mediaBinding.code, detail: media.detail });
     mediaReturnFields = media.fields;

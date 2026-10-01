@@ -4193,7 +4193,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     mediaBytes += bytes.length;
     if (mediaBytes > documentMediaData.MEDIA_LIMITS.totalBytes || mediaCache.size >= documentMediaData.MEDIA_LIMITS.assets) throw Error('DOCUMENT_MEDIA_BYTES');
     const { sha256, width, height, mimeType } = createImageAttrs(bytes);
-    const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
+    const result = Object.freeze({ sha256, width, height, mimeType, dataBase64: bytes.toString('base64') }); mediaCache.set(name, result); return result;
   };
   return {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,

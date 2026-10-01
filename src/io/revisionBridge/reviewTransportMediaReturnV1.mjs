@@ -50,6 +50,25 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
       || reviewIr.structureChanges?.some(x => x.writerAuthorityImpact !== 'inventory-only')) return reject('tracked-or-structural-change');
     const placements = reviewIr.documentMedia?.placements || [];
     if (reviewIr.documentMedia && reviewIr.documentMedia.schemaVersion !== 'yalken.word.media-return.v1') return reject('media-shape');
+    if (binaryParts === undefined) {
+      // Bytes travel once in the immutable bounded worker packet, deduplicated
+      // by package part. Revalidate them here; the packet still grants no write.
+      const assets = reviewIr.documentMedia?.assets || [];
+      if (!Array.isArray(assets) || assets.length > media.MEDIA_LIMITS.assets) return reject('media-assets');
+      const expected = new Set(placements.map(p => p.partName));
+      binaryParts = Object.create(null); let total = 0;
+      for (const asset of assets) {
+        if (!asset || !expected.delete(asset.partName) || typeof asset.dataBase64 !== 'string'
+          || asset.dataBase64.length > Math.ceil(media.MEDIA_LIMITS.bytes / 3) * 4
+          || asset.dataBase64.length % 4 || /[^A-Za-z0-9+/=]/u.test(asset.dataBase64)) return reject('media-asset-binding');
+        const bytes = Buffer.from(asset.dataBase64, 'base64');
+        if (bytes.toString('base64') !== asset.dataBase64 || (total += bytes.length) > media.MEDIA_LIMITS.totalBytes) return reject('media-asset-budget');
+        const facts = media.createImageAttrs(bytes);
+        if (['sha256', 'width', 'height', 'mimeType'].some(k => facts[k] !== asset[k])) return reject('media-asset-facts');
+        binaryParts[asset.partName] = bytes;
+      }
+      if (expected.size) return reject('media-assets-missing');
+    }
     const drawings = (reviewIr.opaqueUnsupported || []).filter(x => x.elementName === 'drawing');
     const seen = new Set(), fields = new Set();
     for (let i = 0; i < blocks.length; i++) {

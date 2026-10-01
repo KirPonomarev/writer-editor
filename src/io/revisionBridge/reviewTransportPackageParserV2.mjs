@@ -4255,6 +4255,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
         relationshipsXml: parts['word/_rels/document.xml.rels'], contentTypesXml: parts['[Content_Types].xml'],
       });
       if (refs.length) {
+        const assets = new Map();
         const placements = refs.map(ref => {
           // Binary validation belongs to the bounded package adapter. The
           // platform-neutral XML parser receives immutable byte-derived facts,
@@ -4265,11 +4266,13 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
             || attrs.width < 1 || attrs.height < 1 || attrs.width > 8192 || attrs.height > 8192)
             throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
           if (attrs.mimeType !== ref.mimeType) throw Error('DOCUMENT_MEDIA_MIME_MISMATCH');
+          if (attrs.dataBase64 !== undefined) assets.set(ref.partName, { partName: ref.partName, ...attrs });
           // XML size is bounded independently of PNG pixels. Authenticated
           // source binding decides whether a size change is an allowed return.
           return { ...ref, sha256: attrs.sha256, width: attrs.width, height: attrs.height };
         });
-        documentMedia = { schemaVersion: 'yalken.word.media-return.v1', placements, canWriteManuscript: false };
+        documentMedia = { schemaVersion: 'yalken.word.media-return.v1', placements,
+          ...(assets.size ? { assets: [...assets.values()] } : {}), canWriteManuscript: false };
         admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMedia', documentMedia);
       }
     } catch (error) { reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', 'reviewIr.documentMedia', error.message)); }

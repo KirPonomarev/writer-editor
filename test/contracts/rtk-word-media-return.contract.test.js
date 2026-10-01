@@ -63,7 +63,7 @@ test('media return IO: actual product package admits changed size and rejects no
   const original = buildDocxReviewPacketBuffer(product);
   const map = io.bindUserBookmarkExportTransportPartsV1(product.localAuthorityCapsule.exportMap, original);
   const extracted = io.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: original });
-  for (const mode of ['same', 'resize', 'text', 'bold', 'owner', 'foreign-part', 'bad-bytes']) {
+  for (const mode of ['same', 'resize', 'text', 'bold', 'owner', 'foreign-part', 'bad-bytes', 'missing-assets', 'duplicate-assets', 'forged-assets']) {
     const parts = { ...extracted.parts, ...extracted.binaryParts };
     let xml = parts['word/document.xml'];
     if (mode === 'resize') xml = xml.replaceAll('cx="180975"', 'cx="1800000"').replaceAll('cy="161925"', 'cy="1200000"');
@@ -78,7 +78,12 @@ test('media return IO: actual product package admits changed size and rejects no
     assert.equal(parsed.ok, true, mode + ': ' + JSON.stringify(parsed).slice(0, 500));
     const binaryParts = { ...extracted.binaryParts };
     if (mode === 'bad-bytes') binaryParts[Object.keys(binaryParts)[0]] = jpeg.gray;
-    const result = analyzeMediaReturn({ beforeDocs: { 'a.txt': beforeDoc }, exportMap: map, reviewIr: parsed.reviewIr, binaryParts });
+    if (mode === 'missing-assets') delete parsed.reviewIr.documentMedia.assets;
+    if (mode === 'duplicate-assets') parsed.reviewIr.documentMedia.assets.push(parsed.reviewIr.documentMedia.assets[0]);
+    if (mode === 'forged-assets') parsed.reviewIr.documentMedia.assets[0].dataBase64 = jpeg.gray.toString('base64');
+    const packetProjection = JSON.parse(JSON.stringify(parsed.reviewIr));
+    const result = analyzeMediaReturn({ beforeDocs: { 'a.txt': beforeDoc }, exportMap: map, reviewIr: packetProjection,
+      ...(mode === 'bad-bytes' ? { binaryParts } : {}) });
     assert.equal(result.ok, ['same', 'resize'].includes(mode), mode + ': ' + JSON.stringify(result).slice(0, 700));
     if (result.ok) {
       assert.equal(result.changed, mode === 'resize');
@@ -87,7 +92,7 @@ test('media return IO: actual product package admits changed size and rejects no
   }
 });
 
-test('Word resize effect extents survive canonical model, native schema, generic import and both DOCX exports', async () => {
+test('Word resize effect extents survive canonical model, native schema, generic import and the shared DOCX media writer', async () => {
   const io = await import('../../src/io/revisionBridge/index.mjs');
   const { mediaImageDom, DocumentMedia } = await import('../../src/renderer/tiptap/documentMedia.mjs');
   const { buildMediaPackage } = require('../../src/export/docx/docxMedia.js');
