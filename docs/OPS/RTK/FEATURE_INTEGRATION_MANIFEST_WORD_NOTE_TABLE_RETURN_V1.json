@@ -19,7 +19,8 @@
     "src/io/documentTableProperties.js",
     "src/io/documentTables.js",
     "test/contracts/rtk-word-table-properties.contract.test.js",
-    "src/renderer/editor.bundle.js"
+    "src/renderer/editor.bundle.js",
+    "src/main.js"
   ],
   "scopeOut": [
     "package.json",

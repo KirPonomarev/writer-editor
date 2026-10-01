@@ -183,8 +183,9 @@ test('native confirmation discloses table ownership, topology and property-only 
   const before = model.bindManuscriptPayload({ body: body(), kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
   const after = JSON.parse(JSON.stringify(before));
   after.body.content[1].attrs = { wordTable: { ...require('../../src/io/documentTableProperties.js').legacyTableProperties(2), grid: [2000, 3000], shading: 'ABCDEF' } };
+  after.body.content[1].content[0].content[0].attrs.wordCell = { version: 1, shading: null, borders: {}, widthDxa: 4675 };
   assert.equal(await ctx.confirmLocalWordNoteDelta({ fileName: 'table.docx', changes: [{ operation: 'update', before, after }] }), false);
-  for (const text of ['Таблица 1: 2 строк, 2 столбцов', 'строка 2, столбец 2', '100 пт, 150 пт', '#ABCDEF', 'одинарная 0.5 пт', 'объединение 1 × 1', 'Оформление до:', 'Оформление после:']) assert(shown.detail.includes(text), text);
+  for (const text of ['Таблица 1: 2 строк, 2 столбцов', 'строка 2, столбец 2', '100 пт, 150 пт', '#ABCDEF', 'предпочтительная ширина 233.75 пт', 'одинарная 0.5 пт', 'объединение 1 × 1', 'Оформление до:', 'Оформление после:']) assert(shown.detail.includes(text), text);
   assert.equal(shown.defaultId, 0);
 });
 

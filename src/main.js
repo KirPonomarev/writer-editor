@@ -10817,7 +10817,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
           location += `Таблица ${tables.size}: ${table.rowCount} строк, ${table.columnCount} столбцов. Ширины столбцов: ${props.grid.map(w => w == null ? 'авто' : w / 20 + ' пт').join(', ')}. Ширина таблицы: ${props.widthDxa == null ? 'авто' : props.widthDxa / 20 + ' пт'}. Раскладка: ${props.layout === 'fixed' ? 'фиксированная' : 'автоматическая'}. Заливка: ${fill(props.shading)}. Границы: ${borders(props.borders)}.\n`;
         }
         location += `Таблица ${tables.get(table.tableId)}, строка ${table.row + 1}, столбец ${table.column + 1}; ячейка ${table.header ? 'заголовка' : 'обычная'}, объединение ${table.rowspan} × ${table.colspan}.\n`;
-        if (table.paragraphIndex === 0 && table.wordCell) location += `Ячейка: заливка ${fill(table.wordCell.shading)}; границы ${borders(table.wordCell.borders)}.\n`;
+        if (table.paragraphIndex === 0 && table.wordCell) location += `Ячейка: предпочтительная ширина ${table.wordCell.widthDxa === undefined ? 'по сетке' : table.wordCell.widthDxa / 20 + ' пт'}; заливка ${fill(table.wordCell.shading)}; границы ${borders(table.wordCell.borders)}.\n`;
       }
       const runs = (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return 'Перенос строки';
