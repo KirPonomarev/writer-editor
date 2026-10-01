@@ -1381,10 +1381,10 @@
     },
     {
       "filePath": "src/io/documentTables.js",
-      "sha256": "457cc22ec7f8ced9d4fb15aa5fced6a370d8f149d21df23b3040aad6f796ae35",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929",
-      "approvedAtUtc": "2026-09-29T05:29:10.532703Z",
-      "rationale": "Owner-authorized pending table-row revisions and authoring: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "6685e609708604e60e3e0f05f6f7b0bc20909473c12324d76b5ab889d00954bd",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "2bf713993397264250b7963ec6adf0d7c8105aabefa5c58905e8cc3c57cff7d4",
+      "sha256": "114308310991f0c0ebb6ba8a5ebf9a15c68f22164c8c0ea9e67d999bb3fefda0",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "28d871fd9964b7279e78175361354f6dc384d1d9077ca24c2e38ab3e884d94bc",
+      "sha256": "c99bb317d0cb839723f81d4c9e207f19a5d9a0726002b2a47a8c12f3b8032b42",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "1353001faf54f30b1ae8e68ff976c199ca977bfb6ce9138fcbbabeaa0ec66822",
+      "sha256": "070b6667c2e1f13d398b532e90f53f1fe228098e9dd57c9eec9973317c841ee1",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
@@ -1984,21 +1984,21 @@
     },
     {
       "filePath": "src/io/documentTableProperties.js",
-      "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "sha256": "2d8b5f000d5b08d0641a5ca7fd5020ce0e9fc726ea15f6d6a11ac9c645bdb870",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
-      "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea",
+      "sha256": "6136ae43d8c9001edcbc8e5f6e5d6012a29ef2bb851c7621afae4279d1d3dea8",
       "approved": true,
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
-      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e11d69e71d28f760851d2034696f1242e1efe1ce94c08fc3b95f5c3210a9cbeb",
+      "sha256": "fbb761cb88ee0886661b0a4f930f449288b53797fbab382143d6550397d45f39",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2472eb1261f9bd7c35f4b529c9ebe8e18e15b21350272bc72be84d117bfc0394",
+      "sha256": "17894913a0845b423dc6f3a8148500faa6d48798bed7c65b547fbee3f21bcbdf",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5935ccde14643ca29400fc8084c4946122242d490225a645938d48f16ac4d134",
+      "sha256": "d8c66e21df95331f0e3e60fbb86b149a44ca64c49209b8010506bc55c5eac1f1",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
@@ -2849,7 +2849,7 @@
     {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
       "sha256": "ed4be61f8d1ef3a95ee8773e81f5c1025f1c6229259777c132676dc5791e0365",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
@@ -3433,8 +3433,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-tables.contract.test.js",
-      "sha256": "6dc47da1996f3f3f472720195a87fdc934103673cbef52996127f55b8a97c061",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "sha256": "b7b6f6adce97afb45c6dea7d3bc4d2ef9a5295747465af03ad7c53a0e7a9bcb1",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
@@ -3478,8 +3478,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-01--word-note-table-return-mac.md",
-      "sha256": "b6ab963e008ea45f2625006850d2332d37c1bc7cc15e0d7a89302ad59eb8925c",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "sha256": "e1ee3944885d44d821f21f6df59934d888429d3b87de1a205923e2a7bbe81b8c",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
@@ -3487,8 +3487,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
-      "sha256": "a15305611d5de7747f20cafa7580317dbffc914273addfec62fee1eb0897129a",
-      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "sha256": "a8cb172b95c83b7b7e4e8fdec79483b7626d595813a1489e4bd3968caa8faf6f",
+      "approvedAtUtc": "2026-10-01T09:23:42.852318Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
@@ -21495,6 +21495,15 @@
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
+      "filePath": "src/io/documentTables.js",
+      "sha256": "457cc22ec7f8ced9d4fb15aa5fced6a370d8f149d21df23b3040aad6f796ae35",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929",
+      "approvedAtUtc": "2026-09-29T05:29:10.532703Z",
+      "rationale": "Owner-authorized pending table-row revisions and authoring: checked Original and Current, main-owned authoring, atomic decisions, durable history, exports and malformed-property negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "sha256": "99c17e08d6d8771e9f94c719d790d65f464269bddcb92f38b5accb7febe556a1",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
@@ -21520,6 +21529,24 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "src/io/documentTableProperties.js",
+      "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
+      "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea",
+      "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929",
+      "approvedAtUtc": "2026-09-29T01:29:12.427537Z",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized pending revisions within lists and table cells: canonical occurrence binding, recording, decisions, durable history and ordinary/authenticated DOCX export with topology negatives. No full plan acceptance claim. Exact source/test/companion bindings only; no acceptance counts or oracle changes."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",

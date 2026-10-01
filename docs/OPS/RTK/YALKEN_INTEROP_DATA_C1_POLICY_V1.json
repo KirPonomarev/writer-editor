@@ -1021,7 +1021,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "457cc22ec7f8ced9d4fb15aa5fced6a370d8f149d21df23b3040aad6f796ae35"
+        "sha256": "6685e609708604e60e3e0f05f6f7b0bc20909473c12324d76b5ab889d00954bd"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -1153,7 +1153,7 @@
       },
       {
         "path": "src/io/documentTableProperties.js",
-        "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da"
+        "sha256": "2d8b5f000d5b08d0641a5ca7fd5020ce0e9fc726ea15f6d6a11ac9c645bdb870"
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
@@ -1161,7 +1161,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea"
+        "sha256": "6136ae43d8c9001edcbc8e5f6e5d6012a29ef2bb851c7621afae4279d1d3dea8"
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -1681,7 +1681,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-tables.contract.test.js",
-        "sha256": "6dc47da1996f3f3f472720195a87fdc934103673cbef52996127f55b8a97c061"
+        "sha256": "b7b6f6adce97afb45c6dea7d3bc4d2ef9a5295747465af03ad7c53a0e7a9bcb1"
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-tables-mac.md",
@@ -1701,11 +1701,11 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-table-return-mac.md",
-        "sha256": "b6ab963e008ea45f2625006850d2332d37c1bc7cc15e0d7a89302ad59eb8925c"
+        "sha256": "e1ee3944885d44d821f21f6df59934d888429d3b87de1a205923e2a7bbe81b8c"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
-        "sha256": "a15305611d5de7747f20cafa7580317dbffc914273addfec62fee1eb0897129a"
+        "sha256": "a8cb172b95c83b7b7e4e8fdec79483b7626d595813a1489e4bd3968caa8faf6f"
       }
     ],
     "followupRepair": {

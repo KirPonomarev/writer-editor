@@ -221,6 +221,7 @@ async function tableReturnFixture(kind, mutate = value => value, explicit = true
 }
 
 const tableOnlyChanges = {
+  preferredCellWidth: xml => xml.replace('<w:tcW w:w="2000"', '<w:tcW w:w="4675"'),
   grid: xml => xml.replaceAll('w:w="2000"', 'w:w="2500"'),
   width: xml => xml.replace('<w:tblPr>', '<w:tblPr><w:tblW w:w="5000" w:type="dxa"/>'),
   border: xml => xml.replace('<w:top w:val="single" w:sz="4" w:color="auto"/>', '<w:top w:val="double" w:sz="8" w:color="FF0000"/>'),

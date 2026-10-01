@@ -15,7 +15,10 @@
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "scripts/ops/rtk-interop-data-c1.mjs",
-    "scripts/ops/r24/corrective/post-audit-certification-set.mjs"
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/io/documentTableProperties.js",
+    "src/io/documentTables.js",
+    "test/contracts/rtk-word-table-properties.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -24,7 +27,7 @@
     "src/renderer/index.html",
     "src/renderer/styles.css"
   ],
-  "productAuthority": "Owner authorized completing Mac Word plan. Repair observed silent loss in existing rich-note return; no new grammar.",
+  "productAuthority": "Owner authorized Mac Word interoperability; same note table return outcome now requires retaining Word preferred cell widths independently of grid.",
   "commandAuthority": "Existing note-save/import/return Kernel and authoring working-state transactions.",
   "designAuthority": "NOT_APPLICABLE: existing confirmation, table editor and panel unchanged.",
   "operationKinds": [
@@ -68,11 +71,12 @@
     "Native Word property-only edit in SOURCE and PACKAGED -> explicit Apply -> re-export all three modes -> fresh-process reopen and independent OOXML/persisted readback.",
     "Required CI, focused note return/table tests, OSS and guardrails, merged exact-head verification."
   ],
-  "securityAndInputBoundary": "No new parser, relationship or mutation authority; compare already validated tables through existing strict topology/property oracle.",
+  "securityAndInputBoundary": "Bounded optional preferred cell width in existing wordCell property object, 1..31680 DXA. Existing type/owner/duplicate/parser/atomic-write guards retained.",
   "performanceAndAccessibility": "Existing bounded note/table grammar and UI unchanged. Linear bounded comparison added before original-body reuse.",
   "currentReality": [
     "Exact f5e2a147 preserves note tables but effectiveBody comparison drops table metadata. Reproducer: parser reads grid 3500; planner returns grid 2000, changes empty, unchanged true.",
-    "PR2050 panel delivery complete with 19 CI checks and 44 merged tests; this is a separate bounded data-fidelity repair."
+    "PR2050 panel delivery complete with 19 CI checks and 44 merged tests; this is a separate bounded data-fidelity repair.",
+    "Native Word normalizes tcW independently of grid; strict note parser rejects property-only return. Preserve both instead of suppressing diagnostic."
   ],
   "targetOnly": [
     "Property/topology-only table return remains unaccepted until focused and native proof. Nested tables/media and full Mac qualification remain open."
@@ -86,6 +90,6 @@
     "mergeRequired": true,
     "postMergeExactHeadVerificationRequired": true
   },
-  "rollbackPlan": "Revert one bounded comparison repair; retain independent failing fixture and native evidence. No schema migration.",
+  "rollbackPlan": "Revert bounded note table return repair including optional backwards-compatible cell width property. No new writer or dependency.",
   "status": "TARGET_NOT_ACCEPTED"
 }

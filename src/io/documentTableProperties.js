@@ -34,8 +34,9 @@ function validateTableProperties(value, columns) {
 }
 function validateCellProperties(value) {
   if (value == null) return;
-  keys(value, ['version', 'shading', 'borders']);
+  keys(value, ['version', 'shading', 'borders', ...(Object.hasOwn(value, 'widthDxa') ? ['widthDxa'] : [])]);
   if (value.version !== 1) fail();
+  if (Object.hasOwn(value, 'widthDxa') && !int(value.widthDxa, 1, MAX_DXA)) fail();
   validateShading(value.shading); validateBorders(value.borders);
 }
 function defaultBorders() { return Object.fromEntries(EDGES.map(k => [k, { style: 'single', size: 4, color: 'auto' }])); }
