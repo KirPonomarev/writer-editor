@@ -1615,7 +1615,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "50f558e15d4939709ca6524046a2597d50495a510120c82c7ef893983b881717"
+        "sha256": "98511458bc3b8bcbc4ccb6a8eadc2086882cabe176141f82038db6b937a8764a"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",

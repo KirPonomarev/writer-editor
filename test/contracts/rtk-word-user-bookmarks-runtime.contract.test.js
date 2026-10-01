@@ -43,7 +43,7 @@ async function harness(t, initial = seed()) {
       commentSceneSnapshotsEqual: (a,b) => JSON.stringify(pending.normalizeNode(a)) === JSON.stringify(pending.normalizeNode(b)) }),
     planCommentAnchorSave: () => null,
     loadNotesStorageModule: async () => ({ readNotesStorage: async () => ({ ok: true, sourceExists: false }) }),
-    manuscriptNoteModel: { planManuscriptNoteAnchorSave: () => null },
+    manuscriptNoteModel: { ...require('../../src/core/word-manuscript-notes-v1.cjs'), planManuscriptNoteAnchorSave: () => null },
     commitProjectTransaction: async request => {
       assert.equal(fs.readFileSync(file, 'utf8'), request.expectedSceneContent);
       h.writes++; fs.writeFileSync(file, request.sceneContent);
