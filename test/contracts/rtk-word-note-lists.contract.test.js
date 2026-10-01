@@ -223,3 +223,29 @@ test('note point at the right edit edge survives deletion; ambiguous interior po
     assert.equal(model.mapPoint(before, after, before.length), after.length);
   }
 });
+
+test('empty scene note publication is verified and missing-versus-present state stays revision bound', async () => {
+  const crypto = require('node:crypto');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const { validateDocumentNotesReturn, notesStateDigest } = require('../../src/export/docx/docxReviewPacketNotes.js');
+  const document = { schemaVersion: 1, projectId: 'p', notes: [] }, owner = {};
+  const ctx = mainFunctions(['stableRtkReviewTransportJson', 'createRtkReviewTransportCryptoPort', 'buildSceneNoteReviewPublicationGate'],
+    { crypto, computeHash: model.sha, validateDocumentNotesReturn, docxReviewReturnIntakeProductBudgets: () => undefined });
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/synthetic', notesDocument: document,
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', text: 'Text', doc: doc(p('Text')), order: 0 }] },
+  { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
+  source.notesDocument = document;
+  assert.equal((await ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer(source), bridge)).publishAllowed, true);
+  for (const [before, after, allowed] of [[undefined, undefined, true], [document, document, true], [undefined, document, false], [document, undefined, false]]) {
+    const binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, raw: 'Text', notesDigest: before ? notesStateDigest(before) : '' };
+    const c = mainFunctions(['revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => 's',
+      activeStage10ApplicationBootstrap: owner, getProjectRootPath: () => '/synthetic', isDirty: false, autoSaveInProgress: false,
+      REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportDocxReviewPacket', userBookmarkCapability: () => {},
+      readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'p', projectRoot: '/synthetic' }),
+      fs: { readFile: async () => 'Text' }, notesStateDigest, readCanonicalNotesForDocxExport: async () => after });
+    const promise = c.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: source.documentNotes });
+    if (allowed) await promise; else await assert.rejects(promise, /REVIEW_DOCX_EXPORT_NOTES_STALE/);
+  }
+});

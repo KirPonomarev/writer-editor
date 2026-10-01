@@ -382,7 +382,9 @@
     "src/io/revisionBridge/reviewTransportReturnEvidenceV1.mjs",
     "docs/tasks/2026-10-01--word-note-lists-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
-    "test/contracts/rtk-word-note-lists.contract.test.js"
+    "test/contracts/rtk-word-note-lists.contract.test.js",
+    "docs/tasks/2026-10-01--word-scene-first-note-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_FIRST_NOTE_V1.json"
   ],
   "protectedFiles": [
     {
@@ -611,7 +613,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "2429f25db9e78845d3a4894c9f5496248b58f2dc888936cb3831c9dc0db481ef"
+        "sha256": "037264782cc2a8604e2297b6be3d80a6f3f73ef24b612aeda92aec5220f55a3d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -831,7 +833,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "e77c31d9d9fd804d091108031090420992563e29e5ea16df86877d18c873d7b0"
+        "sha256": "b89ab9ed9cd6ce21365f261d32b90e43026094c7dee562f558c526bc52c4f27d"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -1659,7 +1661,15 @@
       },
       {
         "path": "test/contracts/rtk-word-note-lists.contract.test.js",
-        "sha256": "32a89e78325a4481187f5110583c1d1aae4e5f5744a8669aa1b2f71a36e8cda9"
+        "sha256": "a0c4708a7279e94a80af0ce70d3c5bbe08d46689f37cd04aff9b351913bb790b"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-scene-first-note-mac.md",
+        "sha256": "7eca29bb70090b635320f595e50a6fbdeb61ccdcdfb19ed638bfb0a8c2c2e076"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_FIRST_NOTE_V1.json",
+        "sha256": "7ee5fd4593af50c4c95f44103235938379361c801a4255a760e6fa3b881d7699"
       }
     ],
     "followupRepair": {

@@ -4356,8 +4356,8 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
   const deriveWordBookmarkNameV1 = typeof options.deriveWordBookmarkNameV1 === 'function'
     ? options.deriveWordBookmarkNameV1
     : deriveWordBookmarkNameV1Cjs;
-  const paragraphs = options.doc
-    ? buildFormatIrParagraphs({ sceneId, text: sceneText, doc: options.doc })
+  const paragraphs = options.doc || options.formatPlainText === true
+    ? buildFormatIrParagraphs({ sceneId, text: options.doc ? sceneText : String(sceneText || '').replace(/\r\n?/g, '\n'), doc: options.doc })
     : String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
       .map((text) => ({ text, formatIr: null }));
   return paragraphs.map(({ text, formatIr }, index) => {
@@ -4523,15 +4523,17 @@ async function readDocxReviewPacketExportSource() {
   const semanticReturnId = `semantic-return-${roundIdHex}`;
   const hmacSecret = crypto.randomBytes(32).toString('hex');
   const cryptoPort = createRtkReviewTransportCryptoPort();
-  const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, { roundId, doc: parsedDocument.doc });
-  const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, true);
-  const activeNotes = notesDocument?.notes.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId);
-  const documentNotes = activeNotes ? buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
+  const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, {
+    roundId, doc: parsedDocument.doc, formatPlainText: true,
+  });
+  const notesSourceDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, true);
+  const notesDocument = notesSourceDocument || { schemaVersion: 1, projectId, notes: [] };
+  const documentNotes = buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
     ...block, sceneId, documentParagraphIndex: index,
-  })), projectId, { editableReturn: true }) : null;
+  })), projectId, { editableReturn: true });
   if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
   const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
-    subjectId: sourceSubjectId, owner: sourceOwner, raw: sceneRawContent, notesDigest: notesStateDigest(notesDocument) } : null;
+    subjectId: sourceSubjectId, owner: sourceOwner, raw: sceneRawContent, notesDigest: notesSourceDocument ? notesStateDigest(notesSourceDocument) : '' } : null;
   if (sourceFilePath !== currentFilePath || sourceSubjectId !== currentLifecycleSubjectId()
     || sourceOwner !== activeStage10ApplicationBootstrap || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const primaryBlock = blocks[0] || {
@@ -4987,7 +4989,7 @@ async function revalidateSceneNoteReviewExportSource(source) {
     throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   if (await fs.readFile(binding.filePath, 'utf8') !== binding.raw) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const notes = await readCanonicalNotesForDocxExport(binding.projectId, binding.projectRoot, true);
-  if (!notes || notesStateDigest(notes) !== binding.notesDigest) throw Error('REVIEW_DOCX_EXPORT_NOTES_STALE');
+  if ((notes ? notesStateDigest(notes) : '') !== binding.notesDigest) throw Error('REVIEW_DOCX_EXPORT_NOTES_STALE');
   check();
 }
 
