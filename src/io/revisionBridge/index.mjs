@@ -3659,7 +3659,8 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
     expected = blocks.flatMap((block, paragraphIndex) => (block.formatIr?.media || []).map(item => {
       const { attrs } = documentMediaData.validateImageAttrs(item.attrs);
       return { paragraphIndex, offset: item.offset, sha256: attrs.sha256, width: attrs.width, height: attrs.height,
-        alt: attrs.alt, displayName: attrs.displayName, ...documentMediaData.imageDisplaySize(attrs) };
+        alt: attrs.alt, displayName: attrs.displayName, ...documentMediaData.imageDisplaySize(attrs),
+        ...(attrs.displayEffectExtent ? { effectExtent: attrs.displayEffectExtent } : {}) };
     }));
   } catch { return fail('SOURCE_INVALID'); }
   const textCorrespondences = [];
@@ -3704,6 +3705,7 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
   const actual = observed.placements.map(x => ({
     ...Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName', 'cx', 'cy'].map(k => [k, x[k]])),
     offset: originalOffsets.has(x) ? originalOffsets.get(x) : x.offset,
+    ...(x.effectExtent ? { effectExtent: x.effectExtent } : {}),
   }));
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     const withoutSize = rows => rows.map(({ cx, cy, ...identity }) => identity);
@@ -10681,7 +10683,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         const image = auxiliary(ref.partName);
         if (!image) throw Error('DOCUMENT_MEDIA_PART_MISSING');
         if ((mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_TOTAL_BYTE_LIMIT');
-        const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName, displayWidthEmu: ref.cx, displayHeightEmu: ref.cy });
+        const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName, displayWidthEmu: ref.cx, displayHeightEmu: ref.cy, displayEffectExtent: ref.effectExtent });
         if (attrs.mimeType !== ref.mimeType) throw Error('DOCUMENT_MEDIA_MIME_MISMATCH');
         (paragraph.media ||= []).push({ offset: ref.offset, attrs });
       }

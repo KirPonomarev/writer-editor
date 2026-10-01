@@ -187,3 +187,18 @@ for (const kind of ['publicCandidate', 'mixedBatch', 'foreignSession', 'inactive
     else assert.equal(fs.existsSync(asset), false);
   });
 }
+
+test('actual authority store selects current project after switching and rejects mixed persistence', () => {
+  const project = root => ({ lastRoundId: 'round-' + root, roundsById: { ['round-' + root]: { projectRoot: root } } });
+  const previous = project('/first'), current = project('/second');
+  const c = vm.createContext({ activeReviewDocxExportAuthorityStore: previous,
+    isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v), getProjectRootPath: () => '/second',
+    readDurableDocxReviewReturnAuthorityStore: options => { assert.equal(options.projectRoot, '/second'); return current; },
+    docxReviewPreviewSessionDetailString: value => typeof value === 'string' ? value.trim() : '' });
+  vm.runInContext(main.slice(main.indexOf('function readActiveDocxReviewReturnAuthorityStore('), main.indexOf('// ROUND-01 (V3): import an export-time')), c);
+  vm.runInContext(main.slice(main.indexOf('function projectRootFromDocxReviewAuthorityStore('), main.indexOf('async function persistDocxReviewReturnAuthorityStore(')), c);
+  assert.equal(c.readActiveDocxReviewReturnAuthorityStore({ projectRoot: '/second' }), current);
+  assert.equal(c.projectRootFromDocxReviewAuthorityStore(current), '/second');
+  assert.throws(() => c.projectRootFromDocxReviewAuthorityStore({ roundsById: { ...previous.roundsById, ...current.roundsById } }), /MIXED_PROJECTS/);
+  assert.equal(previous.roundsById['round-/first'].projectRoot, '/first');
+});

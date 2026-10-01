@@ -4714,9 +4714,9 @@ async function readDocxReviewPacketExportSource() {
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
   // rounds are retained so multi-round retention holds and each round carries
   // an independent lifecycleState.
-  const priorRoundsById = isPlainObjectValue(activeReviewDocxExportAuthorityStore?.roundsById)
-    ? cloneJsonSafe(activeReviewDocxExportAuthorityStore.roundsById)
-    : {};
+  const priorRoundsById = Object.fromEntries(Object.entries(
+    readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
+  ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
   activeReviewDocxExportAuthorityStore = {
     schemaVersion: REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA,
     lastRoundId: roundId,
@@ -4869,9 +4869,9 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   source.localAuthorityCapsule.lifecycleState = 'ALLOCATED';
   source.localAuthorityCapsule.recordVersion = 1;
   // ROUND-01 (V3): MERGE — full-manuscript round must not evict prior rounds.
-  const priorFullManuscriptRoundsById = isPlainObjectValue(activeReviewDocxExportAuthorityStore?.roundsById)
-    ? cloneJsonSafe(activeReviewDocxExportAuthorityStore.roundsById)
-    : {};
+  const priorFullManuscriptRoundsById = Object.fromEntries(Object.entries(
+    readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
+  ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
   activeReviewDocxExportAuthorityStore = {
     schemaVersion: REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA,
     scope: 'full-manuscript',
@@ -8480,6 +8480,8 @@ function readActiveDocxReviewReturnAuthorityStore(options = {}) {
   if (
     typeof activeReviewDocxExportAuthorityStore !== 'undefined'
     && isPlainObjectValue(activeReviewDocxExportAuthorityStore)
+    && activeReviewDocxExportAuthorityStore.roundsById?.[activeReviewDocxExportAuthorityStore.lastRoundId]?.projectRoot
+      === (options.projectRoot || getProjectRootPath())
   ) {
     return activeReviewDocxExportAuthorityStore;
   }
@@ -8582,6 +8584,7 @@ function validateDocxReviewReturnAuthorityStoreRecord(record = {}, options = {})
 function projectRootFromDocxReviewAuthorityStore(store = {}) {
   const rounds = Object.values(isPlainObjectValue(store.roundsById) ? store.roundsById : {});
   const first = rounds.find(isPlainObjectValue) || {};
+  if (rounds.some(round => round?.projectRoot !== first.projectRoot)) throw Error('DOCX_REVIEW_AUTHORITY_MIXED_PROJECTS');
   return docxReviewPreviewSessionDetailString(first.projectRoot);
 }
 
@@ -9243,8 +9246,10 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
   const beforeDocs = {}, sources = {};
   for (const scene of authority.exportMap.scenes) {
     const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId]
+      ?? (scene.rawSha256 === `sha256:${computeHash('')}` ? '' : undefined)
       ?? (authority.scope === 'scene' ? context.sceneText : undefined);
     if (typeof raw !== 'string') return { ok: false, code: 'RTK_MEDIA_BASELINE_REQUIRED' };
+    if (scene.rawSha256 !== `sha256:${computeHash(raw)}`) return { ok: false, code: 'RTK_MEDIA_BASELINE_STALE' };
     const parsed = envelope.parseObservablePayload(raw);
     if (parsed.issue) return { ok: false, code: 'RTK_MEDIA_BASELINE_INVALID' };
     beforeDocs[scene.sceneId] = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);

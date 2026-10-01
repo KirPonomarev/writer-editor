@@ -5171,7 +5171,13 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (tokens.some(t => inside(drawing, t) && t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))) fail('TRACKED_IMAGE_UNSUPPORTED');
     const zero = (t, names) => names.every(k => ['', '0', 'false'].includes(plain(t, k)));
     if (!zero(inline, ['distT', 'distB', 'distL', 'distR']) || !zero(props, ['hidden']) || plain(props, 'title')) fail('PICTURE_FEATURE_UNSUPPORTED');
-    if (descendants.some(t => t.namespaceUri === NS_WP && t.localName === 'effectExtent' && !zero(t, ['l', 'r', 't', 'b']))) fail('PICTURE_EFFECT_UNSUPPORTED');
+    const effectTokens = descendants.filter(t => t.namespaceUri === NS_WP && t.localName === 'effectExtent');
+    if (effectTokens.length > 1) fail('PICTURE_EFFECT_EXTENT');
+    const effectExtent = Object.fromEntries(['l', 't', 'r', 'b'].map(name => {
+      const raw = effectTokens.length ? plain(effectTokens[0], name) : '0';
+      if (!/^(?:0|[1-9][0-9]*)$/u.test(raw) || Number(raw) > 8192 * 9525) fail('PICTURE_EFFECT_EXTENT');
+      return [name, Number(raw)];
+    }));
     const graphic = one(descendants, 'graphicData', NS_A), transform = one(descendants, 'xfrm', NS_A);
     const off = one(descendants.filter(t => inside(t, transform)), 'off', NS_A);
     const size = one(descendants.filter(t => inside(t, transform)), 'ext', NS_A);
@@ -5203,7 +5209,10 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const offset = before.reduce((sum, t) => sum + (isWordToken(t, 'delText') ? 0 : wordInlineTextValue(documentXml, t).length), 0);
     const correspondence = correspondenceFor(paragraph), positions = correspondence.offsets.get(drawing.openStart);
     const firstDrawing = correspondence.offsets.keys().next().value === drawing.openStart;
+    if (dimension('cx') + effectExtent.l + effectExtent.r > 8192 * 9525
+      || dimension('cy') + effectExtent.t + effectExtent.b > 8192 * 9525) fail('PICTURE_EFFECT_EXTENT');
     return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, mimeType, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
+      ...(Object.values(effectExtent).some(Boolean) ? { effectExtent } : {}),
       ...(correspondence.eligible ? { originalOffset: positions.originalOffset,
         ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments,
           ...(correspondence.fieldLinks.length ? { fieldLinks: correspondence.fieldLinks } : {}) } } : {}) } : {}) };

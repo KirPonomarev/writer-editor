@@ -86,3 +86,32 @@ test('media return IO: actual product package admits changed size and rejects no
     }
   }
 });
+
+test('Word resize effect extents survive canonical model, native schema, generic import and both DOCX exports', async () => {
+  const io = await import('../../src/io/revisionBridge/index.mjs');
+  const { mediaImageDom, DocumentMedia } = await import('../../src/renderer/tiptap/documentMedia.mjs');
+  const { buildMediaPackage } = require('../../src/export/docx/docxMedia.js');
+  const effect = { l: 10, t: 20, r: 3810, b: 30 };
+  const image = media.createImageAttrs(jpeg.rgb, { displayWidthEmu: 1800000, displayHeightEmu: 1200000, displayEffectExtent: effect });
+  assert.deepEqual(media.validateImageAttrs(image).attrs.displayEffectExtent, effect);
+  const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
+  const d = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs: image }] }] };
+  const schema = getSchema([StarterKit, DocumentMedia]), roundtrip = schema.nodeFromJSON(d).toJSON();
+  assert.deepEqual(roundtrip.content[0].content[0].attrs.displayEffectExtent, effect);
+  assert.match(mediaImageDom(image)[1].style, /margin:.*0\.4px/);
+  assert.match(buildMediaPackage(d).drawing(image), /<wp:effectExtent l="10" t="20" r="3810" b="30"\/>/);
+  const { buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
+  const [docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await Promise.all([
+    import('../../src/docxPageSetupBind.mjs'), import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
+  const bytes = buildDocxMinBuffer({ doc: d, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule });
+  const preview = io.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(preview.ok, true, JSON.stringify(preview).slice(0, 600));
+  const plan = io.buildDocxImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true, JSON.stringify(plan).slice(0, 600));
+  const imported = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.deepEqual(media.documentMedia(imported).placements[0].displayEffectExtent, effect);
+  for (const invalid of [{ ...effect, r: -1 }, { ...effect, l: 0.5 }, { ...effect, b: 78028800 }, { r: 3810 }, { ...effect, foreign: 0 }]) {
+    assert.throws(() => media.createImageAttrs(jpeg.rgb, { displayEffectExtent: invalid }), /EFFECT_EXTENT/);
+    assert.equal(mediaImageDom({ ...image, displayEffectExtent: invalid })[1]['data-media-unavailable'], 'true');
+  }
+});

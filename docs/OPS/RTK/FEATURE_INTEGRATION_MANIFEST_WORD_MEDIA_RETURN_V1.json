@@ -3,7 +3,7 @@
   "taskId": "WORD_MEDIA_RETURN_MAC_20261001",
   "objective": "Existing authenticated Word return explicitly applies bounded inline PNG/JPEG addition deletion replacement and resize in one active scene, preserving all nonmedia meaning and atomically publishing newly referenced assets.",
   "taskType": "PRODUCT_CODE",
-  "bindingBaseSha": "a14de854369352994478ebeefd3e4b8b9fe3b892",
+  "bindingBaseSha": "ea43e3e7d6fb477f591a70624b4d48cc19faea5c",
   "scopeIn": [
     "docs/tasks/2026-10-01--word-media-return-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
@@ -28,7 +28,9 @@
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "src/export/docx/docxMedia.js",
+    "src/renderer/tiptap/documentMedia.mjs"
   ],
   "scopeOut": [
     "package.json",
@@ -78,7 +80,8 @@
     "Changes limited to one active scene; unaffected scenes remain byte-exact",
     "Private source, project, lifecycle, capability, generation and saved raw CAS revalidated after awaits and immediately before transaction",
     "New content-addressed resources are create-only in same journal as scene/manifest; existing shared assets never deleted or overwritten",
-    "Record version discriminates update-with-resources journal; predecessor must refuse unknown record without overwrite"
+    "Record version discriminates update-with-resources journal; predecessor must refuse unknown record without overwrite",
+    "Native resize emitted effectExtent r=3810EMU; preserve all four bounded inline extent values in canonical attrs, display margins, and DOCX reexport. Actual shadow/crop/rotation remains rejected."
   ],
   "capabilityRevalidation": "Existing review Kernel checks plus private Main handler and prepublication project/lifecycle/source/generation/capability checks. No capability from UI or packet.",
   "fallbacks": [
@@ -90,7 +93,8 @@
     "Actual Main selected Apply, replay/stale/forged/public candidate zero-write; unsaved buffer and project-switch preservation",
     "Atomic new-asset plus existing-scene journal commit and recovery fault injection before/after commit; shared assets and existing resource collision protected",
     "Existing PNG/JPEG bounds, MIME/hash/path/symlink and entropy negatives; nonmedia invariance including root metadata",
-    "SOURCE and PACKAGED real Word changed exchanges, reopen, independent complete ZIP binary/placement inventory, history undo; CI and exact merged checks"
+    "SOURCE and PACKAGED real Word changed exchanges, reopen, independent complete ZIP binary/placement inventory, history undo; CI and exact merged checks",
+    "Native discovery found cross-project export-round retention persisted the new project round under a previous project. Partition prior rounds by exact project root; no mutation of previous project store or recovery by cross-project lookup."
   ],
   "securityAndInputBoundary": "Untrusted bounded DOCX validated before normalization; no arbitrary field evaluation or external path authority; existing input/namespace/package budgets.",
   "performanceAndAccessibility": "Existing 4MiB asset,16MiB aggregate,16Mpixel and bounded node/placement limits; no work on typing hot path; existing accessible review Apply and error controls.",
@@ -112,7 +116,7 @@
     "mergeRequired": true,
     "postMergeExactHeadVerificationRequired": true
   },
-  "rollbackPlan": "One revertible media return delivery; retain all synthetic originals and readable preapply rich snapshots; new journal schema rejects predecessor writes; do not garbage-collect existing or shared assets. Budget24 exact paths and2200 authored added lines plus generated bundle and exact-byte governance companions.",
+  "rollbackPlan": "One revertible media return delivery; retain all synthetic originals and readable preapply rich snapshots; new journal schema rejects predecessor writes; do not garbage-collect existing or shared assets. Budget26 exact paths and2500 authored added lines plus generated bundle and exact-byte governance companions.",
   "featureId": "WORD_MEDIA_RETURN_MAC_20261001",
   "featureVersion": "1.0-target",
   "domainOwner": "Product Core canonical rich scene and content-addressed assets",
