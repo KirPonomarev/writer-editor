@@ -18,7 +18,8 @@
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
     "src/io/documentTableProperties.js",
     "src/io/documentTables.js",
-    "test/contracts/rtk-word-table-properties.contract.test.js"
+    "test/contracts/rtk-word-table-properties.contract.test.js",
+    "src/renderer/editor.bundle.js"
   ],
   "scopeOut": [
     "package.json",

@@ -633,7 +633,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "238ce2c92ba12d014f0dd028bb25dd5695fabb80d690c1d65b7fa26a3b379358"
+        "sha256": "21ec4106084c378ad0b23c761d58c2380ca4f0d65116ab04dac1d82aaed1b1a4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1705,7 +1705,7 @@
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
-        "sha256": "a8cb172b95c83b7b7e4e8fdec79483b7626d595813a1489e4bd3968caa8faf6f"
+        "sha256": "92154e2e31a89fdc228d0682b03e26b69b6439ebc38beb2762222dff3adadf65"
       }
     ],
     "followupRepair": {

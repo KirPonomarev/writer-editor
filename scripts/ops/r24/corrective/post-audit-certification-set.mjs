@@ -1952,7 +1952,7 @@ export const R24_INTEROP_WORD_NOTE_TABLE_RETURN_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "114308310991f0c0ebb6ba8a5ebf9a15c68f22164c8c0ea9e67d999bb3fefda0"
+      "sha256": "fb60dce25ddc25d87dc0a3408f5363551e368c1700c208cd24d15ae53f978289"
     }
   ]
 });
