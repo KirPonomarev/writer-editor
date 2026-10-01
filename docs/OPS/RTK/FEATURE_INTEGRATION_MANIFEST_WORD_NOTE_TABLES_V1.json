@@ -21,7 +21,11 @@
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "scripts/ops/rtk-interop-data-c1.mjs",
-    "scripts/ops/r24/corrective/post-audit-certification-set.mjs"
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/runtimeBridge.js",
+    "src/renderer/editor.js"
   ],
   "scopeOut": [
     "package.json",
@@ -73,12 +77,16 @@
   "recoveryAndNegativeChecks": [
     "Literal independent Word table package import/export semantic topology; cell lists, spans, empty and repeated text.",
     "Reject nested tables, malformed/ragged/overlapping topology, unsupported atoms, over-budget leaves and forged/stale/replayed returns.",
-    "SOURCE and PACKAGED Word table edit -> explicit Apply -> local cell edit/save -> all three exports -> restart."
+    "SOURCE and PACKAGED Word table edit -> explicit Apply -> local cell edit/save -> all three exports -> restart.",
+    "Native and executable tests: focused note undo/redo never changes scene; empty history or read-only note never falls through; switching note/project cannot undo a prior entity body."
   ],
   "securityAndInputBoundary": "Reuse bounded namespace-resolved XML parser and pure table topology validation; no relationships/media authority extension.",
   "performanceAndAccessibility": "Keep existing 128 paragraph and 1 MiB note limits; existing accessible table schema, cell selection and Tab/Shift-Tab; no new surface.",
   "currentReality": [
-    "dfdf6645 notes support paragraphs/lists but reject native table bodies. Existing main-document table parser/model/export/editor available."
+    "dfdf6645 notes support paragraphs/lists but reject native table bodies. Existing main-document table parser/model/export/editor available.",
+    "17 focused tests passed; native route and final delivery pending. Generated renderer bundle must be refreshed from changed renderer sources before copy verification.",
+    "Early native table note import succeeded. Cmd+Z with note focus incorrectly changes main scene; route existing history commands to focused note working state, clear note history on entity replacement, retain existing capability/persistence path. Native paste under investigation; no acceptance claim.",
+    "Native changed note-table exchange now succeeds. Paste focus signal is cleared on window blur and not refreshed on window focus; refresh existing signal on focus without broadening target or platform authority."
   ],
   "targetOnly": [
     "Native flat note table content, cell lists and merge topology remain TARGET until both Mac runtime proofs.",
@@ -94,5 +102,5 @@
     "postMergeExactHeadVerificationRequired": true
   },
   "rollbackPlan": "Revert one bounded note-table delivery; preserve isolated profiles, inputs and atomic note backups.",
-  "status": "TARGET_NOT_ACCEPTED"
+  "status": "CANDIDATE_NATIVE_QUALIFICATION_PENDING"
 }

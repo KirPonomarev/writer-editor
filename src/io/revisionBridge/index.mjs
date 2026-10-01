@@ -10377,6 +10377,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
 // literal model. Conditional formatting and text-style effects remain no-write.
 function docxNoteTableStyleCatalog(bytes) {
   const styles = new Map(), owners = new WeakMap();
+  let defaultId = '';
   const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
   docxFontVisitPart(bytes, 'word/styles.xml', W, 'styles', (node, stack, attr, attributes) => {
     const only = names => [...attributes.keys()].every(key => names.some(name => key === `${W}\u0000${name}`));
@@ -10385,6 +10386,10 @@ function docxNoteTableStyleCatalog(bytes) {
       const id = attr('styleId', W);
       if (!id || id.length > 256 || styles.has(id) || styles.size >= DOCX_INLINE_MAX_STYLES) throw Error('NOTE_TABLE_STYLE_ID');
       const style = { basedOn: '', events: [], unsupported: !only(['type', 'styleId', 'default', 'customStyle']), seen: new Set() };
+      if (['1', 'true', 'on'].includes(attr('default', W))) {
+        if (defaultId) throw Error('NOTE_TABLE_STYLE_DEFAULT_DUPLICATE');
+        defaultId = id;
+      }
       styles.set(id, style); owners.set(node, style); return;
     }
     const owner = stack.find(frame => owners.has(frame)), style = owner && owners.get(owner);
@@ -10428,24 +10433,35 @@ function docxNoteTableStyleCatalog(bytes) {
     const own = paragraphs[0].table.wordTable || documentTableProperties.legacyTableProperties(1);
     return { borders: { ...inherited.borders, ...(own?.borders || {}) }, shading: own?.shading ?? inherited.shading };
   };
-  return { resolve };
+  return { resolve, defaultId };
 }
 
 function resolveNoteTableStyleLosses(bytes, parsed) {
-  let catalog;
-  parsed.diagnostics = parsed.diagnostics.filter(item => {
-    if (item.code !== 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS' || !/^w:tblStyle=/u.test(item.sourceProperty || '')) return true;
-    catalog ??= docxNoteTableStyleCatalog(bytes);
-    const id = item.sourceProperty.slice('w:tblStyle='.length);
-    const properties = catalog.resolve(id);
-    const rows = parsed.contentPreview.paragraphs.filter(row => row.table?.tableId === `table-${item.location?.tableIndex}`);
-    if (!rows.length) throw Error('NOTE_TABLE_STYLE_BINDING');
+  const tables = new Map();
+  for (const row of parsed.contentPreview.paragraphs) {
+    if (!row.table) continue;
+    const rows = tables.get(row.table.tableId) || [];
+    rows.push(row); tables.set(row.table.tableId, rows);
+  }
+  if (!tables.size) return;
+  const explicit = new Map();
+  const losses = parsed.diagnostics.filter(item => item.code === 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS'
+    && /^w:tblStyle=/u.test(item.sourceProperty || ''));
+  for (const item of losses) explicit.set(`table-${item.location?.tableIndex}`, item.sourceProperty.slice('w:tblStyle='.length));
+  const hasStyles = docxHostileFileGateCentralEntries(bytes).entries?.some(entry => entry.entryId === 'word/styles.xml');
+  if (!hasStyles && !losses.length) return;
+  const catalog = docxNoteTableStyleCatalog(bytes);
+  for (const id of explicit.keys()) if (!tables.has(id)) throw Error('NOTE_TABLE_STYLE_BINDING');
+  for (const [id, rows] of tables) {
+    const styleId = explicit.get(id) || catalog.defaultId;
+    if (!styleId) continue;
+    const properties = catalog.resolve(styleId);
     for (const row of rows) {
       const own = row.table.wordTable || documentTableProperties.legacyTableProperties(row.table.columnCount);
       row.table = { ...row.table, wordTable: { ...own, borders: { ...properties.borders, ...own.borders }, shading: own.shading ?? properties.shading } };
     }
-    return false;
-  });
+  }
+  parsed.diagnostics = parsed.diagnostics.filter(item => !losses.includes(item));
 }
 
 // Shared bounded body grammar for generic import and authenticated return.

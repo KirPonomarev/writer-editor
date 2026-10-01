@@ -142,3 +142,32 @@ test('note history routing binds the current editor and never falls through on e
   assert.equal(bridge.undo().performed, true);
   assert.deepEqual(calls, ['note-undo', 'note-redo', 'scene-undo']);
 });
+
+test('paste target is revalidated after returning from Word without changing DOM focus', () => {
+  const fs = require('node:fs'), vm = require('node:vm');
+  const source = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
+  const fragment = source.slice(source.indexOf('function isEditorPasteTargetFocused()'), source.indexOf("const statusElement = document.getElementById('status');"));
+  const handlers = {}, calls = [];
+  class Element { closest() { return this; } contains(value) { return value === this; } }
+  const editable = new Element(); editable.isContentEditable = true;
+  const document = { activeElement: editable, addEventListener() {} };
+  const window = { addEventListener: (type, fn) => { handlers[type] = fn; }, requestAnimationFrame: fn => fn(), electronAPI: { notifyEditorPasteFocusState: state => calls.push(state) } };
+  vm.runInNewContext(fragment, { window, document, HTMLElement: Element });
+  handlers.blur(); handlers.focus();
+  assert.deepEqual(calls, [true, false, true]);
+  editable.isContentEditable = false; handlers.focus();
+  assert.equal(calls.at(-1), false);
+  document.activeElement = {}; handlers.focus();
+  assert.equal(calls.at(-1), false);
+});
+
+test('implicit default table style is retained and unsupported defaults are never silently flattened', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const xml = styledTable().replace('<w:tblStyle w:val="grid"/>', '');
+  const style = `<w:style w:type="table" w:default="1" w:styleId="grid"><w:tblPr><w:tblBorders>${allEdges}</w:tblBorders></w:tblPr></w:style>`;
+  const value = bridge.buildDocxContentPreviewFromZipBytes(literal('endnote', xml, style));
+  assert.equal(value.ok, true, JSON.stringify(value));
+  assert.equal(Object.keys(value.contentPreview.manuscriptNotes[0].body.content[1].attrs.wordTable.borders).length, 6);
+  const bad = bridge.buildDocxContentPreviewFromZipBytes(literal('endnote', xml, style.replace('</w:style>', '<w:rPr><w:b/></w:rPr></w:style>')));
+  assert.equal(bad.ok, false);
+});

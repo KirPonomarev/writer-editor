@@ -129,6 +129,7 @@
     "rtk-word-note-return-package.contract.test.js",
     "rtk-word-note-return-runtime.contract.test.js",
     "rtk-word-note-return.contract.test.js",
+    "rtk-word-note-tables.contract.test.js",
     "rtk-word-p0-modern-comment-replies-typed-limitation.contract.test.js",
     "rtk-word-p0-modern-comment-resolve-reopen-typed-limitation.contract.test.js",
     "rtk-word-p0-multi-round-ledger-reconciliation.contract.test.js",
