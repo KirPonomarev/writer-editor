@@ -56,7 +56,9 @@ const names = { table: 'table', table_row: 'tableRow', table_cell: 'tableCell', 
 const specifications = tableNodes({ tableGroup: 'block', cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' });
 const nodes = Object.entries(specifications).map(([key, spec]) => Node.create({
   name: names[key],
-  content: spec.content.replace(/table_row|table_cell|table_header/gu, name => names[name]),
+  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' }; },
+  content() { return ['table_cell', 'table_header'].includes(key) ? this.options.cellContent
+    : spec.content.replace(/table_row|table_cell|table_header/gu, name => names[name]); },
   group: spec.group,
   isolating: spec.isolating,
   addAttributes() {
@@ -94,7 +96,8 @@ export function nextTableCell(state, dispatch) {
 
 export const DocumentTables = Extension.create({
   name: 'documentTables',
-  addExtensions() { return nodes; },
+  addOptions() { return { cellContent: '(paragraph | heading | codeBlock | bulletList | orderedList)+' }; },
+  addExtensions() { return nodes.map(node => node.configure({ cellContent: this.options.cellContent })); },
   extendNodeSchema(extension) {
     const key = Object.keys(names).find(key => names[key] === extension.name);
     return key ? { tableRole: specifications[key].tableRole } : {};

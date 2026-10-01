@@ -3,6 +3,7 @@
 const crypto = require('node:crypto');
 const { buildDocxRunContentXml, segmentDocxTextForSerialization, escapeXml } = require('./docxTextXml.js');
 const manuscriptModel = require('../../core/word-manuscript-notes-v1.cjs');
+const { renderTableParagraphs } = require('../../io/documentTables.js');
 
 const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
 const MAX_NOTES = 256;
@@ -158,7 +159,7 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
         ids.set(list.numId, nextNumId);
         numberings.push({ ...list, numId: nextNumId++ });
       }
-      return `<w:${kind} w:id="${binding.nativeId}">${binding.paragraphs.map((value, index) => {
+      return `<w:${kind} w:id="${binding.nativeId}">${renderTableParagraphs(binding.paragraphs, (_value, index) => rows[index]?.table, (value, index) => {
       const { paragraph, list } = rows[index] || {};
       const numPr = list ? `<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${ids.get(list.numId)}"/></w:numPr>` : '';
       const runs = paragraph ? (paragraph.content || []).map(node => {
@@ -171,7 +172,7 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
       }).join('') : `<w:r>${buildDocxRunContentXml(value)}</w:r>`;
       const align = paragraph?.attrs?.textAlign;
       return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${numPr}${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
-    }).join('')}</w:${kind}>`; }).join('');
+    })}</w:${kind}>`; }).join('');
     const name = `${kind}s.xml`;
     entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });
     if (links.size) entries.push({ name: `word/_rels/${name}.rels`, data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href, id]) => `<Relationship Id="${id}" Type="${REL_NS}hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('')}</Relationships>` });

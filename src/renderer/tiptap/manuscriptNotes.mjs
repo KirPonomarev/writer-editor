@@ -8,6 +8,7 @@ import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { DocumentTextStyle } from './documentTextStyle.mjs';
 import { DocumentParagraphAlignment } from './documentParagraphAlignment.mjs';
+import { DocumentTables } from './documentTables.mjs';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 import { openLinkDialog } from '../linkDialog.mjs';
 
@@ -54,6 +55,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
     extensions: [StarterKit.configure({ heading: false,
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
     DocumentTextStyle, DocumentParagraphAlignment, Color,
+    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList)+' }),
     Highlight.configure({ multicolor: true }), Underline,
     Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })],
     content: { type: 'doc', content: [{ type: 'paragraph' }] },

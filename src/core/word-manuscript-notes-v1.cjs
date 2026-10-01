@@ -4,6 +4,7 @@ const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
 const { normalizeDocxHttpHref } = require('../io/docxHyperlinks.cjs');
 const { normalizeFontFamily, normalizeFontSize } = require('../io/inlineTypography.cjs');
+const { tableParagraphs } = require('../io/documentTables.js');
 
 const MODE = 'MANUSCRIPT_POINT_REBASE_V1';
 const LIMITS = Object.freeze({ notes: 256, paragraphs: 128, text: 200000, bytes: 1024 * 1024 });
@@ -21,12 +22,32 @@ function validateNoteBody(body) {
     && body.content.length > 0 && body.content.length <= LIMITS.paragraphs, 'NOTE_BODY_STRUCTURE');
   let size = 0;
   const paragraphs = [];
-  let nextListId = 1;
-  const visit = (blocks, stack = []) => {
+  let nextListId = 1, nextTableId = 1;
+  const visit = (blocks, stack = [], tableCursor = null) => {
     for (const block of blocks) {
       if (block?.type === 'paragraph') {
         need(paragraphs.length < LIMITS.paragraphs, 'NOTE_BODY_BUDGET');
-        paragraphs.push({ paragraph: block, list: stack.at(-1) || null });
+        paragraphs.push({ paragraph: block, list: stack.at(-1) || null,
+          ...(tableCursor ? { table: tableCursor() } : {}) });
+        continue;
+      }
+      if (block?.type === 'table') {
+        need(!stack.length && !tableCursor && keys(block, ['type', 'attrs', 'content'])
+          && Array.isArray(block.content) && block.content.length > 0
+          && (block.attrs === undefined || keys(block.attrs, ['wordTable'])), 'NOTE_BODY_TABLE');
+        for (const row of block.content) {
+          need(keys(row, ['type', 'attrs', 'content']) && row.type === 'tableRow' && Array.isArray(row.content)
+            && (row.attrs === undefined || keys(row.attrs, [])), 'NOTE_BODY_TABLE_ROW');
+          for (const cell of row.content) need(keys(cell, ['type', 'attrs', 'content'])
+            && (cell.attrs === undefined || keys(cell.attrs, ['colspan', 'rowspan', 'colwidth', 'wordCell'])), 'NOTE_BODY_TABLE_CELL');
+        }
+        let leaves;
+        try { leaves = tableParagraphs(block, `note-table-${nextTableId++}`); }
+        catch (error) { fail(`NOTE_BODY_TABLE:${error.message}`); }
+        need(paragraphs.length + leaves.length <= LIMITS.paragraphs, 'NOTE_BODY_BUDGET');
+        let index = 0;
+        for (const row of block.content) for (const cell of row.content) visit(cell.content, [], () => leaves[index++].table);
+        need(index === leaves.length, 'NOTE_BODY_TABLE_BINDING');
         continue;
       }
       need(keys(block, ['type', 'attrs', 'content']) && ['bulletList', 'orderedList'].includes(block.type), 'NOTE_BODY_BLOCK');
@@ -42,7 +63,7 @@ function validateNoteBody(body) {
           && item.content.length > 0 && item.content.length <= LIMITS.paragraphs
           && item.content[0]?.type === 'paragraph'
           && item.content.slice(1).every(child => ['bulletList', 'orderedList'].includes(child?.type)), 'NOTE_BODY_LIST_ITEM');
-        visit(item.content, [...stack, list]);
+        visit(item.content, [...stack, list], tableCursor);
       }
     }
   };
