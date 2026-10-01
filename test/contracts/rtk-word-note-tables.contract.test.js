@@ -187,3 +187,80 @@ test('native confirmation discloses table ownership, topology and property-only 
   for (const text of ['Таблица 1: 2 строк, 2 столбцов', 'строка 2, столбец 2', '100 пт, 150 пт', '#ABCDEF', 'одинарная 0.5 пт', 'объединение 1 × 1', 'Оформление до:', 'Оформление после:']) assert(shown.detail.includes(text), text);
   assert.equal(shown.defaultId, 0);
 });
+
+async function tableReturnFixture(kind, mutate = value => value, explicit = true) {
+  const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const { legacyTableProperties } = require('../../src/io/documentTableProperties.js');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const sceneId = 'roman/a.txt', text = 'Text', projectId = 'table-return';
+  const richBody = body();
+  if (explicit) richBody.content[1].attrs = { wordTable: { ...legacyTableProperties(2), grid: [2000, 2000] } };
+  const document = { schemaVersion: 1, projectId, notes: [{ id: 'table-note', title: '', scope: 'manuscript',
+    body: model.validateNoteBody(richBody).text,
+    manuscript: model.bindManuscriptPayload({ kind, body: richBody, sceneId, offsetUtf16: 2, sceneContent: text }) },
+  { id: 'private', title: 'Private', body: 'Do not export or change', scope: 'project' }] };
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId, projectRoot: '/project', notesDocument: document,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text, doc: doc(p(text)) }] });
+  const original = buildDocxReviewPacketBuffer(source);
+  const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: original }).parts };
+  const part = `word/${kind}s.xml`;
+  parts[part] = mutate(parts[part]);
+  const bytes = buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  const stable = value => Array.isArray(value) ? `[${value.map(stable).join(',')}]` : value && typeof value === 'object'
+    ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}` : JSON.stringify(value);
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+    sha256Text: model.sha, sha256Json: value => 'sha256:' + model.sha(stable(value)), byteLength: value => Buffer.byteLength(value),
+  } });
+  assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
+  const returnedNotes = bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes);
+  assert.equal(model.validateNoteBody(returnedNotes[0].body).text, document.notes[0].body, 'fixture changes no note text');
+  return { document, returnedNotes, input: { document, projectId, roundId: 'table-only', artifactSha256: model.sha(bytes),
+    baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap, returnedNotes,
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '2026-10-01T09:00:00Z' } };
+}
+
+const tableOnlyChanges = {
+  grid: xml => xml.replaceAll('w:w="2000"', 'w:w="2500"'),
+  width: xml => xml.replace('<w:tblPr>', '<w:tblPr><w:tblW w:w="5000" w:type="dxa"/>'),
+  border: xml => xml.replace('<w:top w:val="single" w:sz="4" w:color="auto"/>', '<w:top w:val="double" w:sz="8" w:color="FF0000"/>'),
+  fill: xml => xml.replace('<w:tblPr>', '<w:tblPr><w:shd w:val="clear" w:fill="ABCDEF"/>'),
+  cellFill: xml => xml.replace('<w:tcPr>', '<w:tcPr><w:shd w:val="clear" w:fill="CDEFAB"/>'),
+  cellBorder: xml => xml.replace('<w:tcPr>', '<w:tcPr><w:tcBorders><w:bottom w:val="nil"/></w:tcBorders>'),
+  header: xml => xml.replace('<w:tr>', '<w:tr><w:trPr><w:tblHeader/></w:trPr>'),
+  rows: xml => xml.replace(/<w:tbl>[\s\S]*?<\/w:tbl>/u, tableXml => {
+    const cells = [...tableXml.matchAll(/<w:tc>[\s\S]*?<\/w:tc>/gu)].map(match => match[0]);
+    assert.equal(cells.length, 4);
+    return '<w:tbl><w:tblGrid><w:gridCol w:w="2000"/></w:tblGrid>' + cells.map(cellXml => `<w:tr>${cellXml}</w:tr>`).join('') + '</w:tbl>';
+  }),
+  removeTable: xml => xml.replace(/<w:tbl>[\s\S]*?<\/w:tbl>/u, tableXml =>
+    [...tableXml.matchAll(/<w:tc>([\s\S]*?)<\/w:tc>/gu)].map(match => match[1].replace(/<w:tcPr>[\s\S]*?<\/w:tcPr>/u, '')).join('')),
+};
+
+for (const kind of ['footnote', 'endnote']) {
+  test(`${kind} table-only return preserves every changed property and topology with identical text`, async () => {
+    const { planNoteReturnDelta } = require('../../src/core/word-note-return-delta-v1.cjs');
+    for (const [label, mutate] of Object.entries(tableOnlyChanges)) {
+      const fixture = await tableReturnFixture(kind, mutate);
+      const result = planNoteReturnDelta(fixture.input);
+      assert.equal(result.changes.length, 1, label);
+      assert.equal(result.changes[0].operation, 'update', label);
+      assert.deepEqual(result.document.notes[0].manuscript.body, fixture.returnedNotes[0].body, label);
+      assert.deepEqual(result.document.notes[0].manuscript.reference, fixture.document.notes[0].manuscript.reference, label);
+      assert.deepEqual(result.document.notes[1], fixture.document.notes[1], label);
+      assert.equal(planNoteReturnDelta({ ...fixture.input, document: result.document }).replay, true, label);
+      const stale = structuredClone(fixture.document); stale.notes[1].body += '!';
+      assert.throws(() => planNoteReturnDelta({ ...fixture.input, document: stale }), /NOTE_RETURN_BASELINE_CONFLICT/, label);
+    }
+  });
+}
+
+test('table return preserves unchanged rich representation and authenticated legacy auto-fit equivalence', async () => {
+  const { planNoteReturnDelta } = require('../../src/core/word-note-return-delta-v1.cjs');
+  for (const fixture of [await tableReturnFixture('footnote'), await tableReturnFixture('endnote', undefined, false),
+    await tableReturnFixture('footnote', xml => xml.replaceAll('w:gridCol w:w="1440"', 'w:gridCol w:w="2500"'), false)]) {
+    const result = planNoteReturnDelta(fixture.input);
+    assert.equal(result.unchanged, true);
+    assert.deepEqual(result.document, fixture.document);
+  }
+});

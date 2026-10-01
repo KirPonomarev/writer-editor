@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "99c17e08d6d8771e9f94c719d790d65f464269bddcb92f38b5accb7febe556a1",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "sha256": "2bf713993397264250b7963ec6adf0d7c8105aabefa5c58905e8cc3c57cff7d4",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7637b9fce39b1b88d8feb107554a070638c6b47437e33ed4fa59a860990e0757",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "sha256": "28d871fd9964b7279e78175361354f6dc384d1d9077ca24c2e38ab3e884d94bc",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ecc93b15cf904d149c8dd236956e105ed132fe58a9747293b2cc0f4493df0b65",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "sha256": "1353001faf54f30b1ae8e68ff976c199ca977bfb6ce9138fcbbabeaa0ec66822",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "cb59059f990e5b97bbaa9e14adfb70bd6e6dcfcb2200a9a19005ffe835dbab65",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "sha256": "e11d69e71d28f760851d2034696f1242e1efe1ce94c08fc3b95f5c3210a9cbeb",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "83e09b50c19a71370be2f6ede346f9cde6744ae404e152850a05c1f3f4d9c432",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "sha256": "2472eb1261f9bd7c35f4b529c9ebe8e18e15b21350272bc72be84d117bfc0394",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "cc9f3ea7c171c72d0d5c466fb73e6882e016c158fd170c527cc6536c13e08015",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "sha256": "5935ccde14643ca29400fc8084c4946122242d490225a645938d48f16ac4d134",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2848,10 +2848,10 @@
     },
     {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
-      "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d",
-      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
-      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
+      "sha256": "ed4be61f8d1ef3a95ee8773e81f5c1025f1c6229259777c132676dc5791e0365",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3433,10 +3433,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-tables.contract.test.js",
-      "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b",
-      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
+      "sha256": "6dc47da1996f3f3f472720195a87fdc934103673cbef52996127f55b8a97c061",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -3473,6 +3473,24 @@
       "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-01--word-note-table-return-mac.md",
+      "sha256": "b6ab963e008ea45f2625006850d2332d37c1bc7cc15e0d7a89302ad59eb8925c",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
+      "sha256": "a15305611d5de7747f20cafa7580317dbffc914273addfec62fee1eb0897129a",
+      "approvedAtUtc": "2026-10-01T09:17:15.328110Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001",
+      "rationale": "Owner-authorized bounded Mac note table return equivalence repair. Existing table comparator prevents silent loss of property-only and topology-only edits; no new grammar, UI, writer, dependency or network. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -21475,6 +21493,78 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "99c17e08d6d8771e9f94c719d790d65f464269bddcb92f38b5accb7febe556a1",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7637b9fce39b1b88d8feb107554a070638c6b47437e33ed4fa59a860990e0757",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ecc93b15cf904d149c8dd236956e105ed132fe58a9747293b2cc0f4493df0b65",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "cb59059f990e5b97bbaa9e14adfb70bd6e6dcfcb2200a9a19005ffe835dbab65",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:47:32.274530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac notes panel containment repair. Existing narrow layout is reused at component width; no document, command, storage or runtime network changes. Native SOURCE/PACKAGED proof and delivery pending. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "83e09b50c19a71370be2f6ede346f9cde6744ae404e152850a05c1f3f4d9c432",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "cc9f3ea7c171c72d0d5c466fb73e6882e016c158fd170c527cc6536c13e08015",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
+    },
+    {
+      "filePath": "src/core/word-note-return-delta-v1.cjs",
+      "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
+      "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-note-tables.contract.test.js",
+      "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b",
+      "approvedAtUtc": "2026-10-01T08:20:46.843148Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
+      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }

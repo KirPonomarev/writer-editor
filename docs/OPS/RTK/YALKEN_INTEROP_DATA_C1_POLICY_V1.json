@@ -390,7 +390,9 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
     "src/renderer/tiptap/runtimeBridge.js",
     "docs/tasks/2026-10-01--word-note-panel-fit-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
+    "docs/tasks/2026-10-01--word-note-table-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json"
   ],
   "protectedFiles": [
     {
@@ -1471,7 +1473,7 @@
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d"
+        "sha256": "ed4be61f8d1ef3a95ee8773e81f5c1025f1c6229259777c132676dc5791e0365"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -1679,7 +1681,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-tables.contract.test.js",
-        "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b"
+        "sha256": "6dc47da1996f3f3f472720195a87fdc934103673cbef52996127f55b8a97c061"
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-tables-mac.md",
@@ -1696,6 +1698,14 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
         "sha256": "ca190de54ffb1ee2e3b7be366b7273ff6cc78eab97edaf7493e5bf429c2e2703"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-note-table-return-mac.md",
+        "sha256": "b6ab963e008ea45f2625006850d2332d37c1bc7cc15e0d7a89302ad59eb8925c"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
+        "sha256": "a15305611d5de7747f20cafa7580317dbffc914273addfec62fee1eb0897129a"
       }
     ],
     "followupRepair": {
