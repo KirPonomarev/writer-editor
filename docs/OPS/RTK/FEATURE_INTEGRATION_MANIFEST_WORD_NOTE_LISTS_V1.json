@@ -3,7 +3,7 @@
   "taskId": "WORD_NOTE_LISTS_MAC_20261001",
   "objective": "Import, author, explicitly apply Word edits to, save, reopen and reexport bounded bulleted and decimal numbered lists inside manuscript footnotes and endnotes, preserving note identity, list nesting and starts, inline formatting and point references.",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "dab2e78ebb03bc4e7444f9efd70939ae31d3a3f7",
+  "bindingBaseSha": "608d5c1ec38888ad6f8ab0a5b929f5c8b2e572ac",
   "scopeIn": [
     "docs/tasks/2026-10-01--word-note-lists-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
@@ -28,7 +28,10 @@
     "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-    "src/export/docx/docxReviewPacketExportHandler.js"
+    "src/export/docx/docxReviewPacketExportHandler.js",
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+    "test/contracts/rtk-word-generic-comments.contract.test.js",
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js"
   ],
   "scopeOut": [
     "package.json",

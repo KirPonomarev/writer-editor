@@ -379,7 +379,10 @@
     "test/contracts/rtk-word-media-return.contract.test.js",
     "test/contracts/rtk-word-media-return-runtime.contract.test.js",
     "test/unit/r24-wp201-project-transaction.test.js",
-    "src/io/revisionBridge/reviewTransportReturnEvidenceV1.mjs"
+    "src/io/revisionBridge/reviewTransportReturnEvidenceV1.mjs",
+    "docs/tasks/2026-10-01--word-note-lists-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
+    "test/contracts/rtk-word-note-lists.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -608,7 +611,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ad1b41c9541976a3290c0a400d20a008923b45987257277832ff2c1d64d718ec"
+        "sha256": "fad925ca9517e47119b1fb73028d33f8a928b5a05eb11722218c558d233f28ae"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -620,7 +623,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "634989f530ef093d9f9816b6c37bcb037d5f250aa021c6d0d9058cd810b7bef5"
+        "sha256": "95e2174b2576c2ca14601242328228014420791b664551bd2b3ed5b7e7f47105"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -640,11 +643,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "0528cb47e6b1ddbd105c6bbca06905c20abd0287cf50ed31ce9c0dd45742f426"
+        "sha256": "2e0866b414be9c3a7e4ffeee18377a035eef8dcb1787774bc83d44caec6ee5a3"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "10b2ad90779dd6107b36df7c0c26027f839381b28c339dfc3a3785eeb7641d0d"
+        "sha256": "535c4e0e5883613881054951c2db2227dc0ff5763acaf56b060c1d1c416e49d2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -720,7 +723,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "6cbf572947ef4e465f785d8bd182556b3765487b5c53e5a1f2e8f64e4f76600c"
+        "sha256": "328c3b3e162aac7107da53090c30bfdaf0f934b36209a6ad9b3db62f6e48be53"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -828,7 +831,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "197ab9fdfd659852b3f12af684187f1ed055e2afb4c6218383d2e1f130275e8f"
+        "sha256": "e77c31d9d9fd804d091108031090420992563e29e5ea16df86877d18c873d7b0"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -916,7 +919,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "39abceedb4e10432398063b7190c6f3544c57b322ae0dba0386b639f9e08cfec"
+        "sha256": "979a7dae8085922470b37cfdac8b3befa25c4e811a52d2f5c4f20b8aecf02ce9"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
@@ -992,7 +995,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketNotes.js",
-        "sha256": "c942ceebc9df28c9205cedffd56edc61268949115e81a46a904cf7bf66a52c5e"
+        "sha256": "3ee7184b7f368fdd585b32ce9f9adb5f75fce9c468331765decd9168f908beb2"
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
@@ -1264,7 +1267,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "2f118382668b69124241b0c8b0a4748d8e8181200b3168ed801df4375e18e61d"
+        "sha256": "4a4c1df6423ecb403135b8bde350db0bd60569a8f5f31c8c51cdfdedbdb3da50"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
@@ -1424,11 +1427,11 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "a0775e2ff220c791549add92010f7ef2664e490fed3b11e92951478830702780"
+        "sha256": "9abb974823d86f9d3f600c4c418274547147f56e28d99cc2f13ebc063a7561aa"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "bd1512c3cfbb74b6c0e7e455ffc4dcdd5409b74f4021d20cee6db0d29f8d476b"
+        "sha256": "2d0adfd4d1520861c83e8ef94e4f59286a610e40572b50801609b500cfcc10e4"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
@@ -1456,11 +1459,11 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "50e9b8fe8dd156553ef8125c6de8cb5c13d35bec4d00feac5f7d3bfecd7e2d54"
+        "sha256": "ce6db83902e8f47e982bbf7cea6226a8e638b1ca212fc48ac5ec8311986704d0"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "387fa3fd2a20c13b28738cac2f791b34589b8d01c442ffa1c6276540c298c121"
+        "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -1468,7 +1471,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-        "sha256": "c7beddba181656e20df2f5fe54b930cff52863c5c9529444c0028970a108e306"
+        "sha256": "80f6723de437cfbe16811bed395dc0bf1336b63cd7afe04c8a40e92b241e57d0"
       },
       {
         "path": "test/contracts/rtk-word-note-return-package.contract.test.js",
@@ -1645,6 +1648,18 @@
       {
         "path": "test/contracts/rtk-word-media-return-runtime.contract.test.js",
         "sha256": "d5d46534ad11c9e73d29b8142247c7e79d86cf7cac0410fb5c5fb38a55b30e21"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-note-lists-mac.md",
+        "sha256": "0b909f4c0ad03f29fbd353181513ee5c83d059fc2faf66ca76d2cb4218ebb1f7"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
+        "sha256": "fed8f2726440fea821cbc9f18b9eea37307c535d4d792d48d426bddfa7301047"
+      },
+      {
+        "path": "test/contracts/rtk-word-note-lists.contract.test.js",
+        "sha256": "76e939661ad5b226112e09f78a180ac86f752205d8b06247f3aa81b5b810e93f"
       }
     ],
     "followupRepair": {

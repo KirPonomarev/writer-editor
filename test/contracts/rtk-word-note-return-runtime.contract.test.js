@@ -64,7 +64,7 @@ async function harness(t) {
     current: true, duringWrite: null, duringPublish: null };
   const context = { projectRoot: root, projectId, reviewTransportAuthorityCapsule: source.localAuthorityCapsule,
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: model.sha(bytes), parserResult: parsed } };
-  const sandbox = { Buffer, console, require: createRequire(path.join(__dirname, '../../src/main.js')), fs: fs.promises, path,
+  const sandbox = { Buffer, console, manuscriptNoteModel: model, require: createRequire(path.join(__dirname, '../../src/main.js')), fs: fs.promises, path,
     activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life', currentFilePath: scenePath,
     lastSignaledEditGeneration: 0, isDirty: false, autoSaveInProgress: false, notesStateDigest,
     COMMAND_BUS_ROUTE: 'command.bus', evaluateWriterLocalCommandAccess: () => ({ allowed: h.profileAllowed !== false, reason: 'PROFILE_DENIED' }),
