@@ -4387,6 +4387,9 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
       canonicalMarksSha256: cryptoPort.sha256Json(formatIr || { marks: [] }),
       ...(formatIr ? { formatIr } : {}),
       ...(pendingLedger ? {
+        ...(pendingLedger.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingLedger.noteSourcePoints
+          .filter(point => point.paragraphIndex === index).map(point => ({ noteId: point.noteId,
+            offsetUtf16: pendingTextRevisions.projectSourcePoint(pendingLedger, point, 'export').offsetUtf16 })) } : {}),
         pendingRevisionSegments: pendingSegments[index],
         pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision
           : pendingLedger.revisions.find(revision => revision.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(revision)),
@@ -5070,11 +5073,37 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
     throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
   const notesBinding = validateDocumentNotesReturn({ expected: source.documentNotes,
     returned: parsed.reviewIr?.documentNotes, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest });
-  if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
+
   const envelope = await loadDocumentContentEnvelopeModule();
   const baselineDocument = envelope.parseObservablePayload(source.sceneNoteBinding.raw);
   if (baselineDocument.issue) throw Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
   const ledger = pendingTextRevisions.readLedger(baselineDocument.doc);
+  if (ledger?.schemaVersion === 3) {
+    if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest
+      || (parsed.reviewIr.commentThreads || []).length) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    if (!preview.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
+    const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+    if (!plan.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
+    const returnedDoc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+    const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes({
+      document: source.notesDocument, projectId: source.documentNotes.projectId,
+      sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId,
+      baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap,
+      beforeDoc: baselineDocument.doc, returnedDoc,
+      returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+      unionReferences: preview.contentPreview.pendingNoteReferences || parsed.reviewIr.documentNotes.references });
+    const returnedLedger = pendingTextRevisions.readLedger(bound.returnedDoc);
+    const expectedPoints = pendingTextRevisions.noteProjection(baselineDocument.doc, 'export');
+    const actualPoints = pendingTextRevisions.noteProjection(bound.returnedDoc, 'export');
+    if (!revisionBridge.validateDocxReviewTableTopology(parsed.reviewIr.formattingParagraphs, source.localAuthorityCapsule.exportMap).ok
+      || stableRtkReviewTransportJson(expectedPoints) !== stableRtkReviewTransportJson(actualPoints)
+      || stableRtkReviewTransportJson(scenePendingExportSemantics(ledger, source.localAuthorityCapsule.exportMap.exportTypography))
+        !== stableRtkReviewTransportJson(scenePendingExportSemantics(returnedLedger, source.localAuthorityCapsule.exportMap.exportTypography)))
+      throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
+    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256 };
+  }
+  if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
   if (ledger?.revisions.some(revision => revision.state === 'pending')
     && source.documentNotes.notes.length === 0 && source.documentNotes.sourceBindings.length === 0
     && (parsed.reviewIr.documentNotes?.notes || []).length === 0 && (parsed.reviewIr.commentThreads || []).length === 0) {
@@ -5938,7 +5967,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
-    if (intake.parserResult?.reviewIr?.commentThreads?.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)
+    if (intake.parserResult?.reviewIr?.commentThreads?.length)
       throw Error('PENDING_RETURN_ANNOTATION_UNDO_REQUIRED');
     const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
     if (!plan.ok || plan.candidateCreatePlan?.entries?.length !== 1) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
@@ -5957,7 +5986,21 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       const originalProof = revisionBridge.validateShiftedCellReturnOriginalV1(current.parsed.doc, incoming.doc);
       if (!originalProof.ok) throw Error(originalProof.code);
     }
-    const replacement = pendingTextRevisions.replaceFromReturn(current.parsed.doc, incoming.doc, receipt,
+    let beforeDoc = current.parsed.doc, returnedDoc = incoming.doc, notesDigest = null;
+    const notesStorage = await loadNotesStorageModule();
+    const notesState = await notesStorage.readNotesStorage({ projectRoot: current.projectRoot, projectId: current.projectId }); check();
+    if (!notesState.ok) throw Error('PENDING_RETURN_NOTES_UNAVAILABLE');
+    const activeNotes = notesState.document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
+    if (!replay && (activeNotes.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)) {
+      const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes({
+        document: notesState.document, projectId: current.projectId, sceneId, baseline: capsule.documentNotes,
+        exportMap: capsule.exportMap, beforeDoc, returnedDoc,
+        returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
+        unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references });
+      beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
+    }
+    notesDigest = notesStateDigest(notesState.document);
+    const replacement = pendingTextRevisions.replaceFromReturn(beforeDoc, returnedDoc, receipt,
       mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
         ? mapped.paragraphBindings : undefined));
     // Compare exact paragraph occurrences. The envelope's legacy display text
@@ -5971,7 +6014,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       consumed = true; check();
       const payload = { action: 'authenticated-pending-return', projectId: current.projectId,
         sceneId, subjectId: current.subjectId, expectedSceneSha256: current.sceneSha256 };
-      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement });
+      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest });
       let result;
       try { result = await dispatchMenuCommand('cmd.project.review.decidePendingRevision', payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedPendingReturnAdmissions.delete(payload); }
@@ -23963,6 +24006,7 @@ async function handlePendingRevisionCommand(payload = {}) {
       const visible = doc => envelope.canonicalizeDocumentJson(pendingTextRevisions.normalizeNode(doc));
       if (JSON.stringify(visible(live.doc)) !== JSON.stringify(visible(context.parsed.doc))
         || JSON.stringify(liveLedger) !== JSON.stringify(savedLedger)) throw Error('PENDING_REVISION_EDITOR_STALE');
+      let expectedNotesDigest = admission?.notesDigest || null;
       const revalidate = async () => {
         if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
@@ -23973,7 +24017,14 @@ async function handlePendingRevisionCommand(payload = {}) {
         const storage = await loadNotesStorageModule();
         const notes = await storage.readNotesStorage({ projectRoot: context.projectRoot, projectId: context.projectId });
         if (!notes.ok) throw Error('PENDING_REVISION_NOTES_UNAVAILABLE');
-        if (notes.document.notes.some(n => !n.deleted && n.manuscript?.reference?.sceneId === context.sceneId)) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+        const digest = notesStateDigest(notes.document);
+        if (expectedNotesDigest !== null && expectedNotesDigest !== digest) throw Error('PENDING_REVISION_NOTES_CHANGED');
+        expectedNotesDigest = digest;
+        const active = notes.document.notes.filter(n => !n.deleted && n.manuscript?.reference?.sceneId === context.sceneId);
+        const points = pendingTextRevisions.noteProjection(context.parsed.doc);
+        if (active.length && !admission && (!points || points.length !== active.length
+          || active.some(n => !points.some(p => p.noteId === n.id && p.globalOffsetUtf16 === n.manuscript.reference.offsetUtf16))))
+          throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
       };
       await revalidate();
       const decided = admission ? admission.replacement : pendingTextRevisions.decide(context.parsed.doc, { action: payload.action,
@@ -27356,8 +27407,10 @@ async function handleExportDocxMin(payloadRaw) {
     let noteBlocks, documentNotes;
     if (active) {
       manuscriptNoteModel.sceneText(snapshot.content);
-      const paragraphs = snapshot.doc ? snapshot.doc.content.map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
-      noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text }));
+      const paragraphs = snapshot.doc ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(snapshot.doc)).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
+      noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
+        ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
+          .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
       documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
     }
     if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || isDirty) throw new Error('DOCX_SOURCE_CHANGED');

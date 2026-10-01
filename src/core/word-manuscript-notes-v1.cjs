@@ -237,13 +237,33 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
   const active = document.notes.filter(n => n.manuscript?.reference.sceneId === sceneId && !n.deleted);
   if (!active.length) return null;
   const before = sceneText(beforeContent), after = sceneText(afterContent);
+  const pending = require('./word-pending-text-revisions-v1.cjs');
+  const beforeDoc = parseObservablePayload(beforeContent).doc, afterDoc = parseObservablePayload(afterContent).doc;
+  const beforeLedger = pending.readLedger(beforeDoc), afterLedger = pending.readLedger(afterDoc);
+  let beforePoints = pending.noteProjection(beforeDoc), afterPoints = pending.noteProjection(afterDoc);
+  if (beforePoints || afterPoints) {
+    // First admission includes the exact previous baseline frame. It is checked
+    // against the saved canonical reference below, not trusted as an offset hint.
+    if (!beforePoints && afterLedger?.roundUndo?.length) {
+      const frame = afterLedger.roundUndo.at(-1);
+      const frameDoc = pending.bindLedger({ ...frame, roundUndo: [], roundRedo: [], returnReceipts: [] });
+      need(sceneText(require('./document-content-envelope-v1.cjs').composeObservablePayload({ doc: frameDoc })) === before, 'NOTE_PENDING_BASELINE_MISMATCH');
+      beforePoints = pending.noteProjection(frameDoc);
+    }
+    need(beforePoints?.length === active.length && afterPoints?.length === active.length
+      && active.every(n => beforePoints.some(p => p.noteId === n.id) && afterPoints.some(p => p.noteId === n.id)), 'NOTE_PENDING_IDENTITY_MISMATCH');
+  } else need(!beforeLedger && !afterLedger, 'NOTE_PENDING_BINDINGS_REQUIRED');
+  let referenceChanged = false;
   for (const note of active) {
     const ref = note.manuscript.reference;
     need(ref.sourceTextSha256 === sha(before) && boundary(before, ref.offsetUtf16), 'NOTE_REFERENCE_STALE');
-    ref.offsetUtf16 = mapPoint(before, after, ref.offsetUtf16);
+    if (beforePoints) need(beforePoints.find(p => p.noteId === note.id).globalOffsetUtf16 === ref.offsetUtf16, 'NOTE_PENDING_REFERENCE_STALE');
+    const nextOffset = afterPoints ? afterPoints.find(p => p.noteId === note.id).globalOffsetUtf16 : mapPoint(before, after, ref.offsetUtf16);
+    referenceChanged ||= nextOffset !== ref.offsetUtf16;
+    ref.offsetUtf16 = nextOffset;
     ref.sourceTextSha256 = sha(after);
   }
-  if (before === after) return null;
+  if (before === after && !referenceChanged) return null;
   return { mode: MODE, beforeText, afterText: `${JSON.stringify(document, null, 2)}\n` };
 }
 
@@ -305,6 +325,7 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
 function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId, importOperationId, beforeText, createdAt = '1970-01-01T00:00:00.000Z' }) {
   need(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= LIMITS.notes, 'NOTE_IMPORT_COUNT');
   const text = sceneText(sceneContent), parsed = parseObservablePayload(sceneContent);
+  need(!require('./word-pending-text-revisions-v1.cjs').readLedger(parsed.doc), 'NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN');
   const paragraphs = parsed.doc ? sceneParagraphs(parsed.doc) : parsed.text.split('\n');
   const before = beforeText === null ? { schemaVersion: 1, projectId, notes: [] } : JSON.parse(beforeText);
   validateManuscriptDocument(before, projectId);

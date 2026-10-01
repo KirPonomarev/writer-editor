@@ -10700,7 +10700,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     }
     if (!parsed.failure && pendingSource.revisions.length) {
       const supported = result => !result.failure
-        && !result.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd'].includes(d.tagName))
+        && !result.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd', 'w:footnoteReference', 'w:endnoteReference'].includes(d.tagName))
         && !result.contentPreview.paragraphs.some(p => p.blockKind || p.blockquoteDepth || p.sectionBreakType);
       if (!supported(parsed) || parsed.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
@@ -10759,6 +10759,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         throw Error('PENDING_REVISIONS_ORIGINAL_BINDING');
       parsed = currentParsed;
       parsed.contentPreview.pendingRevisionDocument = doc;
+      parsed.contentPreview.pendingNoteReferences = pendingSource.noteReferences.map(ref => {
+        const paragraphIndex = occurrenceToLeaf.get(ref.paragraphIndex);
+        if (paragraphIndex === undefined) throw Error('PENDING_NOTE_PARAGRAPH_REMOVED');
+        pendingTextRevisions.projectSourcePoint(ledger, { ...ref, paragraphIndex });
+        return { ...ref, paragraphIndex };
+      });
     }
     allDocumentRelationshipsPreserved = !parsed.failure && inlineStyles.hyperlinks.onlyHyperlinks
       && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
@@ -10771,9 +10777,10 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           byteLength: value => new TextEncoder().encode(value).length,
         } });
         const ir = analysis.reviewIr, notes = ir?.documentNotes;
-        if (!analysis.ok || ir.sourceMode !== 'CLEAN' || !notes
+        if (!analysis.ok || !notes
+          || !parsed.contentPreview.pendingRevisionDocument && ir.sourceMode !== 'CLEAN'
           || analysis.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))
-          || ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
+          || !parsed.contentPreview.pendingRevisionDocument && ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
           || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
         const richNotes = parseDocumentNotesRichReturn(bytes, notes);
         parsed.contentPreview.noteMediaParts = [...new Set(notes.bodySources.flatMap(source => extractDocumentMediaReferencesV1(source.documentXml, {
@@ -10784,10 +10791,18 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         parsed.contentPreview.manuscriptNotes = notes.notes.map((note, index) => {
           const ref = notes.references[index];
           const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
-          const paragraph = parsed.contentPreview.paragraphs[note.paragraphIndex];
+          let point = note;
+          if (parsed.contentPreview.pendingRevisionDocument) {
+            const ledger = pendingTextRevisions.readLedger(parsed.contentPreview.pendingRevisionDocument);
+            const union = parsed.contentPreview.pendingNoteReferences.find(r => r.kind === ref.kind && r.nativeId === ref.nativeId);
+            if (!union || pendingTextRevisions.projectSourcePoint(ledger, union, 'original').offsetUtf16 !== note.offsetUtf16)
+              throw Error('PENDING_NOTE_ORIGINAL_BINDING');
+            point = pendingTextRevisions.projectSourcePoint(ledger, union);
+          }
+          const paragraph = parsed.contentPreview.paragraphs[point.paragraphIndex];
           if (!source || !paragraph
-            || !Number.isSafeInteger(note.offsetUtf16) || note.offsetUtf16 < 0 || note.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
-          return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
+            || !Number.isSafeInteger(point.offsetUtf16) || point.offsetUtf16 < 0 || point.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
+          return { kind: note.kind, paragraphIndex: point.paragraphIndex, offsetUtf16: point.offsetUtf16,
             body: richNotes[index].body };
         });
         parsed.diagnostics = parsed.diagnostics.filter(item => !['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName));

@@ -222,6 +222,8 @@ test('Actual authenticated pending return preserves exact empty-block positions 
   const context = { projectRoot: root, projectId: 'rich', reviewTransportAuthorityCapsule: capsule,
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes), parserResult: {} } };
   const sandbox = vm.createContext({ Buffer, loadDocumentContentEnvelopeModule: async () => envelope, pendingTextRevisions: model,
+    notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest,
+    loadNotesStorageModule: async () => ({ readNotesStorage: async () => ({ ok: true, document: { schemaVersion: 1, projectId: 'rich', notes: [] } }) }),
     activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life', lastSignaledEditGeneration: 1,
     currentFilePath: file, isDirty: false, autoSaveInProgress: false, getProjectRootPath: () => root,
     computeHash: hash, createRtkReviewTransportCryptoPort: () => ({}), docxReviewReturnIntakeProductBudgets: () => ({}),

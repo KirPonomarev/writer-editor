@@ -118,6 +118,7 @@ function normalizeReviewPacketBlocks(input = {}) {
       ...(block.pendingRowRevision ? { pendingRowRevision: JSON.parse(JSON.stringify(block.pendingRowRevision)) } : {}),
       ...(block.pendingBoundaryRevision ? { pendingBoundaryRevision: JSON.parse(JSON.stringify(block.pendingBoundaryRevision)) } : {}),
       ...(block.pendingParagraphRevision ? { pendingParagraphRevision: JSON.parse(JSON.stringify(block.pendingParagraphRevision)) } : {}),
+      ...(Array.isArray(block.pendingNoteSourcePoints) ? { pendingNoteSourcePoints: JSON.parse(JSON.stringify(block.pendingNoteSourcePoints)) } : {}),
       ...(Array.isArray(block.pendingRevisionSegments) ? { pendingRevisionSegments: JSON.parse(JSON.stringify(block.pendingRevisionSegments)) } : {}),
       paraId: normalizeString(block.paraId).replace(/[^a-fA-F0-9]/g, '').slice(0, 8).padStart(8, '0'),
       textId: normalizeString(block.textId).replace(/[^a-fA-F0-9]/g, '').slice(0, 8).padStart(8, '0'),
@@ -349,7 +350,8 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   let textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
   if (block.pendingRevisionSegments) {
-    if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+    if (commentMarkersForBlock(commentExport, block).size || userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+    const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
     textRun = buildPendingRunsXml(block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments, node => {
       const inline = {}, preservedMarks = [];
       for (const mark of node.marks || []) {
@@ -360,7 +362,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
       }
       const text = node.type === 'hardBreak' ? '\n' : node.text;
       return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks }] } }, hyperlinkByHref);
-    }, revisionCounter, block.sceneId || '');
+    }, revisionCounter, block.sceneId || '', pendingMarkers);
   }
   // Google Office drops an otherwise empty paragraph carrying a section
   // break. A word joiner is visually empty but keeps the authored paragraph

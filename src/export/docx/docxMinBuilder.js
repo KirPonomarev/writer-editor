@@ -399,11 +399,12 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         ? runs.map(run => run.image ? media.drawing(run.image)
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
       if (pendingLedger) {
-        if (markers.size) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+        if (userMarkers.size || hasMedia || hasLinks) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+        const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(deps.documentNotes, noteBlock || {});
         runsXml = buildPendingRunsXml(rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index],
-          node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter);
+          node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter, '', pendingMarkers);
       }
-      if (markers.size) {
+      if (markers.size && !pendingLedger) {
         const parts = [], boundaries = [...markers.keys()].sort((a, b) => a - b);
         let offset = 0;
         for (const run of runs || [{ text }]) {

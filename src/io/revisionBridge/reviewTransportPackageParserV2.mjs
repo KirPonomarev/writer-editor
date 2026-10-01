@@ -5368,17 +5368,32 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     && ['moveFromRangeStart', 'moveFromRangeEnd', 'moveToRangeStart', 'moveToRangeEnd'].includes(t.localName));
   if (!tokens.length && moveMarkers.length) throw Error('PENDING_MOVE_RANGE_ORPHAN');
   const propertyTokens = scan.tokens.filter(t => t.namespaceUri === W_NS && ['rPrChange', 'pPrChange'].includes(t.localName));
-  if (!tokens.length && !propertyTokens.length && !boundaryTokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [] };
+  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
+  const noteReferences = scan.tokens.filter(t => ['footnoteReference', 'endnoteReference'].includes(t.localName)).map(token => {
+    const paragraphIndex = paragraphs.findIndex(p => token.openStart >= p.openEnd && token.closeEnd <= p.closeStart);
+    const p = paragraphs[paragraphIndex], kind = token.localName === 'footnoteReference' ? 'footnote' : 'endnote';
+    const run = p && scan.tokens.find(r => isWordToken(r, 'r') && r.depth === p.depth + 1
+      && token.openStart >= r.openEnd && token.closeEnd <= r.closeStart);
+    if (!p || !run || token.namespaceUri !== W_NS || !token.selfClosing || token.depth !== run.depth + 1
+      || attr(token, 'customMarkFollows', W_NS) || !/^[1-9]\d{0,8}$/u.test(attr(token, 'id', W_NS))
+      || boundaryTokens.length || propertyTokens.length || moveMarkers.length)
+      throw Error('PENDING_NOTE_REFERENCE_UNSUPPORTED');
+    const before = { ...p, closeStart: token.openStart };
+    return { kind, nativeId: attr(token, 'id', W_NS), paragraphIndex,
+      offsetUtf16: semanticAtomsToText(extractSemanticAtoms(documentXml, scan, before)).replaceAll('\r', '\n').length };
+  });
+  if (noteReferences.length > 256 || new Set(noteReferences.map(r => r.kind + ':' + r.nativeId)).size !== noteReferences.length)
+    throw Error('PENDING_NOTE_REFERENCES_INVALID');
+  if (!tokens.length && !propertyTokens.length && !boundaryTokens.length) return { xml: documentXml, currentXml: documentXml, revisions: [], noteReferences };
   if (blockingReason(scan.diagnostics)) throw Error('PENDING_REVISIONS_XML_INVALID');
   if (allRevisionTokens.length + propertyTokens.length > 1024) throw Error('PENDING_REVISIONS_BUDGET');
   const unsupported = new Set(['numPrChange',
     'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
-    'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt', 'footnoteReference', 'endnoteReference',
+    'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt',
     'commentRangeStart', 'commentRangeEnd', 'commentReference', 'ruby', 'sym', 'ptab']);
   if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
   const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
   if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
-  const paragraphs = scan.tokens.filter(t => isWordToken(t, 'p'));
   const edits = [], revisions = [], ids = new Set();
   const boundaryOwners = new Map();
   for (const token of boundaryTokens) {
@@ -5569,7 +5584,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     return value;
   };
   currentXml = projectBoundaries(currentXml, 'del'); originalXml = projectBoundaries(originalXml, 'ins');
-  return { xml, currentXml, originalXml, formatBeforeXml, revisions, paragraphCount: paragraphs.length,
+  return { xml, currentXml, originalXml, formatBeforeXml, revisions, noteReferences, paragraphCount: paragraphs.length,
     originalParagraphCount: paragraphs.length - [...boundaryOwners.values()].filter(v => v === 'ins').length };
 
 }

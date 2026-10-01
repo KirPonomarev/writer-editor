@@ -265,9 +265,13 @@ function serializeDocumentJson(doc) {
 // Retain the readable rich JSON and existing length frame. A separate feature
 // declaration deliberately prevents older single-JSON readers from accepting
 // a scene whose semantic registry they cannot preserve.
+function requiredSceneFeatures(doc) {
+  return [...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
+    ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : [])];
+}
 function encodeSceneDocument(doc) {
-  const json = serializeDocumentJson(doc);
-  return doc.attrs?.wordUserBookmarks != null ? `${SCENE_DOCUMENT_V3_DECLARATION}\n${json}` : json;
+  const json = serializeDocumentJson(doc), requiredFeatures = requiredSceneFeatures(doc);
+  return requiredFeatures.length ? `${JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures })}\n${json}` : json;
 }
 
 function decodeSceneDocument(serializedDoc) {
@@ -288,22 +292,25 @@ function decodeSceneDocument(serializedDoc) {
       fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
     }
     if (!isPlainObject(rawDoc) || rawDoc.type !== 'doc' || !Array.isArray(rawDoc.content)) fail('DOC_BLOCK_DOCUMENT_INVALID');
-    if (rawDoc.attrs?.wordUserBookmarks != null) {
-      require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
+    if (requiredSceneFeatures(rawDoc).length) {
+      if (rawDoc.attrs?.wordUserBookmarks != null) require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
       fail('DOC_BLOCK_REQUIRED_DECLARATION_MISSING');
     }
     return { doc: canonicalizeDocumentJson(rawDoc), payloadVersion: 2 };
   }
   if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
-  if (!Array.isArray(declaration.requiredFeatures) || declaration.requiredFeatures.length !== 1
-    || declaration.requiredFeatures[0] !== 'word-user-bookmarks.v1') fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
-  if (firstLine !== SCENE_DOCUMENT_V3_DECLARATION || newline < 0) fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
-  // JSON.parse requires exactly one complete record and rejects trailing JSON.
+  if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
+    || declaration.requiredFeatures.length > 2 || declaration.requiredFeatures.some(feature =>
+      !['word-user-bookmarks.v1', 'word-pending-note-points.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+  if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
+    fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));
   if (!isPlainObject(rawDoc) || rawDoc.type !== 'doc' || !Array.isArray(rawDoc.content)
-    || !isPlainObject(rawDoc.attrs) || rawDoc.attrs.wordUserBookmarks == null) fail('DOC_BLOCK_REQUIRED_FEATURE_MISSING');
-  require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
+    || JSON.stringify(requiredSceneFeatures(rawDoc)) !== JSON.stringify(declaration.requiredFeatures)) fail('DOC_BLOCK_REQUIRED_FEATURE_MISSING');
+  const expected = JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: requiredSceneFeatures(rawDoc) });
+  if (firstLine !== expected || newline < 0) fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
+  if (rawDoc.attrs?.wordUserBookmarks != null) require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc);
   return { doc: canonicalizeDocumentJson(rawDoc), payloadVersion: 3 };
 }
 
