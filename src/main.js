@@ -4477,6 +4477,7 @@ function buildReviewDocxPacketHashTree({ projectId, sceneId, sceneRevision, rawS
 }
 
 async function readDocxReviewPacketExportSource() {
+  const sourceFilePath = currentFilePath, sourceSubjectId = currentLifecycleSubjectId(), sourceOwner = activeStage10ApplicationBootstrap;
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
@@ -4523,6 +4524,16 @@ async function readDocxReviewPacketExportSource() {
   const hmacSecret = crypto.randomBytes(32).toString('hex');
   const cryptoPort = createRtkReviewTransportCryptoPort();
   const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, { roundId, doc: parsedDocument.doc });
+  const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, true);
+  const activeNotes = notesDocument?.notes.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId);
+  const documentNotes = activeNotes ? buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
+    ...block, sceneId, documentParagraphIndex: index,
+  })), projectId, { editableReturn: true }) : null;
+  if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
+  const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
+    subjectId: sourceSubjectId, owner: sourceOwner, raw: sceneRawContent, notesDigest: notesStateDigest(notesDocument) } : null;
+  if (sourceFilePath !== currentFilePath || sourceSubjectId !== currentLifecycleSubjectId()
+    || sourceOwner !== activeStage10ApplicationBootstrap || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const primaryBlock = blocks[0] || {
     blockId: 'block-0000-empty',
     paragraphId: 'yrtk-p-empty',
@@ -4568,6 +4579,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
+    documentNotes,
     sceneText,
     blocks,
     customProperties: [
@@ -4658,6 +4670,7 @@ async function readDocxReviewPacketExportSource() {
     transportManifestDigest: transportManifestResult.manifest.payloadDigest,
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     blockCount: blocks.length,
+    ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
   };
   const authorityEncoded = buildReviewDocxPacketAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
@@ -4680,6 +4693,7 @@ async function readDocxReviewPacketExportSource() {
     automaticApplyCertified: false,
     productRuntimeWired: true,
     returnIntakeWired: false,
+    ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
   };
   // ROUND-01 (V3): the raw hmacSecret is imported into the main-process-only
   // key vault and the durable capsule carries only an opaque keyRef plus public
@@ -4710,6 +4724,8 @@ async function readDocxReviewPacketExportSource() {
     manifestDigest: transportManifestResult.manifest.payloadDigest,
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     exportMap,
+    ...(documentNotes ? { projectId, documentNotes, scenePathBySceneId: { [sceneId]: sourceFilePath },
+      baselineObservableContentBySceneId: { [sceneId]: sceneRawContent }, baselineFinalTextBySceneId: { [sceneId]: sceneText } } : {}),
   };
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
   // rounds are retained so multi-round retention holds and each round carries
@@ -4733,6 +4749,7 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
+    documentNotes, sceneNoteBinding, notesDocument, localAuthorityCapsule,
     sceneText,
     blocks,
     forbiddenSecret: hmacSecret,
@@ -4955,9 +4972,50 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   }
 }
 
+async function revalidateSceneNoteReviewExportSource(source) {
+  const binding = source?.sceneNoteBinding;
+  if (!binding || !source.documentNotes) throw Error('REVIEW_DOCX_EXPORT_NOTE_BINDING_REQUIRED');
+  const check = () => {
+    userBookmarkCapability(REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID);
+    if (binding.filePath !== currentFilePath || binding.subjectId !== currentLifecycleSubjectId()
+      || binding.owner !== activeStage10ApplicationBootstrap || binding.projectRoot !== getProjectRootPath()
+      || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  };
+  check();
+  const project = await readReviewExactTextApplyProjectBinding(binding.filePath);
+  if (!project.ok || project.projectId !== binding.projectId || project.projectRoot !== binding.projectRoot)
+    throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  if (await fs.readFile(binding.filePath, 'utf8') !== binding.raw) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  const notes = await readCanonicalNotesForDocxExport(binding.projectId, binding.projectRoot, true);
+  if (!notes || notesStateDigest(notes) !== binding.notesDigest) throw Error('REVIEW_DOCX_EXPORT_NOTES_STALE');
+  check();
+}
+
+async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge) {
+  const cryptoPort = createRtkReviewTransportCryptoPort();
+  const finalArtifactSha256 = `sha256:${computeHash(documentBuffer)}`;
+  const parsed = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: documentBuffer,
+    budgets: docxReviewReturnIntakeProductBudgets(), hmacSecret: source.forbiddenSecret,
+    expectedAuthority: source.localAuthorityCapsule.expectedAuthority, returnedArtifactSha256: finalArtifactSha256,
+    baselineFinalText: source.sceneText }, { cryptoPort });
+  if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
+    throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
+  const notesBinding = validateDocumentNotesReturn({ expected: source.documentNotes,
+    returned: parsed.reviewIr?.documentNotes, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest });
+  if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
+  const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
+  const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
+    roundId: source.localAuthorityCapsule.roundId, artifactSha256: finalArtifactSha256, baseline: source.documentNotes,
+    exportMap: source.localAuthorityCapsule.exportMap,
+    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '1970-01-01T00:00:00.000Z' });
+  if (plan.changes.length) throw Error('REVIEW_DOCX_EXPORT_NOTE_SEMANTICS_MISMATCH');
+  return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256 };
+}
+
 async function buildDocxReviewPacketBuffer(source) {
   const documentBuffer = buildDocxReviewPacketBufferCore(source);
-  const revisionBridge = source?.exportCapsule?.fullManuscript === true
+  const revisionBridge = source?.exportCapsule?.fullManuscript === true || source?.sceneNoteBinding
     ? await loadRevisionBridgeModule()
     : null;
   if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)) {
@@ -4965,7 +5023,9 @@ async function buildDocxReviewPacketBuffer(source) {
     source.localAuthorityCapsule.exportMap = privateMap;
     if (source.exportMap) source.exportMap = privateMap;
   }
-  const publicationGate = await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
+  const publicationGate = source.sceneNoteBinding
+    ? await buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge)
+    : await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
   return {
     documentBuffer,
     exportCapsule: source.exportCapsule,
@@ -5077,6 +5137,8 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
     buildDocxReviewPacketBuffer: typeof options.buildDocxReviewPacketBuffer === 'function'
       ? options.buildDocxReviewPacketBuffer
       : buildDocxReviewPacketBuffer,
+    revalidateDocxReviewPacketExportSource: typeof options.revalidateDocxReviewPacketExportSource === 'function'
+      ? options.revalidateDocxReviewPacketExportSource : revalidateSceneNoteReviewExportSource,
     queueDiskOperation: typeof options.queueDiskOperation === 'function'
       ? options.queueDiskOperation
       : queueDiskOperation,
@@ -5897,7 +5959,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true || snapshot.manuscriptNoteAuthoringPending === true) throw rejected('NOTE_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
-      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('NOTE_SAVE_SCENE_FIRST');
+      if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(saved.doc || saved.text))) throw rejected('NOTE_SAVE_SCENE_FIRST');
       checkIdentity();
     };
     // No exported or returned notes means this independent mutation lane is
@@ -10740,7 +10802,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
     if (!value) return '—';
     const alignments = { left: 'по левому краю', center: 'по центру', right: 'по правому краю', justify: 'по ширине' };
     const marks = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание' };
-    return value.body.content.map((paragraph, index) => {
+    return manuscriptNoteModel.validateNoteBody(value.body).paragraphs.map(({ paragraph, list }, index) => {
       const runs = (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return 'Перенос строки';
         const properties = (node.marks || []).flatMap(mark => {
@@ -10752,7 +10814,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
         });
         return `«${node.text}»: ${properties.join(', ') || 'обычное, параметры абзаца'}`;
       });
-      return `Абзац ${index + 1}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
+      return `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
     }).join('\n');
   };
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
@@ -15067,6 +15129,8 @@ async function getProjectNotesContext(payload = {}, options = {}) {
 }
 
 function makeNotesCommandError(commandId, code, reason, details = {}) {
+  // Typed diagnostics only: never log note text, paths, payloads or exception prose.
+  if (typeof code === 'string' && /^[A-Z][A-Z0-9_]{1,100}$/u.test(code)) console.warn(`[notes-command] ${code}`);
   return {
     ok: false,
     code,
@@ -15200,7 +15264,7 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       const review = await loadRtkNonTextReturnModule();
-      if (live.issue || !review.commentSceneSnapshotsEqual(live.doc || live.text, source.parsed.doc || source.parsed.text)) throw Error('NOTE_SAVE_SCENE_FIRST');
+      if (live.issue || !review.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(source.parsed.doc || source.parsed.text))) throw Error('NOTE_SAVE_SCENE_FIRST');
       const authority = await getMainProjectManifestAuthority();
       return authority.withProjectLease(context.projectId, lease => lease.publish(async () => {
         const fresh = await readProjectNotesDocument(context, options);
@@ -18203,7 +18267,7 @@ async function handleHistoryRestoreApplyCommand(payload = {}) {
     preRestoreSnapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
   };
   await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановлено', writeResult?.receipt?.revision ?? null,
-    writeResult?.receipt?.bookmarkPublication || null);
+    writeResult?.receipt?.historyPublication || writeResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     applied: true,
@@ -18265,7 +18329,7 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
   }
   lastHistoryRestoreReceipt = null;
   await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановление отменено', undoWriteResult?.receipt?.revision ?? null,
-    undoWriteResult?.receipt?.bookmarkPublication || null);
+    undoWriteResult?.receipt?.historyPublication || undoWriteResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     undone: true,
@@ -18285,14 +18349,25 @@ async function publishUserBookmarkHistorySnapshot(filePath, currentText, snapsho
   if (before.issue || restored.issue) throw Error('HISTORY_RESTORE_DOCUMENT_INVALID');
   const beforeDoc = before.doc || envelope.buildParagraphDocumentFromText(before.text);
   const snapshotDoc = restored.doc || envelope.buildParagraphDocumentFromText(restored.text);
-  if (!userBookmarkModel.readRegistry(beforeDoc) && !userBookmarkModel.readRegistry(snapshotDoc)) return null;
-  const plan = userBookmarkModel.planHistoryRestore({ beforeDoc, snapshotDoc });
+  const hasBookmarks = Boolean(userBookmarkModel.readRegistry(beforeDoc) || userBookmarkModel.readRegistry(snapshotDoc));
+  if (!hasBookmarks) {
+    const target = await resolveTarget();
+    if (!target.ok || target.filePath !== filePath || !target.resolvedNode?.projectId || !target.resolvedNode?.projectRoot)
+      throw Error('HISTORY_RESTORE_STALE_TARGET');
+    const storage = await loadNotesStorageModule();
+    const notes = await storage.readNotesStorage({ projectId: target.resolvedNode.projectId, projectRoot: target.resolvedNode.projectRoot });
+    if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
+    const document = notes.sourceExists ? manuscriptNoteModel.validateManuscriptDocument(JSON.parse(notes.sourceText), target.resolvedNode.projectId) : null;
+    const sceneId = path.relative(target.resolvedNode.projectRoot, filePath).split(path.sep).join('/');
+    if (!document?.notes.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId)) return null;
+  }
+  const plan = hasBookmarks ? userBookmarkModel.planHistoryRestore({ beforeDoc, snapshotDoc }) : null;
   const subjectId = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
   const snapshot = await requestEditorSnapshot(), live = envelope.parseObservablePayload(snapshot.content);
   const nonText = await loadRtkNonTextReturnModule();
   if (live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
-    || !nonText.commentSceneSnapshotsEqual(live.doc || live.text, beforeDoc)) throw Error('HISTORY_RESTORE_EDITOR_STALE');
+    || !nonText.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(beforeDoc))) throw Error('HISTORY_RESTORE_EDITOR_STALE');
   const stats = await fs.lstat(snapshotPath);
   if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1) throw Error('HISTORY_RESTORE_SNAPSHOT_INVALID');
   const beforeScenePublish = async () => {
@@ -18306,11 +18381,12 @@ async function publishUserBookmarkHistorySnapshot(filePath, currentText, snapsho
   };
   await beforeScenePublish();
   const receipt = await commitWriterProjectSnapshot(filePath, snapshotText, snapshot.generation, snapshot.bookProfile,
-    'validated user bookmark history restore', { expectedSceneContent: currentText,
-      beforeScenePublish, userBookmarkPlan: plan, userBookmarkCapturedContent: currentText });
+    'validated annotated scene history restore', { expectedSceneContent: currentText, historyRestore: true,
+      beforeScenePublish, ...(plan ? { userBookmarkPlan: plan, userBookmarkCapturedContent: currentText } : {}) });
   if (!receipt.success) throw Object.assign(Error(receipt.error || 'HISTORY_RESTORE_WRITE_FAILED'), { code: receipt.code });
   return { snapshotCreated: Boolean(receipt.userBookmarkHistorySnapshot?.snapshotCreated),
-    snapshotPath: receipt.userBookmarkHistorySnapshot?.snapshotPath || '', receipt };
+    snapshotPath: receipt.userBookmarkHistorySnapshot?.snapshotPath || '',
+    receipt: { ...receipt, historyPublication: { filePath, subjectId, sessionId, generation: snapshot.generation, savedContent: snapshotText } } };
 }
 
 function makeReplaceSingleSafeError(code, reason, details = {}) {
@@ -21860,7 +21936,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-          if ((options.userBookmarkPlan || options.mediaReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
+          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
             && expectedSceneContent !== content) {
             const markdownIo = await loadMarkdownIoModule();
             const paths = await markdownIo.listRecoverySnapshots(filePath);

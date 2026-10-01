@@ -1,3 +1,4 @@
+import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
@@ -10377,11 +10378,11 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
   const styles = { ...inlineStyles, hyperlinks };
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
   if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
-    || body.contentPreview.paragraphs.some(p => p.table || p.list || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
+    || body.contentPreview.paragraphs.some(p => p.table || p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
   if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
   const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
-  return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text);
+  return manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
 }
 
 export function parseDocumentNotesRichReturn(bytes, notes) {

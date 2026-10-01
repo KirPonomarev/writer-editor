@@ -11,7 +11,7 @@ const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code })
 // Compare effective meanings, retaining the original authored representation
 // only when every supported property and exact character remains equivalent.
 function effectiveBody(body, defaults) {
-  return body.content.map(paragraph => {
+  return model.validateNoteBody(body).paragraphs.map(({ paragraph, list }) => {
     const runs = [];
     for (const node of paragraph.content || []) {
       if (node.type === 'hardBreak') { runs.push({ type: 'hardBreak' }); continue; }
@@ -28,7 +28,7 @@ function effectiveBody(body, defaults) {
       if (previous?.type === 'text' && stable(previous.marks) === stable(marks)) previous.text += node.text;
       else runs.push({ type: 'text', text: node.text, marks });
     }
-    return { align: paragraph.attrs?.textAlign || 'left', runs };
+    return { align: paragraph.attrs?.textAlign || 'left', runs, list };
   });
 }
 

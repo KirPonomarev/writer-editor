@@ -287,6 +287,7 @@ test('legacy scene export cannot silently drop canonical comments before key or 
     source.indexOf('async function readCanonicalNotesForDocxExport('));
   const vm = require('node:vm');
   const context = vm.createContext({ isDirty: false, autoSaveInProgress: false,
+    currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
     currentFilePath: '/synthetic/roman/a.txt', isAllowedFilePath: () => true,
     getDocumentContextFromPath: () => ({ kind: 'scene' }),
     DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS: new Set(['scene']),

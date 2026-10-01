@@ -23,6 +23,10 @@ async function harness(raw, changes = {}) {
   let keyImports = 0;
   const context = vm.createContext({
     Buffer, crypto, path, Date,
+    currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
+    loadNotesStorageModule: async () => ({}),
+    readProjectNotesDocument: async () => ({ ok: true, current: { sourceExists: Boolean(changes.notesDocument), state: 'ready', document: changes.notesDocument } }),
+    ...require('../../src/export/docx/docxReviewPacketNotes.js'),
     isDirty: false, autoSaveInProgress: false, currentFilePath: '/synthetic/roman/scene.txt',
     fs: { readFile: async () => raw },
     isAllowedFilePath: () => true,
@@ -106,4 +110,28 @@ test('Dirty editor still blocks source reads and authority allocation', async ()
   const h = await harness('saved', { isDirty: true });
   await assert.rejects(h.run(), /REVIEW_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED/);
   assert.equal(h.keys(), 0);
+});
+
+test('scene source includes canonical note lists, signed digest and exact private return binding', async () => {
+  const model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const rich = doc(['Text']);
+  const body = { type: 'doc', content: [{ type: 'orderedList', attrs: { start: 4 }, content: [
+    { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Point' }] }] },
+  ] }] };
+  const notesDocument = { schemaVersion: 1, projectId: 'project-test', notes: [{ id: 'n', title: '', scope: 'manuscript', body: 'Point',
+    manuscript: model.bindManuscriptPayload({ kind: 'footnote', body, sceneId: 'roman/scene.txt', offsetUtf16: 2, sceneContent: 'Text' }) }] };
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const raw = envelope.composeObservablePayload({ doc: rich });
+  const h = await harness(raw, { notesDocument }); const source = await h.run();
+  assert.equal(source.documentNotes.notes.length, 1);
+  assert.equal(source.sceneNoteBinding.raw, raw);
+  assert.equal(source.localAuthorityCapsule.baselineObservableContentBySceneId['roman/scene.txt'], raw);
+  assert.equal(source.localAuthorityCapsule.scenePathBySceneId['roman/scene.txt'], '/synthetic/roman/scene.txt');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const bytes = builder.buildDocxReviewPacketBuffer(source);
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes, hmacSecret: source.forbiddenSecret,
+    expectedAuthority: source.localAuthorityCapsule.expectedAuthority }, { cryptoPort: h.context.createRtkReviewTransportCryptoPort() });
+  assert.equal(parsed.authorityCarrier.status, 'verified-baseline-bound');
+  assert.equal(parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest, source.documentNotes.protectedDigest);
+  assert.equal(bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes)[0].body.content[0].attrs.start, 4);
 });

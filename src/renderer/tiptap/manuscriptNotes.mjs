@@ -51,7 +51,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
   controls.setAttribute('role', 'toolbar'); controls.setAttribute('aria-label', 'Форматирование сноски');
   const surface = document.createElement('div'); surface.className = 'manuscript-note-body'; host.append(controls, surface);
   const editor = new Editor({ element: surface,
-    extensions: [StarterKit.configure({ heading: false, bulletList: false, orderedList: false, listItem: false,
+    extensions: [StarterKit.configure({ heading: false,
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
     DocumentTextStyle, DocumentParagraphAlignment, Color,
     Highlight.configure({ multicolor: true }), Underline,
@@ -72,6 +72,13 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
   for (const [label, command] of [['Полужирный', 'toggleBold'], ['Курсив', 'toggleItalic'], ['Подчёркивание', 'toggleUnderline'], ['Зачёркивание', 'toggleStrike']]) {
     const button = document.createElement('button');button.type = 'button';button.className = 'notes-button';button.textContent = label;
     button.addEventListener('click', () => editor.chain().focus()[command]().run());controls.append(button);
+  }
+  for (const [label, command, args] of [
+    ['Маркированный список', 'toggleBulletList', []], ['Нумерованный список', 'toggleOrderedList', []],
+    ['Увеличить уровень списка', 'sinkListItem', ['listItem']], ['Уменьшить уровень списка', 'liftListItem', ['listItem']],
+  ]) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'notes-button'; button.textContent = label;
+    button.addEventListener('click', () => { if (editor.isEditable) editor.chain().focus()[command](...args).run(); }); controls.append(button);
   }
   let documentGeneration = 0;
   const linkButton = document.createElement('button'); linkButton.type = 'button'; linkButton.className = 'notes-button'; linkButton.textContent = 'Ссылка';

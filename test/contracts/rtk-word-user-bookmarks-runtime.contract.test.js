@@ -43,7 +43,7 @@ async function harness(t, initial = seed()) {
       commentSceneSnapshotsEqual: (a,b) => JSON.stringify(pending.normalizeNode(a)) === JSON.stringify(pending.normalizeNode(b)) }),
     planCommentAnchorSave: () => null,
     loadNotesStorageModule: async () => ({ readNotesStorage: async () => ({ ok: true, sourceExists: false }) }),
-    manuscriptNoteModel: { planManuscriptNoteAnchorSave: () => null },
+    manuscriptNoteModel: { ...require('../../src/core/word-manuscript-notes-v1.cjs'), planManuscriptNoteAnchorSave: () => null },
     commitProjectTransaction: async request => {
       assert.equal(fs.readFileSync(file, 'utf8'), request.expectedSceneContent);
       h.writes++; fs.writeFileSync(file, request.sceneContent);
@@ -164,7 +164,7 @@ test('history preserves the legacy plain-text route and rejects stale artifacts 
   const result = await h.c.publishUserBookmarkHistorySnapshot(h.file, raw, 'ABCDEF', plainPath,
     async () => ({ ok: true, filePath: h.file }));
   assert.equal(result.receipt.success, true); assert.equal(fs.readFileSync(h.file, 'utf8'), 'ABCDEF');
-  assert.equal(await h.c.publishUserBookmarkHistorySnapshot(h.file, 'ABCDEF', 'XYZ', plainPath, async () => ({})), null);
+  assert.equal(await h.c.publishUserBookmarkHistorySnapshot(h.file, 'ABCDEF', 'XYZ', plainPath, async () => ({ ok: true, filePath: h.file, resolvedNode: { projectId: 'p', projectRoot: path.dirname(h.file) } })), null);
   h.c.lastSignaledEditGeneration = 2;
   assert.equal((await h.c.syncHistoryRestoreEditorFromMainState(h.file, 'restore', 1)).reason, 'HISTORY_RESTORE_EDITOR_STALE');
   assert.equal(h.working, raw);
@@ -1299,4 +1299,56 @@ test(`bookmark text return does not activate an empty note lane; ${mode}`,async 
   if(mode==='empty'){assert.equal(result,null);assert.equal(notesReads,0);}
   else {assert.equal(result.ok,false);assert.equal(result.code,({malformed:'NOTE_RETURN_PACKAGE_INCOMPLETE',unauthenticated:'NOTE_RETURN_AUTHORITY_REQUIRED','stale-scene':'NOTE_RETURN_SCENE_CONFLICT',superseded:'NOTE_RETURN_AUTHORITY_REQUIRED'})[mode]||'NOTE_LANE_CONTINUES');}
   assert.equal(h.writes,0);assert.equal(prepared,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);
+});
+
+
+test('history restore and undo atomically rebase rich note references without requiring bookmarks', async t => {
+  const model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const h = await harness(t, doc('ABCDEF')); historyHarness(h);
+  const body = { type: 'doc', content: [{ type: 'orderedList', attrs: { start: 3 }, content: [
+    { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Rich note', marks: [{ type: 'bold' }] }] }] },
+  ] }] };
+  let notesText = JSON.stringify({ schemaVersion: 1, projectId: 'p', notes: [{ id: 'note-a', scope: 'manuscript', body: 'Rich note',
+    manuscript: model.bindManuscriptPayload({ kind: 'endnote', body, sceneId: 'a.txt', offsetUtf16: 5, sceneContent: h.working }) }] });
+  h.c.manuscriptNoteModel = model;
+  h.c.loadNotesStorageModule = async () => ({ readNotesStorage: async () => ({ ok: true, sourceExists: true, sourceText: notesText }) });
+  const commit = h.c.commitProjectTransaction;
+  h.c.commitProjectTransaction = async request => {
+    assert.ok(request.noteState, 'history must include the note cohort in the same transaction');
+    const cohort = model.validateNoteCohort(request.noteState, { projectId: 'p', sceneId: 'a.txt',
+      beforeContent: request.expectedSceneContent, afterContent: request.sceneContent });
+    const result = await commit(request); notesText = cohort.afterText; return result;
+  };
+  const original = h.working;
+  const io = await h.c.loadMarkdownIoModule(); const snapshot = await io.createRecoverySnapshot(h.file);
+  h.working = envelope.composeObservablePayload({ doc: doc('XXABCDEF') }); h.generation = 1;
+  assert.equal((await h.save()).receipt.success, true);
+  assert.equal(JSON.parse(notesText).notes[0].manuscript.reference.offsetUtf16, 7);
+  const preview = await h.c.handleHistoryRestorePreviewCommand({ projectId: 'p', nodeId: 'node-a',
+    snapshotId: 'recovery-snapshot-' + path.basename(snapshot.snapshotPath).slice(-13) });
+  assert.equal(preview.ok, true);
+  const restored = await h.c.handleHistoryRestoreApplyCommand({ confirmed: true, previewPlan: preview.previewPlan });
+  assert.equal(restored.ok, true, JSON.stringify(restored)); assert.equal(restored.receipt.undoAvailable, true);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), original); assert.equal(h.working, original);
+  assert.equal(JSON.parse(notesText).notes[0].manuscript.reference.offsetUtf16, 5);
+  assert.deepEqual(JSON.parse(notesText).notes[0].manuscript.body, body);
+  const undone = await h.c.handleHistoryRestoreUndoCommand({ receiptId: restored.receipt.receiptId });
+  assert.equal(undone.ok, true, JSON.stringify(undone));
+  assert.equal(JSON.parse(notesText).notes[0].manuscript.reference.offsetUtf16, 7);
+  assert.deepEqual(JSON.parse(notesText).notes[0].manuscript.body, body);
+  const before = notesText, writes = h.writes;
+  const resolve = () => h.c.resolveHistoryRestoreSceneTarget({ projectId: 'p', nodeId: 'node-a' });
+  h.c.lastSignaledEditGeneration = h.generation + 1;
+  await assert.rejects(() => h.c.publishUserBookmarkHistorySnapshot(h.file, h.working, original, snapshot.snapshotPath, resolve), /HISTORY_RESTORE_STALE_TARGET/);
+  assert.equal(h.writes, writes); assert.equal(notesText, before); h.c.lastSignaledEditGeneration = 0;
+  h.allowed = false;
+  await assert.rejects(() => h.c.publishUserBookmarkHistorySnapshot(h.file, h.working, original, snapshot.snapshotPath, resolve));
+  assert.equal(h.writes, writes); assert.equal(notesText, before); h.allowed = true;
+  const stale = JSON.parse(notesText); stale.notes[0].manuscript.reference.sourceTextSha256 = '0'.repeat(64); notesText = JSON.stringify(stale);
+  await assert.rejects(() => h.c.publishUserBookmarkHistorySnapshot(h.file, h.working, original, snapshot.snapshotPath, resolve), /NOTE_REFERENCE_STALE/);
+  assert.equal(h.writes, writes); notesText = before;
+  h.c.loadNotesStorageModule = async () => ({ readNotesStorage: async () => ({ ok: false }) });
+  await assert.rejects(() => h.c.publishUserBookmarkHistorySnapshot(h.file, h.working, original, snapshot.snapshotPath,
+    () => h.c.resolveHistoryRestoreSceneTarget({ projectId: 'p', nodeId: 'node-a' })), /NOTE_STORAGE_CORRUPT/);
+  assert.equal(h.writes, writes); assert.equal(notesText, before);
 });
