@@ -4,7 +4,7 @@ import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Color from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { DocumentTextStyle } from './documentTextStyle.mjs';
 import { DocumentParagraphAlignment } from './documentParagraphAlignment.mjs';
@@ -47,6 +47,12 @@ export function applyManuscriptNoteProjection(editor, projection, positionForOff
   editor.view.dispatch(editor.state.tr.setMeta(referenceKey, DecorationSet.create(editor.state.doc, widgets)).setMeta('addToHistory', false));
 }
 
+const bodyEditors = new WeakMap();
+export function getFocusedManuscriptBodyEditor(doc = globalThis.document) {
+  const host = doc?.activeElement?.closest?.('.manuscript-note-editor');
+  return host ? bodyEditors.get(host) || null : null;
+}
+
 export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
   const controls = document.createElement('div'); controls.className = 'manuscript-note-toolbar';
   controls.setAttribute('role', 'toolbar'); controls.setAttribute('aria-label', 'Форматирование сноски');
@@ -71,6 +77,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
       } },
     onUpdate: () => onChange?.(editor.getJSON()),
   });
+  bodyEditors.set(host, editor);
   for (const [label, command] of [['Полужирный', 'toggleBold'], ['Курсив', 'toggleItalic'], ['Подчёркивание', 'toggleUnderline'], ['Зачёркивание', 'toggleStrike']]) {
     const button = document.createElement('button');button.type = 'button';button.className = 'notes-button';button.textContent = label;
     button.addEventListener('click', () => editor.chain().focus()[command]().run());controls.append(button);
@@ -101,7 +108,12 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
       event.preventDefault(); onSave?.();
     }
   });
-  return { getJSON: () => editor.getJSON(), setDocument: doc => { documentGeneration++; editor.commands.setContent(doc, { emitUpdate: false }); },
+  return { getJSON: () => editor.getJSON(), setDocument: doc => {
+    documentGeneration++; editor.commands.setContent(doc, { emitUpdate: false });
+    // Replacing a note/project is not an authoring edit. Its history must never
+    // expose the previous entity's body through Undo.
+    editor.view.updateState(EditorState.create({ schema: editor.schema, doc: editor.state.doc, plugins: editor.state.plugins }));
+  },
     setEditable: value => { editor.setEditable(value, false); for (const button of controls.querySelectorAll('button')) button.disabled = !value; },
-    focus: () => editor.commands.focus('end'), destroy: () => editor.destroy() };
+    focus: () => editor.commands.focus('end'), destroy: () => { bodyEditors.delete(host); editor.destroy(); } };
 }

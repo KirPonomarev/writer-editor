@@ -7,7 +7,7 @@ import { DocumentTextStyle } from './documentTextStyle.mjs'
 import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
 import { DocumentTables } from './documentTables.mjs'
 import { DocumentMedia } from './documentMedia.mjs'
-import { ManuscriptNoteReferences, applyManuscriptNoteProjection } from './manuscriptNotes.mjs'
+import { ManuscriptNoteReferences, applyManuscriptNoteProjection, getFocusedManuscriptBodyEditor } from './manuscriptNotes.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -608,6 +608,7 @@ export function initTiptap(mountEl, options = {}) {
   }
   currentRuntimeBridge = createTiptapRuntimeBridge({
     editor,
+    resolveHistoryEditor: () => getFocusedManuscriptBodyEditor() || editor,
     runtimeHandlers: options.runtimeHandlers || {},
     onRecoveryRestored: ({ message }) => {
       const statusElement = document.getElementById('status')
@@ -934,17 +935,9 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
 }
 
 export function undoTiptap() {
-  if (!currentEditorInstance || !currentEditorInstance.commands || typeof currentEditorInstance.commands.undo !== 'function') {
-    return { performed: false }
-  }
-
-  return { performed: Boolean(currentEditorInstance.commands.undo()) }
+  return currentRuntimeBridge?.undo() || { performed: false }
 }
 
 export function redoTiptap() {
-  if (!currentEditorInstance || !currentEditorInstance.commands || typeof currentEditorInstance.commands.redo !== 'function') {
-    return { performed: false }
-  }
-
-  return { performed: Boolean(currentEditorInstance.commands.redo()) }
+  return currentRuntimeBridge?.redo() || { performed: false }
 }

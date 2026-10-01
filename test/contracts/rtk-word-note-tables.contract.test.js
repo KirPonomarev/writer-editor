@@ -120,3 +120,25 @@ test('note table style loss, cycles, unknown effects and non-neutral geometry bl
     assert.equal(parsed.ok, false, JSON.stringify(parsed));
   }
 });
+
+test('note history routing binds the current editor and never falls through on empty or disabled history', async () => {
+  const fs = require('node:fs');
+  const source = fs.readFileSync(require.resolve('../../src/renderer/tiptap/runtimeBridge.js'), 'utf8');
+  const { createTiptapRuntimeBridge } = await import(`data:text/javascript,${encodeURIComponent(source)}`);
+  const calls = [];
+  const scene = { commands: { undo: () => { calls.push('scene-undo'); return true; }, redo: () => { calls.push('scene-redo'); return true; } } };
+  const note = { commands: { undo: () => { calls.push('note-undo'); return false; }, redo: () => { calls.push('note-redo'); return true; } } };
+  let focused = note;
+  const bridge = createTiptapRuntimeBridge({ editor: scene, resolveHistoryEditor: () => focused });
+  assert.equal(bridge.handleRuntimeCommand({ commandId: 'cmd.project.edit.undo' }).result.performed, false);
+  assert.equal(bridge.handleRuntimeCommand({ command: 'edit-redo' }).result.performed, true);
+  note.isEditable = false;
+  assert.equal(bridge.undo().performed, false);
+  note.isEditable = true; note.isDestroyed = true;
+  assert.equal(bridge.redo().performed, false);
+  focused = null;
+  assert.equal(bridge.undo().performed, false);
+  focused = scene;
+  assert.equal(bridge.undo().performed, true);
+  assert.deepEqual(calls, ['note-undo', 'note-redo', 'scene-undo']);
+});

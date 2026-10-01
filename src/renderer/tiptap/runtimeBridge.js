@@ -1,5 +1,5 @@
 function runEditorCommand(editor, commandName) {
-  if (!editor || !editor.commands || typeof editor.commands[commandName] !== 'function') {
+  if (!editor || editor.isDestroyed || editor.isEditable === false || !editor.commands || typeof editor.commands[commandName] !== 'function') {
     return { performed: false, action: commandName, reason: 'EDITOR_COMMAND_UNAVAILABLE' }
   }
 
@@ -270,10 +270,10 @@ export function createTiptapRuntimeBridge(options = {}) {
       return runtimeHandlers
     },
     undo() {
-      return runTiptapUndo(editor)
+      return runTiptapUndo(typeof options.resolveHistoryEditor === 'function' ? options.resolveHistoryEditor() : editor)
     },
     redo() {
-      return runTiptapRedo(editor)
+      return runTiptapRedo(typeof options.resolveHistoryEditor === 'function' ? options.resolveHistoryEditor() : editor)
     },
     handleRuntimeCommand(payload = {}) {
       const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : ''
