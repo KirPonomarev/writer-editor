@@ -6,7 +6,6 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const same = (a,b) => hashCanonicalValue(a) === hashCanonicalValue(b);
 const reject = detail => ({ok:false,code:'RTK_USER_BOOKMARK_RETURN_CONFLICT',detail,analysisOnly:true,canWriteManuscript:false});
 const key = name => core.validateName(name).toLowerCase();
-const range = record => [record.start,record.end];
 function semanticParagraph(p){
   const out=clone(p), content=[];
   for(const node of out.content||[]){
@@ -206,7 +205,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='active')) {
       const old=resultRegistry.bookmarks.find(item=>key(item.name)===key(record.name));
       if(old){
-        if(old.state!=='active'||!same(range(old),range(record)))return reject('target-relocation-or-name-reuse');
+        if(old.state!=='active')return reject('target-relocation-or-name-reuse');
+        // Preserve private identity provisionally; Core independently proves every
+        // endpoint against the validated label edit before this analysis succeeds.
+        old.start=clone(record.start);old.end=clone(record.end);
         retained.add(old.id);
         if(old.name!==record.name){effects.push({kind:'rename',id:old.id,before:old.name,after:record.name});old.name=record.name;}
       }else{
@@ -250,6 +252,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};
     core.validateRegistry(resultRegistry,doc);core.readRegistry(doc);
+    core.planReturn({beforeDoc:baselineDoc,candidateDoc:doc});
     return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
   }catch(error){return reject(error.code||error.message);}
 }

@@ -563,17 +563,9 @@ function planReturn({ beforeDoc, candidateDoc }) {
   noPending(beforeDoc); noPending(candidateDoc);
   validateLinks(beforeDoc, before); validateLinks(candidateDoc, candidate);
   if (!same(structure(beforeDoc), structure(candidateDoc))) fail('USER_BOOKMARK_RETURN_STRUCTURE');
-  for (const previous of before?.bookmarks || []) {
-    const next = candidate?.bookmarks.find(record => record.id === previous.id);
-    if (!next) fail('USER_BOOKMARK_RETURN_ID_REMOVED');
-    if (previous.state === 'deleted' && !same(previous, next)) fail('USER_BOOKMARK_RETURN_TOMBSTONE_CHANGED');
-    if (previous.state === 'active') {
-      if (next.state === 'deleted' && previous.name !== next.name) fail('USER_BOOKMARK_RETURN_DELETED_NAME');
-      if (next.state === 'active' && (!same(previous.start, next.start) || !same(previous.end, next.end))) fail('USER_BOOKMARK_RETURN_ENDPOINT_RELOCATED');
-    }
-  }
   const oldProjection = nonLinkProjection(beforeDoc), newProjection = nonLinkProjection(candidateDoc);
   const oldBlocks = paragraphs(oldProjection), newBlocks = paragraphs(newProjection), sourceBlocks = paragraphs(beforeDoc);
+  const labelEdits = new Map();
   for (let index = 0; index < oldBlocks.length; index++) {
     const oldText = textOf(oldBlocks[index]), nextText = textOf(newBlocks[index]);
     if (oldText === nextText) continue;
@@ -582,10 +574,28 @@ function planReturn({ beforeDoc, candidateDoc }) {
       && nextText.slice(0, span.from) === oldText.slice(0, span.from)
       && nextText.slice(span.to + delta) === oldText.slice(span.to));
     if (owners.length !== 1) fail('USER_BOOKMARK_RETURN_UNOWNED_TEXT');
+    labelEdits.set(index, { from: owners[0].from, to: owners[0].to, delta });
     restoreLabel(newBlocks[index], { start: owners[0].from, end: owners[0].to,
       inserted: owners[0].to - owners[0].from + delta }, oldText, owners[0]);
   }
   if (!same(oldProjection, nonLinkProjection(newProjection))) fail('USER_BOOKMARK_RETURN_NONLINK_CHANGE');
+  // A proven replacement owns its boundary, but cannot identify an endpoint
+  // inside the replaced label. Coordinates alone never authorize relocation.
+  const mappedEndpoint = endpoint => {
+    const edit = labelEdits.get(endpoint.paragraphIndex);
+    if (!edit || endpoint.offsetUtf16 <= edit.from) return endpoint;
+    if (endpoint.offsetUtf16 < edit.to) fail('USER_BOOKMARK_RETURN_ENDPOINT_AMBIGUOUS');
+    return { ...endpoint, offsetUtf16: endpoint.offsetUtf16 + edit.delta };
+  };
+  for (const previous of before?.bookmarks || []) {
+    const next = candidate?.bookmarks.find(record => record.id === previous.id);
+    if (!next) fail('USER_BOOKMARK_RETURN_ID_REMOVED');
+    if (previous.state === 'deleted' && !same(previous, next)) fail('USER_BOOKMARK_RETURN_TOMBSTONE_CHANGED');
+    if (previous.state === 'active') {
+      if (next.state === 'deleted' && previous.name !== next.name) fail('USER_BOOKMARK_RETURN_DELETED_NAME');
+      if (next.state === 'active' && (!same(mappedEndpoint(previous.start), next.start) || !same(mappedEndpoint(previous.end), next.end))) fail('USER_BOOKMARK_RETURN_ENDPOINT_RELOCATED');
+    }
+  }
   const withoutRevision = value => value ? { ...value, revision: 0 } : null;
   const changed = !same(nonLinkProjection(beforeDoc, true), nonLinkProjection(candidateDoc, true))
     || !same(withoutRevision(before), withoutRevision(candidate));

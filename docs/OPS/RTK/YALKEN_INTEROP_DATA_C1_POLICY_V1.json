@@ -1576,7 +1576,7 @@
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "a3f4e2132f6165724a0e18c525ccf8c7fcf4134ac6a7c84be877e56de1299842"
+        "sha256": "6d976a62c3161c43b8f46cbaf318112dbd9b33d5615821431057b901a38d127d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
@@ -1588,11 +1588,11 @@
       },
       {
         "path": "src/core/word-user-bookmarks-v1.cjs",
-        "sha256": "201d171be11dc0cba10d7f02dcb5e5b349ff5ff814e2347767b612a71397ee61"
+        "sha256": "9d21b72bf6d6d723a6aa52e5791dc588598ca07c4e55378ed5e32e8868bf3508"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "0d69e8125496982e926e0145fb3fbe4b560e658afd23fba265a0981309a30efb"
+        "sha256": "047e902ea92573d867daf2a476096b6a4189efcacb87b97d8ac18088f93f748b"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1600,7 +1600,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-        "sha256": "f67b1ccb74c79f8354b487cd560aa4dff4ae9f6d7982242b14bf3702b3d19e0a"
+        "sha256": "e2660cd56e5cd6c41f944eee54ee2a6c3c5e975d4b92f53309665b3ce45c59a3"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",

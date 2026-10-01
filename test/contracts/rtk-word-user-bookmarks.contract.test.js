@@ -854,3 +854,64 @@ test('typed schema defaults validate raw bounds, identities and attrs before cop
   ]) {const forged=copy(first.doc);mutate(forged);typed(()=>model.materializeInternalLinkSchemaDefaults(forged));}
   assert.equal(getterReads,0);assert.deepEqual(model.materializeInternalLinkSchemaDefaults(doc('legacy')),doc('legacy'));
 });
+
+
+function labelBoundaryFixture() {
+  let value=create(doc('Before label after'),'Label',ep(7),ep(12),'label-owner');
+  for(const [name,start,end] of [['Outer',0,18],['Start',7,7],['End',12,12],['After',13,18]])
+    value=create(value.doc,name,ep(start),ep(end),name);
+  const target=value.registry.bookmarks.find(b=>b.name==='Label');
+  value.doc.content[0].content=[
+    {type:'text',text:'Before ',marks:[{type:'italic'}]},
+    {type:'text',text:'label',marks:[{type:'bold'},{type:'link',attrs:model.linkAttrs(target)}]},
+    {type:'text',text:' after',marks:[{type:'italic'}]},
+  ];
+  return value.doc;
+}
+function replacedLabelCandidate(before,text) {
+  const candidate=copy(before),delta=text.length-5;
+  candidate.content[0].content[1].text=text;candidate.attrs[model.KEY].revision++;
+  for(const b of candidate.attrs[model.KEY].bookmarks)for(const edge of ['start','end'])
+    if(b[edge].offsetUtf16>=12)b[edge].offsetUtf16+=delta;
+  return candidate;
+}
+test('authenticated label replacement maps enclosing ranges and boundary points without changing IDs',()=>{
+  const before=labelBoundaryFixture();
+  for(const text of ['x','new 😺 label','other']) {
+    const candidate=replacedLabelCandidate(before,text);
+    const result=model.planReturn({beforeDoc:before,candidateDoc:candidate});
+    assert.equal(result.changed,true);assert.deepEqual(result.doc,candidate);
+    assert.deepEqual(result.registry.bookmarks.map(b=>b.id),model.readRegistry(before).bookmarks.map(b=>b.id));
+  }
+  for(const mutate of [
+    d=>d.attrs[model.KEY].bookmarks[0].start.offsetUtf16++,
+    d=>d.attrs[model.KEY].bookmarks.find(b=>b.name==='End').end.offsetUtf16++,
+    d=>d.content[0].content[0].text='Forged ',
+    d=>d.content[0].content[1].marks[0].type='italic',
+  ]){const bad=replacedLabelCandidate(before,'new label');mutate(bad);typed(()=>model.planReturn({beforeDoc:before,candidateDoc:bad}));}
+  const interior=create(before,'Interior',ep(9),ep(9),'interior').doc;
+  typed(()=>model.planReturn({beforeDoc:interior,candidateDoc:replacedLabelCandidate(interior,'other')}),'USER_BOOKMARK_RETURN_ENDPOINT_AMBIGUOUS');
+});
+test('real DOCX analysis admits only proven label boundary shifts and Core rechecks the resulting candidate',async()=>{
+  const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const baselineDoc=labelBoundaryFixture();
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'label-boundaries',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-10-01T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
+  const analyze=xml=>{
+    const bytes=buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})));
+    const parsed=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true,JSON.stringify(parsed));
+    return analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  };
+  for(const text of ['x','new 😺 label','other']) {
+    const xml=parts['word/document.xml'].replace('>label<','>'+text+'<');assert.notEqual(xml,parts['word/document.xml']);
+    const result=analyze(xml);assert.equal(result.ok,true,JSON.stringify(result));
+    const expected=replacedLabelCandidate(baselineDoc,text);
+    assert.deepEqual(result.registry,model.readRegistry(expected));
+    assert.equal(model.planReturn({beforeDoc:baselineDoc,candidateDoc:result.doc}).changed,true);
+    for(const fragment of ['>Before <','>after<']){const forged=xml.replace(fragment,fragment.toUpperCase());assert.notEqual(forged,xml);assert.equal(analyze(forged).ok,false);}
+  }
+});
