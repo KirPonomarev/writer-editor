@@ -83,11 +83,11 @@ test('W5: invalid canonical values and inconsistent property ownership cannot se
   records[1].table.wordTable.grid[0] = 721;
   assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bad).ok, false);
 });
-test('W5: supported properties come from raw bytes; unsupported theme/relative/conflicting width retains typed loss', async () => {
+test('W5: supported properties come from raw bytes; unsupported theme/relative width retains typed loss', async () => {
   const bytes = await exported({type:'doc',content:[table(row(cell('A'),cell('B')))]});
   const input = await mutate(bytes, x => x.replace('<w:gridCol w:w="1440"/><w:gridCol w:w="1440"/>','<w:gridCol w:w="720"/><w:gridCol w:w="4320"/>').replace('<w:tblPr>','<w:tblPr><w:tblLayout w:type="fixed"/>').replace('<w:tcPr>','<w:tcPr><w:shd w:val="clear" w:fill="FF0000"/>').replaceAll('w:val="single" w:sz="4"','w:val="double" w:sz="24"'));
   const result = await imported(input); assert.deepEqual(result.doc.content[0].attrs.wordTable.grid,[720,4320]); assert.equal(result.doc.content[0].content[0].content[0].attrs.wordCell.shading,'FF0000');
-  for (const [change, feature] of [[x=>x.replace('w:fill="FF0000"','w:fill="FF0000" w:themeFill="accent1"'),'shading'], [x=>x.replace('<w:tcPr>','<w:tcPr><w:tcW w:type="pct" w:w="50"/>'),'widths'], [x=>x.replace('<w:tcPr>','<w:tcPr><w:tcW w:type="dxa" w:w="999"/>'),'widths'], [x=>x.replace('w:val="double"','w:val="dotted"'),'borders']]) {
+  for (const [change, feature] of [[x=>x.replace('w:fill="FF0000"','w:fill="FF0000" w:themeFill="accent1"'),'shading'], [x=>x.replace('<w:tcPr>','<w:tcPr><w:tcW w:type="pct" w:w="50"/>'),'widths'], [x=>x.replace('w:val="double"','w:val="dotted"'),'borders']]) {
     const {plan}=await imported(await mutate(input,change)); assert.ok(plan.lossReport.items.some(x=>x.feature===`table.${feature}`));
   }
 });
@@ -224,4 +224,22 @@ assert m.parse_body(r)[1]!=expected
 print('NIL_NONE_MUTANT_REJECTED')`;
   const result=spawnSync('python3',['-I','-B','-c',code,path.join(__dirname,'../../scripts/ops/rtk-interop-word-tables-readback.py')],{input:JSON.stringify({doc,bytes:(await exported(doc)).toString('base64')}),encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/NIL_NONE_MUTANT_REJECTED/u);
+});
+
+test('Word preferred cell width survives independently of grid through repeated exports', async () => {
+  const doc = fixture();
+  doc.content[1].content[0].content[0].attrs.wordCell.widthDxa = 4675;
+  let current = doc;
+  for (let round = 0; round < 5; round++) {
+    const bytes = await exported(current);
+    assert.match(bytes.toString(), /<w:tcW w:w="4675" w:type="dxa"\/>/u);
+    const result = await imported(bytes);
+    assert.deepEqual(result.doc, doc);
+    assert.equal(result.plan.lossReport.items.some(x => x.feature === 'table.widths'), false);
+    current = result.doc;
+  }
+  for (const widthDxa of [0, -1, 31681, 1.5, '4675', null]) {
+    const invalid = structuredClone(doc); invalid.content[1].content[0].content[0].attrs.wordCell.widthDxa = widthDxa;
+    await assert.rejects(exported(invalid), /TABLE_PROPERTIES_INVALID/u);
+  }
 });

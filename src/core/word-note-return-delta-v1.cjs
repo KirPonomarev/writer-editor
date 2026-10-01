@@ -2,6 +2,7 @@
 
 const model = require('./word-manuscript-notes-v1.cjs');
 const { notesStateDigest } = require('../export/docx/docxReviewPacketNotes.js');
+const { compareTableParagraphTopology } = require('../io/documentTables.js');
 const clone = value => JSON.parse(JSON.stringify(value));
 const stable = value => Array.isArray(value) ? `[${value.map(stable).join(',')}]`
   : value && typeof value === 'object' ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}` : JSON.stringify(value);
@@ -10,8 +11,8 @@ const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code })
 // Word materializes document defaults and may split equivalent text runs.
 // Compare effective meanings, retaining the original authored representation
 // only when every supported property and exact character remains equivalent.
-function effectiveBody(body, defaults) {
-  return model.validateNoteBody(body).paragraphs.map(({ paragraph, list }) => {
+function effectiveBody(paragraphs, defaults) {
+  return paragraphs.map(({ paragraph, list }) => {
     const runs = [];
     for (const node of paragraph.content || []) {
       if (node.type === 'hardBreak') { runs.push({ type: 'hardBreak' }); continue; }
@@ -30,6 +31,16 @@ function effectiveBody(body, defaults) {
     }
     return { align: paragraph.attrs?.textAlign || 'left', runs, list };
   });
+}
+
+function equivalentBody(expectedBody, returnedBody, defaults) {
+  const expected = model.validateNoteBody(expectedBody).paragraphs;
+  const actual = model.validateNoteBody(returnedBody).paragraphs;
+  // Text equality cannot authorize discarding table-only edits. Reuse the
+  // existing strict topology/property oracle, including its authenticated
+  // legacy auto-fit policy, before retaining the original representation.
+  return compareTableParagraphTopology(actual, expected.map(({ table }) => ({ formatIr: { table } }))).ok
+    && stable(effectiveBody(expected, defaults)) === stable(effectiveBody(actual, defaults));
 }
 
 // Pure plan: caller supplies authenticated local authority, fresh canonical
@@ -87,7 +98,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const sceneBlocks = blocks.filter(b => b.sceneId === block.sceneId);
     const blockIndex = sceneBlocks.indexOf(block), sceneContent = sceneBlocks.map(b => b.text).join('\n');
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
-    const body = binding && stable(effectiveBody(binding.richBody, exportMap.exportTypography)) === stable(effectiveBody(note.body, exportMap.exportTypography))
+    const body = binding && equivalentBody(binding.richBody, note.body, exportMap.exportTypography)
       ? binding.richBody : note.body;
     const manuscript = model.bindManuscriptPayload({ kind: note.kind, body, sceneId: block.sceneId, offsetUtf16, sceneContent });
     candidates.push({ noteId: binding?.noteId || `note-${model.sha(projectId + '\n' + roundId + '\n' + artifactSha256 + '\n' + index).slice(0, 32)}`,

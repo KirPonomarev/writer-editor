@@ -390,7 +390,9 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
     "src/renderer/tiptap/runtimeBridge.js",
     "docs/tasks/2026-10-01--word-note-panel-fit-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
+    "docs/tasks/2026-10-01--word-note-table-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json"
   ],
   "protectedFiles": [
     {
@@ -619,7 +621,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "4a6d4ccd95bc3e6728a732001f795fbe8d25eb86f67c68b7d92bba0145e8a8ea"
+        "sha256": "d6b5b394a011470d6e06772bb8b90ed35baf924deb84fad66b337b34df4ce3ac"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -631,7 +633,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "238ce2c92ba12d014f0dd028bb25dd5695fabb80d690c1d65b7fa26a3b379358"
+        "sha256": "21ec4106084c378ad0b23c761d58c2380ca4f0d65116ab04dac1d82aaed1b1a4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1019,7 +1021,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "457cc22ec7f8ced9d4fb15aa5fced6a370d8f149d21df23b3040aad6f796ae35"
+        "sha256": "6685e609708604e60e3e0f05f6f7b0bc20909473c12324d76b5ab889d00954bd"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -1151,7 +1153,7 @@
       },
       {
         "path": "src/io/documentTableProperties.js",
-        "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da"
+        "sha256": "2d8b5f000d5b08d0641a5ca7fd5020ce0e9fc726ea15f6d6a11ac9c645bdb870"
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
@@ -1159,7 +1161,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "6dd6ae1f5efc55a4ed0fd0c9253dad356c5dbd74ebc78be5fee2aa1dcfc9ddea"
+        "sha256": "6136ae43d8c9001edcbc8e5f6e5d6012a29ef2bb851c7621afae4279d1d3dea8"
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -1471,7 +1473,7 @@
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d"
+        "sha256": "ed4be61f8d1ef3a95ee8773e81f5c1025f1c6229259777c132676dc5791e0365"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -1679,7 +1681,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-tables.contract.test.js",
-        "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b"
+        "sha256": "20c53517143bcb8fe204552e64667b089f86a79ad8e2f4421fd8e91bf6e82af7"
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-tables-mac.md",
@@ -1696,6 +1698,14 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
         "sha256": "ca190de54ffb1ee2e3b7be366b7273ff6cc78eab97edaf7493e5bf429c2e2703"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-note-table-return-mac.md",
+        "sha256": "e1ee3944885d44d821f21f6df59934d888429d3b87de1a205923e2a7bbe81b8c"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
+        "sha256": "b9661d1456d4590b2038c14a9d894ff65fe95f8c72d96d3d0a367686bf6947c9"
       }
     ],
     "followupRepair": {

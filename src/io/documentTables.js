@@ -187,8 +187,9 @@ function tableGroupXml(group, renderParagraph, renderRowProperties) {
       const widths = explicit?.grid.slice(x, x + cell.colspan);
       const widthSum = widths?.every(w => Number.isSafeInteger(w) && w > 0)
         ? widths.reduce((sum, w) => sum + w, 0) : null;
-      const cellWidth = widthSum !== null && widthSum <= MAX_DXA
-        ? `<w:tcW w:w="${widthSum}" w:type="dxa"/>` : '';
+      const preferredWidth = cell.node.attrs?.wordCell?.widthDxa ?? widthSum;
+      const cellWidth = preferredWidth !== null && preferredWidth <= MAX_DXA
+        ? `<w:tcW w:w="${preferredWidth}" w:type="dxa"/>` : '';
       const properties = cellWidth + `${cell.colspan > 1 ? `<w:gridSpan w:val="${cell.colspan}"/>` : ''}`
         + (cell.rowspan > 1 ? `<w:vMerge w:val="${continuation ? 'continue' : 'restart'}"/>` : '')
         + (cell.node.attrs?.wordCell ? borderXml(cell.node.attrs.wordCell.borders, 'tcBorders') + shadingXml(cell.node.attrs.wordCell.shading) : '');
@@ -241,7 +242,9 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         let origin;
         const widths = active.properties.grid.slice(x, x + source.colspan);
         if (source.widthDxa !== undefined && (widths.some(w => w === null) || source.widthDxa !== widths.reduce((sum, w) => sum + w, 0))) {
-          loss('widths', `w:tcW=${source.widthDxa} conflicts with grid at row ${y + 1} column ${x + 1}`, 'preferred cell width is not retained; explicit grid is retained', x);
+          // Word's preferred cell width is independent of the computed grid.
+          // Keep both; conflating them silently changes subsequent layout.
+          source.properties.widthDxa = source.widthDxa;
         }
         if (source.merge === 'continue') {
           origin = previous[x];
@@ -254,7 +257,7 @@ function createTableReader(paragraphs, onLoss = () => {}) {
           const node = { type: sourceRow.header ? 'tableHeader' : 'tableCell',
             attrs: { colspan: source.colspan, rowspan: 1, colwidth: null },
             content: source.paragraphs.map(() => ({ type: 'paragraph' })) };
-          if (source.properties.shading !== null || Object.keys(source.properties.borders).length) node.attrs.wordCell = source.properties;
+          if (source.properties.shading !== null || Object.keys(source.properties.borders).length || source.properties.widthDxa !== undefined) node.attrs.wordCell = source.properties;
           targetRow.content.push(node);
           origin = { node, properties: source.properties, column: x, span: source.colspan, merge: source.merge === 'restart' };
           sources.push(...source.paragraphs);
