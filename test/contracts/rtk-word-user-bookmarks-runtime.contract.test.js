@@ -1264,3 +1264,39 @@ for (const superseded of [false, true]) test(`actual activation installs its pri
     assert.equal(c.activeReviewSessionStore.reviewSurface.exactTextPlanPreview.status, 'ready');
   }
 });
+
+
+for(const mode of ['empty','baseline-note','returned-note','missing-bindings','malformed','unauthenticated','stale-scene','superseded'])
+test(`bookmark text return does not activate an empty note lane; ${mode}`,async t=>{
+  const h=await harness(t),root=path.dirname(h.file),c=h.c;
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const storage=await import('../../src/core/notesStorage.mjs');
+  const notesDocument=storage.normalizeNotesDocument({schemaVersion:1,projectId:'p',notes:[]},{projectId:'p'}).value;
+  const original=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,notesDocument,scenes:[{sceneId:'a.txt',scenePath:h.file,order:0,doc:seed(),text:'ABCDEF',observableContent:h.working}]});
+  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(original)}).parts;
+  const xml=parts['word/document.xml'].replace('>CDE<','>XYZ<');assert.notEqual(xml,parts['word/document.xml']);
+  const bytes=buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})));
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength}});assert.equal(parsed.ok,true);
+  const capsule=original.localAuthorityCapsule;assert.deepEqual(capsule.documentNotes.sourceBindings,[]);
+  const context={projectRoot:root,projectId:'p',reviewTransportAuthorityCapsule:capsule,reviewTransportReturnIntake:{authenticated:true,returnedArtifactSha256:hash(bytes),parserResult:parsed}};
+  let notesReads=0,prepared=0,current=true;
+  Object.assign(c,{require:require('node:module').createRequire(path.join(__dirname,'../../src/main.js')),activeStage10ApplicationBootstrap:{},
+    getProjectNotesContext:async()=>{notesReads++;throw Error('NOTE_LANE_CONTINUES');}});
+  loadNamedFunctions(main,['prepareAuthenticatedNoteDelta'],c);
+  let actualBridge=bridge;
+  if(mode==='baseline-note')capsule.documentNotes.sourceBindings.push({noteId:'test-binding'});
+  if(mode==='missing-bindings')delete capsule.documentNotes.sourceBindings;
+  if(mode==='returned-note')actualBridge={...bridge,parseDocumentNotesRichReturn:()=>[{kind:'footnote'}]};
+  if(mode==='malformed')parsed.reasons.push({code:'RTK_WORD_NOTES_MALFORMED_BLOCKED'});
+  if(mode==='unauthenticated')context.reviewTransportReturnIntake.authenticated=false;
+  if(mode==='stale-scene')fs.appendFileSync(h.file,'LOCAL CHANGE');
+  if(mode==='superseded')current=false;
+  const before=fs.readFileSync(h.file,'utf8');
+  const result=await c.prepareAuthenticatedNoteDelta({context,requestId:'note-free-return',isCurrent:()=>current,docxBytes:bytes,revisionBridge:actualBridge,onPrepared:()=>prepared++});
+  if(mode==='empty'){assert.equal(result,null);assert.equal(notesReads,0);}
+  else {assert.equal(result.ok,false);assert.equal(result.code,({malformed:'NOTE_RETURN_PACKAGE_INCOMPLETE',unauthenticated:'NOTE_RETURN_AUTHORITY_REQUIRED','stale-scene':'NOTE_RETURN_SCENE_CONFLICT',superseded:'NOTE_RETURN_AUTHORITY_REQUIRED'})[mode]||'NOTE_LANE_CONTINUES');}
+  assert.equal(h.writes,0);assert.equal(prepared,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);
+});

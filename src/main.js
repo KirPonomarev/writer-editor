@@ -5897,6 +5897,12 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       checkIdentity();
     };
     await revalidateScenes();
+    // No exported or returned notes means this independent mutation lane is
+    // inapplicable. A bookmark/text edit must not manufacture a notes failure.
+    // Nonempty, missing or malformed inventories still require full admission.
+    if (Array.isArray(capsule.documentNotes.sourceBindings)
+      && capsule.documentNotes.sourceBindings.length === 0
+      && Array.isArray(input.returnedNotes) && input.returnedNotes.length === 0) return null;
     const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
     if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
     const before = await readProjectNotesDocument(notesContext);
