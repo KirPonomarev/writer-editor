@@ -41,6 +41,55 @@ function manifestPublisher() {
   };
 }
 
+function mediaUpdate(t) {
+  const s = sandbox(); t.after(() => fs.rmSync(s.root, { recursive: true, force: true }));
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const media = require('../../src/io/documentMedia.js');
+  const bytes = require('../fixtures/document-jpeg-fixtures.cjs').rgb;
+  const attrs = media.createImageAttrs(bytes);
+  const sceneContent = envelope.composeObservablePayload({ doc: { type: 'doc', content: [
+    { type: 'paragraph', content: [{ type: 'text', text: 'old scene' }, { type: 'image', attrs }] },
+  ] } });
+  const resource = { path: path.join(s.root, attrs.assetPath), content: bytes };
+  return { ...s, resource, input: { scenePath: s.scenePath, manifestPath: s.manifestPath,
+    expectedSceneContent: 'old scene', sceneContent, expectedManifestContent: '{"revision":1}',
+    manifestContent: '{"revision":2}', revision: 2, mediaUpdateResources: [resource], publishManifest: manifestPublisher() } };
+}
+
+test('WP201 media update commits new content-addressed assets with an existing scene', async t => {
+  const s = mediaUpdate(t), result = await commitProjectTransaction(s.input);
+  assert.equal(result.success, true);
+  assert.deepEqual(fs.readFileSync(s.resource.path), s.resource.content);
+  assert.equal(fs.readFileSync(s.scenePath, 'utf8'), s.input.sceneContent);
+  assert.equal(JSON.parse(fs.readFileSync(commitPathFor(s.scenePath))).schemaVersion, 'yalken.project-transaction.commit.v6');
+  assert.equal(classifyProjectTransactionState(s).classification, 'NEW_COMMITTED');
+});
+
+test('WP201 media update rolls back owned new resources and preserves the existing scene after interrupted manifest publish', async t => {
+  const s = mediaUpdate(t);
+  await assert.rejects(commitProjectTransaction({ ...s.input, publishManifest: async () => { throw Error('injected'); } }));
+  assert.deepEqual(fs.readFileSync(s.resource.path), s.resource.content);
+  assert.equal((await readPendingProjectTransactionBinding(s)).pending, true);
+  assert.equal((await recoverProjectTransaction({ ...s, publishManifest: manifestPublisher() })).outcome, 'UNCOMMITTED_ROLLED_BACK');
+  assert.equal(fs.existsSync(s.resource.path), false);
+  assert.equal(fs.readFileSync(s.scenePath, 'utf8'), 'old scene');
+});
+
+test('WP201 media update refuses arbitrary companions and existing shared resources before any publication', async t => {
+  for (const mode of ['path', 'bytes', 'unreferenced', 'exists']) {
+    const s = mediaUpdate(t), entry = { ...s.resource };
+    if (mode === 'path') entry.path = path.join(s.root, 'private.txt');
+    if (mode === 'bytes') entry.content = Buffer.from('forged');
+    if (mode === 'unreferenced') s.input.sceneContent = 'new scene';
+    if (mode === 'exists') { fs.mkdirSync(path.dirname(entry.path), { recursive: true }); fs.writeFileSync(entry.path, entry.content); }
+    await assert.rejects(commitProjectTransaction({ ...s.input, mediaUpdateResources: [entry] }));
+    assert.equal(fs.readFileSync(s.scenePath, 'utf8'), 'old scene');
+    assert.equal(fs.readFileSync(s.manifestPath, 'utf8'), '{"revision":1}');
+    if (mode === 'exists') assert.deepEqual(fs.readFileSync(entry.path), entry.content);
+    assert.equal(fs.existsSync(journalPathFor(s.manifestPath)), false);
+  }
+});
+
 test('WP201 commits scene and manifest under one durable commit point and ACK', async () => {
   const { scenePath, manifestPath } = sandbox();
   const receipt = await commitProjectTransaction({

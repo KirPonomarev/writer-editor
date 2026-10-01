@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_MEDIA_RETURN_MAC_20261001",
+  "objective": "Existing authenticated Word return explicitly applies bounded inline PNG/JPEG addition deletion replacement and resize in one active scene, preserving all nonmedia meaning and atomically publishing newly referenced assets.",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "a14de854369352994478ebeefd3e4b8b9fe3b892",
+  "scopeIn": [
+    "docs/tasks/2026-10-01--word-media-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
+    "src/core/word-media-return-v1.cjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/documentMedia.js",
+    "src/main.js",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "test/contracts/rtk-word-media-return.contract.test.js",
+    "test/contracts/rtk-word-media-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-media.contract.test.js",
+    "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+    "test/unit/r24-wp201-project-transaction.test.js",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "productAuthority": "Owner authorized entire Mac Word plan; bounded P3a media return follow-up after PR2045 complete. Core validates media bytes, placements and unchanged nonmedia graph; private authenticated baseline supplies scene identity.",
+  "commandAuthority": "Existing cmd.project.review.applyExactTextChangesBatch dispatch, private Main candidate and repeated capability revalidation; no new renderer writer or IPC authority.",
+  "designAuthority": "Mechanical contribution to existing review card and explicit Apply. Existing tokens/layout/state model; no new visual surface.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Existing Command Kernel -> private authenticated media candidate -> pure Core delta validation -> existing project transaction under lease -> generation-bound editor publication",
+    "Existing governed DOCX export reads committed scene and content-addressed assets"
+  ],
+  "readPaths": [
+    "Bounded native Word ZIP XML and media bytes",
+    "Exact private export map, raw baseline scene, current saved scene and captured editor generation",
+    "Existing canonical media attrs and project assets"
+  ],
+  "productPorts": [
+    "Existing ProjectPersistencePort atomic transaction and recovery",
+    "ReviewDocxPackagePort and ReviewRoundStorePort",
+    "Existing main-owned scene snapshot and media asset adapter"
+  ],
+  "designOsPorts": [
+    "Existing immutable review projection and command dispatch"
+  ],
+  "readProjections": [
+    "Existing review card semantic effect description; derived no-write preview"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "External bytes validated before deriving hash or asset path",
+    "Authenticated exact scene/block ownership and unchanged nonmedia semantics; no text matching supplies identity",
+    "Changes limited to one active scene; unaffected scenes remain byte-exact",
+    "Private source, project, lifecycle, capability, generation and saved raw CAS revalidated after awaits and immediately before transaction",
+    "New content-addressed resources are create-only in same journal as scene/manifest; existing shared assets never deleted or overwritten",
+    "Record version discriminates update-with-resources journal; predecessor must refuse unknown record without overwrite"
+  ],
+  "capabilityRevalidation": "Existing review Kernel checks plus private Main handler and prepublication project/lifecycle/source/generation/capability checks. No capability from UI or packet.",
+  "fallbacks": [
+    "Typed no-write on unrelated text/style/link/comment/note/bookmark/pending changes, missing ownership, unsupported media, stale candidate or busy recording",
+    "Explicit gaps for floating/crop/rotation/tracked media and unsupported JPEG profiles"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Real native resize first, then failing focused regression; all four media operations and repeated identical asset placements",
+    "Actual Main selected Apply, replay/stale/forged/public candidate zero-write; unsaved buffer and project-switch preservation",
+    "Atomic new-asset plus existing-scene journal commit and recovery fault injection before/after commit; shared assets and existing resource collision protected",
+    "Existing PNG/JPEG bounds, MIME/hash/path/symlink and entropy negatives; nonmedia invariance including root metadata",
+    "SOURCE and PACKAGED real Word changed exchanges, reopen, independent complete ZIP binary/placement inventory, history undo; CI and exact merged checks"
+  ],
+  "securityAndInputBoundary": "Untrusted bounded DOCX validated before normalization; no arbitrary field evaluation or external path authority; existing input/namespace/package budgets.",
+  "performanceAndAccessibility": "Existing 4MiB asset,16MiB aggregate,16Mpixel and bounded node/placement limits; no work on typing hot path; existing accessible review Apply and error controls.",
+  "currentReality": [
+    "a14de854 includes JPEG generic import and existing display extent model; bindDocxReviewMedia rejects all changed media",
+    "Native Word changed width from2286000 to1800000EMU and height1524000 to1200000EMU; current Mac intake supplies no Apply. Artifact retained, unchanged source preserved",
+    "Project transaction v2 companion resources currently require scene create-only; image add/replace therefore requires bounded existing-scene resource admission and recovery"
+  ],
+  "targetOnly": [
+    "Four declared untracked inline-media deltas, existing-scene atomic new resources, and native proof remain target until executed",
+    "No full P3a or entire Mac feature acceptance; unsupported JPEG color/orientation variants and composite structural transformations remain open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "One revertible media return delivery; retain all synthetic originals and readable preapply rich snapshots; new journal schema rejects predecessor writes; do not garbage-collect existing or shared assets. Budget24 exact paths and2200 authored added lines plus generated bundle and exact-byte governance companions.",
+  "featureId": "WORD_MEDIA_RETURN_MAC_20261001",
+  "featureVersion": "1.0-target",
+  "domainOwner": "Product Core canonical rich scene and content-addressed assets",
+  "integrationMode": "EXISTING_SEAM",
+  "authoritativeData": [
+    "Validated rich scene and assets",
+    "Private authenticated export baseline"
+  ],
+  "derivedData": [
+    "Existing review card semantic effect description; derived no-write preview"
+  ],
+  "commandIds": [
+    "cmd.project.review.openDocxReviewPreviewSession",
+    "cmd.project.review.applyExactTextChangesBatch",
+    "cmd.project.history.restoreApply",
+    "cmd.project.history.restoreUndo"
+  ],
+  "eventTypes": [
+    "Existing scene publication and save receipt"
+  ],
+  "effectTypes": [
+    "Existing bounded package adapter",
+    "Existing atomic scene manifest resource transaction"
+  ],
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_REVIEW_CARD_MECHANICAL_CONTRIBUTION"
+}
