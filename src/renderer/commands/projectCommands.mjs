@@ -32,6 +32,7 @@ export const COMMAND_IDS = Object.freeze({
 });
 
 export const EXTRA_COMMAND_IDS = Object.freeze({
+  LOCAL_IMAGE_INSERT: 'cmd.project.media.insertLocal',
   ...Object.fromEntries(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => [`USER_BOOKMARK_${action.toUpperCase()}`, `cmd.project.bookmarks.${action}`])),
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create',
@@ -1124,6 +1125,10 @@ export function registerProjectCommands(registry, options = {}) {
   const domainEventPort = options.domainEventPort && typeof options.domainEventPort === 'object'
     ? options.domainEventPort
     : null;
+
+  registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS.LOCAL_IMAGE_INSERT, {
+    label: 'Вставить изображение…', group: 'insert', surface: ['palette', 'toolbar'],
+  });
 
   for (const action of ['managePrompt', 'create', 'copy', 'rename', 'delete']) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS[`USER_BOOKMARK_${action.toUpperCase()}`], {

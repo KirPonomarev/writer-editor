@@ -40,6 +40,7 @@ test('toolbar expansion wave a2: canonical default seed stays bounded while save
     'toolbar.paragraph.alignment',
     'toolbar.list.type',
     'toolbar.insert.link',
+    'toolbar.insert.image',
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',

@@ -1,3 +1,5 @@
+import { applyLocalImagePublication } from './localImage.mjs'
+import { textOffsetForPosition, positionForTextOffset } from './textCoordinates.mjs'
 import { WordPendingRevisions, setCheckedDocument as setCheckedReviewDocument } from './wordPendingRevisions.mjs'
 import { UserBookmarks, UserBookmarkLink, applyUserBookmarkPublication } from './userBookmarks.mjs'
 import { Editor } from '@tiptap/core'
@@ -31,6 +33,19 @@ let unloadHookBound = false
 let runtimeCommandListenerAttached = false
 let recoveryRestoredListenerAttached = false
 let userBookmarkManageHandler = null
+
+export function getTiptapImageInsertionPosition() {
+  const editor = currentEditorInstance
+  if (!editor || getFocusedManuscriptBodyEditor(document)) return null
+  return editor.state.selection.to
+}
+
+export function applyTiptapLocalImagePublication(payload, currentContent) {
+  if (!currentEditorInstance || currentContent !== payload.expectedContent) return false
+  const checked = parseObservablePayload(payload.content)
+  return !checked.issue && Boolean(checked.doc)
+    && applyLocalImagePublication(currentEditorInstance, checked.doc, payload.position)
+}
 
 function setCheckedDocument(editor, doc) {
   const result = setCheckedReviewDocument(editor, doc)
@@ -330,72 +345,11 @@ function getTiptapDocumentContentSize(editor) {
 }
 
 function getTextOffsetForDocumentPosition(editor, position) {
-  const doc = editor && editor.state ? editor.state.doc : null
-  if (!doc || typeof doc.textBetween !== 'function') {
-    return 0
-  }
-  const boundedPosition = Math.max(0, Math.min(Number(position) || 0, getTiptapDocumentContentSize(editor)))
-  try {
-    return doc.textBetween(0, boundedPosition, '\n', '\0').length
-  } catch {
-    return 0
-  }
+  return editor?.state?.doc ? textOffsetForPosition(editor.state.doc, position) : 0
 }
 
 function getDocumentPositionForTextOffset(editor, offset) {
-  const doc = editor && editor.state ? editor.state.doc : null
-  if (!doc || typeof doc.descendants !== 'function') {
-    return 1
-  }
-
-  const targetOffset = Math.max(0, Math.floor(Number(offset) || 0))
-  let plainOffset = 0
-  let sawTextblock = false
-  let resolvedPosition = 1
-  let matched = false
-
-  doc.descendants((node, pos) => {
-    if (matched) return false
-    if (!node || !node.isTextblock) {
-      return undefined
-    }
-
-    const blockStart = pos + 1
-    const blockText = typeof node.textBetween === 'function'
-      ? node.textBetween(0, node.content.size, '', '\0')
-      : typeof node.textContent === 'string' ? node.textContent : ''
-
-    if (sawTextblock) {
-      if (targetOffset === plainOffset) {
-        resolvedPosition = blockStart
-        matched = true
-        return false
-      }
-      plainOffset += 1
-      if (targetOffset < plainOffset) {
-        resolvedPosition = blockStart
-        matched = true
-        return false
-      }
-    }
-
-    sawTextblock = true
-
-    if (targetOffset <= plainOffset + blockText.length) {
-      resolvedPosition = blockStart + (targetOffset - plainOffset)
-      matched = true
-      return false
-    }
-
-    plainOffset += blockText.length
-    resolvedPosition = blockStart + blockText.length
-    return undefined
-  })
-
-  if (matched) {
-    return resolvedPosition
-  }
-  return getTiptapDocumentContentSize(editor)
+  return editor?.state?.doc ? positionForTextOffset(editor.state.doc, offset) : 1
 }
 
 function runFocusedChainCommand(commandName, payload = undefined) {
@@ -435,6 +389,10 @@ function createIpcSession(editor, options = {}) {
       })
     },
     applyIncomingPayload(payload) {
+      if (payload?.localImageAuthoringPublication === true) {
+        applyTiptapLocalImagePublication(payload, this.readObservablePayload())
+        return
+      }
       if (payload?.userBookmarkAuthoringPublication === true) {
         if (this.readObservablePayload() !== payload.expectedContent) return
         const checked = parseObservablePayload(payload.content)

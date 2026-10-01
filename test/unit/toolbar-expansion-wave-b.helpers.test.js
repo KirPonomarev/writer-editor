@@ -45,6 +45,7 @@ test('toolbar expansion wave b: catalog promotes color and review items while de
     'toolbar.paragraph.alignment',
     'toolbar.list.type',
     'toolbar.insert.link',
+    'toolbar.insert.image',
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',

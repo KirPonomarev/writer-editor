@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_LOCAL_IMAGE_MAC_20261001",
+  "objective": "Insert local PNG/JPEG at the exact editor cursor, retain Undo/Redo, durable save/reopen and annotations, then exchange the image with Word on macOS.",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "c1040cea6ba49e48bf6ebc3521a2c98da1029304",
+  "scopeIn": [
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/main.js",
+    "src/core/word-local-image-v1.cjs",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/core/entitlement-law-v1.cjs",
+    "src/io/localImageFile.cjs",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/localImage.mjs",
+    "src/renderer/tiptap/textCoordinates.mjs",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/renderer/toolbar/toolbarFunctionCatalog.mjs",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-local-image-runtime.contract.test.js",
+    "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
+    "docs/tasks/2026-10-01--word-local-image-mac.md",
+    "src/renderer/index.html",
+    "test/unit/toolbar-expansion-wave-a1.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-a2.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-b.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
+    "test/unit/toolbar-profile-state.foundation.test.js",
+    "test/unit/toolbar-profile-switch.helpers.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-b.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-c1.test.js",
+    "test/unit/r24-r5-lifecycle-physics.test.js",
+    "test/unit/r24-wp200-durable-save-physics.test.js",
+    "test/unit/sector-m-toolbar-phosphor-icon-system.test.js",
+    "src/renderer/styles.css",
+    "src/renderer/assets/icons/local/image.svg"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows"
+  ],
+  "productAuthority": "Owner authorized complete macOS Word interoperability including local image authoring.",
+  "commandAuthority": "cmd.project.media.insertLocal through existing Command Kernel; Main-owned native picker and atomic project transaction.",
+  "designAuthority": "Owner-authorized local image toolbar entry: add one native button within existing insert group, use existing classes and labels, preserve tokens, shell structure and selection. Use the established local currentColor mask icon protocol for the new image control; add only its asset binding, no layout or token changes.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Main commitWriterProjectSnapshot with mediaReturnPlan -> existing project transaction and media resources; guarded incremental editor publication with undo history."
+  ],
+  "readPaths": [
+    "Main-bound active scene, manifest, note/comment state, exact editor snapshot and cursor; native selected file opened read-only."
+  ],
+  "productPorts": [
+    "Existing Command Kernel, Electron native dialog adapter, read-only local image adapter, project transaction and media resource port."
+  ],
+  "designOsPorts": [
+    "Existing toolbar and palette capability projection; no new visual zone."
+  ],
+  "readProjections": [
+    "Revision/generation-bound editor snapshot and incremental saved image publication."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Bind project, lifecycle, session, scene raw hash and editor generation before picker and revalidate before commit and async publication.",
+    "Reject pending revisions, stale or dirty snapshots, malformed cursor, forbidden media shape, invalid bytes, symlink/substitution, bounds, capability denial."
+  ],
+  "capabilityRevalidation": "Kernel entitlement/local policy at dispatch, after picker, before persistence and publication.",
+  "fallbacks": [
+    "Cancel or invalid/stale file performs no image mutation; existing dirty authoring text may be saved before the picker. Publication failure retains recoverable persisted state and dirty authoring buffer."
+  ],
+  "recoveryAndNegativeChecks": [
+    "Core exact cursor among repeated zero-width images, UTF16 and hard breaks; real ProseMirror Undo/Redo.",
+    "Main actual command/atomic resource write with stale picker, capability denial, file substitution and recovery counterexamples.",
+    "Native SOURCE and PACKAGED insert/Undo/Redo/save/reopen/export/edited Word return, independent bytes/placement oracle.",
+    "Required baseline, CI, exact merged-head tests and guardrails."
+  ],
+  "securityAndInputBoundary": "Main exclusively owns native chosen path; no renderer path or asset authority; bytes validated by existing bounded PNG/JPEG parser before planning.",
+  "performanceAndAccessibility": "Existing keyboard-accessible toolbar/palette and native picker; bounded file read and existing image alt text; no new style or animation.",
+  "currentReality": [
+    "c1040cea delivers note-body images; toolbar image blocked; image atoms count inconsistently in editor offsets and note scene grammar rejects media.",
+    "Continuation of the same local-image delivery chain: checkpoint 2cdece67, original delivery base c1040cea. No delivered acceptance yet."
+  ],
+  "targetOnly": [
+    "Local image scenario remains unaccepted until native/runtime proof; full Mac plan and five-cycle acceptance remain outstanding."
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert single local image authoring slice; existing content-addressed assets and previous DOCX behavior remain readable.",
+  "status": "TARGET_NOT_ACCEPTED"
+}

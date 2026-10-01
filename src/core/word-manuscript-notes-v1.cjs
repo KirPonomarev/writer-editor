@@ -136,7 +136,8 @@ function sceneText(content) {
   // The initial point grammar uses the same paragraph separators as the editor.
   // Nested structural coordinates are a separate qualification, never flattened.
   need(parsed.doc.content.every(block => ['paragraph', 'heading', 'codeBlock'].includes(block.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
-  need(parsed.doc.content.every(block => (block.content || []).every(node => ['text', 'hardBreak'].includes(node.type))), 'NOTE_SCENE_INLINE_UNSUPPORTED');
+  need(parsed.doc.content.every(block => (block.content || []).every(node => ['text', 'hardBreak', 'image'].includes(node.type))), 'NOTE_SCENE_INLINE_UNSUPPORTED');
+  documentMedia(parsed.doc);
   return parsed.doc.content.map(block => deriveVisibleTextFromDocument({ type: 'doc', content: [block] })).join('\n');
 }
 

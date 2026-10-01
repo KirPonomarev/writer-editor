@@ -39,6 +39,7 @@ const ICON_CLASS_BY_BIND_KEY = Object.freeze({
   'paragraph-trigger': 'paragraph-align',
   'list-type': 'list-bullets',
   'insert-link': 'link',
+  'insert-image': 'image',
   'review-comment': 'comment',
   'style-paragraph': 'paragraph-style',
   'style-character': 'character-style',
@@ -109,6 +110,11 @@ test('sector-m toolbar phosphor icons: each live visual belongs to its function 
   const scaleHandleMatch = html.match(/<div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--scale"[\s\S]*?<\/div>/);
   assert.ok(scaleHandleMatch, 'main toolbar scale handle must exist');
   assert.ok(scaleHandleMatch[0].includes('floating-toolbar__phosphor-icon--scale'));
+
+  const imageAsset = read(['src', 'renderer', 'assets', 'icons', 'local', 'image.svg']);
+  assert.match(imageAsset, /viewBox="0 0 24 24"/);
+  assert.doesNotMatch(imageAsset, /<script|<foreignObject|href=/i);
+  assert.ok(read(['src', 'renderer', 'styles.css']).includes("url('./assets/icons/local/image.svg')"));
 
   assert.equal(toolbarControls.includes('<svg'), false);
   assert.equal(toolbarControls.includes('floating-toolbar__format-glyph'), false);

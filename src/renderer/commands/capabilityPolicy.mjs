@@ -4,6 +4,7 @@ import productCommandRegistry from '../../shared/productCommandRegistry.cjs';
 const { PRODUCT_COMMAND_CAPABILITY_BINDING } = productCommandRegistry;
 
 export const CAPABILITY_BINDING = Object.freeze({
+  'cmd.project.media.insertLocal': 'cap.project.media.authoring',
   'project.create': 'cap.core.project.create',
   'project.applyTextEdit': 'cap.core.project.applyTextEdit',
   ...PRODUCT_COMMAND_CAPABILITY_BINDING,
@@ -115,6 +116,7 @@ export const CAPABILITY_BINDING = Object.freeze({
 export const CAPABILITY_MATRIX = Object.freeze({
   node: Object.freeze({
     'cap.project.bookmarks.authoring': true,
+    'cap.project.media.authoring': true,
     'cap.core.project.create': true,
     'cap.core.project.applyTextEdit': true,
     'cap.atlas.entity.create': true,

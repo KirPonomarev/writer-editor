@@ -182,7 +182,8 @@ test('main quit joins saves and renderer false-clean signals have no authority',
     'autosaveResult,content,snapshot.generation',
     ...Array(3).fill('saveResult,content,snapshot.generation'),
     'receipt,snapshot.content,snapshot.generation',
-    'durable,bound.savedContent,generation',
+    // Bookmark and local-image publications both require a durable receipt.
+    ...Array(2).fill('durable,bound.savedContent,generation'),
   ].sort());
   assert.match(main, /wasUntitled && saveAck\.kind === SAVE_ACK_KINDS\.SAVED/);
   assert.match(main, /result\.subjectId !== subjectId/);
