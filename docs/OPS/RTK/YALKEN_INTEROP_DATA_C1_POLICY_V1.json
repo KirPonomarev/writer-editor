@@ -415,7 +415,10 @@
     "test/unit/sector-m-toolbar-expansion-wave-b.test.js",
     "test/unit/sector-m-toolbar-expansion-wave-c1.test.js",
     "test/unit/sector-m-toolbar-phosphor-icon-system.test.js",
-    "src/renderer/assets/icons/local/image.svg"
+    "src/renderer/assets/icons/local/image.svg",
+    "test/contracts/rtk-word-media-notes-return.contract.test.js",
+    "docs/tasks/2026-10-01--word-media-notes-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_NOTES_V1.json"
   ],
   "protectedFiles": [
     {
@@ -644,7 +647,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "506f65366eb6486cf6f2ed434a83349121481120027b0705eab0c2e584eb28df"
+        "sha256": "508afb50458c8af11160e1ab0b0d9569bd20687e6e99c1f40d758421a17cb990"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1492,7 +1495,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "be42c545ee92214051a44072273b27be034ff886351d0d96d4685d58a35d86ed"
+        "sha256": "e28bc4fc4a5c4e24c53d1a293bd3096e361bec411e87d68b80b0b1934f109cb6"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1680,7 +1683,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media-return-runtime.contract.test.js",
-        "sha256": "d5d46534ad11c9e73d29b8142247c7e79d86cf7cac0410fb5c5fb38a55b30e21"
+        "sha256": "875b9d395fd4dfc70c2c5ffc2b25ccf3ee4cbf51443bc00f1436305a9b10ce18"
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-lists-mac.md",
@@ -1777,6 +1780,18 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
         "sha256": "5b32dad569b575319aa9790a9d1d170e7ab66cda298137431179492882f35094"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-notes-return.contract.test.js",
+        "sha256": "fc23a5f6bbd0868690e481858152cd167137a5f3124652c7a05df64f2056cf9d"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-media-notes-mac.md",
+        "sha256": "dcbdbcfca2957130d9118da1a380b60add33f886b21bf7e5d01c35d48b928778"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_NOTES_V1.json",
+        "sha256": "ea9038a706be807cfc492b8c90e5eab73c75feb93f1804793aeb40c98b2098b3"
       }
     ],
     "followupRepair": {

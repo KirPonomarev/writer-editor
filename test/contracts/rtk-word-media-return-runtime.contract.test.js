@@ -233,7 +233,7 @@ test('an unsaved synopsis in the materialized scene panel remains a no-write con
   const result = await returnHarness(h).apply(); assert.equal(result.ok, false); assert.equal(h.writes, 0);
 });
 
-test('media-only intake refuses deleted or existing source notes before acquiring a candidate', async () => {
+test('media intake refuses notes without authenticated proof before acquiring a candidate', async () => {
   const start = main.indexOf('async function prepareCleanMediaReturnCapsule('), end = main.indexOf('\nasync function ', start + 1);
   const c = vm.createContext({ compareCommentExportReadback: () => ({ ok: true }),
     loadDocumentContentEnvelopeModule: () => { throw Error('must refuse before baseline access'); } });
@@ -263,3 +263,43 @@ test('media editor publication preserves a newer buffer or changed project after
     assert.equal(h.working, newer); assert.deepEqual(fs.readFileSync(h.file), committed);
   }
 });
+
+for (const mode of ['same', 'changed', 'missing', 'wrong-project', 'during-commit']) {
+  test(`actual media Apply protects notes source: ${mode}`, async t => {
+    const h = await harness(t), r = returnHarness(h), projectRoot = path.dirname(h.file);
+    const notesModel = require('../../src/core/word-manuscript-notes-v1.cjs');
+    const storage = await import('../../src/product/notesStoragePersistence.mjs');
+    const schema = await import('../../src/core/notesStorage.mjs');
+    const document = schema.normalizeNotesDocument({ schemaVersion: 1, projectId: 'p', notes: [
+      { id: 'private', title: 'Private', scope: 'project', body: 'Owner text', deleted: false },
+      { id: 'note-a', title: '', scope: 'manuscript', body: 'Note body', deleted: false,
+        manuscript: notesModel.bindManuscriptPayload({ body: doc('Note body'), kind: 'footnote', sceneId: 'a.txt', offsetUtf16: 1, sceneContent: 'AB' }) },
+    ] }, { projectId: 'p', now: () => '2026-10-01T00:00:00Z' }).value;
+    const notesPath = storage.getNotesStoragePath(projectRoot), noteText = JSON.stringify(document);
+    fs.writeFileSync(notesPath, noteText);
+    r.store.mediaReturnCandidate.noteSourceGuard = { projectId: 'p', projectRoot, sourceText: noteText };
+    h.c.manuscriptNoteModel = notesModel;
+    h.c.loadNotesStorageModule = async () => ({ ...storage, readNotesStorage: async options => {
+      const result = await storage.readNotesStorage(options);
+      if (mode === 'during-commit') fs.writeFileSync(notesPath, noteText + '\n');
+      return result;
+    } });
+    h.c.getProjectNotesContext = async () => ({ ok: true, projectRoot: mode === 'wrong-project' ? projectRoot + '-foreign' : projectRoot });
+    h.c.readProjectNotesDocument = async () => {
+      const current = await storage.readNotesStorage({ projectRoot, projectId: 'p' });
+      return { ok: current.ok, current };
+    };
+    if (mode === 'changed') fs.writeFileSync(notesPath, noteText + '\n');
+    if (mode === 'missing') fs.unlinkSync(notesPath);
+    const rawBefore = fs.readFileSync(h.file, 'utf8'), result = await r.apply();
+    if (mode === 'same') {
+      assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(h.writes, 1);
+      assert.equal(fs.readFileSync(notesPath, 'utf8'), noteText);
+      assert.equal(mediaModel.mediaPlacements(savedDoc(h)).length, 1);
+    } else {
+      assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.writes, 0);
+      assert.equal(fs.readFileSync(h.file, 'utf8'), rawBefore);
+      assert.equal(fs.existsSync(path.join(projectRoot, r.store.mediaReturnCandidate.plan.after[0].attrs.assetPath)), false);
+    }
+  });
+}
