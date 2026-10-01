@@ -159,6 +159,10 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
   }
   const exportCapsule = sanitizeReviewDocxExportCapsule(built?.exportCapsule || source?.exportCapsule);
   const publicationGate = isPlainObjectValue(built?.publicationGate) ? built.publicationGate : null;
+  if (source?.sceneNoteBinding && (!publicationGate?.ok || publicationGate.publishAllowed !== true
+    || publicationGate.code !== 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED')) {
+    return makeTypedReviewDocxExportError('E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED', 'REVIEW_DOCX_EXPORT_NOTES_GATE_REQUIRED');
+  }
   if (exportCapsule.fullManuscript === true) {
     const publicationGateReady = publicationGate
       && publicationGate.publishAllowed === true
@@ -195,7 +199,7 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
           : 'REVIEW_DOCX_EXPORT_TARGET_FORBIDDEN';
         throw error;
       }
-      if (source?.commentExport) {
+      if (source?.commentExport || source?.documentNotes) {
         await requireDependency(deps, 'revalidateDocxReviewPacketExportSource')(source);
       }
       return writeBufferAtomic(outPath, documentBuffer);

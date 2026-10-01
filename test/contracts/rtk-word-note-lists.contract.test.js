@@ -128,3 +128,66 @@ test('literal Word numbering in footnotes imports without a Yalken export; unsup
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes(format)).ok, false, format);
   }
 });
+
+function mainFunctions(names, globals = {}) {
+  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+  const { createRequire } = require('node:module');
+  const file = path.join(__dirname, '../../src/main.js'), source = fs.readFileSync(file, 'utf8');
+  const context = vm.createContext({ Buffer, require: createRequire(file), isPlainObjectValue: v => !!v && typeof v === 'object' && !Array.isArray(v), ...globals });
+  for (const name of names) {
+    const match = source.match(new RegExp('(?:async )?function ' + name + '\\([^]*?\\n}(?=\\n|$)'));
+    assert.ok(match, name); vm.runInContext(match[0], context);
+  }
+  return context;
+}
+test('scene note publication parses signed bytes and refuses lost structure before write', async () => {
+  const crypto = require('node:crypto');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const { validateDocumentNotesReturn } = require('../../src/export/docx/docxReviewPacketNotes.js');
+  const f = fixture();
+  const ctx = mainFunctions(['stableRtkReviewTransportJson', 'createRtkReviewTransportCryptoPort', 'buildSceneNoteReviewPublicationGate'],
+    { crypto, computeHash: model.sha, validateDocumentNotesReturn, docxReviewReturnIntakeProductBudgets: () => undefined });
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/synthetic', notesDocument: f.document,
+    scenes: [{ sceneId: f.block.sceneId, scenePath: '/synthetic/roman/a.txt', text: 'Text', doc: doc(p('Text')), order: 0 }] },
+  { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
+  source.notesDocument = f.document;
+  const valid = await ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer(source), bridge);
+  assert.equal(valid.publishAllowed, true);
+  const altered = structuredClone(source.documentNotes);
+  altered.sourceBindings[0].richBody.content[1].attrs.start++;
+  await assert.rejects(ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer({ ...source, documentNotes: altered }), bridge), /NOTE_SEMANTICS_MISMATCH/);
+  await assert.rejects(ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer({ ...source, documentNotes: null }), bridge), /NOTES_MISMATCH/);
+});
+test('scene note publication requires gate and fresh source inside disk queue', async () => {
+  const { runDocxReviewPacketExport } = require('../../src/export/docx/docxReviewPacketExportHandler.js');
+  for (const mode of ['normal', 'missing-gate', 'failed-gate', 'stale', 'missing-revalidator']) {
+    let writes = 0, inQueue = false, checks = 0;
+    const source = { sceneNoteBinding: {}, documentNotes: fixture().projection };
+    const deps = { normalizeExportPayload: v => v, makeTypedReviewDocxExportError: (code, reason) => ({ ok: false, code, reason }),
+      resolveDocxReviewPacketExportPath: async () => '/owned/test.docx', validateDocxExportTarget: async () => ({ ok: true }),
+      readDocxReviewPacketExportSource: async () => source, buildDocxReviewPacketBuffer: async () => ({ documentBuffer: Buffer.from('unit'),
+        publicationGate: mode === 'missing-gate' ? null : { ok: mode !== 'failed-gate', publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED' } }),
+      queueDiskOperation: async fn => { inQueue = true; return fn(); }, writeBufferAtomic: async () => { assert.equal(inQueue, true); writes++; }, updateStatus: () => {} };
+    if (mode !== 'missing-revalidator') deps.revalidateDocxReviewPacketExportSource = async value => {
+      assert.equal(inQueue, true); assert.equal(value, source); checks++; if (mode === 'stale') throw Error('STALE'); };
+    const result = await runDocxReviewPacketExport({ requestId: 'unit' }, deps);
+    assert.equal(result.ok, mode === 'normal', JSON.stringify(result)); assert.equal(writes, mode === 'normal' ? 1 : 0);
+    if (mode === 'normal' || mode === 'stale') assert.equal(checks, 1);
+  }
+});
+test('actual scene note revalidator rejects source, notes, owner, lifecycle, capability and project changes', async () => {
+  const { notesStateDigest } = require('../../src/export/docx/docxReviewPacketNotes.js');
+  const notes = fixture().document, owner = {}, binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, raw: 'Text', notesDigest: notesStateDigest(notes) };
+  for (const mode of ['normal', 'scene', 'notes', 'owner', 'lifecycle', 'capability', 'project', 'during-read']) {
+    const ctx = mainFunctions(['revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => mode === 'lifecycle' ? 'other' : 's',
+      activeStage10ApplicationBootstrap: mode === 'owner' ? {} : owner, getProjectRootPath: () => '/synthetic', isDirty: false, autoSaveInProgress: false,
+      REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportDocxReviewPacket', userBookmarkCapability: () => { if (mode === 'capability') throw Error('DENIED'); },
+      readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: mode === 'project' ? 'other' : 'p', projectRoot: '/synthetic' }),
+      fs: { readFile: async () => mode === 'scene' ? 'changed' : 'Text' }, notesStateDigest,
+      readCanonicalNotesForDocxExport: async () => { if (mode === 'during-read') ctx.isDirty = true; return mode === 'notes' ? { ...notes, revision: 1 } : notes; } });
+    const promise = ctx.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: {} });
+    if (mode === 'normal') await promise; else await assert.rejects(promise, /STALE|DENIED/);
+  }
+});

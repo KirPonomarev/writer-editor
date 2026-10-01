@@ -4477,6 +4477,7 @@ function buildReviewDocxPacketHashTree({ projectId, sceneId, sceneRevision, rawS
 }
 
 async function readDocxReviewPacketExportSource() {
+  const sourceFilePath = currentFilePath, sourceSubjectId = currentLifecycleSubjectId(), sourceOwner = activeStage10ApplicationBootstrap;
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
@@ -4523,6 +4524,16 @@ async function readDocxReviewPacketExportSource() {
   const hmacSecret = crypto.randomBytes(32).toString('hex');
   const cryptoPort = createRtkReviewTransportCryptoPort();
   const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, { roundId, doc: parsedDocument.doc });
+  const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, true);
+  const activeNotes = notesDocument?.notes.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId);
+  const documentNotes = activeNotes ? buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
+    ...block, sceneId, documentParagraphIndex: index,
+  })), projectId, { editableReturn: true }) : null;
+  if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
+  const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
+    subjectId: sourceSubjectId, owner: sourceOwner, raw: sceneRawContent, notesDigest: notesStateDigest(notesDocument) } : null;
+  if (sourceFilePath !== currentFilePath || sourceSubjectId !== currentLifecycleSubjectId()
+    || sourceOwner !== activeStage10ApplicationBootstrap || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const primaryBlock = blocks[0] || {
     blockId: 'block-0000-empty',
     paragraphId: 'yrtk-p-empty',
@@ -4568,6 +4579,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
+    documentNotes,
     sceneText,
     blocks,
     customProperties: [
@@ -4658,6 +4670,7 @@ async function readDocxReviewPacketExportSource() {
     transportManifestDigest: transportManifestResult.manifest.payloadDigest,
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     blockCount: blocks.length,
+    ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
   };
   const authorityEncoded = buildReviewDocxPacketAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
@@ -4680,6 +4693,7 @@ async function readDocxReviewPacketExportSource() {
     automaticApplyCertified: false,
     productRuntimeWired: true,
     returnIntakeWired: false,
+    ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
   };
   // ROUND-01 (V3): the raw hmacSecret is imported into the main-process-only
   // key vault and the durable capsule carries only an opaque keyRef plus public
@@ -4710,6 +4724,8 @@ async function readDocxReviewPacketExportSource() {
     manifestDigest: transportManifestResult.manifest.payloadDigest,
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     exportMap,
+    ...(documentNotes ? { projectId, documentNotes, scenePathBySceneId: { [sceneId]: sourceFilePath },
+      baselineObservableContentBySceneId: { [sceneId]: sceneRawContent }, baselineFinalTextBySceneId: { [sceneId]: sceneText } } : {}),
   };
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
   // rounds are retained so multi-round retention holds and each round carries
@@ -4733,6 +4749,7 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
+    documentNotes, sceneNoteBinding, notesDocument, localAuthorityCapsule,
     sceneText,
     blocks,
     forbiddenSecret: hmacSecret,
@@ -4955,9 +4972,50 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   }
 }
 
+async function revalidateSceneNoteReviewExportSource(source) {
+  const binding = source?.sceneNoteBinding;
+  if (!binding || !source.documentNotes) throw Error('REVIEW_DOCX_EXPORT_NOTE_BINDING_REQUIRED');
+  const check = () => {
+    userBookmarkCapability(REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID);
+    if (binding.filePath !== currentFilePath || binding.subjectId !== currentLifecycleSubjectId()
+      || binding.owner !== activeStage10ApplicationBootstrap || binding.projectRoot !== getProjectRootPath()
+      || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  };
+  check();
+  const project = await readReviewExactTextApplyProjectBinding(binding.filePath);
+  if (!project.ok || project.projectId !== binding.projectId || project.projectRoot !== binding.projectRoot)
+    throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  if (await fs.readFile(binding.filePath, 'utf8') !== binding.raw) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  const notes = await readCanonicalNotesForDocxExport(binding.projectId, binding.projectRoot, true);
+  if (!notes || notesStateDigest(notes) !== binding.notesDigest) throw Error('REVIEW_DOCX_EXPORT_NOTES_STALE');
+  check();
+}
+
+async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge) {
+  const cryptoPort = createRtkReviewTransportCryptoPort();
+  const finalArtifactSha256 = `sha256:${computeHash(documentBuffer)}`;
+  const parsed = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: documentBuffer,
+    budgets: docxReviewReturnIntakeProductBudgets(), hmacSecret: source.forbiddenSecret,
+    expectedAuthority: source.localAuthorityCapsule.expectedAuthority, returnedArtifactSha256: finalArtifactSha256,
+    baselineFinalText: source.sceneText }, { cryptoPort });
+  if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
+    throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
+  const notesBinding = validateDocumentNotesReturn({ expected: source.documentNotes,
+    returned: parsed.reviewIr?.documentNotes, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest });
+  if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
+  const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
+  const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
+    roundId: source.localAuthorityCapsule.roundId, artifactSha256: finalArtifactSha256, baseline: source.documentNotes,
+    exportMap: source.localAuthorityCapsule.exportMap,
+    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '1970-01-01T00:00:00.000Z' });
+  if (plan.changes.length) throw Error('REVIEW_DOCX_EXPORT_NOTE_SEMANTICS_MISMATCH');
+  return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256 };
+}
+
 async function buildDocxReviewPacketBuffer(source) {
   const documentBuffer = buildDocxReviewPacketBufferCore(source);
-  const revisionBridge = source?.exportCapsule?.fullManuscript === true
+  const revisionBridge = source?.exportCapsule?.fullManuscript === true || source?.sceneNoteBinding
     ? await loadRevisionBridgeModule()
     : null;
   if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)) {
@@ -4965,7 +5023,9 @@ async function buildDocxReviewPacketBuffer(source) {
     source.localAuthorityCapsule.exportMap = privateMap;
     if (source.exportMap) source.exportMap = privateMap;
   }
-  const publicationGate = await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
+  const publicationGate = source.sceneNoteBinding
+    ? await buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge)
+    : await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
   return {
     documentBuffer,
     exportCapsule: source.exportCapsule,
@@ -5077,6 +5137,8 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
     buildDocxReviewPacketBuffer: typeof options.buildDocxReviewPacketBuffer === 'function'
       ? options.buildDocxReviewPacketBuffer
       : buildDocxReviewPacketBuffer,
+    revalidateDocxReviewPacketExportSource: typeof options.revalidateDocxReviewPacketExportSource === 'function'
+      ? options.revalidateDocxReviewPacketExportSource : revalidateSceneNoteReviewExportSource,
     queueDiskOperation: typeof options.queueDiskOperation === 'function'
       ? options.queueDiskOperation
       : queueDiskOperation,

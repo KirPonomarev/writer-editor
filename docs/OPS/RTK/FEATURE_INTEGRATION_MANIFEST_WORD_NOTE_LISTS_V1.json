@@ -3,7 +3,7 @@
   "taskId": "WORD_NOTE_LISTS_MAC_20261001",
   "objective": "Import, author, explicitly apply Word edits to, save, reopen and reexport bounded bulleted and decimal numbered lists inside manuscript footnotes and endnotes, preserving note identity, list nesting and starts, inline formatting and point references.",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "12ab91c3751b612ac00238d9cb3fa77f89fa3f86",
+  "bindingBaseSha": "dab2e78ebb03bc4e7444f9efd70939ae31d3a3f7",
   "scopeIn": [
     "docs/tasks/2026-10-01--word-note-lists-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
@@ -27,7 +27,8 @@
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "src/export/docx/docxReviewPacketExportHandler.js"
   ],
   "scopeOut": [
     "package.json",
@@ -76,7 +77,8 @@
     "One paragraph per list item followed only by nested lists; no guessed ownership of continuation paragraphs",
     "Numbering IDs allocated without collisions across manuscript body and both note parts; semantic ordered start/nesting survive native save",
     "Word transport bookmarks identify notes only through authenticated local baseline; all source/notes digests and lifecycle/generation/capability checks remain",
-    "Malformed topology/format/over-budget input rejected before writer; no flattening unsupported tables or media"
+    "Malformed topology/format/over-budget input rejected before writer; no flattening unsupported tables or media",
+    "Scene Review exports carry notes in signed digest and private baseline, with independently parsed publication and fresh prewrite project/source/notes checks."
   ],
   "capabilityRevalidation": "Existing notes/import/return Kernel and source/lifecycle/generation guards remain unchanged.",
   "fallbacks": [
@@ -95,7 +97,8 @@
   "performanceAndAccessibility": "Bounded recursive traversal over at most128 leaves per note and256 notes; no typing hot-path I/O. Existing named buttons plus list controls, keyboard nesting, focus and native list semantics.",
   "currentReality": [
     "12ab91c3 includes lists in table cells and rich paragraph manuscript notes but rejects note list bodies in Core/parser/editor.",
-    "Native Word-created note-list-native-input.docx contains two w:numPr paragraphs in footnotes.xml; actual current packaged import rejects with disabled Import and no scene creation."
+    "Native Word-created note-list-native-input.docx contains two w:numPr paragraphs in footnotes.xml; actual current packaged import rejects with disabled Import and no scene creation.",
+    "Early native route: generic import, indentation, Save, Full export, Word edit and explicit return passed; Scene Review source omits notes entirely and must join same validated pipeline."
   ],
   "targetOnly": [
     "Positive editable bullet/decimal list note grammar remains TARGET until native/exact-head evidence",
