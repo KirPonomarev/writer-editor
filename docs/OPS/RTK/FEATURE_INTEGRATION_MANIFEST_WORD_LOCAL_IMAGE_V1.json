@@ -38,17 +38,25 @@
     "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
     "test/unit/toolbar-profile-state.foundation.test.js",
     "test/unit/toolbar-profile-switch.helpers.test.js",
-    "test/contracts/rtk-word-comment-authoring.contract.test.js"
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-b.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-c1.test.js",
+    "test/unit/r24-r5-lifecycle-physics.test.js",
+    "test/unit/r24-wp200-durable-save-physics.test.js",
+    "test/unit/sector-m-toolbar-phosphor-icon-system.test.js",
+    "src/renderer/styles.css",
+    "src/renderer/assets/icons/local/image.svg"
   ],
   "scopeOut": [
     "package.json",
     "package-lock.json",
-    ".github/workflows",
-    "src/renderer/styles.css"
+    ".github/workflows"
   ],
   "productAuthority": "Owner authorized complete macOS Word interoperability including local image authoring.",
   "commandAuthority": "cmd.project.media.insertLocal through existing Command Kernel; Main-owned native picker and atomic project transaction.",
-  "designAuthority": "Owner-authorized local image toolbar entry: add one native button within existing insert group, use existing classes and labels, preserve tokens, shell structure and selection.",
+  "designAuthority": "Owner-authorized local image toolbar entry: add one native button within existing insert group, use existing classes and labels, preserve tokens, shell structure and selection. Use the established local currentColor mask icon protocol for the new image control; add only its asset binding, no layout or token changes.",
   "operationKinds": [
     "COMMAND",
     "QUERY",

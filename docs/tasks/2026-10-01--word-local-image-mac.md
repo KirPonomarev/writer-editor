@@ -72,4 +72,15 @@ Mac plan or its five edited alternating cycles per runtime.
 - Frozen SOURCE 0c267df2: native local PNG at offset 5 -> Undo -> Redo ->
   linked DOCX -> native Word resize to 720000 x 480000 EMU -> preview Apply
   persisted the new dimensions, exact original image bytes and unchanged text.
-  PACKAGED and reopened re-export proof remain pending.
+  PACKAGED JPEG completed the same cycle at 1080000 x 720000 EMU. Both
+  processes were restarted; native re-exports independently retained exact
+  image SHA256, offset 5, new dimensions and original text. Product source
+  bytes were identical between 0c267df2 and 40ede08e.
+
+- Candidate 40ede08e full RTK: 2335 passed, two ORCH identity/timing failures;
+  no skips. Isolated affected ORCH tests passed. This is not a green full run.
+- Inventory CI exposed seven integration expectations outside the RTK graph:
+  four toolbar DOM lists, two durable-save call inventories and the icon mask
+  protocol. Lists now include the image path; its icon uses the existing local
+  currentColor mask protocol. The full toolbar plus save/image focused set
+  passes 100 tests, no skips. Final CI and visual mask verification pending.

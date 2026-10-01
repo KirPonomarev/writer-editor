@@ -26,6 +26,7 @@ test('sector-m toolbar expansion wave b: main toolbar exposes bounded color revi
     'paragraph-trigger',
     'list-type',
     'insert-link',
+    'insert-image',
     'color-text',
     'color-highlight',
     'review-comment',

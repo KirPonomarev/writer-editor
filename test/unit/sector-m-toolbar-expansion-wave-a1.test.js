@@ -26,6 +26,7 @@ test('sector-m toolbar expansion wave a1: main toolbar exposes A1 hooks in canon
     'paragraph-trigger',
     'list-type',
     'insert-link',
+    'insert-image',
     'color-text',
     'color-highlight',
     'review-comment',

@@ -26,6 +26,7 @@ test('sector-m toolbar expansion wave c1: main toolbar exposes styles group and 
     'paragraph-trigger',
     'list-type',
     'insert-link',
+    'insert-image',
     'color-text',
     'color-highlight',
     'review-comment',

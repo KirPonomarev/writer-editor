@@ -1205,6 +1205,10 @@ body {
   --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/link-simple-horizontal.svg');
 }
 
+.floating-toolbar__phosphor-icon--image {
+  --floating-toolbar-icon-source: url('./assets/icons/local/image.svg');
+}
+
 .floating-toolbar__phosphor-icon--comment {
   --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/chat-text.svg');
 }

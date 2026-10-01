@@ -410,7 +410,12 @@
     "test/unit/toolbar-expansion-wave-b.helpers.test.js",
     "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
     "test/unit/toolbar-profile-state.foundation.test.js",
-    "test/unit/toolbar-profile-switch.helpers.test.js"
+    "test/unit/toolbar-profile-switch.helpers.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-b.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-c1.test.js",
+    "test/unit/sector-m-toolbar-phosphor-icon-system.test.js",
+    "src/renderer/assets/icons/local/image.svg"
   ],
   "protectedFiles": [
     {
@@ -739,7 +744,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "a7d747db0261e28f0ff55082f561042293befe489c679bd264f884bb0346045a"
+        "sha256": "abc75eeccd560f32d5a5fb91b6e3f40ac30cdccede0235d980a2be63ff14a48c"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -827,7 +832,7 @@
       },
       {
         "path": "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
-        "sha256": "daa10e578414d45ddb16b3af8f97b37a401f926b0f4fb0fc00265d19c4b9e79e"
+        "sha256": "6033e42e7327ad94928880102865ee945a12f9286729edbded67a47f5a6de956"
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
@@ -1127,7 +1132,7 @@
       },
       {
         "path": "src/renderer/index.html",
-        "sha256": "bbb3aa670cd9d236881f29dd79e8e713c08949d2126bcdfd4b35059eb46dc695"
+        "sha256": "33660e162bd7c65526708b2d844b5aac683f94c573dbe410e5aa91454052a1b8"
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
@@ -1603,11 +1608,11 @@
       },
       {
         "path": "test/unit/r24-r5-lifecycle-physics.test.js",
-        "sha256": "0a0969120611ae04d5c59a07dccdac2271f7aa0c7f09e6708454236ec5001780"
+        "sha256": "4b7246b7885b67c74df93d90f4dec1e7d164456e6893c4b35cf062b4955631b8"
       },
       {
         "path": "test/unit/r24-wp200-durable-save-physics.test.js",
-        "sha256": "a640b438a173fe26936026f9d5e830fdec0dfc3fbc023e60ff9fba85962f6cb5"
+        "sha256": "d24fd591828bfa4147c1797bdac562fb3928a79f003b1bbefe8dbefd12232e1a"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
@@ -1738,6 +1743,10 @@
         "sha256": "f6261a91e16aca6e7bd645e1d005ba39cb9e8538e800e1a66d4c180c5cab4b95"
       },
       {
+        "path": "src/renderer/assets/icons/local/image.svg",
+        "sha256": "2916866af2e489ec679c812409d4006bd0672af2b636991efa04e55089e59c71"
+      },
+      {
         "path": "test/contracts/rtk-word-local-image-runtime.contract.test.js",
         "sha256": "47d5e5322b1849606f216aff8a0a2836af8631da887d4c5723d31a4d42792194"
       },
@@ -1763,11 +1772,11 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-local-image-mac.md",
-        "sha256": "98cd32beb0abc83d96b33321c7fc1d1ca934fbd903df59badf9efd46e4050e8d"
+        "sha256": "92a4b11cb8d711932fd2f9d7d3969e66b44ca68fd04e75d2a20ef0b149f42353"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
-        "sha256": "0d45189bac30c382ea9644b5fb78d316750eeca52b6cd24a04fd13cd199f5bd5"
+        "sha256": "5b32dad569b575319aa9790a9d1d170e7ab66cda298137431179492882f35094"
       }
     ],
     "followupRepair": {
