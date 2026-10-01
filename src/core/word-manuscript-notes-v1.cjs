@@ -162,7 +162,9 @@ function mapPoint(oldText, nextText, point) {
   // Repeated text cannot silently move a reference to a different occurrence.
   const earliest = Math.min(prefix, Math.min(n, m) - suffix);
   const latest = Math.max(n - suffix, prefix + Math.max(0, n - m));
-  const result = point < earliest ? point : point > latest ? point + m - n
+  // At the right edge of every possible edit, an after-affinity point has
+  // the same destination as the surviving suffix, including an empty suffix.
+  const result = point < earliest ? point : point >= latest ? point + m - n
     : earliest === latest && point === earliest && m >= n ? point + m - n : null;
   need(result !== null && boundary(nextText, result), 'NOTE_REFERENCE_EDIT_CONFLICT');
   return result;

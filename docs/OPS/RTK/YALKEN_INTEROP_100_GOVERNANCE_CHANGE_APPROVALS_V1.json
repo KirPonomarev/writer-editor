@@ -796,7 +796,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -994,7 +994,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -1111,7 +1111,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "ce6db83902e8f47e982bbf7cea6226a8e638b1ca212fc48ac5ec8311986704d0",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1590,7 +1590,7 @@
       "filePath": "src/export/docx/docxMinBuilder.js",
       "sha256": "2e0866b414be9c3a7e4ffeee18377a035eef8dcb1787774bc83d44caec6ee5a3",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "328c3b3e162aac7107da53090c30bfdaf0f934b36209a6ad9b3db62f6e48be53",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "535c4e0e5883613881054951c2db2227dc0ff5763acaf56b060c1d1c416e49d2",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1651,9 +1651,9 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "fad925ca9517e47119b1fb73028d33f8a928b5a05eb11722218c558d233f28ae",
+      "sha256": "2429f25db9e78845d3a4894c9f5496248b58f2dc888936cb3831c9dc0db481ef",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "95e2174b2576c2ca14601242328228014420791b664551bd2b3ed5b7e7f47105",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "813d2a91c8b687118711c387bed278650b3d993d31690ac6c9b30270426255ca",
+      "sha256": "1f0dd4783821504fdd5590c0e1b321b5f36130b976535db48238071b646ff89e",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "ec091c2e14a700bfaf7ae906618be74d357cbe7b2b357664bf38873914097305",
+      "sha256": "409b692e5a32478e3d4a73f992dd654035154c094b7023cd11ee720b78808633",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e100da814c71574cc976dc8d65786b1d8e356d3925000a5788ad2fbc756ddfd3",
+      "sha256": "b2234ef51acf4e125b9f18b4af2e5fc2fff336d8bba6f088610053c0ea0dfc52",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -2345,7 +2345,7 @@
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
       "sha256": "4a4c1df6423ecb403135b8bde350db0bd60569a8f5f31c8c51cdfdedbdb3da50",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e8d43dea5c728865431a1058d580337fd015e704342b7443e90cdb31ee59721e",
+      "sha256": "dcb556028415b85753cfd850656ef1edaff687a5b81a3f38e4b62090c947f648",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "3e44f1b71a1106d49d3c2378ddedb1e6a1d39b52cb138f55a9b1ec9d44bbfa86",
+      "sha256": "d5a9c31eda0b22f40921628c7b3b9ab5cb9d3dc520ea87abb97bb85616b287e2",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "fd4d669ee1490ae7dba604dc0eb124d18b6caa81bac64657704aa7aa8f99e694",
+      "sha256": "ab3201808ef367f94bf3267e8e56dae8fce0ea8bfeb53054cfcb5cc463a91c4a",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only."
@@ -2776,8 +2776,8 @@
     },
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
-      "sha256": "9abb974823d86f9d3f600c4c418274547147f56e28d99cc2f13ebc063a7561aa",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "sha256": "127ef82d912383dda64caa01964031086d8890cf5b287fbed50097c3f4d71f1c",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -2786,7 +2786,7 @@
     {
       "filePath": "src/renderer/tiptap/manuscriptNotes.mjs",
       "sha256": "2d0adfd4d1520861c83e8ef94e4f59286a610e40572b50801609b500cfcc10e4",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -2849,7 +2849,7 @@
     {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
       "sha256": "79fcdf0a5d317bbdd95a4497861c4cf85e328dfc8b166bc38a268504dcfc023d",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -2867,7 +2867,7 @@
     {
       "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
       "sha256": "80f6723de437cfbe16811bed395dc0bf1336b63cd7afe04c8a40e92b241e57d0",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -3307,8 +3307,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-      "sha256": "98511458bc3b8bcbc4ccb6a8eadc2086882cabe176141f82038db6b937a8764a",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "sha256": "356701ad2c1b59da2f628e41f8a9824c9ad7d943ffbf0e31bee4728891b5021a",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -3388,8 +3388,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-01--word-note-lists-mac.md",
-      "sha256": "0b909f4c0ad03f29fbd353181513ee5c83d059fc2faf66ca76d2cb4218ebb1f7",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "sha256": "6631bd5fad2a919c73a5b529a052131bfc4feb7ea03d3225d6eab631f7947fea",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -3397,8 +3397,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
-      "sha256": "fed8f2726440fea821cbc9f18b9eea37307c535d4d792d48d426bddfa7301047",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "sha256": "54a4b2873b4d84eddc26b190f1be951bccd66cb77b7379f1cb0842c8ab47c00f",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,
@@ -3406,8 +3406,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-lists.contract.test.js",
-      "sha256": "76e939661ad5b226112e09f78a180ac86f752205d8b06247f3aa81b5b810e93f",
-      "approvedAtUtc": "2026-10-01T05:24:58.163294Z",
+      "sha256": "32a89e78325a4481187f5110583c1d1aae4e5f5744a8669aa1b2f71a36e8cda9",
+      "approvedAtUtc": "2026-10-01T06:04:32.368193Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001",
       "rationale": "Owner-authorized Mac rich note lists through bounded Core, generic import, authoring and all DOCX exports with authenticated explicit return. Scene export omission fixed through signed note binding, independent publication parse and fresh source plus notes validation before write. Early native SOURCE authoring, full and scene changed Word returns observed; immutable SOURCE/PACKAGED qualification and mandatory gates remain pending. Existing security, stale, private notes and budgets retained; no whole Mac acceptance claim. Exact-byte companion refresh only.",
       "approved": true,

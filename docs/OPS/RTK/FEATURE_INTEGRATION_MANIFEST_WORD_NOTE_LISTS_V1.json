@@ -3,7 +3,7 @@
   "taskId": "WORD_NOTE_LISTS_MAC_20261001",
   "objective": "Import, author, explicitly apply Word edits to, save, reopen and reexport bounded bulleted and decimal numbered lists inside manuscript footnotes and endnotes, preserving note identity, list nesting and starts, inline formatting and point references.",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "608d5c1ec38888ad6f8ab0a5b929f5c8b2e572ac",
+  "bindingBaseSha": "20f131abdf2f94b2e89ea6f232c2f550de28431e",
   "scopeIn": [
     "docs/tasks/2026-10-01--word-note-lists-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
@@ -31,7 +31,8 @@
     "src/export/docx/docxReviewPacketExportHandler.js",
     "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
     "test/contracts/rtk-word-generic-comments.contract.test.js",
-    "test/contracts/rtk-word-note-return-runtime.contract.test.js"
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -52,7 +53,8 @@
   "writePaths": [
     "Existing import scene+notes transaction",
     "Existing notes Kernel create/update atomic persistence",
-    "Existing authenticated Word-note return explicit native confirmation -> Kernel notes UPDATE"
+    "Existing authenticated Word-note return explicit native confirmation -> Kernel notes UPDATE",
+    "Existing history restore/undo Kernel -> guarded atomic scene/manifest/note cohort, pre-restore checkpoint and revision-bound editor publication"
   ],
   "readPaths": [
     "Bounded literal OOXML note body and global numbering catalog",
@@ -81,7 +83,8 @@
     "Numbering IDs allocated without collisions across manuscript body and both note parts; semantic ordered start/nesting survive native save",
     "Word transport bookmarks identify notes only through authenticated local baseline; all source/notes digests and lifecycle/generation/capability checks remain",
     "Malformed topology/format/over-budget input rejected before writer; no flattening unsupported tables or media",
-    "Scene Review exports carry notes in signed digest and private baseline, with independently parsed publication and fresh prewrite project/source/notes checks."
+    "Scene Review exports carry notes in signed digest and private baseline, with independently parsed publication and fresh prewrite project/source/notes checks.",
+    "History restore and undo preserve rich note bodies and atomically rebase after-affinity points; stale note reference, corrupt storage, denied capability and newer editor generation cannot fall back to scene-only publication."
   ],
   "capabilityRevalidation": "Existing notes/import/return Kernel and source/lifecycle/generation guards remain unchanged.",
   "fallbacks": [
@@ -101,7 +104,7 @@
   "currentReality": [
     "12ab91c3 includes lists in table cells and rich paragraph manuscript notes but rejects note list bodies in Core/parser/editor.",
     "Native Word-created note-list-native-input.docx contains two w:numPr paragraphs in footnotes.xml; actual current packaged import rejects with disabled Import and no scene creation.",
-    "Early native route: generic import, indentation, Save, Full export, Word edit and explicit return passed; Scene Review source omits notes entirely and must join same validated pipeline."
+    "Early SOURCE/PACKAGED note-list import, editing and changed returns observed; Scene Review now carries signed note state. Native history exposed a scene-only restore path; guarded atomic repair and right-edge point mapping are implemented and under final verification."
   ],
   "targetOnly": [
     "Positive editable bullet/decimal list note grammar remains TARGET until native/exact-head evidence",
@@ -131,7 +134,9 @@
   ],
   "commandIds": [
     "Existing notes create/update commands",
-    "Existing generic import and authenticated note return commands"
+    "Existing generic import and authenticated note return commands",
+    "cmd.project.history.restoreApply",
+    "cmd.project.history.restoreUndo"
   ],
   "eventTypes": [
     "Existing notes publication"

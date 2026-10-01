@@ -611,7 +611,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fad925ca9517e47119b1fb73028d33f8a928b5a05eb11722218c558d233f28ae"
+        "sha256": "2429f25db9e78845d3a4894c9f5496248b58f2dc888936cb3831c9dc0db481ef"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1427,7 +1427,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "9abb974823d86f9d3f600c4c418274547147f56e28d99cc2f13ebc063a7561aa"
+        "sha256": "127ef82d912383dda64caa01964031086d8890cf5b287fbed50097c3f4d71f1c"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1615,7 +1615,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "98511458bc3b8bcbc4ccb6a8eadc2086882cabe176141f82038db6b937a8764a"
+        "sha256": "356701ad2c1b59da2f628e41f8a9824c9ad7d943ffbf0e31bee4728891b5021a"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -1651,15 +1651,15 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-lists-mac.md",
-        "sha256": "0b909f4c0ad03f29fbd353181513ee5c83d059fc2faf66ca76d2cb4218ebb1f7"
+        "sha256": "6631bd5fad2a919c73a5b529a052131bfc4feb7ea03d3225d6eab631f7947fea"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_LISTS_V1.json",
-        "sha256": "fed8f2726440fea821cbc9f18b9eea37307c535d4d792d48d426bddfa7301047"
+        "sha256": "54a4b2873b4d84eddc26b190f1be951bccd66cb77b7379f1cb0842c8ab47c00f"
       },
       {
         "path": "test/contracts/rtk-word-note-lists.contract.test.js",
-        "sha256": "76e939661ad5b226112e09f78a180ac86f752205d8b06247f3aa81b5b810e93f"
+        "sha256": "32a89e78325a4481187f5110583c1d1aae4e5f5744a8669aa1b2f71a36e8cda9"
       }
     ],
     "followupRepair": {

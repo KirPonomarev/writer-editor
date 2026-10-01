@@ -18267,7 +18267,7 @@ async function handleHistoryRestoreApplyCommand(payload = {}) {
     preRestoreSnapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
   };
   await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановлено', writeResult?.receipt?.revision ?? null,
-    writeResult?.receipt?.bookmarkPublication || null);
+    writeResult?.receipt?.historyPublication || writeResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     applied: true,
@@ -18329,7 +18329,7 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
   }
   lastHistoryRestoreReceipt = null;
   await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановление отменено', undoWriteResult?.receipt?.revision ?? null,
-    undoWriteResult?.receipt?.bookmarkPublication || null);
+    undoWriteResult?.receipt?.historyPublication || undoWriteResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     undone: true,
@@ -18349,14 +18349,25 @@ async function publishUserBookmarkHistorySnapshot(filePath, currentText, snapsho
   if (before.issue || restored.issue) throw Error('HISTORY_RESTORE_DOCUMENT_INVALID');
   const beforeDoc = before.doc || envelope.buildParagraphDocumentFromText(before.text);
   const snapshotDoc = restored.doc || envelope.buildParagraphDocumentFromText(restored.text);
-  if (!userBookmarkModel.readRegistry(beforeDoc) && !userBookmarkModel.readRegistry(snapshotDoc)) return null;
-  const plan = userBookmarkModel.planHistoryRestore({ beforeDoc, snapshotDoc });
+  const hasBookmarks = Boolean(userBookmarkModel.readRegistry(beforeDoc) || userBookmarkModel.readRegistry(snapshotDoc));
+  if (!hasBookmarks) {
+    const target = await resolveTarget();
+    if (!target.ok || target.filePath !== filePath || !target.resolvedNode?.projectId || !target.resolvedNode?.projectRoot)
+      throw Error('HISTORY_RESTORE_STALE_TARGET');
+    const storage = await loadNotesStorageModule();
+    const notes = await storage.readNotesStorage({ projectId: target.resolvedNode.projectId, projectRoot: target.resolvedNode.projectRoot });
+    if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
+    const document = notes.sourceExists ? manuscriptNoteModel.validateManuscriptDocument(JSON.parse(notes.sourceText), target.resolvedNode.projectId) : null;
+    const sceneId = path.relative(target.resolvedNode.projectRoot, filePath).split(path.sep).join('/');
+    if (!document?.notes.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId)) return null;
+  }
+  const plan = hasBookmarks ? userBookmarkModel.planHistoryRestore({ beforeDoc, snapshotDoc }) : null;
   const subjectId = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
   const snapshot = await requestEditorSnapshot(), live = envelope.parseObservablePayload(snapshot.content);
   const nonText = await loadRtkNonTextReturnModule();
   if (live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
-    || !nonText.commentSceneSnapshotsEqual(live.doc || live.text, beforeDoc)) throw Error('HISTORY_RESTORE_EDITOR_STALE');
+    || !nonText.commentSceneSnapshotsEqual(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc || live.text), manuscriptNoteModel.noteSceneSchemaDefaults(beforeDoc))) throw Error('HISTORY_RESTORE_EDITOR_STALE');
   const stats = await fs.lstat(snapshotPath);
   if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1) throw Error('HISTORY_RESTORE_SNAPSHOT_INVALID');
   const beforeScenePublish = async () => {
@@ -18370,11 +18381,12 @@ async function publishUserBookmarkHistorySnapshot(filePath, currentText, snapsho
   };
   await beforeScenePublish();
   const receipt = await commitWriterProjectSnapshot(filePath, snapshotText, snapshot.generation, snapshot.bookProfile,
-    'validated user bookmark history restore', { expectedSceneContent: currentText,
-      beforeScenePublish, userBookmarkPlan: plan, userBookmarkCapturedContent: currentText });
+    'validated annotated scene history restore', { expectedSceneContent: currentText, historyRestore: true,
+      beforeScenePublish, ...(plan ? { userBookmarkPlan: plan, userBookmarkCapturedContent: currentText } : {}) });
   if (!receipt.success) throw Object.assign(Error(receipt.error || 'HISTORY_RESTORE_WRITE_FAILED'), { code: receipt.code });
   return { snapshotCreated: Boolean(receipt.userBookmarkHistorySnapshot?.snapshotCreated),
-    snapshotPath: receipt.userBookmarkHistorySnapshot?.snapshotPath || '', receipt };
+    snapshotPath: receipt.userBookmarkHistorySnapshot?.snapshotPath || '',
+    receipt: { ...receipt, historyPublication: { filePath, subjectId, sessionId, generation: snapshot.generation, savedContent: snapshotText } } };
 }
 
 function makeReplaceSingleSafeError(code, reason, details = {}) {
@@ -21924,7 +21936,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-          if ((options.userBookmarkPlan || options.mediaReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
+          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
             && expectedSceneContent !== content) {
             const markdownIo = await loadMarkdownIoModule();
             const paths = await markdownIo.listRecoverySnapshots(filePath);

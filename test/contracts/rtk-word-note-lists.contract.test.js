@@ -191,3 +191,35 @@ test('actual scene note revalidator rejects source, notes, owner, lifecycle, cap
     if (mode === 'normal') await promise; else await assert.rejects(promise, /STALE|DENIED/);
   }
 });
+
+
+test('note point at the right edit edge survives deletion; ambiguous interior points remain rejected', () => {
+  const model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  assert.equal(model.mapPoint('Рукопись со сноской.Тест. ', 'Рукопись со сноской.', 26), 20);
+  assert.throws(() => model.mapPoint('aaaa', 'aaa', 2), /NOTE_REFERENCE_EDIT_CONFLICT/);
+  const strings = [''];
+  for (let n = 1; n <= 4; n++) for (let bits = 0; bits < 2 ** n; bits++)
+    strings.push(Array.from({ length: n }, (_, i) => bits & (1 << i) ? 'A' : 'B').join(''));
+  for (const before of strings) for (const after of strings) {
+    if (before === after) continue;
+    let cost = Infinity, edits = [];
+    for (let start = 0; start <= Math.min(before.length, after.length); start++) {
+      if (before.slice(0, start) !== after.slice(0, start)) continue;
+      for (let end = start; end <= before.length; end++) {
+        const nextEnd = after.length - (before.length - end);
+        if (nextEnd < start || before.slice(end) !== after.slice(nextEnd)) continue;
+        const c = end - start + nextEnd - start;
+        if (c < cost) { cost = c; edits = []; }
+        if (c === cost) edits.push({ start, end });
+      }
+    }
+    for (let point = 0; point <= before.length; point++) {
+      let actual; try { actual = model.mapPoint(before, after, point); }
+      catch (error) { assert.match(error.message, /NOTE_REFERENCE_EDIT_CONFLICT/); continue; }
+      const values = edits.map(({ start, end }) => point < start ? point
+        : point >= end ? point + after.length - before.length : null);
+      assert.ok(values.every(value => value !== null && value === actual), JSON.stringify({ before, after, point, actual, values }));
+    }
+    assert.equal(model.mapPoint(before, after, before.length), after.length);
+  }
+});
