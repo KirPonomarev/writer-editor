@@ -9,7 +9,7 @@ const builtin = name => {
 };
 const LIMITS = Object.freeze({ bytes: 4 * 1024 * 1024, pixels: 16 * 1024 * 1024, dimension: 8192, assets: 128, totalBytes: 16 * 1024 * 1024, placementPixels: 64 * 1024 * 1024 });
 const SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-const DISPLAY_KEYS = ['displayWidthEmu', 'displayHeightEmu'];
+const DISPLAY_KEYS = ['displayWidthEmu', 'displayHeightEmu', 'displayEffectExtent', 'wordUseLocalDpi'];
 const KEYS = ['assetId', 'assetPath', 'sha256', 'mimeType', 'width', 'height', 'alt', 'displayName', 'dataBase64'];
 const fail = code => { throw new Error(`DOCUMENT_MEDIA_${code}`); };
 const hash = bytes => builtin('node:crypto').createHash('sha256').update(bytes).digest('hex');
@@ -98,15 +98,30 @@ function imageDisplaySize(attrs) {
   if (![cx, cy].every(n => Number.isSafeInteger(n) && n > 0 && n <= LIMITS.dimension * 9525)) fail('DISPLAY_EXTENT');
   return { cx, cy };
 }
+function imageEffectExtent(attrs) {
+  const value = attrs?.displayEffectExtent;
+  if (value === undefined) return { l: 0, t: 0, r: 0, b: 0 };
+  if (!value || typeof value !== 'object' || Array.isArray(value)
+    || Object.keys(value).sort().join(',') !== 'b,l,r,t'
+    || Object.values(value).some(n => !Number.isSafeInteger(n) || n < 0 || n > LIMITS.dimension * 9525)) fail('EFFECT_EXTENT');
+  const size = imageDisplaySize(attrs);
+  if (size.cx + value.l + value.r > LIMITS.dimension * 9525
+    || size.cy + value.t + value.b > LIMITS.dimension * 9525) fail('EFFECT_EXTENT');
+  return { l: value.l, t: value.t, r: value.r, b: value.b };
+}
 function createImageAttrs(bytes, options = {}) {
   const { alt = '', displayName = '' } = options;
   const info = Buffer.isBuffer(bytes) && bytes[0] === 0xff && bytes[1] === 0xd8
     ? { ...inspectJpeg(bytes, LIMITS), sha256: hash(bytes) } : inspectPng(bytes);
   const size = imageDisplaySize({ ...info, displayWidthEmu: options.displayWidthEmu, displayHeightEmu: options.displayHeightEmu });
+  const effect = imageEffectExtent({ ...info, ...options });
+  if (options.wordUseLocalDpi !== undefined && typeof options.wordUseLocalDpi !== 'boolean') fail('LOCAL_DPI');
   const extension = info.mimeType === 'image/jpeg' ? 'jpg' : 'png';
   return { assetId: `sha256-${info.sha256}`, assetPath: `assets/media/${info.sha256}.${extension}`, ...info,
     ...(size.cx !== info.width * 9525 || size.cy !== info.height * 9525
       ? { displayWidthEmu: size.cx, displayHeightEmu: size.cy } : {}),
+    ...(Object.values(effect).some(Boolean) ? { displayEffectExtent: effect } : {}),
+    ...(options.wordUseLocalDpi !== undefined ? { wordUseLocalDpi: options.wordUseLocalDpi } : {}),
     alt: label(alt, 'ALT'), displayName: label(displayName, 'NAME'), dataBase64: bytes.toString('base64') };
 }
 function validateImageAttrs(attrs) {
@@ -133,7 +148,8 @@ function documentMedia(doc) {
       referenceBytes += media.bytes.length;
       placementPixels += media.attrs.width * media.attrs.height;
       const size = imageDisplaySize(media.attrs);
-      displayAreaEmu += size.cx * size.cy;
+      const effect = imageEffectExtent(media.attrs);
+      displayAreaEmu += (size.cx + effect.l + effect.r) * (size.cy + effect.t + effect.b);
       if (referenceBytes > LIMITS.totalBytes || placementPixels > LIMITS.placementPixels || displayAreaEmu > LIMITS.placementPixels * 9525 * 9525) fail('DOCUMENT_BOUNDS');
       if (!assets.has(media.attrs.assetId)) {
         totalBytes += media.bytes.length;
@@ -149,4 +165,4 @@ function documentMedia(doc) {
   visit(doc);
   return { assets: [...assets.values()], placements };
 }
-module.exports = { MEDIA_LIMITS: LIMITS, inspectPng, createImageAttrs, validateImageAttrs, imageDisplaySize, documentMedia };
+module.exports = { MEDIA_LIMITS: LIMITS, inspectPng, createImageAttrs, validateImageAttrs, imageDisplaySize, imageEffectExtent, documentMedia };

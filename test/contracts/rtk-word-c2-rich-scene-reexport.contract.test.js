@@ -42,12 +42,14 @@ async function harness(raw, changes = {}) {
     buildFormatIrParagraphs,
     importDocxReviewRoundKey: async ({ roundId }) => { keyImports++; return { keyRef: 'opaque-key', keyIdHex: 'a'.repeat(32), roundIdHex: roundId.slice(6) }; },
     activeReviewDocxExportAuthorityStore: null,
+    readDurableDocxReviewReturnAuthorityStore: () => null,
     REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA: 'yalken.rtk.word.product-review-docx-export.authority-store.v2',
     ...changes,
   });
   const constants = slice('const REVIEW_DOCX_PACKET_PROFILE_ID =', 'function makeTypedReviewDocxExportError');
   const source = slice('function stableRtkReviewTransportJson(', 'function normalizeRtkSignedSha256(')
     + constants + slice('function base64UrlEncodeReviewDocxPacketText(', 'async function readFullManuscriptDocxReviewPacketExportSource(');
+  vm.runInContext(slice('function readActiveDocxReviewReturnAuthorityStore(', '// ROUND-01 (V3): import an export-time'), context);
   vm.runInContext(source, context);
   return { run: () => context.readDocxReviewPacketExportSource(), keys: () => keyImports, context, envelope };
 }
