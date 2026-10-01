@@ -1,4 +1,5 @@
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
+import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentMediaData from '../documentMedia.js';
@@ -18,6 +19,7 @@ import {
   extractTransportParagraphOwnershipV1,
   restoreShiftedCellBookmarkOwnershipV1,
   extractDocumentMediaReferencesV1,
+  extractUserBookmarkInventoryV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
@@ -4053,7 +4055,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     });
   }
 
-  const parts = {}, binaryParts = {};
+  const parts = {}, binaryParts = {}, technicalPartDigests = {};
   const inventoryEntries = [];
   let totalInflatedBytes = 0;
   for (const entry of metadataResult.entries) {
@@ -4149,6 +4151,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         };
       }
     }
+    if (['customXml/item1.xml','customXml/itemProps1.xml'].includes(entry.entryId)) technicalPartDigests[entry.entryId]=`sha256:${sha256BytesHex(inflated.contentBytes)}`;
     if (isImage) binaryParts[entry.entryId] = Buffer.from(inflated.contentBytes);
     else parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
   }
@@ -4160,6 +4163,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     reason: 'DOCX_REVIEW_TRANSPORT_PARTS_READY',
     parts,
     binaryParts,
+    technicalPartDigests,
     zipInventory: {
       eocdCount: docxZipCountEndRecordSignatures(bytes),
       entries: inventoryEntries,
@@ -4188,7 +4192,8 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
   };
   return {
-    ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart }),
+    ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
+      readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     packagePartsFromZipBytes: {
       status: extracted.status,
       code: extracted.code,
@@ -4201,6 +4206,26 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // reads YRTK2 properties from the verified packet (V3 single parse).
     docPropsCustomXml: normalizeString(extracted.parts?.['docProps/custom.xml']),
   };
+}
+
+// Bind only the actual produced package. Main stores this result in its
+// authenticated private round capsule; no returned map can call a writer.
+export function bindUserBookmarkExportTransportPartsV1(exportMap, bytes) {
+  if(!isPlainObject(exportMap)||!Array.isArray(exportMap.scenes))throw Error('USER_BOOKMARK_PRIVATE_EXPORT_MAP_REQUIRED');
+  const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{
+    sha256Text:text=>`sha256:${sha256Hex(text)}`,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,
+    byteLength:text=>new TextEncoder().encode(text).length,
+  }});
+  if(!analysis.ok||!analysis.reviewIr)throw Error('USER_BOOKMARK_EXPORT_PACKAGE_INVALID');
+  const types={'customXml/item1.xml':'application/xml','customXml/itemProps1.xml':'application/xml'};
+  const parts=[];
+  for(const [partName,contentType]of Object.entries(types)){
+    const item=analysis.reviewIr.opaqueUnsupported.find(value=>value.partName===partName);
+    if(!item||item.contentType!==contentType||!/^sha256:[a-f0-9]{64}$/u.test(item.partSha256||''))throw Error('USER_BOOKMARK_EXPORT_TECHNICAL_PART_INVALID');
+    parts.push({partName,contentType,partSha256:item.partSha256});
+  }
+  return {...cloneJsonSafe(exportMap),userBookmarkTechnicalParts:{schemaVersion:'yalken.word-user-bookmark-technical-parts.v1',parts,
+    relationships:cloneJsonSafe(analysis.reviewIr.technicalPartRelationships)}};
 }
 
 // EXPORT-01 publication gate helper: extract only what the gate needs (the raw
@@ -4819,7 +4844,15 @@ function docxReviewFormattingStateAt(runs, from, to) {
   if (!run || !isPlainObject(run.inline)) return null;
   const links = (Array.isArray(run.preservedMarks) ? run.preservedMarks : []).filter(mark => mark.type === 'link');
   if (links.length > 1) return null;
-  try { return { ...run.inline, ...(links.length ? { link: normalizeDocxHttpHref(links[0].attrs?.href) } : {}) }; }
+  try {
+    const attrs = links[0]?.attrs;
+    if (attrs?.wordBookmarkId) {
+      userBookmarks.validateName(attrs.wordBookmarkName);
+      if (attrs.href !== `#${attrs.wordBookmarkName}`) return null;
+      return {...run.inline,link:attrs.href,wordBookmarkName:attrs.wordBookmarkName};
+    }
+    return { ...run.inline, ...(links.length ? { link: normalizeDocxHttpHref(attrs?.href) } : {}) };
+  }
   catch { return null; }
 }
 
@@ -7874,6 +7907,8 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 'PENDING_TABLE_ROW_EMPTY', 'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED', 'PENDING_TABLE_ROW_CHILD_OWNER', 'PENDING_TABLE_ROW_INVALID', 'PENDING_TABLE_ROW_OVERLAP', 'PENDING_TABLE_ROW_VERTICAL_MERGE_UNSUPPORTED', 'PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
+  const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
+  for(const code of bookmarkCodes) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
   const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
@@ -9660,7 +9695,10 @@ function docxInlineCanonicalContent(paragraphs) {
         || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
         || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
         || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
-      if (Object.hasOwn(run, 'href')) normalizeDocxHttpHref(run.href);
+      if (Object.hasOwn(run, 'href')) {
+        if (run.href.startsWith('#')) userBookmarks.validateName(run.href.slice(1));
+        else normalizeDocxHttpHref(run.href);
+      }
       for (const key of ['color', 'highlight']) {
         if (Object.hasOwn(run, key) && (typeof run[key] !== 'string' || !/^#[a-f0-9]{6}$/u.test(run[key]))) {
           throw new Error('DOCX_INLINE_COLOR_PROJECTION_INVALID');
@@ -9682,7 +9720,9 @@ function docxInlineCanonicalContent(paragraphs) {
       }
       needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize || run.href);
       const marks = run.marks.map((type) => ({ type }));
-      if (run.href) marks.push({ type: 'link', attrs: { href: run.href, target: '_blank', rel: 'noopener noreferrer nofollow' } });
+      if (run.href) marks.push({ type: 'link', attrs: run.href.startsWith('#')
+        ? {href:run.href,wordBookmarkName:run.href.slice(1)}
+        : { href: run.href, target: '_blank', rel: 'noopener noreferrer nofollow' } });
       const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
       if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
@@ -10099,11 +10139,17 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         const attrs = docxFontAttributes(token, tokenNamespaceMap);
         const id = attrs.get(`${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}\u0000id`);
         const relation = inlineStyles.hyperlinks.get(id);
+        const anchor = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'anchor');
         const semanticExtra = ['docLocation', 'tooltip', 'tgtFrame'].some(key => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, key));
         if (semanticExtra) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
-        if (!relation || relation.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
-        activeParagraphMetadata.currentHref = docxHttpHrefWithFragment(relation.target, docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'anchor'));
-        inlineStyles.hyperlinks.usedIds.add(id);
+        if (!id && anchor) {
+          userBookmarks.validateName(anchor);
+          activeParagraphMetadata.currentHref = `#${anchor}`;
+        } else {
+          if (!relation || relation.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+          activeParagraphMetadata.currentHref = docxHttpHrefWithFragment(relation.target, anchor);
+          inlineStyles.hyperlinks.usedIds.add(id);
+        }
         activeParagraphMetadata.elementLink = true;
       }
     } else if (insideParagraph && tagName === 'w:fldSimple') {
@@ -10115,6 +10161,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
           if (selfClosing || activeParagraphMetadata.currentHref || complexFieldStack.length) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
           activeParagraphMetadata.currentHref = parseDocxHyperlinkInstruction(instruction);
+          if (activeParagraphMetadata.currentHref.startsWith('#')) throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
           activeParagraphMetadata.simpleLink = true;
         }
       }
@@ -10495,6 +10542,16 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       byteLength: value => new TextEncoder().encode(value).length,
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
+    if (!parsed.failure && !pendingSource.revisions.length
+      && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
+        || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
+      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      if (inventory.bookmarks.length || inventory.links.length) {
+        if (parsed.paragraphSourceIndexes.some((source,index)=>source !== index)) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
+        parsed.contentPreview.userBookmarkInventory = inventory;
+        parsed.diagnostics = parsed.diagnostics.filter(item=> !['w:bookmarkStart','w:bookmarkEnd'].includes(item.tagName));
+      }
+    }
     if (!parsed.failure && pendingSource.revisions.length) {
       const supported = result => !result.failure
         && !result.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd'].includes(d.tagName))
@@ -11571,6 +11628,11 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   let richContent;
   try {
     richContent = docxInlineCanonicalContent(importParagraphs);
+    if (contentPreview.userBookmarkInventory) {
+      if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
+      const doc = richContent ? parseObservablePayload(richContent).doc : buildParagraphDocumentFromText(importedText);
+      richContent = composeObservablePayload({doc:userBookmarks.importInventory(doc,contentPreview.userBookmarkInventory,hashCanonicalValue(input))});
+    }
     if (contentPreview.pendingRevisionDocument !== undefined) {
       const doc = contentPreview.pendingRevisionDocument;
       pendingTextRevisions.readLedger(doc);

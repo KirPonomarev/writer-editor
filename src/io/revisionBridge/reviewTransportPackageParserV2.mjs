@@ -948,10 +948,14 @@ function isKnownAdvisoryPart(partName) {
   return partName.endsWith('.rels') && (partName.startsWith('_rels/') || partName.includes('/_rels/'));
 }
 
-function collectOpaqueUnsupportedParts(partNames) {
+function collectOpaqueUnsupportedParts(partNames, contentTypes = [], readTechnicalPartDigest) {
   const unsupported = [];
   for (const partName of partNames) {
     if (!isKnownAdvisoryPart(partName)) {
+      const overrides=contentTypes.filter(item=>item.elementName==='Override'&&item.partName===`/${partName}`);
+      const defaults=contentTypes.filter(item=>item.elementName==='Default'&&item.extension===partName.split('.').at(-1));
+      const contentType=overrides.length===1?overrides[0].contentType:!overrides.length&&defaults.length===1?defaults[0].contentType:'';
+      const partSha256=typeof readTechnicalPartDigest==='function'?readTechnicalPartDigest(partName):null;
       unsupported.push({
         kind: 'unknown-part',
         partName,
@@ -960,6 +964,7 @@ function collectOpaqueUnsupportedParts(partNames) {
         typedDiagnostic: 'RTK_OPAQUE_UNSUPPORTED_PART',
         preservationPolicy: 'preserve-evidence-and-report-loss',
         writerAuthorityImpact: 'blocking',
+        ...(['customXml/item1.xml','customXml/itemProps1.xml'].includes(partName)&&/^sha256:[a-f0-9]{64}$/u.test(partSha256||'')?{partSha256,contentType}:{}),
       });
       continue;
     }
@@ -2283,6 +2288,7 @@ function reviewHyperlinkRelationships(xml, budgets, cryptoPort, budgetState) {
 // Apply authority; the existing authenticated export-map resolver does that.
 function reviewHyperlinkRuns(record, documentXml, relationships) {
   const result = new Map(), stack = [];
+  result.internalNames = new Map();
   result.inertHyperlinkInstructions = [];
   let field = null;
   for (const token of record.tokens) {
@@ -2293,14 +2299,21 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
       if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       const id = attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
       const rel = relationships.get(id);
-      if (!rel || rel.type !== HYPERLINK_REL_TYPE || rel.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+      const anchor = attr(token, 'anchor', W_NS);
+      if (!id && anchor) {
+        if (anchor.length > 40 || !/^[\p{L}][\p{L}\p{N}_]{0,39}$/u.test(anchor) || /^YRTK_/iu.test(anchor)) throw new Error('DOCX_USER_BOOKMARK_NAME_INVALID');
+        href = `#${anchor}`;
+      } else {
+        if (!rel || rel.type !== HYPERLINK_REL_TYPE || rel.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+        href = docxHttpHrefWithFragment(rel.target, anchor);
+      }
       if (['tooltip','tgtFrame','docLocation'].some(key => attr(token,key,W_NS))) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
-      href = docxHttpHrefWithFragment(rel.target, attr(token,'anchor',W_NS));
     } else if (isWordToken(token, 'fldSimple')) {
       const instruction = attr(token,'instr',W_NS);
       if (/\bHYPERLINK\b/iu.test(instruction)) {
         if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
         href = parseDocxHyperlinkInstruction(instruction);
+        if (href.startsWith('#')) throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       }
     }
     if (isWordToken(token,'fldChar')) {
@@ -2332,12 +2345,133 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
         const effective=href || (field?.phase==='result' ? field.href : null);
         if (result.has(owner.openStart) && result.get(owner.openStart)!==effective) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
         result.set(owner.openStart,effective);
+        if (effective?.startsWith('#')) result.internalNames.set(owner.openStart, effective.slice(1));
       }
     }
     if (!token.selfClosing) stack.push({end:token.closeEnd,href,run:owner});
   }
   if (field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
   return result;
+}
+
+// Literal namespace-aware inventory only. Numeric Word IDs pair endpoints;
+// they never become local identity or authenticated scene ownership.
+export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort);
+  if (!cryptoPort.ok) throw Error('DOCX_USER_BOOKMARK_CRYPTO_REQUIRED');
+  const budgets = normalizeBudgets(options.budgets);
+  const scan = options.documentScan || parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, createParserBudgetState(budgets, cryptoPort));
+  if (blockingReason(scan.diagnostics || [])) throw Error('DOCX_USER_BOOKMARK_XML_INVALID');
+  const records = scan.logicalTableParagraphs || tableDocumentParagraphs(documentXml, scan) || indexFormattingDocumentTokens(scan.tokens);
+  const starts = new Map(), ends = new Map(), names = new Set(), unresolvedEndpoints = [];
+  const technicalStarts = scan.tokens.filter(token => isWordToken(token, 'bookmarkStart')
+    && (attr(token, 'name', W_NS) === '_GoBack' || /^YRTK_/u.test(attr(token, 'name', W_NS))));
+  const technicalIds = new Set(technicalStarts.map(token => attr(token, 'id', W_NS)).filter(Boolean));
+  const location = token => {
+    const index = records.findIndex(record => token.openStart >= record.token.openEnd && token.closeEnd <= record.token.closeStart);
+    if (index >= 0) {
+      const p = records[index].token;
+      if (token.depth !== p.depth + 1) {
+        const owner=scan.tokens.find(t=>isWordToken(t,'hyperlink')&&t.depth===p.depth+1&&token.openStart>=t.openEnd&&token.closeEnd<=t.closeStart&&token.depth===t.depth+1);
+        if(!owner)throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
+      }
+      const atoms = extractSemanticAtoms(documentXml, scan, p).filter(atom => atom.order < token.openStart);
+      return { paragraphIndex:index, offsetUtf16:semanticAtomsToText(atoms).replaceAll('\r','\n').length, edge:'text' };
+    }
+    if (token.path?.length !== 3 || token.path[1] !== 'body') throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
+    // XML spans are half-open: Word may put the next tag exactly at closeEnd.
+    const following = records.findIndex(record => record.token.openStart >= token.closeEnd);
+    if (token.localName === 'bookmarkStart' && following >= 0 && records[following].token.path?.length === 3) {
+      const between = scan.tokens.filter(t => t.path?.length === 3 && t.openStart >= token.closeEnd && t.closeEnd <= records[following].token.openStart);
+      if (between.some(t => !['bookmarkStart','bookmarkEnd'].includes(t.localName) || t.namespaceUri !== W_NS)) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
+      return { paragraphIndex:following, offsetUtf16:0, edge:'text' };
+    }
+    const before = records.filter(record => record.token.closeEnd <= token.openStart).at(-1);
+    if (token.localName !== 'bookmarkEnd' || !before || before.token.path?.length !== 3) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
+    const between = scan.tokens.filter(t => t.path?.length === 3 && t.openStart >= before.token.closeEnd && t.closeEnd <= token.openStart);
+    if (between.some(t => !['bookmarkStart','bookmarkEnd'].includes(t.localName) || t.namespaceUri !== W_NS)) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_OWNER');
+    return { paragraphIndex:records.indexOf(before), offsetUtf16:semanticAtomsToText(extractSemanticAtoms(documentXml, scan, before.token)).replaceAll('\r','\n').length, edge:'afterParagraph' };
+  };
+  // Technical locators have their own authenticated continuity mapper. Their
+  // missing/duplicate pairs must remain analysis evidence, not user identities.
+  for (const token of scan.tokens.filter(token => token.localName === 'bookmarkStart')) {
+    if (technicalStarts.includes(token)) continue;
+    if (token.namespaceUri !== W_NS || !token.selfClosing) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE');
+    const id = attr(token,'id',W_NS);
+    if (!/^\d{1,10}$/u.test(id) || starts.has(id) || technicalIds.has(id)) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+    starts.set(id,token);
+  }
+  for (const token of scan.tokens.filter(token => token.localName === 'bookmarkEnd')) {
+    const id = attr(token,'id',W_NS);
+    if (token.namespaceUri !== W_NS || !token.selfClosing) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE');
+    if (technicalIds.has(id)) continue;
+    // With only transport locators, an end whose start was removed is owned
+    // by continuity analysis. Mixed user/transport ambiguity stays fail-closed.
+    if (!starts.size && technicalStarts.length && options.allowUnpairedTechnicalEnds === true) {
+      unresolvedEndpoints.push(provenance(token)); continue;
+    }
+    if (!/^\d{1,10}$/u.test(id) || ends.has(id)) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+    ends.set(id,token);
+  }
+  if (starts.size !== ends.size || [...ends.keys()].some(id => !starts.has(id))) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+  const bookmarks = [];
+  for (const [id,startToken] of starts) {
+    const endToken = ends.get(id), name = attr(startToken,'name',W_NS);
+    if (!endToken || endToken.openStart < startToken.closeEnd) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
+    if (name === '_GoBack' || /^YRTK_/u.test(name)) continue;
+    if (name.length > 40 || !/^[\p{L}][\p{L}\p{N}_]{0,39}$/u.test(name) || names.has(name.toLowerCase())) throw Error('DOCX_USER_BOOKMARK_NAME_INVALID');
+    names.add(name.toLowerCase());
+    if (bookmarks.length >= 1024) throw Error('DOCX_USER_BOOKMARK_BUDGET');
+    const start = location(startToken), end = location(endToken);
+    if (start.paragraphIndex > end.paragraphIndex || (start.paragraphIndex === end.paragraphIndex && start.offsetUtf16 > end.offsetUtf16)) throw Error('DOCX_USER_BOOKMARK_RANGE_INVALID');
+    bookmarks.push({ name,start,end,sourceXmlProvenance:{start:provenance(startToken),end:provenance(endToken)} });
+  }
+  const links = [];
+  for (const token of scan.tokens.filter(t => isWordToken(t,'hyperlink') && !attr(t,'id','http://schemas.openxmlformats.org/officeDocument/2006/relationships') && attr(t,'anchor',W_NS))) {
+    const name=attr(token,'anchor',W_NS);
+    if (name.length > 40 || !/^[\p{L}][\p{L}\p{N}_]{0,39}$/u.test(name) || /^YRTK_/iu.test(name) || token.selfClosing) throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+    const paragraphIndex=records.findIndex(r => token.openStart >= r.token.openEnd && token.closeEnd <= r.token.closeStart);
+    if (paragraphIndex < 0 || token.depth !== records[paragraphIndex].token.depth+1 || links.length >= 4096) throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+    const atoms=extractSemanticAtoms(documentXml,scan,records[paragraphIndex].token);
+    const from=semanticAtomsToText(atoms.filter(a=>a.order<token.openStart)).replaceAll('\r','\n').length;
+    const text=semanticAtomsToText(extractSemanticAtoms(documentXml,scan,token)).replaceAll('\r','\n');
+    if (!text) throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+    links.push({name,paragraphIndex,from,to:from+text.length,sourceXmlProvenance:provenance(token)});
+  }
+  // Field controls remain flat Word runs. Take only the balanced local field's
+  // result atoms, preserving instruction provenance separately from its label.
+  for (const [paragraphIndex,record] of records.entries()) {
+    const atoms=extractSemanticAtoms(documentXml,scan,record.token);
+    let field=null;const orphanInstructions=[];
+    for (const token of record.tokens) {
+      if (isWordToken(token,'fldChar')) {
+        const kind=attr(token,'fldCharType',W_NS);
+        if(kind==='begin'&&!field) field={phase:'instruction',instruction:'',instructions:[],begin:token};
+        else if(kind==='separate'&&field?.phase==='instruction') {
+          field.phase='result';field.separate=token;
+          if(/\bHYPERLINK\b/iu.test(field.instruction)) field.href=parseDocxHyperlinkInstruction(field.instruction);
+        } else if(kind==='end'&&field?.phase==='result') {
+          if(field.href?.startsWith('#')) {
+            const resultAtoms=atoms.filter(a=>a.order>field.separate.closeEnd&&a.order<token.openStart);
+            const from=semanticAtomsToText(atoms.filter(a=>a.order<field.separate.openStart)).replaceAll('\r','\n').length;
+            const text=semanticAtomsToText(resultAtoms).replaceAll('\r','\n');
+            if(!text||links.length>=4096)throw Error('DOCX_USER_BOOKMARK_LINK_INVALID');
+            links.push({name:field.href.slice(1),paragraphIndex,from,to:from+text.length,
+              sourceXmlProvenance:{begin:provenance(field.begin),end:provenance(token),instructions:field.instructions.map(provenance)}});
+          }
+          field=null;
+        } else throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      } else if(isWordToken(token,'instrText')&&field) {
+        if(field.phase!=='instruction')throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field.instruction+=tokenText(documentXml,token);field.instructions.push(token);
+        if(field.instruction.length>4096)throw Error('DOCX_LINK_FIELD_UNSUPPORTED');
+      } else if(isWordToken(token,'instrText'))orphanInstructions.push(tokenText(documentXml,token));
+      else if(field&&['ins','del','moveFrom','moveTo','hyperlink','fldSimple'].some(n=>isWordToken(token,n)))throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+    }
+    if(field||/\bHYPERLINK\s+\\l(?=\s|$)/iu.test(orphanInstructions.join('')))throw Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+  }
+  return {schemaVersion:'yalken.word-user-bookmark-inventory.v1',bookmarks,links,
+    ...(unresolvedEndpoints.length ? {unresolvedEndpoints} : {})};
 }
 
 function leadingBodyBookmarkNames(tokens) {
@@ -2584,6 +2718,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
       const inline = formattingInlineActions(children);
       inline.link = href ? { action:'set', value:href } : { action:'remove' };
+      if (linkRuns.internalNames.has(run.openStart)) inline.wordBookmarkName = { action:'set', value:linkRuns.internalNames.get(run.openStart) };
       const expectedActionKeys = [
         ...[['b', 'bold'], ['i', 'italic'], ['u', 'underline'], ['strike', 'strike']]
           .filter(([name]) => semanticNames.includes(name))
@@ -3927,7 +4062,7 @@ function sourceModeFor(input, documentXml, documentScan, textRevisions, moveRevi
 }
 
 function blockingReason(reasons) {
-  return reasons.find((item) => [
+  const primary = reasons.find((item) => [
     'RTK_BUDGET_EXCEEDED',
     'RTK_HOSTILE_PACKAGE_BLOCKED',
     'RTK_XML_MALFORMED_BLOCKED',
@@ -3947,6 +4082,7 @@ function blockingReason(reasons) {
     'RTK_WORD_RUBY_UNSUPPORTED',
     'RTK_WORD_HYPERLINK_UNSUPPORTED',
   ].includes(item.code));
+  return primary || reasons.find(item => item.code === 'RTK_WORD_USER_BOOKMARK_INVALID');
 }
 
 function validateWordSemanticTypes(documentScan, commentsScan, stylesScan, reasons) {
@@ -4106,6 +4242,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentXml = rawString(parts['word/document.xml']);
   const documentScan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   reasons.push(...documentScan.diagnostics);
+  let userBookmarkInventory = null;
   if (!blockingReason(reasons)) {
     try { documentScan.logicalTableParagraphs = tableDocumentParagraphs(documentXml, documentScan); }
     catch (error) { reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message)); }
@@ -4176,7 +4313,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   }
 
   const opaqueUnsupported = [
-    ...collectOpaqueUnsupportedParts(partNames),
+    ...collectOpaqueUnsupportedParts(partNames, contentTypes.contentTypes, ports.readTechnicalPartDigest),
     ...collectUnsupportedElements(documentScan, budgetState, reasons),
   ];
   for (const item of opaqueUnsupported) {
@@ -4242,6 +4379,15 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMetadata', documentMetadata);
   admitWorkerOutput(budgetState, reasons, 'reviewIr.documentSections', documentSections);
   if (documentNotes) admitWorkerOutput(budgetState, reasons, 'reviewIr.documentNotes', documentNotes);
+  // New inventory cannot supersede established package/XML/typed-value or
+  // semantic resource admission. It is evaluated only after those guards.
+  if (!blockingReason(reasons)) {
+    try {
+      userBookmarkInventory = extractUserBookmarkInventoryV1(documentXml, {cryptoPort, budgets, documentScan, allowUnpairedTechnicalEnds:true});
+      if (userBookmarkInventory.bookmarks.length || userBookmarkInventory.links.length || userBookmarkInventory.unresolvedEndpoints?.length)
+        admitWorkerOutput(budgetState, reasons, 'reviewIr.userBookmarkInventory', userBookmarkInventory);
+    } catch (error) { reasons.push(reason('RTK_WORD_USER_BOOKMARK_INVALID', 'word/document.xml', error.message)); }
+  }
   const semanticBudgetBlocked = blockingReason(reasons);
   if (semanticBudgetBlocked) {
     return {
@@ -4312,6 +4458,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     comments: comments.commentThreads,
     formattingDeltas,
     formattingParagraphs,
+    ...(userBookmarkInventory ? { userBookmarkInventory } : {}),
+    technicalPartRelationships: relationships.relationships.filter(item=>item.partName.startsWith('customXml/')
+      || item.type==='http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml'
+      || item.type==='http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps'),
     documentMetadata,
     documentSections,
     ...(documentNotes ? { documentNotes } : {}),

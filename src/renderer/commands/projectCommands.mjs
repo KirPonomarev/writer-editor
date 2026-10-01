@@ -32,6 +32,7 @@ export const COMMAND_IDS = Object.freeze({
 });
 
 export const EXTRA_COMMAND_IDS = Object.freeze({
+  ...Object.fromEntries(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => [`USER_BOOKMARK_${action.toUpperCase()}`, `cmd.project.bookmarks.${action}`])),
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create',
   PROJECT_LIFECYCLE_OPEN: 'cmd.project.lifecycle.open',
@@ -1123,6 +1124,13 @@ export function registerProjectCommands(registry, options = {}) {
   const domainEventPort = options.domainEventPort && typeof options.domainEventPort === 'object'
     ? options.domainEventPort
     : null;
+
+  for (const action of ['managePrompt', 'create', 'copy', 'rename', 'delete']) {
+    registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS[`USER_BOOKMARK_${action.toUpperCase()}`], {
+      label: action === 'managePrompt' ? 'Закладки…' : `Bookmark ${action}`,
+      group: 'insert', surface: action === 'managePrompt' ? ['palette'] : ['internal'],
+    });
+  }
 
   for (const record of PRODUCT_COMMAND_RECORDS) {
     registerCatalogCommand(

@@ -1,4 +1,5 @@
 import {
+  applyTiptapUserBookmarkPublication,
   applyTiptapCharacterStyle,
   applyTiptapParagraphStyle,
   focusTiptapSurface,
@@ -2185,10 +2186,12 @@ function reviewSurfaceBuildReviewItems(state) {
     const replacementText = reviewSurfaceText(change?.replacementText);
     const previewReady = exactPreview.status === 'ready'
       && reviewSurfaceArray(exactPreview.plan?.applyOps).some((op) => reviewSurfaceText(op?.changeId) === changeId);
+    const bookmarkOp = exactPreview.plan?.userBookmarkReturn === true
+      ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'userBookmarks' && op.changeId === changeId) : null;
     items.push({
       itemId: `text:${changeId}`,
-      title: `Текстовая правка ${changeId}`,
-      body: expectedText || replacementText
+      title: bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
+      body: bookmarkOp ? `${reviewSurfaceText(bookmarkOp.expectedText)} → ${reviewSurfaceText(bookmarkOp.replacementText)}` : expectedText || replacementText
         ? `"${expectedText}" -> "${replacementText}"`
         : 'Кандидат на точную текстовую замену',
       meta: [sceneId ? `Сцена ${sceneId}` : '', previewReady ? 'Предпросмотр готов' : 'Предпросмотр заблокирован'].filter(Boolean),
@@ -2500,11 +2503,13 @@ function reviewSurfaceBuildExactTextPreview(state) {
       itemId: reviewSurfaceText(op?.opId),
       sceneId: reviewSurfaceText(op?.sceneId),
       changeId,
+      userBookmarkReturn: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks',
       from: Number.isFinite(op?.from) ? op.from : null,
       to: Number.isFinite(op?.to) ? op.to : null,
       expectedText: reviewSurfaceText(op?.expectedText),
       replacementText: reviewSurfaceText(op?.replacementText),
-      displayDiff: reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
+      displayDiff: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks'
+        ? [] : reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
       applyState,
       applyLabel: applyState === 'ready' ? 'Применить' : reviewSurfacePresentExactApplyState(applyState),
       applyDisabled: applyState !== 'ready',
@@ -3011,14 +3016,14 @@ function renderReviewSurfaceMarkup(viewModel) {
       ${reviewSurfaceRenderList(exactPreview.ops, (op) => `
         <article class="right-rail-review-item right-rail-review-item--preview">
           <div class="right-rail-review-item-head">
-            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.changeId || op.itemId)}</div>
+            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
             <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
           </div>
           <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
-          ${reviewSurfaceRenderDisplayDiff(op.displayDiff)}
+          ${op.userBookmarkReturn ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
           <div class="right-rail-review-item-meta">
             <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
-            <span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>
+            ${op.userBookmarkReturn ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
           </div>
           <div class="right-rail-review-actions">
             <button
@@ -19075,7 +19080,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;
@@ -21955,6 +21960,42 @@ function handleTiptapFormatCommand(commandName, payload = {}) {
   return result;
 }
 
+async function handleUserBookmarkManage() {
+  if (!isTiptapMode) return { performed: false, reason: 'EDITOR_MODE_UNSUPPORTED' };
+  const admission = await invokeWorkspaceQueryBridge('query.project.userBookmarks', { admissionOnly: true });
+  if (!admission?.ok || !admission.available) return { performed: false, reason: admission?.reason || 'UNAVAILABLE' };
+  const saved = await invokePreloadUiCommandBridge('cmd.project.save');
+  if (!saved?.ok) return { performed: false, reason: 'SAVE_REQUIRED' };
+  const identity = { projectId: currentProjectId, documentId: currentDocumentId,
+    generation: localEditGeneration, content: composeDocumentContent() };
+  const selection = getTiptapSelectionOffsets();
+  const inventory = await invokeWorkspaceQueryBridge('query.project.userBookmarks');
+  if (!inventory?.ok || !inventory.available) {
+    updateStatusText('Закладки недоступны: ' + (inventory?.reason || 'нет открытой сцены'));
+    return { performed: false, reason: inventory?.reason || 'UNAVAILABLE' };
+  }
+  const response = await openLinkDialog({ title: 'Закладки', initialValue: '', canRemove: false,
+    bookmarks: inventory.bookmarks, manageBookmarks: true, fieldLabel: 'Имя', inputMode: 'text',
+    submitLabel: 'Сохранить', cancelLabel: 'Отмена',
+    errorMessage: 'Имя должно начинаться с буквы и содержать до 40 букв, цифр или _.',
+    normalize: value => ({ ok: typeof value === 'string' && /^[\p{L}][\p{L}\p{N}_]{0,39}$/u.test(value) }) });
+  if (!response) return { performed: false, reason: 'USER_CANCELLED' };
+  if (currentProjectId !== identity.projectId || currentDocumentId !== identity.documentId
+    || localEditGeneration !== identity.generation || composeDocumentContent() !== identity.content) {
+    return { performed: false, reason: 'STALE_DOCUMENT' };
+  }
+  const result = await invokePreloadUiCommandBridge(`cmd.project.bookmarks.${response.action}`, {
+    requestId: 'bookmark-' + crypto.randomUUID(),
+    projectId: inventory.projectId, sceneId: inventory.sceneId, subjectId: inventory.subjectId,
+    expectedSceneSha256: inventory.expectedSceneSha256, registryRevision: inventory.registryRevision,
+    ...(response.bookmarkId ? { bookmarkId: response.bookmarkId } : {}),
+    ...(response.action !== 'delete' ? { name: response.name } : {}),
+    ...(response.action === 'create' ? { selectionStart: selection.start, selectionEnd: selection.end } : {}),
+  });
+  updateStatusText(result?.ok ? 'Закладка сохранена' : 'Закладка не применена: ' + (result?.reason || result?.error?.reason || 'конфликт'));
+  return result;
+}
+
 async function handleInsertLinkPrompt(payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_MODE_UNSUPPORTED' };
@@ -21970,11 +22011,15 @@ async function handleInsertLinkPrompt(payload = {}) {
     generation: localEditGeneration, content: composeDocumentContent(),
   };
   const selection = getTiptapSelectionOffsets();
+  const inventory = typeof window.electronAPI?.invokeWorkspaceQueryBridge === 'function'
+    ? await invokeWorkspaceQueryBridge('query.project.userBookmarks') : null;
+  const bookmarks = inventory?.ok && inventory.available ? inventory.bookmarks : [];
   const response = await openLinkDialog({
     title: LINK_PROMPT_TITLE,
     initialValue: readToolbarLinkPromptInitialValue(payload, state),
     canRemove: state.link,
     normalize: normalizeToolbarLinkPromptValue,
+    bookmarks,
   });
   if (response === null) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'USER_CANCELLED' };
@@ -21992,6 +22037,12 @@ async function handleInsertLinkPrompt(payload = {}) {
   const restored = setTiptapSelectionOffsets(selection.start, selection.end);
   if (restored.performed !== true) return restored;
 
+  if (response && typeof response === 'object') {
+    const record = bookmarks.find(item => item.id === response.bookmarkId && item.state === 'active');
+    if (!record) return { performed: false, reason: 'BOOKMARK_TARGET_INVALID' };
+    return handleTiptapFormatCommand('setLink', { href: '#' + record.name,
+      wordBookmarkId: record.id, wordBookmarkName: record.name });
+  }
   const normalized = normalizeToolbarLinkPromptValue(response);
   if (!normalized.ok) {
     syncToolbarFormattingState(state);
@@ -23307,6 +23358,10 @@ window.addEventListener('resize', () => {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.userBookmarkAuthoringPublication === true) {
+      if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
+      return;
+    }
     cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';
@@ -23621,6 +23676,7 @@ if (window.electronAPI) {
       formatTextColorPicker: (_commandId, payload = {}) => handleFormatTextColorPicker(payload),
       formatHighlightColorPicker: (_commandId, payload = {}) => handleFormatHighlightColorPicker(payload),
       insertLinkPrompt: (_commandId, payload = {}) => handleInsertLinkPrompt(payload),
+      userBookmarkManage: () => handleUserBookmarkManage(),
       listToggleBullet: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
       },

@@ -62,6 +62,7 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'project.create',
   'project.applyTextEdit',
   ...PRODUCT_COMMAND_ID_LIST,
+  ...['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`),
   'cmd.project.new',
   'cmd.project.open',
   'cmd.project.save',

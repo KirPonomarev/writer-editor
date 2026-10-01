@@ -1,0 +1,362 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "featureId": "WORD_USER_BOOKMARKS_MAC_20260930",
+  "featureVersion": "1.0-target",
+  "bindingBaseSha": "9a8922d54e60169ea820c159b1d8ec56a8ec9f7c",
+  "domainOwner": "Product Core canonical scene rich document",
+  "integrationMode": "EXISTING_SEAM_WITH_DECLARED_DOMAIN_AND_COMMAND_EXTENSION",
+  "authoritativeData": [
+    "Canonical validated rich scene envelope user registry and typed internal links",
+    "Private authenticated export baseline and local source revision"
+  ],
+  "derivedData": [
+    "query.project.userBookmarks immutable project/scene/source-bound inventory",
+    "Existing authoring/link selection and document projection"
+  ],
+  "commandIds": [
+    "cmd.project.bookmarks.managePrompt",
+    "cmd.project.bookmarks.create",
+    "cmd.project.bookmarks.rename",
+    "cmd.project.bookmarks.delete",
+    "cmd.project.bookmarks.copy",
+    "cmd.project.insert.linkPrompt",
+    "cmd.project.save",
+    "cmd.project.importDocxV1",
+    "cmd.project.review.openDocxReviewPreviewSession",
+    "cmd.project.review.applyExactTextChangesBatch",
+    "cmd.project.review.exportFullManuscriptDocxReviewPacket",
+    "cmd.project.export.docxMin",
+    "cmd.project.history.createCheckpoint",
+    "cmd.project.history.restoreApply",
+    "cmd.project.history.restoreUndo"
+  ],
+  "eventTypes": [
+    "Existing scene transaction and document-save events with generation-bound metadata receipt; no independent event writer"
+  ],
+  "queryIds": [
+    "query.project.userBookmarks"
+  ],
+  "productProjectionIds": [
+    "UserBookmarkInventoryV1",
+    "Existing revision-bound scene document projection"
+  ],
+  "capabilityIds": [
+    "Existing canonical project authoring, scene save, import, export and authenticated return capabilities"
+  ],
+  "authorityMap": {
+    "productTruth": "Core only",
+    "mutation": "Command Kernel and existing atomic transaction",
+    "renderer": "Intent, selection and immutable projections only",
+    "parser": "Bounded untrusted semantic candidate only",
+    "wordNumericId": "No identity or authority",
+    "wordName": "Payload name, never path/command/transport authority"
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "subjectId",
+    "sourceRevision",
+    "sourceDigest",
+    "generation",
+    "bookmarkId",
+    "authenticatedRoundId",
+    "returnArtifactDigest"
+  ],
+  "revisionPolicy": "Kernel dispatch and existing main publication revalidation for all commands and async results; UI visibility is not enforcement",
+  "writePath": [
+    "Command Kernel -> Core validated plan -> existing atomic project/scene persistence -> immutable generation-bound receipt",
+    "Governed DOCX export port with validated source and independent semantic self-readback"
+  ],
+  "readPath": [
+    "Bounded namespace-aware Word XML user bookmarks and hyperlinks, distinct from authenticated transport carriers",
+    "Existing rich scene, private authenticated baseline, saved source revision and captured working content",
+    "Existing immutable command/capability/query projections"
+  ],
+  "requiredProductPorts": [
+    "ProjectPersistencePort existing atomic scene transaction and recovery",
+    "ReviewDocxPackagePort and authenticated ReviewRoundStorePort",
+    "Existing main-owned scene snapshot and file/export adapters",
+    "Existing SceneHistory recovery snapshot and governed restore port; private validated artifact admission into existing atomic scene transaction"
+  ],
+  "requiredDesignOsPorts": [
+    "Existing CommandCatalogPort and CommandDispatchPort",
+    "Existing DomainProjectionPort and current palette/dialog host"
+  ],
+  "adapterRequirements": [
+    "Existing local macOS file/export adapters, no new network or platform permission",
+    "Native Word canary is test-only; not product runtime dependency"
+  ],
+  "surfaceManifests": [
+    "SURFACE_MANIFEST_WORD_USER_BOOKMARKS_V1.json"
+  ],
+  "slotRequirements": [
+    "Existing Command Palette command contribution",
+    "Existing link dialog content contribution; no index.html or shell layout change"
+  ],
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": {
+    "qualification": "macOS SOURCE and packaged arm64",
+    "otherPlatforms": "Not certified by this package"
+  },
+  "accessibilityRequirements": "Existing bounded package/XML budgets; user inventory capped at 1024 and UTF16 scene bounds; no XML parse or document hash on typing path. Existing native buttons/select/labels, Tab/Enter/Escape, focus restoration and explicit error/broken state.",
+  "fallbacks": [
+    "Typed no-write ambiguity, invalid registry, stale snapshot, unsupported tracked composite or cross-scene transform",
+    "Broken target preserves label and declared target identity; shown in existing link dialog",
+    "Existing recovery retains original artifacts and canonical scene"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "persistenceClass": "Validated scene-owned registry in existing canonical rich document; version-discriminated readable payload inside existing length-delimited envelope; no sidecar writer or duplicate manuscript truth",
+  "migrations": "TARGET: Nonnull registry uses readable scene payload v3: one exact header {format:yalken.scene-document, version:3, requiredFeatures:[word-user-bookmarks.v1]} and one complete rich document JSON record inside existing doc-v2 length frame. Null/absent registry preserves legacy single-JSON encoding. Header/profile/future/corruption checks precede normalization. First legacy-to-versioned local publication requires existing readable recovery snapshot before atomic scene transaction; snapshot failure aborts. Generic import retains original source artifact. Immutable N-1 reader/save must reject this payload without scene write even when old legacy startup downgrades the project manifest. Exact current/old-reader and migration/recovery tests plus native qualification remain required; exploratory probe is not final candidate acceptance.",
+  "recovery": [
+    "Malformed/duplicate/missing user endpoints, names and IDs, reserved transport namespace, unresolved and mixed external/internal links, XML depth/node budgets",
+    "UTF16 surrogate split, point/range boundaries, paragraph mark and cross-block endpoints",
+    "Changed local project/source/generation/capability during dialog or return analysis: zero writes",
+    "Ordinary insert/delete uniquely mapped by Core, exact ACK versus saved bytes, ambiguity and stale ACK preserve working text",
+    "Create/rename/delete and link label/retarget/remove native controls, save/restart, Undo/Redo and export/import semantic readback",
+    "No silent unlink or rebinding after target deletion/name reuse",
+    "No parser/renderer writer or runtime network; existing durability/purity/baseline/CI mandatory",
+    "SOURCE and packaged macOS arm64 native changed return with independent XML inventory and exact candidate hashes"
+  ],
+  "rollback": "Revert package while preserving original native input and readable full rich/preupgrade recovery artifacts. Older writer refuses versioned scenes. Validated governed history may restore earlier legacy scene with no registry; preserve bookmark-bearing snapshot for restoreUndo. Never silently discard new semantic fields for compatibility.",
+  "performanceBudget": {
+    "bookmarkCount": 1024,
+    "packageAndXml": "Existing bounded parser budgets",
+    "typingHotPath": "No XML parsing or full document hash; inert renderer preservation only"
+  },
+  "securityBoundary": "External DOCX remains bounded untrusted input; only validated semantic candidates may enter existing Kernel transaction. No new IPC path or command/path authority from XML, no arbitrary fields evaluation.",
+  "lifecycle": [
+    "TARGET_DECLARED",
+    "COMPONENT_PROVEN",
+    "NATIVE_CANDIDATE_PROVEN",
+    "DELIVERED_EXACT_MERGED_HEAD"
+  ],
+  "negativeBypassChecks": [
+    "Word numeric ID, name, identical quote and visual selection never grant target or mutation authority",
+    "Stable local IDs survive rename; deleted targets remain explicitly broken without opportunistic name reuse",
+    "Validate raw registry shape and Unicode endpoint bounds before normalization; absent/null defaults equivalent",
+    "Same-scene ordered paragraph occurrence and UTF16 endpoints, explicit paragraph-mark edge where required; point left-affinity observed native Word",
+    "CAS, project, lifecycle, source digest, generation and capability checked at planning and immediately before publication",
+    "Renderer preserves inert attributes and sends selection/intents only; Core planner maps only uniquely proven source edits",
+    "Any Core-mapped metadata save must publish checked generation-bound content ACK matching actual durable bytes, without dropping text/selection/undo",
+    "Authenticated R uses private baseline and exact block ownership. Ambiguous rename/retarget/copy or unavailable identity causes typed no-write conflict",
+    "Historical standalone ESM/mutant verifier bytes remain untouched; trace new conditional domain dependencies before sandbox changes",
+    "Same-scene bookmark duplicate only: resolve active source ID and endpoint range from private validated current scene registry, create fresh ID with distinct valid name. Never copy text, trusted transport, manuscript or another scene; deleted/wrong/stale source IDs cannot authorize copying."
+  ],
+  "evidenceBindings": {
+    "nativeCanary": "17 frozen synthetic native Word DOCX snapshots independently inventoried by namespace-aware literal Python XML, including Unicode names, native case-insensitive relocation, text boundary insertion and two-unit emoji range; candidate acceptance not inferred.",
+    "candidateTests": "Exact final candidate and merged SHA, zero skips/todo in focused coverage",
+    "acceptance": "Mandatory SOURCE/PACKAGED changed round, restart, CRUD, broken target, authoring ACK, export and independent readback"
+  },
+  "currentReality": [
+    "PR2044 merged9a8922d5, tree equal final887;1236 merged Word checks and guardrails passed; rebuilt SOURCE/PACKAGED restart/full exports independently match rich Original/Current",
+    "Current G/R diagnoses or rejects user bookmarks and internal w:anchor links; Y0 emits only external links",
+    "Native Word canary independently shows same-text distinct targets, same-range distinct names, collapsed point left-affinity, paragraph-mark boundary, broken label preservation and native retarget"
+  ],
+  "targetOnly": [
+    "Same-scene bookmark/internal-link package remains TARGET until exact code, native and delivery proofs pass",
+    "Cross-scene transfer/copy, arbitrary structural/move transformations, REF fields and tracked bookmark/link composites remain explicit subsequent plan obligations; no full feature acceptance in this package",
+    "Direct bookmark CRUD CmdZ/Redo is not accepted by recovery/history restore in this bounded package; remains whole-plan obligation."
+  ],
+  "wordNames": "Document-global with native case-insensitive uniqueness; exact spelling preserved. Duplicate/colliding names and live names matching surviving broken anchors in manuscript export cause typed no-publication error; no silent alias or target substitution.",
+  "endpointPolicy": "Ordered paragraph occurrence and UTF16 offsets; distinguish paragraph-mark-inclusive edge from text-end. Point and uniquely proven text-edge range insertion have native-observed left affinity: start includes insertion, end excludes it. Ambiguous placement, endpoint deletion and unsupported move/copy/split transforms produce typed no-write conflict.",
+  "saveAckPolicy": "Core may map uniquely proven inherited registry against before/working content. Persisted mapped bytes require exact generation/source-bound metadata projection and ACK; stale projection keeps dirty working text. No silent disk-only transform.",
+  "brief": {
+    "purpose": "Write and exchange manuscript text and document links between Yalken and Word on Mac without changing target meaning",
+    "user": "Writer working in the existing MacBook desktop editor",
+    "principles": [
+      "Preserve manuscript meaning and identity before convenience",
+      "Reuse established Yalken controls and visual tokens",
+      "Make broken or ambiguous targets explicit",
+      "Keyboard controls must perform the same governed commands"
+    ],
+    "success": "Create or rename a bookmark, link to the selected distinct target, persist and return through Word with label and endpoint inventory unchanged",
+    "outOfScope": [
+      "Global shell/style redesign",
+      "Cloud/network",
+      "Cross-scene copy and arbitrary move transforms in this bounded package",
+      "REF evaluation or tracked bookmark/link composite acceptance"
+    ]
+  },
+  "designResearch": {
+    "router": "Lazyweb first",
+    "stableResource": "https://www.lazyweb.com/agentic-search/66c2f9a8-68ec-4296-b220-0e0e01fb5300",
+    "finding": "Two bounded searches had no matching bookmark/broken-link picker. Selected Craft reference is density only; native Word and existing Yalken controls determine functional flow.",
+    "novelWriterReference": "docs/references/projects/novelwriter.md conceptual multi-document reference only; no GPL code copying"
+  },
+  "exportRoutes": [
+    "Existing minimal DOCX",
+    "Existing scene review packet",
+    "Existing full manuscript review packet"
+  ],
+  "declaredEquivalences": [
+    "Bijective Word numeric bookmark ID renumbering and ZIP container timestamps; semantic names/labels/endpoints unchanged",
+    "Run fragmentation may merge only contiguous equal-target link fragments at the same paragraph occurrence; literal UTF16 positions remain equal",
+    "Native-observed case-insensitive Word anchor resolution may bind incoming case-only anchor spelling to the exact preserved target name once in G; original literal inventory retains source spelling. No different name, range or quote may create identity."
+  ],
+  "historyPolicy": "Mapped metadata publication preserves ordinary text CmdZ/Redo. CRUD and changed cleanR get existing recovery snapshots and governed full rich history restore/restoreUndo; this is not direct entity CmdZ. Direct CRUD semantic CmdZ/Redo remains explicit later P2c/P2d plan obligation. Raw renderer restore flags or snapshots never grant authority.",
+  "copyPolicy": "Same-scene bookmark duplicate only: resolve active source ID and endpoint range from private validated current scene registry, create fresh ID with distinct valid name. Never copy text, trusted transport, manuscript or another scene; deleted/wrong/stale source IDs cannot authorize copying.",
+  "payloadFormat": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "container": "Existing length-delimited doc-v2 frame",
+    "format": "yalken.scene-document",
+    "version": 3,
+    "requiredFeatures": [
+      "word-user-bookmarks.v1"
+    ],
+    "records": 2,
+    "legacyEncoding": "Unchanged single rich-document JSON when registry absent or null",
+    "unknownVersion": "Typed no-write rejection",
+    "oldWriterOracle": "Exact9a8922d5 parse and actual main scene-save refusal, zero writes, unchanged bytes; include no-continuity legacy startup",
+    "snapshotAuthority": "Existing governed recovery port; no backup artifact supplies product mutation authority",
+    "undeclaredLegacyRegistry": "Nonnull user registry in legacy single-record payload is rejected before normalization; absent/null legacy remains byte-compatible and first governed operation upgrades with readable preupgrade recovery"
+  },
+  "nativeQualificationPlan": {
+    "status": "TARGET_NOT_EXECUTED",
+    "profiles": [
+      "SOURCE",
+      "PACKAGED_MAC_ARM64"
+    ],
+    "candidateBinding": "Freeze code, bundle, SHA/tree, executable/profile and artifacts before native execution; exact merged-head verification follows delivery",
+    "caseGroups": [
+      {
+        "id": "Y0_EMPTY_AUTHOR",
+        "outcome": "Create genuinely empty local project through existing lifecycle command; native editor text, point/range bookmarks, same-range fresh-ID copy and internal links; save/new-process reopen and minimal/review/full DOCX readback"
+      },
+      {
+        "id": "G_NATIVE_BOOKMARKS",
+        "outcome": "Import genuine native Word canary with duplicate text, duplicate range names, point, paragraph-mark, multiparagraph, Unicode names, surrogate range, case-insensitive target and internal links; durable registry/links match independent literal inventory; additionally import a genuine Word document after deletion of every active bookmark, preserving both dangling link labels/targets as explicit tombstones"
+      },
+      {
+        "id": "AUTHORING_LIFECYCLE",
+        "outcome": "Native controls create/copy/rename/delete; link label/retarget/remove; broken link retains label and ID; name reuse cannot rebind tombstone"
+      },
+      {
+        "id": "TYPING_UNDO_REDO",
+        "outcome": "Ordinary uniquely mapped insertion, ordinary CmdZ/Redo, mapped generation ACK, save/restart; endpoint/link ledger equals expected document"
+      },
+      {
+        "id": "GOVERNED_HISTORY",
+        "outcome": "Existing recovery checkpoint restoreApply/restoreUndo preserves complete rich registry/link meaning including precreate legacy checkpoint; direct entity CmdZ remains subsequent scope"
+      },
+      {
+        "id": "FIVE_CHANGED_EXCHANGES",
+        "cycles": 5,
+        "outcome": "Actual edits in both applications across five bound exchanges for same-scene bookmark and internal-link state; independent DOCX/scene readback each cycle, no drift or duplicates"
+      },
+      {
+        "id": "AUTHENTIC_R_APPLY",
+        "outcome": "Native Word clean bookmark addition/deletion/case-only rename and link label/retarget/remove produce private preview then explicit selected Apply; repeat/replay/stale/forged no-write negatives"
+      },
+      {
+        "id": "VERSION_RECOVERY",
+        "outcome": "Readable preupgrade recovery and restart, actual immutable N-1 reader/save refusal with zero scene writes, exact current format admission and future/corruption refusal"
+      }
+    ],
+    "proofRule": "No discovered fixture, count, constructed IO contract or external exploratory probe replaces executed native outcome; any missing promised positive remains UNKNOWN or FAIL",
+    "scopeBoundary": "These bounded same-scene groups do not certify cross-scene, arbitrary structural/move, tracked composites, REF fields or whole Mac plan"
+  },
+  "bareAnchorCompatibility": {
+    "status": "TARGET_CANDIDATE_UNEXECUTED",
+    "contractChange": "Only previously unsupported ordinary bare internal anchor becomes typed broken-target import; forged namespaces, meaningful tooltips, nested links and invalid relationships remain rejected",
+    "nativeInput": "Mac-all-bookmarks-deleted-canary.docx",
+    "nativeInputSha256": "9064e53e27cb799d08e7d0c9a4a2fa6a2df9effcaa05c54ceddf3033ea0cb3c8",
+    "observedWordAction": "Deleted all seven observed bookmarks through native dialog, CmdS; zero active targets and both original link spans/text retained",
+    "candidateCredit": 0
+  },
+  "ordinaryUndoRenameCompatibility": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "evidenceOwner": "Main-owned bounded successful-rename receipt lineage; not renderer/public input",
+    "binding": [
+      "projectId",
+      "sceneFile",
+      "lifecycleSubject",
+      "stableBookmarkId",
+      "currentDurableSceneCAS"
+    ],
+    "admittedTransform": "Validated exact prior href/name pair for the same ID -> current canonical record name only",
+    "prohibited": [
+      "public aliases",
+      "quote/name heuristic identity",
+      "retargeting to another ID",
+      "name reuse rebind",
+      "new truth or sidecar writer"
+    ],
+    "requiredProof": "Actual PM delete linked character, save, rename, ordinary CmdZ/Redo, save/restart/export; consecutive renames and old-name reuse by another ID; stale/foreign/public forgery; unchanged external links; actual Undo -> periodic backup before autosave -> new-process rich recovery; legacy backup positive and stale/forged zero-write",
+    "backupPath": "Existing periodic createBackup -> validated Core snapshot projection under matching private receipt -> final project/lifecycle/generation/durable-source CAS -> existing backupManager product port; aliases never persist"
+  },
+  "canonicalRoutingQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "route": "Existing fixed governed writer bridge as manuscript notes; exact canonical runtime command catalog and UI bridge IDs; dispatch and handler revalidation; existing atomic product writer",
+    "prohibited": [
+      "Unimplemented Stage10 Product-domain admission",
+      "Unused donor-kernel command admission",
+      "Generic command namespace admission"
+    ],
+    "requiredProof": "Actual IPC -> actual dispatch -> guarded handler -> atomic positive; denied capability/profile, stale lifecycle/source and malformed payload zero-write; native Command Palette first create",
+    "publicationSurface": "Palette-only Manage contribution; raw and normalized native menu artifacts/locks unchanged"
+  },
+  "queryPurity": "Validated saved-scene read-only context; no ensureProjectManifest or normalization persistence. Legacy missing-defaults, raw future schema and untitled/non-scene sources require zero writes. Mutation preparation checks raw future version at the real manifest writer seam.",
+  "nativeBridgeQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "sanitizers": "Native local-file report and Main private-reference sanitizer preserve validated bounded userBookmarkInventory; no parser report creates path/command authority",
+    "rendererPublication": "Actual attachIpc:false configuration; existing renderer-owned complete content plus generation guard before checked PM metadata publication; ordinary history survives",
+    "requiredProof": "Actual native palette first create and native Word17/zero-active file-dialog import -> private refs -> atomic create; independent durable scene and DOCX readback; hostile inventory/stale/forged zero-write"
+  },
+  "fullExportCurrentProjectQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "scope": "Existing full-manuscript source and all direct consumers",
+    "binding": "Capture actual active project name, root, manifest identity and lifecycle before enumeration; revalidate after final await and before publication",
+    "forbidden": "Unrelated default project cannot supply source content, scene identity or fallback manifest",
+    "mandatoryProof": [
+      "Actual Main two-project empty/populated default counterexamples",
+      "Active-project and lifecycle races fail without artifact or authority writes",
+      "Native nondefault Mac SOURCE/PACKAGED full export, changed Word return and independent readback"
+    ]
+  },
+  "nativeWordInternalFieldQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "input": "genuine Word16.112 Save conversion to balanced local HYPERLINK field",
+    "oldArtifact": "complete literal XML preserves paired technical start as leading body sibling; native saved artifact must be evaluated with strict actual ownership",
+    "acceptance": "fresh compatible export, Word Save, private authenticated intake and selected apply; no ownership heuristic",
+    "scope": "same bounded internal-link exchange outcome;45path freshPRE",
+    "correction": "preliminary lost-start diagnosis withdrawn after whole-body XML inspection"
+  },
+  "reopenedLinkSchemaQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "input": "Actual c8b8 native reopened source d3a223ff gains only pinned missing Tiptap link defaults",
+    "transform": "Raw-validate registry and typed link identity; fill only absent target=_blank, rel=noopener noreferrer nofollow, class=null, title=null; preserve all explicit attrs and external marks",
+    "comparison": "Bookmark-return and bookmark-CRUD saved/live guards only; unchanged global comment comparator and raw disk CAS/metadata/unsaved/lifecycle/capability",
+    "persistence": "Preserve trusted exact source-span attrs during IO identity rewrites; materialize candidate after semantic effect classification",
+    "mandatoryProof": [
+      "Actual production schema red/green roundtrip",
+      "Changed explicit attrs, identity, label, extra marks zero-write negatives",
+      "Native reopened second changed return and SOURCE/PACKAGED five genuine changed exchanges",
+      "Actual generic-import minimal typed-link production-schema reopen and Main bridge CRUD positives/zero-write negatives"
+    ]
+  },
+  "maintainedCiQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "proof": "Same maintained broad npm test and ENT0 adjuncts used by CI; original denominator/calls preserved plus bookmark additions",
+    "admittedUnitFiles": [
+      "test/unit/r24-r5-lifecycle-physics.test.js",
+      "test/unit/r24-wp200-durable-save-physics.test.js",
+      "test/unit/sector-m-tiptap-runtime-bridge.test.js"
+    ],
+    "protected": "ENT0/WP100/mutant oracle bytes and exact enforcement semantics"
+  },
+  "nativeReviewCardQualification": {
+    "status": "TARGET_NOT_ACCEPTED",
+    "source": "Exact authenticated private bookmark candidate with repeated key/source/project/lifecycle/capability checks",
+    "projection": "Read-only semantic bookmark/link summary in existing card; no generic text-write authority",
+    "intent": "Existing visible Apply -> private batch handler only; forged/missing/stale candidate cannot fallback",
+    "requiredProof": "Actual Main projection/renderer view-click/private batch runtime chain, race negatives and native visible button click"
+  }
+}

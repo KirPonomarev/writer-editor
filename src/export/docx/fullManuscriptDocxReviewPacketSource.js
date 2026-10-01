@@ -1,4 +1,13 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
+function bookmarkDomain() { return require('../../core/word-user-bookmarks-v1.cjs'); }
+function sceneBookmarkRegistry(scene) {
+  return scene.doc?.attrs?.wordUserBookmarks != null ? bookmarkDomain().readRegistry(scene.doc) : null;
+}
+function internalBookmark(mark,registry) {
+  const attrs=mark?.attrs;
+  return mark?.type==='link' && (attrs?.wordBookmarkId!=null || attrs?.wordBookmarkName!=null || attrs?.href?.startsWith('#'))
+    ? bookmarkDomain().inspectInternalLink(mark,registry) : null;
+}
 const { tableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { documentMedia } = require('../../io/documentMedia.js');
@@ -89,7 +98,7 @@ function normalizeFormatFontSize(value) {
   }
 }
 
-function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
+function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal, registry) {
   const inline = {};
   const preservedMarks = [];
   for (const mark of Array.isArray(marks) ? marks : []) {
@@ -135,6 +144,11 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
       continue;
     }
     if (type === 'link') {
+      const internal = internalBookmark(mark, registry);
+      if (internal) {
+        preservedMarks.push({type:'link',attrs:bookmarkDomain().linkAttrs(internal)});
+        continue;
+      }
       const unknownKeys = Object.keys(attrs).filter((key) => (
         !['href', 'target', 'rel', 'class'].includes(key)
         && attrs[key] !== null
@@ -174,6 +188,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
 }
 
 function buildFormatIrParagraphs(scene) {
+  const registry = sceneBookmarkRegistry(scene);
   const sourceDoc = isPlainObjectValue(scene.doc) ? cloneJson(scene.doc) : null;
   if (sourceDoc) documentMedia(sourceDoc);
   const topLevelNodes = sourceDoc
@@ -262,7 +277,7 @@ function buildFormatIrParagraphs(scene) {
       const text = inlineNode.type === 'hardBreak' ? '\n' : normalizeSceneText(inlineNode.text);
       if (inlineNode.type === 'text' && !text) continue;
       const normalizedMarks = inlineNode.type === 'text'
-        ? normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal)
+        ? normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal, registry)
         : { inline: {}, preservedMarks: [] };
       runs.push({
         from: cursor,
@@ -280,6 +295,10 @@ function buildFormatIrParagraphs(scene) {
         schemaVersion: FULL_MANUSCRIPT_FORMAT_IR_SCHEMA,
         paragraph: paragraphFormat,
         runs,
+        ...(registry ? {userBookmarks:registry.bookmarks.filter(record=>record.state==='active').flatMap(record=>[
+          ...(record.start.paragraphIndex===paragraphOrdinal ? [{kind:'start',id:record.id,name:record.name,offsetUtf16:record.start.offsetUtf16,edge:record.start.edge}] : []),
+          ...(record.end.paragraphIndex===paragraphOrdinal ? [{kind:'end',id:record.id,name:record.name,offsetUtf16:record.end.offsetUtf16,edge:record.end.edge}] : []),
+        ])} : {}),
         ...(media.length ? { media } : {}),
       },
     });
@@ -844,6 +863,22 @@ function normalizeFullManuscriptScenes(input = {}) {
 }
 
 function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(), options = {}) {
+  const documentNames = new Set();
+  const brokenNames = new Set();
+  for (const scene of scenes) {
+    const registry=sceneBookmarkRegistry(scene);
+    const visit=node=>{
+      for(const mark of node?.marks||[]){const record=internalBookmark(mark,registry);if(record?.state==='deleted')brokenNames.add(record.name.toLowerCase());}
+      for(const child of node?.content||[])visit(child);
+    };
+    visit(scene.doc);
+    for (const record of registry?.bookmarks || []) {
+      if (record.state !== 'active') continue;
+      if (documentNames.has(record.name.toLowerCase())) throw makeError('FULL_MANUSCRIPT_USER_BOOKMARK_NAME_COLLISION',{name:record.name});
+      documentNames.add(record.name.toLowerCase());
+    }
+  }
+  for(const name of brokenNames)if(documentNames.has(name))throw makeError('FULL_MANUSCRIPT_USER_BOOKMARK_BROKEN_NAME_COLLISION',{name});
   const roundId = typeof options.roundId === 'string' ? options.roundId : '';
   const deriveWordBookmarkNameV1 = typeof options.deriveWordBookmarkNameV1 === 'function'
     ? options.deriveWordBookmarkNameV1
@@ -1217,6 +1252,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       sceneOrdinal: scene.sceneOrdinal,
       sceneRevision: scene.sceneRevision,
       rawSha256: scene.rawSha256,
+      ...(sceneBookmarkRegistry(scene) ? {userBookmarks:sceneBookmarkRegistry(scene)} : {}),
       blocks: blocks
         .filter((block) => block.sceneId === scene.sceneId)
         .map((block) => ({

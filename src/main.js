@@ -30,6 +30,7 @@ const { createDocxImportPreviewReferences } = require('./utils/docxImportPreview
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
   createDocxImportLocalFilePreview,
+  copyValidatedDocxUserBookmarkInventory,
 } = require('./utils/docxImportLocalFilePreview');
 const {
   TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
@@ -86,6 +87,7 @@ const {
 } = require('./core/project-transaction-v1.cjs');
 const { planCommentAnchorSave } = require('./core/word-comment-anchor-save-v1.cjs');
 const manuscriptNoteModel = require('./core/word-manuscript-notes-v1.cjs');
+const userBookmarkModel = require('./core/word-user-bookmarks-v1.cjs');
 const {
   ATOMIC_IMPORT_LIBRARY_TARGET_ROLES,
   ATOMIC_SINGLE_FILE_TARGET_ROLES,
@@ -2458,7 +2460,8 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
     );
   }
 
-  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')) {
+  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')
+    || String(selected.value.textChange.changeId).startsWith('docx-user-bookmarks-')) {
     return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
       requestId:normalizedPayload.value.requestId, changeIds:[selected.value.textChange.changeId],
     }, options);
@@ -2848,7 +2851,8 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
 
   let applyContext = null;
   try {
-    const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-link-label-'));
+    const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
+      || String(change.changeId).startsWith('docx-user-bookmarks-'));
     applyContext = cleanRequested
       ? buildCleanLinkLabelApplyInput(selectedBatch.value.textChanges)
       : await buildBatchInput({
@@ -3519,6 +3523,26 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
   const sessionToken = readReviewExactTextUiPlanSessionToken(activeSession);
   const revisionSession = readReviewExactTextRevisionSession(activeSession);
   const textChanges = readReviewExactTextChangeCollections(revisionSession).textChanges;
+  if (textChanges.some(change => String(change.changeId).startsWith('docx-user-bookmarks-'))) {
+    const store = activeRtkCleanLinkLabelApplyStore, subject = currentLifecycleSubjectId();
+    const generation = lastSignaledEditGeneration, authoringSession = commentAuthoringSessionId;
+    let preview = await buildPrivateUserBookmarksUiPlan(textChanges);
+    if (preview.status === 'ready') {
+      try {
+        userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+        if (activePendingRecording || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
+          || subject !== currentLifecycleSubjectId() || authoringSession !== commentAuthoringSessionId
+          || generation !== lastSignaledEditGeneration
+          || fsSync.readFileSync(store.input.scenePath, 'utf8') !== store.userBookmarksCandidate.raw) {
+          throw Error('RTK_USER_BOOKMARK_SOURCE_STALE');
+        }
+      } catch (error) {
+        preview = buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(error.code || error.message)]);
+      }
+    }
+    const reviewSurface = attachReviewExactTextUiPlanPreview(preview, sessionToken);
+    return { ok: true, refreshed: true, status: preview.status, reviewSurface };
+  }
   if (textChanges.length === 0) {
     return {
       ok: true,
@@ -4764,6 +4788,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const scope = await buildFullManuscriptDocxReviewExportScope();
   const sceneCandidates = Array.isArray(scope?.sceneCandidates) ? scope.sceneCandidates : [];
   if (sceneCandidates.length < 1) {
@@ -4773,9 +4798,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   if (!projectId) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_ID_REQUIRED');
   }
-  const projectRoot = docxReviewPreviewSessionDetailString(scope.projectRoot) || getProjectRootPath();
-  const manifestPath = docxReviewPreviewSessionDetailString(scope.manifestPath)
-    || getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const projectRoot = scope.projectBinding.projectRoot;
+  const manifestPath = scope.projectBinding.manifestPath;
   const scenes = [];
   for (let index = 0; index < sceneCandidates.length; index += 1) {
     const candidate = sceneCandidates[index];
@@ -4804,6 +4828,9 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   }
   const documentNoteSelections = normalizeDocumentNoteSelections(payload.options?.documentNotes);
   const notesDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, documentNoteSelections.length === 0);
+  const nonTextReturnState = await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot });
+  revalidateFullManuscriptProjectBinding(scope.projectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const source = buildFullManuscriptDocxReviewPacketSource({
     documentNoteSelections,
     notesDocument: notesDocument || { schemaVersion: 1, projectId, notes: [] },
@@ -4813,12 +4840,13 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     projectRoot,
     manifestPath,
     scenes,
-    nonTextReturnState: await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot }),
+    nonTextReturnState,
     expectedOrderedSceneIds: scenes.map((scene) => scene.sceneId),
   }, {
     revisionBridge,
     cryptoPort: createRtkReviewTransportCryptoPort(),
   });
+  source.fullManuscriptProjectBinding = scope.projectBinding;
   source.officeModeTransport = payload.options?.officeModeTransport === true;
   source.notesSourceDigest = notesDocument ? notesStateDigest(notesDocument) : '';
   source.localAuthorityCapsule.officeModeTransport = source.officeModeTransport;
@@ -4831,6 +4859,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     projectRoot,
     secret: typeof source.forbiddenSecret === 'string' ? source.forbiddenSecret : '',
   });
+  revalidateFullManuscriptProjectBinding(scope.projectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   source.localAuthorityCapsule.keyRef = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.keyRef);
   source.localAuthorityCapsule.keyIdHex = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.keyIdHex);
   source.localAuthorityCapsule.roundIdHex = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.roundIdHex);
@@ -4865,6 +4895,8 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
     || capsule.projectRoot !== getProjectRootPath()) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SOURCE_STALE');
   }
+  revalidateFullManuscriptProjectBinding(source.fullManuscriptProjectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   const scope = await buildFullManuscriptDocxReviewExportScope();
   if (scope.projectId !== source.commentExport.projectId || scope.projectRoot !== capsule.projectRoot) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
@@ -4913,6 +4945,8 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   }
   const bridge = await loadRevisionBridgeModule();
   const state = await bridge.createRtkNonTextReturnFilePort().readCanonical({ projectId: scope.projectId, projectRoot: scope.projectRoot });
+  revalidateFullManuscriptProjectBinding(source.fullManuscriptProjectBinding);
+  userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   if (commentStateDigest(state) !== source.commentExport.stateDigest || isDirty || autoSaveInProgress
     || source.publicationOwner !== activeStage10ApplicationBootstrap || capsule.projectRoot !== getProjectRootPath()) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_COMMENT_STATE_STALE');
@@ -4924,6 +4958,11 @@ async function buildDocxReviewPacketBuffer(source) {
   const revisionBridge = source?.exportCapsule?.fullManuscript === true
     ? await loadRevisionBridgeModule()
     : null;
+  if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)) {
+    const privateMap = revisionBridge.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap, documentBuffer);
+    source.localAuthorityCapsule.exportMap = privateMap;
+    if (source.exportMap) source.exportMap = privateMap;
+  }
   const publicationGate = await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
   return {
     documentBuffer,
@@ -5858,7 +5897,13 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       checkIdentity();
     };
     await revalidateScenes();
-    const notesContext = await getProjectNotesContext({ projectId: context.projectId });
+    // No exported or returned notes means this independent mutation lane is
+    // inapplicable. A bookmark/text edit must not manufacture a notes failure.
+    // Nonempty, missing or malformed inventories still require full admission.
+    if (Array.isArray(capsule.documentNotes.sourceBindings)
+      && capsule.documentNotes.sourceBindings.length === 0
+      && Array.isArray(input.returnedNotes) && input.returnedNotes.length === 0) return null;
+    const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
     if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
     const before = await readProjectNotesDocument(notesContext);
     if (!before.ok) throw rejected(before.reason);
@@ -9096,8 +9141,15 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
     : {};
   if (localScope === 'full-manuscript') {
     const bridge = await loadRevisionBridgeModule();
+    if (localExportMap.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)
+      || parserResult.reviewIr?.userBookmarkInventory?.bookmarks?.length
+      || parserResult.reviewIr?.userBookmarkInventory?.links?.length) {
+      const bookmarks = await prepareCleanUserBookmarksCapsule(localAuthority, parserResult, options.context);
+      if (!bookmarks.ok) return docxReviewReturnIntakeBlocked(bookmarks.code, { detail: bookmarks.detail });
+      if (bookmarks.changed) Object.assign(sceneAuthorityFields, bookmarks.fields);
+    }
     const cleanLinkLabel = bridge.analyzeFullManuscriptCleanLinkReturn(localExportMap, parserResult.reviewIr);
-    if (cleanLinkLabel.ok) {
+    if (cleanLinkLabel.ok && !sceneAuthorityFields.userBookmarksCandidate) {
       const sceneId = cleanLinkLabel.change.targetScope.id;
       const scenePath = localAuthority.scenePathBySceneId?.[sceneId];
       const raw = localAuthority.baselineObservableContentBySceneId?.[sceneId]
@@ -9137,6 +9189,44 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       : 'not-applicable',
     returnedArtifactExportMapAccepted: false,
   };
+}
+
+async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
+  const candidates = [];
+  for (const scene of authority.exportMap.scenes) {
+    const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId];
+    if (typeof raw !== 'string') return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_REQUIRED' };
+    const parsed = envelope.parseObservablePayload(raw);
+    if (parsed.issue) return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_INVALID' };
+    const beforeDoc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
+    const analysis = module.analyzeUserBookmarksReturn({ baselineDoc: beforeDoc, exportMap: authority.exportMap,
+      sceneId: scene.sceneId, reviewIr: parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography });
+    if (!analysis.ok) return analysis;
+    const plan = userBookmarkModel.planReturn({ beforeDoc, candidateDoc: analysis.doc });
+    if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects });
+  }
+  if (!candidates.length) return { ok: true, changed: false };
+  if (candidates.length !== 1) return { ok: false, code: 'RTK_USER_BOOKMARK_MULTI_SCENE_CONFLICT' };
+  const candidate = candidates[0], scenePath = authority.scenePathBySceneId?.[candidate.sceneId];
+  if (typeof scenePath !== 'string' || scenePath !== currentFilePath) return { ok: false, code: 'RTK_USER_BOOKMARK_OPEN_SCENE_REQUIRED' };
+  const changeId = 'docx-user-bookmarks-' + computeHash(JSON.stringify({ roundId: authority.roundId,
+    sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc })).slice(0, 24);
+  const change = { changeId, targetScope: { type: 'scene', id: candidate.sceneId },
+    match: { kind: 'exact', quote: candidate.parsed.text, prefix: '', suffix: '' },
+    replacementText: envelope.deriveVisibleTextFromDocument(candidate.plan.doc),
+    sourceAuthority: 'authenticated-user-bookmarks-v1', rtkProductPath: 'userBookmarks',
+    paragraphIndex: 0, documentParagraphIndex: authority.exportMap.scenes.find(scene => scene.sceneId === candidate.sceneId).blocks[0].documentParagraphIndex };
+  const projectId = context.projectId, baselineHash = context.baselineHash;
+  return { ok: true, changed: true, fields: { userBookmarksCandidate: { ...candidate, changeId },
+    cleanLinkLabel: { ok: true, change }, writerContext: {
+      projectRoot: authority.projectRoot, scenePath, scenePathBySceneId: { [candidate.sceneId]: scenePath },
+      projectSnapshot: { projectId, baselineHash, scenes: [{ sceneId: candidate.sceneId, text: candidate.raw }] },
+      revisionSession: { projectId, baselineHash, sessionId: `docx-review-preview-${authority.roundId}`,
+        status: 'open', reviewGraph: { commentThreads: [], commentPlacements: [], textChanges: [],
+          structuralChanges: [], diagnosticItems: [], decisionStates: [] } },
+    } } };
 }
 
 function runDocxReviewReturnIntakeParserV2Inline(input = {}, revisionBridge) {
@@ -10028,6 +10118,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
     );
   }
+  let cleanUserBookmarksUiPreview = null;
   if (cleanLabel?.ok === true) {
     const capsule = returnIntake.localAuthorityCapsule;
     const input = cloneJsonSafe(capsule.writerContext);
@@ -10035,10 +10126,15 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     input.revisionSession.reviewGraph.textChanges = cloneJsonSafe(input.reviewItems);
     activeRtkCleanLinkLabelApplyStore = {
       input, keyAuthority:cloneJsonSafe(capsule),
+      ...(capsule.userBookmarksCandidate ? { userBookmarksCandidate: cloneJsonSafe(capsule.userBookmarksCandidate) } : {}),
       openScenePath: currentFilePath,
       sessionToken:readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore),
       intakeGeneration:activeDocxReviewIntakeGeneration,
     };
+    if (capsule.userBookmarksCandidate) {
+      cleanUserBookmarksUiPreview = await refreshActiveReviewExactTextUiPlan({ requestId });
+      if (!isCurrent()) return superseded();
+    }
   }
   const commentShadowPayload = buildDocxReviewPreviewSessionCommentShadowPayload(activeContext, candidate, requestId, revisionBridge);
   let commentShadowResult = null;
@@ -10135,7 +10231,9 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
     budgets: docxReviewReturnIntakeProductBudgets(options),
   });
-  const reviewSurface = isPlainObjectValue(formattingProductPath?.reviewSurface)
+  const reviewSurface = isPlainObjectValue(cleanUserBookmarksUiPreview?.reviewSurface)
+    ? cleanUserBookmarksUiPreview.reviewSurface
+    : isPlainObjectValue(formattingProductPath?.reviewSurface)
     && Object.keys(formattingProductPath.reviewSurface).length > 0
     ? formattingProductPath.reviewSurface
     : isPlainObjectValue(structuralProductPath?.reviewSurface)
@@ -10151,7 +10249,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     requestId,
     activated: true,
     diagnosticOnly: isDiagnosticEvidenceCandidate,
-    session: importResult.session,
+    session: cleanUserBookmarksUiPreview ? cloneActiveReviewSessionStore() : importResult.session,
     reviewSurface,
     commentShadowSession: isPlainObjectValue(commentShadowResult?.session)
       ? cloneJsonSafe(commentShadowResult.session)
@@ -11321,9 +11419,13 @@ function canonicalizeDocxImportPreviewEvidence(evidence) {
 }
 
 function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
+  const userBookmarkInventory = isPlainObjectValue(sourceReport.contentPreview)
+    && Object.prototype.hasOwnProperty.call(sourceReport.contentPreview, 'userBookmarkInventory')
+    ? copyValidatedDocxUserBookmarkInventory(sourceReport.contentPreview) : null;
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(userBookmarkInventory !== null ? { userBookmarkInventory } : {}),
         ...(isPlainObjectValue(sourceReport.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(sourceReport.contentPreview.pendingRevisionDocument) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
           ? { manuscriptNotes: cloneJsonSafe(sourceReport.contentPreview.manuscriptNotes) } : {}),
@@ -11485,6 +11587,15 @@ function validateDocxImportPreviewPayload(payload = {}) {
       'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
       'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_TYPE_INVALID',
     );
+  }
+
+  if (isPlainObjectValue(payload.docxContentPreviewReport.contentPreview)
+    && Object.prototype.hasOwnProperty.call(payload.docxContentPreviewReport.contentPreview, 'userBookmarkInventory')) {
+    try { copyValidatedDocxUserBookmarkInventory(payload.docxContentPreviewReport.contentPreview); }
+    catch (error) {
+      return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+        'DOCX_IMPORT_PREVIEW_USER_BOOKMARK_INVENTORY_INVALID', { sourceCode: error.code || error.message });
+    }
   }
 
   const depthState = inspectDocxImportPreviewPayloadDepth(payload);
@@ -14646,9 +14757,12 @@ async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
     const raw = await fs.readFile(manifestPath, 'utf8');
     const parsed = JSON.parse(raw);
     const sourceManifest = isPlainObjectValue(parsed) ? parsed : null;
+    const sourceSchemaVersion = Number(sourceManifest?.schemaVersion);
     return {
       raw,
-      manifest: await normalizeProjectManifest(sourceManifest || {}, projectName),
+      manifest: sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION
+        ? sourceManifest : await normalizeProjectManifest(sourceManifest || {}, projectName),
+      sourceSchemaVersion,
       sourceManifestComparable: getProjectManifestComparable(sourceManifest)
     };
   } catch {
@@ -14660,6 +14774,9 @@ async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const manifestPath = getProjectManifestPath(projectName);
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const existingManifestRecord = await readProjectManifest(projectName);
+    if (existingManifestRecord?.sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION) {
+      throw Object.assign(new Error('PROJECT_READONLY_SCHEMA'), { code: 'PROJECT_READONLY_SCHEMA' });
+    }
     const existingManifest = existingManifestRecord ? existingManifestRecord.manifest : null;
     const sourceManifestComparable = existingManifestRecord ? existingManifestRecord.sourceManifestComparable : null;
     const nextManifest = await normalizeProjectManifest(existingManifest || {}, projectName);
@@ -14834,8 +14951,32 @@ async function migrateProjectNotesStorage(options = {}) {
   });
 }
 
-async function getProjectNotesContext(payload = {}) {
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+async function getProjectNotesContext(payload = {}, options = {}) {
+  if (options.readOnlyActive !== true) {
+    const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+    const expectedProjectId = normalizeStableProjectId(payload.projectId);
+    if (expectedProjectId && expectedProjectId !== manifest.projectId) {
+      return { ok: false, code: 'E_NOTES_PROJECT_MISMATCH', reason: 'NOTES_PROJECT_MISMATCH' };
+    }
+    return { ok: true, projectRoot: path.dirname(manifestPath), projectId: manifest.projectId,
+      notesStorage: await loadNotesStorageModule() };
+  }
+  const projectName = currentProjectName;
+  const projectRoot = getProjectRootPath();
+  const owner = activeStage10ApplicationBootstrap;
+  const lifecycle = currentLifecycleSubjectId();
+  const session = commentAuthoringSessionId;
+  const refusal = reason => ({ ok: false, code: `E_${reason}`, reason });
+  if (typeof projectName !== 'string' || !projectName.trim()) return refusal('NOTES_PROJECT_REQUIRED');
+  const isCurrent = () => projectName === currentProjectName && projectRoot === getProjectRootPath()
+    && owner === activeStage10ApplicationBootstrap && lifecycle === currentLifecycleSubjectId()
+    && session === commentAuthoringSessionId;
+  // Context lookup cannot create a default project or normalize its manifest on disk.
+  const record = await readProjectManifest(projectName);
+  if (!isCurrent()) return refusal('NOTES_PROJECT_STALE');
+  const manifest = record?.manifest;
+  if (!manifest || record.sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION
+    || !normalizeStableProjectId(manifest.projectId)) return refusal('NOTES_PROJECT_BINDING_INVALID');
   const expectedProjectId = normalizeStableProjectId(payload.projectId);
   if (expectedProjectId && expectedProjectId !== manifest.projectId) {
     return {
@@ -14845,7 +14986,7 @@ async function getProjectNotesContext(payload = {}) {
     };
   }
   const notesStorage = await loadNotesStorageModule();
-  const projectRoot = path.dirname(manifestPath);
+  if (!isCurrent()) return refusal('NOTES_PROJECT_STALE');
   return {
     ok: true,
     projectRoot,
@@ -17874,20 +18015,30 @@ async function handleHistoryRestorePreviewCommand(payload = {}) {
   return buildHistoryRestorePreviewPlan(payload);
 }
 
-async function syncHistoryRestoreEditorFromMainState(filePath, statusText) {
+async function syncHistoryRestoreEditorFromMainState(filePath, statusText, expectedGeneration = null, publication = null) {
+  const stale = () => expectedGeneration !== null && (isDirty || autoSaveInProgress || lastSignaledEditGeneration > expectedGeneration
+    || (publication && (publication.subjectId !== currentLifecycleSubjectId()
+      || publication.sessionId !== commentAuthoringSessionId || publication.filePath !== currentFilePath)));
+  if (stale()) return { ok: false, reason: 'HISTORY_RESTORE_EDITOR_STALE' };
   if (filePath !== currentFilePath || !mainWindow || !mainWindow.webContents || mainWindow.webContents.isDestroyed()) {
     return { ok: false, skipped: true };
   }
   const content = await fs.readFile(filePath, 'utf8');
   const context = getDocumentContextFromPath(filePath);
   const documentIdentity = await getProjectDocumentIdentityPayload(filePath);
-  sendEditorText(await attachProjectIdToEditorPayload({
-    content,
-    title: context.title,
-    ...documentIdentity,
-    kind: context.kind,
-    metaEnabled: context.metaEnabled,
-  }, filePath));
+  const editorPayload = await attachProjectIdToEditorPayload({
+    content, title: context.title, ...documentIdentity, kind: context.kind, metaEnabled: context.metaEnabled,
+  }, filePath);
+  const currentRaw = publication ? await fs.readFile(filePath, 'utf8') : content;
+  if (publication) {
+    try { userBookmarkCapability(HISTORY_RESTORE_APPLY_COMMAND_ID); }
+    catch { return { ok: false, reason: 'HISTORY_RESTORE_EDITOR_STALE' }; }
+  }
+  if (stale() || filePath !== currentFilePath || (publication && content !== publication.savedContent)) {
+    return { ok: false, reason: 'HISTORY_RESTORE_EDITOR_STALE' };
+  }
+  if (currentRaw !== content) return { ok: false, reason: 'HISTORY_RESTORE_EDITOR_STALE' };
+  sendEditorText(editorPayload);
   const contentHash = computeHash(content);
   lastAutosaveHash = contentHash;
   backupHashes.set(filePath, contentHash);
@@ -17941,6 +18092,9 @@ async function handleHistoryRestoreApplyCommand(payload = {}) {
         error.code = 'E_HISTORY_RESTORE_STALE_TARGET';
         throw error;
       }
+      const bookmarkResult = await publishUserBookmarkHistorySnapshot(target.filePath, currentText, snapshot.snapshotText,
+        snapshot.snapshotPath, () => resolveHistoryRestoreSceneTarget(rebuilt.previewPlan));
+      if (bookmarkResult) return bookmarkResult;
       return markdownIo.writeMarkdownWithTransactionRecovery(target.filePath, snapshot.snapshotText, {
         maxSnapshots: 20,
         safetyMode: 'strict',
@@ -17977,7 +18131,8 @@ async function handleHistoryRestoreApplyCommand(payload = {}) {
     filePath: target.filePath,
     preRestoreSnapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
   };
-  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановлено');
+  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановлено', writeResult?.receipt?.revision ?? null,
+    writeResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     applied: true,
@@ -18012,6 +18167,7 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
     );
   }
   const markdownIo = await loadMarkdownIoModule();
+  let undoWriteResult;
   try {
     await queueDiskOperation(async () => {
       const currentText = await fs.readFile(target.filePath, 'utf8');
@@ -18020,6 +18176,9 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
         error.code = 'E_HISTORY_RESTORE_UNDO_STALE_TARGET';
         throw error;
       }
+      const bookmarkResult = await publishUserBookmarkHistorySnapshot(target.filePath, currentText, undoText,
+        lastHistoryRestoreReceipt.preRestoreSnapshotPath, () => resolveHistoryRestoreSceneTarget(receipt));
+      if (bookmarkResult) { undoWriteResult = bookmarkResult; return bookmarkResult; }
       return markdownIo.writeMarkdownWithTransactionRecovery(target.filePath, undoText, {
         maxSnapshots: 20,
         safetyMode: 'strict',
@@ -18034,7 +18193,8 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
     );
   }
   lastHistoryRestoreReceipt = null;
-  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановление отменено');
+  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановление отменено', undoWriteResult?.receipt?.revision ?? null,
+    undoWriteResult?.receipt?.bookmarkPublication || null);
   return {
     ok: true,
     undone: true,
@@ -18046,6 +18206,40 @@ async function handleHistoryRestoreUndoCommand(payload = {}) {
       contentHashAfterUndo: computeHash(undoText),
     },
   };
+}
+
+async function publishUserBookmarkHistorySnapshot(filePath, currentText, snapshotText, snapshotPath, resolveTarget) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const before = envelope.parseObservablePayload(currentText), restored = envelope.parseObservablePayload(snapshotText);
+  if (before.issue || restored.issue) throw Error('HISTORY_RESTORE_DOCUMENT_INVALID');
+  const beforeDoc = before.doc || envelope.buildParagraphDocumentFromText(before.text);
+  const snapshotDoc = restored.doc || envelope.buildParagraphDocumentFromText(restored.text);
+  if (!userBookmarkModel.readRegistry(beforeDoc) && !userBookmarkModel.readRegistry(snapshotDoc)) return null;
+  const plan = userBookmarkModel.planHistoryRestore({ beforeDoc, snapshotDoc });
+  const subjectId = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
+  const snapshot = await requestEditorSnapshot(), live = envelope.parseObservablePayload(snapshot.content);
+  const nonText = await loadRtkNonTextReturnModule();
+  if (live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+    || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+    || !nonText.commentSceneSnapshotsEqual(live.doc || live.text, beforeDoc)) throw Error('HISTORY_RESTORE_EDITOR_STALE');
+  const stats = await fs.lstat(snapshotPath);
+  if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1) throw Error('HISTORY_RESTORE_SNAPSHOT_INVALID');
+  const beforeScenePublish = async () => {
+    const currentTarget = await resolveTarget();
+    const [currentRaw, snapshotRaw] = await Promise.all([fs.readFile(filePath, 'utf8'), fs.readFile(snapshotPath, 'utf8')]);
+    userBookmarkCapability(HISTORY_RESTORE_APPLY_COMMAND_ID);
+    if (!currentTarget.ok || currentTarget.filePath !== filePath || currentFilePath !== filePath
+      || currentLifecycleSubjectId() !== subjectId || commentAuthoringSessionId !== sessionId
+      || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation
+      || currentRaw !== currentText || snapshotRaw !== snapshotText) throw Error('HISTORY_RESTORE_STALE_TARGET');
+  };
+  await beforeScenePublish();
+  const receipt = await commitWriterProjectSnapshot(filePath, snapshotText, snapshot.generation, snapshot.bookProfile,
+    'validated user bookmark history restore', { expectedSceneContent: currentText,
+      beforeScenePublish, userBookmarkPlan: plan, userBookmarkCapturedContent: currentText });
+  if (!receipt.success) throw Object.assign(Error(receipt.error || 'HISTORY_RESTORE_WRITE_FAILED'), { code: receipt.code });
+  return { snapshotCreated: Boolean(receipt.userBookmarkHistorySnapshot?.snapshotCreated),
+    snapshotPath: receipt.userBookmarkHistorySnapshot?.snapshotPath || '', receipt };
 }
 
 function makeReplaceSingleSafeError(code, reason, details = {}) {
@@ -21350,8 +21544,47 @@ async function persistBookProfileForFile(filePath, bookProfile, operationLabel =
 
 // R2.4 WP-202: old and new routing observations must agree before exactly one
 // existing WP-200 or WP-201 authority executes.
+let userBookmarkSaveContinuation = null;
+let userBookmarkRenameLineage = null;
+
+function boundUserBookmarkRenameLineage(filePath, projectId, raw) {
+  const receipt = userBookmarkRenameLineage;
+  if (!receipt) return undefined;
+  if (receipt.filePath !== filePath || receipt.projectId !== projectId
+    || receipt.subjectId !== currentLifecycleSubjectId() || receipt.sessionId !== commentAuthoringSessionId
+    || receipt.savedContent !== raw) {
+    userBookmarkRenameLineage = null;
+    return undefined;
+  }
+  return receipt.aliases;
+}
+
+function continueUserBookmarkWorkingDocument(continuation, workingDoc) {
+  const inherited = userBookmarkModel.readRegistry(workingDoc, { checkBounds: false });
+  if (JSON.stringify(inherited) !== JSON.stringify(continuation.inheritedRegistry)) throw Error('USER_BOOKMARK_SAVE_AUTHORITY');
+  if (!continuation.authoring) return workingDoc;
+  const doc = cloneJsonSafe(workingDoc);
+  if (!doc.attrs) doc.attrs = cloneJsonSafe({});
+  doc.attrs.wordUserBookmarks = cloneJsonSafe(continuation.beforeDoc.attrs.wordUserBookmarks);
+  const oldRegistry = continuation.inheritedRegistry;
+  const nextRegistry = continuation.beforeDoc.attrs.wordUserBookmarks;
+  const visit = node => {
+    for (const mark of node.marks || []) {
+      if (mark.type !== 'link' || !mark.attrs?.wordBookmarkId) continue;
+      const old = oldRegistry?.bookmarks.find(record => record.id === mark.attrs.wordBookmarkId);
+      const next = nextRegistry.bookmarks.find(record => record.id === mark.attrs.wordBookmarkId);
+      if (old && next && old.name !== next.name && mark.attrs.href === '#' + old.name
+        && mark.attrs.wordBookmarkName === old.name) Object.assign(mark.attrs, userBookmarkModel.linkAttrs(next));
+    }
+    for (const child of node.content || []) visit(child);
+  };
+  visit(doc); return doc;
+}
+
 async function commitWriterProjectSnapshot(filePath, content, revision, bookProfile, operationLabel, options = {}) {
   try {
+    const capturedContent = content;
+    let bookmarkSubjectId = null, bookmarkSessionId = null;
     const recordingPort = commitWriterProjectSnapshot.recordingPort;
     const recordingAdmission = recordingPort?.admit(filePath, content, revision);
     const prepared = await prepareBookProfileManifestForFile(filePath, bookProfile);
@@ -21416,8 +21649,64 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           const envelope = await loadDocumentContentEnvelopeModule();
           const beforeDocument = envelope.parseObservablePayload(expectedSceneContent || '');
-          const afterDocument = envelope.parseObservablePayload(content);
+          let afterDocument = envelope.parseObservablePayload(content);
           if (beforeDocument.issue || afterDocument.issue) throw Error('PROJECT_TRANSACTION_DOCUMENT_INVALID');
+          let bookmarkPublication = null;
+          let bookmarkAliases;
+          let nextBookmarkAliases;
+          let userBookmarkHistorySnapshot = null;
+          if (beforeDocument.doc || afterDocument.doc) {
+            const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(beforeDocument.text);
+            const workingDoc = afterDocument.doc || envelope.buildParagraphDocumentFromText(afterDocument.text);
+            if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
+              bookmarkSubjectId = currentLifecycleSubjectId(); bookmarkSessionId = commentAuthoringSessionId;
+              bookmarkAliases = boundUserBookmarkRenameLineage(filePath, prepared.projectId, expectedSceneContent);
+              nextBookmarkAliases = bookmarkAliases;
+            }
+            if (options.userBookmarkPlan) {
+              userBookmarkModel.readRegistry(options.userBookmarkPlan.doc);
+              if (JSON.stringify(envelope.canonicalizeDocumentJson(options.userBookmarkPlan.doc))
+                !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('USER_BOOKMARK_PLAN_MISMATCH');
+              const nextRegistry = userBookmarkModel.readRegistry(workingDoc);
+              if (!options.userBookmarkAuthoringAction) nextBookmarkAliases = undefined;
+              if (options.userBookmarkRename) {
+                const alias = options.userBookmarkRename;
+                const previous = userBookmarkModel.readRegistry(beforeDoc)?.bookmarks.find(record => record.id === alias.bookmarkId);
+                const next = nextRegistry?.bookmarks.find(record => record.id === alias.bookmarkId);
+                if (options.userBookmarkAuthoringAction !== 'rename' || !previous || !next
+                  || previous.name !== alias.oldName || previous.name === next.name) throw Error('USER_BOOKMARK_RENAME_RECEIPT_INVALID');
+                nextBookmarkAliases = [...(bookmarkAliases || [])];
+                if (!nextBookmarkAliases.some(value => value.bookmarkId === alias.bookmarkId && value.oldName === alias.oldName)) {
+                  nextBookmarkAliases.push({ bookmarkId: alias.bookmarkId, oldName: alias.oldName });
+                }
+                if (nextBookmarkAliases.length > 1024) throw Error('USER_BOOKMARK_RENAME_LINEAGE_BUDGET');
+              }
+              bookmarkPublication = { capturedContent: options.userBookmarkCapturedContent,
+                savedContent: content, generation: revision, filePath,
+                subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId,
+                beforeDoc: workingDoc, inheritedRegistry: userBookmarkModel.readRegistry(beforeDoc),
+                authoring: true, bookmarkId: options.userBookmarkPlan.bookmarkId };
+            } else if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
+              const continuation = userBookmarkSaveContinuation;
+              const continued = continuation && continuation.filePath === filePath
+                && continuation.subjectId === currentLifecycleSubjectId()
+                && continuation.sessionId === commentAuthoringSessionId
+                && continuation.savedContent === expectedSceneContent
+                && JSON.stringify(userBookmarkModel.readRegistry(workingDoc, { checkBounds: false }))
+                  === JSON.stringify(continuation.inheritedRegistry);
+              const plan = userBookmarkModel.planSave({ beforeDoc: continued ? continuation.beforeDoc : beforeDoc,
+                workingDoc: continued ? continueUserBookmarkWorkingDocument(continuation, workingDoc) : workingDoc,
+                renameLineage: bookmarkAliases });
+              content = envelope.composeObservablePayload({ ...afterDocument, metaEnabled: afterDocument.hasMetaBlock, doc: plan.doc });
+              afterDocument = envelope.parseObservablePayload(content);
+              if (content !== capturedContent) bookmarkPublication = { capturedContent, savedContent: content,
+                generation: revision, filePath, subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId,
+                beforeDoc: continued ? continuation.beforeDoc : beforeDoc,
+                inheritedRegistry: userBookmarkModel.readRegistry(workingDoc, { checkBounds: false }),
+                ...(plan.restoredLinkBookmarkIds.length ? { authoring: true, bookmarkId: plan.restoredLinkBookmarkIds }
+                  : continued && continuation.authoring ? { authoring: true, bookmarkId: continuation.bookmarkId } : {}) };
+            }
+          }
           const beforeReview = pendingTextRevisions.readLedger(beforeDocument.doc);
           const afterReview = pendingTextRevisions.readLedger(afterDocument.doc);
           if ((beforeReview || afterReview) && !recordingAdmission && options.pendingRevisionDecision !== true
@@ -21461,6 +21750,18 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
+          if ((options.userBookmarkPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
+            && expectedSceneContent !== content) {
+            const markdownIo = await loadMarkdownIoModule();
+            const paths = await markdownIo.listRecoverySnapshots(filePath);
+            const stamp = Math.max(Date.now(), ...paths.map(value => Number(value.slice(-13)) + 1));
+            userBookmarkHistorySnapshot = await markdownIo.createRecoverySnapshot(filePath, { maxSnapshots: 20, now: () => stamp });
+            if (!userBookmarkHistorySnapshot.snapshotCreated || !userBookmarkHistorySnapshot.synced
+              || await fs.readFile(userBookmarkHistorySnapshot.snapshotPath, 'utf8') !== expectedSceneContent) {
+              throw Error('USER_BOOKMARK_HISTORY_SNAPSHOT_INVALID');
+            }
+            if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
+          }
           const receipt = await commitProjectTransaction({
             ...(commentState ? { commentState } : {}),
             ...(noteState ? { noteState } : {}),
@@ -21492,7 +21793,16 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             recordingAdmission.session.raw = content; recordingAdmission.session.savedGeneration = revision;
             pendingRecordingSaveAdmissions.clear();
           }
-          return Object.freeze({ ...receipt, projectTransaction: true });
+          if (receipt.success === true) {
+            userBookmarkRenameLineage = nextBookmarkAliases?.length && currentFilePath === filePath
+              && currentLifecycleSubjectId() === bookmarkSubjectId && commentAuthoringSessionId === bookmarkSessionId
+              ? { filePath, projectId: prepared.projectId, subjectId: bookmarkSubjectId, sessionId: bookmarkSessionId,
+                savedContent: content, aliases: cloneJsonSafe(nextBookmarkAliases) } : null;
+          }
+          if (receipt.success === true && bookmarkPublication) userBookmarkSaveContinuation = bookmarkPublication;
+          return Object.freeze({ ...receipt, projectTransaction: true,
+            ...(receipt.success === true && userBookmarkHistorySnapshot ? { userBookmarkHistorySnapshot } : {}),
+            ...(receipt.success === true && bookmarkPublication ? { bookmarkPublication } : {}) });
         };
         // Authenticated review owns its existing outer journal and comment step.
         // This private main option is never accepted from a renderer payload.
@@ -22837,7 +23147,7 @@ function loadRtkNonTextReturnModule() {
 
 // Ordinary comment authoring uses committed scene truth, never returned Word IDs.
 let commentAuthoringSessionId = crypto.randomUUID();
-async function readCommentAuthoringContext({ pendingRichBlocks = false } = {}) {
+async function readCommentAuthoringContext({ pendingRichBlocks = false, userBookmarks = false } = {}) {
   if (activePendingRecording) throw Error('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
   if (isDirty || autoSaveInProgress) throw new Error('COMMENT_SAVE_SCENE_FIRST');
   const filePath = currentFilePath;
@@ -22857,7 +23167,7 @@ async function readCommentAuthoringContext({ pendingRichBlocks = false } = {}) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const parsed = envelope.parseObservablePayload(raw);
   if (parsed.issue) throw new Error('COMMENT_SCENE_INVALID');
-  const nodes = parsed.doc && (pendingRichBlocks
+  const nodes = parsed.doc && (userBookmarks ? userBookmarkModel.paragraphs(parsed.doc) : pendingRichBlocks
     ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(parsed.doc)) : parsed.doc.content);
   const paragraphs = parsed.doc ? nodes.map(node => {
     if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('COMMENT_STORY_UNSUPPORTED');
@@ -22880,6 +23190,140 @@ async function readCommentAuthoringProjection() {
       threads: context.saved.state.threads.filter(t => t.sceneId === context.sceneId && t.status !== 'deleted')
         .map(normalizeRtkNonTextReturnThreadProjection) };
   } catch (error) { return { available: false, reason: error.message, threads: [] }; }
+}
+
+function userBookmarkEnvelopeMetadataEqual(left, right) {
+  return JSON.stringify([left.hasMetaBlock, left.meta, left.cards])
+    === JSON.stringify([right.hasMetaBlock, right.meta, right.cards]);
+}
+
+function userBookmarkCapability(id) {
+  if (evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: id,
+    productCommandRecord: getProductCommandRecord(id) }).allowed !== true
+    || decideCommandEntitlement(id, getProductEntitlementTier()).available !== true) {
+    throw Error('USER_BOOKMARK_CAPABILITY_DENIED');
+  }
+}
+
+async function readUserBookmarkProjectBinding(filePath = null) {
+  const projectRoot = getProjectRootPath(), subjectId = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
+  if (typeof filePath !== 'string' || !isAllowedFilePath(filePath)
+    || !['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) throw Error('USER_BOOKMARK_SCENE_REQUIRED');
+  if (!isPathInside(projectRoot, filePath)) throw Error('USER_BOOKMARK_PROJECT_BINDING_INVALID');
+  const binding = await readProjectManifestRawAtPath(getProjectManifestPath());
+  const version = binding.sourceSchemaVersion;
+  if (!Number.isSafeInteger(version) || version !== PROJECT_MANIFEST_SCHEMA_VERSION) throw Error('USER_BOOKMARK_PROJECT_READ_ONLY');
+  const projectId = binding.manifest.projectId;
+  if (typeof projectId !== 'string' || !projectId || subjectId !== currentLifecycleSubjectId()
+    || sessionId !== commentAuthoringSessionId || projectRoot !== getProjectRootPath()
+    || (filePath && filePath !== currentFilePath)) throw Error('USER_BOOKMARK_PROJECT_BINDING_INVALID');
+  return { projectId, projectRoot, subjectId, sessionId };
+}
+
+async function readUserBookmarkContext() {
+  const projectBinding = await readUserBookmarkProjectBinding(currentFilePath);
+  const context = await readCommentAuthoringContext({ userBookmarks: true });
+  if (context.projectId !== projectBinding.projectId) throw Error('USER_BOOKMARK_PROJECT_BINDING_INVALID');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const doc = context.parsed.doc || envelope.buildParagraphDocumentFromText(context.parsed.text);
+  if (pendingTextRevisions.readLedger(doc)) throw Error('USER_BOOKMARK_PENDING_COMPOSITE_UNSUPPORTED');
+  return { ...context, doc, registry: userBookmarkModel.readRegistry(doc) };
+}
+
+async function handleUserBookmarkQuery(payload = {}) {
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'admissionOnly'].includes(key))
+      || (payload.admissionOnly !== undefined && typeof payload.admissionOnly !== 'boolean')) {
+      throw Error('USER_BOOKMARK_QUERY_INVALID');
+    }
+    userBookmarkCapability('cmd.project.bookmarks.managePrompt');
+    if (payload.admissionOnly === true) {
+      const binding = await readUserBookmarkProjectBinding(currentFilePath);
+      userBookmarkCapability('cmd.project.bookmarks.managePrompt');
+      return Object.freeze({ ok: true, available: true, projectId: binding.projectId, schemaVersion: 'user-bookmark-admission.v1' });
+    }
+    const source = await readUserBookmarkContext();
+    const currentRaw = await fs.readFile(source.filePath, 'utf8');
+    userBookmarkCapability('cmd.project.bookmarks.managePrompt');
+    if (source.filePath !== currentFilePath || source.subjectId !== `${currentLifecycleSubjectId()}:${commentAuthoringSessionId}`
+      || isDirty || autoSaveInProgress || currentRaw !== source.raw) {
+      throw Error('USER_BOOKMARK_QUERY_STALE');
+    }
+    return Object.freeze({ ok: true, available: true, schemaVersion: 'user-bookmark-inventory.v1',
+      projectId: source.projectId, sceneId: source.sceneId, subjectId: source.subjectId,
+      expectedSceneSha256: source.sceneSha256, registryRevision: source.registry?.revision || 0,
+      bookmarks: cloneJsonSafe(source.registry?.bookmarks || []) });
+  } catch (error) {
+    return { ok: false, available: false, reason: error.message, bookmarks: [] };
+  }
+}
+
+async function handleUserBookmarkMutation(action, payload = {}) {
+  const commandId = `cmd.project.bookmarks.${action}`;
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => ![
+      'requestId', 'projectId', 'sceneId', 'subjectId', 'expectedSceneSha256', 'registryRevision',
+      'bookmarkId', 'name', 'selectionStart', 'selectionEnd',
+    ].includes(key)) || typeof payload.requestId !== 'string' || !/^[\w:.-]{1,160}$/u.test(payload.requestId)) {
+      throw Error('USER_BOOKMARK_INPUT_INVALID');
+    }
+    userBookmarkCapability(commandId);
+    return await queueDiskOperation(async () => {
+      const source = await readUserBookmarkContext();
+      if (payload.projectId !== source.projectId || payload.sceneId !== source.sceneId
+        || payload.subjectId !== source.subjectId || payload.expectedSceneSha256 !== source.sceneSha256
+        || payload.registryRevision !== (source.registry?.revision || 0)) throw Error('USER_BOOKMARK_SOURCE_STALE');
+      const snapshot = await requestEditorSnapshot();
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content);
+      const review = await loadRtkNonTextReturnModule();
+      const materialize = value => value && typeof value === 'object'
+        ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
+      if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)
+        || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+        || !review.commentSceneSnapshotsEqual(materialize(live.doc || live.text), materialize(source.parsed.doc || source.parsed.text))) {
+        throw Error('USER_BOOKMARK_EDITOR_STALE');
+      }
+      const liveDoc = live.doc || envelope.buildParagraphDocumentFromText(live.text);
+      if (JSON.stringify(userBookmarkModel.readRegistry(liveDoc)) !== JSON.stringify(source.registry)) throw Error('USER_BOOKMARK_EDITOR_STALE');
+      const copySource = action === 'copy' ? source.registry?.bookmarks.find(record => record.id === payload.bookmarkId && record.state === 'active') : null;
+      if (action === 'copy' && !copySource) throw Error('USER_BOOKMARK_COPY_SOURCE_INVALID');
+      const plan = userBookmarkModel.planMutation({ doc: liveDoc, action: action === 'copy' ? 'create' : action, requestId: payload.requestId,
+        projectId: source.projectId, sceneId: source.sceneId, name: payload.name,
+        bookmarkId: payload.bookmarkId,
+        ...(copySource ? { start: copySource.start, end: copySource.end } : {}),
+        ...(action === 'create' ? { start: userBookmarkModel.endpointForOffset(liveDoc, payload.selectionStart),
+          end: userBookmarkModel.endpointForOffset(liveDoc, payload.selectionEnd) } : {}) });
+      if (!plan.changed) return { ok: true, changed: false, bookmarkId: plan.bookmarkId };
+      const content = envelope.composeObservablePayload({ ...source.parsed, metaEnabled: source.parsed.hasMetaBlock, doc: plan.doc });
+      const beforeScenePublish = async () => {
+        const projectBinding = await readUserBookmarkProjectBinding(source.filePath);
+        const currentRaw = await fs.readFile(source.filePath, 'utf8');
+        userBookmarkCapability(commandId);
+        if (projectBinding.projectId !== source.projectId
+          || currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+          || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation
+          || currentRaw !== source.raw) throw Error('USER_BOOKMARK_SOURCE_STALE');
+      };
+      await beforeScenePublish();
+      const receipt = await commitWriterProjectSnapshot(source.filePath, content, snapshot.generation,
+        snapshot.bookProfile, 'canonical user bookmark authoring', {
+          expectedSceneContent: source.raw, beforeScenePublish, userBookmarkPlan: plan,
+          userBookmarkCapturedContent: snapshot.content, userBookmarkAuthoringAction: action,
+          ...(action === 'rename' ? { userBookmarkRename: { bookmarkId: plan.bookmarkId,
+            oldName: source.registry.bookmarks.find(record => record.id === plan.bookmarkId).name } } : {}),
+        });
+      if (!receipt.success) throw Object.assign(Error(receipt.code || receipt.error || 'USER_BOOKMARK_WRITE_FAILED'), { code: receipt.code });
+      const ack = await acknowledgeMainOwnedSave(receipt, snapshot.content, snapshot.generation);
+      return { ok: ack.kind === SAVE_ACK_KINDS.SAVED, changed: true, storageWritten: true,
+        reason: ack.kind === SAVE_ACK_KINDS.SAVED ? null : 'USER_BOOKMARK_PUBLICATION_STALE',
+        ...(ack.kind === SAVE_ACK_KINDS.SAVED ? {} : { details: { changed: true, storageWritten: true,
+          bookmarkId: plan.bookmarkId, registryRevision: plan.registry.revision } }),
+        bookmarkId: plan.bookmarkId, registryRevision: plan.registry.revision };
+    }, 'canonical user bookmark authoring');
+  } catch (error) {
+    return makeReviewMutateTypedError(commandId, error.code || error.message, error.message);
+  }
 }
 
 let activePendingRecording = null;
@@ -23708,6 +24152,64 @@ function buildCleanLinkLabelApplyInput(changes) {
   return {ok:true,input:cloneJsonSafe(store.input)};
 }
 
+async function buildPrivateUserBookmarksUiPlan(changes) {
+  const blocked = reason => buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(reason)]);
+  if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
+  const store = activeRtkCleanLinkLabelApplyStore, candidate = store?.userBookmarksCandidate;
+  const selected = buildCleanLinkLabelApplyInput(changes);
+  if (!selected.ok || !candidate || changes.length !== 1 || changes[0].changeId !== candidate.changeId) {
+    return blocked('RTK_USER_BOOKMARK_PRIVATE_CANDIDATE_REQUIRED');
+  }
+  try {
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    const envelope = await loadDocumentContentEnvelopeModule(), snapshot = await requestEditorSnapshot();
+    const live = envelope.parseObservablePayload(snapshot.content), nonText = await loadRtkNonTextReturnModule();
+    const keyGate = await revalidateCleanLinkLabelApplyInput(selected.input);
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    if (activePendingRecording || !keyGate.ok || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
+      || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+      || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+      || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+      || lastSignaledEditGeneration > snapshot.generation
+      || fsSync.readFileSync(selected.input.scenePath, 'utf8') !== candidate.raw
+      || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc))) {
+      return blocked(keyGate.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
+    }
+    const plan = userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
+    if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
+    const prior = userBookmarkModel.readRegistry(candidate.beforeDoc), next = plan.registry;
+    const before = [], after = [];
+    const position = record => {
+      if (record?.state !== 'active') return 'Закладка удалена';
+      const point = value => `абзац ${value.paragraphIndex + 1}, символ ${value.offsetUtf16}${value.edge === 'afterParagraph' ? ', после знака абзаца' : ''}`;
+      return `${record.name}: ${point(record.start)} → ${point(record.end)}`;
+    };
+    for (const record of next?.bookmarks || []) {
+      const old = prior?.bookmarks.find(item => item.id === record.id);
+      if (!old || old.name !== record.name || old.state !== record.state
+        || JSON.stringify(old.start) !== JSON.stringify(record.start) || JSON.stringify(old.end) !== JSON.stringify(record.end)) {
+        before.push(old ? position(old) : 'Нет закладки');
+        after.push(position(record));
+      }
+    }
+    const oldBlocks = userBookmarkModel.paragraphs(candidate.beforeDoc), newBlocks = userBookmarkModel.paragraphs(plan.doc);
+    const links = p => (p.content || []).flatMap(node => (node.marks || []).filter(mark => mark.type === 'link')
+      .map(mark => `${node.text || ''} → ${mark.attrs.wordBookmarkName || mark.attrs.href}`)).join('; ');
+    for (let index = 0; index < oldBlocks.length; index++) {
+      const old = links(oldBlocks[index]), current = links(newBlocks[index]);
+      if (old !== current) { before.push(old || 'Нет ссылки'); after.push(current || 'Ссылка удалена'); }
+    }
+    return { ok: true, type: 'revisionBridge.exactTextApplyPlanNoDiskPreview', status: 'ready',
+      code: 'RTK_USER_BOOKMARK_PREVIEW_READY', reason: 'RTK_USER_BOOKMARK_PREVIEW_READY', reasons: [],
+      plan: { schemaVersion: REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA, projectId: store.input.projectSnapshot.projectId,
+        sessionId: store.sessionToken.sessionId, sceneId: candidate.sceneId, canApply: false, noDisk: true,
+        safeWriteCandidate: false, userBookmarkReturn: true, blockedReasons: [], preconditions: [],
+        applyOps: [{ kind: 'userBookmarks', changeId: candidate.changeId, sceneId: candidate.sceneId,
+          expectedText: before.join('\n'), replacementText: after.join('\n') }] } };
+  } catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_PREVIEW_BLOCKED'); }
+}
+
 async function revalidateCleanLinkLabelApplyInput(input) {
   const store = activeRtkCleanLinkLabelApplyStore;
   const blocked = reason => ({ok:false,status:'blocked',reason,code:reason,applied:false,writerCalled:false});
@@ -23751,6 +24253,9 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
       }
       let trustedLinkReplacementDigest = null;
       let publishScene = publishReviewSceneWithProjectTransaction;
+      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-user-bookmarks-'))) {
+        return applyPrivateUserBookmarksReturn(input);
+      }
       if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
         || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
@@ -23772,10 +24277,75 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
   );
 }
 
+async function applyPrivateUserBookmarksReturn(input) {
+  const store = activeRtkCleanLinkLabelApplyStore;
+  const candidate = store?.userBookmarksCandidate;
+  const gate = await revalidateCleanLinkLabelApplyInput(input);
+  if (!gate.ok) return gate;
+  const blocked = reason => ({ ok: false, applied: false, code: reason, reason });
+  if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
+  if (!candidate || input.reviewItems?.length !== 1 || input.reviewItems[0].changeId !== candidate.changeId) {
+    return blocked('RTK_USER_BOOKMARK_PRIVATE_CANDIDATE_REQUIRED');
+  }
+  const scenePath = input.scenePath;
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const snapshot = await requestEditorSnapshot();
+  const live = envelope.parseObservablePayload(snapshot.content);
+  const nonText = await loadRtkNonTextReturnModule();
+  let richSourceEqual = false;
+  if (!live.issue) {
+    try {
+      richSourceEqual = nonText.commentSceneSnapshotsEqual(
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+        userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc),
+      );
+    } catch { return blocked('RTK_USER_BOOKMARK_SOURCE_STALE'); }
+  }
+  if (activePendingRecording || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+    || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+    || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+    || lastSignaledEditGeneration > snapshot.generation
+    || !richSourceEqual
+    || await fs.readFile(scenePath, 'utf8') !== candidate.raw) return blocked('RTK_USER_BOOKMARK_SOURCE_STALE');
+  const plan = userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
+  if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
+  // Schema materialization follows semantic admission; it cannot create an
+  // effect or revision, and preserves every explicitly stored link attribute.
+  plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
+  const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
+  const beforeScenePublish = async () => {
+    const fresh = await revalidateCleanLinkLabelApplyInput(input);
+    const currentRaw = fsSync.readFileSync(scenePath, 'utf8');
+    userBookmarkCapability('cmd.project.review.applyExactTextChangesBatch');
+    if (activePendingRecording || !fresh.ok || activeRtkCleanLinkLabelApplyStore !== store || !cleanLinkLabelStoreMatches(store)
+      || currentFilePath !== scenePath || isDirty || autoSaveInProgress
+      || lastSignaledEditGeneration > snapshot.generation || currentRaw !== candidate.raw) {
+      throw Error(fresh.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
+    }
+  };
+  try { await beforeScenePublish(); }
+  catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_SOURCE_STALE'); }
+  const receipt = await commitWriterProjectSnapshot(scenePath, content, snapshot.generation, snapshot.bookProfile,
+    'authenticated user bookmark return', { expectedSceneContent: candidate.raw, beforeScenePublish,
+      userBookmarkPlan: plan, userBookmarkCapturedContent: snapshot.content });
+  if (!receipt.success) return blocked(receipt.code || receipt.error || 'RTK_USER_BOOKMARK_WRITE_FAILED');
+  return { ok: true, applied: true, status: 'applied', appliedChangeIds: [candidate.changeId],
+    changes: [{ changeId: candidate.changeId, status: 'applied', reason: 'RTK_USER_BOOKMARK_RETURN_APPLIED' }],
+    receipt: { ...receipt, operationId: candidate.changeId, sceneId: candidate.sceneId,
+      changed: true, beforeSha256: computeHash(candidate.raw), afterSha256: computeHash(content) } };
+}
+
 async function syncReviewExactTextApplyEditorFromMainState(request = {}) {
   const applyInput = isPlainObjectValue(request.applyInput) ? request.applyInput : {};
   const reviewSurface = isPlainObjectValue(request.reviewSurface) ? request.reviewSurface : {};
   const scenePath = normalizeReviewExactTextApplyString(applyInput.scenePath);
+  const bookmarkPublication = request.receipt?.bookmarkPublication;
+  const bookmarkStale = () => Boolean(bookmarkPublication && (isDirty || autoSaveInProgress
+    || bookmarkPublication.filePath !== currentFilePath
+    || bookmarkPublication.subjectId !== currentLifecycleSubjectId()
+    || bookmarkPublication.sessionId !== commentAuthoringSessionId
+    || lastSignaledEditGeneration > bookmarkPublication.generation));
+  if (bookmarkStale()) return { ok: false, skipped: false, reason: 'RTK_USER_BOOKMARK_EDITOR_SYNC_STALE' };
   if (!scenePath || scenePath !== currentFilePath) {
     return {
       ok: false,
@@ -23794,14 +24364,18 @@ async function syncReviewExactTextApplyEditorFromMainState(request = {}) {
   const content = await fs.readFile(currentFilePath, 'utf8');
   const context = getDocumentContextFromPath(currentFilePath);
   const documentIdentity = await getProjectDocumentIdentityPayload(currentFilePath);
-  sendEditorText(await attachProjectIdToEditorPayload({
-    content,
-    title: context.title,
-    ...documentIdentity,
-    kind: context.kind,
-    metaEnabled: context.metaEnabled,
-    reviewSurface,
-  }, currentFilePath));
+  const editorPayload = await attachProjectIdToEditorPayload({
+    content, title: context.title, ...documentIdentity, kind: context.kind, metaEnabled: context.metaEnabled, reviewSurface,
+  }, currentFilePath);
+  const currentRaw = bookmarkPublication ? await fs.readFile(scenePath, 'utf8') : content;
+  if (bookmarkPublication) {
+    try { userBookmarkCapability('cmd.project.review.applyExactTextChangesBatch'); }
+    catch { return { ok: false, skipped: false, reason: 'RTK_USER_BOOKMARK_EDITOR_SYNC_STALE' }; }
+  }
+  if (bookmarkStale() || (bookmarkPublication && (content !== bookmarkPublication.savedContent || currentRaw !== content))) {
+    return { ok: false, skipped: false, reason: 'RTK_USER_BOOKMARK_EDITOR_SYNC_STALE' };
+  }
+  sendEditorText(editorPayload);
   const contentHash = computeHash(content);
   lastAutosaveHash = contentHash;
   backupHashes.set(currentFilePath, contentHash);
@@ -25093,12 +25667,37 @@ async function buildSelectedScenesTxtExportScope() {
   };
 }
 
+function captureFullManuscriptProjectBinding() {
+  const projectName = currentProjectName;
+  if (typeof projectName !== 'string' || !projectName.trim()) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_REQUIRED');
+  }
+  return Object.freeze({ projectName, projectRoot: getProjectRootPath(projectName),
+    manifestPath: getProjectManifestPath(projectName), romanPath: getProjectSectionPath('roman', projectName),
+    subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId,
+    publicationOwner: activeStage10ApplicationBootstrap });
+}
+
+function revalidateFullManuscriptProjectBinding(binding) {
+  if (!binding || binding.projectName !== currentProjectName
+    || binding.projectRoot !== getProjectRootPath(currentProjectName)
+    || binding.manifestPath !== getProjectManifestPath(currentProjectName)
+    || binding.subjectId !== currentLifecycleSubjectId() || binding.sessionId !== commentAuthoringSessionId
+    || binding.publicationOwner !== activeStage10ApplicationBootstrap) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
+  }
+}
+
 async function buildFullManuscriptDocxReviewExportScope() {
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const projectBinding = captureFullManuscriptProjectBinding();
+  const { manifestPath, projectRoot, romanPath } = projectBinding;
+  const manifestRecord = await readProjectManifest(projectBinding.projectName);
+  revalidateFullManuscriptProjectBinding(projectBinding);
   const manifest = manifestRecord ? manifestRecord.manifest : null;
-  const projectRoot = path.dirname(manifestPath);
-  const romanPath = getProjectSectionPath('roman', DEFAULT_PROJECT_NAME);
+  if (!manifest || typeof manifest.projectId !== 'string' || !manifest.projectId.trim()
+    || manifestRecord.sourceSchemaVersion > PROJECT_MANIFEST_SCHEMA_VERSION) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_BINDING_INVALID');
+  }
   const nodeIdsByBindingKey = new Map();
   const identityNodes = manifest?.treeIdentity?.nodes;
   if (identityNodes && typeof identityNodes === 'object' && !Array.isArray(identityNodes)) {
@@ -25115,7 +25714,9 @@ async function buildFullManuscriptDocxReviewExportScope() {
     }
   }
   const sceneCandidates = [];
-  if (await fileExists(romanPath)) {
+  const romanExists = await fileExists(romanPath);
+  revalidateFullManuscriptProjectBinding(projectBinding);
+  if (romanExists) {
     await collectFullManuscriptDocxReviewExportCandidates(
       romanPath,
       { manifestPath, nodeIdsByBindingKey },
@@ -25123,12 +25724,14 @@ async function buildFullManuscriptDocxReviewExportScope() {
     );
   }
 
+  revalidateFullManuscriptProjectBinding(projectBinding);
   const rawProjectCreatedAtUtc = manifest && typeof manifest.createdAtUtc === 'string'
     ? manifest.createdAtUtc.trim()
     : '';
   const projectCreatedAtMilliseconds = Date.parse(rawProjectCreatedAtUtc);
 
   return {
+    projectBinding,
     projectId: manifest && typeof manifest.projectId === 'string' ? manifest.projectId : '',
     projectName: manifest && typeof manifest.projectName === 'string' ? manifest.projectName : '',
     projectCreatedAtUtc: Number.isFinite(projectCreatedAtMilliseconds)
@@ -29169,6 +29772,8 @@ function setDirtyState(state, ack = null) {
     lastAcknowledgedEditGeneration = ack.savedGeneration;
   } else if (state === false && ack === null) {
     commentAuthoringSessionId = crypto.randomUUID();
+    if (typeof userBookmarkSaveContinuation !== 'undefined') userBookmarkSaveContinuation = null;
+    if (typeof userBookmarkRenameLineage !== 'undefined') userBookmarkRenameLineage = null;
     activePendingRecording = null; pendingRecordingSaveAdmissions.clear();
     // A main-owned document replacement establishes a new baseline.
     lastSignaledEditGeneration = 0;
@@ -29182,6 +29787,9 @@ function setDirtyState(state, ack = null) {
 }
 
 function acknowledgeMainOwnedSave(saveReceipt, capturedContent, capturedGeneration) {
+  if (saveReceipt?.bookmarkPublication) {
+    return publishUserBookmarkSaveReceipt(saveReceipt, capturedContent, capturedGeneration);
+  }
   const observedLatestGeneration = mergeSignaledGeneration(
     lastSignaledEditGeneration,
     capturedGeneration,
@@ -29197,6 +29805,35 @@ function acknowledgeMainOwnedSave(saveReceipt, capturedContent, capturedGenerati
   if (ack.kind === SAVE_ACK_KINDS.SAVED) setDirtyState(false, ack);
   else setDirtyState(true);
   return ack;
+}
+
+async function publishUserBookmarkSaveReceipt(receipt, capturedContent, generation) {
+  const bound = receipt.bookmarkPublication;
+  const current = () => {
+    try { userBookmarkCapability('cmd.project.save'); } catch { return false; }
+    return bound.filePath === currentFilePath && bound.subjectId === currentLifecycleSubjectId()
+      && bound.sessionId === commentAuthoringSessionId && lastSignaledEditGeneration <= generation;
+  };
+  if (!current() || bound.capturedContent !== capturedContent || bound.generation !== generation) {
+    setDirtyState(true); return { kind: 'NOT_SAVED', reason: 'USER_BOOKMARK_PUBLICATION_STALE' };
+  }
+  const beforeSendRaw = await fs.readFile(bound.filePath, 'utf8');
+  if (!current() || beforeSendRaw !== bound.savedContent) {
+    setDirtyState(true); return { kind: 'NOT_SAVED', reason: 'USER_BOOKMARK_PUBLICATION_STALE' };
+  }
+  mainWindow.webContents.send('editor:set-text', { content: bound.savedContent,
+    expectedContent: capturedContent, expectedGeneration: generation, userBookmarkAuthoringPublication: true,
+    ...(bound.authoring ? { affectedBookmarkId: bound.bookmarkId } : {}) });
+  const observed = await requestEditorSnapshot();
+  const savedRaw = await fs.readFile(bound.filePath, 'utf8');
+  if (!current() || observed.content !== bound.savedContent || observed.generation !== generation
+    || savedRaw !== bound.savedContent) {
+    setDirtyState(true); return { kind: 'NOT_SAVED', reason: 'USER_BOOKMARK_PUBLICATION_STALE' };
+  }
+  userBookmarkSaveContinuation = null;
+  lastAutosaveHash = computeHash(bound.savedContent);
+  const { bookmarkPublication, ...durable } = receipt;
+  return acknowledgeMainOwnedSave(durable, bound.savedContent, generation);
 }
 
 function sendRuntimeCommand(command, payload = {}) {
@@ -29409,6 +30046,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
 });
 
 const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
+  ['query.project.userBookmarks', handleUserBookmarkQuery],
   [PROJECT_TREE_QUERY_ID, handleWorkspaceProjectTreeQuery],
   [PROJECT_LIBRARY_QUERY_ID, handleWorkspaceProjectLibraryQuery],
   [SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, handleWorkspaceSelectedScenesTxtExportScopeQuery],
@@ -31098,8 +31736,8 @@ async function runAutoSave() {
       if (currentLifecycleSubjectId() !== lifecycleSubjectId) {
         return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_SAVE');
       }
-      const fileAck = acknowledgeMainOwnedSave(saveReceipt, content, snapshot.generation);
-      lastAutosaveHash = currentHash;
+      const fileAck = await acknowledgeMainOwnedSave(saveReceipt, content, snapshot.generation);
+      lastAutosaveHash = computeHash(saveReceipt.bookmarkPublication?.savedContent || content);
       if (fileAck.kind === SAVE_ACK_KINDS.SAVED) {
         updateStatus('Автосохранено');
       }
@@ -31116,7 +31754,7 @@ async function runAutoSave() {
         updateStatus('Ошибка сохранения');
         return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
       }
-      const idleAck = acknowledgeMainOwnedSave(
+      const idleAck = await acknowledgeMainOwnedSave(
         sameContentResult,
         content,
         snapshot.generation,
@@ -31136,7 +31774,7 @@ async function runAutoSave() {
     if (currentLifecycleSubjectId() !== lifecycleSubjectId) {
       return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_SAVE');
     }
-    const tempAck = acknowledgeMainOwnedSave(
+    const tempAck = await acknowledgeMainOwnedSave(
       autosaveResult,
       content,
       snapshot.generation,
@@ -31184,6 +31822,30 @@ function lifecycleSaveFailure(subjectId, reason, ack = null) {
   };
 }
 
+async function prepareUserBookmarkBackup(filePath, snapshot) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const working = envelope.parseObservablePayload(snapshot.content);
+  if (working.issue) throw Error('USER_BOOKMARK_BACKUP_DOCUMENT_INVALID');
+  if (working.doc?.attrs?.wordUserBookmarks == null) return { content: snapshot.content, guard: async () => {} };
+  const subjectId = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
+  const prepared = await prepareBookProfileManifestForFile(filePath, snapshot.bookProfile);
+  if (!prepared?.projectId) throw Error('USER_BOOKMARK_BACKUP_PROJECT_INVALID');
+  const raw = await fs.readFile(filePath, 'utf8'), before = envelope.parseObservablePayload(raw);
+  if (before.issue || !before.doc) throw Error('USER_BOOKMARK_BACKUP_DOCUMENT_INVALID');
+  const plan = userBookmarkModel.planSave({ beforeDoc: before.doc, workingDoc: working.doc,
+    renameLineage: boundUserBookmarkRenameLineage(filePath, prepared.projectId, raw) });
+  const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: plan.doc });
+  const guard = async () => {
+    const currentRaw = await fs.readFile(filePath, 'utf8');
+    userBookmarkCapability('cmd.project.save');
+    if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || sessionId !== commentAuthoringSessionId
+      || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+      || lastSignaledEditGeneration > snapshot.generation || currentRaw !== raw) throw Error('USER_BOOKMARK_BACKUP_STALE');
+  };
+  await guard();
+  return { content, guard };
+}
+
 // Создание бэкапа раз в минуту
 async function createBackup() {
   if (!mainWindow) {
@@ -31192,15 +31854,17 @@ async function createBackup() {
 
   try {
     if (currentFilePath) {
+      const filePath = currentFilePath;
       const snapshot = await requestEditorSnapshot();
-      const content = snapshot.content;
+      const backup = await prepareUserBookmarkBackup(filePath, snapshot);
+      const content = backup.content;
       const hash = computeHash(content);
-      if (backupHashes.get(currentFilePath) === hash) {
+      if (backupHashes.get(filePath) === hash) {
         return;
       }
 
       const result = await queueDiskOperation(
-        () => backupManager.createBackup(currentFilePath, content, { basePath: getBackupBasePathForFile(currentFilePath) }),
+        async () => { await backup.guard(); return backupManager.createBackup(filePath, content, { basePath: getBackupBasePathForFile(filePath) }); },
         'backup current file'
       );
       if (!result.success) {
@@ -31208,7 +31872,7 @@ async function createBackup() {
         return;
       }
 
-      backupHashes.set(currentFilePath, hash);
+      backupHashes.set(filePath, hash);
       return;
     }
 
@@ -31297,7 +31961,7 @@ async function handleSave() {
       if (currentLifecycleSubjectId() !== saveSubjectId) return projectSaveFailure('SUBJECT_CHANGED_DURING_SAVE');
       lastAutosaveHash = contentHash;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
-      const saveAck = acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
+      const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
       if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
       return saveAck.kind === SAVE_ACK_KINDS.SAVED
         ? true
@@ -31347,7 +32011,7 @@ async function handleSave() {
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
-      const saveAck = acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
+      const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
       if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
         await deleteAutosaveFile();
@@ -31462,7 +32126,7 @@ async function handleSaveAs() {
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
-      const saveAck = acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
+      const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
       if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
         await deleteAutosaveFile();
@@ -31601,6 +32265,11 @@ const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   ...PRODUCT_COMMAND_ID_LIST,
+  'cmd.project.bookmarks.managePrompt',
+  'cmd.project.bookmarks.create',
+  'cmd.project.bookmarks.copy',
+  'cmd.project.bookmarks.rename',
+  'cmd.project.bookmarks.delete',
   'cmd.project.new',
   'cmd.project.open',
   PROJECT_LIFECYCLE_CREATE_COMMAND_ID,
@@ -31705,6 +32374,14 @@ const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   moveMenuSectionLater: MENU_CUSTOMIZATION_COMMAND_MOVE_LATER,
 });
 const MENU_COMMAND_HANDLERS = Object.freeze({
+  'cmd.project.bookmarks.managePrompt': async () => {
+    await readUserBookmarkProjectBinding(currentFilePath);
+    userBookmarkCapability('cmd.project.bookmarks.managePrompt');
+    return { ok: sendCanonicalRuntimeCommand('cmd.project.bookmarks.managePrompt') };
+  },
+  ...Object.fromEntries(['create', 'copy', 'rename', 'delete'].map(action => [
+    `cmd.project.bookmarks.${action}`, payload => handleUserBookmarkMutation(action, payload),
+  ])),
   'cmd.project.new': async () => {
     await ensureCleanAction(handleNew);
     return { ok: true };

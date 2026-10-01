@@ -19,6 +19,15 @@ function parseDocxHyperlinkInstruction(instruction) {
   if (typeof instruction !== 'string' || instruction.length > 4096) {
     throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
   }
+  // Word for Mac stores a document-local link as a literal field. Interpret
+  // only its name; no field evaluation, target lookup or writer authority.
+  if (/^\s*HYPERLINK\s+\\l(?=\s|$)/iu.test(instruction)) {
+    const local = /^\s*HYPERLINK\s+\\l\s+"([^"\r\n]+)"\s*(?:\\h\s*)?$/iu.exec(instruction);
+    if (!local) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+    try { require('../core/word-user-bookmarks-v1.cjs').validateName(local[1]); }
+    catch { throw new Error('DOCX_LINK_FIELD_UNSUPPORTED'); }
+    return `#${local[1]}`;
+  }
   // Only a bounded external address, an optional document fragment and the
   // navigation switch are interpreted. No field evaluation or arbitrary args.
   const match = /^\s*HYPERLINK\s+(?:"([^"\r\n]+)"|([^\s"]+))([\s\S]*)$/iu.exec(instruction);
