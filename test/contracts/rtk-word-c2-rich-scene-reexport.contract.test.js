@@ -135,3 +135,37 @@ test('scene source includes canonical note lists, signed digest and exact privat
   assert.equal(parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest, source.documentNotes.protectedDigest);
   assert.equal(bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes)[0].body.content[0].attrs.start, 4);
 });
+
+test('empty scene exports carry an authenticated editable note baseline without leaking private or other-scene notes', async () => {
+  const model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const { planNoteReturnDelta } = require('../../src/core/word-note-return-delta-v1.cjs');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const body = doc(['First note']);
+  const privateNote = { id: 'private', title: 'Private', body: 'Do not export', scope: 'project' };
+  const otherNote = { id: 'other', title: '', body: 'Other scene', scope: 'manuscript', manuscript: model.bindManuscriptPayload({
+    kind: 'footnote', body: doc(['Other scene']), sceneId: 'roman/other.txt', offsetUtf16: 2, sceneContent: 'Other' }) };
+  for (const notes of [undefined, [], [privateNote], [otherNote], [privateNote, otherNote]]) {
+    const notesDocument = notes === undefined ? undefined : { schemaVersion: 1, projectId: 'project-test', notes };
+    const h = await harness('Scene text', { notesDocument }); const source = await h.run();
+    assert.ok(source.documentNotes, 'first-note return must have an export-time baseline');
+    assert.equal(source.documentNotes.policy, 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1');
+    assert.equal(source.documentNotes.sourceBindings.length, 0);
+    assert.equal(source.documentNotes.notes.length, 0);
+    assert.equal(source.sceneNoteBinding.notesDigest, notesDocument ? h.context.notesStateDigest(notesDocument) : '');
+    const bytes = builder.buildDocxReviewPacketBuffer(source);
+    assert.ok(!bytes.includes(Buffer.from('Do not export'))); assert.ok(!bytes.includes(Buffer.from('Other scene')));
+    const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes, hmacSecret: source.forbiddenSecret,
+      expectedAuthority: source.localAuthorityCapsule.expectedAuthority }, { cryptoPort: h.context.createRtkReviewTransportCryptoPort() });
+    assert.equal(parsed.authorityCarrier.status, 'verified-baseline-bound');
+    assert.equal(parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest, source.documentNotes.protectedDigest);
+    for (const kind of ['footnote', 'endnote']) {
+      const delta = planNoteReturnDelta({ document: source.notesDocument, projectId: 'project-test', roundId: source.exportCapsule.roundId,
+        artifactSha256: 'a'.repeat(64), baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap,
+        returnedNotes: [{ kind, paragraphIndex: 0, offsetUtf16: 5, body, transportIdentity: null }],
+        returnedParagraphs: [{ paragraphIndex: 0, paragraphText: 'Scene text', trackedRevision: false }], now: '2026-10-01T00:00:00Z' });
+      assert.equal(delta.changes.length, 1); assert.equal(delta.changes[0].operation, 'create');
+      assert.deepEqual(plain(delta.document.notes.slice(0, notes?.length || 0)), plain(notes || []));
+      assert.equal(delta.document.notes.at(-1).manuscript.reference.sceneId, 'roman/scene.txt');
+    }
+  }
+});
