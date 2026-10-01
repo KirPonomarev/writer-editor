@@ -37,7 +37,8 @@
     "test/unit/toolbar-expansion-wave-b.helpers.test.js",
     "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
     "test/unit/toolbar-profile-state.foundation.test.js",
-    "test/unit/toolbar-profile-switch.helpers.test.js"
+    "test/unit/toolbar-profile-switch.helpers.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js"
   ],
   "scopeOut": [
     "package.json",

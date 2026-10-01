@@ -2006,7 +2006,7 @@ export const R24_INTEROP_WORD_LOCAL_IMAGE_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "84bcdbc88d409a060a5034cc885bc5100008d8553b912e83028196c2418884e3"
+      "sha256": "ee02023e6a776b1e1bd15f6c012da1653ba9637aaae0edb4bdd0ff9ee8b269c8"
     }
   ]
 });

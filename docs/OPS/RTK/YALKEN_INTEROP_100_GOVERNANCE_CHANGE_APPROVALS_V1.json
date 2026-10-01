@@ -205,7 +205,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "be42c545ee92214051a44072273b27be034ff886351d0d96d4685d58a35d86ed",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1653,7 +1653,7 @@
       "filePath": "src/main.js",
       "sha256": "506f65366eb6486cf6f2ed434a83349121481120027b0705eab0c2e584eb28df",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "8333f0e973016e8109f03eb006f591bcd4651aa10c082958f566c3ced421f2f9",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "99656873ab6cca53b5162e4420b6396b1b7aada018ed07d9bc6234b8db596297",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "2298fc318d3174a13b2cdd03e178499ba6790d765d8c0a26cb9d58542759dd05",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "84bcdbc88d409a060a5034cc885bc5100008d8553b912e83028196c2418884e3",
+      "sha256": "ee02023e6a776b1e1bd15f6c012da1653ba9637aaae0edb4bdd0ff9ee8b269c8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "b7d817f9375a09f7be4243403c81e31984c4317dc75d56af247b7bb71fdb87ec",
+      "sha256": "b6626b39c956c24499b483775f5b9f1dff7c7affacaf16f78f25d733753112a2",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "fa469740da17f0834096a2d92cf43a9449c7240ecb3f8928f1898eb94ec75115",
+      "sha256": "447aa7267b819cd6ba0b74d53853121062604aecbeab0fb89275393521e2334f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -1914,7 +1914,7 @@
       "filePath": "src/renderer/index.html",
       "sha256": "bbb3aa670cd9d236881f29dd79e8e713c08949d2126bcdfd4b35059eb46dc695",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -2371,10 +2371,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-      "sha256": "a1e0617ae7f8eea29ee315f2949d1c3e7a795e85d85a8b172c1b26dfe367ac6b",
-      "approvedAtUtc": "2026-09-28T03:24:42.484595Z",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
-      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "sha256": "c2dff3716299a8ba6732a37609fa3719fc703aae01eee6695e644ef9624a8514",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
+      "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
@@ -2390,7 +2390,7 @@
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
       "sha256": "4a3b7e057453f19f428d8969a0ccafa29c17fca5794cbc71e4b1fe090aa818c3",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "618fc46d30df79be7ef0f9a9e281af4842ef77f5c27f4a1ae64d619ec749c012",
+      "sha256": "0c81b6fe7e7ee5a40e9c3370a6e3d6f28d177d29aef9d9dc1865122e9086242a",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "eaeb7cf3a62cf62d195ac38f073b1b2eb6620d6049fb64f526a40a0458553951",
+      "sha256": "93d992d797cc17a0a39a62e0afc875f93bb27a5fda75c2a4a0e0925a2a2a26ba",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2582b59c2725a7201c60237b2196b1bb93f535abfd66cc6b7fc22a20a6a8fb67",
+      "sha256": "afe1c5153fe7c9c2208d6a2fed741a87e94d04947c746aab774aa56278e916e9",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance."
@@ -2777,7 +2777,7 @@
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "sha256": "6c91a14be3efd10d2081c482bf6a0c64a36daa1192817762e2c2623b652743f6",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -2795,7 +2795,7 @@
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
       "sha256": "9afec790e92726d23fe016b016efb013804d986b6e3417a4bc3d0f626f84f957",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3524,7 +3524,7 @@
     {
       "filePath": "test/contracts/rtk-word-local-image-runtime.contract.test.js",
       "sha256": "47d5e5322b1849606f216aff8a0a2836af8631da887d4c5723d31a4d42792194",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3533,7 +3533,7 @@
     {
       "filePath": "src/core/word-local-image-v1.cjs",
       "sha256": "1fc1419672ff85fa5d524fc6c1465733e4e324b218cea88ddc0173d3c22dc8a2",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3542,7 +3542,7 @@
     {
       "filePath": "src/io/localImageFile.cjs",
       "sha256": "40d0aa0c98777938248ea602076571f6eb27b5d0507f9710a73acfc8c1a73949",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3551,7 +3551,7 @@
     {
       "filePath": "src/renderer/tiptap/localImage.mjs",
       "sha256": "09b418e706cd0314ebde3f3eba6e13bd02bce22d0381839f56a302faacfc1903",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3560,7 +3560,7 @@
     {
       "filePath": "src/renderer/tiptap/textCoordinates.mjs",
       "sha256": "458d3f8da0c6c6179df61ecdc5b16a0c9ccce1b4b6cd68fd5aefd8e296a9fefe",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3569,7 +3569,7 @@
     {
       "filePath": "test/contracts/rtk-word-local-image.contract.test.js",
       "sha256": "6be9acbeee8396bb4f4794dc598dcc764e06bcc48b9b12aa3c1d3076eb2897f1",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3577,8 +3577,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-01--word-local-image-mac.md",
-      "sha256": "4b0879c03498770a2718378f1ccc9f2426fd16e0655e63e976243c2ca7b32919",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "sha256": "98cd32beb0abc83d96b33321c7fc1d1ca934fbd903df59badf9efd46e4050e8d",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -3586,8 +3586,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
-      "sha256": "dad666f86939eed9cd05ab12ef7c4edd971f81e294e14a1ce760d4ff61938dc2",
-      "approvedAtUtc": "2026-10-01T11:34:52.910459Z",
+      "sha256": "0d45189bac30c382ea9644b5fb78d316750eeca52b6cd24a04fd13cd199f5bd5",
+      "approvedAtUtc": "2026-10-01T11:46:30.755535Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001",
       "rationale": "Owner-authorized local PNG/JPEG authoring at exact cursor via existing Command Kernel, native picker, media validator and atomic project transaction; undo-preserving publication and zero-width annotation coordinates. No new dependency, runtime network or independent writer. Native SOURCE/PACKAGED proof and delivery pending; exact-byte governance companions are not acceptance.",
       "approved": true,
@@ -21988,6 +21988,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "a1e0617ae7f8eea29ee315f2949d1c3e7a795e85d85a8b172c1b26dfe367ac6b",
+      "approvedAtUtc": "2026-09-28T03:24:42.484595Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928",
+      "rationale": "Owner-authorized macOS Word plan P1d-R: authenticated manuscript-note delta, explicit native confirmation, atomic notes CAS and bounded replay. Exact source/test/companion bindings only; no acceptance counts or oracle changes.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/core/entitlement-law-v1.cjs",

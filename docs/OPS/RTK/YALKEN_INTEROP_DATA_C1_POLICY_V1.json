@@ -1303,7 +1303,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "a1e0617ae7f8eea29ee315f2949d1c3e7a795e85d85a8b172c1b26dfe367ac6b"
+        "sha256": "c2dff3716299a8ba6732a37609fa3719fc703aae01eee6695e644ef9624a8514"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -1763,11 +1763,11 @@
       },
       {
         "path": "docs/tasks/2026-10-01--word-local-image-mac.md",
-        "sha256": "4b0879c03498770a2718378f1ccc9f2426fd16e0655e63e976243c2ca7b32919"
+        "sha256": "98cd32beb0abc83d96b33321c7fc1d1ca934fbd903df59badf9efd46e4050e8d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
-        "sha256": "dad666f86939eed9cd05ab12ef7c4edd971f81e294e14a1ce760d4ff61938dc2"
+        "sha256": "0d45189bac30c382ea9644b5fb78d316750eeca52b6cd24a04fd13cd199f5bd5"
       }
     ],
     "followupRepair": {

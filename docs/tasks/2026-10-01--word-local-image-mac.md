@@ -63,3 +63,13 @@ Mac plan or its five edited alternating cycles per runtime.
 - Existing media-return lane still rejects a changed main-text image combined
   with document notes. This residual belongs to full composite acceptance; local
   insertion and note preservation do not prove that return composition.
+
+- Candidate 0c267df2: 215 focused tests passed. Full RTK: 2333 pass, 4 fail,
+  zero skips. Three ORCH failures concern process inspection/identity timing.
+  The fourth was an extracted snapshot fixture missing isTiptapMode and cursor
+  dependencies; the fixture now supplies them without weakening assertions.
+  Comment-authoring plus image group: 36 passed, zero failures/skips.
+- Frozen SOURCE 0c267df2: native local PNG at offset 5 -> Undo -> Redo ->
+  linked DOCX -> native Word resize to 720000 x 480000 EMU -> preview Apply
+  persisted the new dimensions, exact original image bytes and unchanged text.
+  PACKAGED and reopened re-export proof remain pending.
