@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_NOTE_PANEL_FIT_MAC_20261001",
+  "objective": "Make imported wide note tables, formatting controls and save actions reachable in the existing narrow Mac notes panel without changing document semantics.",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "05487fc7bdbf53addb6875e2f91cace000dc9336",
+  "scopeIn": [
+    "src/renderer/styles.css",
+    "docs/tasks/2026-10-01--word-note-panel-fit-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/main.js",
+    "src/core",
+    "src/io",
+    "src/export"
+  ],
+  "productAuthority": "Owner authorized completing the Mac Word feature. Existing note content, table topology, persistence and Commands are protected; this repair changes computed layout only.",
+  "commandAuthority": "Existing note editor/save commands unchanged; CSS cannot create availability or mutation authority.",
+  "designAuthority": "Bounded Group 01 repair of observed clipping. Reuse existing narrow viewport stacked notes layout for narrow component widths; preserve existing fonts, colors, controls and DOM. Lazyweb metadata research e8e30ec8-4bf7-42d7-bf64-3166c13d29df and local native screenshot, UI Craft, Design OS guide and brain refs read.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Existing authoring and save paths exercised only in isolated native test profiles; product source write restricted to notes CSS selectors."
+  ],
+  "readPaths": [
+    "Existing immutable notes projections and native rendered panel"
+  ],
+  "productPorts": [
+    "Existing note authoring/save ports unchanged"
+  ],
+  "designOsPorts": [
+    "Existing notes workspace surface and responsive computed layout"
+  ],
+  "readProjections": [
+    "Existing notes/detail/editor projection, unchanged"
+  ],
+  "stateClasses": [
+    "SHELL_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "No product identity/revision/generation code changes; existing guarded persistence remains unchanged."
+  ],
+  "capabilityRevalidation": "Existing notes/import/return Kernel and source/lifecycle/generation guards remain unchanged.",
+  "fallbacks": [
+    "Existing viewport responsive layout retained; narrow container uses same stacked list/detail arrangement. Wide content scrolls within note editor rather than being clipped."
+  ],
+  "recoveryAndNegativeChecks": [
+    "SOURCE and PACKAGED native table rightmost cell pointer/keyboard access, local edit undo/save and reopen.",
+    "Inspect narrow and wider notes layouts, long Russian controls, empty note, list switching and main scene preservation.",
+    "Native disk readback of prior notes and table model; final CSS diff only within declared selectors; mandatory CI, OSS policy and guardrails."
+  ],
+  "securityAndInputBoundary": "No parser, IPC, security boundary or authority changes.",
+  "performanceAndAccessibility": "Native CSS container sizing only, no JS measurement or hot-path work. Existing accessible controls and keyboard focus retained; horizontal table scrolling and action reachability observed.",
+  "currentReality": [
+    "PR2049 merged at binding base; wide note tables and toolbar controls are clipped because fixed internal column minima exceed the notes panel width. Existing mobile stacked layout is gated on viewport width rather than container width."
+  ],
+  "targetOnly": [
+    "Reachable note editing until native SOURCE/PACKAGED observation; no claim of nested tables/media or full Mac plan."
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert the single CSS repair delivery; preserve notes and main-scene content.",
+  "status": "TARGET_NOT_ACCEPTED"
+}

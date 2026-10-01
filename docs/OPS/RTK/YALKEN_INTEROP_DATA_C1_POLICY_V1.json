@@ -388,7 +388,9 @@
     "test/contracts/rtk-word-note-tables.contract.test.js",
     "docs/tasks/2026-10-01--word-note-tables-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
-    "src/renderer/tiptap/runtimeBridge.js"
+    "src/renderer/tiptap/runtimeBridge.js",
+    "docs/tasks/2026-10-01--word-note-panel-fit-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json"
   ],
   "protectedFiles": [
     {
@@ -717,7 +719,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "94815ae6c857f3c91b0f47e690b7bec1aa538ba2a816f8ce2b0390738e7280dc"
+        "sha256": "a7d747db0261e28f0ff55082f561042293befe489c679bd264f884bb0346045a"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -1686,6 +1688,14 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
         "sha256": "051c829f99693829a4ef7b4778e2fb46b58b1f7d51d1bc9a6a3cc8a49fb81523"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-note-panel-fit-mac.md",
+        "sha256": "31e5ffc37f65f21b58934bcaba72cee8095a2d257d7d2670f0f0f18b831b3eb4"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_PANEL_FIT_V1.json",
+        "sha256": "ca190de54ffb1ee2e3b7be366b7273ff6cc78eab97edaf7493e5bf429c2e2703"
       }
     ],
     "followupRepair": {
