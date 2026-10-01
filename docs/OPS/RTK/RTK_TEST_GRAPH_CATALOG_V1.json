@@ -112,6 +112,8 @@
     "rtk-word-link-anchor-continuity.contract.test.js",
     "rtk-word-link-authoring.contract.test.js",
     "rtk-word-link-label-context.contract.test.js",
+    "rtk-word-local-image-runtime.contract.test.js",
+    "rtk-word-local-image.contract.test.js",
     "rtk-word-manuscript-notes-import.contract.test.js",
     "rtk-word-manuscript-notes-transaction.contract.test.js",
     "rtk-word-manuscript-notes.contract.test.js",

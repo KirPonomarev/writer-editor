@@ -120,3 +120,18 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).imageInsertionPosition,7);
   assert.equal(context.normalizeEditorSnapshotPayload({content:'x',imageInsertionPosition:-1}).imageInsertionPosition,null);
 });
+test('physical toolbar image button routes the live catalog entry through the command bus', async () => {
+  const f=require('node:fs'),vm=require('node:vm');
+  const html=f.readFileSync(path.join(__dirname,'../../src/renderer/index.html'),'utf8');
+  const button=html.match(/<button\b[^>]*data-toolbar-item-key="insert-image"[^>]*>[\s\S]*?<\/button>/u)?.[0];
+  assert(button); assert.match(button,/type="button"/u); assert.match(button,/aria-label="Вставить изображение"/u);
+  const action=button.match(/data-action="([^"]+)"/u)[1];
+  const catalog=await import('../../src/renderer/toolbar/toolbarFunctionCatalog.mjs');
+  const {EXTRA_COMMAND_IDS}=await import('../../src/renderer/commands/projectCommands.mjs');
+  assert(catalog.TOOLBAR_CANONICAL_LIVE_ORDER.includes('toolbar.insert.image'));
+  const dispatched=[],context=vm.createContext({EXTRA_COMMAND_IDS,dispatchUiCommand:(...args)=>dispatched.push(args)});
+  const source=f.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+  vm.runInContext(source.slice(source.indexOf('function handleUiAction('),source.indexOf('function triggerLeftToolbarAction(')),context);
+  assert.equal(context.handleUiAction(action),true);
+  assert.deepEqual(dispatched,[['cmd.project.media.insertLocal']]);
+});

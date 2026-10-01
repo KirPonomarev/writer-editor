@@ -30,18 +30,24 @@
     "test/contracts/rtk-word-manuscript-notes.contract.test.js",
     "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
-    "docs/tasks/2026-10-01--word-local-image-mac.md"
+    "docs/tasks/2026-10-01--word-local-image-mac.md",
+    "src/renderer/index.html",
+    "test/unit/toolbar-expansion-wave-a1.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-a2.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-b.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
+    "test/unit/toolbar-profile-state.foundation.test.js",
+    "test/unit/toolbar-profile-switch.helpers.test.js"
   ],
   "scopeOut": [
     "package.json",
     "package-lock.json",
     ".github/workflows",
-    "src/renderer/index.html",
     "src/renderer/styles.css"
   ],
   "productAuthority": "Owner authorized complete macOS Word interoperability including local image authoring.",
   "commandAuthority": "cmd.project.media.insertLocal through existing Command Kernel; Main-owned native picker and atomic project transaction.",
-  "designAuthority": "Enable existing toolbar.insert.image and palette; existing image rendering and native macOS picker; preserve tokens, styling and shell.",
+  "designAuthority": "Owner-authorized local image toolbar entry: add one native button within existing insert group, use existing classes and labels, preserve tokens, shell structure and selection.",
   "operationKinds": [
     "COMMAND",
     "QUERY",
@@ -74,7 +80,7 @@
   ],
   "capabilityRevalidation": "Kernel entitlement/local policy at dispatch, after picker, before persistence and publication.",
   "fallbacks": [
-    "Cancel or invalid/stale file leaves scene/assets unchanged; publication failure retains recoverable persisted state and dirty authoring buffer."
+    "Cancel or invalid/stale file performs no image mutation; existing dirty authoring text may be saved before the picker. Publication failure retains recoverable persisted state and dirty authoring buffer."
   ],
   "recoveryAndNegativeChecks": [
     "Core exact cursor among repeated zero-width images, UTF16 and hard breaks; real ProseMirror Undo/Redo.",
@@ -85,7 +91,8 @@
   "securityAndInputBoundary": "Main exclusively owns native chosen path; no renderer path or asset authority; bytes validated by existing bounded PNG/JPEG parser before planning.",
   "performanceAndAccessibility": "Existing keyboard-accessible toolbar/palette and native picker; bounded file read and existing image alt text; no new style or animation.",
   "currentReality": [
-    "c1040cea delivers note-body images; toolbar image blocked; image atoms count inconsistently in editor offsets and note scene grammar rejects media."
+    "c1040cea delivers note-body images; toolbar image blocked; image atoms count inconsistently in editor offsets and note scene grammar rejects media.",
+    "Continuation of the same local-image delivery chain: checkpoint 2cdece67, original delivery base c1040cea. No delivered acceptance yet."
   ],
   "targetOnly": [
     "Local image scenario remains unaccepted until native/runtime proof; full Mac plan and five-cycle acceptance remain outstanding."

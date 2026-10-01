@@ -395,7 +395,22 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLE_RETURN_V1.json",
     "test/contracts/rtk-word-note-media.contract.test.js",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_MEDIA_V1.json",
-    "docs/tasks/2026-10-01--word-note-media-mac.md"
+    "docs/tasks/2026-10-01--word-note-media-mac.md",
+    "src/core/word-local-image-v1.cjs",
+    "src/io/localImageFile.cjs",
+    "src/renderer/tiptap/localImage.mjs",
+    "src/renderer/tiptap/textCoordinates.mjs",
+    "src/renderer/toolbar/toolbarFunctionCatalog.mjs",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-local-image-runtime.contract.test.js",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
+    "docs/tasks/2026-10-01--word-local-image-mac.md",
+    "test/unit/toolbar-expansion-wave-a1.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-a2.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-b.helpers.test.js",
+    "test/unit/toolbar-expansion-wave-c1.helpers.test.js",
+    "test/unit/toolbar-profile-state.foundation.test.js",
+    "test/unit/toolbar-profile-switch.helpers.test.js"
   ],
   "protectedFiles": [
     {
@@ -624,7 +639,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "4799c5f281bb2fc1783b8d959e58891cb9cd1bbe41cf77ffd97921fad6b14e33"
+        "sha256": "506f65366eb6486cf6f2ed434a83349121481120027b0705eab0c2e584eb28df"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -632,11 +647,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "156f54017bf09043528f7b57c065b4bb1907925acf948241d42fec07584e6231"
+        "sha256": "87bd2df43af7e78e0863135b7d1cef5a778af4f2ee3ab38108379caea57352d3"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "eeac45d6310eea937532ded7ad9e7314732cfdc4bc3e6ad2bd595a131d22f64d"
+        "sha256": "8333f0e973016e8109f03eb006f591bcd4651aa10c082958f566c3ced421f2f9"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -764,7 +779,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "14e702a4f54934eda3e8e8110d28a0c370ddd7bd5352a6bbb937c09e1186cb4a"
+        "sha256": "2298fc318d3174a13b2cdd03e178499ba6790d765d8c0a26cb9d58542759dd05"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -800,7 +815,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "6ce0beb6c83874bec690c3e188e634f96715a02cbdb7b362bb4197deab2ec092"
+        "sha256": "99656873ab6cca53b5162e4420b6396b1b7aada018ed07d9bc6234b8db596297"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1112,7 +1127,7 @@
       },
       {
         "path": "src/renderer/index.html",
-        "sha256": "fd4020dbb327d28cd54d3de9be8ed68590aeb7cb27e96a658b492257dbca9968"
+        "sha256": "bbb3aa670cd9d236881f29dd79e8e713c08949d2126bcdfd4b35059eb46dc695"
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
@@ -1296,7 +1311,7 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "90f1fbd10d2eb1ad131dd8ff7ff7b806344790e6c6b64c0bc3724145c8e913ac"
+        "sha256": "4a3b7e057453f19f428d8969a0ccafa29c17fca5794cbc71e4b1fe090aa818c3"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
@@ -1440,7 +1455,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "22aa8aa2134d43b23c4b4c6e51de0957ebb6e2cdd32ce00ab98662d84a11920b"
+        "sha256": "6c91a14be3efd10d2081c482bf6a0c64a36daa1192817762e2c2623b652743f6"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1448,7 +1463,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "14329badc21e487942040b223d5bdee6b5dfe40e267d2f805ebe416dc82feb51"
+        "sha256": "9afec790e92726d23fe016b016efb013804d986b6e3417a4bc3d0f626f84f957"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
@@ -1472,7 +1487,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "954177bff02082ef608dddb47fa5c0322166d00547b0962404d220c1fdcb8afd"
+        "sha256": "be42c545ee92214051a44072273b27be034ff886351d0d96d4685d58a35d86ed"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1721,6 +1736,38 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_MEDIA_V1.json",
         "sha256": "f6261a91e16aca6e7bd645e1d005ba39cb9e8538e800e1a66d4c180c5cab4b95"
+      },
+      {
+        "path": "test/contracts/rtk-word-local-image-runtime.contract.test.js",
+        "sha256": "47d5e5322b1849606f216aff8a0a2836af8631da887d4c5723d31a4d42792194"
+      },
+      {
+        "path": "src/core/word-local-image-v1.cjs",
+        "sha256": "1fc1419672ff85fa5d524fc6c1465733e4e324b218cea88ddc0173d3c22dc8a2"
+      },
+      {
+        "path": "src/io/localImageFile.cjs",
+        "sha256": "40d0aa0c98777938248ea602076571f6eb27b5d0507f9710a73acfc8c1a73949"
+      },
+      {
+        "path": "src/renderer/tiptap/localImage.mjs",
+        "sha256": "09b418e706cd0314ebde3f3eba6e13bd02bce22d0381839f56a302faacfc1903"
+      },
+      {
+        "path": "src/renderer/tiptap/textCoordinates.mjs",
+        "sha256": "458d3f8da0c6c6179df61ecdc5b16a0c9ccce1b4b6cd68fd5aefd8e296a9fefe"
+      },
+      {
+        "path": "test/contracts/rtk-word-local-image.contract.test.js",
+        "sha256": "6be9acbeee8396bb4f4794dc598dcc764e06bcc48b9b12aa3c1d3076eb2897f1"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-local-image-mac.md",
+        "sha256": "4b0879c03498770a2718378f1ccc9f2426fd16e0655e63e976243c2ca7b32919"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LOCAL_IMAGE_V1.json",
+        "sha256": "dad666f86939eed9cd05ab12ef7c4edd971f81e294e14a1ce760d4ff61938dc2"
       }
     ],
     "followupRepair": {

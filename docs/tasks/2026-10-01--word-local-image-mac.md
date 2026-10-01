@@ -44,10 +44,22 @@ Mac plan or its five edited alternating cycles per runtime.
 - Early native palette action did not open a picker. Inspection found two
   integration omissions: the palette injects editorMode (strict Main input must
   admit only the known tiptap value) and desktop capability matrix lacked the
-  new media capability. Both are fixed; an actual renderer capability/bus test
-  now covers the desktop route and rejects web. Native rerun is pending.
+  new media capability. Both are fixed; actual renderer capability/bus and snapshot-transport tests
+  cover the desktop route and reject web. Native picker and insertion now work.
 - The image catalog row had no live toolbar node or live-order membership. The
-  palette exposes the command; toolbar completion remains outstanding. Do not
-  claim a usable toolbar from catalog state alone.
+  physical button and live order are now wired; native SOURCE selected and
+  inserted JPEG through the full toolbar profile. Existing saved custom profiles
+  remain unchanged. A compact accessible icon replaces an overflowing label.
 - Diagnostic runtime copies are explicitly dirty, hash-bound early-route
   diagnostics, not frozen candidate acceptance or full Mac qualification.
+
+- Native SOURCE diagnostic 05 confirmed PNG at visible UTF16 offset 5, not just
+  the end of the scene; keyboard focus was required for deterministic positioning.
+- Diagnostic 06 confirmed persisted PNG after process restart and JPEG insertion
+  at document start using Command-Up. The existing endnote remained available.
+- Native Undo/Redo writes and byte-identical note storage were observed; these
+  are early route observations, not frozen candidate acceptance.
+- Focused image and toolbar regression group: 49 passed, zero failed/skipped.
+- Existing media-return lane still rejects a changed main-text image combined
+  with document notes. This residual belongs to full composite acceptance; local
+  insertion and note preservation do not prove that return composition.

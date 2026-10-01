@@ -22224,6 +22224,9 @@ function handleUiAction(action) {
     case 'insert-link':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT);
       return true;
+    case 'insert-image':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.LOCAL_IMAGE_INSERT);
+      return true;
     case 'review-open-comments':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
       return true;
