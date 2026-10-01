@@ -1,7 +1,7 @@
 const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
-const { buildMediaPackage } = require('./docxMedia.js');
+const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 
 const { buildStoredZip } = require('./docxMinBuilder');
 const {
@@ -804,7 +804,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + mediaPackage.contentTypes, Boolean(documentMetadata)) },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + mergeMediaTypes(mediaPackage.contentTypes, notes.mediaTypes), Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
     { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships + mediaPackage.relationships) },
     { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage) },
@@ -818,7 +818,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'customXml/itemProps1.xml', data: buildCustomXmlItemPropsXml() },
     ...comments.entries,
     ...notes.entries,
-    ...mediaPackage.parts,
+    ...mergeMediaParts(mediaPackage.parts, notes.mediaParts),
   ]);
   const modernMode = validateDocxReviewPacketModernMode15(buffer);
   if (!modernMode.ok) throw new Error(modernMode.code);

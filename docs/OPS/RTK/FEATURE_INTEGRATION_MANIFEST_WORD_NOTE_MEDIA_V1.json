@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_NOTE_MEDIA_MAC_20261001",
+  "objective": "Preserve bounded inline PNG/JPEG inside footnotes and endnotes across generic import, canonical note save, explicit Word return and three DOCX exports.",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "8ee4c80c56e28f5d9d076bbcf8e56258678d6f5c",
+  "scopeIn": [
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/core/word-note-return-delta-v1.cjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/export/docx/docxMedia.js",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/utils/docxImportSafeCreate.js",
+    "src/main.js",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "src/renderer/editor.bundle.js",
+    "test/contracts/rtk-word-note-media.contract.test.js",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_MEDIA_V1.json",
+    "docs/tasks/2026-10-01--word-note-media-mac.md"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "productAuthority": "Owner authorized full macOS Word interoperability, bounded inline PNG/JPEG in manuscript notes.",
+  "commandAuthority": "Existing note-save/import/return Kernel and authoring working-state transactions.",
+  "designAuthority": "Existing image node rendering inside existing note editor; no new surface, controls or flow.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Existing generic-import project transaction; existing guarded note commands and authenticated explicit return, using project transaction for note plus new content-addressed media cohort."
+  ],
+  "readPaths": [
+    "Existing canonical notes state, scene snapshot, private export baseline"
+  ],
+  "productPorts": [
+    "Existing NotesStorage persistence, project transaction, DOCX export and review ports"
+  ],
+  "designOsPorts": [
+    "Existing read-only notes projection"
+  ],
+  "readProjections": [
+    "Existing native note return confirmation"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "All existing project/source/lifecycle/generation/CAS/Kernel checks retained.",
+    "Validate literal image bytes and relationships before canonical attrs; private notes unchanged.",
+    "Note-media transaction binds resources to validated after-note body and unchanged scene; shared journal recovery."
+  ],
+  "capabilityRevalidation": "Existing notes/import/return Kernel and source/lifecycle/generation guards remain unchanged.",
+  "fallbacks": [
+    "Stale, malformed or unbound notes/source fail without writing; no implicit private-note export"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Core image budgets, hashes, unsupported nodes and malformed bytes fail closed.",
+    "Export/import both note kinds, table/list placements, shared assets, image-only mutation and no-op.",
+    "Atomic resource plus notes rollback/readback; stale source and private state preserved.",
+    "SOURCE/PACKAGED native edited Word return, three exports, restart and independent image/XML readback.",
+    "Required baseline/CI and merged exact-head tests."
+  ],
+  "securityAndInputBoundary": "Existing bounded PNG/JPEG validator, no external images, new paths or renderer writes. Existing note 1MiB budget retained.",
+  "performanceAndAccessibility": "Bounded existing media node with alt text in existing keyboard-accessible note editor.",
+  "currentReality": [
+    "Merged 8ee4 rejects drawings in notes; main-text PNG/JPEG mechanism already exists."
+  ],
+  "targetOnly": [
+    "Note media remains unaccepted until proof; nested tables, local image insertion and full Mac qualification remain open."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert bounded note-media support and backwards-compatible new note transaction mode; no migration or dependency.",
+  "status": "TARGET_NOT_ACCEPTED"
+}

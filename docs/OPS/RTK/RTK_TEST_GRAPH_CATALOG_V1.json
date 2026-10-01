@@ -126,6 +126,7 @@
     "rtk-word-node-name-input.contract.test.js",
     "rtk-word-normalized-capability-matrix.contract.test.js",
     "rtk-word-note-lists.contract.test.js",
+    "rtk-word-note-media.contract.test.js",
     "rtk-word-note-return-package.contract.test.js",
     "rtk-word-note-return-runtime.contract.test.js",
     "rtk-word-note-return.contract.test.js",

@@ -286,13 +286,16 @@ function normalizeResources(resources, { scenePath, manifestPath }, wire = false
   });
 }
 
-function validateMediaUpdateResources(resources, { scenePath, manifestPath, before, after }) {
+function validateMediaUpdateResources(resources, { scenePath, manifestPath, before, after, noteState = null }) {
   if (typeof before !== 'string' || !resources.length) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MEDIA_UPDATE_SHAPE', TRANSACTION_PHASES.ADMIT);
   const envelope = require('./document-content-envelope-v1.cjs');
   const media = require('../io/documentMedia.js');
   const parsed = envelope.parseObservablePayload(after);
-  if (parsed.issue || !parsed.doc) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MEDIA_DOCUMENT', TRANSACTION_PHASES.ADMIT);
-  const assets = media.documentMedia(parsed.doc).assets;
+  if (parsed.issue || (!parsed.doc && !noteState)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MEDIA_DOCUMENT', TRANSACTION_PHASES.ADMIT);
+  // noteState has already passed the cohort validator; paths still derive only
+  // from validated canonical bytes. Journal recovery repeats the same binding.
+  const noteBlocks = noteState ? JSON.parse(noteState.afterText).notes.flatMap(note => note.manuscript?.body.content || []) : [];
+  const assets = media.documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...noteBlocks] }).assets;
   for (const resource of resources) {
     const matches = assets.filter(asset => path.join(path.dirname(manifestPath), asset.attrs.assetPath) === resource.path);
     if (matches.length !== 1 || !matches[0].bytes.equals(resource.content)) {
@@ -447,8 +450,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   if (journal.schemaVersion === JOURNAL_SCHEMA_VERSION && journal.resources !== undefined) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
   }
-  if (journal.schemaVersion === MEDIA_JOURNAL_SCHEMA_VERSION) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: before.scene, after: after.scene });
-  else if (resources.length && before.scene !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.RECOVER);
+  if (journal.schemaVersion !== MEDIA_JOURNAL_SCHEMA_VERSION && resources.length && before.scene !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.RECOVER);
   const hasComments = [COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)
     || ([NOTE_JOURNAL_SCHEMA_VERSION, MEDIA_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion) && journal.commentState !== undefined);
   const commentState = hasComments
@@ -460,6 +462,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
   }
   const noteState = normalizeNoteState(journal.noteState, scenePath, manifestPath, { before, after });
+  if (journal.schemaVersion === MEDIA_JOURNAL_SCHEMA_VERSION) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: before.scene, after: after.scene, noteState });
   if (journal.schemaVersion !== MEDIA_JOURNAL_SCHEMA_VERSION && (journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION) !== Boolean(noteState)
     || (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.RECOVER);
@@ -524,7 +527,7 @@ async function readCommitRecordState({
   if (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION || (record.schemaVersion === MEDIA_COMMIT_SCHEMA_VERSION && record.noteState !== undefined)) {
     if (!record.noteState || (record.noteState.beforeDigest !== null && !isDigest(record.noteState.beforeDigest))
       || !isDigest(record.noteState.afterDigest)
-      || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1'].includes(record.noteState.mode)) return corruptCommitState(source, 'COMMIT_NOTE_SCHEMA');
+      || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1', 'MANUSCRIPT_BODY_UPDATE_V1'].includes(record.noteState.mode)) return corruptCommitState(source, 'COMMIT_NOTE_SCHEMA');
   } else if (record.noteState !== undefined) return corruptCommitState(source, 'COMMIT_NOTE_SCHEMA');
   const manifestMatches = async (targetDigest) => {
     if (record.manifestDigest === targetDigest) return true;
@@ -877,7 +880,6 @@ async function commitProjectTransaction({
   if (mediaUpdate && createResources !== undefined) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.ADMIT);
   const inputResources = mediaUpdate ? mediaUpdateResources : createResources;
   const resources = inputResources === undefined ? [] : normalizeResources(inputResources, { scenePath, manifestPath });
-  if (mediaUpdate) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: expectedSceneContent, after: sceneContent });
   const commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath, {
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
@@ -886,6 +888,7 @@ async function commitProjectTransaction({
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
+  if (mediaUpdate) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: expectedSceneContent, after: sceneContent, noteState });
   if (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.ADMIT);
   }
@@ -1410,7 +1413,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
       if (stat.isSymbolicLink() || !stat.isFile() || stat.nlink !== 1 || stat.size > 4 * 1024 * 1024
         || !record.noteState || (record.noteState.beforeDigest !== null && !isDigest(record.noteState.beforeDigest))
         || !isDigest(record.noteState.afterDigest)
-        || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1'].includes(record.noteState.mode)
+        || !['MANUSCRIPT_POINT_REBASE_V1', 'MANUSCRIPT_IMPORT_V1', 'MANUSCRIPT_BODY_UPDATE_V1'].includes(record.noteState.mode)
         || sha256hex(fs.readFileSync(target)) !== record.noteState.afterDigest) throw Error('NOTE_BINDING');
     } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'NOTE_BINDING_MISMATCH' }; }
   } else if (record.noteState !== undefined) {

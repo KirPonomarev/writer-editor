@@ -10469,7 +10469,26 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
   const inlineStyles = docxInlineStyleCatalog(bytes);
   const styles = { ...inlineStyles, hyperlinks };
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
-  if (!body.failure) resolveNoteTableStyleLosses(bytes, body);
+  if (!body.failure) {
+    resolveNoteTableStyleLosses(bytes, body);
+    const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
+    const refs = extractDocumentMediaReferencesV1(source.documentXml, {
+      relationshipsXml: Buffer.from(auxiliary(source.relationshipPart) || []).toString('utf8'),
+      contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
+      cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },
+    });
+    let mediaBytes = 0;
+    for (const ref of refs) {
+      const paragraph = body.contentPreview.paragraphs[ref.paragraphIndex], image = auxiliary(ref.partName);
+      if (!paragraph || !Number.isSafeInteger(ref.offset) || ref.offset < 0 || ref.offset > paragraph.text.length || !image) throw Error('NOTE_MEDIA_PLACEMENT');
+      if ((mediaBytes += image.length) > manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_MEDIA_BUDGET');
+      const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName,
+        displayWidthEmu: ref.cx, displayHeightEmu: ref.cy, displayEffectExtent: ref.effectExtent, wordUseLocalDpi: ref.useLocalDpi });
+      if (attrs.mimeType !== ref.mimeType) throw Error('NOTE_MEDIA_MIME');
+      (paragraph.media ||= []).push({ offset: ref.offset, attrs });
+    }
+    if (refs.length) body.diagnostics = body.diagnostics.filter(item => !(item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC' && item.tagName === 'w:drawing'));
+  }
   if (body.failure || body.diagnostics.some(item => item.code !== DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
     || body.contentPreview.paragraphs.some(p => p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
@@ -10733,6 +10752,11 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           || ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
           || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
         const richNotes = parseDocumentNotesRichReturn(bytes, notes);
+        parsed.contentPreview.noteMediaParts = [...new Set(notes.bodySources.flatMap(source => extractDocumentMediaReferencesV1(source.documentXml, {
+          relationshipsXml: Buffer.from(auxiliary(source.relationshipPart) || []).toString('utf8'),
+          contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
+          cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },
+        }).map(ref => ref.partName)))];
         parsed.contentPreview.manuscriptNotes = notes.notes.map((note, index) => {
           const ref = notes.references[index];
           const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
@@ -10776,7 +10800,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
         cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },
       });
-      if (refs.length) parsed.contentPreview.mediaParts = [...new Set(refs.map(ref => ref.partName))];
+      const noteMediaParts = parsed.contentPreview.noteMediaParts || [];
+      if (refs.length || noteMediaParts.length) parsed.contentPreview.mediaParts = [...new Set([...refs.map(ref => ref.partName), ...noteMediaParts])];
       let mediaBytes = 0;
       for (const ref of refs) {
         const paragraph = parsed.contentPreview.paragraphs[ref.paragraphIndex];
@@ -11568,7 +11593,7 @@ function docxImportPreviewBuildLossReport(
     if (isDocxPackageRootRelationshipDiagnostic(diagnostic)) continue;
     if (richCandidate && diagnostic.code === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC
       && diagnostic.sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.line) continue;
-    if (contentPreview.paragraphs.some(p => p.media?.length)
+    if ((contentPreview.paragraphs.some(p => p.media?.length) || contentPreview.noteMediaParts?.length)
       && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
         || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
           && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)))) continue;
