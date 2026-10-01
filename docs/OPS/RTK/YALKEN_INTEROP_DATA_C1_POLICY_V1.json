@@ -612,7 +612,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "22db447d7f5aaa9917769a5ec0c4762f2da924b0a12dc012d6444a799fbdfbf3"
+        "sha256": "6af34798ec5cfa66e3636029f801f26cc47cc12cfaea3ae0a9489318f6745d48"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1576,7 +1576,7 @@
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
-        "sha256": "b5ae89c2a9297d815fc4478712da28c2b39025783d9e55a227bc0eae8e46af26"
+        "sha256": "cfce50d0d67786c925a1cf983447658fe9d8773b590b37c324e9e60253f2e53b"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_USER_BOOKMARKS_V1.json",
@@ -1596,7 +1596,7 @@
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
-        "sha256": "7671f49de33df54cb1d75e1caf2f273e23cbd6b9f72ee24216be900e2f7a0eb9"
+        "sha256": "cbfa9b4e8489ffd01e312857299c75869ce8cf9f9dcfa6ca3ba3c4d4960c611c"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
@@ -1608,7 +1608,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
-        "sha256": "92b4f73d5fe8b6ea289b51ecb6439f9971f0b64583aef856f79cdfa80ece6654"
+        "sha256": "26b5999a050add307afd3b236526099f8a4d06616a9c4fba25381731266d9683"
       },
       {
         "path": "test/fixtures/word-user-bookmarks-native-v1.json",

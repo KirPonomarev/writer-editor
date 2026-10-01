@@ -73,6 +73,49 @@ async function editorHarness() {
   editor.view.dispatch(editor.state.tr.setSelection(TextSelection.create(editor.state.doc, 4)));
   return { editor, api, undo: () => undo(editor.state, editor.view.dispatch), redo: () => redo(editor.state, editor.view.dispatch) };
 }
+test('plain clipboard text inherits the current typed link without an identity-losing HTML roundtrip', async () => {
+  const h = await editorHarness(), e = h.editor;
+  const { TextSelection } = await import('@tiptap/pm/state');
+  const record = core.readRegistry(e.state.doc.toJSON()).bookmarks[0];
+  e.view.dispatch(e.state.tr.addMark(2, 7, e.schema.marks.link.create(core.linkAttrs(record))));
+  const before = e.state.doc.toJSON();
+  const plugins = h.api.UserBookmarkLink.config.addProseMirrorPlugins.call({ parent: () => [] });
+  const parser = plugins.map(plugin => plugin.props.clipboardTextParser).find(Boolean);
+  assert.equal(typeof parser, 'function');
+  e.view.dispatch(e.state.tr.setSelection(TextSelection.create(e.state.doc, 4)));
+  const slice = parser('LOCAL Ω🙂 ', e.state.selection.$from, true, { state: e.state });
+  e.view.dispatch(e.state.tr.replaceSelection(slice));
+  const saved = core.planSave({ beforeDoc: before, workingDoc: e.state.doc.toJSON() });
+  assert.equal(e.state.doc.textContent, 'ABCLOCAL Ω🙂 DEF');
+  assert.equal(saved.registry.bookmarks[0].end.offsetUtf16, 15);
+  const inserted = e.state.doc.nodeAt(4);
+  assert.equal(inserted.marks.find(mark => mark.type.name === 'link').attrs.wordBookmarkId, record.id);
+  assert.equal(h.undo(), true);
+  assert.equal(e.state.doc.textContent, 'ABCDEF');
+  assert.equal(h.redo(), true);
+  assert.equal(e.state.doc.textContent, 'ABCLOCAL Ω🙂 DEF');
+});
+test('clipboard parser stays literal and never accepts HTML identity or changes unrelated paste contexts', async () => {
+  const h = await editorHarness(), e = h.editor;
+  const record = core.readRegistry(e.state.doc.toJSON()).bookmarks[0];
+  const plugins = h.api.UserBookmarkLink.config.addProseMirrorPlugins.call({ parent: () => [] });
+  const parser = plugins.map(plugin => plugin.props.clipboardTextParser).find(Boolean);
+  assert.equal(typeof parser, 'function');
+  assert.equal(parser('x', e.state.doc.resolve(1)), undefined); // External link.
+  assert.equal(parser('x', e.state.doc.resolve(4)), undefined); // Bold prose.
+  e.view.dispatch(e.state.tr.addMark(2, 7, e.schema.marks.link.create(core.linkAttrs(record))));
+  const context = e.state.doc.resolve(4), raw = '<a href="#forged" wordBookmarkId="forged">x</a>';
+  const slice = parser(raw + '\r\nΩ\n\nend', context);
+  assert.equal(slice.content.childCount, 3);
+  assert.equal(slice.content.firstChild.textContent, raw);
+  slice.content.descendants(node => {
+    if (node.isText) assert.equal(node.marks.find(mark => mark.type.name === 'link').attrs.wordBookmarkId, record.id);
+  });
+  assert.equal(parser('', context).content.firstChild.textContent, '');
+  const attrs = h.api.UserBookmarkLink.config.addAttributes.call({ parent: () => ({}) });
+  assert.equal(attrs.wordBookmarkId.parseHTML({ getAttribute: () => record.id }), null);
+  assert.equal(attrs.wordBookmarkName.parseHTML({ getAttribute: () => record.name }), null);
+});
 test('actual ProseMirror metadata ACK preserves text, external attrs, selection and text Undo/Redo', async () => {
   const h = await editorHarness(), e = h.editor, before = e.state.doc.toJSON();
   e.view.dispatch(e.state.tr.insertText('X', 1));

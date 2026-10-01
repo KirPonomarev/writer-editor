@@ -1,5 +1,7 @@
 import { Extension } from '@tiptap/core';
 import Link from '@tiptap/extension-link';
+import { Plugin } from '@tiptap/pm/state';
+import { Fragment, Slice } from '@tiptap/pm/model';
 import model from '../../core/word-user-bookmarks-v1.cjs';
 
 // Inert schema preservation. Mapping and identity decisions belong to Core/main.
@@ -15,6 +17,21 @@ export const UserBookmarkLink = Link.extend({
   addAttributes() {
     return { ...this.parent?.(), wordBookmarkId: { default: null, rendered: false, parseHTML: () => null },
       wordBookmarkName: { default: null, rendered: false, parseHTML: () => null } };
+  },
+  addProseMirrorPlugins() {
+    return [...(this.parent?.() || []), new Plugin({ props: {
+      clipboardTextParser(text, context) {
+        const marks = context.marks();
+        if (!marks.some(mark => mark.type.name === 'link' && mark.attrs.wordBookmarkId != null)) return;
+        // ProseMirror's default text parser roundtrips context marks through HTML,
+        // which intentionally cannot carry private bookmark identity. Inherit only
+        // the current editor marks; clipboard bytes remain literal text. Core still
+        // validates the resulting link and selection-bound save independently.
+        const schema = context.doc.type.schema;
+        return Slice.maxOpen(Fragment.from(text.split(/(?:\r\n?|\n)+/).map(line =>
+          schema.nodes.paragraph.create(null, line ? schema.text(line, marks) : null))));
+      },
+    } })];
   },
 });
 
