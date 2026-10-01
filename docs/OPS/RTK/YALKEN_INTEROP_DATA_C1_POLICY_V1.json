@@ -371,7 +371,14 @@
     "test/fixtures/word-user-bookmarks-native-v1.json",
     "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
     "test/unit/r24-r5-lifecycle-physics.test.js",
-    "test/unit/r24-wp200-durable-save-physics.test.js"
+    "test/unit/r24-wp200-durable-save-physics.test.js",
+    "docs/tasks/2026-10-01--word-media-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
+    "src/core/word-media-return-v1.cjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "test/contracts/rtk-word-media-return.contract.test.js",
+    "test/contracts/rtk-word-media-return-runtime.contract.test.js",
+    "test/unit/r24-wp201-project-transaction.test.js"
   ],
   "protectedFiles": [
     {
@@ -600,7 +607,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0bdb7fc8fccea14f06f56be61ce391969d696b35a1f14ab68fe68190f87f7051"
+        "sha256": "5a0a331e02af29d1f8700b7e3bde2181b151294ca6a68a17dcf3ef4ec3f9e20d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -612,7 +619,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "6af34798ec5cfa66e3636029f801f26cc47cc12cfaea3ae0a9489318f6745d48"
+        "sha256": "634989f530ef093d9f9816b6c37bcb037d5f250aa021c6d0d9058cd810b7bef5"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -636,7 +643,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "84b8731a567de959ccf57c2ebc0d713a0df8108c2a8951181e7a56710ec8dd56"
+        "sha256": "6591b15041807faa85d7fe1581ce91c4884025230df0c10c165fed1159d7614b"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -716,7 +723,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "dc8f704ddc8f28d829997e92f05ab55f1d57d52f77c873e1b9b2c5b9abdbe443"
+        "sha256": "dd121a5c46a6e9d4dd23efa7a5a867bc383070e66a194818fc911c99cea919a4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -776,7 +783,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "48f4ddbbcc45bcf934b76e5f91bfacbdb756570a27482595c42075d3d1852469"
+        "sha256": "d18f7c0e768e0c9b8791e6edd30209d41cae87acaad0c4f88f0c529efa26f129"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -872,7 +879,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "cd0c99388aee71d24835fc566b9419e58f9965669065f7850b7c4d33d43c6ae9"
+        "sha256": "616843326bb5bccd9418ba4a229ac8d966f4167169f42fbd11a1b5d6a0afb098"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1008,15 +1015,15 @@
       },
       {
         "path": "src/io/documentMedia.js",
-        "sha256": "7e365b030d51e9e77a0064d1f18ae4641642194242480573f6da5754b1f5c2c6"
+        "sha256": "5414af1f1e08444b5efe722c7e573de988cbc634c0dada8aafffcf35cb4f9d31"
       },
       {
         "path": "src/export/docx/docxMedia.js",
-        "sha256": "a2678c8d1b9d2835fd854aa0ce95f95283d25b2e98dd5a2401a5a31c29831cda"
+        "sha256": "57a86332b457bb05f96b77f2549b54087f486ff7f6b5b02c33d4cf292342f143"
       },
       {
         "path": "src/renderer/tiptap/documentMedia.mjs",
-        "sha256": "bc3c43d50e5ff668ff31c160be6c0c78e4d2a0e820e4e0ad8e85211d882b5a34"
+        "sha256": "e2863ac1bec413ba679b747a23086473e5a4eab6d2c7430eb63b988233a37a3d"
       },
       {
         "path": "src/utils/flowSceneBatchAtomic.js",
@@ -1036,7 +1043,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
-        "sha256": "7d6c265fc30f6840802c66b4981d5e554b76cfe9657fedd8645fbab3f081d18c"
+        "sha256": "255d29a5c60451c6e11db467dda97e2871f780d8966857b757883536c792cd19"
       },
       {
         "path": "test/contracts/rtk-word-tables.contract.test.js",
@@ -1448,7 +1455,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "5c07afbaccacdd65f72e0e5d56997cb975774a91388396900416b1b59c82d79e"
+        "sha256": "50e9b8fe8dd156553ef8125c6de8cb5c13d35bec4d00feac5f7d3bfecd7e2d54"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1572,7 +1579,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
-        "sha256": "3c509a2093e9b3b3d2430762445c376302bcea2f921a62292daeb144fb89d859"
+        "sha256": "4fdfd98076d8cf048412722ba8852da16f99d6ac1078d8911cb4c0a428b36faf"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
@@ -1613,6 +1620,30 @@
       {
         "path": "test/fixtures/word-user-bookmarks-native-v1.json",
         "sha256": "6063829a6ebea6ec7ff28b22bc34fea419128858845e1aec0947e11f5b7b495c"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-media-return-mac.md",
+        "sha256": "c0fecd247d5e98bf8a2e8ed1a97466c54855e5e4acc072aadf9d064b2e1ed8ff"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
+        "sha256": "0075082dadf8e2ffcf7cb94c6bf44b8f090f5d144b819eb88ce0c9850e179adc"
+      },
+      {
+        "path": "src/core/word-media-return-v1.cjs",
+        "sha256": "f79ca41fa933b50699aa07d570f39ebb832457de3cd46a0cd39111812acbc382"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+        "sha256": "c27387a446174f948cd9c61e0c4718a497f5bac09de699a26620b92cec1cc76a"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-return.contract.test.js",
+        "sha256": "aac1704856e20e3137e387251998314d3188f9134c979ab07e97ae9c4cde15a7"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-return-runtime.contract.test.js",
+        "sha256": "d5d46534ad11c9e73d29b8142247c7e79d86cf7cac0410fb5c5fb38a55b30e21"
       }
     ],
     "followupRepair": {

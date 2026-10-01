@@ -202,3 +202,64 @@ test('actual authority store selects current project after switching and rejects
   assert.throws(() => c.projectRootFromDocxReviewAuthorityStore({ roundsById: { ...previous.roundsById, ...current.roundsById } }), /MIXED_PROJECTS/);
   assert.equal(previous.roundsById['round-/first'].projectRoot, '/first');
 });
+
+test('actual editor schema defaults do not falsely mark an unchanged imported media scene stale', async t => {
+  const { getSchema } = await import('@tiptap/core'), { default: StarterKit } = await import('@tiptap/starter-kit');
+  const { DocumentMedia } = await import('../../src/renderer/tiptap/documentMedia.mjs');
+  const { UserBookmarks, UserBookmarkLink } = await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const { WordPendingRevisions } = await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
+  const before = initialDoc(); before.content[0].content[0].marks = [{ type: 'link', attrs: { href: 'https://example.invalid/' } }];
+  const h = await harness(t, before), schema = getSchema([StarterKit.configure({ link: false }), DocumentMedia, UserBookmarks, UserBookmarkLink, WordPendingRevisions]);
+  const live = schema.nodeFromJSON(before).toJSON();
+  assert.equal(mediaModel.mediaSourceEqual(live, before), true);
+  h.working = envelope.composeObservablePayload({ doc: live });
+  const result = await returnHarness(h).apply(); assert.equal(result.ok, true, JSON.stringify(result));
+  const changed = clone(live); changed.content[0].content[0].marks[0].attrs.href = 'https://other.invalid/';
+  assert.equal(mediaModel.mediaSourceEqual(changed, before), false);
+  const rootChanged = clone(live); rootChanged.attrs.foreign = null;
+  assert.equal(mediaModel.mediaSourceEqual(rootChanged, before), false);
+});
+
+test('imported scenes materialize an empty metadata panel without authoring metadata or blocking media Apply', async t => {
+  const h = await harness(t), raw = envelope.parseObservablePayload(h.working);
+  assert.equal(raw.hasMetaBlock, false);
+  h.working = envelope.composeObservablePayload({ ...raw, doc: raw.doc, metaEnabled: true });
+  const result = await returnHarness(h).apply(); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).hasMetaBlock, false);
+});
+test('an unsaved synopsis in the materialized scene panel remains a no-write conflict', async t => {
+  const h = await harness(t), raw = envelope.parseObservablePayload(h.working);
+  h.working = envelope.composeObservablePayload({ ...raw, doc: raw.doc, metaEnabled: true, meta: { ...raw.meta, synopsis: 'unsaved owner content' } });
+  const result = await returnHarness(h).apply(); assert.equal(result.ok, false); assert.equal(h.writes, 0);
+});
+
+test('media-only intake refuses deleted or existing source notes before acquiring a candidate', async () => {
+  const start = main.indexOf('async function prepareCleanMediaReturnCapsule('), end = main.indexOf('\nasync function ', start + 1);
+  const c = vm.createContext({ compareCommentExportReadback: () => ({ ok: true }),
+    loadDocumentContentEnvelopeModule: () => { throw Error('must refuse before baseline access'); } });
+  vm.runInContext(main.slice(start, end), c);
+  for (const documentNotes of [{ sourceBindings: [{}] }, { notes: [{}] }]) {
+    const result = await c.prepareCleanMediaReturnCapsule({ documentNotes }, { reviewIr: { documentNotes: { notes: [] } } }, {}, {});
+    assert.equal(result.code, 'RTK_MEDIA_ANNOTATION_COMPOSITE_UNSUPPORTED');
+  }
+});
+
+test('media editor publication preserves a newer buffer or changed project after disk Apply', async t => {
+  for (const mode of ['generation', 'project', 'async-lifecycle']) {
+    const h = await harness(t), r = returnHarness(h), applied = await r.apply();
+    assert.equal(applied.ok, true);
+    const committed = fs.readFileSync(h.file);
+    h.c.mainWindow.webContents.isDestroyed = () => false;
+    h.c.getProjectDocumentIdentityPayload = async () => {
+      if (mode === 'async-lifecycle') h.subject = 'new-life';
+      return {};
+    };
+    h.c.attachProjectIdToEditorPayload = async payload => payload;
+    const newer = h.working + '\nowner edit'; h.working = newer;
+    if (mode === 'generation') h.c.lastSignaledEditGeneration = 2;
+    if (mode === 'project') h.c.currentFilePath = path.join(path.dirname(h.file), 'another.txt');
+    const result = await h.c.syncReviewExactTextApplyEditorFromMainState({ applyInput: r.input, receipt: applied.receipt });
+    assert.equal(result.ok, false); assert.equal(h.publications.length, 0);
+    assert.equal(h.working, newer); assert.deepEqual(fs.readFileSync(h.file), committed);
+  }
+});

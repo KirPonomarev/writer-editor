@@ -796,6 +796,11 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
       reason: committed ? 'recover-committed' : 'recover-uncommitted',
     });
   }
+  // Restore missing committed bytes before publishing a scene that references
+  // them. Uncommitted rollback removes owned assets only after restoring scene.
+  if (committed) for (let index = 0; index < journal.resources.length; index++) {
+    if (resourceStates[index] === null) await publishResource(journal.resources[index], manifestPath, journal.revision, fsAdapter, journal.transactionId);
+  }
   if (currentScene !== target.scene) {
     if (journal.resources.length && target.scene !== null) await ensureCompanionDirectory(scenePath, manifestPath, fsAdapter);
     if (journal.resources.length && !mediaUpdate && target.scene !== null) {
@@ -810,7 +815,6 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   }
   for (let index = 0; index < journal.resources.length; index++) {
     const resource = journal.resources[index];
-    if (committed && resourceStates[index] === null) await publishResource(resource, manifestPath, journal.revision, fsAdapter, journal.transactionId);
     if (!committed && resourceStates[index] !== null) {
       const observed = await readResource(resource, manifestPath, fsAdapter, journal.transactionId);
       if (!observed?.equals(resource.content)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_DIVERGENCE', TRANSACTION_PHASES.RECOVER);

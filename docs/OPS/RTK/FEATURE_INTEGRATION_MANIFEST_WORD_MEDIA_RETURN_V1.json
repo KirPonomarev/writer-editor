@@ -3,7 +3,7 @@
   "taskId": "WORD_MEDIA_RETURN_MAC_20261001",
   "objective": "Existing authenticated Word return explicitly applies bounded inline PNG/JPEG addition deletion replacement and resize in one active scene, preserving all nonmedia meaning and atomically publishing newly referenced assets.",
   "taskType": "PRODUCT_CODE",
-  "bindingBaseSha": "ea43e3e7d6fb477f591a70624b4d48cc19faea5c",
+  "bindingBaseSha": "363109f3e0e63f9a1a2fa6f376fc296d793c971a",
   "scopeIn": [
     "docs/tasks/2026-10-01--word-media-return-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_RETURN_V1.json",
@@ -30,7 +30,8 @@
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "src/export/docx/docxMedia.js",
-    "src/renderer/tiptap/documentMedia.mjs"
+    "src/renderer/tiptap/documentMedia.mjs",
+    "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -81,7 +82,8 @@
     "Private source, project, lifecycle, capability, generation and saved raw CAS revalidated after awaits and immediately before transaction",
     "New content-addressed resources are create-only in same journal as scene/manifest; existing shared assets never deleted or overwritten",
     "Record version discriminates update-with-resources journal; predecessor must refuse unknown record without overwrite",
-    "Native resize emitted effectExtent r=3810EMU; preserve all four bounded inline extent values in canonical attrs, display margins, and DOCX reexport. Actual shadow/crop/rotation remains rejected."
+    "Native resize emitted effectExtent r=3810EMU; preserve all four bounded inline extent values in canonical attrs, display margins, and DOCX reexport. Actual shadow/crop/rotation remains rejected.",
+    "Office useLocalDpi is a strictly nested recognized BLIP extension with a typed boolean, preserved in Core, editor schema and DOCX output; unknown extension payloads remain blocked."
   ],
   "capabilityRevalidation": "Existing review Kernel checks plus private Main handler and prepublication project/lifecycle/source/generation/capability checks. No capability from UI or packet.",
   "fallbacks": [
@@ -116,7 +118,7 @@
     "mergeRequired": true,
     "postMergeExactHeadVerificationRequired": true
   },
-  "rollbackPlan": "One revertible media return delivery; retain all synthetic originals and readable preapply rich snapshots; new journal schema rejects predecessor writes; do not garbage-collect existing or shared assets. Budget26 exact paths and2500 authored added lines plus generated bundle and exact-byte governance companions.",
+  "rollbackPlan": "One revertible media return delivery; retain all synthetic originals and readable preapply rich snapshots; new journal schema rejects predecessor writes; do not garbage-collect existing or shared assets. Budget27 exact paths and2500 authored added lines plus generated bundle and exact-byte governance companions.",
   "featureId": "WORD_MEDIA_RETURN_MAC_20261001",
   "featureVersion": "1.0-target",
   "domainOwner": "Product Core canonical rich scene and content-addressed assets",

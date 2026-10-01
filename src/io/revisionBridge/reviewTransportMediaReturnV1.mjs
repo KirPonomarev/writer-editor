@@ -123,7 +123,7 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
         const bytes = binaryParts?.[p.partName];
         if (!bytes || !Buffer.isBuffer(bytes)) throw Error('media-bytes-required');
         const attrs = media.createImageAttrs(bytes, { alt: p.alt, displayName: p.displayName, displayWidthEmu: p.cx, displayHeightEmu: p.cy,
-          displayEffectExtent: p.effectExtent });
+          displayEffectExtent: p.effectExtent, wordUseLocalDpi: p.useLocalDpi });
         if (attrs.sha256 !== p.sha256 || attrs.width !== p.width || attrs.height !== p.height || attrs.mimeType !== p.mimeType) throw Error('media-byte-binding');
         return { paragraphIndex: p.paragraphIndex - offset, offset: p.offset, attrs };
       });

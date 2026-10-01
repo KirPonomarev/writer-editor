@@ -9,7 +9,7 @@ const builtin = name => {
 };
 const LIMITS = Object.freeze({ bytes: 4 * 1024 * 1024, pixels: 16 * 1024 * 1024, dimension: 8192, assets: 128, totalBytes: 16 * 1024 * 1024, placementPixels: 64 * 1024 * 1024 });
 const SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-const DISPLAY_KEYS = ['displayWidthEmu', 'displayHeightEmu', 'displayEffectExtent'];
+const DISPLAY_KEYS = ['displayWidthEmu', 'displayHeightEmu', 'displayEffectExtent', 'wordUseLocalDpi'];
 const KEYS = ['assetId', 'assetPath', 'sha256', 'mimeType', 'width', 'height', 'alt', 'displayName', 'dataBase64'];
 const fail = code => { throw new Error(`DOCUMENT_MEDIA_${code}`); };
 const hash = bytes => builtin('node:crypto').createHash('sha256').update(bytes).digest('hex');
@@ -115,11 +115,13 @@ function createImageAttrs(bytes, options = {}) {
     ? { ...inspectJpeg(bytes, LIMITS), sha256: hash(bytes) } : inspectPng(bytes);
   const size = imageDisplaySize({ ...info, displayWidthEmu: options.displayWidthEmu, displayHeightEmu: options.displayHeightEmu });
   const effect = imageEffectExtent({ ...info, ...options });
+  if (options.wordUseLocalDpi !== undefined && typeof options.wordUseLocalDpi !== 'boolean') fail('LOCAL_DPI');
   const extension = info.mimeType === 'image/jpeg' ? 'jpg' : 'png';
   return { assetId: `sha256-${info.sha256}`, assetPath: `assets/media/${info.sha256}.${extension}`, ...info,
     ...(size.cx !== info.width * 9525 || size.cy !== info.height * 9525
       ? { displayWidthEmu: size.cx, displayHeightEmu: size.cy } : {}),
     ...(Object.values(effect).some(Boolean) ? { displayEffectExtent: effect } : {}),
+    ...(options.wordUseLocalDpi !== undefined ? { wordUseLocalDpi: options.wordUseLocalDpi } : {}),
     alt: label(alt, 'ALT'), displayName: label(displayName, 'NAME'), dataBase64: bytes.toString('base64') };
 }
 function validateImageAttrs(attrs) {

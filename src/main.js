@@ -5898,13 +5898,16 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('NOTE_SAVE_SCENE_FIRST');
       checkIdentity();
     };
-    await revalidateScenes();
     // No exported or returned notes means this independent mutation lane is
     // inapplicable. A bookmark/text edit must not manufacture a notes failure.
     // Nonempty, missing or malformed inventories still require full admission.
     if (Array.isArray(capsule.documentNotes.sourceBindings)
       && capsule.documentNotes.sourceBindings.length === 0
-      && Array.isArray(input.returnedNotes) && input.returnedNotes.length === 0) return null;
+      && Array.isArray(input.returnedNotes) && input.returnedNotes.length === 0) {
+      checkIdentity();
+      return null;
+    }
+    await revalidateScenes();
     const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
     if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
     const before = await readProjectNotesDocument(notesContext);
@@ -9238,7 +9241,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
 async function prepareCleanMediaReturnCapsule(authority, parserResult, context, binaryParts) {
   const comments = parserResult.reviewIr?.commentThreads || [];
   if ((authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
-    || authority.documentNotes?.notes?.length || parserResult.reviewIr?.documentNotes?.notes?.length) {
+    || authority.documentNotes?.notes?.length || authority.documentNotes?.sourceBindings?.length
+    || parserResult.reviewIr?.documentNotes?.notes?.length) {
     return { ok: false, code: 'RTK_MEDIA_ANNOTATION_COMPOSITE_UNSUPPORTED' };
   }
   const envelope = await loadDocumentContentEnvelopeModule();
@@ -24265,6 +24269,17 @@ function buildCleanLinkLabelApplyInput(changes) {
   return {ok:true,input:cloneJsonSafe(store.input)};
 }
 
+function mediaReturnEnvelopeMetadataEqual(live, baseline, envelope) {
+  if (userBookmarkEnvelopeMetadataEqual(live, baseline)) return true;
+  // Imported scene files may omit the default metadata block, while the
+  // existing scene inspector materializes that empty panel on open. Preserve
+  // the baseline representation; a changed field or any cards remain a conflict.
+  return baseline.hasMetaBlock === false && live.hasMetaBlock === true
+    && JSON.stringify(baseline.meta) === JSON.stringify(envelope.createDefaultDocumentMeta())
+    && JSON.stringify(live.meta) === JSON.stringify(baseline.meta)
+    && JSON.stringify(live.cards) === JSON.stringify(baseline.cards);
+}
+
 async function buildPrivateUserBookmarksUiPlan(changes) {
   const blocked = reason => buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(reason)]);
   if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
@@ -24281,22 +24296,24 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
     const keyGate = await revalidateCleanLinkLabelApplyInput(selected.input);
     userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
     if (activePendingRecording || !keyGate.ok || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
-      || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+      || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+        : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
       || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
       || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
       || lastSignaledEditGeneration > snapshot.generation
       || fsSync.readFileSync(selected.input.scenePath, 'utf8') !== candidate.raw
-      || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
-        userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc))) {
+      || !(isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc)
+        : nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+          userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc)))) {
       return blocked(keyGate.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
     }
     const plan = isMedia ? wordMediaReturnModel.planMediaReturn({ beforeDoc: candidate.beforeDoc, placements: candidate.plan.after })
       : userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
     if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
     if (isMedia) {
-      const describe = rows => rows.length ? rows.map((row, index) => {
+      const describe = (rows, prior = []) => rows.length ? rows.map((row, index) => {
         const size = wordMediaData.imageDisplaySize(row.attrs);
-        return `${index + 1}. ${row.attrs.alt || row.attrs.displayName || 'Изображение'}: ${(size.cx / 360000).toFixed(2)} × ${(size.cy / 360000).toFixed(2)} см, абзац ${row.paragraphIndex + 1}, символ ${row.offset}`;
+        return `${index + 1}. ${row.attrs.alt || row.attrs.displayName || 'Изображение'}: ${(size.cx / 360000).toFixed(2)} × ${(size.cy / 360000).toFixed(2)} см, абзац ${row.paragraphIndex + 1}, символ ${row.offset}${prior[index] && prior[index].attrs.sha256 !== row.attrs.sha256 ? ' · файл заменён' : ''}`;
       }).join('\n') : 'Нет изображений';
       return { ok: true, type: 'revisionBridge.exactTextApplyPlanNoDiskPreview', status: 'ready',
         code: 'RTK_MEDIA_RETURN_PREVIEW_READY', reason: 'RTK_MEDIA_RETURN_PREVIEW_READY', reasons: [],
@@ -24304,7 +24321,7 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
           sessionId: store.sessionToken.sessionId, sceneId: candidate.sceneId, canApply: false, noDisk: true,
           safeWriteCandidate: false, mediaReturn: true, blockedReasons: [], preconditions: [],
           applyOps: [{ kind: 'mediaReturn', changeId: candidate.changeId, sceneId: candidate.sceneId,
-            expectedText: describe(plan.before), replacementText: describe(plan.after) }] } };
+            expectedText: describe(plan.before), replacementText: describe(plan.after, plan.before) }] } };
     }
     const prior = userBookmarkModel.readRegistry(candidate.beforeDoc), next = plan.registry;
     const before = [], after = [];
@@ -24424,13 +24441,14 @@ async function applyPrivateUserBookmarksReturn(input) {
   let richSourceEqual = false;
   if (!live.issue) {
     try {
-      richSourceEqual = nonText.commentSceneSnapshotsEqual(
+      richSourceEqual = isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc) : nonText.commentSceneSnapshotsEqual(
         userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
         userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc),
       );
     } catch { return blocked('RTK_USER_BOOKMARK_SOURCE_STALE'); }
   }
-  if (activePendingRecording || live.issue || !userBookmarkEnvelopeMetadataEqual(live, candidate.parsed)
+  if (activePendingRecording || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+    : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
     || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
     || lastSignaledEditGeneration > snapshot.generation

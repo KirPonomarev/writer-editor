@@ -18,7 +18,7 @@ export function mediaImageDom(attrs = {}) {
     && Object.values(effect).every(n => Number.isSafeInteger(n) && n >= 0 && n <= 78028800)
     && (legacy ? attrs.width * 9525 : attrs.displayWidthEmu) + effect.l + effect.r <= 78028800
     && (legacy ? attrs.height * 9525 : attrs.displayHeightEmu) + effect.t + effect.b <= 78028800);
-  if (!safe || !sizeSafe || !effectSafe) return ['span', { role: 'img', 'aria-label': 'Изображение недоступно', 'data-media-unavailable': 'true' }, 'Изображение недоступно'];
+  if (!safe || !sizeSafe || !effectSafe || (attrs.wordUseLocalDpi !== undefined && typeof attrs.wordUseLocalDpi !== 'boolean')) return ['span', { role: 'img', 'aria-label': 'Изображение недоступно', 'data-media-unavailable': 'true' }, 'Изображение недоступно'];
   return ['img', {
     src: `data:${attrs.mimeType};base64,${attrs.dataBase64}`,
     alt: typeof attrs.alt === 'string' ? attrs.alt : '',
@@ -32,6 +32,7 @@ export const DocumentMedia = Node.create({
   name: 'image', inline: true, group: 'inline', atom: true,
   selectable: true, draggable: false,
   addAttributes() { return { ...Object.fromEntries(fields.map(name => [name, { default: null, rendered: false }])),
+    wordUseLocalDpi: { default: undefined, rendered: false },
     displayEffectExtent: { default: undefined, rendered: false },
     displayWidthEmu: { default: undefined, rendered: false }, displayHeightEmu: { default: undefined, rendered: false } }; },
   // External HTML cannot invent project media. The typed DOCX intake supplies

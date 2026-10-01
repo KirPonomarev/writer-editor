@@ -116,6 +116,8 @@
     "rtk-word-manuscript-notes-transaction.contract.test.js",
     "rtk-word-manuscript-notes.contract.test.js",
     "rtk-word-media-editor.contract.test.js",
+    "rtk-word-media-return-runtime.contract.test.js",
+    "rtk-word-media-return.contract.test.js",
     "rtk-word-media-text-correspondence.contract.test.js",
     "rtk-word-media.contract.test.js",
     "rtk-word-move-recording.contract.test.js",

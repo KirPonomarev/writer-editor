@@ -79,4 +79,31 @@ function planMediaReturn({ beforeDoc, placements }) {
   return { changed: true, doc: saved.doc, before, after: checked };
 }
 
-module.exports = { mediaPlacements, planMediaReturn };
+// Exact semantic comparison across the pinned editor's inert schema defaults.
+// It neither rebases a revision nor changes the raw-byte CAS used by Main.
+function mediaSourceEqual(left, right) {
+  mediaPlacements(left); mediaPlacements(right);
+  const normalize = node => {
+    const out = clone(node);
+    const defaults = node.type === 'doc' ? { wordUserBookmarks: null, wordPendingRevisions: null }
+      : ['paragraph', 'heading'].includes(node.type) ? { textAlign: null }
+      : node.type === 'textStyle' ? { color: null, fontFamily: null, fontSize: null }
+      : node.type === 'link' ? { target: '_blank', rel: 'noopener noreferrer nofollow', class: null, title: null,
+        wordBookmarkId: null, wordBookmarkName: null } : null;
+    if (defaults) out.attrs = { ...defaults, ...out.attrs };
+    if (out.marks) out.marks = out.marks.map(normalize);
+    if (out.content) {
+      out.content = out.content.map(normalize).reduce((rows, current) => {
+        const previous = rows.at(-1);
+        if (previous?.type === 'text' && current.type === 'text' && same(previous.marks || [], current.marks || [])) previous.text += current.text;
+        else rows.push(current);
+        return rows;
+      }, []);
+      if (!out.content.length && out.type !== 'doc') delete out.content;
+    }
+    return out;
+  };
+  return same(normalize(left), normalize(right));
+}
+
+module.exports = { mediaPlacements, planMediaReturn, mediaSourceEqual };

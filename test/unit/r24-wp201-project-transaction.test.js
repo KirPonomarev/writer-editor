@@ -281,3 +281,88 @@ test('live Writer save routes use WP201 while non-project fallback remains WP200
   );
   assert.doesNotMatch(source, /commitProjectTextAndManifest\(/u);
 });
+
+for (const phase of ['before-scene', 'before-commit', 'after-commit']) {
+  test(`WP201 media update recovers a real filesystem interruption ${phase}`, async t => {
+    const s = mediaUpdate(t), actual = fs.promises;
+    let fired = false;
+    const adapter = { ...actual,
+      async rename(from, to) {
+        if (!fired && ((phase === 'before-scene' && to === s.scenePath)
+          || (phase === 'before-commit' && to === commitPathFor(s.scenePath)))) {
+          fired = true; throw Error(`injected ${phase}`);
+        }
+        return actual.rename(from, to);
+      },
+      async unlink(target) {
+        if (!fired && phase === 'after-commit' && target === journalPathFor(s.manifestPath)) {
+          fired = true; throw Error('injected after-commit');
+        }
+        return actual.unlink(target);
+      },
+    };
+    await assert.rejects(commitProjectTransaction({ ...s.input, fsAdapter: adapter }));
+    assert.equal(fired, true);
+    assert.equal(fs.existsSync(journalPathFor(s.manifestPath)), true);
+    const result = await recoverProjectTransaction({ ...s, publishManifest: manifestPublisher() });
+    const committed = phase === 'after-commit';
+    assert.equal(result.outcome, committed ? 'COMMITTED_CONVERGED' : 'UNCOMMITTED_ROLLED_BACK');
+    assert.equal(fs.readFileSync(s.scenePath, 'utf8'), committed ? s.input.sceneContent : 'old scene');
+    assert.equal(fs.readFileSync(s.manifestPath, 'utf8'), committed ? '{"revision":2}' : '{"revision":1}');
+    assert.equal(fs.existsSync(s.resource.path), committed);
+    if (committed) assert.deepEqual(fs.readFileSync(s.resource.path), s.resource.content);
+    assert.equal((await recoverProjectTransaction({ ...s, publishManifest: manifestPublisher() })).outcome, 'NO_JOURNAL');
+  });
+}
+
+test('WP201 media recovery preserves a substituted resource and refuses destructive rollback', async t => {
+  const s = mediaUpdate(t);
+  await assert.rejects(commitProjectTransaction({ ...s.input, publishManifest: async () => { throw Error('injected'); } }));
+  fs.writeFileSync(s.resource.path, 'foreign owner content');
+  await assert.rejects(recoverProjectTransaction({ ...s, publishManifest: manifestPublisher() }));
+  assert.equal(fs.readFileSync(s.resource.path, 'utf8'), 'foreign owner content');
+  assert.equal(fs.readFileSync(s.scenePath, 'utf8'), 'old scene');
+  assert.equal(fs.existsSync(journalPathFor(s.manifestPath)), true);
+});
+
+test('WP201 committed media recovery restores missing assets before exposing the referencing scene', async t => {
+  const s = mediaUpdate(t), actual = fs.promises;
+  const stop = { ...actual, async unlink(target) {
+    if (target === journalPathFor(s.manifestPath)) throw Error('after-commit');
+    return actual.unlink(target);
+  } };
+  await assert.rejects(commitProjectTransaction({ ...s.input, fsAdapter: stop }));
+  fs.writeFileSync(s.scenePath, 'old scene'); fs.unlinkSync(s.resource.path);
+  let scenePublished = false;
+  const inspect = { ...actual, async rename(from, to) {
+    if (to === s.scenePath) { assert.deepEqual(fs.readFileSync(s.resource.path), s.resource.content); scenePublished = true; }
+    return actual.rename(from, to);
+  } };
+  assert.equal((await recoverProjectTransaction({ ...s, publishManifest: manifestPublisher(), fsAdapter: inspect })).outcome, 'COMMITTED_CONVERGED');
+  assert.equal(scenePublished, true); assert.equal(fs.readFileSync(s.scenePath, 'utf8'), s.input.sceneContent);
+});
+
+for (const packetOnly of [false, true]) test(`WP201 media corrupt-commit repair retains update semantics with packetOnly=${packetOnly}`, async t => {
+  const s = mediaUpdate(t), tx = require('../../src/core/project-transaction-v1.cjs');
+  if (!packetOnly) await assert.rejects(commitProjectTransaction({ ...s.input, publishManifest: async () => { throw Error('injected'); } }));
+  fs.writeFileSync(commitPathFor(s.scenePath), '{broken');
+  let recovery;
+  await assert.rejects(packetOnly ? commitProjectTransaction(s.input)
+    : recoverProjectTransaction({ ...s, publishManifest: manifestPublisher() }), error => {
+    recovery = error.recovery; return error.code === 'E_PROJECT_COMMIT_CORRUPT';
+  });
+  const journal = { transactionId: recovery.transactionId };
+  assert.equal(fs.existsSync(journalPathFor(s.manifestPath)), !packetOnly);
+  const packetPath = tx.recoveryPacketPathFor(s.manifestPath, journal.transactionId);
+  const bytes = fs.readFileSync(packetPath), packet = JSON.parse(bytes);
+  assert.equal(packet.resourceMode, 'MEDIA_UPDATE_V1');
+  const input = { ...s, publishManifest: manifestPublisher(), decision: 'REPAIR_TO_BEFORE',
+    recoveryTransactionId: journal.transactionId, recoveryPacketDigest: require('node:crypto').createHash('sha256').update(bytes).digest('hex') };
+  await assert.rejects(tx.repairCorruptProjectCommit({ ...input, verifyAuthorityProof: async () => false }));
+  if (!packetOnly) assert.deepEqual(fs.readFileSync(s.resource.path), s.resource.content);
+  else assert.equal(fs.existsSync(s.resource.path), false);
+  await tx.repairCorruptProjectCommit({ ...input, verifyAuthorityProof: async p => p.transactionId === journal.transactionId && p.decision === 'REPAIR_TO_BEFORE' });
+  assert.equal(fs.readFileSync(s.scenePath, 'utf8'), 'old scene');
+  assert.equal(fs.readFileSync(s.manifestPath, 'utf8'), '{"revision":1}');
+  assert.equal(fs.existsSync(s.resource.path), false);
+});

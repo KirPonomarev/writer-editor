@@ -72,7 +72,12 @@ function exportHarness() {
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)), cloneJsonSafe: clone,
     REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA: 'private-test', activeReviewDocxExportAuthorityStore: null,
     notesStateDigest: () => '', commentStateDigest: () => 'empty',
+    readDurableDocxReviewReturnAuthorityStore: options => {
+      assert.equal(options.projectRoot, '/owned/Active project'); return h.durableStore || null;
+    },
   });
+  vm.runInContext(main.slice(main.indexOf('function readActiveDocxReviewReturnAuthorityStore('),
+    main.indexOf('// ROUND-01 (V3): import an export-time')), c);
   vm.runInContext(main.slice(main.indexOf('async function readFullManuscriptDocxReviewPacketExportSource('),
     main.indexOf('async function buildDocxReviewPacketBuffer(')), c);
   h.mutate = kind => {
@@ -95,6 +100,17 @@ function exportHarness() {
   });
   return h;
 }
+test('full export after a project switch retains its durable rounds and excludes the preceding project', async () => {
+  const h = exportHarness();
+  h.c.activeReviewDocxExportAuthorityStore = { lastRoundId: 'foreign', roundsById: { foreign: { projectRoot: '/owned/Other project' } } };
+  const previous = clone(h.c.activeReviewDocxExportAuthorityStore);
+  h.durableStore = { lastRoundId: 'old', roundsById: { old: { projectRoot: '/owned/Active project', recordVersion: 1 } } };
+  const source = await h.c.readFullManuscriptDocxReviewPacketExportSource({});
+  assert.deepEqual(Object.keys(source.pendingAuthorityStore.roundsById).sort(), ['old', 'round']);
+  for (const round of Object.values(source.pendingAuthorityStore.roundsById)) assert.equal(round.projectRoot, '/owned/Active project');
+  assert.deepEqual(previous, { lastRoundId: 'foreign', roundsById: { foreign: { projectRoot: '/owned/Other project' } } });
+  assert.equal(h.authorityActivations, 0); assert.equal(h.artifactWrites, 0);
+});
 test('actual full export reader and handler publish only active project source and authority', async () => {
   const h = exportHarness(), result = await h.run(); assert.equal(result.ok, true, JSON.stringify(result));
   assert.equal(h.artifactWrites, 1); assert.equal(h.authorityActivations, 1); assert.equal(h.keyImports, 1);

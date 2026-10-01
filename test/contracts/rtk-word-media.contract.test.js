@@ -450,3 +450,40 @@ test('W3: unchanged scaled review size binds local source, size-only edit is exp
   const manual=bridge.bindDocxReviewMedia(resized,map);assert.equal(manual.ok,false);assert.equal(manual.code,'DOCX_MEDIA_RESIZE_REQUIRES_MANUAL');assert.equal(manual.proof,undefined);
   const changed=structuredClone(resized);changed.documentMedia.placements[0].sha256='0'.repeat(64);assert.equal(bridge.bindDocxReviewMedia(changed,map).code,'DOCX_MEDIA_RETURN_MISMATCH');
 });
+
+test('Word inserted-image local DPI metadata survives canonical, editor and DOCX roundtrips; unknown extensions fail closed', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const { DocumentMedia } = await import('../../src/renderer/tiptap/documentMedia.mjs');
+  assert.equal(DocumentMedia.config.addAttributes().wordUseLocalDpi.default, undefined);
+  for (const value of [false, true]) {
+    const attrs = createImageAttrs(image(), { wordUseLocalDpi: value });
+    const original = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] };
+    let doc = original;
+    for (let cycle = 0; cycle < 2; cycle++) {
+      const bytes = await exported(doc);
+      const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assert.equal(preview.ok, true, JSON.stringify(preview));
+      const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+      assert.equal(plan.ok, true, JSON.stringify(plan));
+      doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+      assert.deepEqual(doc, original);
+    }
+  }
+  for (const value of [null, 'false', 0, {}]) assert.throws(() => createImageAttrs(image(), { wordUseLocalDpi: value }), /LOCAL_DPI/);
+  const good = await exported({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs: createImageAttrs(image(), { wordUseLocalDpi: false }) }] }] });
+  for (const mode of ['uri', 'value', 'duplicate', 'nested', 'unknown-child']) {
+    const bad = python(`import sys,io,zipfile,json,base64
+source,mode=json.loads(sys.stdin.read());z=zipfile.ZipFile(io.BytesIO(base64.b64decode(source)));parts={n:z.read(n) for n in z.namelist()};x=parts['word/document.xml']
+if mode=='uri':x=x.replace(b'28A0092B-C50C-407E-A947-70E740481C1C',b'00000000-C50C-407E-A947-70E740481C1C')
+if mode=='value':x=x.replace(b'val="0"',b'val="bad"')
+if mode=='duplicate':x=x.replace(b'</a:ext>',b'<a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"/></a:ext>')
+if mode=='nested':x=x.replace(b'<a:extLst>',b'<a:extLst><a:extLst>').replace(b'</a:extLst>',b'</a:extLst></a:extLst>')
+if mode=='unknown-child':x=x.replace(b'</a:ext>',b'<a:blur/></a:ext>')
+parts['word/document.xml']=x;out=io.BytesIO()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as w:
+ for n,b in parts.items():w.writestr(n,b)
+sys.stdout.buffer.write(out.getvalue())`, JSON.stringify([good.toString('base64'), mode]));
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bad).ok, false, mode);
+  }
+});

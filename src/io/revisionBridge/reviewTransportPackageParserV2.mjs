@@ -5160,12 +5160,30 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const blip = one(descendants, 'blip', NS_A), props = one(descendants, 'docPr', NS_WP);
     const extent = one(descendants.filter(t => inside(t, inline)), 'extent', NS_WP);
     const NS_PIC = 'http://schemas.openxmlformats.org/drawingml/2006/picture';
+    const NS_A14 = 'http://schemas.microsoft.com/office/drawing/2010/main';
     const supported = new Map([
+      [NS_A14, new Set(['useLocalDpi'])],
       [NS_WP, new Set(['inline', 'extent', 'effectExtent', 'docPr', 'cNvGraphicFramePr'])],
-      [NS_A, new Set(['graphicFrameLocks', 'graphic', 'graphicData', 'blip', 'stretch', 'fillRect', 'xfrm', 'off', 'ext', 'prstGeom', 'avLst'])],
+      [NS_A, new Set(['graphicFrameLocks', 'graphic', 'graphicData', 'blip', 'extLst', 'stretch', 'fillRect', 'xfrm', 'off', 'ext', 'prstGeom', 'avLst'])],
       [NS_PIC, new Set(['pic', 'nvPicPr', 'cNvPr', 'cNvPicPr', 'blipFill', 'spPr'])],
     ]);
     if (descendants.some(t => !supported.get(t.namespaceUri)?.has(t.localName))) fail('PICTURE_FEATURE_UNSUPPORTED');
+    // Office emits this bounded BLIP extension on ordinary inserted images.
+    // Preserve its boolean; never admit arbitrary extension payloads or nesting.
+    let useLocalDpi;
+    const dpiTokens = descendants.filter(t => t.namespaceUri === NS_A14);
+    const lists = descendants.filter(t => t.namespaceUri === NS_A && t.localName === 'extLst');
+    const extensionTokens = descendants.filter(t => t.namespaceUri === NS_A && t.localName === 'ext' && inside(t, blip));
+    if (dpiTokens.length || lists.length || extensionTokens.length) {
+      if (dpiTokens.length !== 1 || lists.length !== 1 || extensionTokens.length !== 1
+        || !inside(lists[0], blip) || !inside(extensionTokens[0], lists[0]) || !inside(dpiTokens[0], extensionTokens[0])
+        || plain(extensionTokens[0], 'uri').toUpperCase() !== '{28A0092B-C50C-407E-A947-70E740481C1C}'
+        || descendants.filter(t => inside(t, lists[0])).length !== 2
+        || plain(blip, 'cstate')) fail('PICTURE_DPI_EXTENSION');
+      const value = plain(dpiTokens[0], 'val');
+      if (!['', '0', '1', 'true', 'false'].includes(value)) fail('PICTURE_DPI_EXTENSION');
+      useLocalDpi = !['0', 'false'].includes(value);
+    }
     // Reject unrepresented crop, rotation, reflection, links, hidden images or
     // tracked image replacement; byte equality alone cannot prove appearance.
     if (tokens.some(t => inside(drawing, t) && t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))) fail('TRACKED_IMAGE_UNSUPPORTED');
@@ -5213,6 +5231,7 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
       || dimension('cy') + effectExtent.t + effectExtent.b > 8192 * 9525) fail('PICTURE_EFFECT_EXTENT');
     return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, mimeType, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
       ...(Object.values(effectExtent).some(Boolean) ? { effectExtent } : {}),
+      ...(useLocalDpi !== undefined ? { useLocalDpi } : {}),
       ...(correspondence.eligible ? { originalOffset: positions.originalOffset,
         ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments,
           ...(correspondence.fieldLinks.length ? { fieldLinks: correspondence.fieldLinks } : {}) } } : {}) } : {}) };
