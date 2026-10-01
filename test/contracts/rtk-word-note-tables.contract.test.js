@@ -171,3 +171,19 @@ test('implicit default table style is retained and unsupported defaults are neve
   const bad = bridge.buildDocxContentPreviewFromZipBytes(literal('endnote', xml, style.replace('</w:style>', '<w:rPr><w:b/></w:rPr></w:style>')));
   assert.equal(bad.ok, false);
 });
+
+test('native confirmation discloses table ownership, topology and property-only changes before Apply', async () => {
+  const fs = require('node:fs'), vm = require('node:vm'), { createRequire } = require('node:module');
+  const mainPath = require.resolve('../../src/main.js');
+  const source = fs.readFileSync(mainPath, 'utf8');
+  const fragment = source.slice(source.indexOf('async function confirmLocalWordNoteDelta('), source.indexOf('async function confirmLocalWordCommentDelta('));
+  let shown;
+  const ctx = vm.createContext({ require: createRequire(mainPath), manuscriptNoteModel: model, mainWindow: { isDestroyed: () => false }, dialog: { showMessageBox: async (_w, detail) => { shown = detail; return { response: 0 }; } } });
+  vm.runInContext(fragment, ctx);
+  const before = model.bindManuscriptPayload({ body: body(), kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
+  const after = JSON.parse(JSON.stringify(before));
+  after.body.content[1].attrs = { wordTable: { ...require('../../src/io/documentTableProperties.js').legacyTableProperties(2), grid: [2000, 3000], shading: 'ABCDEF' } };
+  assert.equal(await ctx.confirmLocalWordNoteDelta({ fileName: 'table.docx', changes: [{ operation: 'update', before, after }] }), false);
+  for (const text of ['Таблица 1: 2 строк, 2 столбцов', 'строка 2, столбец 2', '100 пт, 150 пт', '#ABCDEF', 'одинарная 0.5 пт', 'объединение 1 × 1', 'Оформление до:', 'Оформление после:']) assert(shown.detail.includes(text), text);
+  assert.equal(shown.defaultId, 0);
+});

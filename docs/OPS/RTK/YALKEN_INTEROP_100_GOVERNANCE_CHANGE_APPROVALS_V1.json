@@ -1111,7 +1111,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -1302,7 +1302,7 @@
       "filePath": "src/renderer/tiptap/documentTables.mjs",
       "sha256": "6a431951efbcbc01c4afdbaa70c38cc895da4137474ebc59da5cb6827afb4f3d",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "1c897094f32c6412797e8a5874ded136008213bb4eae6b4b1a2d9d2202047dd4",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "f1f3b6316aac2e209ea492f5bdba3161f39c5b6e2ba46be8ed720325dfee4dd2",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -1644,25 +1644,25 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "1b4e46291e43c311ff5fb26e5d584c3e9e4b52ea6257631b7d39b90cc84dc50f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "037264782cc2a8604e2297b6be3d80a6f3f73ef24b612aeda92aec5220f55a3d",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
+      "sha256": "4a6d4ccd95bc3e6728a732001f795fbe8d25eb86f67c68b7d92bba0145e8a8ea",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only."
+      "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "238ce2c92ba12d014f0dd028bb25dd5695fabb80d690c1d65b7fa26a3b379358",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "6ce0beb6c83874bec690c3e188e634f96715a02cbdb7b362bb4197deab2ec092",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "14e702a4f54934eda3e8e8110d28a0c370ddd7bd5352a6bbb937c09e1186cb4a",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9c7ca05d9656760bd5a28316f1b822a74339bf5f496343a0f860f6b758445558",
+      "sha256": "9ecd3121bb12cd103e2950ba8bbb04b670cfd23b517df43c3c5f5fc9f03d7a11",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "b0e227e7586a962c5865d9a5992a25a7da92964b701ba898be0303b229206ada",
+      "sha256": "cbd7cc6b508373af980f9847dacde8796891ef22fa06d6d75604ea3748e96236",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4ced5bc81e5430d5ef5ae1c2a4c1605bd8a8cfe3b732bd5870a34ad82806dcb1",
+      "sha256": "a2880cf15df66ee6935e89ae61c9dcae27673611b3a34e77dce7f2a8669c70a1",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c66ac1bc438016b7784da752ada0a23ac2c76b88ea1f866446f5f46204705edc",
+      "sha256": "b192d32885cf9a4a11539908aee28e0e88cf80bdd64d2ff23b230c05e3a99dca",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "691042cd6c52d609530b05714ed7440b39e96e66c42d018ac74d43388c5667f6",
+      "sha256": "5661f96c12be0ce256d737d34f301d6b1b2436749364a8a99f77b65b821f1a6d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "3f690479af74f3d410ec4812713f382e3c55695444de77e3ab0e2eb962f937cd",
+      "sha256": "ac5ab7ae0a8df50061cce789edb913396a82e9e5851451589d07a22354c8af07",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only."
@@ -2777,7 +2777,7 @@
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "sha256": "b40dd1d7543380395434e329b17ffa8647255f1409037f818b7ebacefc4148ef",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
@@ -2786,7 +2786,7 @@
     {
       "filePath": "src/renderer/tiptap/manuscriptNotes.mjs",
       "sha256": "e6d4894a65d85fd5bdb57347605ba6e659c92bf66d9fc2c878c7b0fa03a1f1a2",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
@@ -3433,8 +3433,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-note-tables.contract.test.js",
-      "sha256": "0edea75c6ae3e86d950062e740a08a531a3159e13a9e0e491c1a45fe57ea367c",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
@@ -3442,8 +3442,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-01--word-note-tables-mac.md",
-      "sha256": "d2014ac1300d9c93887673ebac57cea2aca14e48f4fbca0ab934288ebd993358",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "sha256": "ccf33d759b994c91171e9e507e665c50c779967d10b6ca05a3791ce099d5814c",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
@@ -3451,8 +3451,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
-      "sha256": "6a99d8083a73fbb018e9273d763590352ebcf2f71a9b85e7de9a912f7b6b5d80",
-      "approvedAtUtc": "2026-10-01T07:48:41.608491Z",
+      "sha256": "77fe4b3a2d735dc95af31d66cc7ae52ee583764f9b9d7fcc5b2f66ccb0126257",
+      "approvedAtUtc": "2026-10-01T07:57:15.739485Z",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001",
       "rationale": "Owner-authorized bounded Mac note-table body grammar, literal style inheritance and focused note authoring history. Existing Kernel, atomic notes and explicit return authority remain unchanged. Early SOURCE native changed exchange observed; final exact candidate SOURCE/PACKAGED qualification, required suites and delivery pending. No new dependencies, UI composition or runtime network. Exact-byte governance companions only.",
       "approved": true,
@@ -21295,6 +21295,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized bounded Mac inline PNG/JPEG add/delete/replace/resize return, private authenticated baseline, atomic existing-scene new-resource transaction and readable recovery. Exact Word extents and recognized local-DPI flag preserved; cross-project round retention repaired. Early native four-operation SOURCE evidence exists; final candidate SOURCE/PACKAGED and mandatory gates remain pending. No composite, floating/cropped/rotated image or entire-plan acceptance claim. Companion updates bind changed bytes only; historical oracles and cell counts remain unchanged."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "037264782cc2a8604e2297b6be3d80a6f3f73ef24b612aeda92aec5220f55a3d",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001",
+      "approvedAtUtc": "2026-10-01T06:38:06.345707Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Mac first-note scene return through existing authenticated baseline and atomic note commands. Missing and present notes state remain separately bound. Native SOURCE first footnote and PACKAGED first endnote applied without changing other-scene notes. Final exact candidate qualification and delivery remain pending; no new dependencies, UI or runtime network. Exact-byte governance companions only."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",

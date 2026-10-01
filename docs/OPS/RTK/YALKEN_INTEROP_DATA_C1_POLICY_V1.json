@@ -617,7 +617,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "037264782cc2a8604e2297b6be3d80a6f3f73ef24b612aeda92aec5220f55a3d"
+        "sha256": "4a6d4ccd95bc3e6728a732001f795fbe8d25eb86f67c68b7d92bba0145e8a8ea"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1677,15 +1677,15 @@
       },
       {
         "path": "test/contracts/rtk-word-note-tables.contract.test.js",
-        "sha256": "0edea75c6ae3e86d950062e740a08a531a3159e13a9e0e491c1a45fe57ea367c"
+        "sha256": "ebf05be597ef04b9d892c28e47bb3e7aad78c7ac0aba77e6b434f40a9a07d54b"
       },
       {
         "path": "docs/tasks/2026-10-01--word-note-tables-mac.md",
-        "sha256": "d2014ac1300d9c93887673ebac57cea2aca14e48f4fbca0ab934288ebd993358"
+        "sha256": "ccf33d759b994c91171e9e507e665c50c779967d10b6ca05a3791ce099d5814c"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOTE_TABLES_V1.json",
-        "sha256": "6a99d8083a73fbb018e9273d763590352ebcf2f71a9b85e7de9a912f7b6b5d80"
+        "sha256": "77fe4b3a2d735dc95af31d66cc7ae52ee583764f9b9d7fcc5b2f66ccb0126257"
       }
     ],
     "followupRepair": {

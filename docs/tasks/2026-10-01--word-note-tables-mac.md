@@ -21,3 +21,5 @@ Existing note surface and table keyboard behavior only. Lazyweb metadata researc
 - Focused note/table/bridge chain: 183 tests passed, zero skips/todo. Final frozen SOURCE/PACKAGED exchange, restart, independent artifact inventory, full RTK, CI and merged verification are pending.
 
 Limits: flat tables only; 128 logical paragraph leaves, existing table grid bounds. Nested tables, note media, conditional table styles, arbitrary cell margins and local table-insertion toolbar remain outside this delivery. Existing note surface has limited horizontal space for wide tables; no UI layout acceptance is claimed.
+
+- Candidate bb4c native SOURCE cell edit and PACKAGED footnote conversion plus new Word table row both applied successfully. The shared confirmation now includes table dimensions, cell ownership/spans, grid widths, borders and fill, so property-only changes are reviewable. This final description change requires renewed exact-candidate proof; bb4c observations remain predecessor evidence only.

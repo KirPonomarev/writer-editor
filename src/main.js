@@ -10804,7 +10804,21 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
     if (!value) return '—';
     const alignments = { left: 'по левому краю', center: 'по центру', right: 'по правому краю', justify: 'по ширине' };
     const marks = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание' };
-    return manuscriptNoteModel.validateNoteBody(value.body).paragraphs.map(({ paragraph, list }, index) => {
+    const tables = new Map();
+    const borderNames = { top: 'верх', bottom: 'низ', left: 'слева', right: 'справа', insideH: 'между строками', insideV: 'между столбцами' };
+    const borders = value => Object.entries(value || {}).map(([edge, b]) => `${borderNames[edge]}: ${['none', 'nil'].includes(b.style) ? 'нет' : `${b.style === 'double' ? 'двойная' : 'одинарная'} ${b.size / 8} пт, ${b.color === 'auto' ? 'автоцвет' : '#' + b.color}`}`).join('; ') || 'не заданы';
+    const fill = value => value == null ? 'не задана' : value === 'none' ? 'нет' : '#' + value;
+    return manuscriptNoteModel.validateNoteBody(value.body).paragraphs.map(({ paragraph, list, table }, index) => {
+      let location = '';
+      if (table) {
+        if (!tables.has(table.tableId)) {
+          tables.set(table.tableId, tables.size + 1);
+          const props = table.wordTable || require('./io/documentTableProperties.js').legacyTableProperties(table.columnCount);
+          location += `Таблица ${tables.size}: ${table.rowCount} строк, ${table.columnCount} столбцов. Ширины столбцов: ${props.grid.map(w => w == null ? 'авто' : w / 20 + ' пт').join(', ')}. Ширина таблицы: ${props.widthDxa == null ? 'авто' : props.widthDxa / 20 + ' пт'}. Раскладка: ${props.layout === 'fixed' ? 'фиксированная' : 'автоматическая'}. Заливка: ${fill(props.shading)}. Границы: ${borders(props.borders)}.\n`;
+        }
+        location += `Таблица ${tables.get(table.tableId)}, строка ${table.row + 1}, столбец ${table.column + 1}; ячейка ${table.header ? 'заголовка' : 'обычная'}, объединение ${table.rowspan} × ${table.colspan}.\n`;
+        if (table.paragraphIndex === 0 && table.wordCell) location += `Ячейка: заливка ${fill(table.wordCell.shading)}; границы ${borders(table.wordCell.borders)}.\n`;
+      }
       const runs = (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return 'Перенос строки';
         const properties = (node.marks || []).flatMap(mark => {
@@ -10816,7 +10830,7 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
         });
         return `«${node.text}»: ${properties.join(', ') || 'обычное, параметры абзаца'}`;
       });
-      return `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
+      return location + `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
     }).join('\n');
   };
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';

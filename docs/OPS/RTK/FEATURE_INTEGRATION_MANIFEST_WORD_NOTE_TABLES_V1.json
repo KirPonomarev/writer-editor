@@ -25,7 +25,8 @@
     "src/renderer/editor.bundle.js",
     "src/renderer/tiptap/index.js",
     "src/renderer/tiptap/runtimeBridge.js",
-    "src/renderer/editor.js"
+    "src/renderer/editor.js",
+    "src/main.js"
   ],
   "scopeOut": [
     "package.json",
@@ -86,7 +87,8 @@
     "dfdf6645 notes support paragraphs/lists but reject native table bodies. Existing main-document table parser/model/export/editor available.",
     "17 focused tests passed; native route and final delivery pending. Generated renderer bundle must be refreshed from changed renderer sources before copy verification.",
     "Early native table note import succeeded. Cmd+Z with note focus incorrectly changes main scene; route existing history commands to focused note working state, clear note history on entity replacement, retain existing capability/persistence path. Native paste under investigation; no acceptance claim.",
-    "Native changed note-table exchange now succeeds. Paste focus signal is cleared on window blur and not refreshed on window focus; refresh existing signal on focus without broadening target or platform authority."
+    "Native changed note-table exchange now succeeds. Paste focus signal is cleared on window blur and not refreshed on window focus; refresh existing signal on focus without broadening target or platform authority.",
+    "Frozen bb4c SOURCE and PACKAGED changed native returns succeeded; PACKAGED added a table row. Existing confirmation enumerates paragraphs but omits table ownership and geometry. Extend its existing bounded text description with table/cell structure and literal properties before final acceptance. No visual composition change."
   ],
   "targetOnly": [
     "Native flat note table content, cell lists and merge topology remain TARGET until both Mac runtime proofs.",
