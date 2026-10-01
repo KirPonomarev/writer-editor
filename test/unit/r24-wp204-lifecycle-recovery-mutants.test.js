@@ -107,7 +107,7 @@ function loadMutant(mutant) {
   const dir = path.join(root, 'core');
   fs.mkdirSync(dir);
   fs.mkdirSync(path.join(root, 'io'));
-  for (const basename of ['docxHyperlinks.cjs', 'inlineTypography.cjs', 'documentTables.js', 'documentTableProperties.js']) {
+  for (const basename of ['docxHyperlinks.cjs', 'inlineTypography.cjs', 'documentTables.js', 'documentTableProperties.js', 'documentMedia.js', 'documentJpeg.js']) {
     fs.copyFileSync(path.join(ROOT, 'src', 'io', basename), path.join(root, 'io', basename));
   }
   fs.writeFileSync(path.join(dir, MODULE_BASENAME), source.replace(mutant.find, mutant.replace));

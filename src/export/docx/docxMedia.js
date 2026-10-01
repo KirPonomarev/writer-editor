@@ -6,11 +6,12 @@ const attribute = value => escapeXml(value).replaceAll('\n', '&#10;').replaceAll
 // Pure package construction. The caller supplies a validated, revision-bound
 // document; these relationships are document-local identifiers, never paths
 // accepted from renderer or imported relationship targets.
-function buildMediaPackage(doc) {
+function buildMediaPackage(doc, { firstPlacementId = 0 } = {}) {
   const graph = documentMedia(doc);
   const byId = new Map(graph.assets.map((asset, index) => [asset.attrs.assetId, { ...asset, relationshipId: `yalkenMedia${index + 1}` }]));
   const extension = asset => asset.attrs.mimeType === 'image/jpeg' ? 'jpg' : 'png';
-  let placementId = 0;
+  if (!Number.isSafeInteger(firstPlacementId) || firstPlacementId < 0 || firstPlacementId > 3000000) throw Error('DOCX_MEDIA_PLACEMENT_ID');
+  let placementId = firstPlacementId;
   return {
     parts: [...byId.values()].map(a => ({ name: `word/media/${a.attrs.sha256}.${extension(a)}`, data: a.bytes })),
     contentTypes: [...new Set([...byId.values()].map(a => `<Default Extension="${extension(a)}" ContentType="${a.attrs.mimeType}"/>`))].join(''),
@@ -27,4 +28,15 @@ function buildMediaPackage(doc) {
     },
   };
 }
-module.exports = { buildMediaPackage };
+// Merge shared content-addressed image parts only after exact byte equality.
+function mergeMediaParts(...groups) {
+  const result = new Map();
+  for (const part of groups.flat()) {
+    const old = result.get(part.name);
+    if (old && !Buffer.from(old.data).equals(Buffer.from(part.data))) throw Error('DOCX_MEDIA_PART_COLLISION');
+    if (!old) result.set(part.name, part);
+  }
+  return [...result.values()];
+}
+function mergeMediaTypes(...types) { return [...new Set(types.join('').match(/<Default[^>]+\/>/gu) || [])].join(''); }
+module.exports = { buildMediaPackage, mergeMediaParts, mergeMediaTypes };

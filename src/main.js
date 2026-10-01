@@ -5996,7 +5996,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
           await revalidate();
           if (plan.replay || plan.unchanged) return { ok: true, replay: plan.replay === true, unchanged: plan.unchanged === true, writerCalled: false, operationId: plan.operationId };
           const written = await writeProjectNotesDocument(notesContext, before.current, plan.document, NOTES_UPDATE_COMMAND_ID,
-            { beforeWrite: revalidate, inDiskOperation: true });
+            { beforeWrite: revalidate, inDiskOperation: true, mediaCohort: { lease, scenePath: file, revision: generation } });
           if (!written.ok) return written;
           const after = await readProjectNotesDocument(notesContext);
           if (!after.ok || notesStateDigest(after.current.document) !== notesStateDigest(plan.document)) throw rejected('NOTE_RETURN_READBACK_FAILED');
@@ -10821,6 +10821,10 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
       }
       const runs = (paragraph.content || []).map(node => {
         if (node.type === 'hardBreak') return 'Перенос строки';
+        if (node.type === 'image') {
+          const size = wordMediaData.imageDisplaySize(node.attrs);
+          return `Изображение «${node.attrs.displayName}»: ${node.attrs.width} × ${node.attrs.height} пикселей; размер ${Math.round(size.cx / 36000) / 10} × ${Math.round(size.cy / 36000) / 10} см; описание «${node.attrs.alt}»; отпечаток ${node.attrs.sha256}.`;
+        }
         const properties = (node.marks || []).flatMap(mark => {
           if (marks[mark.type]) return [marks[mark.type]];
           if (mark.type === 'link') return [`ссылка: ${mark.attrs.href}`];
@@ -15194,6 +15198,38 @@ async function writeProjectNotesDocument(context, current, document, commandId, 
     ),
     now,
   });
+  if (options.mediaCohort) {
+    const mediaDoc = { type: 'doc', content: document.notes.flatMap(note => note.manuscript?.body.content || []) };
+    const manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
+    if (path.dirname(manifestPath) !== context.projectRoot) throw Error('NOTE_MEDIA_PROJECT_STALE');
+    const resources = await prepareWordMediaReturnResources(mediaDoc, manifestPath);
+    if (resources.length) {
+      const { lease, scenePath, revision } = options.mediaCohort;
+      const authority = await getMainProjectManifestAuthority();
+      const sceneContent = await fs.readFile(scenePath, 'utf8');
+      const manifestContent = await fs.readFile(manifestPath, 'utf8');
+      if (JSON.parse(manifestContent).projectId !== context.projectId) throw Error('NOTE_MEDIA_PROJECT_STALE');
+      await options.beforeWrite();
+      const freshResources = await prepareWordMediaReturnResources(mediaDoc, manifestPath);
+      if (JSON.stringify(freshResources) !== JSON.stringify(resources)) throw Error('NOTE_MEDIA_RESOURCE_RACE');
+      await options.beforeWrite();
+      const result = await commitProjectTransaction({ scenePath, sceneContent, expectedSceneContent: sceneContent,
+        manifestPath, manifestContent, expectedManifestContent: manifestContent, revision,
+        mediaUpdateResources: resources,
+        noteState: { mode: 'MANUSCRIPT_BODY_UPDATE_V1', beforeText: current.sourceText,
+          afterText: `${JSON.stringify(document, null, 2)}\n` },
+        verifyManifestContinuation: request => authority.verifyManifestContinuation({ ...request, projectId: context.projectId }),
+        publishManifest: async ({ manifestPath: targetPath, expectedText, nextText, reason }) => {
+          if (targetPath !== manifestPath) throw Error('NOTE_MEDIA_MANIFEST_PATH');
+          await authority.commitManifestText({ projectId: context.projectId, lease, targetPath, expectedText, nextText,
+            label: `manuscript note media:${reason}` });
+        },
+      });
+      if (result.success !== true) return makeNotesCommandError(commandId, 'E_NOTES_STORAGE_WRITE_FAILED', 'NOTES_STORAGE_WRITE_FAILED', { recovery });
+      if ((await prepareWordMediaReturnResources(mediaDoc, manifestPath)).length) throw Error('NOTE_MEDIA_READBACK');
+      return { ok: true, recovery };
+    }
+  }
   const writeResult = await writeNotesOrSettingsThroughAtomicGateway({
     filePath: notesPath,
     content: `${JSON.stringify(document, null, 2)}\n`,
@@ -15321,7 +15357,7 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
         };
         await beforeWrite();
         const written = await writeProjectNotesDocument(context, fresh.current, result.document, commandId,
-          { ...options, beforeWrite, inDiskOperation: true });
+          { ...options, beforeWrite, inDiskOperation: true, mediaCohort: { lease, scenePath: source.filePath, revision: snapshot.generation } });
         if (!written.ok) return written;
         return { ok: true, note: result.note,
           receipt: buildNotesMutationReceipt({ commandId, mutation, result, recovery: written.recovery }) };

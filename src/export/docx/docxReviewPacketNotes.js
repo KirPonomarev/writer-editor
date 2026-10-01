@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 const { buildDocxRunContentXml, segmentDocxTextForSerialization, escapeXml } = require('./docxTextXml.js');
 const manuscriptModel = require('../../core/word-manuscript-notes-v1.cjs');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
@@ -138,9 +139,9 @@ function noteMarkersForBlock(projection, block) {
 }
 
 function notePackageParts(projection, { firstNumId = 1 } = {}) {
-  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [] };
+  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '' };
   demand(projection.schemaVersion === DOCUMENT_NOTES_SCHEMA, 'DOCX_NOTES_EXPORT_SCHEMA_INVALID');
-  const entries = [], types = [], relationships = [], numberings = [];
+  const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [];
   demand(Number.isSafeInteger(firstNumId) && firstNumId > 0 && firstNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');
   let nextNumId = firstNumId;
   for (const kind of ['footnote', 'endnote']) {
@@ -148,6 +149,9 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
     if (!bindings.length) continue;
     const style = kind === 'footnote' ? 'Footnote' : 'Endnote';
     const links = new Map();
+    const media = buildMediaPackage({ type: 'doc', content: bindings.flatMap(binding => binding.richBody?.content || []) },
+      { firstPlacementId: kind === 'footnote' ? 1000000 : 2000000 });
+    mediaParts.push(...media.parts); mediaTypes.push(media.contentTypes);
     const separator = `<w:${kind} w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:${kind}>`
       + `<w:${kind} w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:${kind}>`;
     const body = bindings.map(binding => {
@@ -163,6 +167,7 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
       const { paragraph, list } = rows[index] || {};
       const numPr = list ? `<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${ids.get(list.numId)}"/></w:numPr>` : '';
       const runs = paragraph ? (paragraph.content || []).map(node => {
+        if (node.type === 'image') return media.drawing(node.attrs);
         if (node.type === 'hardBreak') return '<w:r><w:br/></w:r>';
         const xml = require('./docxMinBuilder.js').buildDocxMarkedRunXml(node, true, true);
         const href = node.marks?.find(mark => mark.type === 'link')?.attrs?.href;
@@ -175,11 +180,11 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
     })}</w:${kind}>`; }).join('');
     const name = `${kind}s.xml`;
     entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });
-    if (links.size) entries.push({ name: `word/_rels/${name}.rels`, data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href, id]) => `<Relationship Id="${id}" Type="${REL_NS}hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('')}</Relationships>` });
+    if (links.size || media.relationships) entries.push({ name: `word/_rels/${name}.rels`, data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href, id]) => `<Relationship Id="${id}" Type="${REL_NS}hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('')}${media.relationships}</Relationships>` });
     types.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>`);
     relationships.push(`<Relationship Id="rIdYalken${style}s" Type="${REL_NS}${kind}s" Target="${name}"/>`);
   }
-  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings };
+  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings, mediaParts: mergeMediaParts(mediaParts), mediaTypes: mergeMediaTypes(...mediaTypes) };
 }
 
 function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) {

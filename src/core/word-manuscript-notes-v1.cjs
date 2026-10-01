@@ -4,6 +4,7 @@ const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
 const { normalizeDocxHttpHref } = require('../io/docxHyperlinks.cjs');
 const { normalizeFontFamily, normalizeFontSize } = require('../io/inlineTypography.cjs');
+const { documentMedia, validateImageAttrs } = require('../io/documentMedia.js');
 const { tableParagraphs } = require('../io/documentTables.js');
 
 const MODE = 'MANUSCRIPT_POINT_REBASE_V1';
@@ -79,6 +80,11 @@ function validateNoteBody(body) {
         size++;
         return '\n';
       }
+      if (node?.type === 'image') {
+        need(keys(node, ['type', 'attrs']), 'NOTE_BODY_IMAGE');
+        validateImageAttrs(node.attrs);
+        return '';
+      }
       need(keys(node, ['type', 'text', 'marks']) && node.type === 'text'
         && typeof node.text === 'string' && node.text.length > 0, 'NOTE_BODY_INLINE');
       need(!/[\u0000-\u0008\u000B-\u001F\uFFFE\uFFFF]/u.test(node.text)
@@ -110,6 +116,7 @@ function validateNoteBody(body) {
     }).join('');
   }).join('\n');
   need(size <= LIMITS.text && Buffer.byteLength(JSON.stringify(body)) <= LIMITS.bytes, 'NOTE_BODY_BUDGET');
+  documentMedia(body);
   return { body: clone(body), text, paragraphs };
 }
 
@@ -211,7 +218,7 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
 function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterContent }) {
   if (value == null) return null;
   need(keys(value, ['mode', 'beforeText', 'afterText'])
-    && [MODE, 'MANUSCRIPT_IMPORT_V1'].includes(value.mode)
+    && [MODE, 'MANUSCRIPT_IMPORT_V1', 'MANUSCRIPT_BODY_UPDATE_V1'].includes(value.mode)
     && (value.beforeText === null || typeof value.beforeText === 'string')
     && typeof value.afterText === 'string'
     && [value.beforeText || '', value.afterText].every(s => Buffer.byteLength(s) <= 4 * LIMITS.bytes), 'NOTE_COHORT_SHAPE');
@@ -219,6 +226,31 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
     const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent });
     need(expected && expected.afterText === value.afterText, 'NOTE_COHORT_REBASE');
     return expected;
+  }
+  if (value.mode === 'MANUSCRIPT_BODY_UPDATE_V1') {
+    need(typeof beforeContent === 'string' && beforeContent === afterContent && value.beforeText !== null, 'NOTE_COHORT_UNCHANGED_SCENE');
+    const before = validateManuscriptDocument(JSON.parse(value.beforeText), projectId);
+    const after = validateManuscriptDocument(JSON.parse(value.afterText), projectId);
+    const byId = new Map(before.notes.map(note => [note.id, note]));
+    need(byId.size === before.notes.length && new Set(after.notes.map(note => note.id)).size === after.notes.length, 'NOTE_COHORT_DUPLICATE_ID');
+    need(after.notes.length >= before.notes.length, 'NOTE_COHORT_OLDER_STATE');
+    for (const old of before.notes) {
+      const next = after.notes.find(note => note.id === old.id);
+      need(next && (old.manuscript || JSON.stringify(next) === JSON.stringify(old)), 'NOTE_COHORT_PRIVATE_STATE');
+    }
+    const text = sceneText(afterContent);
+    for (const note of after.notes) {
+      const old = byId.get(note.id);
+      if (JSON.stringify(old) === JSON.stringify(note)) continue;
+      need(note.manuscript && (!old || old.manuscript), 'NOTE_COHORT_MANUSCRIPT_ONLY');
+      const ref = note.manuscript.reference;
+      if (ref.sceneId !== sceneId) need(old && JSON.stringify(old.manuscript.reference) === JSON.stringify(ref), 'NOTE_COHORT_OTHER_SCENE_REFERENCE');
+      else need(ref.sourceTextSha256 === sha(text) && boundary(text, ref.offsetUtf16), 'NOTE_COHORT_SOURCE');
+    }
+    // Only existing return receipts and clock metadata may change at the root.
+    const root = doc => Object.fromEntries(Object.entries(doc).filter(([key]) => !['notes', 'wordNoteReturnReceipts', 'updatedAtUtc'].includes(key)));
+    need(JSON.stringify(root(before)) === JSON.stringify(root(after)), 'NOTE_COHORT_ROOT_STATE');
+    return clone(value);
   }
   need(beforeContent === null, 'NOTE_COHORT_CREATE_ONLY');
   const before = value.beforeText === null ? { schemaVersion: 1, projectId, notes: [] } : JSON.parse(value.beforeText);

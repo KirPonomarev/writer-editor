@@ -16,6 +16,7 @@ function effectiveBody(paragraphs, defaults) {
     const runs = [];
     for (const node of paragraph.content || []) {
       if (node.type === 'hardBreak') { runs.push({ type: 'hardBreak' }); continue; }
+      if (node.type === 'image') { runs.push({ type: 'image', attrs: node.attrs }); continue; }
       const marks = [], style = { ...(defaults?.fontSize ? { fontSize: defaults.fontSize } : {}) };
       for (const mark of node.marks || []) {
         if (mark.type === 'textStyle') Object.assign(style, Object.fromEntries(Object.entries(mark.attrs || {}).filter(([, v]) => v != null)));
@@ -84,7 +85,8 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
   for (const binding of privateBindings) {
     const matches = returnedNotes.map((note, i) => ({ note, i })).filter(({ note, i }) => !privateCandidates.has(i)
       && !note.transportIdentity && note.kind === binding.kind && note.paragraphIndex === binding.documentParagraphIndex
-      && note.offsetUtf16 === binding.offsetUtf16 && stable(note.paragraphs) === stable(binding.paragraphs));
+      && note.offsetUtf16 === binding.offsetUtf16 && stable(note.paragraphs) === stable(binding.paragraphs)
+      && !require('../io/documentMedia.js').documentMedia(note.body).assets.length);
     need(matches.length === 1, 'NOTE_RETURN_PRIVATE_SELECTION_CHANGED'); privateCandidates.add(matches[0].i);
   }
   const seen = new Set(), candidates = [];

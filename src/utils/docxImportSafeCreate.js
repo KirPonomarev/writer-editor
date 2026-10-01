@@ -1270,11 +1270,11 @@ async function validateExistingDocxImportReceipt(options) {
 // Derive every asset path from validated canonical bytes. Existing content-
 // addressed assets are reused only after exact readback; no incoming path is
 // trusted and no image becomes an independent filesystem writer.
-async function prepareDocxMediaEntries(content, projectRoot) {
+async function prepareDocxMediaEntries(content, projectRoot, notes = []) {
   const { parseObservablePayload } = await import('../renderer/documentContentEnvelope.mjs');
   const parsed = parseObservablePayload(content);
   if (parsed.issue) throw Error('DOCX_MEDIA_DOCUMENT_INVALID');
-  const graph = documentMedia(parsed.doc), entries = [];
+  const graph = documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...notes.flatMap(note => note.body.content)] }), entries = [];
   for (const asset of graph.assets) {
     const target = path.join(projectRoot, asset.attrs.assetPath);
     if (!isPathInsideBoundary(projectRoot, target, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');
@@ -1298,8 +1298,8 @@ async function prepareDocxMediaEntries(content, projectRoot) {
   return entries;
 }
 
-async function verifyDocxMediaAssetFiles(content, projectRoot) {
-  const missing = await prepareDocxMediaEntries(content, projectRoot);
+async function verifyDocxMediaAssetFiles(content, projectRoot, notes = []) {
+  const missing = await prepareDocxMediaEntries(content, projectRoot, notes);
   if (missing.length) throw Error('DOCX_MEDIA_FILES_MISSING');
 }
 
@@ -1397,7 +1397,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
     );
   }
   let mediaEntries;
-  try { mediaEntries = await prepareDocxMediaEntries(validated.value.entry.content, projectRoot); }
+  try { mediaEntries = await prepareDocxMediaEntries(validated.value.entry.content, projectRoot, validated.value.entry.notes); }
   catch (error) { return buildError('DOCX_SAFE_CREATE_MEDIA_INVALID', 'docx_import_media_invalid', { code: error.message }); }
   const transactionAuthority = typeof options.transactionAuthority === 'object'
     && options.transactionAuthority !== null
@@ -1580,7 +1580,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
     projectRoot, romanRoot, targetPath, importOperationId, operationNonce, projectId,
     transactionAuthority, manifestPath: options.manifestPath });
   if (!checked.ok) return checked;
-  await verifyDocxMediaAssetFiles(normalizedEntry.content, projectRoot);
+  await verifyDocxMediaAssetFiles(normalizedEntry.content, projectRoot, validated.value.entry.notes);
   await options.assertPublication();
 
   return {

@@ -1,7 +1,7 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
 const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
-const { buildMediaPackage } = require('./docxMedia.js');
+const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
 const { tableParagraphs, renderTableParagraphs } = require('../../io/documentTables.js');
 const ZIP_CRC32_TABLE = (() => {
@@ -430,7 +430,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>${media.contentTypes}${notes.contentTypes}
+  <Default Extension="xml" ContentType="application/xml"/>${mergeMediaTypes(media.contentTypes, notes.mediaTypes)}${notes.contentTypes}
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
   <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
 ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
@@ -471,7 +471,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/settings.xml', data: '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>' },
     ...styleParts,
-    ...media.parts,
+    ...mergeMediaParts(media.parts, notes.mediaParts),
     ...notes.entries,
   ]);
 }

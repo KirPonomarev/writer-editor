@@ -3693,8 +3693,10 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       const noteLinks = parts[noteRelationshipPart] === undefined ? new Map()
         : reviewHyperlinkRelationships(parts[noteRelationshipPart], budgets, cryptoPort, budgetState);
       for (const link of noteLinks.values()) {
-        requireNote(link.type === HYPERLINK_REL_TYPE && link.mode === 'External', 'NOTE_RELATIONSHIP_UNSUPPORTED');
-        normalizeDocxHttpHref(link.target);
+        if (link.type === HYPERLINK_REL_TYPE && link.mode === 'External') normalizeDocxHttpHref(link.target);
+        else requireNote(link.type === 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
+          && ['', 'Internal'].includes(link.mode) && /^media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:png|jpe?g)$/u.test(link.target)
+          && !link.target.includes('..'), 'NOTE_RELATIONSHIP_UNSUPPORTED');
       }
       const types = contentTypes.filter(item => item.partName === `/${partName}`);
       requireNote(types.length === 1 && types[0].contentType === `application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml`, 'PART_CONTENT_TYPE');
@@ -3702,7 +3704,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       reasons.push(...scan.diagnostics);
       const roots = scan.tokens.filter(token => token.depth === 0);
       requireNote(roots.length === 1 && isWordToken(roots[0], `${kind}s`), 'PART_ROOT');
-      const ids = new Set();
+      const ids = new Set(), usedImages = new Set();
       for (const entry of directChildTokensWithin(scan, roots[0])) {
         requireNote(isWordToken(entry, kind), 'PART_CHILD');
         const id = attr(entry, 'id', W_NS), type = attr(entry, 'type', W_NS);
@@ -3744,6 +3746,10 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
         let body = ps.map(paragraph => {
           for (const token of childTokensWithin(scan, paragraph)) {
             const property = token.path.includes('pPr') || token.path.includes('rPr');
+            if (isWordToken(token, 'drawing') || token.path.includes('drawing')) {
+              requireNote(!property && (!isWordToken(token, 'drawing') || token.path.at(-2) === 'r'), 'NOTE_IMAGE_LOCATION');
+              continue; // Entire drawing subtree is validated by the strict media reader below.
+            }
             if (['t', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen', `${kind}Ref`].includes(token.localName)) {
               requireNote(token.namespaceUri === W_NS && token.path.at(-2) === 'r' && !property, 'NOTE_ATOM_LOCATION');
               if (token.localName === `${kind}Ref`) markCount++;
@@ -3788,10 +3794,14 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
           requireNote(logical && logical.length <= 128, 'NOTE_PARAGRAPH_STRUCTURE');
           body = logical.map(record => tokenTextSemantic(unstrippedXml, bodyScan, record.token));
         } else requireNote(ps.length <= 128, 'NOTE_PARAGRAPH_STRUCTURE');
+        const mediaReferences = extractDocumentMediaReferencesV1(bodyXml, { budgets, cryptoPort,
+          relationshipsXml: parts[noteRelationshipPart] || '', contentTypesXml: parts['[Content_Types].xml'] });
+        for (const ref of mediaReferences) usedImages.add(ref.embed);
         bodySources.push({ kind, nativeId: id, transportIdentity, relationshipPart: noteRelationshipPart, documentXml: bodyXml });
         noteByKey.set(`${kind}:${id}`, body);
         requireNote(noteByKey.size <= 256, 'NOTE_COUNT');
       }
+      for (const [id, link] of noteLinks) if (link.type.endsWith('/image')) requireNote(usedImages.has(id), 'NOTE_UNUSED_IMAGE');
     }
     const used = new Set();
     for (const reference of refs) {
