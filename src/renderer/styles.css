@@ -7802,6 +7802,7 @@ body.dark-theme .status-bar {
 
 .notes-workspace {
   width: min(100%, 920px);
+  container: notes-workspace / inline-size;
   min-height: min(680px, calc(100vh - 168px));
   color: var(--foreground);
 }
@@ -7928,7 +7929,7 @@ body.dark-theme .status-bar {
 .manuscript-note-editor { display: grid; gap: 12px; min-width: 0; }
 .manuscript-note-editor[hidden] { display: none; }
 .manuscript-note-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
-.manuscript-note-body { border: 1px solid var(--toolbar-control-border); border-radius: 6px; }
+.manuscript-note-body { min-width: 0; border: 1px solid var(--toolbar-control-border); border-radius: 6px; }
 .manuscript-note-body .tiptap { min-height: 140px; max-height: 45vh; overflow: auto; padding: 12px; color: var(--foreground); font: inherit; }
 .manuscript-note-body .tiptap p { margin: 0 0 0.5em; }
 .manuscript-note-reference { vertical-align: super; font: inherit; font-size: 0.75em; color: var(--foreground); background: transparent; border: 0; padding: 0 3px; cursor: pointer; }
@@ -8020,7 +8021,21 @@ body.dark-theme .status-bar {
   display: grid;
   grid-template-rows: auto auto minmax(160px, 1fr) auto;
   gap: 12px;
+  min-width: 0;
   min-height: 0;
+}
+
+/* The notes surface can be narrow even in a wide application window. */
+@container notes-workspace (max-width: 600px) {
+  .notes-workspace__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .notes-list {
+    max-height: 220px;
+    border-right: 0;
+    border-bottom: 1px solid var(--toolbar-control-border);
+  }
 }
 
 .notes-detail__body-input {
