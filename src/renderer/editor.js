@@ -8513,6 +8513,8 @@ function composeDocumentContent() {
 
 function composeEditorSnapshot() {
   return {
+    projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
+    documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '',
     content: composeDocumentContent(),
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
@@ -10576,8 +10578,9 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
   row.addEventListener('dragover', (event) => {
     if (!event.dataTransfer) return;
     if (!effectiveDocumentId || activeTab !== 'roman') return;
-    const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
-    if (!draggedId || draggedId === effectiveDocumentId) return;
+    // HTML protected mode exposes formats during hover, but not their data.
+    // The drop handler and Main still validate the actual node intent.
+    if (!Array.from(event.dataTransfer.types || []).includes('application/x-yalken-tree-node-id')) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   });
@@ -23559,17 +23562,20 @@ window.addEventListener('resize', () => {
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });
 
+function treeReplacementRefusalReason(payload) {
+  if (payload?.treeReplacement !== true || payload.treePublication === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
+  if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0) return 'GENERATION_INVALID';
+  if (payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
+  if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
+  if (!currentDocumentId || payload.expectedDocumentId !== currentDocumentId) return 'SOURCE_DOCUMENT_MISMATCH';
+  if (typeof payload.documentId !== 'string' || !payload.documentId || payload.documentId === currentDocumentId) return 'TARGET_DOCUMENT_INVALID';
+  if (!['scene', 'chapter-file'].includes(payload.kind) || payload.metaEnabled !== true) return 'DOCUMENT_KIND_INVALID';
+  if (typeof payload.content !== 'string' || typeof payload.expectedContent !== 'string') return 'CONTENT_INVALID';
+  return composeDocumentContent() === payload.expectedContent ? '' : 'CONTENT_MISMATCH';
+}
+
 function isTreeReplacementCurrent(payload) {
-  return Boolean(payload?.treeReplacement === true && payload.treePublication !== true && payload.treeDetached !== true
-    && Number.isSafeInteger(payload.expectedGeneration) && payload.expectedGeneration >= 0
-    && payload.expectedGeneration === localEditGeneration
-    && currentProjectId && payload.projectId === currentProjectId
-    && currentDocumentId && payload.expectedDocumentId === currentDocumentId
-    && typeof payload.documentId === 'string' && payload.documentId
-    && payload.documentId !== currentDocumentId
-    && ['scene', 'chapter-file'].includes(payload.kind) && payload.metaEnabled === true
-    && typeof payload.content === 'string' && typeof payload.expectedContent === 'string'
-    && composeDocumentContent() === payload.expectedContent);
+  return treeReplacementRefusalReason(payload) === '';
 }
 
 function applyTreeDetachedPublication(payload) {
@@ -23591,7 +23597,7 @@ function applyTreeDetachedPublication(payload) {
   void refreshManuscriptNoteReferences();
   void refreshVisibleCommentProjection();
   if (currentRightTab === 'history') refreshSceneHistory('');
-  updateStatusText('Правки сохранены в редакторе. Сохраните восстановленную копию через «Сохранить»', { visible: true });
+  updateStatusText('Отмена структуры завершена, но появились новые правки. Текст остаётся в редакторе; не закрывайте его до сохранения или копирования.', { visible: true });
   return true;
 }
 
@@ -23627,6 +23633,9 @@ if (window.electronAPI) {
       return;
     }
     if (payload?.treeReplacement === true && !isTreeReplacementCurrent(payload)) {
+      const reason = treeReplacementRefusalReason(payload);
+      const expected = Number.isSafeInteger(payload.expectedGeneration) ? payload.expectedGeneration : 'invalid';
+      console.warn(`TREE_REPLACEMENT_REJECTED reason=${reason} expectedGeneration=${expected} actualGeneration=${localEditGeneration}`);
       updateStatusText('Сцена не переключена: состояние изменилось', { visible: true });
       return;
     }

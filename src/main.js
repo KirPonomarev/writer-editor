@@ -543,6 +543,7 @@ function logPerfStage(label) {
 let diskQueue = Promise.resolve();
 const pendingTextRequests = new Map();
 const pendingSnapshotRequests = new Map();
+let treeEditorReplacementFence = null;
 let currentFontSize = 16;
 const MENU_PRESENTATION_MODE_CLASSIC = 'classic';
 const MENU_PRESENTATION_MODE_COMPACT = 'compact';
@@ -21587,11 +21588,19 @@ function cloneJsonSafe(value) {
 
 function sendEditorText(payload) {
   if (!mainWindow) return;
+  const retireObsoleteTreeFence = () => {
+    if (typeof treeEditorReplacementFence === 'undefined' || !treeEditorReplacementFence) return;
+    const fence = treeEditorReplacementFence;
+    if (currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+      || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+      || currentLifecycleSubjectId() !== fence.subjectId) treeEditorReplacementFence = null;
+  };
   if (typeof payload === 'string') {
     currentReviewSurfacePayload = {};
     currentReviewSurfacePayloadSource = 'none';
     currentReviewSurfacePayloadContentHash = '';
     mainWindow.webContents.send('editor:set-text', { content: payload, documentId: '' });
+    retireObsoleteTreeFence();
     return;
   }
   if (payload && typeof payload === 'object') {
@@ -21619,12 +21628,14 @@ function sendEditorText(payload) {
       currentReviewSurfacePayloadContentHash = '';
     }
     mainWindow.webContents.send('editor:set-text', safePayload);
+    retireObsoleteTreeFence();
     return;
   }
   currentReviewSurfacePayload = {};
   currentReviewSurfacePayloadSource = 'none';
   currentReviewSurfacePayloadContentHash = '';
   mainWindow.webContents.send('editor:set-text', { content: '', documentId: '' });
+  retireObsoleteTreeFence();
 }
 
 async function attachProjectIdToEditorPayload(payload, privateFilePath = '') {
@@ -21694,7 +21705,16 @@ function normalizeEditorSnapshotPayload(payload) {
     : typeof source.text === 'string'
       ? source.text
       : '';
+  const identity = {};
+  for (const key of ['projectId', 'documentId']) {
+    if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
+    if (typeof source[key] !== 'string' || source[key].length > 192 || /[\u0000-\u001f\u007f]/u.test(source[key])) {
+      throw Object.assign(new Error('SNAPSHOT_DOCUMENT_IDENTITY_INVALID'), { code: 'E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID' });
+    }
+    identity[key] = source[key];
+  }
   return {
+    ...identity,
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
@@ -21707,6 +21727,21 @@ function normalizeEditorSnapshotPayload(payload) {
       ? source.generation
       : null,
   };
+}
+
+function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence = null) {
+  const fence = expectedFence || treeEditorReplacementFence;
+  if (!fence) return;
+  if ((treeEditorReplacementFence && treeEditorReplacementFence !== fence)
+    || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+    || currentLifecycleSubjectId() !== fence.subjectId
+    || snapshot?.projectId !== fence.projectId || snapshot?.documentId !== fence.documentId
+    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < lastSignaledEditGeneration) {
+    isDirty = true;
+    throw Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' });
+  }
+  if (clear && treeEditorReplacementFence === fence) treeEditorReplacementFence = null;
 }
 
 function requestEditorSnapshot(timeoutMs = 2500) {
@@ -21722,26 +21757,45 @@ function requestEditorSnapshot(timeoutMs = 2500) {
     }, timeoutMs);
 
     const recordingSession = activePendingRecording;
-    pendingSnapshotRequests.set(requestId, { resolve: snapshot => {
-      preparePendingRecordingSnapshot(snapshot, recordingSession).then(resolve, reject);
+    const capturedTreeFence = typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null;
+    pendingSnapshotRequests.set(requestId, { resolve: async snapshot => {
+      try {
+        const fence = capturedTreeFence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
+        if (fence) assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
+        const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
+        if (publicationFence) assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        resolve(prepared);
+      } catch (error) { reject(error); }
     }, reject, timeoutId });
     mainWindow.webContents.send('editor:snapshot-request', { requestId });
   });
 }
 
 async function requestEditorText(timeoutMs = 2500) {
+  if (typeof treeEditorReplacementFence !== 'undefined' && treeEditorReplacementFence) {
+    isDirty = true;
+    return Promise.reject(Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' }));
+  }
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
 
   return new Promise((resolve, reject) => {
     const requestId = crypto.randomBytes(8).toString('hex');
+    const capturedSession = typeof commentAuthoringSessionId !== 'undefined' ? commentAuthoringSessionId : null;
     const timeoutId = setTimeout(() => {
       pendingTextRequests.delete(requestId);
       reject(new Error('Timed out waiting for editor text'));
     }, timeoutMs);
 
-    pendingTextRequests.set(requestId, { resolve, reject, timeoutId });
+    pendingTextRequests.set(requestId, { resolve: text => {
+      if ((typeof treeEditorReplacementFence !== 'undefined' && treeEditorReplacementFence)
+        || (capturedSession !== null && capturedSession !== commentAuthoringSessionId)) {
+        isDirty = true;
+        reject(Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' }));
+      } else resolve(text);
+    }, reject, timeoutId });
     mainWindow.webContents.send('editor:text-request', { requestId });
   });
 }
@@ -30601,7 +30655,11 @@ guardedOn('editor:snapshot-response', (_, payload) => {
 
   clearTimeout(pending.timeoutId);
   pendingSnapshotRequests.delete(requestId);
-  pending.resolve(normalizeEditorSnapshotPayload(payload ? payload.snapshot : null));
+  try { pending.resolve(normalizeEditorSnapshotPayload(payload ? payload.snapshot : null)); }
+  catch (error) {
+    if (typeof treeEditorReplacementFence !== 'undefined' && treeEditorReplacementFence) isDirty = true;
+    pending.reject(error);
+  }
 });
 
 guardedOn(EDITOR_PASTE_FOCUS_STATE_CHANNEL, (_, payload) => {
@@ -31830,17 +31888,39 @@ async function captureTreeMutationContext(commandId, payload) {
   if (admission.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || admission.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
   if (activePendingRecording) throw treeCohortError('RECORDING_STOP_BEFORE_TREE_MUTATION');
   if (activeAutoSavePromise) await activeAutoSavePromise;
+  let editorSnapshotContent = null, editorSnapshotGeneration = null;
   if (mainWindow && currentFilePath && isPathInside(projectRoot, currentFilePath)) {
-    const snapshot = await requestEditorSnapshot();
+    let snapshot = await requestEditorSnapshot();
     const disk = await fs.readFile(filePath, 'utf8');
     if (subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
       || owner !== activeStage10ApplicationBootstrap || filePath !== currentFilePath
       || !Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
+    // A clean PM view may materialize only pinned schema defaults. Such a
+    // readback must not create a new commit and invalidate exact tree Undo.
+    let cleanSame = snapshot.content === disk;
+    if (!isDirty && !cleanSame) {
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const saved = envelope.parseObservablePayload(disk), live = envelope.parseObservablePayload(snapshot.content);
+      const review = await loadRtkNonTextReturnModule();
+      const materialize = value => value && typeof value === 'object'
+        ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
+      cleanSame = !saved.issue && !live.issue && saved.hasMetaBlock === live.hasMetaBlock
+        && JSON.stringify(saved.meta) === JSON.stringify(live.meta) && JSON.stringify(saved.cards) === JSON.stringify(live.cards)
+        && JSON.stringify(saved.doc ? userBookmarkModel.readRegistry(saved.doc) : null) === JSON.stringify(live.doc ? userBookmarkModel.readRegistry(live.doc) : null)
+        && review.commentSceneSnapshotsEqual(materialize(saved.doc || saved.text), materialize(live.doc || live.text));
+    }
     // Avoid rewriting an unchanged scene commit: exact tree Undo binds it too.
-    if (isDirty || snapshot.content !== disk) {
+    if (isDirty || !cleanSame) {
       const saved = await handleSave();
       if (saved !== true) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
+      snapshot = await requestEditorSnapshot();
+      if (subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+        || owner !== activeStage10ApplicationBootstrap || filePath !== currentFilePath
+        || !Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation
+        || isDirty || autoSaveInProgress || activePendingRecording) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
     }
+    editorSnapshotContent = snapshot.content;
+    editorSnapshotGeneration = snapshot.generation;
   } else if (isDirty || autoSaveInProgress) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
   userBookmarkCapability(commandId);
   if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
@@ -31860,7 +31940,7 @@ async function captureTreeMutationContext(commandId, payload) {
   };
   guard();
   return { projectRoot, projectName, manifestPath, manifest: raw.manifest, beforeManifestText: raw.raw,
-    filePath, generation, guard, identityCurrent };
+    filePath, generation, guard, identityCurrent, editorSnapshotContent, editorSnapshotGeneration };
 }
 
 function treeCohortMappedPath(projectRoot, original, bindings) {
@@ -31916,26 +31996,44 @@ async function publishTreeCohortActiveContext(bound) {
   const kind = manifest.treeIdentity?.nodes?.[doc.documentId]?.kind
     || getDocumentContextFromPath(bound.filePath).kind;
   const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(bound.filePath), kind,
-    documentId: doc.documentId, content: raw, expectedContent: removedCopy ? bound.activeBeforeContent : raw,
-    expectedGeneration: bound.generation, ...(removedCopy ? { treeReplacement: true,
+    documentId: doc.documentId, content: removedCopy ? raw : bound.activeBeforeContent, expectedContent: bound.activeBeforeContent,
+    expectedGeneration: bound.editorSnapshotGeneration, ...(removedCopy ? { treeReplacement: true,
       expectedDocumentId: removedCopy.nodeId } : { treePublication: true }),
     metaEnabled: ROMAN_META_KINDS.has(kind) }, bound.filePath);
   // The general editor replacement adapter deliberately has a closed shape.
   // Add only this privately checked publication envelope after normalization.
-  Object.assign(payload, { expectedContent: removedCopy ? bound.activeBeforeContent : raw,
-    expectedGeneration: bound.generation, ...(removedCopy ? { treeReplacement: true,
+  Object.assign(payload, { expectedContent: bound.activeBeforeContent,
+    expectedGeneration: bound.editorSnapshotGeneration, ...(removedCopy ? { treeReplacement: true,
       expectedDocumentId: removedCopy.nodeId } : { treePublication: true }) });
   const current = await fs.readFile(bound.filePath, 'utf8');
   guard();
   if (current !== raw) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  if (removedCopy) treeEditorReplacementFence = { filePath: bound.filePath, projectRoot: bound.projectRoot,
+    projectId: bound.projectId, documentId: doc.documentId, owner: bound.owner,
+    session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId() };
   mainWindow.webContents.send('editor:set-text', payload);
-  if (removedCopy) setDirtyState(false);
+  if (removedCopy) {
+    setDirtyState(false);
+    // Main's own replacement resets its authoring session; the observed editor
+    // identity still must confirm this privately bound source before any write.
+    treeEditorReplacementFence.session = commentAuthoringSessionId;
+    treeEditorReplacementFence.subjectId = currentLifecycleSubjectId();
+  }
 }
 
 async function runTreeCohortIntent(commandId, payload, build, options = {}) {
+  treeBackupCaptureDepth++;
   let publication = null, committedOutcome = null;
   try {
+    if (activeBackupPromise) await activeBackupPromise;
     const context = await captureTreeMutationContext(commandId, payload);
+    // Complete the current scene's missing periodic checkpoint before binding
+    // the exact cohort; identical later timers then dedupe against this hash.
+    if (mainWindow && context.filePath && commandId !== 'cmd.project.tree.undoLastMutation') {
+      const checkpoint = await runCreateBackup();
+      if (checkpoint?.success !== true) throw treeCohortError(checkpoint?.code || 'E_TREE_BACKUP_REQUIRED');
+    }
+    context.guard();
     const outcome = await queueDiskOperation(async () => {
       context.guard();
       const authority = await getMainProjectManifestAuthority();
@@ -32004,6 +32102,14 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         // typing arrives during the final journal removal; never erase that
         // buffer or let its next save recreate the vanished original path.
         committedOutcome = { treeRevision: result.treeRevision };
+        for (const entry of plan.entries.filter(x => x.role === 'scene' && x.afterBase64 !== null)) {
+          if (plan.entries.some(x => x.role === 'recoverySnapshot' && x.afterBase64 === entry.afterBase64
+            && path.posix.dirname(x.relativePath) === path.posix.dirname(entry.relativePath)
+            && path.posix.basename(x.relativePath).startsWith('.' + path.posix.basename(entry.relativePath) + '.bak.')
+            && /^\d{13}$/u.test(path.posix.basename(x.relativePath).slice(('.' + path.posix.basename(entry.relativePath) + '.bak.').length)))) {
+            treeBackupSeeds.set(path.join(context.projectRoot, entry.relativePath), Buffer.from(entry.afterBase64, 'base64').toString('utf8'));
+          }
+        }
         if (!context.identityCurrent()) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
         const workingChanged = context.generation !== lastSignaledEditGeneration
           || isDirty || autoSaveInProgress || activePendingRecording;
@@ -32016,8 +32122,9 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
           userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
           backupHashes.delete(context.filePath);
           publication = { projectRoot: context.projectRoot, filePath: nextFile, generation: context.generation,
+            editorSnapshotGeneration: context.editorSnapshotGeneration ?? context.generation,
             owner: activeStage10ApplicationBootstrap, session: commentAuthoringSessionId, commandId,
-            projectId: payload.projectId, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent };
+            projectId: payload.projectId, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent: context.editorSnapshotContent ?? activeBeforeContent };
           if (workingChanged && removedCopy) Object.assign(publication, { detached: true, removedCopy, treeRevision: result.treeRevision });
         }
         if (workingChanged && !publication?.detached) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
@@ -32036,7 +32143,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
     logDevError('project tree cohort', error);
     return { ...makeTreeMoveError(error.code || 'E_TREE_COHORT_FAILED', error.message || 'TREE_COHORT_FAILED'),
       ...(committedOutcome ? { committed: true, treeRevision: committedOutcome.treeRevision } : {}) };
-  }
+  } finally { treeBackupCaptureDepth--; }
 }
 
 async function handleUiRenameNonSceneNodeCommand(payload) {
@@ -32595,6 +32702,20 @@ async function runAutoSave() {
 
   const lifecycleSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
+  const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
+  const isCurrentAutoSaveTarget = () => currentLifecycleSubjectId() === lifecycleSubjectId
+    && commentAuthoringSessionId === saveSessionId && getProjectRootPath() === saveProjectRoot
+    && currentFilePath === saveTargetPath;
+  const executeCapturedAutoSave = async operation => isCurrentAutoSaveTarget()
+    ? operation() : { success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' };
+  const guardAutoSaveTarget = () => {
+    if (!isCurrentAutoSaveTarget()) throw Object.assign(Error('SAVE_AUTHORING_TARGET_STALE'), { code: 'E_SAVE_AUTHORING_TARGET_STALE' });
+  };
+  if (!isDirty && typeof treeEditorReplacementFence !== 'undefined' && treeEditorReplacementFence) {
+    try { await requestEditorSnapshot(); }
+    catch (error) { return lifecycleSaveFailure(lifecycleSubjectId, error.code || 'SNAPSHOT_UNAVAILABLE'); }
+    if (!isCurrentAutoSaveTarget()) return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_CAPTURE');
+  }
   if (!isDirty) {
     return {
       ok: true,
@@ -32612,7 +32733,7 @@ async function runAutoSave() {
   try {
     const snapshot = await requestEditorSnapshot();
     lastSignaledEditGeneration = mergeSignaledGeneration(lastSignaledEditGeneration, snapshot.generation);
-    if (currentLifecycleSubjectId() !== lifecycleSubjectId) {
+    if (!isCurrentAutoSaveTarget()) {
       return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_CAPTURE');
     }
     const content = snapshot.content;
@@ -32643,13 +32764,14 @@ async function runAutoSave() {
       let saveReceipt = null;
       if (currentHash !== lastAutosaveHash) {
         const saveResult = await queueDiskOperation(
-          () => commitWriterProjectSnapshot(
+          () => executeCapturedAutoSave(() => commitWriterProjectSnapshot(
             saveTargetPath,
             content,
             snapshot.generation,
             snapshot.bookProfile,
             'autosave project transaction',
-          ),
+            { beforeScenePublish: guardAutoSaveTarget },
+          )),
           'autosave project transaction'
         );
         if (!saveResult.success) {
@@ -32668,13 +32790,14 @@ async function runAutoSave() {
         }
       } else {
         saveReceipt = await queueDiskOperation(
-          () => commitWriterProjectSnapshot(
+          () => executeCapturedAutoSave(() => commitWriterProjectSnapshot(
             saveTargetPath,
             content,
             snapshot.generation,
             snapshot.bookProfile,
             'autosave exact project transaction',
-          ),
+            { beforeScenePublish: guardAutoSaveTarget },
+          )),
           'autosave exact project transaction',
         );
         if (!saveReceipt.success) {
@@ -32683,7 +32806,7 @@ async function runAutoSave() {
         }
       }
 
-      if (currentLifecycleSubjectId() !== lifecycleSubjectId) {
+      if (!isCurrentAutoSaveTarget()) {
         return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_SAVE');
       }
       const fileAck = await acknowledgeMainOwnedSave(saveReceipt, content, snapshot.generation);
@@ -32697,7 +32820,7 @@ async function runAutoSave() {
 
     if (currentHash === lastAutosaveHash) {
       const sameContentResult = await queueDiskOperation(
-        () => writeAutosaveFile(content, snapshot.generation),
+        () => executeCapturedAutoSave(() => writeAutosaveFile(content, snapshot.generation)),
         'autosave exact content receipt',
       );
       if (!sameContentResult.success) {
@@ -32713,7 +32836,7 @@ async function runAutoSave() {
     }
 
     const autosaveResult = await queueDiskOperation(
-      () => writeAutosaveFile(content, snapshot.generation),
+      () => executeCapturedAutoSave(() => writeAutosaveFile(content, snapshot.generation)),
       'autosave temporary'
     );
     if (!autosaveResult.success) {
@@ -32721,7 +32844,7 @@ async function runAutoSave() {
       return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
     }
 
-    if (currentLifecycleSubjectId() !== lifecycleSubjectId) {
+    if (!isCurrentAutoSaveTarget()) {
       return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_SAVE');
     }
     const tempAck = await acknowledgeMainOwnedSave(
@@ -32796,25 +32919,71 @@ async function prepareUserBookmarkBackup(filePath, snapshot) {
   return { content, guard };
 }
 
+// Serialize periodic history before a tree inventory is bound. The receipt is
+// an opaque stale-publication fence, never manuscript or mutation authority.
+let activeBackupPromise = null, treeBackupCaptureDepth = 0;
+const treeBackupSeeds = new Map();
+function createBackup() {
+  if (activeBackupPromise) return activeBackupPromise;
+  if (treeBackupCaptureDepth > 0) return Promise.resolve();
+  const operation = runCreateBackup();
+  const joined = operation.finally(() => { if (activeBackupPromise === joined) activeBackupPromise = null; });
+  activeBackupPromise = joined;
+  return joined;
+}
+
 // Создание бэкапа раз в минуту
-async function createBackup() {
+async function runCreateBackup() {
   if (!mainWindow) {
     return;
   }
 
+  const capturedFile = currentFilePath, capturedRoot = getProjectRootPath(), capturedSession = commentAuthoringSessionId;
+  const capturedOwner = activeStage10ApplicationBootstrap;
+  const receiptPath = path.join(capturedRoot, 'project.craftsman.json.wp201-tree-commit.json');
+  const readTreeFence = async () => {
+    try { return await fs.readFile(receiptPath, 'utf8'); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  };
   try {
-    if (currentFilePath) {
-      const filePath = currentFilePath;
+    const treeFence = await readTreeFence();
+    const guard = async () => {
+      const currentFence = await readTreeFence();
+      if (capturedFile !== currentFilePath || capturedRoot !== getProjectRootPath() || capturedSession !== commentAuthoringSessionId
+        || capturedOwner !== activeStage10ApplicationBootstrap || currentFence !== treeFence) throw treeCohortError('E_BACKUP_AUTHORING_TARGET_STALE');
+    };
+    if (capturedFile) {
+      const filePath = capturedFile;
       const snapshot = await requestEditorSnapshot();
+      await guard();
+      if (!Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation) throw treeCohortError('E_BACKUP_AUTHORING_TARGET_STALE');
       const backup = await prepareUserBookmarkBackup(filePath, snapshot);
       const content = backup.content;
       const hash = computeHash(content);
-      if (backupHashes.get(filePath) === hash) {
-        return;
+      const seeded = treeBackupSeeds.get(filePath);
+      if (seeded !== undefined) {
+        const raw = await fs.readFile(filePath, 'utf8');
+        if (raw === seeded) {
+          const envelope = await loadDocumentContentEnvelopeModule(), saved = envelope.parseObservablePayload(raw), working = envelope.parseObservablePayload(content);
+          const review = await loadRtkNonTextReturnModule();
+          const materialize = value => value && typeof value === 'object'
+            ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
+          if (!saved.issue && !working.issue && saved.hasMetaBlock === working.hasMetaBlock
+            && JSON.stringify(saved.meta) === JSON.stringify(working.meta) && JSON.stringify(saved.cards) === JSON.stringify(working.cards)
+            && review.commentSceneSnapshotsEqual(materialize(saved.doc || saved.text), materialize(working.doc || working.text))) {
+            await backup.guard(); await guard();
+            backupHashes.set(filePath, hash); treeBackupSeeds.delete(filePath);
+            return { success: true, unchanged: true };
+          }
+        }
+        treeBackupSeeds.delete(filePath);
       }
+      if (backupHashes.get(filePath) === hash) return { success: true, unchanged: true };
 
       const result = await queueDiskOperation(
-        async () => { await backup.guard(); return backupManager.createBackup(filePath, content, { basePath: getBackupBasePathForFile(filePath) }); },
+        async () => { await backup.guard(); await guard();
+          if (lastSignaledEditGeneration > snapshot.generation) throw treeCohortError('E_BACKUP_AUTHORING_TARGET_STALE');
+          return backupManager.createBackup(filePath, content, { basePath: getBackupBasePathForFile(filePath) }); },
         'backup current file'
       );
       if (!result.success) {
@@ -32823,7 +32992,7 @@ async function createBackup() {
       }
 
       backupHashes.set(filePath, hash);
-      return;
+      return { success: true };
     }
 
     const autosavePath = getAutosavePath();
@@ -32844,7 +33013,7 @@ async function createBackup() {
     }
 
     const backupResult = await queueDiskOperation(
-      () => backupManager.createBackup(autosavePath, autosaveResult.content),
+      async () => { await guard(); return backupManager.createBackup(autosavePath, autosaveResult.content); },
       'backup autosave'
     );
     if (!backupResult.success) {
@@ -32856,6 +33025,7 @@ async function createBackup() {
   } catch (error) {
     updateStatus('Ошибка');
     logDevError('createBackup', error);
+    return { success: false, code: error.code || error.message || 'E_BACKUP_REQUIRED' };
   }
 }
 
@@ -32866,15 +33036,24 @@ async function handleSave() {
 
   const saveSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
+  const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
+  const isCurrentSaveTarget = () => currentLifecycleSubjectId() === saveSubjectId
+    && commentAuthoringSessionId === saveSessionId && getProjectRootPath() === saveProjectRoot
+    && currentFilePath === saveTargetPath;
+  const staleSaveReceipt = () => ({ success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' });
+  const guardSaveTarget = () => {
+    if (!isCurrentSaveTarget()) throw Object.assign(Error('SAVE_AUTHORING_TARGET_STALE'), { code: 'E_SAVE_AUTHORING_TARGET_STALE' });
+  };
   let snapshot;
   try {
     snapshot = await requestEditorSnapshot();
   } catch (error) {
     updateStatus('Ошибка');
     logDevError('handleSave', error);
+    await showCommentSaveFailure(error);
     return projectSaveFailure('SNAPSHOT_UNAVAILABLE', error);
   }
-  if (currentLifecycleSubjectId() !== saveSubjectId) return projectSaveFailure('SUBJECT_CHANGED_DURING_CAPTURE');
+  if (!isCurrentSaveTarget()) return projectSaveFailure('AUTHORING_TARGET_CHANGED_DURING_CAPTURE');
   const content = snapshot.content;
   const wasUntitled = saveTargetPath === null;
 
@@ -32886,13 +33065,16 @@ async function handleSave() {
     const contentHash = computeHash(content);
     const textChanged = contentHash !== lastAutosaveHash;
     const saveResult = await queueDiskOperation(
-      () => commitWriterProjectSnapshot(
+      async () => {
+        if (!isCurrentSaveTarget()) return staleSaveReceipt();
+        return commitWriterProjectSnapshot(
         saveTargetPath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save existing project transaction',
-      ),
+        { beforeScenePublish: guardSaveTarget },
+      ); },
       'save existing project transaction'
     );
     if (saveResult.success) {
@@ -32941,16 +33123,19 @@ async function handleSave() {
       updateStatus('Ошибка');
       return projectSaveFailure('TARGET_PATH_NOT_ALLOWED');
     }
-    if (currentLifecycleSubjectId() !== saveSubjectId) return projectSaveFailure('SUBJECT_CHANGED_DURING_DIALOG');
+    if (!isCurrentSaveTarget()) return projectSaveFailure('AUTHORING_TARGET_CHANGED_DURING_DIALOG');
 
     const saveResult = await queueDiskOperation(
-      () => commitWriterProjectSnapshot(
+      async () => {
+        if (!isCurrentSaveTarget()) return staleSaveReceipt();
+        return commitWriterProjectSnapshot(
         filePath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save new project transaction',
-      ),
+        { beforeScenePublish: guardSaveTarget },
+      ); },
       'save new project transaction'
     );
     if (saveResult.success) {
@@ -32984,19 +33169,27 @@ function writerSaveFailureStatus(result) {
   if (typeof result?.code === 'string' && /^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)) {
     return 'Ошибка сохранения комментариев. Отмените правки текста или скопируйте черновик.';
   }
+  if (typeof result?.code === 'string' && /^USER_BOOKMARK_/u.test(result.code)) return 'Текст с закладками не сохранён. Правки остаются в редакторе.';
+  if (typeof result?.code === 'string' && /^NOTE_(?:REFERENCE_|PENDING_)/u.test(result.code)) return 'Текст с примечаниями не сохранён. Правки остаются в редакторе.';
   return 'Ошибка сохранения';
 }
 
 let commentSaveWarningPromise = null;
 async function showCommentSaveFailure(result) {
-  if (typeof result?.code !== 'string' || !/^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)
+  if (typeof result?.code !== 'string' || !/^(?:COMMENT_SAVE_|COMMENT_STATE_|USER_BOOKMARK_|NOTE_REFERENCE_|NOTE_PENDING_|E_TREE_EDITOR_IDENTITY_UNCONFIRMED$|E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID$)/u.test(result.code)
     || !mainWindow || mainWindow.isDestroyed()) return;
   if (commentSaveWarningPromise) return commentSaveWarningPromise;
+  const identityFailure = /^(?:E_TREE_EDITOR_IDENTITY_UNCONFIRMED|E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID)$/u.test(result.code);
+  const bookmarkFailure = /^USER_BOOKMARK_/u.test(result.code);
+  const noteFailure = /^NOTE_(?:REFERENCE_|PENDING_)/u.test(result.code);
+  const protectedKind = bookmarkFailure ? 'закладками' : noteFailure ? 'примечаниями' : 'комментариями';
   // This dismiss-only platform effect reports failure; it cannot authorize writes.
   commentSaveWarningPromise = dialog.showMessageBox(mainWindow, {
     type: 'warning', title: 'Текст не сохранён',
-    message: 'Не удалось безопасно сохранить текст с комментариями',
-    detail: 'Привязки комментариев не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки текста или скопируйте черновик перед закрытием.',
+    message: identityFailure ? 'Открытая сцена изменилась. Сохранение остановлено.' : `Не удалось безопасно сохранить текст с ${protectedKind}`,
+    detail: identityFailure ? 'Текст остаётся в редакторе. Скопируйте его перед закрытием.' : bookmarkFailure || noteFailure
+      ? 'Привязки не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки или скопируйте текст перед закрытием.'
+      : 'Привязки комментариев не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки текста или скопируйте черновик перед закрытием.',
     buttons: ['Вернуться к тексту'], defaultId: 0, cancelId: 0, noLink: true,
   });
   try { await commentSaveWarningPromise; } finally { commentSaveWarningPromise = null; }
@@ -33288,6 +33481,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
+  TREE_MOVE_COMMAND_ID,
   METADATA_UPDATE_COMMAND_ID,
   NOTES_CREATE_COMMAND_ID,
   NOTES_UPDATE_COMMAND_ID,

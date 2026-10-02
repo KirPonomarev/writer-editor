@@ -215,6 +215,56 @@ test('command error reveals only existing product status and survives background
   assert.equal(status.textContent, 'Готово');
 });
 
+test('real tree command refusal preserves typed Main conflict in public status and diagnostic code', async () => {
+  const { pathToFileURL } = require('node:url');
+  const commands = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  const bridge = require('../../src/shared/commandBridgeResponse.cjs');
+  const handlers = new Map(), logs = [];
+  let response = bridge.makeCommandBridgeFailure('E_TREE_UNDO_CAS', { ok: false, reason: 'E_TREE_UNDO_CAS' });
+  commands.registerProjectCommands({ registerCommand(meta, handler) { handlers.set(meta.id, handler); } }, {
+    electronAPI: { invokeUiCommandBridge() {
+      return response;
+    } },
+  });
+  const c = { statusElement: { textContent: '', style: {} }, heldCommandStatusMessage: false,
+    COMMAND_BUS_ROUTE: 'command.bus', UI_ERROR_FALLBACK_SEVERITY: 'ERROR',
+    uiErrorMap: { index: new Map(), defaultUserMessage: 'GENERIC_FAILURE' },
+    withEditorModeCommandPayload: p => p, runCommand: (id, p) => handlers.get(id)(p),
+    runCommandThroughBus: (runner, id, p) => runner(id, p), console: { error: x => logs.push(x) } };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['updateStatusText', 'mapCommandErrorToUi', 'dispatchUiCommand']), c);
+  const result = await c.dispatchUiCommand(commands.EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION,
+    { projectId: 'project', expectedTreeRevision: 5, mutationId: 'mutation' });
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_TREE_UNDO_CAS');
+  assert.equal(result.error.reason, 'E_TREE_UNDO_CAS');
+  assert.equal(c.statusElement.style.visibility, 'visible');
+  assert.notEqual(c.statusElement.textContent, 'GENERIC_FAILURE');
+  assert.match(c.statusElement.textContent, /отмен|Отмен/u);
+  assert.match(logs[0], /code=E_TREE_UNDO_CAS/u);
+  for (const invalid of [null, 'invalid', {}, { ok: false, reason: 'free text with spaces' }]) {
+    response = invalid;
+    const refused = await c.dispatchUiCommand(commands.EXTRA_COMMAND_IDS.TREE_COPY_NODE,
+      { projectId: 'project', expectedTreeRevision: 5, nodeId: 'scene', name: 'Copy' });
+    assert.equal(refused.ok, false);
+    assert.equal(refused.error.code, 'E_COMMAND_FAILED');
+    assert.match(c.statusElement.textContent, /копии/u);
+  }
+  response = bridge.makeCommandBridgeFailure('E_TREE_COHORT_PUBLICATION_STALE',
+    { ok: false, reason: 'E_TREE_COHORT_PUBLICATION_STALE', committed: true });
+  await c.dispatchUiCommand(commands.EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION,
+    { projectId: 'project', expectedTreeRevision: 5, mutationId: 'mutation' });
+  assert.match(c.statusElement.textContent, /Структура изменена/u);
+  response = bridge.makeCommandBridgeFailure('E_TREE_REVISION_CAS', { ok: false, reason: 'E_TREE_REVISION_CAS' });
+  const move = await c.dispatchUiCommand(commands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+    { projectId: 'project', nodeId: 'scene', targetParentNodeId: 'chapter', targetIndex: 0, expectedTreeRevision: 5 });
+  assert.equal(move.ok, false);
+  assert.equal(move.error.code, 'E_TREE_REVISION_CAS');
+  assert.equal(move.error.reason, 'E_TREE_REVISION_CAS');
+  assert.match(c.statusElement.textContent, /перемещ/u);
+  assert.match(logs.at(-1), /code=E_TREE_REVISION_CAS/u);
+});
+
 test('executed scene copy captures current project, identity and revision; cancellation and delayed changes write nothing', async () => {
   for (const change of ['cancel', 'project', 'tree', 'revision', 'capability', 'pending']) {
     const c = sceneUiHarness();
@@ -354,6 +404,48 @@ test('executed focused tree keyboard opens existing actions without intercepting
   assert.equal(opened, 2);
 });
 
+test('tree dragover accepts protected-mode type while drop alone reads and validates node intent', () => {
+  const source = read('src/renderer/editor.js');
+  const start = source.indexOf("  row.addEventListener('dragstart', (event) => {");
+  const end = source.indexOf('\n  li.appendChild(row);', start);
+  assert.ok(start > 0 && end > start);
+  const handlers = new Map(), moves = [];
+  const dragged = { nodeId: 'source', kind: 'scene' };
+  const c = { row: { addEventListener: (type, handler) => handlers.set(type, handler) },
+    effectiveDocumentId: 'chapter', activeTab: 'roman', node: { kind: 'chapter-folder' },
+    parentNodeId: 'part', siblingIndex: 1, treeRoot: {},
+    isNavigatorMovableNode: () => true,
+    findTreeNodeById: (root, id) => id === 'source' ? dragged : null,
+    handleMoveNode: (...args) => moves.push(args) };
+  vm.createContext(c);
+  vm.runInContext(source.slice(start, end), c);
+  let prevented = 0, reads = 0;
+  const transfer = { types: ['application/x-yalken-tree-node-id'],
+    getData() { reads++; return ''; }, dropEffect: 'none' };
+  handlers.get('dragover')({ dataTransfer: transfer, preventDefault() { prevented++; } });
+  assert.equal(prevented, 1, 'HTML protected-mode hover must allow the subsequent drop');
+  assert.equal(reads, 0, 'dragover has formats only, never payload authority');
+  assert.equal(transfer.dropEffect, 'move');
+  for (const types of [[], ['text/plain'], ['Files']]) {
+    handlers.get('dragover')({ dataTransfer: { ...transfer, types }, preventDefault() { assert.fail('foreign format'); } });
+  }
+  c.activeTab = 'notes';
+  handlers.get('dragover')({ dataTransfer: transfer, preventDefault() { assert.fail('wrong workspace'); } });
+  c.activeTab = 'roman';
+  for (const id of ['', 'missing', 'chapter']) {
+    handlers.get('drop')({ dataTransfer: { getData: () => id }, preventDefault() {} });
+    assert.equal(moves.length, 0);
+  }
+  handlers.get('drop')({ dataTransfer: { getData: type => ({
+    'application/x-yalken-tree-node-id': 'source',
+    'application/x-yalken-tree-parent-node-id': 'other-chapter',
+    'application/x-yalken-tree-sibling-index': '0',
+  })[type] || '' }, preventDefault() {} });
+  assert.equal(moves.length, 1);
+  assert.equal(moves[0][0], dragged);
+  assert.deepEqual(moves[0].slice(1), ['chapter', 0]);
+});
+
 
 test('tree context publication preserves authoring and history and rejects stale or forged Main payloads', () => {
   const calls = [];
@@ -443,7 +535,7 @@ test('removed-copy replacement requires live old identity and bytes before ordin
   const c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
     composeDocumentContent: () => 'saved copied scene' };
   vm.createContext(c);
-  vm.runInContext(executableFunctions(['isTreeReplacementCurrent']), c);
+  vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent']), c);
   const payload = { treeReplacement: true, projectId: 'project', expectedDocumentId: 'copy',
     documentId: 'source', kind: 'scene', metaEnabled: true, expectedGeneration: 9,
     expectedContent: 'saved copied scene', content: 'original source scene' };
@@ -458,4 +550,88 @@ test('removed-copy replacement requires live old identity and bytes before ordin
   const source = read('src/renderer/editor.js');
   const listener = source.slice(source.indexOf('window.electronAPI.onEditorSetText((payload) => {'));
   assert.ok(listener.indexOf('!isTreeReplacementCurrent(payload)') < listener.indexOf('setTiptapDocumentSnapshot({'));
+});
+
+test('actual replacement listener rejects a reset Main generation and accepts the exact live generation with new title', () => {
+  const source = read('src/renderer/editor.js');
+  const start = source.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  const end = source.indexOf('  window.electronAPI.onEditorTextRequest(', start);
+  for (const expectedGeneration of [0, 9]) {
+    let listener, working = 'copied live content';
+    const events = [], warnings = [];
+    const c = { currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
+      currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
+      metaEnabled: true, isTiptapMode: true, activeDocumentRevealRequested: false, currentRightTab: 'metadata',
+      window: { electronAPI: { onEditorSetText: handler => { listener = handler; } } },
+      console: { warn: value => warnings.push(value) }, composeDocumentContent: () => working,
+      updateStatusText: (value, options) => events.push(['status', value, options?.visible]),
+      isProjectTreeDocumentId: id => Boolean(id), normalizeProjectId: id => id,
+      parseDocumentContent: content => ({ doc: { type: 'doc', content: [] }, text: content, meta: {}, cards: [] }),
+      shouldUseCentralSheetLargePayloadFastPath: () => false,
+      setTiptapDocumentSnapshot: snapshot => { working = snapshot.text; events.push(['replace', snapshot.text]); },
+      reviewSurfaceResolveIncomingPayload: () => ({}), revealActiveDocumentAncestors: () => ({ found: true }),
+      editorPanel: null, mainContent: null, emptyState: null,
+      localStorage: { setItem: (key, value) => events.push(['stored-title', value]) },
+      getActiveDocumentTitleStorageKey: () => 'title',
+      showAuthoringSurfacesSurface: () => events.push(['surface-title', c.currentDocumentTitle]),
+      requestAnimationFrame() {},
+    };
+    for (const name of ['cancelLinkDialog', 'clearFlowModeState', 'clearPendingMetadataUpdate', 'applyIncomingBookProfile',
+      'setReviewSurfaceState', 'clearCentralSheetLargePayloadFastPath', 'resetCentralSheetStripForIncomingPayload',
+      'updateMetaInputs', 'updateMetaVisibility', 'updateCardsList', 'updateWordCount', 'scheduleCentralSheetStripProofRefresh',
+      'hideManualMapPlanWorkspace', 'hideNotesWorkspace', 'hideProjectSearchWorkspace', 'hideWriterHomeSurface',
+      'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
+      'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump']) c[name] = () => {};
+    vm.createContext(c);
+    vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'showEditorPanelFor'])
+      + '\n' + source.slice(start, end), c);
+    listener({ treeReplacement: true, projectId: 'project', expectedDocumentId: 'copy', documentId: 'source',
+      kind: 'scene', metaEnabled: true, title: 'Alpha', expectedGeneration,
+      expectedContent: 'copied live content', content: 'original source content' });
+    if (expectedGeneration === 0) {
+      assert.equal(working, 'copied live content');
+      assert.equal(c.currentDocumentId, 'copy');
+      assert.equal(c.currentDocumentTitle, 'Beta');
+      assert.match(warnings[0], /reason=GENERATION_MISMATCH expectedGeneration=0 actualGeneration=9/u);
+      assert.equal(warnings[0].includes('copied live content'), false);
+      assert.equal(events.at(-1)[2], true);
+    } else {
+      assert.equal(working, 'original source content');
+      assert.equal(c.currentDocumentId, 'source');
+      assert.equal(c.currentDocumentTitle, 'Alpha');
+      assert.ok(events.some(x => x[0] === 'surface-title' && x[1] === 'Alpha'));
+      assert.equal(warnings.length, 0);
+      assert.equal(c.localEditGeneration, 9);
+    }
+  }
+});
+
+test('existing editor snapshot response observes the current project and document alongside its exact buffer generation', () => {
+  const responses = [], c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
+    composeDocumentContent: () => 'exact live copy', getPlainText: () => 'live copy',
+    getActiveBookProfile: () => ({ format: 'A4' }), getSelectionOffsets: () => ({ start: 1, end: 2 }),
+    isTiptapMode: false, wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
+    window: { electronAPI: { onEditorSnapshotRequest(handler) { c.respond = handler; },
+      sendEditorSnapshotResponse(requestId, snapshot) { responses.push({ requestId, snapshot }); } } } };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['composeEditorSnapshot']), c);
+  const source = read('src/renderer/editor.js');
+  const start = source.indexOf("  if (typeof window.electronAPI.onEditorSnapshotRequest === 'function') {");
+  const end = source.indexOf('\n  window.electronAPI.onEditorSetFontSize(', start);
+  assert.ok(start > 0 && end > start);
+  vm.runInContext(source.slice(start, end), c);
+  c.respond({ requestId: 'capture-copy' });
+  assert.equal(responses[0].requestId, 'capture-copy');
+  assert.equal(responses[0].snapshot.projectId, 'project');
+  assert.equal(responses[0].snapshot.documentId, 'copy');
+  assert.equal(responses[0].snapshot.content, 'exact live copy');
+  assert.equal(responses[0].snapshot.generation, 9);
+  c.currentDocumentId = 'source';
+  c.respond({ requestId: 'capture-source' });
+  assert.equal(responses[1].snapshot.documentId, 'source');
+  c.currentProjectId = null; c.currentDocumentId = null;
+  c.respond({ requestId: 'capture-unbound' });
+  assert.equal(responses[2].snapshot.projectId, '');
+  assert.equal(responses[2].snapshot.documentId, '');
+  assert.equal(c.localEditGeneration, 9);
 });

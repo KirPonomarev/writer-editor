@@ -17,7 +17,7 @@ const find = (root, label) => root?.label === label ? root : (root?.children || 
 
 // Compile the actual entire Main source with owned local adapters. Private
 // state access is added ONLY to this test module, never shipped in production.
-async function fixture(t, rich = false) {
+async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const spelled = await fsp.mkdtemp(path.join(os.tmpdir(), 'scene-identity-main-'));
   const temp = await fsp.realpath(spelled);
   t.after(() => fsp.rm(temp, { recursive: true, force: true }));
@@ -25,15 +25,16 @@ async function fixture(t, rich = false) {
   fs.mkdirSync(data, { recursive: true });
   const root = path.join(documents, 'craftsman', 'Роман'), imported = path.join(root, 'roman', 'Imported');
   fs.mkdirSync(imported, { recursive: true });
-  const alpha = path.join(imported, '01_Alpha.txt'), beta = path.join(imported, '02_Beta.txt');
+  const alpha = path.join(imported, alphaFileName), beta = path.join(imported, '02_Beta.txt');
   fs.writeFileSync(alpha, 'Alpha'); fs.writeFileSync(beta, 'Beta');
   const handles = new Map(), listeners = new Map();
-  let nextSavePath = null, saveDialogs = 0;
+  let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
+  const warnings = [];
   const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
-    dialog: { showMessageBox: async () => ({}), showSaveDialog: async () => { saveDialogs++; return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
+    dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: 0 }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), originalLoad = Module._load;
@@ -54,7 +55,8 @@ async function fixture(t, rich = false) {
     fresh: assertFreshDocxReviewRoundAuthority, strict: readStrictDocxReviewAuthorityStore,
     persist: persistDocxReviewReturnAuthorityStore, expire: expireProjectWordRoundsBeforeTree,
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
-    recover: recoverPendingWriterProjectTransaction, save: handleSave,
+    recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload,
+    changeSession() { commentAuthoringSessionId += 1; },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
   try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
@@ -70,13 +72,13 @@ async function fixture(t, rich = false) {
   let source = read(alpha);
   if (rich) {
     const result = bookmarks.planMutation({ doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Alpha' }] }] },
-      action: 'create', projectId: query.projectId, sceneId: 'roman/Imported/01_Alpha.txt', requestId: 'local-create', name: 'Anchor',
+      action: 'create', projectId: query.projectId, sceneId: 'roman/Imported/' + alphaFileName, requestId: 'local-create', name: 'Anchor',
       start: { paragraphIndex: 0, offsetUtf16: 0, edge: 'text' }, end: { paragraphIndex: 0, offsetUtf16: 5, edge: 'text' } });
     result.doc.content.push({ type: 'paragraph', content: [{ type: 'text', text: 'Link', marks: [{ type: 'link', attrs: bookmarks.linkAttrs(result.registry.bookmarks[0]) }] }] });
     source = envelope.composeObservablePayload({ doc: result.doc, metaEnabled: true, meta: { status: 'черновик', synopsis: 'keep', tags: {} }, cards: [] });
     fs.writeFileSync(alpha, source);
     const manuscript = notes.bindManuscriptPayload({ kind: 'footnote', body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Note' }] }] },
-      sceneId: 'roman/Imported/01_Alpha.txt', offsetUtf16: 2, sceneContent: source });
+      sceneId: 'roman/Imported/' + alphaFileName, offsetUtf16: 2, sceneContent: source });
     fs.writeFileSync(path.join(root, 'notes.craftsman.json'), JSON.stringify({ schemaVersion: 1, projectId: query.projectId,
       notes: [{ id: 'note-source', scope: 'manuscript', body: 'Note', manuscript }] }));
   }
@@ -103,7 +105,7 @@ async function fixture(t, rich = false) {
     probe.setReviewStore(store); return { capsule, store, target };
   }
   return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners,
-    chooseSavePath: target => { nextSavePath = target; }, saveDialogs: () => saveDialogs };
+    chooseSavePath: (target, callback) => { nextSavePath = target; onSaveDialog = callback; }, saveDialogs: () => saveDialogs, warnings };
 }
 
 test('actual Main simultaneous sibling permutation rebinds active sibling and note owner, exact persisted Undo survives reopen', async t => {
@@ -241,16 +243,16 @@ test('durable expiry survives exact tree Undo; cached fresh key and old export c
   assert.equal(JSON.parse(read(round.target)).roundsById['round-one'].lifecycleState, 'EXPIRED');
 });
 
-function mountRenderer(f, content, generation = 0, onSnapshot = null) {
+function mountRenderer(f, content, generation = 0, onSnapshot = null, identity = null) {
   const sends = [], session = {}, url = f.probe.shellUrl();
   const wc = { id: 91, session, getURL: () => url, isDestroyed: () => false,
     send(channel, payload) {
       sends.push({ channel, payload });
       if (channel === 'editor:snapshot-request') {
         const current = typeof content === 'function' ? content() : content;
-        if (onSnapshot) onSnapshot();
+        if (onSnapshot && onSnapshot() === false) return;
         queueMicrotask(() => f.listeners.get('editor:snapshot-response')({ sender: wc, senderFrame: { url } }, {
-          requestId: payload.requestId, snapshot: { content: current, generation: typeof generation === 'function' ? generation() : generation, selectionRange: { start: 0, end: 0 } },
+          requestId: payload.requestId, snapshot: { ...(typeof identity === 'function' ? identity() : identity || {}), content: current, generation: typeof generation === 'function' ? generation() : generation, selectionRange: { start: 0, end: 0 } },
         }));
       }
     } };
@@ -336,7 +338,7 @@ test('late dirty copied-scene Undo detaches its live buffer and actual Save dial
   assert.equal(read(f.alpha), 'Alpha'); assert.equal(f.probe.state().dirty, false);
 });
 
-test('a save captured during the final tree commit cannot recreate the removed prior active path', async t => {
+for (const mode of ['save', 'autosave']) test(`${mode} captured during the final tree commit cannot recreate the removed prior active path`, async t => {
   const f = await fixture(t);
   let working = read(f.beta), generation = 0;
   mountRenderer(f, () => working, () => generation);
@@ -346,7 +348,7 @@ test('a save captured during the final tree commit cannot recreate the removed p
     if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
       working = 'Beta typed concurrently'; generation = 1;
       f.probe.state({ generation, dirty: true });
-      save = f.probe.save();
+      save = f.probe[mode]();
     }
     return unlink.call(this, target, ...args);
   };
@@ -358,4 +360,270 @@ test('a save captured during the final tree commit cannot recreate the removed p
     assert.equal(read(path.join(f.imported, '01_Beta.txt')), 'Beta');
     assert.equal(f.probe.state().dirty, true);
   } finally { fsp.unlink = unlink; }
+});
+
+test('actual bookmark boundary Save refusal shows one dismiss-only warning and keeps the working buffer dirty', async t => {
+  const f = await fixture(t, true), before = f.capture();
+  const parsed = envelope.parseObservablePayload(f.source); parsed.doc.content[0].content = [];
+  const working = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock });
+  mountRenderer(f, working, 1); f.probe.state({ filePath: f.alpha, dirty: true });
+  const result = await f.probe.save();
+  assert.notEqual(result, true); assert.deepEqual(f.capture(), before);
+  assert.equal(f.warnings.length, 1); assert.match(f.warnings[0].message, /закладками/u);
+  assert.equal(f.warnings[0].buttons.length, 1); assert.equal(f.warnings[0].defaultId, 0);
+  assert.equal(f.probe.state().dirty, true);
+});
+
+
+test('untitled Save dialog cannot publish after the authoring session changes during native choice', async t => {
+  const f = await fixture(t), before = f.capture();
+  mountRenderer(f, 'Unsaved buffer', 1); f.probe.state({ filePath: null, dirty: true });
+  const target = path.join(f.imported, '03_Unsaved.txt'); f.chooseSavePath(target, () => f.probe.changeSession());
+  assert.notEqual(await f.probe.save(), true); assert.equal(f.saveDialogs(), 1);
+  assert.equal(fs.existsSync(target), false); assert.deepEqual(f.capture(), before);
+  assert.equal(f.probe.state().dirty, true); assert.equal(f.probe.state().filePath, null);
+});
+
+test('rich late-copy Undo preserves the working buffer and readable graph packet while fresh SaveAs safely refuses', async t => {
+  const f = await fixture(t, true), commentModel = require('../../src/core/word-comment-authoring-v1.cjs');
+  const commentPath = path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json');
+  const sceneId = 'roman/Imported/01_Alpha.txt';
+  const comment = commentModel.planCommentAuthoring({ beforeText: null, projectId: f.query.projectId, sceneId,
+    sceneSha256: sha(f.source), paragraphs: ['Alpha', 'Link'], now: '2026-10-02T00:00:00.000Z',
+    input: { action: 'create', requestId: 'comment-source', projectId: f.query.projectId, sceneId,
+      expectedStateSha256: '', expectedSceneSha256: sha(f.source), body: 'Comment graph',
+      anchor: { paragraphIndex: 0, startUtf16: 0, selectedText: 'Alpha' } } });
+  fs.mkdirSync(path.dirname(commentPath), { recursive: true }); fs.writeFileSync(commentPath, comment.afterText);
+  const before = f.capture();
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true, JSON.stringify(copy));
+  const fork = path.join(f.imported, '03_Fork.txt'), copied = read(fork);
+  const copiedRegistry = bookmarks.readRegistry(envelope.parseObservablePayload(copied).doc);
+  const copiedNotes = read(path.join(f.root, 'notes.craftsman.json')), copiedComments = read(commentPath);
+  assert.equal(JSON.parse(copiedNotes).notes.length, 2); assert.equal(JSON.parse(copiedComments).threads.length, 2);
+  let working = copied, generation = 0;
+  const ui = mountRenderer(f, () => working, () => generation); f.probe.state({ filePath: fork });
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), unlink = fsp.unlink;
+  fsp.unlink = async function (target, ...args) {
+    if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
+      const parsed = envelope.parseObservablePayload(working);
+      parsed.doc.content.push({ type: 'paragraph', content: [{ type: 'text', text: 'Unsaved rich buffer' }] });
+      working = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }); generation = 1;
+      f.probe.state({ generation, dirty: true });
+    }
+    return unlink.call(this, target, ...args);
+  };
+  try {
+    const result = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+    assert.equal(result.committed, true, JSON.stringify(result)); assert.equal(result.error, 'E_TREE_UNSAVED_COPY_SAVE_AS_REQUIRED');
+  } finally { fsp.unlink = unlink; }
+  assert.deepEqual(f.capture(), before);
+  assert.equal(ui.sends.at(-1).payload.expectedContent, working); assert.equal(ui.sends.at(-1).payload.treeDetached, true);
+  assert.deepEqual(bookmarks.readRegistry(envelope.parseObservablePayload(working).doc), copiedRegistry);
+  const retained = (await transaction.readVerifiedProjectTreeMutation({ manifestPath: f.manifestPath, projectId: f.query.projectId })).retainedPacket;
+  const retainedBefore = relative => Buffer.from(retained.plan.entries.find(x => x.relativePath === relative).beforeBase64, 'base64').toString('utf8');
+  assert.equal(retainedBefore('roman/Imported/03_Fork.txt'), copied);
+  assert.equal(retainedBefore('notes.craftsman.json'), copiedNotes);
+  assert.equal(retainedBefore('.yalken/word-review/non-text-return-state.v1.json'), copiedComments);
+  const fresh = path.join(f.imported, '03_Recovered.txt'); f.chooseSavePath(fresh);
+  assert.notEqual(await f.probe.save(), true); assert.equal(fs.existsSync(fresh), false);
+  assert.deepEqual(f.capture(), before); assert.equal(f.probe.state().dirty, true);
+  assert.equal(f.warnings.length, 1); assert.match(f.warnings[0].detail, /Текст остаётся в редакторе/u);
+});
+
+
+test('delayed periodic backup is drained before copy and unchanged post-copy timer cannot invalidate exact Undo', async t => {
+  const f = await fixture(t, true);
+  mountRenderer(f, f.source, 0); f.probe.state({ filePath: f.alpha });
+  const manager = require('../../src/utils/backupManager'), original = manager.createBackup;
+  let release, started; const gate = new Promise(r => { release = r; }), arrived = new Promise(r => { started = r; });
+  let calls = 0;
+  manager.createBackup = async (...args) => { calls++; if (calls === 1) { started(); await gate; } return original(...args); };
+  try {
+    const pending = f.probe.backup(); await arrived;
+    let completed = false;
+    const copying = f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 }).then(x => { completed = true; return x; });
+    await new Promise(r => setImmediate(r)); assert.equal(completed, false);
+    release(); await pending; const copy = await copying; assert.equal(copy.ok, true, JSON.stringify(copy));
+    const fork = path.join(f.imported, '03_Fork.txt');
+    const parsed = envelope.parseObservablePayload(read(fork));
+    parsed.doc.content.forEach(p => { p.attrs = { ...(p.attrs || {}), textAlign: null }; });
+    parsed.doc = bookmarks.materializeInternalLinkSchemaDefaults(parsed.doc);
+    const opened = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock });
+    const openedUi = mountRenderer(f, opened, 0); f.probe.state({ filePath: fork });
+    const beforeTimer = f.capture(); await f.probe.backup(); assert.deepEqual(f.capture(), beforeTimer);
+    assert.equal(calls, 2, 'one drained scene snapshot and one manifest checkpoint; unchanged timer writes nothing');
+    const undone = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+    assert.equal(undone.ok, true, JSON.stringify(undone));
+    const replacement = openedUi.sends.find(x => x.channel === 'editor:set-text');
+    assert.equal(replacement.payload.treeReplacement, true);
+    assert.equal(replacement.payload.expectedContent, opened, 'publication must bind the actual checked PM composer, not differently serialized disk bytes');
+    assert.equal(replacement.payload.content, read(f.alpha));
+    assert.equal(replacement.payload.title, 'Alpha');
+    assert.equal(fs.existsSync(path.join(f.imported, '03_Fork.txt')), false);
+  } finally { release(); manager.createBackup = original; }
+});
+
+test('periodic backup snapshot raced by a path change never publishes old-path history', async t => {
+  const f = await fixture(t); const before = f.capture();
+  mountRenderer(f, 'Beta', 0, () => f.probe.state({ filePath: f.alpha }));
+  await f.probe.backup();
+  assert.deepEqual(f.capture(), before); assert.equal(fs.existsSync(path.join(f.root, 'backups', sha(f.beta))), false);
+});
+
+test('actual dirty-free rename, copy, open-copy Undo and subsequent reorder keep current publication and stable owners', async t => {
+  const f = await fixture(t, true, 'Alpha.txt');
+  mountRenderer(f, f.source, 9); f.probe.state({ filePath: f.alpha, generation: 0 });
+  const renamed = await f.main.handleUiRenameNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'RenamedAlpha', expectedTreeRevision: 0 });
+  assert.equal(renamed.ok, true, JSON.stringify(renamed));
+  const alpha = path.join(f.imported, 'RenamedAlpha.txt');
+  const copied = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.b.nodeId, name: 'BetaCopy', expectedTreeRevision: 1 });
+  assert.equal(copied.ok, true, JSON.stringify(copied));
+  const copy = path.join(f.imported, '03_BetaCopy.txt');
+  const opened = mountRenderer(f, read(copy), 9); f.probe.state({ filePath: copy, generation: 0 });
+  const undone = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 2, mutationId: copied.lastMutation.id });
+  assert.equal(undone.ok, true, JSON.stringify(undone));
+  const replacement = opened.sends.find(x => x.channel === 'editor:set-text');
+  assert.equal(replacement.payload.content, 'Beta'); assert.equal(replacement.payload.title, 'Beta');
+  assert.equal(replacement.payload.expectedGeneration, 9, 'actual renderer generation survives clean document open independently of Main signal generation');
+  mountRenderer(f, 'Beta', 9, null, { projectId: f.query.projectId, documentId: f.b.nodeId });
+  f.probe.state({ filePath: f.beta, generation: 0 });
+  await f.probe.snapshot();
+  const parsed = envelope.parseObservablePayload(read(alpha));
+  parsed.doc.attrs = { wordPendingRevisions: null, ...parsed.doc.attrs };
+  parsed.doc.content.forEach(p => { p.attrs = { textAlign: null, ...(p.attrs || {}) }; });
+  parsed.doc = bookmarks.materializeInternalLinkSchemaDefaults(parsed.doc);
+  const view = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock });
+  const active = mountRenderer(f, view, 9, null, { projectId: f.query.projectId, documentId: f.a.nodeId }); f.probe.state({ filePath: alpha, generation: 0 });
+  const moved = await f.main.handleUiMoveNodeCommand({ projectId: f.query.projectId, nodeId: f.b.nodeId,
+    targetParentNodeId: f.parent.nodeId, targetIndex: 1, expectedTreeRevision: 3 });
+  assert.equal(moved.ok, true, JSON.stringify(moved));
+  assert.equal(f.probe.state().filePath, path.join(f.imported, '01_RenamedAlpha.txt'));
+  const publication = active.sends.find(x => x.channel === 'editor:set-text');
+  assert.equal(publication.payload.treePublication, true);
+  assert.equal(publication.payload.expectedGeneration, 9);
+  assert.equal(publication.payload.content, view); assert.equal(publication.payload.expectedContent, view);
+});
+
+test('actual versioned command bridge routes the existing move ID through Kernel and rejects stale replay and malformed peers', async t => {
+  const f = await fixture(t), ui = mountRenderer(f, read(f.beta));
+  const protocol = require('../../src/core/ipc-envelope-v1.cjs');
+  const payload = { projectId: f.query.projectId, nodeId: f.a.nodeId, targetParentNodeId: f.parent.nodeId,
+    targetIndex: 1, expectedTreeRevision: 0 };
+  const request = protocol.createEnvelope('ui:command-bridge', 'cmd.project.tree.moveNode', payload,
+    { correlationId: 'move-native-route', issuedAt: '2026-10-02T00:00:00.000Z' });
+  const before = f.capture();
+  const malformed = await f.handles.get('ui:command-bridge')(ui.event, { ...request, v: 99 });
+  assert.equal(malformed.ok, false); assert.deepEqual(f.capture(), before);
+  assert.throws(() => f.handles.get('ui:command-bridge')({ ...ui.event, senderFrame: { url: 'https://foreign.invalid/' } }, request), /E_IPC_FRAME_PROTOCOL_DENIED/u);
+  assert.deepEqual(f.capture(), before);
+  const accepted = await f.handles.get('ui:command-bridge')(ui.event, request);
+  assert.equal(accepted.ok, true, JSON.stringify(accepted));
+  assert.equal(f.probe.state().filePath, path.join(f.imported, '01_Beta.txt'));
+  const after = f.capture();
+  const replay = await f.handles.get('ui:command-bridge')(ui.event, request);
+  assert.equal(replay.ok, false); assert.deepEqual(f.capture(), after);
+});
+
+for (const observed of ['old-copy', 'missing', 'foreign-project', 'malformed']) test(`late rejected copy replacement with ${observed} snapshot cannot write the original through save, autosave, backup or tree`, async t => {
+  const f = await fixture(t);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true, JSON.stringify(copy));
+  const fork = path.join(f.imported, '03_Fork.txt');
+  let content = read(fork), identity = { projectId: f.query.projectId, documentId: copy.nodeId };
+  const ui = mountRenderer(f, () => content, 9, null, () => identity);
+  f.probe.state({ filePath: fork, generation: 0 });
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+  assert.equal(undo.ok, true, JSON.stringify(undo));
+  const replacement = ui.sends.find(x => x.channel === 'editor:set-text');
+  assert.equal(replacement.payload.treeReplacement, true); assert.equal(replacement.payload.expectedGeneration, 9);
+  // A real renderer can reject after send due to another edit; it retains the
+  // copied identity and buffer. Its observations cannot authorize source paths.
+  content += ' late copied typing';
+  if (observed === 'missing') identity = {};
+  if (observed === 'foreign-project') identity = { projectId: 'foreign', documentId: f.a.nodeId };
+  if (observed === 'malformed') identity = { projectId: f.query.projectId, documentId: { id: f.a.nodeId } };
+  const before = f.capture();
+  const autosave = await f.probe.autosave();
+  assert.equal(autosave.ok, false, JSON.stringify(autosave)); assert.equal(f.probe.state().dirty, true);
+  assert.equal(f.warnings.length, 0, 'autosave does not produce repeated warnings');
+  assert.equal((await f.probe.save()).ok, false);
+  assert.equal(f.warnings.length, 1); assert.match(f.warnings[0].message, /Сохранение остановлено/u);
+  const backup = await f.probe.backup(); assert.notEqual(backup?.success, true);
+  const blockedOpen = await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.b.nodeId });
+  assert.equal(blockedOpen.ok, false); assert.equal(blockedOpen.cancelled, true);
+  const rename = await f.main.handleUiRenameNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Wrong', expectedTreeRevision: 2 });
+  assert.equal(rename.ok, false, JSON.stringify(rename));
+  await assert.rejects(f.probe.text(), /TREE_EDITOR_IDENTITY_UNCONFIRMED/u);
+  assert.deepEqual(f.capture(), before); assert.equal(read(f.alpha), 'Alpha');
+  assert.equal(content.endsWith(' late copied typing'), true);
+  // Only an actual matching current viewer observation clears the private
+  // pending fence, with all Main lifecycle/path bindings still unchanged.
+  identity = { projectId: f.query.projectId, documentId: f.a.nodeId }; content = read(f.alpha);
+  const snapshot = await f.probe.snapshot(); assert.equal(snapshot.documentId, f.a.nodeId);
+  assert.equal(await f.probe.save(), true); assert.equal(read(f.alpha), 'Alpha');
+});
+
+test('matching snapshot cannot clear a replacement fence after authoring lifecycle changes', async t => {
+  const f = await fixture(t);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true);
+  const fork = path.join(f.imported, '03_Fork.txt'); let identity = { projectId: f.query.projectId, documentId: copy.nodeId };
+  mountRenderer(f, read(fork), 9, null, () => identity); f.probe.state({ filePath: fork, generation: 0 });
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+  assert.equal(undo.ok, true);
+  const before = f.capture(); identity = { projectId: f.query.projectId, documentId: f.a.nodeId }; f.probe.changeSession();
+  await assert.rejects(f.probe.snapshot(), /TREE_EDITOR_IDENTITY_UNCONFIRMED/u);
+  assert.equal((await f.probe.save()).ok, false); assert.equal(f.probe.state().dirty, true); assert.deepEqual(f.capture(), before);
+});
+
+test('one valid replacement observation cannot release an older wrong-copy snapshot request', async t => {
+  const f = await fixture(t);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  const fork = path.join(f.imported, '03_Fork.txt');
+  let identity = { projectId: f.query.projectId, documentId: copy.nodeId }, defer = false;
+  const ui = mountRenderer(f, () => read(f.alpha), 9, () => defer ? false : undefined, () => identity);
+  f.probe.state({ filePath: fork, generation: 0 });
+  const pendingText = f.probe.text().then(value => ({ value }), error => ({ error }));
+  const textRequest = ui.sends.at(-1).payload.requestId;
+  // The initial capture must describe the copied buffer exactly.
+  // Both plain source and its clean copy contain identical text, distinct IDs.
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+  assert.equal(undo.ok, true, JSON.stringify(undo));
+  defer = true;
+  const pending = f.probe.snapshot(); const outcome = pending.then(value => ({ value }), error => ({ error }));
+  const request = ui.sends.at(-1).payload.requestId;
+  defer = false; identity = { projectId: f.query.projectId, documentId: f.a.nodeId };
+  assert.equal((await f.probe.snapshot()).documentId, f.a.nodeId);
+  f.listeners.get('editor:text-response')(ui.event, { requestId: textRequest, text: 'Old delayed copied text' });
+  assert.equal((await pendingText).error?.code, 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED');
+  f.listeners.get('editor:snapshot-response')(ui.event, { requestId: request,
+    snapshot: { content: 'Copied buffer', generation: 9, projectId: f.query.projectId, documentId: copy.nodeId } });
+  const rejected = await outcome; assert.equal(rejected.error?.code, 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED');
+  assert.equal(read(f.alpha), 'Alpha'); assert.equal(f.probe.state().dirty, true);
+});
+
+test('successful canonical open retires obsolete replacement context but an old pending snapshot keeps its lifecycle binding', async t => {
+  const f = await fixture(t);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  const fork = path.join(f.imported, '03_Fork.txt');
+  let content = read(fork), identity = { projectId: f.query.projectId, documentId: copy.nodeId }, defer = false;
+  const ui = mountRenderer(f, () => content, 9, () => defer ? false : undefined, () => identity);
+  f.probe.state({ filePath: fork, generation: 0 });
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+  assert.equal(undo.ok, true);
+  defer = true; const pending = f.probe.snapshot(); const outcome = pending.then(value => ({ value }), error => ({ error }));
+  const request = ui.sends.at(-1).payload.requestId;
+  // The actual source viewer is observed before the existing no-loss Open
+  // barrier; this permits the deliberate switch without discarding a copy.
+  defer = false; content = read(f.alpha); identity = { projectId: f.query.projectId, documentId: f.a.nodeId };
+  const opened = await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.b.nodeId });
+  assert.equal(opened.ok, true, JSON.stringify(opened)); assert.equal(f.probe.state().filePath, f.beta);
+  const before = f.capture();
+  f.listeners.get('editor:snapshot-response')(ui.event, { requestId: request,
+    snapshot: { content: 'Old delayed copied buffer', generation: 9, projectId: f.query.projectId, documentId: copy.nodeId } });
+  assert.equal((await outcome).error?.code, 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED');
+  assert.deepEqual(f.capture(), before);
+  content = read(f.beta); identity = { projectId: f.query.projectId, documentId: f.b.nodeId };
+  assert.equal(await f.probe.save(), true); assert.equal(read(f.alpha), 'Alpha'); assert.equal(read(f.beta), 'Beta');
 });

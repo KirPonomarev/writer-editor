@@ -233,3 +233,64 @@ test('exact tree Undo restores legacy receipt then ordinary save retains resourc
   assert.deepEqual(current.resources.map(x=>x.path),[path.join(f.root,attrs.assetPath)]);
   assert.equal(text(asset),'asset'); // Replacement neither republishes nor deletes inherited immutable bytes.
 });
+
+function boundaryBookmarkFixture(value,start,end) {
+  const endpoint=offsetUtf16=>({paragraphIndex:0,offsetUtf16,edge:'text'});
+  const result=bookmarks.planMutation({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:value}]}]},action:'create',
+    requestId:'boundary-seed',projectId:'p',sceneId:'a.txt',name:'Boundary',start:endpoint(start),end:endpoint(end)});
+  const link={type:'text',text:'Link',marks:[{type:'link',attrs:bookmarks.linkAttrs(result.registry.bookmarks[0])}]};
+  result.doc.content.push({type:'paragraph',content:[link]});return result.doc;
+}
+function boundaryBookmarkEdit(before,value) {
+  const working=JSON.parse(JSON.stringify(before));working.content[0].content=value?[{type:'text',text:value}]:[];
+  return bookmarks.planSave({beforeDoc:before,workingDoc:working});
+}
+test('surviving bookmark prefix and suffix boundaries map pure deletion without changing link identity',()=>{
+  for(const [text,next,start,end,expectedStart,expectedEnd] of [
+    ['PREFIXtarget','target',0,12,0,6],['targetSUFFIX','target',0,12,0,6],
+    ['goneTARGET','TARGET',4,10,0,6],['TARGETgone','TARGET',0,6,0,6],['😀target','target',0,8,0,6]]) {
+    const before=boundaryBookmarkFixture(text,start,end),id=bookmarks.readRegistry(before).bookmarks[0].id;
+    const result=boundaryBookmarkEdit(before,next),record=result.registry.bookmarks[0];
+    assert.equal(record.id,id);assert.equal(record.start.offsetUtf16,expectedStart);assert.equal(record.end.offsetUtf16,expectedEnd);
+    assert.deepEqual(result.doc.content[1],before.content[1]);
+  }
+});
+for(const [label,text,next,start,end,code] of [
+  ['point at deletion start','goneTARGET','TARGET',0,0,'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT'],
+  ['point at deletion end','goneTARGET','TARGET',4,4,'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT'],
+  ['wholly consumed range','goneTARGET','TARGET',0,4,'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT'],
+  ['strict interior','goneTARGET','TARGET',2,8,'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT'],
+  ['replacement','goneTARGET','xTARGET',0,10,'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT'],
+  ['ambiguous repeated placement','aaaa','aaa',1,3,'USER_BOOKMARK_EDIT_AMBIGUOUS']])test(`bookmark deletion preserves refusal for ${label}`,()=>{
+  const before=boundaryBookmarkFixture(text,start,end),raw=JSON.stringify(before);
+  assert.throws(()=>boundaryBookmarkEdit(before,next),{code});assert.equal(JSON.stringify(before),raw);
+});
+
+test('native renamed canary prefix Undo preserves seven bookmark IDs, both links and paragraph terminator owner',()=>{
+  const before={"attrs":{"wordPendingRevisions":null,"wordUserBookmarks":{"bookmarks":[{"end":{"edge":"text","offsetUtf16":28,"paragraphIndex":2},"id":"ubm-4a1a5bee6d3f70b639d53e2d519ec983","name":"UserTwinSecond","start":{"edge":"text","offsetUtf16":0,"paragraphIndex":2},"state":"active"},{"end":{"edge":"text","offsetUtf16":8,"paragraphIndex":4},"id":"ubm-203b938b6e70d2fffef234648bb2e1e7","name":"Цель_Кириллица_Ω","start":{"edge":"text","offsetUtf16":0,"paragraphIndex":4},"state":"active"},{"end":{"edge":"text","offsetUtf16":8,"paragraphIndex":4},"id":"ubm-9a163b528a3a77c818439300186b1ce3","name":"usertwinb","start":{"edge":"text","offsetUtf16":0,"paragraphIndex":4},"state":"active"},{"end":{"edge":"afterParagraph","offsetUtf16":26,"paragraphIndex":5},"id":"ubm-38d4ccb77753d2597c6f91faa775f3d5","name":"UserCrossBlock","start":{"edge":"text","offsetUtf16":0,"paragraphIndex":5},"state":"active"},{"end":{"edge":"text","offsetUtf16":1,"paragraphIndex":7},"id":"ubm-d15b0c14e39ee6d0e1b00a9dbf8d8335","name":"UserSpanTwo","start":{"edge":"text","offsetUtf16":0,"paragraphIndex":5},"state":"active"},{"end":{"edge":"text","offsetUtf16":13,"paragraphIndex":7},"id":"ubm-1f4c0c75d96bbde80d4287d2c51cecc2","name":"UserPoint","start":{"edge":"text","offsetUtf16":13,"paragraphIndex":7},"state":"active"},{"end":{"edge":"text","offsetUtf16":17,"paragraphIndex":8},"id":"ubm-a3206b7b59d7d98c1f63f5f19500c5a2","name":"UserEmoji","start":{"edge":"text","offsetUtf16":15,"paragraphIndex":8},"state":"active"}],"revision":1,"schemaVersion":"yalken.word-user-bookmarks.v1"}},"content":[{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"Bookmark canary","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"Target Twin Alpha","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"STARTBOUND_Target Twin Alpha_ENDBOUND","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"class":null,"href":"#usertwinb","rel":"noopener noreferrer nofollow","target":"_blank","title":null,"wordBookmarkId":"ubm-9a163b528a3a77c818439300186b1ce3","wordBookmarkName":"usertwinb"},"type":"link"},{"attrs":{"color":"#467886","fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"},{"type":"underline"}],"text":"Link One","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"class":null,"href":"#UserTwinSecond","rel":"noopener noreferrer nofollow","target":"_blank","title":null,"wordBookmarkId":"ubm-4a1a5bee6d3f70b639d53e2d519ec983","wordBookmarkName":"UserTwinSecond"},"type":"link"},{"attrs":{"color":"#467886","fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"},{"type":"underline"}],"text":"Link Two","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":" ПроверкаCross Block Start","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"Cross Block End","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"After canary.","type":"text"},{"marks":[{"attrs":{"color":null,"fontFamily":"Times New Roman","fontSize":"12pt"},"type":"textStyle"}],"text":" ","type":"text"},{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"POINT_INSERT_","type":"text"}],"type":"paragraph"},{"attrs":{"textAlign":null},"content":[{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":"Unicode target ","type":"text"},{"marks":[{"attrs":{"color":null,"fontFamily":null,"fontSize":"12pt"},"type":"textStyle"}],"text":"🌋","type":"text"},{"marks":[{"attrs":{"color":null,"fontFamily":"Aptos","fontSize":"12pt"},"type":"textStyle"}],"text":" omega","type":"text"}],"type":"paragraph"}],"type":"doc"};
+  const working=JSON.parse(JSON.stringify(before));assert.ok(working.content[5].content[0].text.startsWith(' Проверка'));
+  working.content[5].content[0].text=working.content[5].content[0].text.slice(9);
+  const result=bookmarks.planSave({beforeDoc:before,workingDoc:working});
+  assert.deepEqual(result.registry.bookmarks.map(x=>x.id),bookmarks.readRegistry(before).bookmarks.map(x=>x.id));
+  assert.equal(result.registry.bookmarks.length,7);
+  const cross=result.registry.bookmarks.find(x=>x.name==='UserCrossBlock');
+  assert.deepEqual(cross.start,{paragraphIndex:5,offsetUtf16:0,edge:'text'});
+  assert.deepEqual(cross.end,{paragraphIndex:5,offsetUtf16:17,edge:'afterParagraph'});
+  assert.deepEqual(result.registry.bookmarks.find(x=>x.name==='UserSpanTwo').end,{paragraphIndex:7,offsetUtf16:1,edge:'text'});
+  assert.deepEqual(result.doc.content[3],before.content[3]);assert.deepEqual(result.doc.content[4],before.content[4]);
+});
+
+test('moved backup metadata matches real producer bytes while a later new snapshot still invalidates exact Undo',async t=>{
+  const f=fixture(t),m=await modelPromise,manager=require('../../src/utils/backupManager'),source=path.join(f.root,'roman/01 Alpha.txt');
+  const first=await manager.createBackup(source,f.raw,{basePath:f.root});assert.equal(first.success,true,first.error);
+  const plan=m.planProjectTreeCohort(f.capture());
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const moved=path.join(f.root,'roman/03 Alpha.txt'),dir=path.join(f.root,'backups',sha(moved)),metadata=text(path.join(dir,'meta.json'));
+  assert.equal(metadata,JSON.stringify({originalPath:moved,baseName:path.basename(moved)},null,2));
+  assert.equal((await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath})).lastMutation.canUndo,true);
+  const next=await manager.createBackup(moved,f.raw,{basePath:f.root});assert.equal(next.success,true,next.error);
+  assert.equal(text(path.join(dir,'meta.json')),metadata,'real producer causes no metadata-only CAS drift');
+  const current=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  assert.equal(current.lastMutation.canUndo,false);assert.equal(current.lastMutation.unavailableReason,'E_TREE_COHORT_FOREIGN_ENTRY');
+  assert.equal(text(moved),f.raw);
+});

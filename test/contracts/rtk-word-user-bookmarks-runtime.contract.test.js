@@ -711,7 +711,10 @@ for (const kind of ['lifecycle', 'session', 'disk', 'public', 'mismatchedPair'])
 function backupHarness(h) {
   const manager = require('../../src/utils/backupManager');
   h.backupWrites = 0;
-  Object.assign(h.c, { backupHashes: new Map(), getBackupBasePathForFile: () => path.dirname(h.file),
+  Object.assign(h.c, { activeStage10ApplicationBootstrap: {},
+    loadRtkNonTextReturnModule: () => import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+    treeCohortError: code => Object.assign(new Error(code), { code }),
+    backupHashes: new Map(), getBackupBasePathForFile: () => path.dirname(h.file),
     backupManager: { createBackup: async (...args) => { h.backupWrites++; return manager.createBackup(...args); } },
     updateStatus: () => {}, logDevError: (label, error) => { h.backupError = error.message; },
   });

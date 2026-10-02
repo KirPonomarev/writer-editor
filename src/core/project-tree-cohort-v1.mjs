@@ -232,7 +232,7 @@ export function planProjectTreeCohort(input) {
       else if (item.role === 'recoverySnapshot') to = path.posix.join(path.posix.dirname(mapping.to), '.' + path.posix.basename(mapping.to) + path.posix.basename(item.relativePath).match(/\.bak\.\d{13}$/u)[0]);
       else {
         const absolute = path.join(path.dirname(input.manifestPath), mapping.to), directory = `backups/${sha(absolute)}`;
-        if (item.role === 'backupMetadata') { to = directory + '/meta.json'; content = b64(json({ ...JSON.parse(text(content)), originalPath: absolute, baseName: path.basename(absolute) })); }
+        if (item.role === 'backupMetadata') { to = directory + '/meta.json'; content = b64(JSON.stringify({ ...JSON.parse(text(content)), originalPath: absolute, baseName: path.basename(absolute) }, null, 2)); }
         else to = directory + '/' + path.posix.basename(item.relativePath).slice(0, 14) + path.posix.basename(mapping.to);
       }
     }

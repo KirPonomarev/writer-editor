@@ -2267,17 +2267,15 @@ export function registerProjectCommands(registry, options = {}) {
           targetIndex: Number.isInteger(bridged.targetIndex) ? bridged.targetIndex : targetIndex,
         });
       }
-      return fail(
-        'E_COMMAND_FAILED',
-        EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
-        bridged && typeof bridged.reason === 'string'
-          ? bridged.reason
-          : bridged && typeof bridged.error === 'string'
-            ? bridged.error
-            : response && typeof response.reason === 'string'
-              ? response.reason
-              : 'TREE_MOVE_FAILED',
-      );
+      const reason = typeof bridged?.reason === 'string' && bridged.reason ? bridged.reason
+        : typeof bridged?.error === 'string' && bridged.error ? bridged.error
+          : typeof bridged?.code === 'string' && bridged.code ? bridged.code
+            : typeof response?.reason === 'string' && response.reason ? response.reason : 'TREE_MOVE_FAILED';
+      const code = /^E_[A-Z0-9_]{1,95}$/u.test(reason) ? reason : 'E_COMMAND_FAILED';
+      const userMessage = bridged?.committed === true
+        ? 'Структура изменена, но обновление редактора не завершено. Сохраните или скопируйте текущие правки перед закрытием.'
+        : 'Не удалось завершить перемещение. Проверьте текущее состояние проекта.';
+      return fail(code, EXTRA_COMMAND_IDS.TREE_MOVE_NODE, reason, { userMessage });
     },
   );
 
@@ -2310,9 +2308,17 @@ export function registerProjectCommands(registry, options = {}) {
           return ok({ projectId, copied: action === 'copy', undone: action === 'undo',
             nodeId: typeof result.nodeId === 'string' ? result.nodeId : '' });
         }
-        return fail('E_COMMAND_FAILED', commandId,
-          typeof result?.reason === 'string' ? result.reason
-            : typeof result?.error === 'string' ? result.error : 'TREE_MUTATION_FAILED');
+        const reason = typeof result?.reason === 'string' && result.reason ? result.reason
+          : typeof result?.error === 'string' && result.error ? result.error
+            : typeof result?.code === 'string' && result.code ? result.code
+              : typeof response?.reason === 'string' && response.reason ? response.reason : 'TREE_MUTATION_FAILED';
+        const code = /^E_[A-Z0-9_]{1,95}$/u.test(reason) ? reason : 'E_COMMAND_FAILED';
+        const userMessage = result?.committed === true
+          ? 'Структура изменена, но обновление редактора не завершено. Сохраните или скопируйте текущие правки перед закрытием.'
+          : action === 'undo'
+            ? 'Не удалось завершить отмену изменения структуры. Проверьте текущее состояние проекта.'
+            : 'Не удалось завершить создание копии сцены. Проверьте текущее состояние проекта.';
+        return fail(code, commandId, reason, { userMessage });
       });
   }
 
