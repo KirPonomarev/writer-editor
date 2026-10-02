@@ -11,6 +11,7 @@ const frame = ledger => clone(Object.fromEntries(['schemaVersion', 'source', 're
 
 function baseline(doc) {
   const ledger = review.readLedger(doc);
+  if (ledger?.schemaVersion === 3) fail('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
   if (ledger) return { ...clone(ledger), schemaVersion: 2, roundUndo: clone(ledger.roundUndo || []),
     roundRedo: clone(ledger.roundRedo || []), returnReceipts: clone(ledger.returnReceipts || []) };
   const source = review.normalizeNode(doc);

@@ -421,7 +421,10 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MEDIA_NOTES_V1.json",
     "test/contracts/rtk-word-nested-tables.contract.test.js",
     "docs/tasks/2026-10-01--word-nested-tables-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json",
+    "test/contracts/rtk-word-pending-notes.contract.test.js",
+    "docs/tasks/2026-10-01--word-pending-notes-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json"
   ],
   "protectedFiles": [
     {
@@ -650,7 +653,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fbf4011c7216931afbc055bad76598ca4b55156ed1a8164f9aa2530b88144b92"
+        "sha256": "af3123e5447493e0ebb947ad85c58c653982cc3a232f2ccb685df0535c61a846"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -662,7 +665,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "939b1dd5670a1f4b85a5d0f678fd5fa5d058545cefa842021aaf0ae2f7666f22"
+        "sha256": "2eb5aa34c1f773bdd520a6e9a9453c790d39d9295028e660f5f8a7801bae58b1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -682,11 +685,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "2a8991a06771c794318760bbb73ab5fe2f3f38c795135d243202a7e193d27c29"
+        "sha256": "74ac17d796d830e6a545ea49533ffc5977a213e220f2f2ba26876e26279915ee"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "b3dbd553f5c01bb5ad2726e1b76ff9fce70ad8a962393e3e98ae6df915f3e3dd"
+        "sha256": "0f3583556ee45583d01f1994915f916307c8351f2ae0ea0b05cf1513fcd529ba"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -762,11 +765,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "97f31a9ca74366b276776228b455f86410605311fe0c56f89285fca209a8e512"
+        "sha256": "116746a4162752a643b6bf6854c4e4514960ffff73c11c5e43862a8a7a3b7cd9"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "14f421407dd8186c2f45449f758c33d04975697f082652a6448bf7536dbbed23"
+        "sha256": "71ed86b5d4395976ddf359f7aef09e540ba7765a23986307ffb776697a21183d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1354,7 +1357,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "74b92fbe6b46d968fe169d65c3732d21468515cbd69f037d3202d362d70cb457"
+        "sha256": "ad53ee89fda07ee8f6da7cbbcbad1496d4791a2efc50500dcb475ae69f9aebe4"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1466,7 +1469,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "23b45c125cbfa8c975b1e005c9ef56533339117e1806b6e326f5b897b2db1e05"
+        "sha256": "e051fbb9c68e972e15a3132fa81397af365faa7891af7971035a26398e9ba131"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1498,11 +1501,11 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "835b0a804428df4f50272993fa0b8913f82815c42114f675cd6d50b5b6665f12"
+        "sha256": "67c1b46bfb925ab2abe414634247637077196300fbe41db99fe492441b8c45d5"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "c45176577fce13a3c548569caf652b175a1e5f8f377d2930689ab6e85e8025cf"
+        "sha256": "f4d23b130a62368db631e248ae48a5c7cb414ac44cf26aa5e4cd9bbf759ecc95"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -1518,11 +1521,11 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "af802884d0e9ea2351557d3ecddaba4a16fef7de796acc7bfce643669663cfd0"
+        "sha256": "6df9cd36c73be1a6b9e043238cbf605cf9676525e88d8290fdeeb0b06ccc59c0"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
-        "sha256": "02c73701eb006655eb26d0b7cc60012d6494c7a64b38a2df6810f9b2e3ad05e3"
+        "sha256": "6f8d590c4ba2a70d36c1abdbd438d3d80e2b0f3fb8e0319fb3d15822328db351"
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
@@ -1538,7 +1541,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
-        "sha256": "fe2c0368e9dd78314d69974e68a6bf1edc00e3d2e66ffd7ec1179b9a0171fc87"
+        "sha256": "ebc6e72379453aaed031a126b83c520832f53711b67be6d7806ed68c8cfe8687"
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
@@ -1550,11 +1553,11 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "53313f48a1807e3c56d963c440dffca61afb2cde91561e744bac5a6e90ef18fa"
+        "sha256": "143eda30bd22935ac61b931943329b2bc4e5cb37b49ed6191fbee51d88658930"
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
-        "sha256": "711481768fae74a15da790e9a90ae727d4ee43fa79b84cf54dc3c364bf567c12"
+        "sha256": "8e4b543d7705f9ee09df8e79225c2d22b81c66547fc8693a5a0cc6c649a7c338"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
@@ -1570,7 +1573,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-        "sha256": "55e4d120b8f25843c00a36120969b627c47168ba77acd7417eb8b15ba8db87b4"
+        "sha256": "76195428e39d72391c616fe70717d49383eaa3c27a975a52792059afc2714437"
       },
       {
         "path": "test/contracts/rtk-word-pending-moves.contract.test.js",
@@ -1798,7 +1801,7 @@
       },
       {
         "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
-        "sha256": "4e31399079ae40d2d6fb7df4676f008382ec14589ad8261b6723a6a41a62cc27"
+        "sha256": "f1169501e44d244b6f6a59ac1cdb8f9c323cf024e0f061291df2bb76fb704623"
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
@@ -1807,6 +1810,18 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json",
         "sha256": "34734b005b296698e794ddd9aaf8329533559247c4360ff44da7b80dbec8076e"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
+        "sha256": "6e84491d8c621daf00d24526e1b0aea1e1f609deb5a6167ee2a33f2d2a1f6f95"
+      },
+      {
+        "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
+        "sha256": "76d7bbe64bf5bb92cbab2eb6da78761118e137aed3c660b002725fc71d94f0ff"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json",
+        "sha256": "f06a1654ac4afd04537d6e7fc4583f3ba844b957ba74672f69be0d7353a456ce"
       }
     ],
     "followupRepair": {

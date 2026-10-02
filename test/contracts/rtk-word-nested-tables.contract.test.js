@@ -582,8 +582,11 @@ test('Single-scene source reexports nested pending insertion/deletion and decide
         manuscript: notes.bindManuscriptPayload({ kind: 'footnote', body: d(p('body')), sceneId: 'roman/scene.txt', offsetUtf16: 1,
           sceneContent: envelope.deriveVisibleTextFromDocument(doc) }) }] };
       withNote.notes[0].manuscript.reference.sourceTextSha256 = notes.sha(source.blocks.map(block => block.text).join('\n'));
-      const noteHarness = await module.exports.harness(raw, { notesDocument: withNote }), noteSource = await noteHarness.run();
-      await assert.rejects(installSingleScenePublicationGate(noteHarness)(noteSource, buildDocxReviewPacketBuffer(noteSource), bridge), /NOTE_RETURN_MANUSCRIPT_CHANGED|REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH|PENDING/);
+      const noteHarness = await module.exports.harness(raw, { notesDocument: withNote });
+      await assert.rejects(async () => {
+        const noteSource = await noteHarness.run();
+        return installSingleScenePublicationGate(noteHarness)(noteSource, buildDocxReviewPacketBuffer(noteSource), bridge);
+      }, /NOTE_RETURN_MANUSCRIPT_CHANGED|REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH|PENDING/);
     }
   }
   const sameAuthor = { operation: 'insert', author: 'Reviewer', date: '', dateUtc: '', groupId: null, paragraphIndex: 0, state: 'pending' };

@@ -1,0 +1,94 @@
+{
+  "featureId": "WORD_PENDING_NOTES_MAC_20261001",
+  "featureVersion": 1,
+  "status": "TARGET_NOT_ACCEPTED",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "3cc581010faefe65dffece89398c89852450a2ea",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Canonical scene-owned versioned pending ledger and manuscript note identity/body/reference",
+  "derivedData": "Bounded union, Original, Current and DOCX projections",
+  "commandIds": [
+    "cmd.project.review.decidePendingRevision",
+    "cmd.project.review.exportDocxReviewPacket",
+    "cmd.project.review.openDocxReviewPreviewSession"
+  ],
+  "eventTypes": [
+    "Existing scene saved and review applied events; no new bus"
+  ],
+  "queryIds": [
+    "Existing review-surface and document-note queries"
+  ],
+  "productProjectionIds": [
+    "Immutable revision-bound pending changes and note positions; renderer never reconstructs source authority."
+  ],
+  "capabilityIds": [
+    "Existing review apply, pending decision and local DOCX export capabilities"
+  ],
+  "authorityMap": {
+    "product": "Owner-authorized complete macOS Word plan P2d. Core owns versioned scene review ledger and canonical note identity/body/reference; extend existing ledger with durable source point bindings.",
+    "command": "Existing authenticated review intake and explicit Apply through cmd.project.review.decidePendingRevision; existing accept/reject/Undo/Redo and atomic scene plus notes writer.",
+    "design": "Existing review and note projections only; no UI design, composition, visual baseline or command meaning change."
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "noteId",
+    "paragraphIndex",
+    "offsetUtf16",
+    "sourceRevision",
+    "generation"
+  ],
+  "revisionPolicy": "Existing Command Kernel capability enforcement plus Main admission identity and scene/note CAS revalidation inside atomic publication.",
+  "writePath": [
+    "Authenticated bytes -> bounded parser -> retained Main baseline/note proof -> Command Kernel revalidation -> Core pending ledger and note cohort -> existing commitWriterProjectSnapshot and commitProjectTransaction."
+  ],
+  "readPath": [
+    "Canonical saved scene/ledger and notes -> checked union/Original/Current point projections -> existing DOCX builders and semantic publication readback."
+  ],
+  "requiredProductPorts": [
+    "Existing local DOCX intake/export, canonical note storage, atomic project transaction and recovery."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing read-only review/document/note projections and intent-only command bridge."
+  ],
+  "adapterRequirements": "Existing bounded local DOCX, canonical notes and atomic project transaction adapters",
+  "surfaceManifests": "NOT_APPLICABLE: existing review and note surfaces unchanged",
+  "slotRequirements": "NOT_APPLICABLE: no visual contribution",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS SOURCE and PACKAGED acceptance; no Windows product claim",
+  "accessibilityRequirements": "Existing review decision and note representation keyboard routes",
+  "fallbacks": [
+    "Typed zero-write refusal on malformed, forged, duplicate, consumed or stale note bindings and unsupported mixed composites.",
+    "Existing older reader rejects unsupported version/required feature without silently dropping note source identities."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "persistenceClass": "Existing atomic scene and note transaction",
+  "migrations": "Versioned pending ledger source-point bindings; validate older ledgers unchanged, explicitly refuse unsupported new version on older reader",
+  "recovery": "Existing transaction rollback and readable scene/note recovery, exact cohort validation",
+  "rollback": "Revert this bounded extension while preserving versioned documents and recovery snapshots; older readers must refuse unsupported ledger features, never rewrite them as legacy content.",
+  "performanceBudget": "Existing ledger/note bounds, linear bounded source segment projection, no new typing analysis",
+  "securityBoundary": "Retain bounded ZIP/XML and namespace validation, signed locally retained export authority; external note ids/points never provide path or mutation authority.",
+  "lifecycle": [
+    "Exact project/scene/lifecycle/source bytes/edit generation and canonical notes digest before every publication.",
+    "Bound noteId, paragraph occurrence and UTF-16 source point to validated union source and unchanged note body; never invert ambiguous collapsed Current offsets."
+  ],
+  "negativeBypassChecks": [
+    "Collapsed deletion endpoint identity, multiple disjoint edits, nested/repeated/empty leaves, Unicode boundaries and note body preservation.",
+    "Versioned upgrade and N-1 refusal, no silent downgrade, actual atomic transaction rollback/recovery and stale note race.",
+    "Native SOURCE and PACKAGED Word text edit -> Apply -> decisions/Undo/Redo -> restart -> re-export before frozen full CI."
+  ],
+  "evidenceBindings": [
+    "rtk-word-pending-notes.contract.test.js",
+    "External exact-build native SOURCE/PACKAGED artifacts and mandatory CI"
+  ],
+  "currentReality": [
+    "3cc58101 supports nested tables and independent note return; tracked text combined with real manuscript notes remains refused. Current-only note offsets cannot disambiguate collapsed deletion boundaries after restart."
+  ]
+}

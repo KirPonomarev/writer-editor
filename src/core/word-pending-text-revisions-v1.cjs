@@ -186,9 +186,9 @@ function validateSource(doc) {
 }
 function validateState(input, frame = false) {
   assert(object(input) && new TextEncoder().encode(JSON.stringify(input)).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
-  const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo'];
-  assert([1, 2].includes(input.schemaVersion));
-  assert(exact(input, input.schemaVersion === 2 && !frame ? [...baseKeys, 'roundUndo', 'roundRedo', 'returnReceipts'] : baseKeys));
+  const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(input.schemaVersion === 3 ? ['noteSourcePoints'] : [])];
+  assert([1, 2, 3].includes(input.schemaVersion));
+  assert(exact(input, input.schemaVersion >= 2 && !frame ? [...baseKeys, 'roundUndo', 'roundRedo', 'returnReceipts'] : baseKeys));
   validateSource(input.source);
   const sourceParagraphs = paragraphs(input.source);
   assert(Array.isArray(input.revisions) && input.revisions.length >= (input.schemaVersion === 1 ? 1 : 0) && input.revisions.length <= 1024);
@@ -287,7 +287,18 @@ function validateState(input, frame = false) {
       for (const group of groups.values()) assert(row[input.revisions.indexOf(group[0])] === row[input.revisions.indexOf(group[1])]);
     }
   }
-  if (input.schemaVersion === 2 && !frame) {
+  if (input.schemaVersion === 3) {
+    assert(Array.isArray(input.noteSourcePoints) && input.noteSourcePoints.length > 0 && input.noteSourcePoints.length <= 256, 'PENDING_NOTE_POINTS_INVALID');
+    assert(input.revisions.every(r => ['insert', 'delete'].includes(r.operation) && !isStructural(r) && !r.moveName), 'PENDING_NOTE_REVISION_UNSUPPORTED');
+    const noteIds = new Set();
+    for (const point of input.noteSourcePoints) {
+      assert(exact(point, ['noteId', 'paragraphIndex', 'offsetUtf16']) && typeof point.noteId === 'string'
+        && /^[A-Za-z0-9._:-]{1,128}$/u.test(point.noteId) && !noteIds.has(point.noteId), 'PENDING_NOTE_POINTS_INVALID');
+      noteIds.add(point.noteId);
+      projectSourcePoint(input, point);
+    }
+  }
+  if (input.schemaVersion >= 2 && !frame) {
     for (const rounds of [input.roundUndo, input.roundRedo]) {
       assert(Array.isArray(rounds) && rounds.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
       for (const previous of rounds) validateState(previous, true);
@@ -304,9 +315,56 @@ function validateState(input, frame = false) {
   }
   return input;
 }
+// A point belongs to the union source occurrence, never to ambiguous Current
+// text. Endpoints remain distinct even when a hidden deletion collapses them.
+function projectSourcePoint(ledger, point, mode = 'current') {
+  assert(['current', 'original', 'export'].includes(mode), 'PENDING_NOTE_POINT_MODE');
+  const leaves = paragraphs(ledger.source), p = leaves[point?.paragraphIndex];
+  assert(Number.isSafeInteger(point?.paragraphIndex) && point.paragraphIndex >= 0 && p
+    && safeBoundary(p.content.map(textOf).join(''), point.offsetUtf16), 'PENDING_NOTE_POINT_BOUNDARY');
+  assert(ledger.revisions.every(r => ['insert', 'delete'].includes(r.operation) && !isStructural(r) && !r.moveName), 'PENDING_NOTE_REVISION_UNSUPPORTED');
+  let offsetUtf16 = point.offsetUtf16;
+  for (const r of ledger.revisions) {
+    if (r.paragraphIndex !== point.paragraphIndex) continue;
+    assert(!(r.from < point.offsetUtf16 && point.offsetUtf16 < r.to), 'PENDING_NOTE_REFERENCE_CONSUMED');
+    const included = mode === 'export' && r.state === 'pending' || includeRevision(r, mode === 'export' ? 'current' : mode);
+    if (!included && r.to <= point.offsetUtf16) offsetUtf16 -= r.to - r.from;
+  }
+  let globalOffsetUtf16 = offsetUtf16;
+  for (let i = 0; i < point.paragraphIndex; i++)
+    globalOffsetUtf16 += paragraphSegments(ledger, leaves[i], i, mode).reduce((n, segment) => n + textOf(segment.node).length, 0) + 1;
+  return { paragraphIndex: point.paragraphIndex, offsetUtf16, globalOffsetUtf16 };
+}
+function exportNoteBasis(ledger) {
+  validateLedger(ledger);
+  assert(!ledger.revisions.some(r => !['insert', 'delete'].includes(r.operation) || isStructural(r) || r.moveName), 'PENDING_NOTE_REVISION_UNSUPPORTED');
+  const exported = exportDocument(ledger), revisions = [];
+  exported.paragraphs.forEach((paragraph, paragraphIndex) => {
+    let offset = 0;
+    for (const segment of paragraph.segments) {
+      const end = offset + textOf(segment.node).length;
+      if (segment.revision) {
+        const last = revisions.at(-1);
+        if (last?.id === segment.revision.id) last.to = end;
+        else revisions.push({ ...clone(segment.revision), paragraphIndex, from: offset, to: end });
+      }
+      offset = end;
+    }
+  });
+  return validateLedger({ schemaVersion: 2, source: exported.doc, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+}
+function bindNoteSourcePoints(doc, points) {
+  const ledger = asRoundLedger(doc);
+  return bindLedger({ ...ledger, schemaVersion: 3, noteSourcePoints: clone(points) });
+}
+function noteProjection(doc, mode = 'current') {
+  const ledger = readLedger(doc);
+  if (ledger?.schemaVersion !== 3) return null;
+  return ledger.noteSourcePoints.map(point => ({ noteId: point.noteId, ...projectSourcePoint(ledger, point, mode) }));
+}
 function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
-  return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(key => [key, ledger[key]])));
+  return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(ledger.schemaVersion === 3 ? ['noteSourcePoints'] : [])].map(key => [key, ledger[key]])));
 }
 function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex) {
   // A paragraph property's identity covers the paragraph, not its changing text.
@@ -379,7 +437,7 @@ function preserveReturnedIdentities(before, proposed, paragraphBindings) {
 }
 function asRoundLedger(doc) {
   const existing = readLedger(doc);
-  if (existing) return { ...clone(existing), schemaVersion: 2,
+  if (existing) return { ...clone(existing), schemaVersion: existing.schemaVersion === 3 ? 3 : 2,
     roundUndo: clone(existing.roundUndo || []), roundRedo: clone(existing.roundRedo || []), returnReceipts: clone(existing.returnReceipts || []) };
   const source = normalizeNode(doc);
   assert(source?.type === 'doc' && !source.attrs, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
@@ -485,7 +543,8 @@ function decide(doc, input) {
       if (!rounds?.length) return { changed: false, doc };
       assert(other.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
       const next = rounds.pop(); other.push(roundFrame(ledger));
-      return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: 2,
+      if (next.schemaVersion !== 3) delete ledger.noteSourcePoints;
+      return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: next.schemaVersion === 3 ? 3 : 2,
         roundUndo: ledger.roundUndo, roundRedo: ledger.roundRedo, returnReceipts: ledger.returnReceipts }) };
     }
     assert(target.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET'); target.push(before);
@@ -502,7 +561,7 @@ function decide(doc, input) {
     }
     if (!selected.length) return { changed: false, doc };
     assert(ledger.undo.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET'); ledger.undo.push(before); ledger.redo = [];
-    if (ledger.schemaVersion === 2) ledger.roundRedo = [];
+    if (ledger.schemaVersion >= 2) ledger.roundRedo = [];
     selected.forEach(r => { r.state = input.action.startsWith('accept') ? 'accepted' : 'rejected'; });
   }
   return { changed: true, doc: bindLedger(ledger) };
@@ -515,4 +574,4 @@ function projection(doc) {
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: isTableRow(r) ? tableRows(ledger.source).filter(row => row.tableIndex === r.structure.tableIndex && row.rowIndex === r.structure.rowIndex).flatMap(row => sourceParagraphs.slice(row.paragraphIndex, row.paragraphIndex + row.paragraphCount)).map(p => p.content.map(textOf).join('')).join('\t') : isParagraphBoundary(r) ? '\n' : sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

@@ -41,7 +41,7 @@ function buildPendingRowParagraphXml(xml, revision, counter) {
 }
 // Export segments have already been validated against canonical scene truth.
 // One native wrapper per revision, even when its body has several rich runs.
-function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
+function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map()) {
   let output = '', active = null, body = '', formatText = '';
   const flush = () => {
     if (!active) { output += body; body = ''; return; }
@@ -72,13 +72,47 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '') {
     if (active.moveName) output += `<w:${tag}RangeEnd w:id="${rangeId}"/>`;
     body = '';
   };
+  let offset = 0;
+  const remaining = new Map(markers);
+  const emit = point => {
+    if (!remaining.has(point)) return;
+    flush(); active = null; output += remaining.get(point); remaining.delete(point);
+  };
   for (const segment of segments) {
-    if ((active?.id || null) !== (segment.revision?.id || null)) { flush(); active = segment.revision; }
-    if (active?.operation === 'format') { formatText += segment.node.type === 'hardBreak' ? '\n' : segment.node.text; continue; }
-    let xml = renderRun(segment.node);
-    if (active?.operation === 'delete' && !active.moveName) xml = xml.replace(/<w:t(?=[ >])/gu, '<w:delText').replaceAll('</w:t>', '</w:delText>');
-    body += xml;
+    const value = segment.node.type === 'hardBreak' ? '\n' : segment.node.text, end = offset + value.length;
+    const inner = [...remaining.keys()].filter(point => point > offset && point < end).sort((a, b) => a - b);
+    if (segment.revision && inner.length) throw Error('PENDING_NOTE_REFERENCE_CONSUMED');
+    const cuts = [offset, ...inner, end];
+    for (let i = 0; i < cuts.length - 1; i++) {
+      emit(cuts[i]);
+      if ((active?.id || null) !== (segment.revision?.id || null)) { flush(); active = segment.revision; }
+      const node = segment.node.type === 'hardBreak' ? segment.node : { ...segment.node, text: value.slice(cuts[i] - offset, cuts[i + 1] - offset) };
+      if (active?.operation === 'format') { formatText += node.type === 'hardBreak' ? '\n' : node.text; continue; }
+      let xml = renderRun(node);
+      if (active?.operation === 'delete' && !active.moveName) xml = xml.replace(/<w:t(?=[ >])/gu, '<w:delText').replaceAll('</w:t>', '</w:delText>');
+      body += xml;
+    }
+    offset = end;
   }
+  emit(offset);
+  if (remaining.size) throw Error('PENDING_NOTE_ANCHOR_UNEMITTED');
   flush(); return output;
 }
-module.exports = { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
+function pendingNoteMarkersForBlock(projection, block) {
+  const bindings = (projection?.sourceBindings || []).filter(binding => binding.blockId === block.blockId);
+  if (!bindings.length) return new Map();
+  if (!Array.isArray(block.pendingNoteSourcePoints) || bindings.length !== block.pendingNoteSourcePoints.length)
+    throw Error('PENDING_NOTE_BINDINGS_REQUIRED');
+  const result = new Map(), seen = new Set();
+  for (const binding of bindings) {
+    const points = block.pendingNoteSourcePoints.filter(point => point.noteId === binding.noteId);
+    if (!binding.richBody || points.length !== 1 || seen.has(binding.noteId)) throw Error('PENDING_NOTE_BINDINGS_REQUIRED');
+    seen.add(binding.noteId);
+    const point = points[0].offsetUtf16;
+    if (!Number.isSafeInteger(point) || point < 0) throw Error('PENDING_NOTE_POINT_BOUNDARY');
+    const xml = [...require('./docxReviewPacketNotes.js').noteMarkersForBlock({ sourceBindings: [binding] }, block).values()].join('');
+    result.set(point, (result.get(point) || '') + xml);
+  }
+  return result;
+}
+module.exports = { pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };

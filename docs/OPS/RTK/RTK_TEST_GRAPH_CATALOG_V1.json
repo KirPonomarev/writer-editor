@@ -144,6 +144,7 @@
     "rtk-word-p0-scale-envelope-terminal-audit.contract.test.js",
     "rtk-word-pending-formatting.contract.test.js",
     "rtk-word-pending-moves.contract.test.js",
+    "rtk-word-pending-notes.contract.test.js",
     "rtk-word-pending-paragraph-boundaries.contract.test.js",
     "rtk-word-pending-recording-runtime.contract.test.js",
     "rtk-word-pending-recording.contract.test.js",

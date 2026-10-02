@@ -155,4 +155,56 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
   need(Buffer.byteLength(JSON.stringify(after)) <= 4 * model.LIMITS.bytes, 'NOTE_RETURN_STATE_BUDGET');
   return { replay: false, document: after, operationId, changes };
 }
-module.exports = { planNoteReturnDelta };
+// An authenticated caller supplies local canonical identities. Word contributes
+// only validated source occurrences and bodies, never note IDs or write paths.
+function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exportMap,
+  beforeDoc, returnedDoc, returnedNotes, unionReferences }) {
+  const pending = require('./word-pending-text-revisions-v1.cjs');
+  model.validateManuscriptDocument(document, projectId);
+  need(baseline?.projectId === projectId && baseline.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+    && baseline.stateDigest === notesStateDigest(document), 'PENDING_NOTE_BASELINE_CONFLICT');
+  const active = document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
+  need(active.length > 0 && active.length <= 256 && baseline.sourceBindings?.length === active.length
+    && returnedNotes?.length === active.length && unionReferences?.length === active.length, 'PENDING_NOTE_GRAPH_MISMATCH');
+  const text = doc => pending.paragraphs(pending.normalizeNode(doc)).map(p => (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('')).join('\n');
+  const old = pending.readLedger(beforeDoc), incoming = pending.readLedger(returnedDoc);
+  const original = value => value ? pending.materialize(pending.exportNoteBasis(value), 'original') : null;
+  need(text(original(old) || beforeDoc) === text(original(incoming) || returnedDoc), 'PENDING_NOTE_ORIGINAL_TEXT_MISMATCH');
+  const originalLeaves = pending.paragraphs(pending.normalizeNode(original(old) || beforeDoc));
+  const currentText = text(beforeDoc), beforePoints = [], returnedPoints = [], used = new Set();
+  for (const note of active) {
+    const binding = baseline.sourceBindings.find(b => b.noteId === note.id);
+    need(binding?.richBody && binding.sceneId === sceneId && binding.kind === note.manuscript.kind
+      && equivalentBody(binding.richBody, note.manuscript.body, exportMap.exportTypography), 'PENDING_NOTE_BASELINE_MISMATCH');
+    const matches = returnedNotes.map((n, i) => ({ n, i })).filter(({ n }) => n.transportIdentity === binding.transportIdentity);
+    need(binding.transportIdentity && matches.length === 1 && !used.has(matches[0].i), 'PENDING_NOTE_IDENTITY_MISMATCH');
+    const { n, i } = matches[0]; used.add(i);
+    need(n.kind === binding.kind && equivalentBody(note.manuscript.body, n.body, exportMap.exportTypography), 'PENDING_NOTE_BODY_CHANGED');
+    const ref = note.manuscript.reference;
+    need(ref.sourceTextSha256 === model.sha(currentText), 'PENDING_NOTE_REFERENCE_STALE');
+    let beforePoint = old?.noteSourcePoints?.find(p => p.noteId === note.id);
+    if (old) need(beforePoint, 'PENDING_NOTE_BINDINGS_REQUIRED');
+    if (!beforePoint) {
+      let offset = ref.offsetUtf16, paragraphIndex = 0;
+      const leaves = pending.paragraphs(pending.normalizeNode(beforeDoc));
+      for (; paragraphIndex < leaves.length; paragraphIndex++) {
+        const length = (leaves[paragraphIndex].content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('').length;
+        if (offset <= length) break;
+        offset -= length + 1;
+      }
+      beforePoint = { noteId: note.id, paragraphIndex, offsetUtf16: offset };
+    }
+    const oldProjection = old ? pending.projectSourcePoint(pending.exportNoteBasis(old), pending.projectSourcePoint(old, beforePoint, 'export'), 'original') : beforePoint;
+    need(n.paragraphIndex === oldProjection.paragraphIndex && n.offsetUtf16 === oldProjection.offsetUtf16
+      && originalLeaves[n.paragraphIndex], 'PENDING_NOTE_REFERENCE_MOVED');
+    const union = unionReferences[i];
+    need(union && union.kind === n.kind && union.paragraphIndex === n.paragraphIndex, 'PENDING_NOTE_UNION_BINDING');
+    const returnedPoint = { noteId: note.id, paragraphIndex: union.paragraphIndex, offsetUtf16: union.offsetUtf16 };
+    const projected = incoming ? pending.projectSourcePoint(incoming, returnedPoint, 'original') : returnedPoint;
+    need(projected.paragraphIndex === n.paragraphIndex && projected.offsetUtf16 === n.offsetUtf16, 'PENDING_NOTE_UNION_BINDING');
+    beforePoints.push(beforePoint); returnedPoints.push(returnedPoint);
+  }
+  return { beforeDoc: pending.bindNoteSourcePoints(beforeDoc, beforePoints),
+    returnedDoc: pending.bindNoteSourcePoints(returnedDoc, returnedPoints) };
+}
+module.exports = { planNoteReturnDelta, bindUnchangedPendingNotes, equivalentBody };
