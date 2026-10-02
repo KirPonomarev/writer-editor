@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1255,6 +1255,14 @@ async function cleanTextReturnFixture(t,{sceneScope=false,bookmarked=true,mutate
     }
   }
   f.source=read(f.alpha); let observed=f.source;
+  if(schemaDefaults){
+    const live=envelope.parseObservablePayload(observed);
+    live.doc.attrs={wordUserBookmarks:null,wordPendingRevisions:null,...live.doc.attrs};
+    if(schemaDefaults==='unknown-attribute')live.doc.attrs.ownerData='unsaved';
+    if(schemaDefaults==='false-attribute')live.doc.attrs.ownerData=false;
+    const visit=node=>{if(node.type==='paragraph')node.attrs={textAlign:null,...node.attrs};for(const child of node.content||[])visit(child);};visit(live.doc);
+    observed=envelope.composeObservablePayload({...live,metaEnabled:true,doc:live.doc});
+  }
   const ui=mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
   f.probe.state({filePath:f.alpha,projectName:'Роман'});
   const source=await (sceneScope?f.probe.sceneSource():f.probe.fullSource()),built=await f.probe.reviewBuild(source);
@@ -1545,8 +1553,8 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
-  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
     ...(variant==='outside-bookmark'?{mutateReturn:parts=>{
       const xml=parts['word/document.xml'];
@@ -1569,6 +1577,14 @@ for(const variant of ['plain','outside-bookmark','continued-list']) test(`actual
   const after=f.capture();
   assert.notEqual((await f.probe.fullApply({requestId:'scene-clean-replay'})).applied,true);
   assert.deepEqual(f.capture(),after);
+});
+
+for(const variant of ['unknown-attribute','false-attribute'])test(`single-scene clean return preserves non-default root state guard: ${variant}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'scene-root-state-apply'});
+  assert.equal(result.reason,'RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE',JSON.stringify(result));
+  assert.deepEqual(f.capture(),before);
 });
 
 for(const variant of ['dirty','scene','session','annotation-state']) test(`single-scene clean return revalidates ${variant} before Apply`,async t=>{

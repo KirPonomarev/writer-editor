@@ -25560,8 +25560,9 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
   if(parsed.issue || live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation<generation
     || !mediaReturnEnvelopeMetadataEqual(live,parsed,envelope)
-    || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
-      userBookmarkModel.materializeInternalLinkSchemaDefaults(parsed.doc))) return blocked('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+    || !nonText.commentSceneSnapshotsEqual(
+      userBookmarkModel.materializeInternalLinkSchemaDefaults(manuscriptNoteModel.noteSceneSchemaDefaults(live.doc)),
+      userBookmarkModel.materializeInternalLinkSchemaDefaults(manuscriptNoteModel.noteSceneSchemaDefaults(parsed.doc)))) return blocked('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
   let publication;
   const beforeRename=async()=>{
     const fresh=await revalidateCleanLinkLabelApplyInput(input);
