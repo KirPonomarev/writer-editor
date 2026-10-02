@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1219,6 +1219,10 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn}={}) {
   if(bookmarked){
     parsed.doc.content.unshift({type:'paragraph',content:[{type:'text',text:target}]});
     parsed.doc=bookmarks.planSave({beforeDoc,workingDoc:parsed.doc}).doc;
+  }
+  if(mixedLanguage){
+    parsed.doc.content[0].content=[{type:'text',text:target.slice(0,1)},
+      {type:'text',text:target.slice(1),marks:[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]}];
   }
   const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
   const beforeAppend=structuredClone(parsed.doc);
@@ -1246,9 +1250,21 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn}={}) {
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
   const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
   assert.ok(zip['word/document.xml'].includes(target));
-  zip['word/document.xml']=zip['word/document.xml'].replace(target,target+' CLEAN_EDIT');
+  const editedText=mixedLanguage?target.slice(1):target;
+  zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
   if(mutateReturn)mutateReturn(zip);
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
+  if(localCase){
+    const local=envelope.parseObservablePayload(read(f.alpha));
+    const index=['overlap','same-paragraph','mixed-runs'].includes(localCase)?0:local.doc.content.length-1;
+    const node=local.doc.content[index].content[0];
+    if(localCase==='mixed-runs')local.doc.content[index].content.splice(1,0,{type:'text',text:'LOCAL ',marks:[{type:'italic'}]});
+    else node.text=localCase==='same-paragraph'?'LOCAL '+node.text:node.text+' LOCAL_EDIT';
+    observed=envelope.composeObservablePayload({...local,metaEnabled:true,doc:local.doc});
+    f.probe.state({dirty:true});
+    assert.equal(await f.probe.save(),true,'local edit must pass actual product Save');
+    observed=read(f.alpha);
+  }
   const beforeActivation=f.capture();
   const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
   return {f,ui,source,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
@@ -1378,4 +1394,64 @@ test('actual clean-return renderer click uses admitted Free batch and actual Mai
   assert.equal(calls.length,1);assert.deepEqual(f.capture(),after);
   const replay=await f.probe.reviewBatchApply({requestId:'new-repeat-request',changeIds:[changeId]});
   assert.notEqual(replay.applied,true);assert.deepEqual(f.capture(),after);
+});
+
+for(const bookmarked of [false,true])for(const localCase of ['disjoint','same-paragraph'])test(`actual concurrent Main merges ${localCase} saved local edit with Word return; graph ${bookmarked}`,async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked,localCase});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  const sibling=read(f.beta);
+  const applied=await f.probe.fullApply({requestId:'concurrent-apply'});
+  assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.applied,true,JSON.stringify(applied));
+  const doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  const target=bookmarked?'Unannotated target':'Alpha';
+  assert.equal(doc.content[0].content[0].text,(localCase==='same-paragraph'?'LOCAL ':'')+target+' CLEAN_EDIT');
+  assert.equal(doc.content.at(-1).content[0].text,'STARTBOUND_'+target+'_ENDBOUND'+(localCase==='disjoint'?' LOCAL_EDIT':''));
+  if(bookmarked){
+    const source=envelope.parseObservablePayload(Buffer.from(beforeActivation.files['roman/Imported/01_Alpha.txt'],'base64').toString());
+    assert.deepEqual(bookmarks.readRegistry(doc),bookmarks.readRegistry(source.doc));
+    assert.deepEqual(doc.content.slice(1,-1),source.doc.content.slice(1,-1));
+    const notePath='notes.craftsman.json',oldNotes=JSON.parse(Buffer.from(beforeActivation.files[notePath],'base64').toString());
+    const currentNotes=JSON.parse(read(path.join(f.root,notePath))),reference=currentNotes.notes[0].manuscript.reference;
+    assert.equal(reference.sourceTextSha256,sha(envelope.deriveVisibleTextFromDocument(doc)));
+    assert.equal(reference.offsetUtf16,oldNotes.notes[0].manuscript.reference.offsetUtf16+' CLEAN_EDIT'.length);
+    const expected=structuredClone(oldNotes);expected.notes[0].manuscript.reference=reference;
+    assert.deepEqual(currentNotes,expected);
+    const comments='.yalken/word-review/non-text-return-state.v1.json';
+    assert.equal(read(path.join(f.root,comments)),Buffer.from(beforeActivation.files[comments],'base64').toString());
+  }
+  assert.equal(read(f.beta),sibling);
+  const after=f.capture(),replay=await f.probe.fullApply({requestId:'concurrent-replay'});
+  assert.notEqual(replay.applied,true);assert.deepEqual(f.capture(),after);
+});
+test('actual concurrent Main overlapping edit is explicit conflict without canonical writes',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,localCase:'overlap'});
+  assert.equal(activated.ok,false,JSON.stringify(activated));
+  assert.match(JSON.stringify(activated),/RTK_WORD_CONCURRENT_CONFLICT/);
+  assert.deepEqual(f.capture(),beforeActivation);
+});
+
+test('actual concurrent Main preserves mixed language runs and separately styled local insertion through Apply',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,localCase:'mixed-runs',mixedLanguage:true});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  const before=envelope.parseObservablePayload(read(f.alpha)).doc;
+  const result=await f.probe.fullApply({requestId:'concurrent-mixed-language'});
+  assert.equal(result.applied,true,JSON.stringify(result));
+  const expected=structuredClone(before);expected.content[0].content[2].text+=' CLEAN_EDIT';
+  assert.deepEqual(envelope.parseObservablePayload(read(f.alpha)).doc,expected);
+});
+
+for(const variant of ['scene','sibling','dirty','session','notes'])test(`actual concurrent Main preview rejects later ${variant} changes without overwriting them`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,localCase:'disjoint'});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  if(variant==='scene')fs.appendFileSync(f.alpha,' LATER');
+  if(variant==='sibling')fs.writeFileSync(f.beta,'LATER SIBLING');
+  if(variant==='dirty')f.probe.state({dirty:true,generation:1});
+  if(variant==='session')f.probe.changeSession();
+  if(variant==='notes')fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),'LATER NOTES');
+  const before=f.capture(),applied=await f.probe.fullApply({requestId:'stale-concurrent'});
+  assert.notEqual(applied.applied,true);assert.deepEqual(f.capture(),before);
 });

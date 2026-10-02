@@ -471,7 +471,11 @@
     "test/unit/sector-m-s22-replace-mass-reversible.test.js",
     "test/unit/sector-m-s24-history-restore-recovery.test.js",
     "test/unit/project-tree-derived-counters-main.test.js",
-    "test/unit/metadata-inspector-read-model-main.test.js"
+    "test/unit/metadata-inspector-read-model-main.test.js",
+    "src/core/word-concurrent-return-v1.cjs",
+    "src/main/rtkDocxActivationGuards.cjs",
+    "test/contracts/rtk-word-concurrent-return.contract.test.js",
+    "docs/tasks/2026-10-02--word-concurrent-return-mac.md"
   ],
   "protectedFiles": [
     {
@@ -700,7 +704,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6c36146ee1817a5bdf1134524f1099ebbfcf9aae953546a1de2ff1063475d94e"
+        "sha256": "02d1dfad45b6c86c8b973ce321d96edfd8a3ff12fc82fc5feb527060f357f6af"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1344,7 +1348,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "77fa86d95dab6929ab461bf441e5e2188b760250698edd4957a4c00e27bfcb6c"
+        "sha256": "d4f9498e41aecf8237e7c5717005768e551cc77b78ad7dacc0770e5b7f199551"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -1548,7 +1552,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "f5e26921db430d596eec328177364efa2effce3d37ef31fe2a4e090626c780c5"
+        "sha256": "656a9332a7d89ff718bdafc17787fd2620464ced440f67d21950196b8b91f737"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1888,7 +1892,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "9136e3423af6138022ca4df17d5c408d90b6f6775d71f74b137349ae9ddb6d72"
+        "sha256": "8333cb49645c6da312ed703ffb3a1fb1fbf9c974939909b9ccf68f2df5032ea1"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -1997,6 +2001,22 @@
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
         "sha256": "9b6269cedca78f9ea59806135bfdc7e49d210f640698a95e017b7ff9484e0659"
+      },
+      {
+        "path": "src/core/word-concurrent-return-v1.cjs",
+        "sha256": "e5870b6611d897202003377fe717fbba16dc442c524099b04b4e3682bbd2d00e"
+      },
+      {
+        "path": "src/main/rtkDocxActivationGuards.cjs",
+        "sha256": "3dc6fb6e32df671a582d61fc6b2fd4d2bc255339b42e0e86c3f186c603f384c5"
+      },
+      {
+        "path": "test/contracts/rtk-word-concurrent-return.contract.test.js",
+        "sha256": "93cae5867fe02704523dcb30e544ea532d1ed489928ed55f5888946e50dcb620"
+      },
+      {
+        "path": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
+        "sha256": "8629c60936513526563f94d2d757e6d093a63bbfd7a8e8ed15bb1ddd8ed1c3b1"
       }
     ],
     "followupRepair": {

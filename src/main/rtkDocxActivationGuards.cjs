@@ -145,18 +145,19 @@ function verifyFullManuscriptCurrentSceneBindings(input = {}, deps = {}) {
       });
     }
     const actualRawSha256 = sha256Text(rawContent);
-    if (actualRawSha256 !== expectedRawSha256) {
+    if (actualRawSha256 !== expectedRawSha256 && input.captureForComparison !== true) {
       return fullManuscriptBindingBlocked('RTK_RETURN_INTAKE_STALE_FULL_MANUSCRIPT_SCENE', {
         sceneId,
         expectedRawSha256,
         actualRawSha256,
       });
     }
-    sceneReadback.push({ sceneId, actualRawSha256 });
+    sceneReadback.push({ sceneId, actualRawSha256,
+      ...(input.captureForComparison === true ? { rawContent, changedSinceExport: actualRawSha256 !== expectedRawSha256 } : {}) });
   }
   return {
     ok: true,
-    status: 'verified',
+    status: input.captureForComparison === true ? 'captured-for-comparison-no-write-authority' : 'verified',
     sceneCount: sceneReadback.length,
     sceneReadback,
   };

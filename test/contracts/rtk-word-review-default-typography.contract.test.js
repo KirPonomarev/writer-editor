@@ -21,9 +21,10 @@ test('Word language scene feature survives durable reopen and prevents old-reade
  assert.deepEqual(e.parseObservablePayload(raw).doc,e.canonicalizeDocumentJson(doc));
  const legacy={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'old'}]}]};
  assert.deepEqual(e.parseObservablePayload(e.composeObservablePayload({doc:legacy,metaEnabled:false})).doc,legacy);
- // Execute the exact predecessor reader, whose bytes predate this feature.
+ // Execute the exact predecessor reader from retained main ancestry. Its blob
+ // is identical to the old intermediate commit, which a squash does not retain.
  const vm=require('node:vm'),cp=require('node:child_process'),module={exports:{}};
- const old=cp.execFileSync('git',['show','56de05bf:src/core/document-content-envelope-v1.cjs'],{encoding:'utf8'});
+ const old=cp.execFileSync('git',['show','a2a5ae6cbefffce13475a0f71a3de3252d9deac6:src/core/document-content-envelope-v1.cjs'],{encoding:'utf8'});
  vm.runInNewContext(old,{module,exports:module.exports,require:id=>require(path.resolve(__dirname,'../../src/core',id))});
  assert.equal(module.exports.parseObservablePayload(raw).issue?.reason,'DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
  for(const value of [{val:'en_US'},{val:''},{val:'en-US',ignored:'drop'},[],{val:42},{}]){
