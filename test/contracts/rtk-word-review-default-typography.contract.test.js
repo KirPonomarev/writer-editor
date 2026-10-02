@@ -84,6 +84,20 @@ test('Word language raw accessors, foreign owners and forged segment shapes cann
   const bad=structuredClone(patch);mutate(bad);assert.throws(()=>core.applyParagraphLanguage(p,bad),/WORD_LANGUAGE/);
  }
 });
+test('language validation admits repeated serialized values but rejects ancestry cycles and wrong mark owners',()=>{
+ const core=require('../../src/core/word-language-v1.cjs'),e=require('../../src/core/document-content-envelope-v1.cjs');
+ const mark={type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}};
+ const paragraph={type:'paragraph',content:[{type:'text',text:'shared',marks:[mark]}]};
+ const doc={type:'doc',content:[paragraph,paragraph]};
+ assert.equal(core.inspectDocumentLanguage(doc),true);
+ assert.deepEqual(e.parseObservablePayload(e.composeObservablePayload({doc})).doc,doc);
+ const absent={type:'paragraph',content:[{type:'text',text:'absent'}]};
+ assert.deepEqual(e.parseObservablePayload(e.composeObservablePayload({doc:{type:'doc',content:[absent,absent]}})).doc,{type:'doc',content:[absent,absent]});
+ const cycle={type:'doc',content:[]};cycle.content.push(cycle);
+ assert.throws(()=>core.inspectDocumentLanguage(cycle),/WORD_LANGUAGE/);
+ assert.throws(()=>e.composeObservablePayload({doc:cycle}),/WORD_LANGUAGE/);
+ assert.throws(()=>core.inspectDocumentLanguage({type:'doc',content:[paragraph,{type:'paragraph',marks:[mark]}]}),/WORD_LANGUAGE/);
+});
 function fixture({explicitSize,returnedSize='12pt',bind=true}={}) {
  const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'original',marks:[{type:'link',attrs:{href}},...(explicitSize?[{type:'textStyle',attrs:{fontSize:explicitSize}}]:[])]}]}]};
  const baselineParagraphs=buildFormatIrParagraphs({sceneId,text:'original',doc});

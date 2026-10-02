@@ -205,7 +205,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
@@ -490,7 +490,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -661,7 +661,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxInlineTypography.js",
@@ -679,7 +679,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -697,7 +697,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -742,7 +742,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/renderer/tiptap/documentParagraphAlignment.mjs",
@@ -913,7 +913,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1021,7 +1021,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/export/docx/docxReviewPacketComments.js",
@@ -1437,7 +1437,7 @@
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
       "sha256": "39471e3be496d1fee2caa2746f05b5e27927ec7eaac6be011940977726822cb9",
       "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1590,7 +1590,7 @@
       "filePath": "src/export/docx/docxMinBuilder.js",
       "sha256": "dace4c0a687a836efb63539ed8c476c93b616ad4d388007bc983f78408a0b8c3",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "02d21833221eecc4fed0c9f75494cdf56d35096d0377a3f5b380cd7634bcb979",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1608,7 +1608,7 @@
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
       "sha256": "0c8d73b89d7e9db0215b3e753a34b1771c38af94b6cd4da177f7691c47ceb549",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1626,7 +1626,7 @@
       "filePath": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
       "sha256": "cde83727869ed6e0f2701667d39f881d7f40dfee8e4606a571e9d8b12a07b184",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1644,7 +1644,7 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "d49ab1fc1c47cb489bd926aedd912630dc6c1d151c12326fe5323697ee4a72b4",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1653,16 +1653,16 @@
       "filePath": "src/main.js",
       "sha256": "6c36146ee1817a5bdf1134524f1099ebbfcf9aae953546a1de2ff1063475d94e",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "5af8628bd47465b3103f15d68b9349acb02530ec856b4e8bfad00de4f69a11f2",
+      "sha256": "d6747405aaf0d620d8f2f5e4e0d79343d67362738b0b20c71fd735968e5713d0",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "5a464ee91064bd8775e18133a8337db4507e47455e08e99339ed8acec3ff6a67",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "b9a530443cb5a6919729ecbc4974dd2572b769cc5bb952b35726b017474a2906",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1725,7 +1725,7 @@
       "filePath": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
       "sha256": "c1f3c49af0e4b358b9d2c621b32a7933a322bf6bcd53993b94a5805e5c4f6be6",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9854336e90c5b0633ea8847d575408d21db8c33af8b9397c83b11f0be3d7dba4",
+      "sha256": "d0ad243fcfffd3881e0c67178b567a5e7231a7bfb45d90fcd95b3cac11113018",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "0f5f544703d6737847e6ec2c4cd3872b9ef706f63461beb356bf5cf9c507e749",
+      "sha256": "1ea3f09c34d685801aaae84d3e3fed9c12c10425cfa6d006b4d2cef4c7f97dd7",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "21f1179f04c37713c21cafae493aab111fcf0eaa3db8e8f238105d031372fdd1",
+      "sha256": "d9c57f1fdc740f1f63bdcf32f30b7851f6c7d749b98d080a09c91bd7dc73fb5d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1824,7 +1824,7 @@
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "sha256": "2ce29aa211746bc8b92660c388102025dc5fdde227b94ef2d28649a1be04d66e",
       "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -1950,7 +1950,7 @@
       "filePath": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
       "sha256": "296f97ed92c38fbf7bdfe9b9955965b0da7f6684a35a9f392d7ee45066aa41c5",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -2282,7 +2282,7 @@
     {
       "filePath": "test/unit/project-tree-pathless-contract.test.js",
       "sha256": "0bcc85f99f34ec5589c4caff2a0773878949e61ce19d167331ab011e7fe9a503",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -2299,8 +2299,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "1637b3d0229ce91b046ec294776361641a772a4d13159d61343b773df8b71bbd",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "sha256": "77fa86d95dab6929ab461bf441e5e2188b760250698edd4957a4c00e27bfcb6c",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -2372,7 +2372,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
       "sha256": "095d5626bdccfbd03e2985e7a2c401f28b48f6ed95ad9dbfaff7b6c8cccbccc1",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -2390,7 +2390,7 @@
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
       "sha256": "e6c4cf4092ac3e6e886fffbc9d52aa19260b0f4a2409690ce35613516775844d",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -2461,8 +2461,8 @@
     },
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
-      "sha256": "e317fdd8378a45b8cd1ea38ff24421ced6c30fb0facddcab00a7596b1155b1fd",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "sha256": "de5809949d022e92bb77adb278f0428f8eeb49c7ce7d92420c706f23075db906",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "3945d9de59adef0c91dc9e74d34d8831fdaed873c4b99a19a886d47ffa66fe7f",
+      "sha256": "8f30c1fd23978e97ed509d50c3430ac3297531c8891dc7090e26b59e97d340ce",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "42d46d77d3646804b704cd5ba21bc857ee490f687208a01ce031d4ef135f1243",
+      "sha256": "f2c97b1852ccc04db449059e7491e26084cc4e2609abeac7951ceb07d824b69b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "1371571438c6a322be1d9ab4924d5be7a7b052024b7b60fd7c3ad241b8318256",
+      "sha256": "efff4053b1baa85a8e7dd8be5fa32c2ed5a683e79167b46a6e5432b733aea1ac",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -2562,7 +2562,7 @@
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
       "sha256": "f5a03101f5efa61b06c06bc2720633cefded4283b262d5f99ce607b157d8171a",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance."
@@ -2867,7 +2867,7 @@
     {
       "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
       "sha256": "46375083c5cc2b831723b32d8d24f989a04e6b21f71315160a6c91ca98bfc2b1",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3272,7 +3272,7 @@
     {
       "filePath": "src/core/word-user-bookmarks-v1.cjs",
       "sha256": "4ab061b9b483dd2f601018fe54f75b9e8f7fa481209ecde4bf8804c65f058379",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3281,7 +3281,7 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
       "sha256": "6422e0897f43016673df3bb40b18674a928ffd3d3bd3946d2acb6a1729f6e6ce",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3299,7 +3299,7 @@
     {
       "filePath": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
       "sha256": "5a0d18b7efbbcc038cc872fc102cb256774467cf009527b0874b82a3aacaf99c",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3578,7 +3578,7 @@
     {
       "filePath": "test/contracts/rtk-word-local-image.contract.test.js",
       "sha256": "567f65e981f5ea1c4804cf45f11c7831de645ade31ab940f862bd90d7a04bd5d",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3704,7 +3704,7 @@
     {
       "filePath": "src/core/project-tree-cohort-v1.mjs",
       "sha256": "d5f68c56b34bd189612c47aebc5e40c3d3c2c7b0bced9a1eb02a552d80e52109",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3713,7 +3713,7 @@
     {
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
       "sha256": "7ec00ab8f9a750c5fc9264e8d18dff0ef49115d0cbf929388eb7bfc8c163d11f",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3722,7 +3722,7 @@
     {
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
       "sha256": "9136e3423af6138022ca4df17d5c408d90b6f6775d71f74b137349ae9ddb6d72",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3767,7 +3767,7 @@
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
       "sha256": "0005762f619245c32cc2e69238e3f821a8900d2b416274f2774a9d29ded33ccf",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3776,7 +3776,7 @@
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
       "sha256": "c98f925f73e84fff667bc45bfdda8c4725fc54f2af1aeb8482ac3e7f7b1f5af3",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3838,8 +3838,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-02--word-scene-split-merge-mac.md",
-      "sha256": "13139e1760371c357d012708231b01ca00ffdfaef8b4953f12f2614365b37146",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "sha256": "4a59d016bb742f9f4b9725465ec68a33d96971b34664eb815b7beecf6ca23510",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3848,7 +3848,7 @@
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json",
       "sha256": "ed6c2cbb58c9111fc0e2215fba2133cf8e8bf4f88fb4f18daa185ceafe602b41",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3857,7 +3857,7 @@
     {
       "filePath": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json",
       "sha256": "80a46c7e6699472b78a0dd385075b15a077d1da27528e9318cafde69a27c9d3a",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3866,7 +3866,7 @@
     {
       "filePath": "scripts/ops-gate.mjs",
       "sha256": "65e4089d6966f1555e7d99ba3b83dc229d394132aadb6394200632fa936ae22c",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3875,7 +3875,7 @@
     {
       "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
       "sha256": "5803c1bd8dad8690994c491d3d8970b1c66167fc7495517918121cf446144b37",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3884,7 +3884,7 @@
     {
       "filePath": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
       "sha256": "d6940b4f6dd723fe29cef9ee78b3dba530de45fbb184dfb12c830427c589a4b4",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3893,7 +3893,7 @@
     {
       "filePath": "test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js",
       "sha256": "23b03ea190ecc0a90deb429d9605a5ea28dd31d02655d7a6bc53b0f5f03aa1e1",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3901,8 +3901,8 @@
     },
     {
       "filePath": "src/core/word-language-v1.cjs",
-      "sha256": "bb6465e4d785513aab831d18611ed74f54bc39a41dc3ae1dee92c086641adf87",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "sha256": "0a64349ba3e09d0b4717f1c4b2d91ebd2742b79197f66fab8965122e4643c196",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3911,7 +3911,7 @@
     {
       "filePath": "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
       "sha256": "0005762f619245c32cc2e69238e3f821a8900d2b416274f2774a9d29ded33ccf",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,
@@ -3920,7 +3920,7 @@
     {
       "filePath": "test/contracts/capability-command-coverage.contract.test.js",
       "sha256": "ab6c83291eafed4129ea36d668eb9fc46d983033780dc118cc0c089dd4a0869e",
-      "approvedAtUtc": "2026-10-02T10:25:52.259563Z",
+      "approvedAtUtc": "2026-10-02T10:32:13.891990Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002",
       "rationale": "Owner-authorized Mac Word scene split and merge through existing Core cohort, leased writer and guarded editor publication. Includes native proofing language tuples in existing v3 required-feature scene envelope and privately authenticated clean return composition. Exact command/capability and lexical path-import companions; no filesystem capability grant, new writer, dependency or runtime network. Exact-byte binding is not user acceptance.",
       "approved": true,

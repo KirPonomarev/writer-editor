@@ -26,12 +26,14 @@ function normalizeWordLanguage(value) {
 
 function inspectDocumentLanguage(doc) {
   let present = false, count = 0;
-  const pending = [{ node: doc, mark: false }], seen = new Set();
+  const pending = [{ node: doc, mark: false }], ancestors = new Set();
   while (pending.length) {
-    const { node, mark, parentType } = pending.pop();
+    const { node, mark, parentType, exit } = pending.pop();
     if (!node || typeof node !== 'object') continue;
-    if (++count > 200000 || seen.has(node)) fail();
-    seen.add(node);
+    if (exit) { ancestors.delete(node); continue; }
+    if (++count > 200000 || ancestors.has(node)) fail();
+    ancestors.add(node);
+    pending.push({ node, exit: true });
     const data = key => {
       const d = Object.getOwnPropertyDescriptor(node, key);
       if (d && !Object.hasOwn(d, 'value')) fail();

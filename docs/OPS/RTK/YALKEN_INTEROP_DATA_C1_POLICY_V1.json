@@ -703,7 +703,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "5af8628bd47465b3103f15d68b9349acb02530ec856b4e8bfad00de4f69a11f2"
+        "sha256": "d6747405aaf0d620d8f2f5e4e0d79343d67362738b0b20c71fd735968e5713d0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1335,7 +1335,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "1637b3d0229ce91b046ec294776361641a772a4d13159d61343b773df8b71bbd"
+        "sha256": "77fa86d95dab6929ab461bf441e5e2188b760250698edd4957a4c00e27bfcb6c"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -1395,7 +1395,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "e317fdd8378a45b8cd1ea38ff24421ced6c30fb0facddcab00a7596b1155b1fd"
+        "sha256": "de5809949d022e92bb77adb278f0428f8eeb49c7ce7d92420c706f23075db906"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1915,7 +1915,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-split-merge-mac.md",
-        "sha256": "13139e1760371c357d012708231b01ca00ffdfaef8b4953f12f2614365b37146"
+        "sha256": "4a59d016bb742f9f4b9725465ec68a33d96971b34664eb815b7beecf6ca23510"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json",
@@ -1947,7 +1947,7 @@
       },
       {
         "path": "src/core/word-language-v1.cjs",
-        "sha256": "bb6465e4d785513aab831d18611ed74f54bc39a41dc3ae1dee92c086641adf87"
+        "sha256": "0a64349ba3e09d0b4717f1c4b2d91ebd2742b79197f66fab8965122e4643c196"
       }
     ],
     "followupRepair": {

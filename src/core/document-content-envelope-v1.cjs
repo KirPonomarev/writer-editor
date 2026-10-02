@@ -234,21 +234,22 @@ function canonicalizeJsonValue(value) {
 // Keep the N-1 absent-feature path usable by isolated older consumers. Detect
 // presence from raw data descriptors before loading the feature validator.
 function documentHasWordLanguage(doc) {
-  const stack = [doc], seen = new Set();
+  const stack = [{ node: doc }], ancestors = new Set(); let count = 0;
   const data = (object, key) => {
     const d = Object.getOwnPropertyDescriptor(object, key);
     if (d && !Object.hasOwn(d, 'value')) throw Error('WORD_LANGUAGE_INVALID');
     return d?.value;
   };
   while (stack.length) {
-    const node = stack.pop();
+    const { node, exit } = stack.pop();
     if (!node || typeof node !== 'object') continue;
-    if (seen.has(node) || seen.size >= 200000) throw Error('WORD_LANGUAGE_INVALID');
-    seen.add(node);
+    if (exit) { ancestors.delete(node); continue; }
+    if (++count > 200000 || ancestors.has(node)) throw Error('WORD_LANGUAGE_INVALID');
+    ancestors.add(node); stack.push({ node, exit: true });
     const attrs = data(node, 'attrs');
     if (attrs && typeof attrs === 'object'
       && ['wordLanguage', 'wordParagraphMarkLanguage'].some(key => data(attrs, key) != null)) return true;
-    for (const key of ['content', 'marks']) { const children = data(node, key); if (Array.isArray(children)) for (const child of children) stack.push(child); }
+    for (const key of ['content', 'marks']) { const children = data(node, key); if (Array.isArray(children)) for (const child of children) stack.push({ node: child }); }
   }
   return false;
 }

@@ -494,3 +494,15 @@ text-plus-language and language-only Apply/re-export, forged patch refusals,
 crash reconciliation and identical canonical tuple no-op. Guardrails and OSS
 policy pass. Native PACKAGED13 remains bound to its earlier source-copy digest;
 these later language-only writer changes require stable-candidate verification.
+
+Checkpointa9d1b7c7 full RTK exposed a concrete regression in the existing Word
+import loss-diagnostic oracle: repeated table objects were mistaken for cycles
+by the new language validator. The run was stopped after that failure and is
+INCOMPLETE_FAILED, never green. Its owned process tree was verified terminated.
+PACKAGED14 launched but no acceptance action was taken; it was also stopped.
+Clean61path preflight rebound to a9d1b7c7. Validation now tracks current ancestry,
+not every previously visited value, while retaining the total node budget and
+per-owner validation. The unchanged failing table oracle plus language tests
+pass55of55; added repeated-value, real-cycle and shared-wrong-owner cases pass.
+The dependency audit reports13 findings (5moderate,8high); no dependency or
+lockfile change is introduced, and the audit is not reported green.
