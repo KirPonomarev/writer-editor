@@ -443,7 +443,8 @@
     "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
     "docs/OPS/CAPABILITIES_MATRIX.json",
     "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
-    "test/helpers/main-docx-round-authority.js"
+    "test/helpers/main-docx-round-authority.js",
+    "test/unit/sector-m-design-os-layout-commit-sync.test.js"
   ],
   "protectedFiles": [
     {
@@ -1352,7 +1353,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
-        "sha256": "f9d34d662cdbc61721364ba8befa725fcbeaa058f61f369e7bd24f0327e37f7f"
+        "sha256": "13d47e213c5fa34c485ba319a4bfa5da9ec0be373e466299b59a4fd6d681cf62"
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
@@ -1864,7 +1865,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
-        "sha256": "df825ca0fef66ebb10465c89a6c001200717e9643e55f6ecff41bb3a040360e9"
+        "sha256": "66f0619c8421d255af94da35f47b4f8e732edf6d4545698488e19481d780c857"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_IDENTITY_V1.json",

@@ -288,21 +288,16 @@ test('layout commit sync: runtime and design-os compat defaults are symmetric to
 test('layout commit sync: runtime bridge command surface remains unchanged', () => {
   const source = readEditorSource();
 
-  const statusStart = source.indexOf('function updateStatusText(text)');
-  const statusEnd = source.indexOf('function updateSaveStateText(text)');
-  assert.ok(statusStart > -1 && statusEnd > statusStart, 'status update bounds must exist');
-  const statusSnippet = source.slice(statusStart, statusEnd);
+  const statusSnippet = source.match(/^function updateStatusText\([^\n]*\n[\s\S]*?^\}/mu)?.[0];
+  assert.ok(statusSnippet, 'status update declaration and closing boundary must exist');
   assert.ok(statusSnippet.includes('statusElement.textContent = text;'));
 
-  const warningStart = source.indexOf('function updateWarningStateText(text)');
-  const warningEnd = source.indexOf('function updatePerfHintText(text)');
-  assert.ok(warningStart > -1 && warningEnd > warningStart, 'warning update bounds must exist');
-  const warningSnippet = source.slice(warningStart, warningEnd);
+  const warningSnippet = source.match(/^function updateWarningStateText\([^\n]*\n[\s\S]*?^\}/mu)?.[0];
+  assert.ok(warningSnippet, 'warning update declaration and closing boundary must exist');
   assert.ok(warningSnippet.includes('warningStateElement.textContent = `Warnings: ${text}`;'));
 
-  const perfStart = source.indexOf('function updatePerfHintText(text)');
-  const perfEnd = source.indexOf('function buildStatusLineWithDormantYdosHint(text)');
-  const perfSnippet = source.slice(perfStart, perfEnd);
+  const perfSnippet = source.match(/^function updatePerfHintText\([^\n]*\n[\s\S]*?^\}/mu)?.[0];
+  assert.ok(perfSnippet, 'performance update declaration and closing boundary must exist');
   assert.ok(perfSnippet.includes('perfHintElement.textContent = `Perf: ${text}`;'));
 
   const bridgeSource = readBridgeSource();
