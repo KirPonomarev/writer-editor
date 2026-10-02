@@ -136,3 +136,12 @@ test('table integrity: sets are frozen, product registry commands are free autho
   assert.deepEqual(law.ENTITLEMENT_AUTHORITY_MODE.disabledTiers, ['pro']);
   assert.equal(Object.isFrozen(law.ENTITLEMENT_INVARIANTS), true);
 });
+
+test('scene copy and explicit tree Undo remain free local authorship', () => {
+  for (const id of ['cmd.project.tree.copyNode', 'cmd.project.tree.undoLastMutation']) {
+    const result = law.decideCommandEntitlement(id, 'free');
+    assert.equal(result.ok, true);
+    assert.equal(result.available, true);
+    assert.equal(result.access, 'free_authorship');
+  }
+});

@@ -1,0 +1,375 @@
+import path from 'node:path';
+import { sha256Hex } from './browser-safe-hash.mjs';
+import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity } from './projectTreeIdentity.mjs';
+import envelope from './document-content-envelope-v1.cjs';
+import bookmarks from './word-user-bookmarks-v1.cjs';
+import pending from './word-pending-text-revisions-v1.cjs';
+import notesModel from './word-manuscript-notes-v1.cjs';
+import commentsModel from './word-comment-authoring-v1.cjs';
+import commentAnchors from './word-comment-anchor-save-v1.cjs';
+import mediaModel from './word-media-return-v1.cjs';
+
+export const TREE_COHORT_MODE = 'PROJECT_TREE_COHORT_V1';
+export const TREE_COHORT_LIMITS = Object.freeze({ files: 2048, bytes: 32 * 1024 * 1024, scenes: 512 });
+const clone = x => JSON.parse(JSON.stringify(x));
+const stable = x => Array.isArray(x) ? `[${x.map(stable).join(',')}]` : x && typeof x === 'object'
+  ? `{${Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + stable(x[k])).join(',')}}` : JSON.stringify(x);
+const sha = x => sha256Hex(x);
+const fail = code => { throw Object.assign(Error(code), { code }); };
+const need = (ok, code = 'E_TREE_COHORT_INVALID') => { if (!ok) fail(code); };
+const text = x => x === null ? null : Buffer.from(x, 'base64').toString('utf8');
+const b64 = x => x === null ? null : Buffer.from(x).toString('base64');
+const json = x => JSON.stringify(x, null, 2) + '\n';
+const same = (a, b) => stable(a) === stable(b);
+const frozen = value => { if (value && typeof value === 'object') { Object.values(value).forEach(frozen); Object.freeze(value); } return value; };
+export function treeRelativePath(value) {
+  need(typeof value === 'string' && value.length > 0 && value.length <= 2048 && !/[\\\x00-\x1f]/u.test(value)
+    && !path.posix.isAbsolute(value) && value.split('/').every(p => p && p !== '.' && p !== '..'), 'E_TREE_COHORT_PATH');
+  return value;
+}
+const matches = (value, base) => value === base || value.startsWith(base + '/');
+const NOTE_PATH = 'notes.craftsman.json', COMMENT_PATH = '.yalken/word-review/non-text-return-state.v1.json';
+const roles = new Set(['scene', 'sceneCommit', 'recoverySnapshot', 'backupSnapshot', 'backupMetadata', 'directory']);
+function validateInventory(input) {
+  need(Array.isArray(input) && input.length <= TREE_COHORT_LIMITS.files, 'E_TREE_COHORT_BUDGET');
+  const found = new Map(); let size = 0;
+  for (const item of input) {
+    need(item && Object.keys(item).sort().join(',') === 'contentBase64,relativePath,role');
+    const relative = treeRelativePath(item.relativePath);
+    need(roles.has(item.role) && !found.has(relative), 'E_TREE_COHORT_INVENTORY');
+    if (item.role === 'directory') need(item.contentBase64 === null);
+    else {
+      need(typeof item.contentBase64 === 'string' && Buffer.from(item.contentBase64, 'base64').toString('base64') === item.contentBase64, 'E_TREE_COHORT_ENCODING');
+      const bytes = Buffer.from(item.contentBase64, 'base64');
+      need(Buffer.from(bytes.toString('utf8'), 'utf8').equals(bytes), 'E_TREE_COHORT_UTF8');
+      size += Buffer.from(item.contentBase64, 'base64').length;
+      need(size <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
+    }
+    const basename = path.posix.basename(relative);
+    if (item.role === 'scene') need(relative.startsWith('roman/') && /\.(?:txt|md)$/iu.test(relative)
+      && (!basename.startsWith('.') || basename === '.index.txt'), 'E_TREE_COHORT_SCENE_PATH');
+    if (item.role === 'sceneCommit') need(relative.startsWith('roman/') && /\.(?:txt|md)\.(?:wp201-)?commit\.json$/iu.test(relative), 'E_TREE_COHORT_COMPANION');
+    if (item.role === 'recoverySnapshot') need(relative.startsWith('roman/') && /^\..+\.bak\.\d{13}$/u.test(basename), 'E_TREE_COHORT_COMPANION');
+    if (item.role === 'backupMetadata') need(/^backups\/[a-f0-9]{64}\/meta\.json$/u.test(relative), 'E_TREE_COHORT_COMPANION');
+    if (item.role === 'backupSnapshot') need(/^backups\/[a-f0-9]{64}\/\d{13}_.+$/u.test(relative), 'E_TREE_COHORT_COMPANION');
+    if (item.role === 'directory') need(relative === 'roman' || relative.startsWith('roman/') || relative === 'backups' || /^backups\/[a-f0-9]{64}$/u.test(relative), 'E_TREE_COHORT_DIRECTORY');
+    found.set(relative, clone(item));
+  }
+  return found;
+}
+function parsedScene(raw) {
+  const parsed = envelope.parseObservablePayload(raw);
+  need(!parsed.issue, 'E_TREE_COHORT_SCENE_INVALID');
+  if (parsed.doc) { bookmarks.readRegistry(parsed.doc); pending.readLedger(parsed.doc); }
+  return parsed;
+}
+function newId(prefix, input, original) { return prefix + sha(`${input.projectId}\n${input.operationId}\n${original}`).slice(0, 32); }
+function forkScene(raw, input, sceneId, noteIds, occupiedNames, idMap) {
+  const parsed = parsedScene(raw);
+  if (!parsed.doc) return raw;
+  const doc = clone(parsed.doc), registry = bookmarks.readRegistry(doc);
+  if (registry) {
+    const byId = new Map();
+    for (const record of registry.bookmarks) {
+      const originalId = record.id;
+      record.id = newId('ubm-', input, `${sceneId}:${originalId}`);
+      let name = `Copy_${sha(`${input.operationId}:${sceneId}:${originalId}`).slice(0, 32)}`;
+      need(!occupiedNames.has(bookmarks.nameKey(name)), 'E_TREE_COHORT_BOOKMARK_COLLISION');
+      occupiedNames.add(bookmarks.nameKey(name)); record.name = name;
+      byId.set(originalId, record); idMap[originalId] = record.id;
+    }
+    const visit = node => {
+      for (const mark of node.marks || []) if (mark.type === 'link' && mark.attrs?.wordBookmarkId) {
+        const record = byId.get(mark.attrs.wordBookmarkId);
+        need(record, 'E_TREE_COHORT_BOOKMARK_LINK');
+        mark.attrs = { ...mark.attrs, ...bookmarks.linkAttrs(record) };
+      }
+      for (const child of node.content || []) visit(child);
+    };
+    doc.attrs.wordUserBookmarks = registry; visit(doc);
+    bookmarks.validateRegistry(registry, doc);
+    bookmarks.planSave({ beforeDoc: doc, workingDoc: doc });
+  }
+  const ledger = pending.readLedger(doc);
+  if (ledger) {
+    const forked = clone(ledger);
+    for (const frame of [forked, ...(forked.roundUndo || []), ...(forked.roundRedo || [])]) {
+      for (const point of frame.noteSourcePoints || []) {
+        need(noteIds[point.noteId], 'E_TREE_COHORT_NOTE_HISTORY_UNKNOWN');
+        point.noteId = noteIds[point.noteId];
+      }
+    }
+    pending.validateLedger(forked); doc.attrs.wordPendingRevisions = forked; pending.readLedger(doc);
+  }
+  return envelope.composeObservablePayload({ ...parsed, doc, metaEnabled: parsed.hasMetaBlock });
+}
+function noteScene(note) { return note.manuscript?.reference?.sceneId || note.attachment?.sceneId || note.sceneId; }
+function rebindNote(note, to, nodeIds, freshId) {
+  const out = clone(note);
+  if (freshId) out.id = freshId;
+  if (out.manuscript) out.manuscript.reference.sceneId = to;
+  if (out.sceneId !== undefined) out.sceneId = to;
+  if (out.attachment?.sceneId !== undefined) out.attachment.sceneId = to;
+  if (out.nodeId && nodeIds[out.nodeId]) out.nodeId = nodeIds[out.nodeId];
+  if (out.attachment?.nodeId && nodeIds[out.attachment.nodeId]) out.attachment.nodeId = nodeIds[out.attachment.nodeId];
+  return out;
+}
+
+// Recovery consumes one removed-copy beforeimage, never a caller-provided graph.
+function recoveredCopySource(input) {
+  const recovery = input.recoveredCopy;
+  if (recovery === undefined) return null;
+  need(recovery && Object.keys(recovery).sort().join(',') === 'receipt,removedNodeId,retainedPacket,workingContent', 'E_TREE_RECOVERY_INPUT');
+  const { receipt, retainedPacket: packet } = recovery;
+  let retained = packet, depth = 0;
+  while (retained?.plan?.input?.recoveredCopy) {
+    need(++depth <= 8, 'E_TREE_RECOVERY_CHAIN_BUDGET');
+    retained = retained.plan.input.recoveredCopy.retainedPacket;
+  }
+  need(Buffer.byteLength(stable(packet)) <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
+  need(input.operation === 'copy' && input.bindings?.length === 1 && (input.bindings[0].copy === undefined || input.bindings[0].copy === true) && ['undo', 'copy'].includes(receipt?.kind)
+    && receipt.projectId === input.projectId && packet?.projectId === input.projectId
+    && receipt.treeRevision === input.expectedTreeRevision && packet.transactionId === receipt.transactionId
+    && sha(stable(packet)) === receipt.packetDigest && packet.plan?.kind === receipt.kind
+    && packet.manifestPath === input.manifestPath, 'E_TREE_RECOVERY_BINDING');
+  validateProjectTreeCohort(packet.plan);
+  if (receipt.kind === 'copy') {
+    const previous = packet.plan.input.recoveredCopy, copied = packet.plan.pathBindings.filter(x => x.copy);
+    need(previous?.removedNodeId === recovery.removedNodeId && copied.length === 1
+      && copied[0].newNodeId === input.bindings[0].nodeId
+      && copied[0].toRelativePath === input.bindings[0].fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
+    const original = recoveredCopySource({ ...packet.plan.input,
+      recoveredCopy: { ...previous, workingContent: recovery.workingContent } });
+    return { ...original, livePath: copied[0].toRelativePath };
+  }
+  const binding = packet.plan.pathBindings.find(x => x.removedCopy && x.nodeId === recovery.removedNodeId);
+  need(binding && input.bindings[0].nodeId === binding.newNodeId
+    && input.bindings[0].fromRelativePath === binding.toRelativePath
+    && input.bindings[0].toRelativePath !== binding.fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
+  const entry = packet.entries.find(x => x.role === 'scene' && x.relativePath === binding.fromRelativePath);
+  need(entry?.beforeBase64 !== null && entry?.afterBase64 === null, 'E_TREE_RECOVERY_SOURCE');
+  validateInventory([{ relativePath: entry.relativePath, role: 'scene', contentBase64: entry.beforeBase64 }]);
+  const raw = text(entry.beforeBase64), before = parsedScene(raw);
+  need(typeof recovery.workingContent === 'string' && Buffer.byteLength(recovery.workingContent) <= TREE_COHORT_LIMITS.bytes
+    && Buffer.from(recovery.workingContent).toString('utf8') === recovery.workingContent, 'E_TREE_RECOVERY_INPUT');
+  const working = envelope.parseObservablePayload(recovery.workingContent);
+  need(!working.issue, 'E_TREE_COHORT_SCENE_INVALID');
+  const beforeDoc = before.doc || envelope.buildParagraphDocumentFromText(before.text);
+  const workingDoc = working.doc || envelope.buildParagraphDocumentFromText(working.text);
+  const saved = bookmarks.planSave({ beforeDoc, workingDoc });
+  need(same(pending.readLedger(beforeDoc), pending.readLedger(saved.doc)), 'E_TREE_RECOVERY_LEDGER_CHANGED');
+  need(same(mediaModel.mediaPlacements(beforeDoc), mediaModel.mediaPlacements(saved.doc)), 'E_TREE_RECOVERY_MEDIA_CHANGED');
+  const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: saved.doc });
+  const retainedText = role => text(packet.entries.find(x => x.role === role)?.beforeBase64 ?? null);
+  let notesText = retainedText('notes'), commentsText = retainedText('comments');
+  const args = { projectId: input.projectId, sceneId: entry.relativePath, beforeContent: raw, afterContent: content };
+  if (notesText !== null) notesText = notesModel.planManuscriptNoteAnchorSave({ ...args, beforeText: notesText })?.afterText || notesText;
+  if (commentsText !== null) commentsText = commentAnchors.planCommentAnchorSave({ ...args, beforeText: commentsText })?.afterText || commentsText;
+  return { relativePath: entry.relativePath, content, originalBase64: entry.beforeBase64,
+    commitBase64: packet.entries.find(x => x.role === 'sceneCommit' && x.relativePath === entry.relativePath + '.wp201-commit.json')?.beforeBase64 ?? null,
+    notesText, commentsText, livePath: binding.toRelativePath };
+}
+
+export function planProjectTreeCohort(input) {
+  need(input && typeof input === 'object');
+  need(typeof input.projectId === 'string' && input.projectId.length > 0 && input.projectId.length <= 128
+    && typeof input.operationId === 'string' && /^[A-Za-z0-9._:-]{1,128}$/u.test(input.operationId), 'E_TREE_COHORT_IDENTITY');
+  need(['rename', 'move', 'reorder', 'copy'].includes(input.operation), 'E_TREE_COHORT_OPERATION');
+  need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath) && typeof input.beforeManifestText === 'string');
+  need(Number.isSafeInteger(input.expectedTreeRevision ?? 0) && (input.expectedTreeRevision ?? 0) >= 0, 'E_TREE_REVISION_CAS');
+  const manifest = JSON.parse(input.beforeManifestText);
+  need(manifest.projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
+  const registry = normalizeProjectTreeIdentity(manifest.treeIdentity); need(registry.ok, 'E_TREE_COHORT_IDENTITY');
+  const recovery = recoveredCopySource(input);
+  const inventory = validateInventory(input.inventory), files = new Map([...inventory].filter(([, x]) => x.role !== 'directory'));
+  need(Array.isArray(input.bindings), 'E_TREE_COHORT_BINDINGS');
+  const bindings = input.bindings.map(binding => {
+    treeRelativePath(binding.fromRelativePath); treeRelativePath(binding.toRelativePath);
+    need(binding.fromRelativePath.startsWith('roman/') && binding.toRelativePath.startsWith('roman/'), 'E_TREE_COHORT_SCOPE');
+    return { ...binding, copy: binding.copy ?? input.operation === 'copy' };
+  });
+  const identities = planProjectTreeIdentityCohort({ ...input, registry: registry.value, bindings });
+  need(identities.ok, identities.error?.code || 'E_TREE_COHORT_IDENTITY');
+  const mapped = relative => bindings.find(b => matches(relative, b.fromRelativePath));
+  const target = (relative, binding = mapped(relative)) => binding ? binding.toRelativePath + relative.slice(binding.fromRelativePath.length) : relative;
+  for (const binding of bindings) need(inventory.has(binding.fromRelativePath), 'E_TREE_COHORT_SOURCE_MISSING');
+  const scenes = [...files.values()].filter(x => x.role === 'scene');
+  need(scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_TREE_COHORT_BUDGET');
+  const sceneMap = {}, affectedScenes = [], occupiedNames = new Set();
+  for (const scene of scenes) {
+    const parsed = parsedScene(text(scene.contentBase64));
+    for (const mark of bookmarks.readRegistry(parsed.doc || { type: 'doc', content: [] })?.bookmarks || []) occupiedNames.add(bookmarks.nameKey(mark.name));
+    const binding = mapped(scene.relativePath);
+    if (!binding || (!binding.copy && scene.relativePath === target(scene.relativePath))) continue;
+    const to = target(scene.relativePath);
+    sceneMap[scene.relativePath] = { to, copy: binding.copy };
+    affectedScenes.push({ from: scene.relativePath, to, copy: binding.copy });
+  }
+  const noteIds = {}, bookmarkIds = {}, threadIds = {}, messageIds = {};
+  const notesBefore = input.notesText ?? null, commentsBefore = input.commentsText ?? null;
+  need(notesBefore === null || typeof notesBefore === 'string'); need(commentsBefore === null || typeof commentsBefore === 'string');
+  let notesAfter = notesBefore, commentsAfter = commentsBefore;
+  if (notesBefore !== null || recovery?.notesText !== null && recovery?.notesText !== undefined) {
+    const notes = notesBefore !== null ? JSON.parse(notesBefore) : { ...JSON.parse(recovery.notesText), notes: [] }; notesModel.validateManuscriptDocument(notes, input.projectId);
+    const ids = new Set();
+    for (const note of notes.notes) { need(typeof note.id === 'string' && !ids.has(note.id), 'E_TREE_COHORT_NOTE_ID'); ids.add(note.id); }
+    const additions = [];
+    const sourceNotes = recovery ? (recovery.notesText === null ? [] : notesModel.validateManuscriptDocument(JSON.parse(recovery.notesText), input.projectId).notes.filter(n => noteScene(n) === recovery.relativePath)) : notes.notes;
+    const result = sourceNotes.map(note => {
+      const mapping = sceneMap[recovery ? recovery.livePath : noteScene(note)]; if (!mapping) return note;
+      if (note.manuscript && !note.deleted) {
+        const sceneContent = recovery ? recovery.content : text(files.get(noteScene(note))?.contentBase64 ?? null);
+        need(typeof sceneContent === 'string', 'E_TREE_COHORT_NOTE_OWNER');
+        const visible = notesModel.sceneText(sceneContent), reference = note.manuscript.reference;
+        need(reference.sourceTextSha256 === notesModel.sha(visible) && notesModel.boundary(visible, reference.offsetUtf16), 'E_TREE_COHORT_NOTE_STALE');
+      }
+      if (!mapping.copy) return rebindNote(note, mapping.to, identities.identityMap);
+      const id = newId('note-', input, note.id); need(!ids.has(id), 'E_TREE_COHORT_NOTE_ID'); ids.add(id); noteIds[note.id] = id;
+      additions.push(rebindNote(note, mapping.to, recovery ? { ...identities.identityMap, [input.recoveredCopy.removedNodeId]: identities.identityMap[input.bindings[0].nodeId] } : identities.identityMap, id)); return note;
+    });
+    const next = { ...notes, notes: [...(recovery ? notes.notes : result), ...additions] }; notesModel.validateManuscriptDocument(next, input.projectId);
+    if (!same(next, notes)) notesAfter = json(next);
+  }
+  if (commentsBefore !== null || recovery?.commentsText !== null && recovery?.commentsText !== undefined) {
+    const before = commentsBefore !== null ? commentsModel.readState(commentsBefore, input.projectId) : { ...commentsModel.readState(recovery.commentsText, input.projectId), threads: [] };
+    const next = clone(before), additions = [];
+    const sourceThreads = recovery ? (recovery.commentsText === null ? [] : commentsModel.readState(recovery.commentsText, input.projectId).threads.filter(t => t.sceneId === recovery.relativePath)) : before.threads;
+    for (let i = 0; i < sourceThreads.length; i++) {
+      const thread = sourceThreads[i], mapping = sceneMap[recovery ? recovery.livePath : thread.sceneId]; if (!mapping) continue;
+      need(thread.anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
+      if (thread.status !== 'deleted') {
+        const anchor = thread.anchor;
+        const paragraphs = commentAnchors.paragraphs(recovery ? recovery.content : text(files.get(thread.sceneId).contentBase64)).map(p => p.text);
+        const proof = commentsModel.exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex,
+          startUtf16: anchor.startUtf16, selectedText: anchor.selectedText }, thread.sceneId, paragraphs);
+        need(proof.selectedTextSha256 === anchor.selectedTextSha256 && proof.blockTextSha256 === anchor.blockTextSha256,
+          'E_TREE_COHORT_COMMENT_STALE');
+      }
+      const changed = clone(thread); changed.sceneId = mapping.to; changed.anchor.sceneId = mapping.to;
+      if (mapping.copy) {
+        changed.threadId = newId('local-comment-', input, thread.threadId); threadIds[thread.threadId] = changed.threadId;
+        for (const message of [...changed.messages, ...(changed.deletedMessages || [])]) {
+          const old = message.commentId; message.commentId = newId('local-reply-', input, `${thread.threadId}:${old}`); messageIds[old] = message.commentId;
+        }
+        need(messageIds[thread.rootCommentId], 'E_TREE_COHORT_COMMENT_ROOT'); changed.rootCommentId = messageIds[thread.rootCommentId]; additions.push(changed);
+      } else next.threads[i] = changed;
+    }
+    next.threads.push(...additions);
+    if (!same(next, before)) { next.revision++; commentsAfter = json(next); commentsModel.readState(commentsAfter, input.projectId); }
+  }
+  // Rebind recognized history by owner, not by a global string replacement.
+  const ownerOf = item => {
+    if (item.role === 'sceneCommit') return item.relativePath.replace(/\.(?:wp201-)?commit\.json$/u, '');
+    if (item.role === 'recoverySnapshot') {
+      const base = path.posix.basename(item.relativePath).slice(1).replace(/\.bak\.\d{13}$/u, '');
+      return path.posix.join(path.posix.dirname(item.relativePath), base);
+    }
+    if (['backupMetadata', 'backupSnapshot'].includes(item.role)) {
+      const metadata = files.get(path.posix.dirname(item.relativePath) + '/meta.json'); need(metadata?.role === 'backupMetadata', 'E_TREE_COHORT_HISTORY_OWNER');
+      const value = JSON.parse(text(metadata.contentBase64));
+      need(typeof value.originalPath === 'string' && path.isAbsolute(value.originalPath), 'E_TREE_COHORT_HISTORY_OWNER');
+      const relative = path.relative(path.dirname(input.manifestPath), value.originalPath).split(path.sep).join('/');
+      treeRelativePath(relative); need(files.get(relative)?.role === 'scene'
+        && path.posix.dirname(item.relativePath) === `backups/${sha(value.originalPath)}`, 'E_TREE_COHORT_HISTORY_OWNER');
+      return relative;
+    }
+    return item.relativePath;
+  };
+  const afterFiles = new Map();
+  const put = (relative, role, contentBase64) => {
+    need(!afterFiles.has(relative), 'E_TREE_COHORT_COLLISION');
+    afterFiles.set(relative, { relativePath: relative, role, contentBase64 });
+  };
+  for (const item of files.values()) {
+    const owner = ownerOf(item), mapping = sceneMap[owner], binding = mapped(item.relativePath);
+    if (mapping?.copy || (!mapping && !binding)) put(item.relativePath, item.role, item.contentBase64);
+    if (mapping?.copy && item.role !== 'scene') continue; // Fork has a fresh checkpoint, never source history.
+    if (!mapping && !binding) continue;
+    let to = target(item.relativePath), content = item.contentBase64;
+    if (mapping) {
+      if (item.role === 'scene') { to = mapping.to; if (mapping.copy) content = b64(forkScene(recovery ? recovery.content : text(content), input, recovery ? recovery.relativePath : owner, noteIds, occupiedNames, bookmarkIds)); }
+      else if (item.role === 'sceneCommit') to = mapping.to + item.relativePath.slice(owner.length);
+      else if (item.role === 'recoverySnapshot') to = path.posix.join(path.posix.dirname(mapping.to), '.' + path.posix.basename(mapping.to) + path.posix.basename(item.relativePath).match(/\.bak\.\d{13}$/u)[0]);
+      else {
+        const absolute = path.join(path.dirname(input.manifestPath), mapping.to), directory = `backups/${sha(absolute)}`;
+        if (item.role === 'backupMetadata') { to = directory + '/meta.json'; content = b64(JSON.stringify({ ...JSON.parse(text(content)), originalPath: absolute, baseName: path.basename(absolute) }, null, 2)); }
+        else to = directory + '/' + path.posix.basename(item.relativePath).slice(0, 14) + path.posix.basename(mapping.to);
+      }
+    }
+    put(to, item.role, content);
+  }
+  const manifestText = identities.changed ? json({ ...manifest, treeIdentity: identities.value }) : input.beforeManifestText;
+  // A destination starts at one current readable checkpoint. Imported Word
+  // rounds in its ledger remain inert history, never copied local authority.
+  const stamp = String(Date.parse(input.now || '')).padStart(13, '0');
+  for (const item of affectedScenes.filter(x => x.copy)) {
+    need(/^\d{13}$/u.test(stamp), 'E_TREE_COHORT_TIME');
+    put(path.posix.join(path.posix.dirname(item.to), '.' + path.posix.basename(item.to) + '.bak.' + stamp), 'recoverySnapshot', afterFiles.get(item.to).contentBase64);
+  }
+  const beforeDirs = new Set([...inventory.values()].filter(x => x.role === 'directory').map(x => x.relativePath));
+  const afterDirs = new Set();
+  for (const relative of beforeDirs) { const binding = mapped(relative); if (!binding || binding.copy) afterDirs.add(relative); if (binding) afterDirs.add(target(relative)); }
+  for (const relative of afterFiles.keys()) {
+    let dir = path.posix.dirname(relative);
+    while (dir !== '.') { afterDirs.add(dir); dir = path.posix.dirname(dir); }
+  }
+  // Historical backup directories follow the scene, including empty ownership
+  // folders; remove only those emptied by this typed plan.
+  for (const directory of [...afterDirs]) if (/^backups\/[a-f0-9]{64}$/u.test(directory)
+    && ![...afterFiles.keys()].some(x => x.startsWith(directory + '/'))) afterDirs.delete(directory);
+  const entries = [...new Set([...files.keys(), ...afterFiles.keys()])].sort().map(relativePath => ({ relativePath,
+    role: (afterFiles.get(relativePath) || files.get(relativePath)).role,
+    beforeBase64: files.get(relativePath)?.contentBase64 ?? null, afterBase64: afterFiles.get(relativePath)?.contentBase64 ?? null }));
+  entries.push({ relativePath: NOTE_PATH, role: 'notes', beforeBase64: b64(notesBefore), afterBase64: b64(notesAfter) },
+    { relativePath: COMMENT_PATH, role: 'comments', beforeBase64: b64(commentsBefore), afterBase64: b64(commentsAfter) });
+  const changed = manifestText !== input.beforeManifestText || entries.some(x => x.beforeBase64 !== x.afterBase64);
+  const plan = { mode: TREE_COHORT_MODE, projectId: input.projectId, operationId: input.operationId,
+    expectedTreeRevision: input.expectedTreeRevision ?? 0, kind: input.operation, changed,
+    code: changed ? 'TREE_COHORT_READY' : 'TREE_COHORT_UNCHANGED', beforeManifestText: input.beforeManifestText, manifestText,
+    entries, directories: [...new Set([...beforeDirs, ...afterDirs])].sort().map(relativePath => ({ relativePath, before: beforeDirs.has(relativePath), after: afterDirs.has(relativePath) })),
+    ...(recovery ? { recoverySource: { relativePath: recovery.relativePath, originalBase64: recovery.originalBase64, commitBase64: recovery.commitBase64 } } : {}),
+    affectedScenes, pathBindings: Object.entries(identities.identityMap).map(([nodeId, newNodeId]) => ({ nodeId, newNodeId,
+      fromRelativePath: registry.value.nodes[nodeId].bindingKey.slice(5), toRelativePath: identities.value.nodes[newNodeId].bindingKey.slice(5),
+      copy: mapped(registry.value.nodes[nodeId].bindingKey.slice(5))?.copy === true })),
+    identityMap: { nodes: identities.identityMap, scenes: sceneMap, notes: noteIds, bookmarks: bookmarkIds, threads: threadIds, messages: messageIds },
+    input: clone(input) };
+  plan.planDigest = sha(stable(plan));
+  need(Buffer.byteLength(stable(plan)) <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
+  return frozen(plan);
+}
+
+export function validateProjectTreeCohort(plan) {
+  need(plan?.mode === TREE_COHORT_MODE, 'E_TREE_COHORT_MODE');
+  if (plan.kind === 'undo') {
+    const regenerated = planProjectTreeUndo(plan.input); need(same(regenerated, plan), 'E_TREE_COHORT_PLAN_MISMATCH');
+  } else need(same(planProjectTreeCohort(plan.input), plan), 'E_TREE_COHORT_PLAN_MISMATCH');
+  return plan;
+}
+
+export function planProjectTreeUndo(input) {
+  const { receipt, retainedPacket: packet } = input;
+  need(receipt?.projectId === input.projectId && packet?.projectId === input.projectId
+    && receipt.kind !== 'undo' && receipt.transactionId === input.lastMutation
+    && receipt.treeRevision === input.expectedTreeRevision, 'E_TREE_UNDO_UNAVAILABLE');
+  need(packet.plan?.kind !== 'undo' && packet.transactionId === receipt.transactionId
+    && sha(stable(packet)) === receipt.packetDigest, 'E_TREE_UNDO_PACKET');
+  const original = validateProjectTreeCohort(packet.plan);
+  need(input.currentManifestText === original.manifestText, 'E_TREE_UNDO_CAS');
+  const current = validateInventory(input.currentInventory);
+  for (const entry of packet.entries.filter(x => !['notes', 'comments'].includes(x.role))) need((current.get(entry.relativePath)?.contentBase64 ?? null) === entry.afterBase64, 'E_TREE_UNDO_CAS');
+  for (const dir of original.directories) need((current.get(dir.relativePath)?.role === 'directory') === dir.after, 'E_TREE_UNDO_CAS');
+  const inverse = { mode: TREE_COHORT_MODE, projectId: input.projectId, operationId: input.operationId,
+    expectedTreeRevision: input.expectedTreeRevision, kind: 'undo', changed: true, code: 'TREE_COHORT_READY',
+    beforeManifestText: original.manifestText, manifestText: original.beforeManifestText,
+    entries: packet.entries.map(x => ({ ...x, beforeBase64: x.afterBase64, afterBase64: x.beforeBase64 })),
+    directories: original.directories.map(x => ({ ...x, before: x.after, after: x.before })),
+    affectedScenes: original.affectedScenes.map(x => ({ from: x.to, to: x.from, copy: false, removedCopy: x.copy })),
+    pathBindings: original.pathBindings.map(x => ({ nodeId: x.newNodeId, newNodeId: x.nodeId, fromRelativePath: x.toRelativePath, toRelativePath: x.fromRelativePath, copy: false, removedCopy: x.copy })),
+    identityMap: { nodes: Object.fromEntries(Object.entries(original.identityMap.nodes).map(([a,b])=>[b,a])), scenes: {}, notes: {}, bookmarks: {}, threads: {}, messages: {} },
+    input: clone(input) };
+  inverse.planDigest = sha(stable(inverse));
+  need(Buffer.byteLength(stable(inverse)) <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
+  return frozen(inverse);
+}
+
+export const projectTreeCohortDigest = value => sha(stable(value));

@@ -36,10 +36,10 @@ test('preload tree document bridge: projectCommands routes six tree and document
 
   assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ projectId, nodeId }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ projectId, parentNodeId, kind, name }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', '{ projectId, nodeId, name }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', "{ projectId, nodeId, name, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) }")
   assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ projectId, nodeId }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', '{ projectId, nodeId, direction }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_MOVE_NODE', '{ projectId, nodeId, targetParentNodeId, targetIndex }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', "{ projectId, nodeId, direction, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) }")
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_MOVE_NODE', "{ projectId, nodeId, targetParentNodeId, targetIndex, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) }")
 })
 
 test('preload tree document bridge: main bridge allowlist includes only existing cmd.ui set and existing tree document ids', () => {
@@ -105,3 +105,13 @@ test('preload tree document bridge: out-of-scope surfaces remain present and unc
   assert.ok(bindingDoc.includes('"commandId": "cmd.project.document.open"'))
   assert.ok(namespaceDoc.includes('"cmd.ui.theme.set"'))
 })
+
+test('tree copy and Undo use the generic bridge without a new preload mutation channel', () => {
+  const source = read('src/renderer/commands/projectCommands.mjs');
+  const preload = read('src/preload.js');
+  assert.match(source, /await invokeBridgeOnlyCommand\(electronAPI, commandId, payload\)/u);
+  assert.equal(source.includes('electronAPI.copyNode('), false);
+  assert.equal(source.includes('electronAPI.undoLastMutation('), false);
+  assert.equal(preload.includes("'ui:copy-node'"), false);
+  assert.equal(preload.includes("'ui:undo-tree'"), false);
+});

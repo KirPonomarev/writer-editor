@@ -1,3 +1,4 @@
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -83,6 +84,7 @@ test('Kernel formatting and structural Apply revalidate the private live key and
    createRtkReviewTransportCryptoPort:()=>({}),makeReviewMutateTypedError:()=>({ok:false}),
    loadRtkFormattingReturnModule:async()=>({createRtkFormattingReturnCommandHandler:()=>async()=>{writes++;return{ok:true};}}),
    loadRtkStructuralReturnModule:async()=>({createRtkStructuralReturnCommandHandler:()=>async()=>{writes++;return{ok:true};}})};
+  installMainDocxRoundAuthority(env, { projectRoot: input.projectRoot, references: [store.keyAuthority] });
   vm.createContext(env);vm.runInContext(mainFunction('handleRtkNonOverlapTrackedReplacementCommandSurface','handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface')+mainFunction('handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface','revalidateRtkReturnApplyKey')+mainFunction('revalidateRtkReturnApplyKey','handleRtkFormattingReturnCommandSurface')+mainFunction('handleRtkFormattingReturnCommandSurface','handleRtkStructuralReturnCommandSurface')+mainFunction('handleRtkStructuralReturnCommandSurface','buildRtkFormattingReturnRuntimeProjectScope'),env);
   const call=kind==='text'?env.handleRtkNonOverlapTrackedReplacementCommandSurface:kind==='full-text'?env.handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface:kind==='formatting'?env.handleRtkFormattingReturnCommandSurface:env.handleRtkStructuralReturnCommandSurface;
   const result=await call(JSON.parse(JSON.stringify(input)));assert.equal(result.ok,state==='ACTIVE',JSON.stringify({kind,state,result}));assert.equal(writes,state==='ACTIVE'?1:0);

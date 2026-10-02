@@ -1,3 +1,4 @@
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -66,6 +67,7 @@ for(const fault of ['none','forged','revoked','session-during-key','project','di
  const input={projectRoot:'/synthetic/project',scenePath:'/synthetic/project/roman/a.txt',reviewItems:[{changeId:'docx-clean-link-label-test',replacementText:'bound'}]};
  const store={input,sessionToken:{sessionId:'s',sourcePacketHash:'p'},intakeGeneration:7,keyAuthority:{keyRef:'k',roundId:'r'}};
  const sandbox={activeRtkCleanLinkLabelApplyStore:store,activeReviewSessionLifecycle:'active',activeReviewSessionStore:{sessionId:'s',sourcePacketHash:'p'},activeDocxReviewIntakeGeneration:7,isDirty:fault==='dirty',autoSaveInProgress:false,currentFilePath:input.scenePath,getProjectRootPath:()=>fault==='project'?'/different':input.projectRoot,readRtkNonOverlapTrackedReplacementSessionToken:s=>s,resolveDocxReviewRoundKeyHandle:async()=>{if(fault==='session-during-key')sandbox.activeDocxReviewIntakeGeneration++;return {state:fault==='revoked'?'REVOKED':'ACTIVE'};}};
+ installMainDocxRoundAuthority(sandbox, { projectRoot: input.projectRoot, references: [store.keyAuthority] });
  vm.createContext(sandbox);vm.runInContext(extracted('cleanLinkLabelStoreMatches')+'\n'+extracted('revalidateCleanLinkLabelApplyInput'),sandbox);
  const supplied=structuredClone(input);if(fault==='forged')supplied.reviewItems[0].replacementText='unbound';
  const result=await sandbox.revalidateCleanLinkLabelApplyInput(supplied);assert.equal(result.ok,fault==='none');

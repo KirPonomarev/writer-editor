@@ -43,7 +43,19 @@ test('preload workspace query bridge: editor tree collab and review surface read
 
   assert.ok(source.includes('const PROJECT_TREE_QUERY_ID = WORKSPACE_QUERY_IDS.PROJECT_TREE;'))
   assert.ok(source.includes('const COLLAB_SCOPE_LOCAL_QUERY_ID = WORKSPACE_QUERY_IDS.COLLAB_SCOPE_LOCAL;'))
-  assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: activeTab });'))
+  const treeQuery = source.match(/^async function loadTree\([^\n]*\n[\s\S]*?^\}/mu)?.[0]
+  assert.ok(treeQuery, 'tree query loader declaration and closing boundary exist')
+  assert.ok(treeQuery.includes('const generation = ++treeQueryGeneration;'))
+  assert.ok(treeQuery.includes('const requestedProjectId = currentProjectId;'))
+  assert.ok(treeQuery.includes('const requestedTab = activeTab;'))
+  const treeRead = 'const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: requestedTab });'
+  const staleGuard = 'if (generation !== treeQueryGeneration || currentProjectId !== requestedProjectId || activeTab !== requestedTab) return;'
+  assert.ok(treeQuery.includes(treeRead))
+  assert.equal(treeQuery.split(staleGuard).length - 1, 2, 'success and failure must both reject stale completions')
+  assert.ok(treeQuery.indexOf(treeRead) < treeQuery.indexOf(staleGuard), 'read must precede completion guard')
+  assert.ok(treeQuery.indexOf(staleGuard) < treeQuery.indexOf('treeRoot = result.root;'), 'guard must precede tree publication')
+  assert.match(treeQuery, /catch\s*\{\s*if \(generation !== treeQueryGeneration \|\| currentProjectId !== requestedProjectId \|\| activeTab !== requestedTab\) return;/u)
+  assert.equal(/dispatchUiCommand|invokeUiCommandBridge|ipcRenderer/u.test(treeQuery), false, 'tree read must remain query-only')
   assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(COLLAB_SCOPE_LOCAL_QUERY_ID);'))
   assert.ok(source.includes('result.ok === true'))
   assert.ok(source.includes('result.value === true'))

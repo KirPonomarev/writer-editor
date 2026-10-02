@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const modules=Promise.all([import('../../src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs'),import('../../src/renderer/documentContentEnvelope.mjs'),import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs')]);
@@ -155,6 +156,9 @@ for(const stale of [false,true])test('queued full manuscript link gate rechecks 
  const store={input,keyAuthority:{scope:'full-manuscript',exportMap:{scenes:[{sceneId:'target'},{sceneId:'untouched'}]},scenePathBySceneId:{target:'a',untouched:'b'}}};
  const sandbox={activeRtkCleanLinkLabelApplyStore:store,cleanLinkLabelStoreMatches:s=>s===store,
  resolveDocxReviewRoundKeyHandle:async()=>({state:'ACTIVE'}),verifyFullManuscriptCurrentSceneBindings:arg=>{checked++;assert.equal(arg.exportMapScenes.length,2);return {ok:!stale,reason:'STALE_UNTOUCHED_SCENE'};},fsSync:{readFileSync(){}},computeHash:hash,isPathInsideBoundary:()=>true};
+ sandbox.getProjectRootPath = () => input.projectRoot;
+ store.keyAuthority.roundId = 'private-round'; store.keyAuthority.keyRef = 'private-key';
+ installMainDocxRoundAuthority(sandbox, { projectRoot: input.projectRoot, references: [store.keyAuthority] });
  vm.createContext(sandbox);vm.runInContext(extracted('revalidateCleanLinkLabelApplyInput'),sandbox);
  const result=await sandbox.revalidateCleanLinkLabelApplyInput(input);assert.equal(result.ok,!stale);assert.equal(checked,1);
 });

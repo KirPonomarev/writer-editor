@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
@@ -120,6 +121,7 @@ async function preparedHarness(t, { deletion = false, addition = false, replyDel
   };
   const main = await fs.readFile(path.join(__dirname, '../../src/main.js'), 'utf8');
   const extract = name => main.match(new RegExp('async function ' + name + '\\([^]*?\\n}(?=\\n|$)'))[0];
+  installMainDocxRoundAuthority(sandbox, { projectRoot: root, references: [context.reviewTransportAuthorityCapsule], publishAllocated: true });
   const ctx = vm.createContext(sandbox);
   vm.runInContext('const authenticatedCommentDeltaAdmissions = new WeakMap();\n'
     + extract('applyAuthenticatedCommentDelta') + '\n' + extract('handleRtkCommentLifecycleReturnCommandSurface'), ctx);

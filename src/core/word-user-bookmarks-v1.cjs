@@ -382,7 +382,7 @@ function editCandidates(before, after) {
   if (!result.length) fail('USER_BOOKMARK_EDIT_BOUNDARY');
   return result;
 }
-function mapEndpoint(endpoint, edits, oldText, newText) {
+function mapEndpoint(endpoint, edits, oldText, newText, oppositeEndpoint) {
   const oldOffset = endpoint.offsetUtf16 + (endpoint.edge === 'afterParagraph' ? 1 : 0);
   const values = new Set();
   for (const edit of edits) {
@@ -392,6 +392,16 @@ function mapEndpoint(endpoint, edits, oldText, newText) {
     if (edit.start === edit.end && oldOffset === edit.start) value = oldOffset;
     else if (oldOffset < edit.start) value = oldOffset;
     else if (oldOffset > edit.end) value = oldOffset + edit.delta;
+    else if (edit.inserted === 0 && edit.end > edit.start
+      && (oldOffset === edit.start || oldOffset === edit.end)
+      && oppositeEndpoint && (oppositeEndpoint.paragraphIndex !== endpoint.paragraphIndex
+        || oppositeEndpoint.offsetUtf16 + (oppositeEndpoint.edge === 'afterParagraph' ? 1 : 0) < edit.start
+        || oppositeEndpoint.offsetUtf16 + (oppositeEndpoint.edge === 'afterParagraph' ? 1 : 0) > edit.end)) {
+      // A pure deletion may touch a surviving range's outer boundary. The
+      // original opposite endpoint proves this is neither a point nor a wholly
+      // consumed range. Interior/replacement/ambiguous endpoints still refuse.
+      value = edit.start;
+    }
     else fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
     values.add(value);
   }
@@ -618,10 +628,11 @@ function planSave({ beforeDoc, workingDoc, renameLineage }) {
   }
   for (const record of mapped.bookmarks) {
     if (record.state !== 'active') continue;
+    const originalEndpoints = { start: record.start, end: record.end };
     for (const key of ['start', 'end']) {
       const endpoint = record[key], edit = edits.get(endpoint.paragraphIndex);
       if (structuralMap) record[key] = structuralMap(endpoint);
-      else if (edit) record[key] = mapEndpoint(endpoint, edit.candidates, edit.oldText, edit.newText);
+      else if (edit) record[key] = mapEndpoint(endpoint, edit.candidates, edit.oldText, edit.newText, originalEndpoints[key === 'start' ? 'end' : 'start']);
     }
   }
   const changed = !same(before, mapped);

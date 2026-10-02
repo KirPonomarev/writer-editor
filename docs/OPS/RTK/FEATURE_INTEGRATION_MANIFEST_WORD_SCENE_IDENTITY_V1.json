@@ -1,0 +1,111 @@
+{
+  "featureId": "WORD_SCENE_IDENTITY_MAC_20261002",
+  "featureVersion": 1,
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "35cee726420005dd561634f0b6771d4759191220",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Canonical scene tree identities, scenes, notes/comments and typed transaction cohort/recovery.",
+  "derivedData": "query.projectTree extended treeRevision and lastMutation {id,kind,canUndo,unavailableReason}; project/node/revision bound.",
+  "commandIds": [
+    "cmd.project.tree.renameNode",
+    "cmd.project.tree.moveNode",
+    "cmd.project.tree.reorderNode",
+    "cmd.project.tree.copyNode",
+    "cmd.project.tree.undoLastMutation",
+    "cmd.project.saveAs"
+  ],
+  "eventTypes": [
+    "Existing project tree changed and scene saved events; no new event bus"
+  ],
+  "queryIds": [
+    "query.projectTree"
+  ],
+  "productProjectionIds": [
+    "query.projectTree extended treeRevision and lastMutation {id,kind,canUndo,unavailableReason}; project/node/revision bound."
+  ],
+  "capabilityIds": [
+    "Existing tree mutation capabilities plus cap.project.tree.copyNode and cap.project.tree.undoLastMutation"
+  ],
+  "authorityMap": {
+    "product": "Owner-authorized entire Mac Word plan P2d. Product Core owns stable tree identity, canonical scenes, note/comment ownership, bookmark forks and recoverable exact multi-file cohort. Existing journal/writer extended; no independent store or broad project format migration.",
+    "command": "Existing pathless tree rename/move/reorder plus cmd.project.tree.copyNode and cmd.project.tree.undoLastMutation through Command Kernel capability revalidation and Main project lease/CAS. Existing query.projectTree extends immutable revision-bound projection. Existing cmd.project.saveAs may recover a retained removed-copy buffer only through private exact Undo packet identity and the same governed cohort writer.",
+    "design": "Existing tree context menu and naming dialog contributions only. Preserve current styles/layout and text history keyboard meaning. Lazyweb and ui-craft consulted; no new visual language. Existing tree move intent gains a labelled chapter chooser using existing dialog and native select controls; same styles, existing move command and revision guards, no new IPC or storage authority."
+  },
+  "identityKeys": [
+    "projectId",
+    "nodeId",
+    "treeRevision",
+    "mutationId",
+    "sourceRevision",
+    "lifecycle",
+    "generation"
+  ],
+  "revisionPolicy": "Main rechecks project and command capability, expected tree revision, lease and full cohort before/after identities. Durable Word rounds reread after final await for intake/apply/export activation; terminal expiry cannot be overwritten by cached OPEN store.",
+  "writePath": [
+    "Renderer pathless intent -> Command Kernel -> Main private identity and dirty save barrier -> terminal durable Word round expiry -> Core pure cohort plan -> existing project transaction lease/journal/CAS writer -> readback -> current identity-guarded projection.",
+    "Explicit Save As -> private retained-copy snapshot and current verified Undo receipt -> Core fresh-copy recovery plan -> existing v7 lease/journal/CAS writer -> guarded publication. Normal Save identity fence remains mandatory."
+  ],
+  "readPath": [
+    "Canonical scene/manifest/notes/comments/recognized history plus durable transaction receipt -> checked pure plan or immutable query.projectTree projection."
+  ],
+  "requiredProductPorts": [
+    "Existing commitProjectTransaction/recoverProjectTransaction and Main filesystem adapter/project lease/save coordinator; existing durable review authority port with CAS."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing command intent bridge and query.projectTree; no renderer storage or filesystem capability."
+  ],
+  "adapterRequirements": "Existing local filesystem/project transaction adapter and durable Word authority CAS; no new writer",
+  "surfaceManifests": [
+    "SURFACE_MANIFEST_WORD_SCENE_IDENTITY_V1.json"
+  ],
+  "slotRequirements": "Existing project tree context menu, naming dialog and labelled chapter chooser using existing dialog classes",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS SOURCE and PACKAGED acceptance; no Windows product claim",
+  "accessibilityRequirements": "Bounded cohort file and byte limits; no typing hot-path scans. Existing context menu and labelled dialog, ShiftF10/ContextMenu, Tab/Enter/Escape and focus return; text CmdZ unchanged.",
+  "fallbacks": [
+    "Typed zero-write refusal for unknown ownership, malformed present authority, path collision, symlink, unsupported history, dirty save failure, stale revision or unsupported composite.",
+    "Tree failure rolls back manuscript cohort; already expired Word rounds stay terminal, including after Undo. Fresh export required; no silent reactivation."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "persistenceClass": "Existing project transaction extended with typed multi-file tree journal v7",
+  "migrations": "No project format/scene-ID migration; bounded journal/commit v7 uses existing recovery dispatcher; legacy v1-v6 paths preserved.",
+  "recovery": "Exact before/after cohort, durable commit point, unknown-byte conflict; persistent inverse after-image CAS. Word expiry is monotonic and outside tree rollback. Explicit existing Save As can recover a privately bound removed-copy buffer from the verified Undo beforeimage through fresh IDs and the same v7 writer; never through normal snapshot-fence bypass.",
+  "rollback": "Revert bounded command/planner integration while preserving readable journal/recovery support for created v7 artifacts. Never blindly downgrade pending journals or reactivate expired Word rounds; complete recovery first. No private documents modified outside dedicated native fixtures.",
+  "performanceBudget": "Explicit maximum cohort files and bytes; no derived scan in typing path",
+  "securityBoundary": "Validate external/name payload before path resolution; Main resolves canonical private paths. Closed typed bounded plan revalidated by existing transaction; reject symlinks, escapes, unsupported schema, inventory ambiguity and unknown annotations. No secrets/network/dependencies.",
+  "lifecycle": [
+    "Full simultaneous old/new mapping includes all renumbered siblings and descendants; stable node IDs retained for move and fresh IDs for copy.",
+    "Project/lifecycle/generation and treeRevision checked before capture and publication; dirty scene ACK before mutation; stale autosave and delayed dialogs cannot write old path.",
+    "Typed annotations remapped without rewriting historical provenance; pending ledger remains scene-local, copied note source IDs remapped in current and history frames.",
+    "Undo exact after-image CAS with monotonic external transaction token; unknown bytes or authority store abort before tree writes.",
+    "Recovery never accepts caller graph, source paths or bypass flags; exact removed copy ID, undo receipt/packet, project/session/generation and absent destination revalidated under lease. Live original bytes remain unchanged."
+  ],
+  "negativeBypassChecks": [
+    "Actual Main full sibling permutation active path and annotation ownership; copied note/comment/bookmark identity independence; source unchanged; save/Undo/reopen/export after tree mutation.",
+    "Fault every cohort publication/recovery phase, partial disk crash, unknown third-party bytes, retry/idempotence, monotonic Undo stale token refusal.",
+    "Forged renderer paths, project switch, late autosave, dirty scene, stale candidate apply/export activation, malformed present durable authority; expiry failure leaves tree unchanged.",
+    "SOURCE and PACKAGED native coherent tree edits and copy/Undo then restart/DOCX Word readback before frozen full CI.",
+    "Native dirty edit -> tree rename -> text Undo -> save: only proven pure-deletion boundary of a surviving bookmark range may rebase; consumed/point/interior/ambiguous/replacement cases remain typed conflicts.",
+    "Rejected replacement rich buffer -> explicit Save As -> fresh scene with independent bookmark/note/comment identities -> reopen/export; original unchanged. Wrong or stale receipt/identity, tamper, occupied target, late edit, cancel and every v7 fault phase remain no-loss failures.",
+    "Chapter chooser returns only an observed node ID and captured project/tree revision; cancel, empty targets, missing source/target, stale revision and foreign project refuse without dispatch. Actual native SOURCE/PACKAGED move and Undo prove this route; drag gesture remains separately unverified."
+  ],
+  "evidenceBindings": [
+    "rtk-word-project-tree-cohort.contract.test.js",
+    "rtk-word-scene-identity-main.contract.test.js",
+    "Focused existing tree/transaction/command suites",
+    "Native SOURCE and PACKAGED plus frozen exact-head CI"
+  ],
+  "currentReality": [
+    "35cee726 bookmark paragraph package delivered; actual Main move probe shows sibling filenames and manifest change while active sibling path and note/comment scene fields retain old names.",
+    "Existing single-scene transaction cannot atomically rename multi-file tree cohort; existing tree handlers have no equivalent dirty-save or durable Word-round fence."
+  ]
+}

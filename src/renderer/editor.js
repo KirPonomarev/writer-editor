@@ -25,7 +25,7 @@ import { tableParagraphs } from '../io/documentTables.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
-import { openLinkDialog, openNodeNameDialog, normalizeNodeName, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
+import { openLinkDialog, openNodeNameDialog, openNodeMoveDialog, normalizeNodeName, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
 import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
@@ -257,6 +257,7 @@ if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState 
   notifyEditorPasteFocusState();
 }
 const statusElement = document.getElementById('status');
+let heldCommandStatusMessage = false;
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');
 const perfHintElement = document.querySelector('[data-perf-hint]');
@@ -1126,6 +1127,7 @@ let projectionInspectorState = {
 let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
+let treeDetachedOrigin = null;
 let currentDocumentKind = null;
 let currentDocumentTitle = '';
 let currentProjectId = '';
@@ -1161,6 +1163,10 @@ let reviewSurfaceApplyActionListenerBound = false;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
+let treeMutationProjection = null;
+let treeQueryGeneration = 0;
+let treeMutationPending = false;
+let contextMenuReturnFocus = null;
 let currentMeta = {
   synopsis: '',
   status: 'черновик',
@@ -7822,12 +7828,13 @@ function withEditorModeCommandPayload(payload = {}) {
 }
 
 async function dispatchUiCommand(commandId, payload = {}) {
+  updateStatusText('', { clear: true });
   const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
   if (!result.ok) {
     const mapped = mapCommandErrorToUi(result.error);
-    updateStatusText(mapped.userMessage);
+    updateStatusText(mapped.userMessage, { visible: true });
     if (mapped.severity === 'ERROR') {
       const opSuffix = mapped.op ? ` op=${mapped.op}` : '';
       console.error(`UI_COMMAND_ERROR code=${mapped.code}${opSuffix}`);
@@ -8507,6 +8514,8 @@ function composeDocumentContent() {
 
 function composeEditorSnapshot() {
   return {
+    projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
+    documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '',
     content: composeDocumentContent(),
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
@@ -10013,15 +10022,19 @@ function isTreeNodeRowExpandable(node) {
   );
 }
 
-function clearContextMenu() {
+function clearContextMenu({ restoreFocus = false } = {}) {
   if (!contextMenu) return;
   contextMenu.innerHTML = '';
   contextMenu.hidden = true;
+  const previousFocus = contextMenuReturnFocus;
+  contextMenuReturnFocus = null;
+  if (restoreFocus && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
 }
 
-function showContextMenu(items, x, y) {
+function showContextMenu(items, x, y, trigger = null) {
   if (!contextMenu) return;
   contextMenu.innerHTML = '';
+  contextMenuReturnFocus = trigger || document.activeElement;
   items.forEach((item) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -10031,7 +10044,7 @@ function showContextMenu(items, x, y) {
     button.disabled = item.enabled === false;
     button.addEventListener('click', () => {
       if (button.disabled) return;
-      clearContextMenu();
+      clearContextMenu({ restoreFocus: true });
       item.onInvoke();
     });
     contextMenu.appendChild(button);
@@ -10039,6 +10052,14 @@ function showContextMenu(items, x, y) {
   contextMenu.style.left = `${x}px`;
   contextMenu.style.top = `${y}px`;
   contextMenu.hidden = false;
+  contextMenu.querySelector('button:not(:disabled)')?.focus({ preventScroll: true });
+  contextMenu.onkeydown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      clearContextMenu({ restoreFocus: true });
+    }
+  };
 }
 
 function isNavigatorContextCommandAvailable(commandId) {
@@ -10120,11 +10141,17 @@ function captureNodeNameTarget(node) {
   const current = findTreeNodeById(treeRoot, nodeId);
   if (!currentProjectId || !current) return null;
   return { projectId: currentProjectId, tree: treeRoot, nodeId,
-    kind: current.kind, label: current.label };
+    kind: current.kind, label: current.label,
+    treeRevision: treeMutationProjection?.treeRevision };
 }
 
 function isNodeNameTargetCurrent(target) {
-  if (!target || currentProjectId !== target.projectId || treeRoot !== target.tree) return false;
+  if (!target || currentProjectId !== target.projectId
+    || treeMutationProjection?.treeRevision !== target.treeRevision) return false;
+  // A refreshed immutable tree may have the same canonical revision. Object
+  // allocation is not a source change; Main still revalidates the revision.
+  const revisionBound = Number.isSafeInteger(target.treeRevision) && target.treeRevision >= 0;
+  if (!revisionBound && treeRoot !== target.tree) return false;
   const current = findTreeNodeById(treeRoot, target.nodeId);
   return Boolean(current && current.kind === target.kind && current.label === target.label);
 }
@@ -10146,16 +10173,90 @@ async function handleCreateNode(node, kind, promptLabel) {
 
 async function handleRenameNode(node) {
   const target = captureNodeNameTarget(node);
-  if (!target) return;
+  if (!target) { updateStatusText('Выберите элемент в актуальном дереве проекта', { visible: true }); return; }
   const name = await openNodeNameDialog({ title: 'Новое имя', initialValue: target.label || '', rename: true });
-  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) return;
+  if (name === null) return;
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) {
+    updateStatusText('Переименование недоступно: состояние проекта изменилось', { visible: true });
+    return;
+  }
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {
     projectId: target.projectId,
     nodeId: target.nodeId,
     name: name.trim(),
+    expectedTreeRevision: target.treeRevision,
   });
   if (!result || result.ok === false || !isNodeNameTargetCurrent(target)) return;
   await loadTree();
+}
+
+function captureTreeMutationProjection() {
+  const projection = treeMutationProjection;
+  return projection && projection.projectId === currentProjectId
+    && Number.isSafeInteger(projection.treeRevision) && projection.treeRevision >= 0
+    ? projection : null;
+}
+
+async function handleCopyNode(node) {
+  if (treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
+    updateStatusText('Создание копии сейчас недоступно', { visible: true });
+    return;
+  }
+  const target = captureNodeNameTarget(node);
+  if (!target || !['scene', 'chapter-file'].includes(target.kind) || !captureTreeMutationProjection()) {
+    updateStatusText('Выберите сцену в актуальном дереве проекта', { visible: true });
+    return;
+  }
+  const name = await openNodeNameDialog({ title: 'Название копии',
+    initialValue: `${(target.label || '').slice(0, 72)} — копия`, submitLabel: 'Создать копию' });
+  if (name === null) return;
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target) || treeMutationPending
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
+    updateStatusText('Создание копии недоступно: состояние проекта изменилось', { visible: true });
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_COPY_NODE, {
+      projectId: target.projectId, nodeId: target.nodeId, name: name.trim(),
+      expectedTreeRevision: target.treeRevision,
+    });
+    if (result?.ok && currentProjectId === target.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
+async function handleUndoTreeMutation(expectedProjection = treeMutationProjection) {
+  const projection = captureTreeMutationProjection();
+  if (!projection || !expectedProjection
+    || projection.projectId !== expectedProjection.projectId
+    || projection.treeRevision !== expectedProjection.treeRevision
+    || projection.lastMutation?.id !== expectedProjection.lastMutation?.id
+    || treeMutationPending || !projection.lastMutation?.canUndo
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION)) {
+    updateStatusText('Отмена изменения структуры сейчас недоступна', { visible: true });
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION, {
+      projectId: projection.projectId, expectedTreeRevision: projection.treeRevision,
+      mutationId: projection.lastMutation.id,
+    });
+    if (result?.ok && currentProjectId === projection.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
+function appendTreeUndoMenuItem(items) {
+  const projection = captureTreeMutationProjection();
+  const available = !treeMutationPending && projection?.lastMutation?.canUndo === true;
+  appendContextMenuCommandItem(items, EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION,
+    available ? 'Отменить последнее изменение структуры'
+      : 'Отмена изменения структуры недоступна',
+    () => handleUndoTreeMutation(projection), { enabled: available });
 }
 
 async function handleDeleteNode(node) {
@@ -10179,14 +10280,71 @@ async function handleDeleteNode(node) {
   updateInspectorSnapshot();
 }
 
+function collectSceneMoveDestinations(sourceNodeId) {
+  const destinations = [];
+  const visit = (node, labels) => {
+    if (!node) return;
+    const nextLabels = ['part', 'chapter-folder'].includes(node.kind) && node.label
+      ? [...labels, node.label] : labels;
+    if (node.kind === 'chapter-folder' && getEffectiveDocumentId(node)
+      && !(node.children || []).some(child => getEffectiveDocumentId(child) === sourceNodeId)) {
+      destinations.push({ nodeId: getEffectiveDocumentId(node), label: nextLabels.join(' › ') });
+    }
+    for (const child of node.children || []) visit(child, nextLabels);
+  };
+  visit(treeRoot, []);
+  return destinations;
+}
+
+async function handleChooseSceneMove(node) {
+  if (treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_MOVE_NODE)) {
+    updateStatusText('Перемещение сейчас недоступно', { visible: true });
+    return;
+  }
+  const target = captureNodeNameTarget(node);
+  if (!target || !['scene', 'chapter-file'].includes(target.kind) || !captureTreeMutationProjection()) {
+    updateStatusText('Выберите сцену в актуальном дереве проекта', { visible: true });
+    return;
+  }
+  const destinations = collectSceneMoveDestinations(target.nodeId);
+  if (!destinations.length) {
+    updateStatusText('Нет другой главы для перемещения сцены', { visible: true });
+    return;
+  }
+  const targetParentNodeId = await openNodeMoveDialog({ destinations });
+  if (targetParentNodeId === null) return;
+  const destination = findTreeNodeById(treeRoot, targetParentNodeId);
+  if (!isNodeNameTargetCurrent(target) || !captureTreeMutationProjection()
+    || !destinations.some(choice => choice.nodeId === targetParentNodeId)
+    || destination?.kind !== 'chapter-folder'
+    || !collectSceneMoveDestinations(target.nodeId).some(choice => choice.nodeId === targetParentNodeId)
+    || treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_MOVE_NODE)) {
+    updateStatusText('Перемещение недоступно: состояние проекта изменилось', { visible: true });
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {
+      projectId: target.projectId, nodeId: target.nodeId, targetParentNodeId, targetIndex: 0,
+      expectedTreeRevision: target.treeRevision,
+    });
+    if (result?.ok && currentProjectId === target.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
 async function handleMoveNode(node, targetParentNodeId, targetIndex) {
+  const projectId = currentProjectId;
+  const expectedTreeRevision = captureTreeMutationProjection()?.treeRevision;
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {
     projectId: currentProjectId,
     nodeId: getEffectiveDocumentId(node),
     targetParentNodeId,
     targetIndex,
+    expectedTreeRevision,
   });
-  if (!result || result.ok === false) {
+  if (!result || result.ok === false || currentProjectId !== projectId) {
     return;
   }
   await loadTree();
@@ -10222,6 +10380,7 @@ function buildContextMenuItems(node) {
     append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Вниз', () => handleReorderNode(node, 'down'));
   };
   const appendRenameDelete = () => {
+    appendTreeUndoMenuItem(items);
     append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать', () => handleRenameNode(node));
     append(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'Удалить', () => handleDeleteNode(node));
   };
@@ -10243,6 +10402,10 @@ function buildContextMenuItems(node) {
 
   if (node.kind === 'chapter-file' || node.kind === 'scene') {
     appendOpen();
+    append(EXTRA_COMMAND_IDS.TREE_COPY_NODE, 'Создать копию…', () => handleCopyNode(node),
+      { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
+    append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Переместить…', () => handleChooseSceneMove(node),
+      { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
     append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
     append(
       EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
@@ -10448,16 +10611,20 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     }
     const items = buildContextMenuItems(node);
     if (items.length) {
-      showContextMenu(items, event.clientX, event.clientY);
+      const trigger = row.isConnected ? row
+        : treeContainer?.querySelector(`.tree__row[data-navigator-row-id="${effectiveDocumentId}"]`);
+      showContextMenu(items, event.clientX, event.clientY, trigger);
     }
   });
 
   row.addEventListener('dragstart', (event) => {
     if (!event.dataTransfer) {
+      console.info('TREE_DRAG phase=start outcome=blocked reason=NO_DATA_TRANSFER');
       event.preventDefault();
       return;
     }
     if (!effectiveDocumentId || activeTab !== 'roman' || !isNavigatorMovableNode(node)) {
+      console.info(`TREE_DRAG phase=start outcome=blocked hasIdentity=${Boolean(effectiveDocumentId)} roman=${activeTab === 'roman'} movable=${isNavigatorMovableNode(node)}`);
       event.preventDefault();
       return;
     }
@@ -10465,24 +10632,35 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     event.dataTransfer.setData('application/x-yalken-tree-node-id', effectiveDocumentId);
     event.dataTransfer.setData('application/x-yalken-tree-parent-node-id', parentNodeId || '');
     event.dataTransfer.setData('application/x-yalken-tree-sibling-index', String(siblingIndex));
+    console.info('TREE_DRAG phase=start outcome=accepted');
+  });
+
+  row.addEventListener('dragend', (event) => {
+    const effect = ['none', 'move', 'copy', 'link'].includes(event.dataTransfer?.dropEffect)
+      ? event.dataTransfer.dropEffect : 'unknown';
+    console.info(`TREE_DRAG phase=end effect=${effect}`);
   });
 
   row.addEventListener('dragover', (event) => {
     if (!event.dataTransfer) return;
     if (!effectiveDocumentId || activeTab !== 'roman') return;
-    const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
-    if (!draggedId || draggedId === effectiveDocumentId) return;
+    // HTML protected mode exposes formats during hover, but not their data.
+    // The drop handler and Main still validate the actual node intent.
+    if (!Array.from(event.dataTransfer.types || []).includes('application/x-yalken-tree-node-id')) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   });
 
   row.addEventListener('drop', (event) => {
-    if (!event.dataTransfer) return;
-    if (!effectiveDocumentId || activeTab !== 'roman') return;
+    const reject = reason => console.info(`TREE_DRAG phase=drop outcome=blocked reason=${reason}`);
+    if (!event.dataTransfer) { reject('NO_DATA_TRANSFER'); return; }
+    const formatPresent = Array.from(event.dataTransfer.types || []).includes('application/x-yalken-tree-node-id');
+    console.info(`TREE_DRAG phase=drop formatPresent=${formatPresent}`);
+    if (!effectiveDocumentId || activeTab !== 'roman') { reject('TARGET_CONTEXT'); return; }
     const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
-    if (!draggedId || draggedId === effectiveDocumentId) return;
+    if (!draggedId || draggedId === effectiveDocumentId) { reject(!draggedId ? 'MISSING_SOURCE' : 'SELF_DROP'); return; }
     const draggedNode = findTreeNodeById(treeRoot, draggedId);
-    if (!draggedNode) return;
+    if (!draggedNode) { reject('SOURCE_NOT_IN_TREE'); return; }
     event.preventDefault();
     const targetParentNodeId = node.kind === 'chapter-folder' || node.kind === 'part' || node.kind === 'roman-root'
       ? effectiveDocumentId
@@ -10501,7 +10679,8 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     ) {
       targetIndex -= 1;
     }
-    if (!targetParentNodeId || targetIndex < 0) return;
+    if (!targetParentNodeId || targetIndex < 0) { reject('TARGET_POSITION'); return; }
+    console.info('TREE_DRAG phase=drop outcome=intent-dispatched');
     handleMoveNode(draggedNode, targetParentNodeId, targetIndex);
   });
 
@@ -10560,6 +10739,7 @@ function buildNavigatorRootCreateMenuItems() {
     'Новая глава (со сценами)',
     () => handleCreateNode(romanRoot, 'chapter-folder', 'Название главы'),
   );
+  appendTreeUndoMenuItem(items);
   return items;
 }
 
@@ -10616,9 +10796,14 @@ function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
 
 async function loadTree() {
   if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') return;
+  const generation = ++treeQueryGeneration;
+  const requestedProjectId = currentProjectId;
+  const requestedTab = activeTab;
   try {
-    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: activeTab });
+    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: requestedTab });
+    if (generation !== treeQueryGeneration || currentProjectId !== requestedProjectId || activeTab !== requestedTab) return;
     if (!result || result.ok === false) {
+      treeMutationProjection = null;
       updateStatusText('Ошибка');
       return;
     }
@@ -10631,6 +10816,15 @@ async function loadTree() {
       }
     }
     treeRoot = result.root;
+    const lastMutation = result.lastMutation;
+    treeMutationProjection = Number.isSafeInteger(result.treeRevision) && result.treeRevision >= 0
+      ? Object.freeze({ projectId: currentProjectId, treeRevision: result.treeRevision,
+        lastMutation: lastMutation && typeof lastMutation.id === 'string' && lastMutation.id
+          && typeof lastMutation.kind === 'string'
+          ? Object.freeze({ id: lastMutation.id, kind: lastMutation.kind,
+            canUndo: lastMutation.canUndo === true,
+            unavailableReason: typeof lastMutation.unavailableReason === 'string' ? lastMutation.unavailableReason : '' })
+          : null }) : null;
     if (treeContainer) {
       treeContainer.dataset.tab = activeTab;
     }
@@ -10662,6 +10856,8 @@ async function loadTree() {
       restoreEditorFocus: revealResult.found,
     });
   } catch {
+    if (generation !== treeQueryGeneration || currentProjectId !== requestedProjectId || activeTab !== requestedTab) return;
+    treeMutationProjection = null;
     updateStatusText('Ошибка');
   }
 }
@@ -11000,6 +11196,15 @@ if (treeContainer) {
       : null;
     if (!(row instanceof HTMLElement)) return;
     const currentId = row.dataset.navigatorRowId || '';
+    if (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)) {
+      event.preventDefault();
+      event.stopPropagation();
+      const node = findTreeNodeById(treeRoot, currentId);
+      const items = buildContextMenuItems(node);
+      const rect = row.getBoundingClientRect();
+      if (items.length) showContextMenu(items, rect.left, rect.bottom, row);
+      return;
+    }
     const visibleIds = getVisibleNavigatorRowIds();
     const directionByKey = {
       ArrowUp: 'previous',
@@ -11374,9 +11579,19 @@ document.addEventListener('scroll', () => {
   clearContextMenu();
 }, true);
 
-function updateStatusText(text) {
-  if (statusElement && text) {
-    statusElement.textContent = text;
+function updateStatusText(text, { visible = false, clear = false } = {}) {
+  if (!statusElement) return;
+  if (clear) {
+    heldCommandStatusMessage = false;
+    statusElement.style.visibility = '';
+  }
+  if (!text || (heldCommandStatusMessage && !visible)) return;
+  statusElement.textContent = text;
+  if (visible) {
+    heldCommandStatusMessage = true;
+    // This one product message overrides the inherited baseline visibility;
+    // developer save/warning/performance siblings remain hidden.
+    statusElement.style.visibility = 'visible';
   }
 }
 
@@ -23417,8 +23632,92 @@ window.addEventListener('resize', () => {
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });
 
+function treeReplacementRefusalReason(payload) {
+  if (payload?.treeReplacement !== true || payload.treePublication === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_DRAFT_PENDING';
+  if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0) return 'GENERATION_INVALID';
+  if (payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
+  if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
+  const detachedRecovery = payload.treeRecovery === true && currentDocumentId === ''
+    && treeDetachedOrigin?.projectId === currentProjectId
+    && treeDetachedOrigin.documentId === payload.expectedDocumentId;
+  if (!detachedRecovery && (!currentDocumentId || payload.expectedDocumentId !== currentDocumentId)) return 'SOURCE_DOCUMENT_MISMATCH';
+  if (typeof payload.documentId !== 'string' || !payload.documentId || payload.documentId === currentDocumentId) return 'TARGET_DOCUMENT_INVALID';
+  if (!['scene', 'chapter-file'].includes(payload.kind) || payload.metaEnabled !== true) return 'DOCUMENT_KIND_INVALID';
+  if (typeof payload.content !== 'string' || typeof payload.expectedContent !== 'string') return 'CONTENT_INVALID';
+  return composeDocumentContent() === payload.expectedContent ? '' : 'CONTENT_MISMATCH';
+}
+
+function isTreeReplacementCurrent(payload) {
+  return treeReplacementRefusalReason(payload) === '';
+}
+
+function applyTreeDetachedPublication(payload) {
+  if (payload?.treeDetached !== true || payload.treePublication === true || payload.treeReplacement === true
+    || !Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
+    || payload.expectedGeneration !== localEditGeneration
+    || !currentProjectId || payload.projectId !== currentProjectId
+    || !currentDocumentId || payload.expectedDocumentId !== currentDocumentId
+    || payload.documentId !== '' || typeof payload.title !== 'string' || !payload.title.trim()
+    || typeof payload.expectedContent !== 'string'
+    || composeDocumentContent() !== payload.expectedContent) return false;
+  // A committed Undo removed this copy before a late edit arrived. Main has
+  // detached its save target; preserve the live buffer for the existing Save As.
+  treeDetachedOrigin = { projectId: currentProjectId, documentId: currentDocumentId };
+  currentDocumentId = '';
+  currentDocumentTitle = payload.title.trim();
+  syncVisibleAuthoringSurfacesSurface();
+  updateInspectorSnapshot();
+  refreshMetadataInspector();
+  void refreshManuscriptNoteReferences();
+  void refreshVisibleCommentProjection();
+  if (currentRightTab === 'history') refreshSceneHistory('');
+  updateStatusText('Отмена структуры завершена, но появились новые правки. Текст остаётся в редакторе; не закрывайте его до сохранения или копирования.', { visible: true });
+  return true;
+}
+
+// Main has already committed a path-only tree cohort. This publication changes
+// only the current shell context; the editor document and its history stay live.
+function applyTreeContextPublication(payload) {
+  if (!payload || payload.treePublication !== true || payload.treeReplacement === true || payload.treeDetached === true
+    || !Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
+    || payload.expectedGeneration !== localEditGeneration
+    || !currentProjectId || payload.projectId !== currentProjectId
+    || !currentDocumentId || payload.documentId !== currentDocumentId
+    || payload.kind !== currentDocumentKind || payload.metaEnabled !== metaEnabled
+    || typeof payload.title !== 'string' || !payload.title.trim()
+    || typeof payload.expectedContent !== 'string' || payload.content !== payload.expectedContent
+    || composeDocumentContent() !== payload.expectedContent) return false;
+  currentDocumentTitle = payload.title.trim();
+  try {
+    localStorage.setItem(getActiveDocumentTitleStorageKey(currentProjectId), currentDocumentTitle);
+  } catch {}
+  syncVisibleAuthoringSurfacesSurface();
+  updateInspectorSnapshot();
+  refreshMetadataInspector();
+  void refreshManuscriptNoteReferences();
+  void refreshVisibleCommentProjection();
+  if (currentRightTab === 'history') refreshSceneHistory('');
+  return true;
+}
+
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.treeDetached === true) {
+      if (!applyTreeDetachedPublication(payload)) updateStatusText('Восстановленная копия не привязана: состояние изменилось', { visible: true });
+      return;
+    }
+    if (payload?.treeReplacement === true && !isTreeReplacementCurrent(payload)) {
+      const reason = treeReplacementRefusalReason(payload);
+      const expected = Number.isSafeInteger(payload.expectedGeneration) ? payload.expectedGeneration : 'invalid';
+      console.warn(`TREE_REPLACEMENT_REJECTED reason=${reason} expectedGeneration=${expected} actualGeneration=${localEditGeneration}`);
+      updateStatusText('Сцена не переключена: состояние изменилось', { visible: true });
+      return;
+    }
+    if (payload?.treePublication === true) {
+      if (!applyTreeContextPublication(payload)) updateStatusText('Название сцены не обновлено: состояние изменилось', { visible: true });
+      return;
+    }
     if (payload?.localImageAuthoringPublication === true) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapLocalImagePublication(payload, composeDocumentContent());
       return;
@@ -23427,6 +23726,7 @@ if (window.electronAPI) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
       return;
     }
+    treeDetachedOrigin = null;
     cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';

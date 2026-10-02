@@ -70,6 +70,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   TREE_DELETE_NODE: 'cmd.project.tree.deleteNode',
   TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
   TREE_MOVE_NODE: 'cmd.project.tree.moveNode',
+  TREE_COPY_NODE: 'cmd.project.tree.copyNode',
+  TREE_UNDO_LAST_MUTATION: 'cmd.project.tree.undoLastMutation',
   METADATA_UPDATE: 'cmd.project.metadata.update',
   NOTES_CREATE: 'cmd.project.notes.create',
   NOTES_UPDATE: 'cmd.project.notes.update',
@@ -2016,7 +2018,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
-          { projectId, nodeId, name },
+          { projectId, nodeId, name, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },
         );
       } catch (error) {
         return fail(
@@ -2133,7 +2135,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
-          { projectId, nodeId, direction },
+          { projectId, nodeId, direction, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },
         );
       } catch (error) {
         return fail(
@@ -2239,7 +2241,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
-          { projectId, nodeId, targetParentNodeId, targetIndex },
+          { projectId, nodeId, targetParentNodeId, targetIndex, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },
         );
       } catch (error) {
         return fail(
@@ -2265,19 +2267,60 @@ export function registerProjectCommands(registry, options = {}) {
           targetIndex: Number.isInteger(bridged.targetIndex) ? bridged.targetIndex : targetIndex,
         });
       }
-      return fail(
-        'E_COMMAND_FAILED',
-        EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
-        bridged && typeof bridged.reason === 'string'
-          ? bridged.reason
-          : bridged && typeof bridged.error === 'string'
-            ? bridged.error
-            : response && typeof response.reason === 'string'
-              ? response.reason
-              : 'TREE_MOVE_FAILED',
-      );
+      const reason = typeof bridged?.reason === 'string' && bridged.reason ? bridged.reason
+        : typeof bridged?.error === 'string' && bridged.error ? bridged.error
+          : typeof bridged?.code === 'string' && bridged.code ? bridged.code
+            : typeof response?.reason === 'string' && response.reason ? response.reason : 'TREE_MOVE_FAILED';
+      const code = /^E_[A-Z0-9_]{1,95}$/u.test(reason) ? reason : 'E_COMMAND_FAILED';
+      const userMessage = bridged?.committed === true
+        ? 'Структура изменена, но обновление редактора не завершено. Сохраните или скопируйте текущие правки перед закрытием.'
+        : 'Не удалось завершить перемещение. Проверьте текущее состояние проекта.';
+      return fail(code, EXTRA_COMMAND_IDS.TREE_MOVE_NODE, reason, { userMessage });
     },
   );
+
+  for (const [commandId, label, action] of [
+    [EXTRA_COMMAND_IDS.TREE_COPY_NODE, 'Create Scene Copy', 'copy'],
+    [EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION, 'Undo Last Tree Change', 'undo'],
+  ]) {
+    registry.registerCommand({ id: commandId, label, group: 'edit', surface: ['internal'], hotkey: '' },
+      async (input = {}) => {
+        const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+        const expectedTreeRevision = input.expectedTreeRevision;
+        const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
+        const name = typeof input.name === 'string' ? input.name.trim() : '';
+        const mutationId = typeof input.mutationId === 'string' ? input.mutationId.trim() : '';
+        if (!projectId || !Number.isSafeInteger(expectedTreeRevision) || expectedTreeRevision < 0
+          || (action === 'copy' ? !nodeId || !name : !mutationId)) {
+          return fail('E_COMMAND_FAILED', commandId, 'TREE_MUTATION_PAYLOAD_INVALID');
+        }
+        const payload = action === 'copy'
+          ? { projectId, nodeId, name, expectedTreeRevision }
+          : { projectId, expectedTreeRevision, mutationId };
+        let response;
+        try {
+          response = await invokeBridgeOnlyCommand(electronAPI, commandId, payload);
+        } catch {
+          return fail('E_COMMAND_FAILED', commandId, 'TREE_MUTATION_IPC_FAILED');
+        }
+        const result = unwrapBridgeResponseValue(response);
+        if (result && (result.ok === true || result.ok === 1)) {
+          return ok({ projectId, copied: action === 'copy', undone: action === 'undo',
+            nodeId: typeof result.nodeId === 'string' ? result.nodeId : '' });
+        }
+        const reason = typeof result?.reason === 'string' && result.reason ? result.reason
+          : typeof result?.error === 'string' && result.error ? result.error
+            : typeof result?.code === 'string' && result.code ? result.code
+              : typeof response?.reason === 'string' && response.reason ? response.reason : 'TREE_MUTATION_FAILED';
+        const code = /^E_[A-Z0-9_]{1,95}$/u.test(reason) ? reason : 'E_COMMAND_FAILED';
+        const userMessage = result?.committed === true
+          ? 'Структура изменена, но обновление редактора не завершено. Сохраните или скопируйте текущие правки перед закрытием.'
+          : action === 'undo'
+            ? 'Не удалось завершить отмену изменения структуры. Проверьте текущее состояние проекта.'
+            : 'Не удалось завершить создание копии сцены. Проверьте текущее состояние проекта.';
+        return fail(code, commandId, reason, { userMessage });
+      });
+  }
 
   registry.registerCommand(
     {

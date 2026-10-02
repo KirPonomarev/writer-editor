@@ -397,3 +397,37 @@ export function rebindProjectTreeIdentityBatch({ registry, moves } = {}) {
     error: null,
   };
 }
+
+// One immutable before-map: a sibling permutation must never apply A→B and
+// then reinterpret the newly rebound B as the original B. Copy forks IDs.
+export function planProjectTreeIdentityCohort({ projectId, operationId, registry, bindings, copy = false } = {}) {
+  const checked = normalizeProjectTreeIdentity(registry);
+  const bad = reason => ({ ok: false, value: null, error: makeError('E_TREE_COHORT_IDENTITY', reason) });
+  if (!checked.ok) return checked;
+  if (!normalizeString(projectId) || !normalizeString(operationId) || !Array.isArray(bindings)
+    || bindings.length > 512) return bad('BINDINGS_INVALID');
+  const moves = [], sources = new Set(), targets = new Set();
+  for (const binding of bindings) {
+    const from = normalizeTreeBindingKey(`file:${binding?.fromRelativePath}`);
+    const to = normalizeTreeBindingKey(`file:${binding?.toRelativePath}`);
+    if (!binding || checked.value.nodes[binding.nodeId]?.bindingKey !== from
+      || checked.value.nodes[binding.nodeId].present === false || sources.has(from) || targets.has(to)) return bad('BINDING_INVALID');
+    const fork = binding.copy ?? copy;
+    if (typeof fork !== 'boolean' || (fork && from === to)) return bad('COPY_DESTINATION_INVALID');
+    if (to.startsWith(`${from}/`)) return bad('CYCLE');
+    sources.add(from); targets.add(to); moves.push({ from, to, copy: fork });
+  }
+  if (moves.some((a, i) => moves.some((b, j) => i !== j &&
+    (a.from.startsWith(`${b.from}/`) || a.to.startsWith(`${b.to}/`))))) return bad('OVERLAPPING_BINDINGS');
+  const next = cloneJson(checked.value), identityMap = {};
+  for (const [nodeId, node] of Object.entries(checked.value.nodes)) {
+    const move = moves.find(m => node.bindingKey === m.from || node.bindingKey.startsWith(`${m.from}/`));
+    if (!move || node.present === false) continue;
+    const nextId = move.copy ? `${PROJECT_TREE_IDENTITY_PREFIX}${sha256Hex(`${projectId}\n${operationId}\n${nodeId}`).slice(0, 32)}` : nodeId;
+    if (move.copy && next.nodes[nextId]) return bad('COPY_ID_COLLISION');
+    next.nodes[nextId] = { ...cloneJson(node), bindingKey: move.to + node.bindingKey.slice(move.from.length), present: true };
+    identityMap[nodeId] = nextId;
+  }
+  const result = normalizeProjectTreeIdentity(next);
+  return { ...result, identityMap, changed: JSON.stringify(checked.value) !== JSON.stringify(result.value) };
+}

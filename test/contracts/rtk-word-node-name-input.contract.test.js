@@ -7,22 +7,24 @@ const source = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/edito
 const dialogSource = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/linkDialog.mjs'), 'utf8').replace(/export /g, '');
 function harness() {
   let respond;
-  const effects = [];
+  const effects = [], statuses = [];
   const node = { nodeId: 'n1', kind: 'scene', label: 'Original' };
   const context = vm.createContext({
     currentProjectId: 'p1', treeRoot: { children: [node] }, allowed: true,
+    treeMutationProjection: null,
     EXTRA_COMMAND_IDS: { TREE_CREATE_NODE: 'create', TREE_RENAME_NODE: 'rename' },
     getEffectiveDocumentId: (n) => n?.nodeId,
     findTreeNodeById: (root, id) => root.children.find((n) => n.nodeId === id),
     openNodeNameDialog: (options) => { context.options = options; return new Promise((r) => { respond = r; }); },
     dispatchUiCommand: async (id, payload) => { effects.push([id, JSON.parse(JSON.stringify(payload))]); return { ok: context.allowed }; },
     loadTree: async () => { effects.push(['load']); },
+    updateStatusText: (text, options) => { statuses.push({ text, visible: options?.visible === true }); },
   });
   vm.runInContext(dialogSource, context);
   // Keep the actual validator; substitute only the asynchronous input port.
   context.openNodeNameDialog = (options) => { context.options = options; return new Promise((r) => { respond = r; }); };
   vm.runInContext(source.slice(source.indexOf('function captureNodeNameTarget('), source.indexOf('async function handleDeleteNode(')), context);
-  return { context, node, effects, respond: (v) => respond(v), run: (rename) => rename ? context.handleRenameNode(node) : context.handleCreateNode(node, 'scene', 'Новая сцена') };
+  return { context, node, effects, statuses, respond: (v) => respond(v), run: (rename) => rename ? context.handleRenameNode(node) : context.handleCreateNode(node, 'scene', 'Новая сцена') };
 }
 for (const rename of [false, true]) {
   test(`node name ${rename ? 'rename' : 'create'} uses captured identity and canonical dispatch`, async () => {
@@ -38,6 +40,7 @@ for (const rename of [false, true]) {
       (h) => { h.context.treeRoot.children = []; },
     ]) {
       const h = harness(), pending = h.run(rename); mutate(h); h.respond('Valid'); await pending; assert.deepEqual(h.effects, []);
+      if (rename) assert.equal(h.statuses.at(-1)?.visible, true);
     }
   });
   test(`node name ${rename} cancels and validates before dispatch; rejected command cannot reload`, async () => {

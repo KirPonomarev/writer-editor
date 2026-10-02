@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -54,6 +55,8 @@ async function harness(raw, changes = {}) {
   const source = slice('function stableRtkReviewTransportJson(', 'function normalizeRtkSignedSha256(')
     + constants + slice('function base64UrlEncodeReviewDocxPacketText(', 'async function readFullManuscriptDocxReviewPacketExportSource(');
   vm.runInContext(slice('function readActiveDocxReviewReturnAuthorityStore(', '// ROUND-01 (V3): import an export-time'), context);
+  context.getProjectRootPath ||= () => '/synthetic';
+  installMainDocxRoundAuthority(context, { projectRoot: '/synthetic', projectId: 'project-test' });
   vm.runInContext(source, context);
   return { run: () => context.readDocxReviewPacketExportSource(), keys: () => keyImports, context, envelope };
 }
