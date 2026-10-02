@@ -32285,8 +32285,12 @@ async function publishTreeTopologyContext(bound) {
   const doc = await getProjectDocumentIdentityPayload(fence.filePath);
   guard();
   if (doc.documentId !== fence.documentId) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const manifest = JSON.parse(await fs.readFile(path.join(fence.projectRoot, 'project.craftsman.json'), 'utf8'));
+  guard();
+  const kind = manifest.treeIdentity?.nodes?.[doc.documentId]?.kind;
+  if (manifest.projectId !== fence.projectId || !['scene', 'chapter-file'].includes(kind)) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
   const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(fence.filePath),
-    kind: 'scene', metaEnabled: true, content: raw, documentId: doc.documentId }, fence.filePath);
+    kind, metaEnabled: true, content: raw, documentId: doc.documentId }, fence.filePath);
   Object.assign(payload, { treeContentReplacement: true, expectedDocumentId: fence.sourceNodeId,
     expectedContent: bound.activeBeforeContent, expectedGeneration: bound.editorSnapshotGeneration,
     expectedTreeContentPublicationId: fence.priorTreeContentPublicationId,

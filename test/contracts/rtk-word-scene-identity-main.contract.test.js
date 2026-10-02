@@ -58,6 +58,18 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
+    session: () => commentAuthoringSessionId,
+    captureQueued(label) {
+      const previous = queueDiskOperation; let captured = null;
+      queueDiskOperation = (operation, name) => {
+        if (name === label && !captured) {
+          captured = operation; queueDiskOperation = previous;
+          return Promise.resolve({success:false,code:'E_TEST_QUEUE_DEFERRED'});
+        }
+        return previous(operation, name);
+      };
+      return () => { if (!captured) throw Error('QUEUE_NOT_CAPTURED'); return previous(captured,label); };
+    },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
   try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
@@ -885,13 +897,13 @@ test('typing during detached Undo receipt read installs verified private recover
 async function topologyFixture(t, { refuse = false } = {}) {
   const f = await fixture(t); await installMixedScene(f);
   let working = read(f.alpha), documentId = f.a.nodeId, publicationId = '', uiGeneration = 9;
-  let cut = { boundaryRootIndex: 1, position: 22 }, serial = 0;
+  let cut = { boundaryRootIndex: 1, position: 22 }, serial = 0, decline = refuse;
   const publications = [];
   const ui = mountRenderer(f, () => working, () => uiGeneration, null,
     () => ({ projectId: f.query.projectId, documentId, treeContentPublicationId: publicationId, rootSplitBoundary: cut }),
     payload => {
       publications.push(payload);
-      if (payload.treeContentReplacement && !refuse) {
+      if (payload.treeContentReplacement && !decline) {
         assert.equal(payload.expectedContent, working);
         assert.equal(payload.expectedDocumentId, documentId);
         assert.equal(payload.expectedGeneration, uiGeneration);
@@ -917,6 +929,16 @@ async function topologyFixture(t, { refuse = false } = {}) {
     edit(fn) { working = fn(working); uiGeneration++; f.probe.state({ dirty: true, generation: uiGeneration }); },
     observation(value) { if ('documentId' in value) documentId = value.documentId; if ('epoch' in value) publicationId = value.epoch; },
     boundary(value) { cut = value; },
+    accept() { decline = false; },
+    deferNextSnapshot() {
+      const wc = ui.event.sender, send = wc.send;
+      let request = null;
+      wc.send = (channel, payload) => {
+        if (channel === 'editor:snapshot-request') { request = payload.requestId; wc.send = send; }
+        else send(channel, payload);
+      };
+      return snapshot => f.listeners.get('editor:snapshot-response')(ui.event, { requestId: request, snapshot });
+    },
   };
 }
 
@@ -970,4 +992,58 @@ test('topology refused same-ID replacement cannot authorize old full buffer even
   assert.equal((await f.probe.save()).ok, false);
   assert.deepEqual(f.capture(), before);
   assert.match(envelope.parseObservablePayload(r.working()).text, /Link destination/u);
+});
+
+test('topology old same-ID snapshot answered after new content ACK remains session-stale', async t => {
+  const r = await topologyFixture(t), { f } = r, original = r.working(), oldIdentity = r.identity();
+  const answer = r.deferNextSnapshot();
+  const old = f.probe.snapshot().then(value => ({ value }), error => ({ error }));
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split));
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const after = f.capture();
+  answer({ ...oldIdentity, content: original, generation: 9 });
+  assert.equal((await old).error?.code, 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED');
+  assert.deepEqual(f.capture(), after); assert.equal(f.probe.state().dirty, false);
+});
+
+test('topology refused old whole rich buffer forks through actual SaveAs using verified preimage; partitions stay exact', async t => {
+  const r = await topologyFixture(t, { refuse: true }), { f } = r;
+  const original = r.working(), split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, false); assert.equal(fs.existsSync(path.join(f.imported, '02_Right.txt')), true);
+  r.edit(raw => {
+    const parsed = envelope.parseObservablePayload(raw);
+    parsed.doc.content.push({ type: 'paragraph', content: [{ type: 'text', text: 'late original buffer 🧭' }] });
+    return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock, doc: parsed.doc });
+  });
+  const left = read(f.alpha), right = read(path.join(f.imported, '02_Right.txt'));
+  const target = path.join(f.imported, 'RecoveredOriginal.txt'); f.chooseSavePath(target); r.accept();
+  assert.equal(await f.probe.saveAs(), true);
+  assert.equal(read(f.alpha), left); assert.equal(read(path.join(f.imported, '02_Right.txt')), right);
+  const recovered = envelope.parseObservablePayload(read(target));
+  assert.match(recovered.text, /late original buffer 🧭/u);
+  assert.equal(bookmarks.readRegistry(recovered.doc).bookmarks.length, 7);
+  const originalIds = new Set(bookmarks.readRegistry(envelope.parseObservablePayload(original).doc).bookmarks.map(x => x.id));
+  assert.equal(bookmarks.readRegistry(recovered.doc).bookmarks.some(x => originalIds.has(x.id)), false);
+  const state = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), comments = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(state.notes.length, 2); assert.equal(comments.threads.length, 2);
+  assert.equal(f.probe.state().filePath, target); assert.equal(f.probe.state().dirty, false);
+  assert.equal((await f.probe.snapshot()).documentId, r.identity().documentId);
+});
+
+for (const kind of ['save', 'autosave']) test(`topology old ${kind} queue callback cannot write same-ID partitions after successful new ACK`, async t => {
+  const r = await topologyFixture(t), { f } = r, oldSession = f.probe.session();
+  const resume = f.probe.captureQueued(kind === 'save' ? 'save existing project transaction' : 'autosave project transaction');
+  if (kind === 'autosave') f.probe.state({ dirty: true });
+  const deferred = await f.probe[kind === 'save' ? 'save' : 'autosave']();
+  assert.notEqual(deferred, true); assert.equal(deferred.ok, false);
+  // A normal real Save settles the already durable unchanged buffer, without
+  // retiring the captured authoring session or fabricating a successful write.
+  assert.equal(await f.probe.save(), true); assert.equal(f.probe.session(), oldSession);
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split)); assert.notEqual(f.probe.session(), oldSession);
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const before = f.capture(), outcome = await resume();
+  assert.equal(outcome.success, false); assert.equal(outcome.code, 'E_SAVE_AUTHORING_TARGET_STALE');
+  assert.deepEqual(f.capture(), before); assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
 });

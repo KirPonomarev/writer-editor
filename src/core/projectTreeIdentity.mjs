@@ -433,16 +433,16 @@ export function planProjectTreeIdentityCohort({ projectId, operationId, registry
     const sourceId = operation === 'split' ? topology?.sourceNodeId : topology?.leftNodeId;
     const sourcePath = operation === 'split' ? topology?.sourceRelativePath : topology?.leftRelativePath;
     const source = checked.value.nodes[sourceId];
-    if (!source || source.present === false || source.kind !== 'scene' || source.bindingKey !== `file:${sourcePath}`
+    if (!source || source.present === false || !['scene', 'chapter-file'].includes(source.kind) || source.bindingKey !== `file:${sourcePath}`
       || moves.some(m => m.copy)) return bad('TOPOLOGY_SOURCE_INVALID');
     if (operation === 'split') {
       const target = normalizeTreeBindingKey(`file:${topology?.newRelativePath}`);
       const id = `${PROJECT_TREE_IDENTITY_PREFIX}${sha256Hex(`${projectId}\n${operationId}\nsplit:${sourceId}`).slice(0, 32)}`;
       if (!target || next.nodes[id] || target === next.nodes[sourceId].bindingKey) return bad('TOPOLOGY_DESTINATION_INVALID');
-      next.nodes[id] = { bindingKey: target, kind: 'scene', present: true }; createdNodeIds.push(id);
+      next.nodes[id] = { bindingKey: target, kind: source.kind, present: true }; createdNodeIds.push(id);
     } else {
       const right = checked.value.nodes[topology?.rightNodeId];
-      if (!right || right.present === false || right.kind !== 'scene' || topology.rightNodeId === sourceId
+      if (!right || right.present === false || !['scene', 'chapter-file'].includes(right.kind) || topology.rightNodeId === sourceId
         || right.bindingKey !== `file:${topology.rightRelativePath}`) return bad('TOPOLOGY_SOURCE_INVALID');
       next.nodes[topology.rightNodeId] = { ...cloneJson(right), present: false, bindingKey: `virtual:retired:${topology.rightNodeId}` };
       delete identityMap[topology.rightNodeId]; removedNodeIds.push(topology.rightNodeId);

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   createDeterministicTreeNodeId,
+  planProjectTreeIdentityCohort,
   normalizeProjectTreeIdentity,
   reconcileProjectTreeIdentity,
   rebindProjectTreeIdentity,
@@ -154,4 +155,16 @@ test('project tree identity batch rebind preserves IDs across prefix swaps', () 
   assert.equal(rebound.ok, true);
   assert.equal(rebound.value.nodes[firstId].bindingKey, 'file:roman/02_first.txt');
   assert.equal(rebound.value.nodes[secondId].bindingKey, 'file:roman/01_second.txt');
+});
+
+
+test('topology identity preserves left kind and retires merge-right before sibling permutation collision check', () => {
+  const registry={schemaVersion:1,nodes:{a:{kind:'chapter-file',present:true,bindingKey:'file:roman/01_A.txt'},b:{kind:'chapter-file',present:true,bindingKey:'file:roman/02_B.txt'},c:{kind:'scene',present:true,bindingKey:'file:roman/03_C.txt'}}};
+  const base={projectId:'p',operationId:'op',registry,bindings:[]};
+  const split=planProjectTreeIdentityCohort({...base,operation:'split',topology:{sourceNodeId:'a',sourceRelativePath:'roman/01_A.txt',newRelativePath:'roman/01a_New.txt',boundaryRootIndex:1}});
+  assert.equal(split.ok,true);assert.equal(split.createdNodeIds.length,1);assert.equal(split.value.nodes[split.createdNodeIds[0]].kind,'chapter-file');assert.deepEqual(split.value.nodes.a,registry.nodes.a);
+  const merged=planProjectTreeIdentityCohort({...base,operation:'merge',topology:{leftNodeId:'a',leftRelativePath:'roman/01_A.txt',rightNodeId:'b',rightRelativePath:'roman/02_B.txt'},bindings:[{nodeId:'c',fromRelativePath:'roman/03_C.txt',toRelativePath:'roman/02_B.txt'}]});
+  assert.equal(merged.ok,true);assert.equal(merged.value.nodes.b.present,false);assert.equal(merged.value.nodes.b.bindingKey,'virtual:retired:b');assert.equal(merged.value.nodes.c.bindingKey,'file:roman/02_B.txt');assert.deepEqual(merged.removedNodeIds,['b']);assert.equal(registry.nodes.b.present,true);
+  const forged=planProjectTreeIdentityCohort({...base,operation:'split',topology:{sourceNodeId:'a',sourceRelativePath:'roman/02_B.txt',newRelativePath:'roman/04_New.txt'}});
+  assert.equal(forged.ok,false);
 });

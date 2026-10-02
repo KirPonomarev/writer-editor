@@ -124,6 +124,9 @@ function prepareTopology(input, files, identities, target, inventory) {
     : 'leftNodeId,leftRelativePath,rightNodeId,rightRelativePath'), 'E_TREE_TOPOLOGY_INPUT');
   const paths = split ? [t.sourceRelativePath] : [t.leftRelativePath, t.rightRelativePath];
   paths.forEach(treeRelativePath);
+  need(input.bindings.every(b => b.copy !== true && path.posix.dirname(b.fromRelativePath) === path.posix.dirname(paths[0])
+    && path.posix.dirname(b.toRelativePath) === path.posix.dirname(paths[0])
+    && (split || b.fromRelativePath !== paths[1])), 'E_TREE_TOPOLOGY_BINDINGS');
   need(paths.every(p => files.get(p)?.role === 'scene' && path.posix.basename(p) !== '.index.txt'), 'E_TREE_TOPOLOGY_SOURCE');
   need(split || path.posix.dirname(paths[0]) === path.posix.dirname(paths[1]), 'E_TREE_TOPOLOGY_PARENT');
   if (!split) {
@@ -164,17 +167,21 @@ function prepareTopology(input, files, identities, target, inventory) {
     need(Number.isSafeInteger(cut) && cut > 0 && cut < left.doc.content.length
       && ['paragraph','heading'].includes(left.doc.content[cut]?.type), 'E_TREE_TOPOLOGY_BOUNDARY');
     outputs.push({ nodeId: left.nodeId, relativePath: target(left.relativePath), doc: { ...clone(left.doc), content: clone(left.doc.content.slice(0, cut)) }, parsed: left.parsed });
-    outputs.push({ nodeId: identities.createdNodeIds[0], relativePath: t.newRelativePath, doc: { ...clone(left.doc), content: clone(left.doc.content.slice(cut)) }, parsed: { meta: envelope.createDefaultDocumentMeta(), cards: [], hasMetaBlock: false } });
+    outputs.push({ nodeId: identities.createdNodeIds[0], relativePath: t.newRelativePath, doc: { ...clone(left.doc), content: clone(left.doc.content.slice(cut)) }, parsed: { meta: envelope.createDefaultDocumentMeta(), cards: [], hasMetaBlock: true } });
     part(left, 0, cut, outputs[0], 0, 0); part(left, cut, left.doc.content.length, outputs[1], 0, 0);
   } else {
     const right = sources[1];
-    const attrs = doc => { const a = { ...(doc.attrs || {}) }; delete a.wordUserBookmarks; return a; };
+    const attrs = doc => { const a = { ...(doc.attrs || {}) }; delete a.wordUserBookmarks;
+      if (a.wordPendingRevisions == null) delete a.wordPendingRevisions; return a; };
     need(same(attrs(left.doc), attrs(right.doc)), 'E_TREE_TOPOLOGY_DOCUMENT_ATTRS');
-    const defaults = envelope.createDefaultDocumentMeta();
-    const leftMeta = !same(left.parsed.meta, defaults), rightMeta = !same(right.parsed.meta, defaults);
-    need(!leftMeta || !rightMeta || same(left.parsed.meta, right.parsed.meta), 'E_TREE_TOPOLOGY_METADATA_CONFLICT');
+    const combineMeta = (a, b, defaults) => {
+      if (same(a, b) || same(b, defaults)) return clone(a);
+      if (same(a, defaults)) return clone(b);
+      need(a && b && typeof a === 'object' && typeof b === 'object', 'E_TREE_TOPOLOGY_METADATA_CONFLICT');
+      return Object.fromEntries(Object.keys(defaults).map(key => [key, combineMeta(a[key], b[key], defaults[key])]));
+    };
     const parsed = { ...left.parsed, hasMetaBlock: left.parsed.hasMetaBlock || right.parsed.hasMetaBlock,
-      meta: leftMeta ? left.parsed.meta : right.parsed.meta, cards: [...left.parsed.cards, ...right.parsed.cards] };
+      meta: combineMeta(left.parsed.meta, right.parsed.meta, envelope.createDefaultDocumentMeta()), cards: [...left.parsed.cards, ...right.parsed.cards] };
     outputs.push({ nodeId: left.nodeId, relativePath: target(left.relativePath),
       doc: { ...clone(left.doc), content: clone([...left.doc.content, ...right.doc.content]) }, parsed });
     part(left, 0, left.doc.content.length, outputs[0], 0, 0);
@@ -203,6 +210,7 @@ function prepareTopology(input, files, identities, target, inventory) {
       for (const child of node.content || []) walk(child);
     }; walk(output.doc);
     output.raw = envelope.composeObservablePayload({ ...output.parsed, metaEnabled: output.parsed.hasMetaBlock, doc: output.doc });
+    validateInventory([{ relativePath: output.relativePath, role: 'scene', contentBase64: b64(output.raw) }]);
     output.leafTexts = bookmarks.paragraphs(output.doc).map(bookmarks.textOf); output.visible = output.leafTexts.join('\n');
   }
   const publication = source => {

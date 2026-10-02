@@ -621,6 +621,14 @@
     {
       "commandId": "cmd.project.bookmarks.delete",
       "capabilityId": "cap.project.bookmarks.authoring"
+    },
+    {
+      "commandId": "cmd.project.tree.splitScene",
+      "capabilityId": "cap.project.tree.splitScene"
+    },
+    {
+      "commandId": "cmd.project.tree.mergeNextScene",
+      "capabilityId": "cap.project.tree.mergeNextScene"
     }
   ]
 }

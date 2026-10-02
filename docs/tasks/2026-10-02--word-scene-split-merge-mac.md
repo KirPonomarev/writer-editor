@@ -67,6 +67,8 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `scripts/ops-gate.mjs`
 - `test/contracts/ops-gate-core-purity-exception.contract.test.js`
 
+- `docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json`
+
 ## DENYLIST
 
 No new writer, registry, IPC channel, dependency, network, project schema or
@@ -199,3 +201,8 @@ case reproduced that failure. Existing purity contract now passes44of44, no
 skips/todos, including exact-source positives and other-source, filesystem,
 process and mixed-line negatives. Task shape gate passes. This proves admission
 classification only, not runtime or user acceptance.
+
+Command-binding amendment: clean owned WIP checkpoint4994c2e6049a993c131d5c34aec04044f6c0560a
+admits39paths including existing COMMAND_CAPABILITY_BINDING.json. Add only the
+two declared command-to-capability pairs. Preflight PASS; original delivery base
+remains a2a5ae6c. Checkpoint and focused tests are not native acceptance.
