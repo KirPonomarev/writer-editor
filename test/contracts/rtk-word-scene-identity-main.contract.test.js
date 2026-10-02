@@ -62,7 +62,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
-    fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
+    sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     refreshReview:refreshActiveReviewExactTextUiPlan,reviewState:()=>cloneJsonSafe(activeReviewSessionStore),
     captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1255,9 +1255,17 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,
     }
   }
   f.source=read(f.alpha); let observed=f.source;
+  if(schemaDefaults){
+    const live=envelope.parseObservablePayload(observed);
+    live.doc.attrs={wordUserBookmarks:null,wordPendingRevisions:null,...live.doc.attrs};
+    if(schemaDefaults==='unknown-attribute')live.doc.attrs.ownerData='unsaved';
+    if(schemaDefaults==='false-attribute')live.doc.attrs.ownerData=false;
+    const visit=node=>{if(node.type==='paragraph')node.attrs={textAlign:null,...node.attrs};for(const child of node.content||[])visit(child);};visit(live.doc);
+    observed=envelope.composeObservablePayload({...live,metaEnabled:true,doc:live.doc});
+  }
   const ui=mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
   f.probe.state({filePath:f.alpha,projectName:'Роман'});
-  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  const source=await (sceneScope?f.probe.sceneSource():f.probe.fullSource()),built=await f.probe.reviewBuild(source);
   assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
   await f.probe.activate(source.pendingAuthorityStore);
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
@@ -1542,4 +1550,64 @@ test('actual whole Main continued list survives authenticated text Apply and re-
  assert.equal(parsed.doc.content[2].attrs.start,4);
  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+});
+
+
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
+    ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
+    ...(variant==='outside-bookmark'?{mutateReturn:parts=>{
+      const xml=parts['word/document.xml'];
+      parts['word/document.xml']=xml.replace(/Alpha CLEAN_EDIT(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,
+        'Alpha$1<w:r><w:t xml:space="preserve"> CLEAN_EDIT</w:t></w:r>');
+      assert.notEqual(parts['word/document.xml'],xml,'append must be outside transport bookmark');
+    }}:{})});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  const before=f.capture(),sibling=read(f.beta);
+  await f.probe.refreshReview();
+  assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');
+  assert.deepEqual(f.capture(),before);
+  const result=await f.probe.fullApply({requestId:'scene-clean-apply'});
+  assert.equal(result.applied,true,JSON.stringify(result));
+  assert.equal(read(f.beta),sibling);
+  assert.match(envelope.parseObservablePayload(read(f.alpha)).text,/Alpha CLEAN_EDIT/u);
+  if(variant==='continued-list'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[2].attrs.start,4);assert.equal(doc.content[2].attrs.wordListId,'chain');}
+  const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  const after=f.capture();
+  assert.notEqual((await f.probe.fullApply({requestId:'scene-clean-replay'})).applied,true);
+  assert.deepEqual(f.capture(),after);
+});
+
+for(const variant of ['unknown-attribute','false-attribute'])test(`single-scene clean return preserves non-default root state guard: ${variant}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'scene-root-state-apply'});
+  assert.equal(result.reason,'RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE',JSON.stringify(result));
+  assert.deepEqual(f.capture(),before);
+});
+
+for(const variant of ['dirty','scene','session','annotation-state']) test(`single-scene clean return revalidates ${variant} before Apply`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  if(variant==='dirty')f.probe.state({dirty:true,generation:1});
+  if(variant==='scene')fs.writeFileSync(f.alpha,'Owner changed this scene');
+  if(variant==='session')f.probe.changeSession();
+  if(variant==='annotation-state')fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),'{}');
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'scene-stale-apply'});
+  assert.notEqual(result.applied,true,JSON.stringify(result));
+  assert.deepEqual(f.capture(),before);
+});
+for(const variant of ['topology','format','tracked','stale-baseline']) test(`single-scene clean return rejects ${variant} without writing`,async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,
+    ...(variant==='stale-baseline'?{localCase:'overlap'}:{}),
+    mutateReturn:parts=>{
+      if(variant==='topology')parts['word/document.xml']=parts['word/document.xml'].replace('</w:body>','<w:p><w:r><w:t>Injected paragraph</w:t></w:r></w:p></w:body>');
+      if(variant==='format')parts['word/document.xml']=parts['word/document.xml'].replace('<w:t xml:space="preserve">Alpha CLEAN_EDIT','<w:rPr><w:b/></w:rPr><w:t xml:space="preserve">Alpha CLEAN_EDIT');
+      if(variant==='tracked')parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha CLEAN_EDIT</w:t></w:r><w:ins w:id="901" w:author="Review" w:date="2026-10-03T00:00:00Z"><w:r><w:t>Tracked</w:t></w:r></w:ins><w:r><w:t>');
+    }});
+  assert.ok(activated.ok===false || activated.nonOverlapTrackedReplacementProductPath?.prepared!==true,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  assert.notEqual((await f.probe.fullApply({requestId:'scene-rejected'})).applied,true);
+  assert.deepEqual(f.capture(),beforeActivation);
 });
