@@ -32,6 +32,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js`
 - `test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js`
 - `test/contracts/rtk-word-concurrent-return.contract.test.js`
+- `test/contracts/rtk-word-review-default-typography.contract.test.js`
 - `docs/tasks/2026-10-02--word-concurrent-return-mac.md`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -144,3 +145,9 @@ The frozen actual Word return now passes native PACKAGED Apply and re-export on
 Stable gates and delivery are still required before closure. The maintained
 RTK catalog adds the new Core contract; the same-contour scope amendment passed
 preflight on clean checkpoint 4001183e, retaining ba54c4cf as delivery base.
+
+CI found that the inherited old-reader compatibility test referenced an
+unretained intermediate commit after squash. The exact same reader blob
+834a3d732bdede08f2c3e7254a04d37c0e1ff05d exists at retained main ancestor
+a2a5ae6c. Only that test reference changes; no assertion or reader bytes change.
+The same-contour amendment passed preflight on clean checkpoint 7b37e88a.

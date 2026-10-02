@@ -1348,7 +1348,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "77fa86d95dab6929ab461bf441e5e2188b760250698edd4957a4c00e27bfcb6c"
+        "sha256": "d4f9498e41aecf8237e7c5717005768e551cc77b78ad7dacc0770e5b7f199551"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2016,7 +2016,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
-        "sha256": "7b95185ed328a460330de49a8435ade41392a38c7705f0e5cd2c94c33d2f531e"
+        "sha256": "8629c60936513526563f94d2d757e6d093a63bbfd7a8e8ed15bb1ddd8ed1c3b1"
       }
     ],
     "followupRepair": {
