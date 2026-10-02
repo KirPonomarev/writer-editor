@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -87,6 +88,7 @@ async function harness(t) {
     makeNotesCommandError: (id, code) => ({ ok: false, code }), runNotesMutationCommand: () => { throw Error('unexpected ordinary route'); },
     cloneJsonSafe: value => JSON.parse(JSON.stringify(value)),
   };
+  installMainDocxRoundAuthority(sandbox, { projectRoot: root, projectId, references: [context.reviewTransportAuthorityCapsule], publishAllocated: true, t });
   vm.createContext(sandbox); vm.runInContext(helper + '\n' + handler + '\n' + bus + '\nglobalThis.prepare = prepareAuthenticatedNoteDelta; globalThis.update = handleNotesUpdateCommand;', sandbox);
   sandbox.MENU_COMMAND_HANDLERS = { 'cmd.project.notes.update': payload => sandbox.update(payload) };
   const actualDispatch = sandbox.dispatchMenuCommand;

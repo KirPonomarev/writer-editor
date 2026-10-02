@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test'), assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
@@ -78,6 +79,7 @@ function exportHarness() {
   });
   vm.runInContext(main.slice(main.indexOf('function readActiveDocxReviewReturnAuthorityStore('),
     main.indexOf('// ROUND-01 (V3): import an export-time')), c);
+  installMainDocxRoundAuthority(c, { projectRoot: '/owned/Active project', projectId: 'active-project' });
   vm.runInContext(main.slice(main.indexOf('async function readFullManuscriptDocxReviewPacketExportSource('),
     main.indexOf('async function buildDocxReviewPacketBuffer(')), c);
   h.mutate = kind => {

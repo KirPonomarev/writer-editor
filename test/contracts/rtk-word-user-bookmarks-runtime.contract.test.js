@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test'), assert = require('node:assert/strict'), vm = require('node:vm');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path'), crypto = require('node:crypto');
 const core = require('../../src/core/word-user-bookmarks-v1.cjs');
@@ -176,7 +177,7 @@ function returnHarness(h) {
   const changeId = 'docx-user-bookmarks-private-test', projectRoot = path.dirname(h.file);
   const input = { projectRoot, scenePath: h.file, reviewItems: [{ changeId, replacementText: 'ABCDEF' }] };
   const store = { input: clone(input), intakeGeneration: 1, sessionToken: { sessionId: 'review', sourcePacketHash: 'packet' },
-    keyAuthority: { scope: 'full-manuscript', keyRef: 'private-key-ref',
+    keyAuthority: { scope: 'full-manuscript', keyRef: 'private-key-ref', roundId: 'private-round',
       exportMap: { scenes: [{ sceneId: 'a.txt', rawSha256: 'sha256:' + hash(before.raw) }] }, scenePathBySceneId: { 'a.txt': h.file } },
     userBookmarksCandidate: { sceneId: 'a.txt', beforeDoc, plan: core.planReturn({ beforeDoc, candidateDoc }),
       raw: before.raw, parsed: before.parsed, changeId } };
@@ -191,6 +192,7 @@ function returnHarness(h) {
     publishReviewSceneWithProjectTransaction: () => { throw Error('ORDINARY_WRITER_MUST_NOT_RUN'); },
     normalizeReviewExactTextApplyString: value => typeof value === 'string' ? value.trim() : '',
   });
+  installMainDocxRoundAuthority(h.c, { projectRoot, references: [store.keyAuthority] });
   vm.runInContext(main.slice(main.indexOf('function cleanLinkLabelStoreMatches('), main.indexOf('function mapMarkdownErrorCode(')), h.c);
   return { input, store, candidateDoc, apply: value => h.c.runReviewExactTextBatchSafeWriteFromMainState(() => { throw Error('FORGED_ORDINARY_WRITER'); }, value || input) };
 }
@@ -1430,6 +1432,7 @@ test(`bookmark text return does not activate an empty note lane; ${mode}`,async 
   let notesReads=0,prepared=0,current=true;
   Object.assign(c,{require:require('node:module').createRequire(path.join(__dirname,'../../src/main.js')),activeStage10ApplicationBootstrap:{},
     getProjectNotesContext:async()=>{notesReads++;throw Error('NOTE_LANE_CONTINUES');}});
+  installMainDocxRoundAuthority(c, { projectRoot: root, references: [capsule], publishAllocated: true });
   loadNamedFunctions(main,['prepareAuthenticatedNoteDelta'],c);
   let actualBridge=bridge;
   if(mode==='baseline-note')capsule.documentNotes.sourceBindings.push({noteId:'test-binding'});

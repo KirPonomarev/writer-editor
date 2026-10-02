@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
@@ -229,6 +230,7 @@ test('Actual authenticated pending return preserves exact empty-block positions 
     computeHash: hash, createRtkReviewTransportCryptoPort: () => ({}), docxReviewReturnIntakeProductBudgets: () => ({}),
     readCommentAuthoringContext: async () => ({ projectId: 'rich', projectRoot: root, sceneId, raw, parsed: { doc } }),
   });
+  installMainDocxRoundAuthority(sandbox, { projectRoot: root, projectId: 'rich', references: [capsule] });
   vm.runInContext(source, sandbox);
   let mappedText = exactText, prepared;
   const adapter = { ...bridge, extractDocxReviewTransportWordDocumentProjection: () => ({ ok: true, documentXml: '' }),

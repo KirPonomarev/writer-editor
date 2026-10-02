@@ -54,6 +54,21 @@ Existing transaction journal and governed tree commands. PRODUCT_UI declaration 
 - `docs/OPS/CAPABILITIES_MATRIX.json`
 - `src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json`
 
+- `test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js`
+- `test/contracts/rtk-word-clean-link-label.contract.test.js`
+- `test/contracts/rtk-word-combined-link-return.contract.test.js`
+- `test/contracts/rtk-word-full-manuscript-current-project.contract.test.js`
+- `test/contracts/rtk-word-media-return-runtime.contract.test.js`
+- `test/contracts/rtk-word-nested-tables.contract.test.js`
+- `test/contracts/rtk-word-round-key-durability.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `test/contracts/rtk-word-comment-return-delta.contract.test.js`
+- `test/contracts/rtk-word-note-return-runtime.contract.test.js`
+- `test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js`
+- `test/contracts/rtk-word-pending-return-runtime.contract.test.js`
+- `test/contracts/rtk-word-pending-rich-blocks.contract.test.js`
+- `test/helpers/main-docx-round-authority.js`
+
 ## DENYLIST
 
 No owner checkout writes, new dependency/network, new writer/store, global scene-ID migration, HTML/CSS redesign, numbering or story grammar changes. No weakening tests or dropping unsupported metadata to make a copy succeed.
@@ -101,3 +116,19 @@ CODEX_OUTPUT_POLICY: one text block, KEY: VALUE; files as basenames. Task/base/c
 ## FAIL_PROTOCOL
 
 Revert bounded command/planner integration while preserving readable journal/recovery support for created v7 artifacts. Never blindly downgrade pending journals or reactivate expired Word rounds; complete recovery first. No private documents modified outside dedicated native fixtures.
+
+## CURRENT_EVIDENCE_AND_AMENDMENT
+
+Checkpoint4582cb22b88f5a50ca03b3c76885b016dd0944d8 preserves the initial owned implementation before expanding existing Word test harness closure. Clean amended preflight passed for49 paths, adding13 actual affected contract harnesses and one test-only actual-Main authority helper. This is the same P2d delivery, not acceptance or a new contour. Original delivery base remains35cee726.
+
+Core focused57 passed with zero skip/todo: inherited assets verified before tree write, retained through ordinary save, crash recovery and explicit repair; malformed UTF8 scene bytes refuse instead of replacement. Main focused19 and existing3 passed before native; UI focused49 passed. These counts do not substitute for final exact-candidate proof.
+
+SOURCE runtime01 copied3447 files with equal digest8ab713ad6ef9f164a98440f713731a17049c43571c381a054f51903250790130. Native rename twice accepted a valid visible name and closed without changing canonical path or showing an error. This is FAIL, not acceptance. No third identical attempt. Next hypothesis: actual dialog-to-command seam or snapshot dispatch closure; inspect real error publication and runtime bridge before rebuilding. Separate actual-Main late-edit injection after durable commit found stale guard can leave active path on removed source; fix must preserve dirty authoring and rebind durable committed identity.
+
+Native SOURCE and PACKAGED execute sequentially against the same synthetic absolute project root. Preserve each run output then restore exact initial fixture before the other process, because canonical commit receipts bind absolute paths. This does not prove cross-root portability. Initial native fixture has7 bookmarks,2 internal links,1 footnote and1 comment, authored via baseline native commands. Independent canonical inspector checks ownership, fresh copied IDs and original bookmark identity.
+
+Retained limitations: serialized cohort packet is bounded to32MiB including before/after; replay after commit refuses by revision CAS rather than promising idempotent success. Old synchronous classifier has no runtime callers and remains legacy-only; verified runtime reader accepts v7. Non-roman rename retains the existing privately resolved route. Command/capability docs synchronize prior missing media and bookmark bindings without runtime authority expansion.
+
+Original-plan boundary: ENGINEERING_PLAN P2d explicitly includes scene split/merge and three-way local/returned concurrency. This rename/reorder/move/copy package alone does not close P2d. Scene split/merge and any unproven independent-concurrent apply remain in the whole-plan remainder after this delivery. Expiring old review rounds during structural mutations is a safe bounded fence, not proof of automatic concurrent merge.
+
+SOURCE02 diagnostic logging identified the native refusal: Main omitted existing backups root from captured inventory, so the planner treated that directory as absent and exact before-image CAS correctly refused. The original error was then masked by invoking single-scene recovery without a pending journal. Fix inventory capture and preserve the original prejournal failure; do not weaken directory CAS. The existing status text is hidden by literal-stage baseline, making failures invisible. Bounded UI correction exposes only the existing status text on explicit command failure or tree refusal; no dev status siblings, new surface or layout is introduced.

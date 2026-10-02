@@ -152,6 +152,69 @@ function sceneUiHarness() {
   return c;
 }
 
+test('actual name dialog submit reaches create, rename and copy handlers with Cyrillic input', async () => {
+  for (const action of ['create', 'rename', 'copy']) {
+    for (const submit of ['button', 'enter']) {
+      const c = sceneUiHarness(), nodes = [];
+      class Element {
+        constructor(tag) { this.tag = tag; this.style = {}; this.events = {}; this.isConnected = true; nodes.push(this); }
+        setAttribute() {}
+        removeAttribute() {}
+        append() {}
+        addEventListener(type, handler) { this.events[type] = handler; }
+        focus() { c.document.activeElement = this; }
+        select() {}
+        showModal() { this.open = true; }
+        close() { this.open = false; this.events.close?.(); }
+        remove() { this.isConnected = false; }
+      }
+      c.document = { createElement: tag => new Element(tag), body: new Element('body'), activeElement: new Element('button') };
+      c.EXTRA_COMMAND_IDS.TREE_CREATE_NODE = 'create'; c.EXTRA_COMMAND_IDS.TREE_RENAME_NODE = 'rename';
+      vm.runInContext(read('src/renderer/linkDialog.mjs').replace(/export /gu, ''), c);
+      vm.runInContext(executableFunctions(['handleCreateNode', 'handleRenameNode']), c);
+      const pending = action === 'create' ? c.handleCreateNode(c.treeRoot, 'scene', 'Новая сцена')
+        : action === 'rename' ? c.handleRenameNode(c.treeRoot) : c.handleCopyNode(c.treeRoot);
+      const input = nodes.find(n => n.tag === 'input');
+      input.value = 'Альфа';
+      if (submit === 'enter') input.events.keydown({ key: 'Enter', isComposing: false, preventDefault() {} });
+      else nodes.find(n => n.tag === 'button' && n.className?.includes('--primary')).events.click();
+      await pending;
+      assert.equal(c.calls.length, 1, `${action} ${submit}`);
+      assert.equal(c.calls[0].id, action);
+      assert.equal(c.calls[0].payload.name, 'Альфа');
+      assert.equal(c.reloads, 1);
+      assert.equal(c.statuses.length, 0);
+    }
+  }
+});
+
+test('command error reveals only existing product status and survives background save until next command', async () => {
+  const status = { textContent: 'Готово', style: {} };
+  const siblings = [{ style: {} }, { style: {} }];
+  const parent = { style: { visibility: 'hidden' }, children: [status, ...siblings] };
+  status.parentElement = parent;
+  const c = { statusElement: status, heldCommandStatusMessage: false, succeeded: false,
+    runCommand() {}, COMMAND_BUS_ROUTE: 'command.bus', withEditorModeCommandPayload: p => p,
+    mapCommandErrorToUi: () => ({ userMessage: 'Переименование не выполнено', severity: 'WARN' }),
+    runCommandThroughBus: async () => c.succeeded ? { ok: true } : { ok: false, error: {} } };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['updateStatusText', 'dispatchUiCommand']), c);
+  await c.dispatchUiCommand('rename');
+  assert.equal(status.style.visibility, 'visible');
+  assert.equal(status.textContent, 'Переименование не выполнено');
+  c.updateStatusText('Автосохранено');
+  assert.equal(status.textContent, 'Переименование не выполнено');
+  assert.equal(status.style.visibility, 'visible');
+  assert.equal(parent.style.visibility, 'hidden');
+  assert.deepEqual(siblings.map(n => n.style), [{}, {}]);
+  c.succeeded = true;
+  await c.dispatchUiCommand('rename');
+  assert.equal(status.style.visibility, '');
+  assert.equal(c.heldCommandStatusMessage, false);
+  c.updateStatusText('Готово');
+  assert.equal(status.textContent, 'Готово');
+});
+
 test('executed scene copy captures current project, identity and revision; cancellation and delayed changes write nothing', async () => {
   for (const change of ['cancel', 'project', 'tree', 'revision', 'capability', 'pending']) {
     const c = sceneUiHarness();
@@ -300,6 +363,7 @@ test('tree context publication preserves authoring and history and rejects stale
     composeDocumentContent: () => 'exact current authoring bytes',
     getActiveDocumentTitleStorageKey: id => id,
     localStorage: { setItem: (key, value) => calls.push(['title', key, value]) },
+    syncVisibleAuthoringSurfacesSurface: () => calls.push(['surface-title', c.currentDocumentTitle]),
     updateInspectorSnapshot: () => calls.push('inspector'), refreshMetadataInspector: () => calls.push('metadata'),
     refreshManuscriptNoteReferences: () => calls.push('notes'), refreshVisibleCommentProjection: () => calls.push('comments'),
     refreshSceneHistory: () => calls.push('history'),
@@ -321,10 +385,44 @@ test('tree context publication preserves authoring and history and rejects stale
   }
   assert.equal(c.applyTreeContextPublication(publication), true);
   assert.equal(c.currentDocumentTitle, 'Renamed');
-  assert.deepEqual(calls, [['title', 'project', 'Renamed'], 'inspector', 'metadata', 'notes', 'comments', 'history']);
+  assert.deepEqual(calls, [['title', 'project', 'Renamed'], ['surface-title', 'Renamed'], 'inspector', 'metadata', 'notes', 'comments', 'history']);
   assert.equal(c.localDirty, true);
   assert.equal(c.localEditGeneration, 9);
   assert.equal(c.lastAckedGeneration, 8);
+});
+
+test('committed copy Undo detaches only exact late working buffer and preserves text history and dirty generation', () => {
+  const calls = [];
+  const c = { currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
+    currentDocumentTitle: 'Copy', metaEnabled: true, localEditGeneration: 12, localDirty: true,
+    lastAckedGeneration: 11, currentRightTab: 'history', composeDocumentContent: () => 'late unsaved text',
+    syncVisibleAuthoringSurfacesSurface: () => calls.push(['surface-title', c.currentDocumentTitle]),
+    updateInspectorSnapshot: () => calls.push('inspector'), refreshMetadataInspector: () => calls.push('metadata'),
+    refreshManuscriptNoteReferences: () => calls.push('notes'), refreshVisibleCommentProjection: () => calls.push('comments'),
+    refreshSceneHistory: () => calls.push('history'), updateStatusText: () => calls.push('status'),
+    setTiptapDocumentSnapshot: () => assert.fail('must retain PM document and history'),
+    setPlainText: () => assert.fail('must retain live text') };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['applyTreeDetachedPublication']), c);
+  const payload = { treeDetached: true, projectId: 'project', expectedDocumentId: 'copy', documentId: '',
+    expectedGeneration: 12, expectedContent: 'late unsaved text', title: 'Несохранённая восстановленная копия' };
+  for (const override of [{ projectId: 'other' }, { expectedDocumentId: 'source' }, { documentId: 'source' },
+    { expectedGeneration: 11 }, { expectedGeneration: '12' }, { expectedContent: 'old text' },
+    { treePublication: true }, { treeReplacement: true }, { title: '' }]) {
+    assert.equal(c.applyTreeDetachedPublication({ ...payload, ...override }), false);
+    assert.equal(c.currentDocumentId, 'copy');
+    assert.equal(c.currentDocumentTitle, 'Copy');
+    assert.equal(calls.length, 0);
+  }
+  assert.equal(c.applyTreeDetachedPublication(payload), true);
+  assert.equal(c.currentDocumentId, '');
+  assert.equal(c.currentDocumentTitle, payload.title);
+  assert.equal(c.currentDocumentKind, 'scene');
+  assert.equal(c.metaEnabled, true);
+  assert.equal(c.localDirty, true);
+  assert.equal(c.localEditGeneration, 12);
+  assert.equal(c.lastAckedGeneration, 11);
+  assert.deepEqual(calls, [['surface-title', payload.title], 'inspector', 'metadata', 'notes', 'comments', 'history', 'status']);
 });
 
 

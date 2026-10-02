@@ -257,6 +257,7 @@ if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState 
   notifyEditorPasteFocusState();
 }
 const statusElement = document.getElementById('status');
+let heldCommandStatusMessage = false;
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');
 const perfHintElement = document.querySelector('[data-perf-hint]');
@@ -7826,12 +7827,13 @@ function withEditorModeCommandPayload(payload = {}) {
 }
 
 async function dispatchUiCommand(commandId, payload = {}) {
+  updateStatusText('', { clear: true });
   const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
   if (!result.ok) {
     const mapped = mapCommandErrorToUi(result.error);
-    updateStatusText(mapped.userMessage);
+    updateStatusText(mapped.userMessage, { visible: true });
     if (mapped.severity === 'ERROR') {
       const opSuffix = mapped.op ? ` op=${mapped.op}` : '';
       console.error(`UI_COMMAND_ERROR code=${mapped.code}${opSuffix}`);
@@ -10168,11 +10170,11 @@ async function handleCreateNode(node, kind, promptLabel) {
 
 async function handleRenameNode(node) {
   const target = captureNodeNameTarget(node);
-  if (!target) { updateStatusText('Выберите элемент в актуальном дереве проекта'); return; }
+  if (!target) { updateStatusText('Выберите элемент в актуальном дереве проекта', { visible: true }); return; }
   const name = await openNodeNameDialog({ title: 'Новое имя', initialValue: target.label || '', rename: true });
   if (name === null) return;
   if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) {
-    updateStatusText('Переименование недоступно: состояние проекта изменилось');
+    updateStatusText('Переименование недоступно: состояние проекта изменилось', { visible: true });
     return;
   }
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {
@@ -10194,12 +10196,12 @@ function captureTreeMutationProjection() {
 
 async function handleCopyNode(node) {
   if (treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
-    updateStatusText('Создание копии сейчас недоступно');
+    updateStatusText('Создание копии сейчас недоступно', { visible: true });
     return;
   }
   const target = captureNodeNameTarget(node);
   if (!target || !['scene', 'chapter-file'].includes(target.kind) || !captureTreeMutationProjection()) {
-    updateStatusText('Выберите сцену в актуальном дереве проекта');
+    updateStatusText('Выберите сцену в актуальном дереве проекта', { visible: true });
     return;
   }
   const name = await openNodeNameDialog({ title: 'Название копии',
@@ -10207,7 +10209,7 @@ async function handleCopyNode(node) {
   if (name === null) return;
   if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target) || treeMutationPending
     || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
-    updateStatusText('Создание копии недоступно: состояние проекта изменилось');
+    updateStatusText('Создание копии недоступно: состояние проекта изменилось', { visible: true });
     return;
   }
   treeMutationPending = true;
@@ -10230,7 +10232,7 @@ async function handleUndoTreeMutation(expectedProjection = treeMutationProjectio
     || projection.lastMutation?.id !== expectedProjection.lastMutation?.id
     || treeMutationPending || !projection.lastMutation?.canUndo
     || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION)) {
-    updateStatusText('Отмена изменения структуры сейчас недоступна');
+    updateStatusText('Отмена изменения структуры сейчас недоступна', { visible: true });
     return;
   }
   treeMutationPending = true;
@@ -11504,9 +11506,19 @@ document.addEventListener('scroll', () => {
   clearContextMenu();
 }, true);
 
-function updateStatusText(text) {
-  if (statusElement && text) {
-    statusElement.textContent = text;
+function updateStatusText(text, { visible = false, clear = false } = {}) {
+  if (!statusElement) return;
+  if (clear) {
+    heldCommandStatusMessage = false;
+    statusElement.style.visibility = '';
+  }
+  if (!text || (heldCommandStatusMessage && !visible)) return;
+  statusElement.textContent = text;
+  if (visible) {
+    heldCommandStatusMessage = true;
+    // This one product message overrides the inherited baseline visibility;
+    // developer save/warning/performance siblings remain hidden.
+    statusElement.style.visibility = 'visible';
   }
 }
 
@@ -23548,7 +23560,7 @@ window.addEventListener('resize', () => {
 });
 
 function isTreeReplacementCurrent(payload) {
-  return Boolean(payload?.treeReplacement === true && payload.treePublication !== true
+  return Boolean(payload?.treeReplacement === true && payload.treePublication !== true && payload.treeDetached !== true
     && Number.isSafeInteger(payload.expectedGeneration) && payload.expectedGeneration >= 0
     && payload.expectedGeneration === localEditGeneration
     && currentProjectId && payload.projectId === currentProjectId
@@ -23560,10 +23572,33 @@ function isTreeReplacementCurrent(payload) {
     && composeDocumentContent() === payload.expectedContent);
 }
 
+function applyTreeDetachedPublication(payload) {
+  if (payload?.treeDetached !== true || payload.treePublication === true || payload.treeReplacement === true
+    || !Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
+    || payload.expectedGeneration !== localEditGeneration
+    || !currentProjectId || payload.projectId !== currentProjectId
+    || !currentDocumentId || payload.expectedDocumentId !== currentDocumentId
+    || payload.documentId !== '' || typeof payload.title !== 'string' || !payload.title.trim()
+    || typeof payload.expectedContent !== 'string'
+    || composeDocumentContent() !== payload.expectedContent) return false;
+  // A committed Undo removed this copy before a late edit arrived. Main has
+  // detached its save target; preserve the live buffer for the existing Save As.
+  currentDocumentId = '';
+  currentDocumentTitle = payload.title.trim();
+  syncVisibleAuthoringSurfacesSurface();
+  updateInspectorSnapshot();
+  refreshMetadataInspector();
+  void refreshManuscriptNoteReferences();
+  void refreshVisibleCommentProjection();
+  if (currentRightTab === 'history') refreshSceneHistory('');
+  updateStatusText('Правки сохранены в редакторе. Сохраните восстановленную копию через «Сохранить»', { visible: true });
+  return true;
+}
+
 // Main has already committed a path-only tree cohort. This publication changes
 // only the current shell context; the editor document and its history stay live.
 function applyTreeContextPublication(payload) {
-  if (!payload || payload.treePublication !== true || payload.treeReplacement === true
+  if (!payload || payload.treePublication !== true || payload.treeReplacement === true || payload.treeDetached === true
     || !Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
     || payload.expectedGeneration !== localEditGeneration
     || !currentProjectId || payload.projectId !== currentProjectId
@@ -23576,6 +23611,7 @@ function applyTreeContextPublication(payload) {
   try {
     localStorage.setItem(getActiveDocumentTitleStorageKey(currentProjectId), currentDocumentTitle);
   } catch {}
+  syncVisibleAuthoringSurfacesSurface();
   updateInspectorSnapshot();
   refreshMetadataInspector();
   void refreshManuscriptNoteReferences();
@@ -23586,12 +23622,16 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.treeDetached === true) {
+      if (!applyTreeDetachedPublication(payload)) updateStatusText('Восстановленная копия не привязана: состояние изменилось', { visible: true });
+      return;
+    }
     if (payload?.treeReplacement === true && !isTreeReplacementCurrent(payload)) {
-      updateStatusText('Сцена не переключена: состояние изменилось');
+      updateStatusText('Сцена не переключена: состояние изменилось', { visible: true });
       return;
     }
     if (payload?.treePublication === true) {
-      if (!applyTreeContextPublication(payload)) updateStatusText('Название сцены не обновлено: состояние изменилось');
+      if (!applyTreeContextPublication(payload)) updateStatusText('Название сцены не обновлено: состояние изменилось', { visible: true });
       return;
     }
     if (payload?.localImageAuthoringPublication === true) {

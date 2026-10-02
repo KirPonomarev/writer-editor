@@ -777,8 +777,16 @@ async function publishSceneExact({ scenePath, expectedText, nextText, revision, 
   await durableSaveTransaction({ filePath: scenePath, content: nextText, revision, fsAdapter });
 }
 
-async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, revalidate, fsAdapter = fsp }) {
+async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, treeCohort, revalidate, fsAdapter = fsp }) {
   const treeSource = await readOptionalText(journalPathFor(manifestPath), fsAdapter);
+  // A tree admission may fail before staging its journal. Its caller still
+  // discharges recovery under the lease; no scene path exists for this mode.
+  if (treeSource === null && treeCohort !== undefined) {
+    treeNeed(treeCohort?.mode === 'PROJECT_TREE_COHORT_V1' && typeof revalidate === 'function'
+      && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
+    await revalidate();
+    return Object.freeze({ recovered: false, outcome: 'NO_JOURNAL', mode: 'tree' });
+  }
   if (treeSource !== null) {
     let head; try { head = JSON.parse(treeSource); } catch { /* Existing parser reports malformed journal. */ }
     if (head?.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && head.mode !== 'SCENE_RESOURCE_CONTINUATION_V1') return recoverTreeCohort({ manifestPath, publishManifest, revalidate, fsAdapter, source: treeSource });
@@ -966,7 +974,7 @@ async function commitProjectTransaction({
   const before = { scene: expectedSceneContent, manifest: expectedManifestContent };
   const after = { scene: sceneContent, manifest: manifestContent };
   const retainedCommit = await readCommitRecordState({ scenePath, manifestPath, observedScene, observedManifest, verifyManifestContinuation, fsAdapter });
-  const retainedResources = retainedCommit.status === 'VALID' && retainedCommit.record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION
+  const retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
     && retainedCommit.record.resources?.length ? normalizeRetainedResources(retainedCommit.record.resources, scenePath, manifestPath) : [];
   await verifyRetainedResources(retainedResources, scenePath, manifestPath, fsAdapter);
   for (const entry of resources) {

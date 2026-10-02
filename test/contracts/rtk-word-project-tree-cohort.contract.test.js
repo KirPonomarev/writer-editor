@@ -128,6 +128,9 @@ test('tree move refuses altered inherited resource bytes before journal or scene
   const plan=m.planProjectTreeCohort(f.capture());
   await assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}}),{code:'E_PROJECT_TRANSACTION_RESOURCE_READBACK'});
   assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);assert.equal(text(scenePath),f.raw);
+  const recovered=await tx.recoverProjectTransaction({manifestPath:f.manifestPath,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.deepEqual(recovered,{recovered:false,outcome:'NO_JOURNAL',mode:'tree'});
+  assert.equal(text(scenePath),f.raw);
 });
 
 for(const stage of ['manifest','scene','notes','filesComplete','commitMarker','cleanup'])test(`tree journal recovers injected ${stage} failure with exact cohort`,async t=>{
@@ -205,4 +208,28 @@ for(const phase of ['beforeCommit','afterCommit','repair'])test(`ordinary save a
   assert.equal((await tx.readVerifiedProjectTransaction({scenePath,manifestPath})).resources[0].digest,sha('asset'));
   fs.writeFileSync(asset,'other');
   await assert.rejects(tx.readVerifiedProjectTransaction({scenePath,manifestPath}),{code:'E_PROJECT_TRANSACTION_RESOURCE_READBACK'});
+});
+
+test('exact tree Undo restores legacy receipt then ordinary save retains resource authority; explicit media replacement owns only new bytes',async t=>{
+  const f=fixture(t),m=await modelPromise,scenePath=path.join(f.root,'roman/01 Alpha.txt'),manifestPath=f.manifestPath,asset=path.join(f.root,'assets/a.bin');
+  fs.mkdirSync(path.dirname(asset));fs.writeFileSync(asset,'asset');
+  fs.writeFileSync(tx.commitPathFor(scenePath),JSON.stringify({schemaVersion:'yalken.project-transaction.commit.v2',transactionId:sha('old'),revision:0,scenePath,manifestPath,
+    sceneDigest:sha(f.raw),manifestDigest:sha(text(manifestPath)),resources:[{path:asset,digest:sha('asset'),bytes:5}]}));
+  const beforeReceipt=text(tx.commitPathFor(scenePath));
+  const result=await tx.commitProjectTransaction({manifestPath,revision:1,treeCohort:m.planProjectTreeCohort(f.capture()),publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-resource',expectedTreeRevision:1,lastMutation:result.transactionId,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(manifestPath),currentInventory:inventory(f.root)});
+  await tx.commitProjectTransaction({manifestPath,revision:2,treeCohort:undo,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.equal(text(tx.commitPathFor(scenePath)),beforeReceipt);
+  await tx.commitProjectTransaction({scenePath,manifestPath,revision:3,sceneContent:f.raw+'!',expectedSceneContent:f.raw,manifestContent:text(manifestPath),expectedManifestContent:text(manifestPath),publishManifest:f.publishManifest});
+  assert.equal((await tx.readVerifiedProjectTransaction({scenePath,manifestPath})).resources[0].digest,sha('asset'));
+  fs.writeFileSync(asset,'other');await assert.rejects(tx.readVerifiedProjectTransaction({scenePath,manifestPath}),{code:'E_PROJECT_TRANSACTION_RESOURCE_READBACK'});
+  fs.writeFileSync(asset,'asset');
+  const media=require('../../src/io/documentMedia.js'),bytes=require('../fixtures/document-jpeg-fixtures.cjs').rgb,attrs=media.createImageAttrs(bytes);
+  const after=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:f.raw+'!'},{type:'image',attrs}]}]}});
+  await tx.commitProjectTransaction({scenePath,manifestPath,revision:4,sceneContent:after,expectedSceneContent:f.raw+'!',manifestContent:text(manifestPath),expectedManifestContent:text(manifestPath),
+    mediaUpdateResources:[{path:path.join(f.root,attrs.assetPath),content:bytes}],publishManifest:f.publishManifest});
+  const current=await tx.readVerifiedProjectTransaction({scenePath,manifestPath});assert.equal(current.schemaVersion,'yalken.project-transaction.commit.v6');
+  assert.deepEqual(current.resources.map(x=>x.path),[path.join(f.root,attrs.assetPath)]);
+  assert.equal(text(asset),'asset'); // Replacement neither republishes nor deletes inherited immutable bytes.
 });

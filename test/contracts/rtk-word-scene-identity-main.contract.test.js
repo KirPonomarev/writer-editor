@@ -139,6 +139,52 @@ test('actual command bridge copy forks local IDs and source stays exact; Undo re
   assert.equal(undo.ok, true, JSON.stringify(undo)); assert.deepEqual(f.capture(), before);
 });
 
+test('late typing after durable commit rebinds active sibling before refusing publication and preserves dirty state', async t => {
+  const f = await fixture(t);
+  f.probe.state({ filePath: f.beta });
+  const transaction = require('../../src/core/project-transaction-v1.cjs');
+  const unlink = fsp.unlink;
+  let injected = false;
+  fsp.unlink = async function (target, ...args) {
+    if (target === transaction.journalPathFor(f.manifestPath)
+      && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
+      injected = true;
+      f.probe.state({ generation: 1, dirty: true });
+    }
+    return unlink.call(this, target, ...args);
+  };
+  try {
+    const result = await f.move({ expectedTreeRevision: 0 });
+    assert.equal(injected, true);
+    assert.equal(result.ok, false); assert.equal(result.committed, true, JSON.stringify(result));
+    assert.equal(result.treeRevision, 1);
+    assert.deepEqual(f.probe.state(), { filePath: path.join(f.imported, '01_Beta.txt'), dirty: true, generation: 1 });
+    assert.equal(fs.existsSync(f.beta), false);
+    assert.equal(read(path.join(f.imported, '01_Beta.txt')), 'Beta');
+    assert.equal(fs.existsSync(transaction.journalPathFor(f.manifestPath)), false);
+  } finally { fsp.unlink = unlink; }
+});
+
+test('actual existing scene backup root and history follow their owner through cohort and exact Undo', async t => {
+  const f = await fixture(t, true);
+  const backup = await require('../../src/utils/backupManager').createBackup(f.alpha, f.source, { basePath: f.root });
+  assert.equal(backup.success, true);
+  const beforeDir = path.join(f.root, 'backups', sha(f.alpha));
+  const beforeFiles = Object.fromEntries(fs.readdirSync(beforeDir).map(name => [name, read(path.join(beforeDir, name))]));
+  const result = await f.move({ expectedTreeRevision: 0 });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const movedFile = path.join(f.imported, '02_Alpha.txt');
+  const afterDir = path.join(f.root, 'backups', sha(movedFile));
+  assert.equal(fs.existsSync(beforeDir), false);
+  assert.equal(JSON.parse(read(path.join(afterDir, 'meta.json'))).originalPath, movedFile);
+  assert.equal(fs.readdirSync(afterDir).filter(x => x !== 'meta.json').length, 1);
+  const query = await f.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: query.treeRevision, mutationId: query.lastMutation.id });
+  assert.equal(undo.ok, true, JSON.stringify(undo));
+  assert.deepEqual(Object.fromEntries(fs.readdirSync(beforeDir).map(name => [name, read(path.join(beforeDir, name))])), beforeFiles);
+  assert.equal(fs.existsSync(afterDir), false);
+});
+
 for (const failure of ['dirty', 'pending', 'future', 'stale-revision', 'forged-path', 'unsafe-symlink']) {
   test(`actual Main ${failure} refuses without changing canonical cohort`, async t => {
     const f = await fixture(t);

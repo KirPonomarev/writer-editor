@@ -1,4 +1,5 @@
 'use strict';
+const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test'), assert = require('node:assert/strict'), vm = require('node:vm');
 const fs = require('node:fs'), path = require('node:path'), os = require('node:os'), crypto = require('node:crypto');
 const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
@@ -78,6 +79,7 @@ async function harness(t, { clean = false, savedDefaults = false } = {}) {
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes) } },
     requestId: 'return-test', isCurrent: () => h.current !== false, docxBytes: bytes, revisionBridge: b,
     onPrepared: value => { h.prepared = value; } };
+  installMainDocxRoundAuthority(c, { projectRoot: root, projectId: 'p', references: [capsule], publishAllocated: true, t });
   h.prepare = () => c.prepareAuthenticatedPendingReturn(h.input);
   return h;
 }

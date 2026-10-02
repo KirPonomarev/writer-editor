@@ -31773,6 +31773,8 @@ async function captureTreeCohortInventory(projectRoot) {
   await visit('roman');
   // Generic backup identity is the hash of the original absolute scene path.
   // Other project backups remain untouched and never become cohort authority.
+  const backupsRoot = await readTreeCohortPath(projectRoot, 'backups', true, true);
+  if (backupsRoot) add('backups', 'directory', backupsRoot);
   for (const scenePath of scenePaths) {
     const dir = `backups/${computeHash(scenePath)}`;
     const meta = await readTreeCohortPath(projectRoot, `${dir}/meta.json`, false, true);
@@ -31847,16 +31849,18 @@ async function captureTreeMutationContext(commandId, payload) {
   const raw = await readProjectManifestRawAtPath(manifestPath);
   if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || raw.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
   const generation = lastSignaledEditGeneration;
+  const identityCurrent = () => projectRoot === getProjectRootPath()
+    && projectName === (currentProjectName || DEFAULT_PROJECT_NAME)
+    && owner === activeStage10ApplicationBootstrap && subject === currentLifecycleSubjectId()
+    && session === commentAuthoringSessionId && filePath === currentFilePath;
   const guard = () => {
     userBookmarkCapability(commandId);
-    if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
-      || owner !== activeStage10ApplicationBootstrap || subject !== currentLifecycleSubjectId()
-      || session !== commentAuthoringSessionId || filePath !== currentFilePath || generation !== lastSignaledEditGeneration
+    if (!identityCurrent() || generation !== lastSignaledEditGeneration
       || isDirty || autoSaveInProgress || activePendingRecording) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
   };
   guard();
   return { projectRoot, projectName, manifestPath, manifest: raw.manifest, beforeManifestText: raw.raw,
-    filePath, generation, guard };
+    filePath, generation, guard, identityCurrent };
 }
 
 function treeCohortMappedPath(projectRoot, original, bindings) {
@@ -31868,6 +31872,26 @@ function treeCohortMappedPath(projectRoot, original, bindings) {
 }
 
 async function publishTreeCohortActiveContext(bound) {
+  if (bound.detached === true) {
+    const guard = () => {
+      if (getProjectRootPath() !== bound.projectRoot || currentFilePath !== null
+        || activeStage10ApplicationBootstrap !== bound.owner || commentAuthoringSessionId !== bound.session)
+        throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+    };
+    guard();
+    const snapshot = await requestEditorSnapshot();
+    guard();
+    const state = await readVerifiedProjectTreeMutation({ manifestPath: path.join(bound.projectRoot, 'project.craftsman.json'), projectId: bound.projectId });
+    guard();
+    if (state.treeRevision !== bound.treeRevision || snapshot.generation !== lastSignaledEditGeneration
+      || typeof snapshot.content !== 'string') throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('editor:set-text', {
+      treeDetached: true, projectId: bound.projectId, expectedDocumentId: bound.removedCopy.nodeId,
+      expectedGeneration: snapshot.generation, expectedContent: snapshot.content,
+      documentId: '', title: 'Несохранённая восстановленная копия',
+    });
+    throw treeCohortError('E_TREE_UNSAVED_COPY_SAVE_AS_REQUIRED');
+  }
   const guard = () => {
     userBookmarkCapability(bound.commandId);
     if (getProjectRootPath() !== bound.projectRoot || currentFilePath !== bound.filePath
@@ -31889,8 +31913,7 @@ async function publishTreeCohortActiveContext(bound) {
   const doc = await getProjectDocumentIdentityPayload(bound.filePath);
   const removedCopy = bound.pathBindings.find(x => x.removedCopy
     && path.join(bound.projectRoot, x.fromRelativePath) === bound.priorFilePath);
-  const originalBinding = bound.pathBindings.find(x => x.fromRelativePath === path.relative(bound.projectRoot, bound.priorFilePath).split(path.sep).join('/'));
-  const kind = originalBinding?.newNodeId && manifest.treeIdentity?.nodes?.[originalBinding.newNodeId]?.kind
+  const kind = manifest.treeIdentity?.nodes?.[doc.documentId]?.kind
     || getDocumentContextFromPath(bound.filePath).kind;
   const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(bound.filePath), kind,
     documentId: doc.documentId, content: raw, expectedContent: removedCopy ? bound.activeBeforeContent : raw,
@@ -31965,26 +31988,39 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         let result;
         try { result = await commitProjectTransaction(transactionRequest); }
         catch (error) {
+          logDevError('project tree cohort commit', error);
           // Recovery is an independent existing lease-bound duty, even if the
           // UI generation/project has changed. Never replay stale UI intent.
-          try { await recoverProjectTransaction({ ...transactionRequest, revalidate: () => lease.assertOwned() }); }
+          try {
+            const pending = await readPendingProjectTransactionBinding({ manifestPath: context.manifestPath });
+            if (pending.pending) await recoverProjectTransaction({ ...transactionRequest, revalidate: () => lease.assertOwned() });
+          }
           catch (recoveryError) { throw treeCohortError(recoveryError.code || 'E_TREE_RECOVERY_REQUIRED'); }
           throw treeCohortError(typeof options.afterFsMoveBeforeIdentity === 'function' ? 'E_TREE_MOVE_FILESYSTEM_FAILED'
             : error.code || 'E_TREE_COHORT_FAILED');
         }
         if (result.success !== true) throw treeCohortError(result.code || 'E_TREE_MOVE_FILESYSTEM_FAILED');
-        context.guard();
+        // Commit is already durable. Reconcile its path ownership even if
+        // typing arrives during the final journal removal; never erase that
+        // buffer or let its next save recreate the vanished original path.
+        committedOutcome = { treeRevision: result.treeRevision };
+        if (!context.identityCurrent()) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
+        const workingChanged = context.generation !== lastSignaledEditGeneration
+          || isDirty || autoSaveInProgress || activePendingRecording;
         const nextFile = treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
+        const removedCopy = (result.pathBindings || []).find(x => x.removedCopy
+          && path.join(context.projectRoot, x.fromRelativePath) === context.filePath);
         // Rebind all affected active siblings, not only the dragged subtree.
         if (nextFile !== context.filePath) {
-          currentFilePath = nextFile;
+          currentFilePath = workingChanged && removedCopy ? null : nextFile;
           userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
           backupHashes.delete(context.filePath);
           publication = { projectRoot: context.projectRoot, filePath: nextFile, generation: context.generation,
             owner: activeStage10ApplicationBootstrap, session: commentAuthoringSessionId, commandId,
             projectId: payload.projectId, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent };
-
+          if (workingChanged && removedCopy) Object.assign(publication, { detached: true, removedCopy, treeRevision: result.treeRevision });
         }
+        if (workingChanged && !publication?.detached) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
         return { ok: true, changed: true, moved: true, nodeId: result.pathBindings?.find(x => x.copy && x.nodeId === payload.nodeId)?.newNodeId || payload.nodeId,
           targetParentNodeId: request.targetParentNodeId, targetIndex: request.targetIndex,
           treeRevision: result.treeRevision, lastMutation: result.lastMutation,
