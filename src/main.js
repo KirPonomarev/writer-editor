@@ -2389,6 +2389,13 @@ async function handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurfa
     );
   }
 
+  if (commandInput.sceneCommands?.every(command => command.kind === 'authenticated-clean-text')) {
+    const changes = commandInput.sceneCommands.flatMap(command => command.input.writerInput.reviewItems);
+    return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
+      requestId: normalizedPayload.value.requestId, changeIds: changes.map(change => change.changeId),
+    }, options);
+  }
+
   const confirmedInput = {
     ...commandInput,
     requestId: rtkNonOverlapTrackedReplacementDetailString(normalizedPayload.value.requestId)
@@ -2465,7 +2472,8 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
     );
   }
 
-  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')
+  if (String(selected.value.textChange.changeId).startsWith('docx-clean-block-text-')
+    || String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')
     || (String(selected.value.textChange.changeId).startsWith('docx-user-bookmarks-') || String(selected.value.textChange.changeId).startsWith('docx-media-return-'))) {
     return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
       requestId:normalizedPayload.value.requestId, changeIds:[selected.value.textChange.changeId],
@@ -2725,6 +2733,13 @@ function attachReviewExactTextApplyBatchResult(safeWriteResult) {
       .filter((change) => (change.status === 'applied' || change.status === 'replay') && change.changeId)
       .map((change) => change.changeId)
     : [];
+  summary.totals = {
+    requested: summary.changes.length,
+    applied: batchAppliedChangeIds.length,
+    blocked: summary.changes.filter(change => change.status === 'blocked').length,
+    failed: summary.changes.filter(change => change.status === 'failed').length,
+    skipped: summary.changes.filter(change => change.status === 'skipped').length,
+  };
   nextReviewSurface.exactTextAppliedChangeIds = [...new Set([
     ...existingAppliedChangeIds,
     ...batchAppliedChangeIds,
@@ -2856,7 +2871,8 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
 
   let applyContext = null;
   try {
-    const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
+    const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-block-text-')
+      || String(change.changeId).startsWith('docx-clean-link-label-')
       || (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')));
     applyContext = cleanRequested
       ? buildCleanLinkLabelApplyInput(selectedBatch.value.textChanges)
@@ -3528,6 +3544,31 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
   const sessionToken = readReviewExactTextUiPlanSessionToken(activeSession);
   const revisionSession = readReviewExactTextRevisionSession(activeSession);
   const textChanges = readReviewExactTextChangeCollections(revisionSession).textChanges;
+  if (textChanges.some(change => String(change.changeId).startsWith('docx-clean-block-text-'))) {
+    // Completed operations describe the write that already happened. Replanning
+    // against their old source would turn a successful Apply into a stale error.
+    // This only preserves the projection; repeat dispatch still revalidates the
+    // private input and cannot use these displayed IDs as write authority.
+    const completed = activeSession.lastExactTextApplyBatchResult;
+    const appliedIds = new Set((completed?.changes || [])
+      .filter(change => change.status === 'applied' || change.status === 'replay')
+      .map(change => change.changeId));
+    if (completed?.applied === true && textChanges.every(change => appliedIds.has(change.changeId))) {
+      return { ok: true, refreshed: false, status: 'applied', reviewSurface: readActiveReviewSessionReviewSurface() };
+    }
+    const store=activeRtkCleanLinkLabelApplyStore,subject=currentLifecycleSubjectId(),generation=lastSignaledEditGeneration,
+      authoringSession=commentAuthoringSessionId;
+    const gate=store?.cleanTextUiPreview ? await revalidateCleanLinkLabelApplyInput(store.input) : {ok:false};
+    let preview;
+    try {
+      userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+      if(!gate.ok||activePendingRecording||store!==activeRtkCleanLinkLabelApplyStore||!cleanLinkLabelStoreMatches(store)
+        ||subject!==currentLifecycleSubjectId()||generation!==lastSignaledEditGeneration||authoringSession!==commentAuthoringSessionId
+        ||fsSync.readFileSync(store.input.scenePath,'utf8')!==store.input.projectSnapshot.scenes[0].text)throw Error('RTK_CLEAN_TEXT_SOURCE_STALE');
+      preview=cloneJsonSafe(store.cleanTextUiPreview);
+    }catch(error){preview=buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(error.code||error.message)]);}
+    return {ok:true,refreshed:true,status:preview.status,reviewSurface:attachReviewExactTextUiPlanPreview(preview,sessionToken)};
+  }
   if (textChanges.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')))) {
     const store = activeRtkCleanLinkLabelApplyStore, subject = currentLifecycleSubjectId();
     const generation = lastSignaledEditGeneration, authoringSession = commentAuthoringSessionId;
@@ -5212,7 +5253,7 @@ async function buildDocxReviewPacketBuffer(source) {
   const revisionBridge = source?.exportCapsule?.fullManuscript === true || source?.sceneNoteBinding
     ? await loadRevisionBridgeModule()
     : null;
-  if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)) {
+  if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.length) {
     const privateMap = revisionBridge.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap, documentBuffer);
     source.localAuthorityCapsule.exportMap = privateMap;
     if (source.exportMap) source.exportMap = privateMap;
@@ -5333,7 +5374,7 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
 }
 
 async function handleReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  return runDocxReviewPacketExport(payload, {
+  const result = await runDocxReviewPacketExport(payload, {
     commandId: REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError,
@@ -5366,10 +5407,24 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
       ? options.activateReviewDocxExportAuthority
       : activateReviewDocxExportAuthority,
   });
+  if (result?.ok === false) {
+    const status = typeof options.updateStatus === 'function' ? options.updateStatus : updateStatus;
+    if (result.error?.code === 'E_REVIEW_DOCX_EXPORT_CANCELED') status('Экспорт отменён.');
+    else {
+      const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
+        ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
+      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+        .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+      status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
+      logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
+    }
+  }
+  return result;
 }
 
 async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  return runDocxReviewPacketExport(payload, {
+  const result = await runDocxReviewPacketExport(payload, {
     commandId: REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError: makeTypedFullManuscriptReviewDocxExportError,
@@ -5403,6 +5458,20 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
       ? options.activateReviewDocxExportAuthority
       : activateReviewDocxExportAuthority,
   });
+  if (result?.ok === false) {
+    const status = typeof options.updateStatus === 'function' ? options.updateStatus : updateStatus;
+    if (result.error?.code === 'E_REVIEW_DOCX_EXPORT_CANCELED') status('Экспорт отменён.');
+    else {
+      const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
+        ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
+      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+        .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+      status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
+      logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
+    }
+  }
+  return result;
 }
 // DOCX_REVIEW_PACKET_EXPORT_COMMAND_SURFACE_END
 
@@ -6039,6 +6108,11 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     if (parsed.issue) throw Error('PENDING_RETURN_BASELINE_INVALID');
     return !!pendingTextRevisions.readLedger(parsed.doc);
   });
+  // Retained ledgers and explicitly bound pending returns never downgrade.
+  // Older plain-text or multi-scene packets keep their authenticated exact
+  // lane when no canonical pending state requires this single-scene writer.
+  const hasSingleRichBaseline = capsule?.exportMap?.scenes?.length === 1 && baselines.length === 1;
+  if (!baselinePending && capsule?.pendingReturnOnly !== true && !hasSingleRichBaseline) return null;
   const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
   const returnedPending = !!preview?.contentPreview?.pendingRevisionDocument;
   if (!baselinePending && !returnedPending) return null;
@@ -7569,19 +7643,33 @@ async function buildDocxReviewPreviewSessionDefaultRtkApplyInput({
       && typeof change.replacementText === 'string'
       && change.replacementText.length > 0
     ));
-    const operations = exactTextChanges.map((change) => ({
+    const privateCleanChanges = Array.isArray(authorityCapsule.cleanTextChanges) ? authorityCapsule.cleanTextChanges : [];
+    const operations = exactTextChanges.map((change) => {
+      const clean = privateCleanChanges.find(item => item.changeId === change.changeId);
+      if (clean && (change.targetScope?.id !== clean.sceneId || change.match?.quote !== clean.expectedText
+        || change.replacementText !== clean.replacementText)) throw Error('RTK_CLEAN_TEXT_PREVIEW_BINDING_MISMATCH');
+      return ({
       id: docxReviewPreviewSessionDetailString(change.changeId),
-      family: 'tracked_text_edit',
+      family: clean ? 'clean_text_edit' : 'tracked_text_edit',
       sceneId: docxReviewPreviewSessionDetailString(change.targetScope?.id),
       anchor: {
         sceneId: docxReviewPreviewSessionDetailString(change.targetScope?.id),
         selectedText: typeof change.match?.quote === 'string' ? change.match.quote : '',
+        ...(clean ? { authenticatedBlock: {
+          schemaVersion:'yalken.rtk.authenticated-scene-block.v1',sceneId:clean.sceneId,blockId:clean.blockId,
+          documentParagraphIndex:clean.documentParagraphIndex,sceneParagraphIndex:clean.sceneParagraphIndex,
+          baselineRawSha256:clean.baselineRawSha256,blockTextSha256:clean.blockTextSha256,
+          blockLocalStart:0,blockLocalEnd:clean.expectedText.length,
+        } } : {}),
       },
       semanticIntent: {
         kind: 'replace',
         replacementText: typeof change.replacementText === 'string' ? change.replacementText : '',
+        ...(clean?.wordLanguageChange ? { wordLanguageChange: cloneJsonSafe(clean.wordLanguageChange) } : {}),
       },
-    }));
+    }); });
+    if (privateCleanChanges.length && (operations.length !== privateCleanChanges.length
+      || operations.some(operation => operation.family !== 'clean_text_edit'))) throw Error('RTK_CLEAN_TEXT_PREVIEW_BINDING_MISMATCH');
     const returnIntakeProof = {
       status: docxReviewPreviewSessionDetailString(context.reviewTransportReturnIntake?.status),
       authenticated: context.reviewTransportReturnIntake?.authenticated === true,
@@ -7592,7 +7680,7 @@ async function buildDocxReviewPreviewSessionDefaultRtkApplyInput({
       parserProfileDigest: docxReviewPreviewSessionDetailString(analysis.parserProfileDigest),
       analysisDigest: docxReviewPreviewSessionDetailString(analysis.analysisDigest),
       reviewIrDigest: cryptoPort.sha256Json(analysis.reviewIr || {}),
-      operationSource: 'parsed-review-ir',
+      operationSource: privateCleanChanges.length ? 'authenticated-clean-block-text' : 'parsed-review-ir',
       operationIds: operations.map((operation) => operation.id),
     };
     returnIntakeProof.mainIntakeAuthorityDigest = buildFullManuscriptReturnIntakeProofBindingDigest({
@@ -8045,6 +8133,53 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
         reason: docxReviewPreviewSessionDetailString(plan.code || built.reason)
           || 'RTK_FULL_MANUSCRIPT_EXACT_AUTHORITY_BLOCKED',
       };
+    }
+    if (plan.sceneCommands.every(command => command.kind === 'authenticated-clean-text')) {
+      if (plan.sceneCommands.length !== 1 || plan.sceneCommands[0].input.writerInput.scenePath !== currentFilePath) {
+        return {prepared:false,status:'blocked',reason:'RTK_CLEAN_TEXT_OPEN_SINGLE_SCENE_REQUIRED'};
+      }
+      const command = plan.sceneCommands[0], token = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
+      const capsule = readDocxReviewPreviewSessionRtkAuthorityCapsule(context);
+      const ranges = plan.exactAuthorityBySceneId[command.sceneId].ranges;
+      const publicItems = command.input.writerInput.reviewItems.map(item => ({changeId:item.changeId,
+        targetScope:cloneJsonSafe(item.targetScope),match:{kind:'exact',quote:item.match.quote},replacementText:item.replacementText}));
+      activeRtkCleanLinkLabelApplyStore = {input:cloneJsonSafe(command.input.writerInput),keyAuthority:cloneJsonSafe(capsule),
+        cleanTextCandidateDoc:capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
+        cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,
+        cleanTextAuthoringBinding:{subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,
+          generation:lastSignaledEditGeneration},
+        openScenePath:currentFilePath,
+        sessionToken:token,intakeGeneration:activeDocxReviewIntakeGeneration};
+      activeRtkNonOverlapTrackedReplacementApplyStore={schemaVersion:'yalken.rtk.word.a03.c05.main-owned-apply-store.v2',
+        sessionToken:cloneJsonSafe(token),keyAuthority:{keyRef:capsule.keyRef,roundId:capsule.roundId,keyIdHex:capsule.keyIdHex,
+          roundIdHex:capsule.roundIdHex,projectRoot:capsule.projectRoot},fullManuscriptInput:cloneJsonSafe(plan),
+        fullManuscriptChangeIds:publicItems.map(item=>item.changeId),fullManuscriptSceneIds:[command.sceneId],
+        inputsByChangeId:{},inputsByKey:{},writerAuthorityExposedToRenderer:false,fullManuscriptApplyEnvelopeExposedToRenderer:false};
+      const preview = {ok:true,status:'ready',code:'RTK_CLEAN_BLOCK_TEXT_PREVIEW_READY',plan:{
+        commandId:REVIEW_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID,fullManuscript:true,sessionId:token.sessionId,
+        sceneCount:1,sceneIds:[command.sceneId],canApply:false,noDisk:true,applyOps:publicItems.map(item=>{
+          const range=ranges.find(range=>range.operationId===item.changeId);
+          return {opId:item.changeId,changeId:item.changeId,kind:'replaceExactText',sceneId:command.sceneId,
+            from:range.from,to:range.to,expectedText:item.match.quote,replacementText:item.replacementText};
+        })}};
+      // Attach uses the existing full surface; clean items have no tracked
+      // runtime preview and therefore receive their private readonly plan here.
+      const next=cloneJsonSafe(activeReviewSessionStore);
+      activeRtkCleanLinkLabelApplyStore.cleanTextUiPreview=cloneJsonSafe(preview);
+      next.reviewSurface.exactTextPlanPreview=preview;
+      next.revisionSession.reviewGraph.textChanges=publicItems;
+      next.reviewSurface.revisionSession=cloneJsonSafe(next.revisionSession);
+      next.reviewSurface.fullManuscriptExactTextReturnPreview={...(next.reviewSurface.fullManuscriptExactTextReturnPreview||{}),
+        schemaVersion:'yalken.rtk.word.a03.c05.full-manuscript-product-path-preview.v1',
+        status:'preview-ready',productRuntimeWired:true,automaticApplyCertified:false,writerCalled:false,rendererAuthority:false,
+        applyCommandId:REVIEW_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID,
+        sceneIds:[command.sceneId],sceneCount:1,changeIds:publicItems.map(item=>item.changeId),source:'authenticated-clean-block-text'};
+      activeReviewSessionStore=next;
+      currentReviewSurfacePayload=cloneJsonSafe(next.reviewSurface);
+      currentReviewSurfacePayloadSource='session';currentReviewSurfacePayloadContentHash='';
+      return {prepared:true,status:'preview-ready',reason:'RTK_CLEAN_BLOCK_TEXT_PREVIEW_READY',writerCalled:false,
+        rendererAuthority:false,authorityAgreement:true,sceneCount:1,applyCommandId:REVIEW_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID,
+        reviewSurface:readActiveReviewSessionReviewSurface()};
     }
     const previews = plan.sceneCommands.map((sceneCommand) => (
       revisionBridge.buildNonOverlapTrackedReplacementRuntimePreview(sceneCommand.input, {
@@ -9243,6 +9378,13 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
     documentMetadata: {
       status: docxReviewPreviewSessionDetailString(documentMetadataBinding.status),
       authority: docxReviewPreviewSessionDetailString(documentMetadataBinding.authority),
+      coreMetadataPreserved: documentMetadataBinding.coreMetadataPreserved === true,
+      ...(documentMetadataBinding.coreCreatedAtChange?.policy === 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'
+        ? { coreCreatedAtChange: {
+          expected: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreCreatedAtChange.expected),
+          returned: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreCreatedAtChange.returned),
+          policy: 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY',
+        } } : {}),
       protectedDigest: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedDigest),
       protectedProperties: {
         schemaVersion: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.schemaVersion),
@@ -9270,6 +9412,12 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
         revision: docxReviewPreviewSessionDetailString(documentMetadataBinding.volatileCoreProperties?.revision),
       },
       lossLedger: {
+        ...(documentMetadataBinding.lossLedger?.coreCreatedAtChange?.policy === 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'
+          ? { coreCreatedAtChange: {
+            expected: docxReviewPreviewSessionDetailString(documentMetadataBinding.lossLedger.coreCreatedAtChange.expected),
+            returned: docxReviewPreviewSessionDetailString(documentMetadataBinding.lossLedger.coreCreatedAtChange.returned),
+            policy: 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY',
+          } } : {}),
         missingProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingProtectedProperties)
           ? documentMetadataBinding.lossLedger.missingProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
           : [],
@@ -9530,15 +9678,21 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
   if (options.mediaReturnFields) Object.assign(sceneAuthorityFields, options.mediaReturnFields);
   if (localScope === 'full-manuscript' && !options.mediaReturnFields) {
     const bridge = await loadRevisionBridgeModule();
-    if (localExportMap.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)
+    const cleanTextApplicable = !['textRevisions','moveRevisions','propertyRevisions'].some(name => parserResult.reviewIr?.[name]?.length)
+      && localExportMap.scenes?.some(scene => scene.blocks?.some(block => {
+        const returned = parserResult.reviewIr?.formattingParagraphs?.[block.documentParagraphIndex];
+        return returned && block.formatIr?.runs?.map(run => run.text).join('') !== returned.paragraphText;
+      }));
+    if (cleanTextApplicable || localExportMap.scenes?.some(scene => scene.userBookmarks?.bookmarks?.length)
       || parserResult.reviewIr?.userBookmarkInventory?.bookmarks?.length
       || parserResult.reviewIr?.userBookmarkInventory?.links?.length) {
-      const bookmarks = await prepareCleanUserBookmarksCapsule(localAuthority, parserResult, options.context);
+      const bookmarks = await prepareCleanUserBookmarksCapsule(localAuthority, parserResult,
+        { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes });
       if (!bookmarks.ok) return docxReviewReturnIntakeBlocked(bookmarks.code, { detail: bookmarks.detail });
       if (bookmarks.changed) Object.assign(sceneAuthorityFields, bookmarks.fields);
     }
     const cleanLinkLabel = bridge.analyzeFullManuscriptCleanLinkReturn(localExportMap, parserResult.reviewIr);
-    if (cleanLinkLabel.ok && !sceneAuthorityFields.userBookmarksCandidate) {
+    if (cleanLinkLabel.ok && !sceneAuthorityFields.userBookmarksCandidate && !sceneAuthorityFields.cleanTextChanges) {
       const sceneId = cleanLinkLabel.change.targetScope.id;
       const scenePath = localAuthority.scenePathBySceneId?.[sceneId];
       const raw = localAuthority.baselineObservableContentBySceneId?.[sceneId]
@@ -9583,18 +9737,97 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
 async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
-  const candidates = [];
+  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {};
   for (const scene of authority.exportMap.scenes) {
-    const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId];
+    const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId] ?? authority.baselineFinalTextBySceneId?.[scene.sceneId];
     if (typeof raw !== 'string') return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_REQUIRED' };
+    if(scene.rawSha256!==`sha256:${computeHash(raw)}`)return {ok:false,code:'RTK_USER_BOOKMARK_BASELINE_STALE'};
     const parsed = envelope.parseObservablePayload(raw);
     if (parsed.issue) return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_INVALID' };
     const beforeDoc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
     const analysis = module.analyzeUserBookmarksReturn({ baselineDoc: beforeDoc, exportMap: authority.exportMap,
-      sceneId: scene.sceneId, reviewIr: parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography });
+      sceneId: scene.sceneId, reviewIr: parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography,
+      ordinaryTextMode: true });
     if (!analysis.ok) return analysis;
+    if (analysis.ordinaryTextChanges?.length) {
+      cleanTextDocsBySceneId[scene.sceneId] = analysis.doc;
+      for (const change of analysis.ordinaryTextChanges) {
+        const changeId = 'docx-clean-block-text-' + computeHash(JSON.stringify({ roundId: authority.roundId, raw, change })).slice(0,24);
+        cleanTextChanges.push({ ...change, changeId, baselineRawSha256: scene.rawSha256 });
+      }
+      continue;
+    }
     const plan = userBookmarkModel.planReturn({ beforeDoc, candidateDoc: analysis.doc });
     if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects });
+  }
+  if (cleanTextChanges.length) {
+    if (candidates.length) return {ok:false,code:'RTK_USER_BOOKMARK_RETURN_CONFLICT',detail:'ordinary-text-bookmark-composite'};
+    const returnedComments = parserResult.reviewIr.commentThreads || [];
+    const commentGrammar=parserResult.reviewIr.commentBodyGrammar,commentInventory=parserResult.reviewIr.commentReturnInventory;
+    let cleanTextCommentUnchanged = !authority.commentExport && returnedComments.length === 0
+      && commentGrammar?.status==='ABSENT' && commentInventory?.status==='COMPLETE' && commentInventory?.packageState==='ABSENT',
+      cleanTextCommentSourceText = null, cleanTextNoteSourceText = null;
+    const optionalSource = async relative => {
+      try { return await fs.readFile(path.join(authority.projectRoot,relative),'utf8'); }
+      catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+    };
+    cleanTextCommentSourceText = await optionalSource('.yalken/word-review/non-text-return-state.v1.json');
+    cleanTextNoteSourceText = await optionalSource('notes.craftsman.json');
+    const changedOrdinals = new Set(cleanTextChanges.map(change => change.documentParagraphIndex));
+    // Only privately verified, annotation-free text blocks are projected back
+    // to baseline for the independent annotation-equality validators. The
+    // actual returned bodies, identities and anchors are never substituted.
+    const annotationParagraphs = parserResult.reviewIr.formattingParagraphs.map(paragraph => {
+      const change = cleanTextChanges.find(item => item.documentParagraphIndex === paragraph.paragraphIndex);
+      return change ? { ...paragraph, paragraphText: change.expectedText } : paragraph;
+    });
+    if (authority.commentExport) {
+      try {
+        const beforeText = cleanTextCommentSourceText;
+        if(returnedComments.some(thread=>changedOrdinals.has(thread.paragraphIndex))
+          || authority.commentExport.threads.some(thread=>changedOrdinals.has(thread.anchor.documentParagraphIndex))) {
+          return {ok:false,code:'RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED'};
+        }
+        // These blocks were independently admitted by the literal clean text
+        // analyzer and carry no comment. The comment-only validator receives
+        // their authenticated baseline text; all comment-bearing rows remain
+        // the actual returned paragraph and graph.
+        const delta = require('./core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({
+          beforeText,projectId:context.projectId,roundId:authority.roundId,
+          artifactSha256:context.returnedArtifactSha256,
+          baseline:authority.commentExport,exportMap:authority.exportMap,
+          returnedThreads:returnedComments,returnedParagraphs:annotationParagraphs,
+          commentReturnInventory:parserResult.reviewIr.commentReturnInventory,
+        });
+        cleanTextCommentUnchanged = delta.unchanged === true && delta.afterText === beforeText;
+        cleanTextCommentSourceText = beforeText;
+      } catch (error) { return {ok:false,code:'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT',detail:error.code || error.message}; }
+    }
+    if (!cleanTextCommentUnchanged) return {ok:false,code:'RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED'};
+    try {
+      if (!Buffer.isBuffer(context.docxBytes)
+        || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256) throw Error('RTK_CLEAN_TEXT_ARTIFACT_MISMATCH');
+      const bridge = await loadRevisionBridgeModule();
+      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+      if (authority.documentNotes?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') {
+        if (authority.documentNotes.sourceBindings.some(note => changedOrdinals.has(note.documentParagraphIndex))
+          || returnedNotes.some(note => changedOrdinals.has(note.paragraphIndex))) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
+        const storage = await loadNotesStorageModule();
+        const saved = await storage.readNotesStorage({ projectRoot: authority.projectRoot, projectId: context.projectId });
+        if (!saved.ok) throw Error('NOTE_STORAGE_CORRUPT');
+        const plan = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
+          document: saved.document, projectId: context.projectId, roundId: authority.roundId,
+          artifactSha256: context.returnedArtifactSha256, baseline: authority.documentNotes,
+          exportMap: authority.exportMap, returnedNotes, returnedParagraphs: annotationParagraphs,
+          now: new Date().toISOString(),
+        });
+        if (plan.unchanged !== true) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
+      } else if (returnedNotes.length) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
+    } catch (error) {
+      return {ok:false,code:'RTK_CLEAN_TEXT_NOTE_BINDING_CONFLICT',detail:error.code || error.message};
+    }
+    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextCommentUnchanged,
+      cleanTextNotesUnchanged:true,cleanTextCommentSourceText,cleanTextNoteSourceText}};
   }
   if (!candidates.length) return { ok: true, changed: false };
   if (candidates.length !== 1) return { ok: false, code: 'RTK_USER_BOOKMARK_MULTI_SCENE_CONFLICT' };
@@ -10285,6 +10518,9 @@ async function inspectDocxReviewReturnIntakeV2({
     // provider may omit only redundant core title/identifier; signed custom
     // metadata must still match and the omitted fields are reported as loss.
     allowAdvisoryCoreOmissions: true,
+    // Word Save As assigns the document creation date; the authenticated
+    // signed custom project date stays exact and never updates project truth.
+    allowProviderCoreCreatedAtChange: true,
   });
   if (!documentMetadataBinding.ok) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH', {
@@ -10351,7 +10587,7 @@ async function inspectDocxReviewReturnIntakeV2({
   const localAuthorityCapsule = await buildDocxReviewReturnIntakeLocalAuthorityCapsule(
     localAuthority,
     verifiedParserResult,
-    { hmacSecret, context, mediaReturnFields },
+    { hmacSecret, context, mediaReturnFields, returnedArtifactSha256, docxBytes },
   );
   if (localAuthorityCapsule?.ok === false) return localAuthorityCapsule;
   try { assertFreshDocxReviewRoundAuthority(localAuthority); }
@@ -10555,6 +10791,17 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       sourceViewState:{packetHash:returnIntake.returnedArtifactSha256, mode:'docx-clean-link-label-preview'},
     };
   }
+  const cleanTextChanges = returnIntake.authenticated === true ? returnIntake.localAuthorityCapsule?.cleanTextChanges : null;
+  if (Array.isArray(cleanTextChanges) && cleanTextChanges.length && authenticatedFullManuscriptExportMap) {
+    const changes = cleanTextChanges.map(change => ({changeId:change.changeId,targetScope:{type:'scene',id:change.sceneId},
+      match:{kind:'exact',quote:change.expectedText},replacementText:change.replacementText,
+      paragraphIndex:change.sceneParagraphIndex,documentParagraphIndex:change.documentParagraphIndex,
+      sourceAuthority:'authenticated-clean-block-text-v1'}));
+    candidate = {...candidate,ok:true,status:'ready',reason:'RTK_CLEAN_BLOCK_TEXT_PREVIEW_READY',
+      canAutoApply:false,canImportMutate:false,canWriteStorage:false,canOpenReviewSession:true,
+      reviewPacket:{...buildCleanLinkLabelPreviewPacket(changes[0]),textChanges:changes},
+      sourceViewState:{packetHash:returnIntake.returnedArtifactSha256,mode:'docx-clean-block-text-preview'}};
+  }
 
   const isReadyPreviewCandidate = isPlainObjectValue(candidate)
     && candidate.status === 'ready'
@@ -10636,7 +10883,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     });
   if (!isCurrent()) return superseded();
   const explicitCanonicalApplyConfirmed = payload?.explicitCanonicalApplyConfirmed === true;
-  const existingCommentDelta = activeContext.reviewTransportAuthorityCapsule?.commentExport
+  const cleanCommentsUnchanged = returnIntake.localAuthorityCapsule?.cleanTextCommentUnchanged === true;
+  const existingCommentDelta = !cleanCommentsUnchanged && activeContext.reviewTransportAuthorityCapsule?.commentExport
     && !compareCommentExportReadback(activeContext.reviewTransportAuthorityCapsule.commentExport,
       commentShadowPayload?.reviewIr?.commentThreads || []).ok;
   let preCommentExactTextApplyResult = null;
@@ -10676,7 +10924,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
   const reviewSurfaceForComments = isPlainObjectValue(preCommentExactTextApplyResult?.reviewSurface)
     ? preCommentExactTextApplyResult.reviewSurface
     : nonOverlapTrackedReplacementProductPath?.reviewSurface;
-  const commentProductPath = commentShadowPayload
+  const commentProductPath = cleanCommentsUnchanged ? {ok:true,status:'unchanged',writerCalled:false,
+    code:'RTK_CLEAN_TEXT_AUTHENTICATED_COMMENTS_UNCHANGED'} : commentShadowPayload
     ? await applyAuthenticatedDocxCommentProductPath({
       context: activeContext,
       commentShadowPayload: attachProductTextChangesToDocxCommentShadowPayload(
@@ -10692,8 +10941,10 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     })
     : null;
   if (!isCurrent()) return superseded();
-  const noteProductPath = await prepareAuthenticatedNoteDelta({ context: activeContext, requestId,
-    isCurrent, docxBytes: decoded.bytes, revisionBridge, onPrepared: options.onNoteDeltaPrepared });
+  const noteProductPath = returnIntake.localAuthorityCapsule?.cleanTextNotesUnchanged === true
+    ? {ok:true,status:'unchanged',writerCalled:false,code:'RTK_CLEAN_TEXT_AUTHENTICATED_NOTES_UNCHANGED'}
+    : await prepareAuthenticatedNoteDelta({ context: activeContext, requestId,
+      isCurrent, docxBytes: decoded.bytes, revisionBridge, onPrepared: options.onNoteDeltaPrepared });
   if (!isCurrent()) return superseded();
   const formattingProductPath = prepareAuthenticatedDocxFormattingReturnProductPath({
     context: activeContext,
@@ -21782,15 +22033,27 @@ function normalizeEditorSnapshotPayload(payload) {
       ? source.text
       : '';
   const identity = {};
-  for (const key of ['projectId', 'documentId']) {
+  for (const key of ['projectId', 'documentId', 'treeContentPublicationId']) {
     if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
     if (typeof source[key] !== 'string' || source[key].length > 192 || /[\u0000-\u001f\u007f]/u.test(source[key])) {
       throw Object.assign(new Error('SNAPSHOT_DOCUMENT_IDENTITY_INVALID'), { code: 'E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID' });
     }
     identity[key] = source[key];
   }
+  let rootSplitBoundary = null;
+  if (source.rootSplitBoundary !== undefined && source.rootSplitBoundary !== null) {
+    const cut = source.rootSplitBoundary;
+    if (!isPlainObjectValue(cut) || Object.keys(cut).length !== 2
+      || !Object.prototype.hasOwnProperty.call(cut, 'boundaryRootIndex') || !Object.prototype.hasOwnProperty.call(cut, 'position')
+      || !Number.isSafeInteger(cut.boundaryRootIndex) || cut.boundaryRootIndex < 0
+      || !Number.isSafeInteger(cut.position) || cut.position < 1) {
+      throw Object.assign(new Error('SNAPSHOT_ROOT_BOUNDARY_INVALID'), { code: 'E_SNAPSHOT_ROOT_BOUNDARY_INVALID' });
+    }
+    rootSplitBoundary = { boundaryRootIndex: cut.boundaryRootIndex, position: cut.position };
+  }
   return {
     ...identity,
+    rootSplitBoundary,
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
@@ -21805,15 +22068,36 @@ function normalizeEditorSnapshotPayload(payload) {
   };
 }
 
-function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence = null) {
+async function treeSceneSnapshotsEqual(savedContent, liveContent) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const saved = envelope.parseObservablePayload(savedContent), live = envelope.parseObservablePayload(liveContent);
+  if (saved.issue || live.issue || saved.hasMetaBlock !== live.hasMetaBlock
+    || JSON.stringify(saved.meta) !== JSON.stringify(live.meta) || JSON.stringify(saved.cards) !== JSON.stringify(live.cards)) return false;
+  const materialize = doc => {
+    if (!doc) return null;
+    const checked = envelope.canonicalizeDocumentJson(doc);
+    const registry = userBookmarkModel.readRegistry(checked);
+    const ledger = pendingTextRevisions.readLedger(checked);
+    const result = userBookmarkModel.materializeInternalLinkSchemaDefaults(checked);
+    result.attrs = { ...(result.attrs || {}), wordUserBookmarks: registry, wordPendingRevisions: ledger };
+    return result;
+  };
+  const review = await loadRtkNonTextReturnModule();
+  return review.commentSceneSnapshotsEqual(materialize(saved.doc) || saved.text, materialize(live.doc) || live.text);
+}
+
+async function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence = null) {
   const fence = expectedFence || treeEditorReplacementFence;
   if (!fence) return;
-  if ((treeEditorReplacementFence && treeEditorReplacementFence !== fence)
-    || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
-    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
-    || currentLifecycleSubjectId() !== fence.subjectId
+  const current = () => !(treeEditorReplacementFence && treeEditorReplacementFence !== fence)
+    && currentFilePath === fence.filePath && getProjectRootPath() === fence.projectRoot
+    && activeStage10ApplicationBootstrap === fence.owner && commentAuthoringSessionId === fence.session
+    && currentLifecycleSubjectId() === fence.subjectId;
+  if (!current()
     || snapshot?.projectId !== fence.projectId || snapshot?.documentId !== fence.documentId
-    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < lastSignaledEditGeneration) {
+    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < lastSignaledEditGeneration
+    || fence.treeContentPublicationId && (snapshot.treeContentPublicationId !== fence.treeContentPublicationId
+      || !await treeSceneSnapshotsEqual(fence.targetContent, snapshot.content)) || !current()) {
     isDirty = true;
     throw Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' });
   }
@@ -21822,6 +22106,13 @@ function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence
 
 function assertTreeRecoverySnapshot(snapshot, admission) {
   const fence = admission?.fence;
+  let image = null;
+  if (fence?.sourceNodeId) {
+    const retainedId = fence.recoveryObservedDocumentId || fence.sourceNodeId;
+    const retainedEpoch = fence.recoveryObservedEpoch ?? fence.priorTreeContentPublicationId;
+    if (snapshot?.documentId === retainedId && snapshot?.treeContentPublicationId === retainedEpoch) image = 'before';
+    else if (snapshot?.documentId === fence.documentId && snapshot?.treeContentPublicationId === fence.treeContentPublicationId) image = 'after';
+  }
   if (!treeRecoverySnapshotAdmissions.has(admission) || !fence || treeEditorReplacementFence !== fence
     || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
     || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
@@ -21829,10 +22120,12 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
     || snapshot?.commentAuthoringPending === true || snapshot?.manuscriptNoteAuthoringPending === true
     || lastSignaledEditGeneration !== admission.generation
     || snapshot?.projectId !== fence.projectId
-    || (snapshot?.documentId !== fence.removedNodeId && !(fence.detached === true && snapshot?.documentId === ''))
+    || (fence.sourceNodeId ? !image || admission.sourceImage !== undefined && admission.sourceImage !== image
+      : snapshot?.documentId !== fence.removedNodeId && !(fence.detached === true && snapshot?.documentId === ''))
     || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < admission.generation) {
     throw treeCohortError('E_TREE_RECOVERY_CONTEXT_STALE');
   }
+  if (fence.sourceNodeId) admission.sourceImage = image;
 }
 
 function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
@@ -21848,16 +22141,26 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
     }, timeoutMs);
 
     const recordingSession = activePendingRecording;
+    const capturedAuthoringSession = commentAuthoringSessionId;
+    const checkSession = () => {
+      if (capturedAuthoringSession !== commentAuthoringSessionId) {
+        throw Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' });
+      }
+    };
     const capturedTreeFence = typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null;
     pendingSnapshotRequests.set(requestId, { resolve: async snapshot => {
       try {
+        checkSession();
         const fence = capturedTreeFence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
-        else if (fence) assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        else if (fence) await assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        checkSession();
         const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
+        checkSession();
         const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
-        else if (publicationFence) assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        else if (publicationFence) await assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        checkSession();
         resolve(prepared);
       } catch (error) { reject(error); }
     }, reject, timeoutId });
@@ -22394,15 +22697,17 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           let commentState = null;
           let noteState = null;
-          if (lease && typeof expectedSceneContent === 'string'
+          if ((lease || options.authenticatedCleanBlockText === true) && typeof expectedSceneContent === 'string'
             && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
-            const comments = await loadRtkNonTextReturnModule();
-            const current = await comments.readCommentAuthoringState({
-              projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId,
-            });
-            commentState = planCommentAnchorSave({ beforeText: current.text,
-              projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-              beforeContent: expectedSceneContent, afterContent: content });
+            if (lease) {
+              const comments = await loadRtkNonTextReturnModule();
+              const current = await comments.readCommentAuthoringState({
+                projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId,
+              });
+              commentState = planCommentAnchorSave({ beforeText: current.text,
+                projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
+                beforeContent: expectedSceneContent, afterContent: content });
+            }
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
             if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
@@ -24873,7 +25178,9 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
   }
   const receipt = await commitWriterProjectSnapshot(
     filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
-    'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL' },
+    'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL',
+      ...(options.userBookmarkPlan ? {userBookmarkPlan:options.userBookmarkPlan,userBookmarkCapturedContent:options.userBookmarkCapturedContent}: {}),
+      ...(options.authenticatedCleanBlockText === true ? {authenticatedCleanBlockText:true}: {}) },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
     throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
@@ -24928,6 +25235,10 @@ function cleanLinkLabelStoreMatches(store) {
     || store.intakeGeneration !== activeDocxReviewIntakeGeneration
     || store.input.projectRoot !== getProjectRootPath()
     || (store.openScenePath || store.input.scenePath) !== currentFilePath) return false;
+  if (store.cleanTextCandidateDoc && (!store.cleanTextAuthoringBinding
+    || store.cleanTextAuthoringBinding.subjectId !== currentLifecycleSubjectId()
+    || store.cleanTextAuthoringBinding.sessionId !== commentAuthoringSessionId
+    || store.cleanTextAuthoringBinding.generation !== lastSignaledEditGeneration)) return false;
   const token = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
   return Boolean(token.sessionId && token.sourcePacketHash
     && token.sessionId === store.sessionToken.sessionId && token.sourcePacketHash === store.sessionToken.sourcePacketHash);
@@ -24935,8 +25246,9 @@ function cleanLinkLabelStoreMatches(store) {
 
 function buildCleanLinkLabelApplyInput(changes) {
   const store = activeRtkCleanLinkLabelApplyStore;
-  if (!cleanLinkLabelStoreMatches(store) || changes.length !== 1
-    || changes[0].changeId !== store.input.reviewItems[0].changeId) {
+  const expected=store?.input?.reviewItems||[];
+  if (!cleanLinkLabelStoreMatches(store) || changes.length !== expected.length
+    || changes.some((change,index)=>change.changeId!==expected[index].changeId)) {
     return makeReviewExactTextApplyContextBlock('RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED');
   }
   // Private baseline and candidate, not the renderer's quote or replacement.
@@ -25077,6 +25389,9 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
       if (input.reviewItems?.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')))) {
         return applyPrivateUserBookmarksReturn(input);
       }
+      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-block-text-'))) {
+        return applyPrivateCleanBlockTextReturn(applyExactTextBatchMinSafeWrite,input,safeWriteOptions);
+      }
       if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
         || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
@@ -25096,6 +25411,67 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
     },
     'review exact text batch safe apply',
   );
+}
+
+async function applyPrivateCleanBlockTextReturn(writer,input,options) {
+  const store=activeRtkCleanLinkLabelApplyStore;
+  const blocked=reason=>({ok:false,applied:false,code:reason,reason});
+  const gate=await revalidateCleanLinkLabelApplyInput(input);
+  if (!gate.ok) return gate;
+  if (!store.cleanTextCandidateDoc || input.reviewItems.some(item=>!String(item.changeId).startsWith('docx-clean-block-text-'))) {
+    return blocked('RTK_CLEAN_BLOCK_TEXT_PRIVATE_CANDIDATE_REQUIRED');
+  }
+  const subjectId=currentLifecycleSubjectId(),sessionId=commentAuthoringSessionId,
+    generation=lastSignaledEditGeneration,scenePath=input.scenePath;
+  const envelope=await loadDocumentContentEnvelopeModule(),snapshot=await requestEditorSnapshot();
+  const before=input.projectSnapshot.scenes.find(scene=>scene.sceneId===input.reviewItems[0].targetScope.id)?.text;
+  const parsed=envelope.parseObservablePayload(before),live=envelope.parseObservablePayload(snapshot.content);
+  const nonText=await loadRtkNonTextReturnModule();
+  const currentOptional=relative=>{try{return fsSync.readFileSync(path.join(input.projectRoot,relative),'utf8');}
+    catch(error){if(error.code==='ENOENT')return null;throw error;}};
+  const guard=()=>{
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    if(activePendingRecording || !cleanLinkLabelStoreMatches(store) || currentFilePath!==scenePath
+      || currentLifecycleSubjectId()!==subjectId || commentAuthoringSessionId!==sessionId
+      || lastSignaledEditGeneration!==generation || fsSync.readFileSync(scenePath,'utf8')!==before
+      || currentOptional('.yalken/word-review/non-text-return-state.v1.json')!==store.cleanTextCommentSourceText
+      || currentOptional('notes.craftsman.json')!==store.cleanTextNoteSourceText) throw Error('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+  };
+  if(parsed.issue || live.issue || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+    || !Number.isSafeInteger(snapshot.generation) || snapshot.generation<generation
+    || !mediaReturnEnvelopeMetadataEqual(live,parsed,envelope)
+    || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
+      userBookmarkModel.materializeInternalLinkSchemaDefaults(parsed.doc))) return blocked('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+  let publication;
+  const beforeRename=async()=>{
+    const fresh=await revalidateCleanLinkLabelApplyInput(input);
+    if(!fresh.ok)throw Error(fresh.reason);
+    guard();
+  };
+  const publishScene=async(filePath,content,publishOptions)=>{
+    if(filePath!==scenePath || publishOptions.expectedText!==before)throw Error('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+    const after=envelope.parseObservablePayload(content);
+    if(after.issue || !userBookmarkEnvelopeMetadataEqual(after,parsed)
+      || JSON.stringify(envelope.canonicalizeDocumentJson(after.doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(store.cleanTextCandidateDoc))) {
+      throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+    }
+    const working=cloneJsonSafe(after.doc);
+    if(after.doc.attrs?.wordUserBookmarks!=null)working.attrs={...(working.attrs||{}),wordUserBookmarks:userBookmarkModel.readRegistry(parsed.doc)};
+    const plan=userBookmarkModel.planSave({beforeDoc:parsed.doc,workingDoc:working});
+    if(JSON.stringify(envelope.canonicalizeDocumentJson(plan.doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(after.doc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+    await beforeRename();
+    const result=await publishReviewSceneWithProjectTransaction(filePath,content,{...publishOptions,beforeRename,
+      userBookmarkPlan:plan,userBookmarkCapturedContent:snapshot.content,authenticatedCleanBlockText:true});
+    publication={filePath,savedContent:content,capturedContent:snapshot.content,generation:snapshot.generation,subjectId,sessionId};
+    return result;
+  };
+  try {
+    guard();
+    const result=await writer(input,{...options,publishScene,
+      trustedAuthenticatedBlockDigests:input.reviewItems.map(item=>computeHash(JSON.stringify(item)))});
+    if(result.ok && publication)result.receipt={...result.receipt,bookmarkPublication:publication};
+    return result;
+  }catch(error){return blocked(error.code||error.message||'RTK_CLEAN_BLOCK_TEXT_APPLY_FAILED');}
 }
 
 async function applyPrivateUserBookmarksReturn(input) {
@@ -31767,6 +32143,8 @@ const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
   'cmd.project.tree.copyNode',
+  'cmd.project.tree.splitScene',
+  'cmd.project.tree.mergeNextScene',
   'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
@@ -32030,7 +32408,7 @@ async function captureTreeMutationContext(commandId, payload) {
   if (admission.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || admission.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
   if (activePendingRecording) throw treeCohortError('RECORDING_STOP_BEFORE_TREE_MUTATION');
   if (activeAutoSavePromise) await activeAutoSavePromise;
-  let editorSnapshotContent = null, editorSnapshotGeneration = null;
+  let editorSnapshotContent = null, editorSnapshotGeneration = null, editorSnapshot = null;
   if (mainWindow && currentFilePath && isPathInside(projectRoot, currentFilePath)) {
     let snapshot = await requestEditorSnapshot();
     const disk = await fs.readFile(filePath, 'utf8');
@@ -32063,6 +32441,7 @@ async function captureTreeMutationContext(commandId, payload) {
     }
     editorSnapshotContent = snapshot.content;
     editorSnapshotGeneration = snapshot.generation;
+    editorSnapshot = snapshot;
   } else if (isDirty || autoSaveInProgress) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
   userBookmarkCapability(commandId);
   if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
@@ -32082,7 +32461,48 @@ async function captureTreeMutationContext(commandId, payload) {
   };
   guard();
   return { projectRoot, projectName, manifestPath, manifest: raw.manifest, beforeManifestText: raw.raw,
-    filePath, generation, guard, identityCurrent, editorSnapshotContent, editorSnapshotGeneration };
+    filePath, generation, guard, identityCurrent, editorSnapshotContent, editorSnapshotGeneration, editorSnapshot };
+}
+
+async function assertTreeTopologySelection(context, payload, node, split) {
+  const snapshot = context.editorSnapshot;
+  if (node.nodePath !== context.filePath || payload.expectedDocumentId !== node.nodeId
+    || snapshot?.projectId !== payload.projectId || snapshot?.documentId !== node.nodeId
+    || snapshot?.generation !== payload.expectedGeneration
+    || (snapshot?.treeContentPublicationId || '') !== payload.expectedTreeContentPublicationId
+    || snapshot?.commentAuthoringPending || snapshot?.manuscriptNoteAuthoringPending) throw treeCohortError('E_TREE_TOPOLOGY_SELECTION_STALE');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  context.guard();
+  const parsed = envelope.parseObservablePayload(snapshot.content);
+  if (parsed.issue || !parsed.doc) throw treeCohortError('E_TREE_TOPOLOGY_DOCUMENT_INVALID');
+  const doc = envelope.canonicalizeDocumentJson(parsed.doc);
+  if (split) {
+    const cut = snapshot.rootSplitBoundary, index = payload.boundaryRootIndex;
+    if (!cut || cut.boundaryRootIndex !== index || index < 1 || index >= doc.content.length
+      || !['paragraph', 'heading'].includes(doc.content[index].type)
+      || !snapshot.selectionRange || snapshot.selectionRange.start !== snapshot.selectionRange.end) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+    let visited = 0;
+    const size = (node, depth = 0) => {
+      if (++visited > 100000 || depth > 64) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+      if (node.type === 'text') return node.text.length;
+      if (Array.isArray(node.content)) return 2 + node.content.reduce((sum, child) => sum + size(child, depth + 1), 0);
+      return ['paragraph', 'heading', 'codeBlock', 'blockquote', 'bulletList', 'orderedList', 'listItem', 'table', 'tableRow', 'tableCell', 'tableHeader'].includes(node.type) ? 2 : 1;
+    };
+    const position = 1 + doc.content.slice(0, index).reduce((sum, root) => sum + size(root), 0);
+    if (cut.position !== position) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+  }
+}
+
+function normalizeTreeTopologyIntent(payload, split) {
+  const safe = normalizeTreeCohortIntent(payload, ['projectId', 'nodeId', 'expectedTreeRevision',
+    'expectedDocumentId', 'expectedGeneration', 'expectedTreeContentPublicationId', ...(split ? ['name', 'boundaryRootIndex'] : [])]);
+  if (!Number.isSafeInteger(safe.expectedTreeRevision) || typeof safe.expectedDocumentId !== 'string'
+    || !Number.isSafeInteger(safe.expectedGeneration) || safe.expectedGeneration < 0
+    || typeof safe.expectedTreeContentPublicationId !== 'string' || safe.expectedTreeContentPublicationId.length > 192
+    || /[\u0000-\u001f\u007f]/u.test(safe.expectedTreeContentPublicationId)
+    || split && (!Number.isSafeInteger(safe.boundaryRootIndex) || safe.boundaryRootIndex < 1
+      || typeof safe.name !== 'string' || !sanitizeFilename(safe.name))) throw treeCohortError('E_TREE_COHORT_PAYLOAD_INVALID');
+  return safe;
 }
 
 function treeCohortMappedPath(projectRoot, original, bindings) {
@@ -32094,6 +32514,7 @@ function treeCohortMappedPath(projectRoot, original, bindings) {
 }
 
 async function publishTreeCohortActiveContext(bound) {
+  if (bound.structural) return publishTreeTopologyContext(bound);
   if (bound.detached === true) {
     let generation = null;
     const subjectId = currentLifecycleSubjectId();
@@ -32180,6 +32601,54 @@ async function publishTreeCohortActiveContext(bound) {
   }
 }
 
+async function publishTreeTopologyContext(bound) {
+  const fence = bound.fence;
+  const guard = () => {
+    userBookmarkCapability(bound.commandId);
+    if (treeEditorReplacementFence !== fence || currentFilePath !== fence.filePath
+      || getProjectRootPath() !== fence.projectRoot || activeStage10ApplicationBootstrap !== fence.owner
+      || commentAuthoringSessionId !== fence.session || currentLifecycleSubjectId() !== fence.subjectId
+      || lastSignaledEditGeneration !== bound.generation || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  };
+  guard();
+  const raw = await fs.readFile(fence.filePath, 'utf8');
+  guard();
+  if (raw !== fence.targetContent) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const doc = await getProjectDocumentIdentityPayload(fence.filePath);
+  guard();
+  if (doc.documentId !== fence.documentId) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const manifest = JSON.parse(await fs.readFile(path.join(fence.projectRoot, 'project.craftsman.json'), 'utf8'));
+  guard();
+  const kind = manifest.treeIdentity?.nodes?.[doc.documentId]?.kind;
+  if (manifest.projectId !== fence.projectId || !['scene', 'chapter-file'].includes(kind)) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(fence.filePath),
+    kind, metaEnabled: true, content: raw, documentId: doc.documentId }, fence.filePath);
+  Object.assign(payload, { treeContentReplacement: true, expectedDocumentId: fence.sourceNodeId,
+    expectedContent: bound.activeBeforeContent, expectedGeneration: bound.editorSnapshotGeneration,
+    expectedTreeContentPublicationId: fence.priorTreeContentPublicationId,
+    treeContentPublicationId: fence.treeContentPublicationId });
+  if (await fs.readFile(fence.filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  guard();
+  mainWindow.webContents.send('editor:set-text', payload);
+  // Never clear Main's dirty/generation state merely because a projection was
+  // sent. The real viewer must confirm target bytes and the private epoch.
+  await requestEditorSnapshot();
+  if (treeEditorReplacementFence || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+    || currentLifecycleSubjectId() !== fence.subjectId || lastSignaledEditGeneration !== bound.generation
+    || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const sessionGuard = () => {
+    userBookmarkCapability(bound.commandId);
+    if (currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+      || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+      || currentLifecycleSubjectId() !== fence.subjectId || lastSignaledEditGeneration !== bound.generation
+      || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  };
+  const saved = await saveLastFile({ preserveSelectionOnPathRebind: true, beforeWrite: sessionGuard });
+  sessionGuard();
+  if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+}
+
 async function runTreeCohortIntent(commandId, payload, build, options = {}) {
   treeBackupCaptureDepth++;
   let publication = null, committedOutcome = null;
@@ -32220,7 +32689,8 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
             notesText: inventory.notesText, commentsText: inventory.commentsText, operationId })
           : cohort.planProjectTreeCohort({ projectId: payload.projectId, manifestPath: context.manifestPath,
             operationId, operation: request.operation, beforeManifestText, ...inventory,
-            expectedTreeRevision: state.treeRevision, bindings: request.bindings, now: new Date().toISOString() });
+            expectedTreeRevision: state.treeRevision, bindings: request.bindings,
+            ...(request.topology ? { topology: request.topology } : {}), now: new Date().toISOString() });
         context.guard();
         if (plan.changed === false) return { ok: true, nodeId: payload.nodeId, moved: false, changed: false };
         const expired = await expireProjectWordRoundsBeforeTree(context.projectRoot, context.guard);
@@ -32262,7 +32732,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         // buffer or let its next save recreate the vanished original path.
         committedOutcome = { treeRevision: result.treeRevision };
         for (const entry of plan.entries.filter(x => x.role === 'scene' && x.afterBase64 !== null)) {
-          if (plan.entries.some(x => x.role === 'recoverySnapshot' && x.afterBase64 === entry.afterBase64
+          if (Array.isArray(plan.scenePartitions) || plan.entries.some(x => x.role === 'recoverySnapshot' && x.afterBase64 === entry.afterBase64
             && path.posix.dirname(x.relativePath) === path.posix.dirname(entry.relativePath)
             && path.posix.basename(x.relativePath).startsWith('.' + path.posix.basename(entry.relativePath) + '.bak.')
             && /^\d{13}$/u.test(path.posix.basename(x.relativePath).slice(('.' + path.posix.basename(entry.relativePath) + '.bak.').length)))) {
@@ -32272,11 +32742,28 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         if (!context.identityCurrent()) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
         const workingChanged = context.generation !== lastSignaledEditGeneration
           || isDirty || autoSaveInProgress || activePendingRecording;
-        const nextFile = treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
+        const structural = plan.scenePublications?.find(row => path.join(context.projectRoot, row.fromRelativePath) === context.filePath);
+        const nextFile = structural ? path.join(context.projectRoot, structural.toRelativePath)
+          : treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
         const removedCopy = (result.pathBindings || []).find(x => x.removedCopy
           && path.join(context.projectRoot, x.fromRelativePath) === context.filePath);
         // Rebind all affected active siblings, not only the dragged subtree.
-        if (nextFile !== context.filePath) {
+        if (structural) {
+          // This runs inside the existing disk queue, before any queued old
+          // Save can acquire a new partition as its expected beforeimage.
+          currentFilePath = nextFile;
+          commentAuthoringSessionId = crypto.randomUUID();
+          userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
+          const fence = treeEditorReplacementFence = { filePath: nextFile, projectRoot: context.projectRoot,
+            projectId: payload.projectId, documentId: structural.afterNodeId, sourceNodeId: structural.beforeNodeId,
+            treeRevision: result.treeRevision, owner: context.owner || activeStage10ApplicationBootstrap,
+            session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId(), targetContent: structural.afterContent,
+            priorTreeContentPublicationId: context.editorSnapshot?.treeContentPublicationId || '',
+            treeContentPublicationId: `tree-content-${crypto.randomUUID()}` };
+          publication = { structural: true, fence, projectRoot: context.projectRoot, filePath: nextFile,
+            commandId, generation: context.generation, editorSnapshotGeneration: context.editorSnapshotGeneration,
+            activeBeforeContent: context.editorSnapshotContent ?? activeBeforeContent };
+        } else if (nextFile !== context.filePath) {
           currentFilePath = workingChanged && removedCopy ? null : nextFile;
           userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
           backupHashes.delete(context.filePath);
@@ -32500,6 +32987,52 @@ async function handleUiCopyNodeCommand(payload) {
     const next = entries.length + 1;
     const toRelativePath = path.posix.join(path.posix.dirname(node.relativePath), `${String(next).padStart(2, '0')}_${sanitizeFilename(safe.name)}.txt`);
     return { operation: 'copy', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath, copy: true }] };
+  });
+}
+
+async function handleUiSceneTopologyCommand(payload, split) {
+  let safe;
+  try { safe = normalizeTreeTopologyIntent(payload, split); }
+  catch (error) { return makeTreeMoveError(error.code, error.message); }
+  const commandId = split ? 'cmd.project.tree.splitScene' : 'cmd.project.tree.mergeNextScene';
+  return runTreeCohortIntent(commandId, safe, async context => {
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
+    if (!['scene', 'chapter-file'].includes(node.kind) || !node.relativePath.startsWith('roman/')) throw treeCohortError('E_TREE_TOPOLOGY_KIND_BLOCKED');
+    await assertTreeTopologySelection(context, safe, node, split);
+    context.guard();
+    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent);
+    context.guard();
+    const index = entries.findIndex(entry => entry.path === node.nodePath);
+    if (index < 0) throw treeCohortError('E_TREE_NODE_NOT_FOUND');
+    let right = null;
+    if (split) entries.splice(index + 1, 0, { path: null, baseName: sanitizeFilename(safe.name), isFile: true });
+    else {
+      const next = entries[index + 1];
+      if (!next?.isFile) throw treeCohortError('E_TREE_MERGE_NEXT_SCENE_REQUIRED');
+      const relative = path.relative(context.projectRoot, next.path).split(path.sep).join('/');
+      const owner = Object.entries(context.manifest.treeIdentity.nodes).find(([, value]) => value.present !== false && value.bindingKey === `file:${relative}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      right = await resolveTreeCohortNode(owner[0], safe.projectId, context);
+      if (!['scene', 'chapter-file'].includes(right.kind)) throw treeCohortError('E_TREE_MERGE_NEXT_SCENE_REQUIRED');
+      entries.splice(index + 1, 1);
+    }
+    const bindings = [], nodes = context.manifest.treeIdentity.nodes;
+    entries.forEach((entry, ordinal) => {
+      const name = formatPrefixedName(entry.baseName, ordinal + 1) + (entry.isFile ? '.txt' : '');
+      entry.nextPath = joinPathSegmentsWithinRoot(parent, [name], { resolveSymlinks: false });
+      if (!entry.path) return;
+      const fromRelativePath = path.relative(context.projectRoot, entry.path).split(path.sep).join('/');
+      const owner = Object.entries(nodes).find(([, value]) => value.present !== false && value.bindingKey === `file:${fromRelativePath}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      if (entry.nextPath !== entry.path || entry.path === node.nodePath) bindings.push({ nodeId: owner[0], fromRelativePath,
+        toRelativePath: path.relative(context.projectRoot, entry.nextPath).split(path.sep).join('/') });
+    });
+    const topology = split ? { sourceNodeId: node.nodeId, sourceRelativePath: node.relativePath,
+      boundaryRootIndex: safe.boundaryRootIndex,
+      newRelativePath: path.relative(context.projectRoot, entries[index + 1].nextPath).split(path.sep).join('/') }
+      : { leftNodeId: node.nodeId, leftRelativePath: node.relativePath, rightNodeId: right.nodeId, rightRelativePath: right.relativePath };
+    context.guard();
+    return { operation: split ? 'split' : 'merge', bindings, topology };
   });
 }
 
@@ -33119,17 +33652,22 @@ async function runCreateBackup() {
       const backup = await prepareUserBookmarkBackup(filePath, snapshot);
       const content = backup.content;
       const hash = computeHash(content);
-      const seeded = treeBackupSeeds.get(filePath);
+      let seeded = treeBackupSeeds.get(filePath);
+      if (seeded === undefined && treeFence !== null) {
+        // Restarted processes recover deduplication only from the verified
+        // durable structural packet, never a filename or renderer assertion.
+        const state = await readVerifiedProjectTreeMutation({ manifestPath: path.join(capturedRoot, 'project.craftsman.json') });
+        await guard();
+        const packet = state.retainedPacket;
+        const relative = path.relative(capturedRoot, filePath).split(path.sep).join('/');
+        const entry = Array.isArray(packet?.plan?.scenePartitions)
+          ? packet.entries.find(value => value.role === 'scene' && value.relativePath === relative && value.afterBase64 !== null) : null;
+        if (entry) seeded = Buffer.from(entry.afterBase64, 'base64').toString('utf8');
+      }
       if (seeded !== undefined) {
         const raw = await fs.readFile(filePath, 'utf8');
         if (raw === seeded) {
-          const envelope = await loadDocumentContentEnvelopeModule(), saved = envelope.parseObservablePayload(raw), working = envelope.parseObservablePayload(content);
-          const review = await loadRtkNonTextReturnModule();
-          const materialize = value => value && typeof value === 'object'
-            ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
-          if (!saved.issue && !working.issue && saved.hasMetaBlock === working.hasMetaBlock
-            && JSON.stringify(saved.meta) === JSON.stringify(working.meta) && JSON.stringify(saved.cards) === JSON.stringify(working.cards)
-            && review.commentSceneSnapshotsEqual(materialize(saved.doc || saved.text), materialize(working.doc || working.text))) {
+          if (await treeSceneSnapshotsEqual(raw, content)) {
             await backup.guard(); await guard();
             backupHashes.set(filePath, hash); treeBackupSeeds.delete(filePath);
             return { success: true, unchanged: true };
@@ -33339,7 +33877,7 @@ async function showCommentSaveFailure(result) {
     || !mainWindow || mainWindow.isDestroyed()) return;
   if (commentSaveWarningPromise) return commentSaveWarningPromise;
   const identityFailure = /^(?:E_TREE_EDITOR_IDENTITY_UNCONFIRMED|E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID)$/u.test(result.code);
-  const recoverableCopy = identityFailure && treeEditorReplacementFence?.removedNodeId
+  const recoverableCopy = identityFailure && (treeEditorReplacementFence?.removedNodeId || treeEditorReplacementFence?.sourceNodeId)
     && treeEditorReplacementFence.filePath === currentFilePath
     && treeEditorReplacementFence.projectRoot === getProjectRootPath()
     && treeEditorReplacementFence.owner === activeStage10ApplicationBootstrap
@@ -33382,7 +33920,7 @@ function projectSaveFailure(reason, cause = null) {
 
 async function handleTreeRecoveredCopySaveAs() {
   const fence = treeEditorReplacementFence;
-  if (!fence?.removedNodeId || !Number.isSafeInteger(fence.treeRevision)) return false;
+  if (!(fence?.removedNodeId || fence?.sourceNodeId) || !Number.isSafeInteger(fence.treeRevision)) return false;
   userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
   const admission = { fence, generation: lastSignaledEditGeneration };
   treeRecoverySnapshotAdmissions.add(admission);
@@ -33421,7 +33959,7 @@ async function handleTreeRecoveredCopySaveAs() {
         if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || raw.manifest.projectId !== fence.projectId) throw treeCohortError('E_TREE_RECOVERY_PROJECT_READ_ONLY');
         const state = await readVerifiedProjectTreeMutation({ manifestPath, projectId: fence.projectId });
         guard();
-        if (state.treeRevision !== fence.treeRevision || !['undo', 'copy'].includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
+        if (state.treeRevision !== fence.treeRevision || !(fence.sourceNodeId ? ['split', 'merge', 'undo', 'copy'] : ['undo', 'copy']).includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
         const node = await resolveTreeCohortNode(fence.documentId, fence.projectId, { projectRoot: fence.projectRoot, manifestPath, manifest: raw.manifest });
         guard();
         const inventory = await captureTreeCohortInventory(fence.projectRoot);
@@ -33433,7 +33971,9 @@ async function handleTreeRecoveredCopySaveAs() {
           ...inventory, expectedTreeRevision: state.treeRevision,
           bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: relativePath, copy: true }],
           recoveredCopy: { receipt: state.receipt, retainedPacket: state.retainedPacket,
-            removedNodeId: fence.removedNodeId, workingContent: snapshot.content }, now: new Date().toISOString() });
+            ...(fence.sourceNodeId ? { sourceNodeId: fence.sourceNodeId } : { removedNodeId: fence.removedNodeId }),
+            ...(admission.sourceImage === 'after' ? { sourceImage: 'after' } : {}),
+            workingContent: snapshot.content }, now: new Date().toISOString() });
         guard();
         await expireProjectWordRoundsBeforeTree(fence.projectRoot, guard);
         guard();
@@ -33471,6 +34011,9 @@ async function handleTreeRecoveredCopySaveAs() {
     const publishedSubject = currentLifecycleSubjectId();
     treeEditorReplacementFence = ownedRecoveryContext = { ...fence, filePath, documentId: outcome.documentId,
       removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject, detached: fence.detached === true };
+    if (fence.sourceNodeId) Object.assign(treeEditorReplacementFence, {
+      targetContent: outcome.content, treeContentPublicationId: `tree-content-${crypto.randomUUID()}`,
+      recoveryObservedDocumentId: snapshot.documentId, recoveryObservedEpoch: snapshot.treeContentPublicationId });
     const publishGuard = () => {
       userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
@@ -33488,12 +34031,15 @@ async function handleTreeRecoveredCopySaveAs() {
     const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(filePath),
       kind: 'scene', metaEnabled: true, content: raw, documentId: outcome.documentId }, filePath);
     publishGuard();
-    Object.assign(payload, { treeReplacement: true, ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.removedNodeId,
+    Object.assign(payload, { ...(fence.sourceNodeId ? { treeContentReplacement: true,
+      expectedTreeContentPublicationId: snapshot.treeContentPublicationId,
+      treeContentPublicationId: treeEditorReplacementFence.treeContentPublicationId } : { treeReplacement: true }),
+      ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.sourceNodeId ? snapshot.documentId : fence.removedNodeId,
       expectedContent: snapshot.content, expectedGeneration: snapshot.generation });
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     publishGuard();
     mainWindow.webContents.send('editor:set-text', payload);
-    setDirtyState(false);
+    if (!fence.sourceNodeId) setDirtyState(false);
     treeEditorReplacementFence.session = commentAuthoringSessionId;
     treeEditorReplacementFence.subjectId = currentLifecycleSubjectId();
     const acknowledgedSession = commentAuthoringSessionId, acknowledgedSubject = currentLifecycleSubjectId(), acknowledgedGeneration = lastSignaledEditGeneration;
@@ -33502,16 +34048,18 @@ async function handleTreeRecoveredCopySaveAs() {
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
         || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== acknowledgedSession
         || currentLifecycleSubjectId() !== acknowledgedSubject || lastSignaledEditGeneration !== acknowledgedGeneration
-        || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+        || (!fence.sourceNodeId && isDirty) || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     };
     const observed = await requestEditorSnapshot();
     ackGuard();
-    if (observed.content !== raw || observed.documentId !== outcome.documentId) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    if (observed.documentId !== outcome.documentId || !(fence.sourceNodeId
+      ? await treeSceneSnapshotsEqual(raw, observed.content) : observed.content === raw)) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     ackGuard();
     const saved = await saveLastFile({ selectionRange: observed.selectionRange, beforeWrite: ackGuard });
     ackGuard();
     if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+    if (fence.sourceNodeId) isDirty = false;
     updateStatus('Сохранено');
     return true;
   } catch (error) {
@@ -33793,6 +34341,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
   'cmd.project.tree.copyNode',
+  'cmd.project.tree.splitScene',
+  'cmd.project.tree.mergeNextScene',
   'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
@@ -34219,6 +34769,18 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.review.openDocxReviewPreviewSession': async (payload = {}) => {
     const result = await handleDocxReviewPreviewSessionLocalFileCommandSurface(payload);
+    if (result?.ok === false) {
+      // Only bounded machine codes enter the shell/log; the full private receipt
+      // remains unchanged and never supplies authority through observation.
+      const safeCode = value => typeof value === 'string' && value.length <= 160
+        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING_RETURN)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(value);
+      const codes = { code: safeCode(result.error?.code) ? result.error.code : 'E_DOCX_REVIEW_PREVIEW_SESSION_FAILED' };
+      for (const [key, value] of [['reason', result.error?.reason], ['nestedCode', result.error?.details?.nestedCode], ['nestedReason', result.error?.details?.nestedReason]]) {
+        if (safeCode(value)) codes[key] = value;
+      }
+      updateStatus(`Не удалось открыть возврат Word (${[...new Set(Object.values(codes))].join(': ')}).`);
+      logDevError('review-docx-return', codes);
+    }
     if (result && result.ok === true && result.activated === true) {
       sendCanonicalRuntimeCommand(
         'cmd.project.review.openComments',
@@ -34377,6 +34939,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return handleUiRenameNodeCommand(payload);
   },
   'cmd.project.tree.copyNode': async (payload = {}) => handleUiCopyNodeCommand(payload),
+  'cmd.project.tree.splitScene': async (payload = {}) => handleUiSceneTopologyCommand(payload, true),
+  'cmd.project.tree.mergeNextScene': async (payload = {}) => handleUiSceneTopologyCommand(payload, false),
   'cmd.project.tree.undoLastMutation': async (payload = {}) => handleUiTreeUndoCommand(payload),
   'cmd.project.tree.deleteNode': async (payload = {}) => {
     return handleUiDeleteNodeCommand(payload);
@@ -36273,6 +36837,7 @@ module.exports = {
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
   handleUiCopyNodeCommand,
+  handleUiSceneTopologyCommand,
   handleUiTreeUndoCommand,
   handleMetadataUpdateCommand,
   handleNotesAttachToSceneCommand,

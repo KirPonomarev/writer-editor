@@ -795,3 +795,23 @@ test('ops gate tokenizes cross-line and non-dot effect counterexamples', (t) => 
     assert.equal(result.status, entry.expectedStatus, `${entry.name}\n${result.stderr}`);
   }
 });
+
+
+test('ops gate admits cohort lexical path import without admitting IO or other sources', (t) => {
+  const source = 'src/core/project-tree-cohort-v1.mjs';
+  const lexical = "import path from 'node:path';\nexport const leaf = value => path.posix.basename(value);\n";
+  for (const [name, file, body, expected] of [
+    ['lexical cohort import', source, lexical, 0],
+    ['other source', 'src/core/unadmitted-cohort.mjs', lexical, 1],
+    ['filesystem import', source, lexical + "import fs from 'node:fs';\n", 1],
+    ['filesystem call', source, lexical + "fs.writeFileSync('bad', 'bad');\n", 1],
+    ['process effect', source, lexical + 'process.cwd();\n', 1],
+    ['same-line effect', source, "import path from 'node:path'; process.cwd();\n", 1],
+  ]) {
+    const root = makeFixture(t);
+    writeFile(root, file, body);
+    const result = runGate(root);
+    assert.equal(result.status, expected, `${name}\n${result.stderr}`);
+    if (expected === 1) assert.match(result.stderr, /CORE_PURITY_VIOLATION/u);
+  }
+});

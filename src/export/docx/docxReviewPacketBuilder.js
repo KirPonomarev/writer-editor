@@ -10,7 +10,7 @@ const {
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
 const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
-const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js');
+const { buildDocxTypographyPropertiesXml, buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
 const { commentPackageParts, commentMarkersForBlock } = require('./docxReviewPacketComments.js');
@@ -401,6 +401,8 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
+  const markLanguage = buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
+  if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
   if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));
   const paragraphProperties = buildPendingRowParagraphXml(buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(paragraphPropertyParts.length > 0
     ? `<w:pPr>${paragraphPropertyParts.join('')}</w:pPr>`

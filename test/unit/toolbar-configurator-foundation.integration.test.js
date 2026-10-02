@@ -70,7 +70,7 @@ test('toolbar configurator foundation: restore-last-stable and project switch re
   assert.equal(restoreSnippet.includes('readConfiguratorBucketState('), false)
 
   const projectSwitchStart = source.indexOf('if (hasProjectId) {')
-  const projectSwitchEnd = source.indexOf('const parsed = parseDocumentContent(content);')
+  const projectSwitchEnd = source.indexOf('const parsed = treeContentParsed || parseDocumentContent(content);', projectSwitchStart)
   assert.ok(projectSwitchStart > -1 && projectSwitchEnd > projectSwitchStart, 'project switch bounds must exist')
   const projectSwitchSnippet = source.slice(projectSwitchStart, projectSwitchEnd)
   assert.ok(projectSwitchSnippet.includes('currentProjectId = nextProjectId;'))

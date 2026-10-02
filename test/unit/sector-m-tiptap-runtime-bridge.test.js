@@ -592,3 +592,77 @@ test('tiptap ipc adapter seams: attach does not register window listeners unless
     }
   }
 })
+
+async function treeDocumentAdapter(doc) {
+  const vm = require('node:vm');
+  const { Editor } = await import('@tiptap/core');
+  const { default: StarterKit } = await import('@tiptap/starter-kit');
+  const pm = await import('@tiptap/pm/state');
+  const historyApi = await import('@tiptap/pm/history');
+  const { WordPendingRevisions, setCheckedDocument } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/wordPendingRevisions.mjs')));
+  const { UserBookmarks } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/userBookmarks.mjs')));
+  const { ManuscriptNoteReferences } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/manuscriptNotes.mjs')));
+  const editor = new Editor({ element: null, extensions: [StarterKit.configure({ trailingNode: false }),
+    WordPendingRevisions, UserBookmarks, ManuscriptNoteReferences], content: doc });
+  let markerInitializations = 0;
+  const marker = new pm.Plugin({ key: new pm.PluginKey('treeResetSentinel'), state: {
+    init() { markerInitializations++; return { retained: true }; }, apply(_tr, previous) { return previous; },
+  } });
+  editor.view.updateState(editor.state.reconfigure({ plugins: [...editor.extensionManager.plugins, marker] }));
+  const c = { currentEditorInstance: editor, document: {}, getFocusedManuscriptBodyEditor: () => null,
+    history: historyApi.history, setCheckedReviewDocument: setCheckedDocument, notifyFormattingStateChange() {} };
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
+  const functions = ['getTiptapRootSplitBoundary', 'replaceTiptapTreeDocumentSnapshot', 'setCheckedDocument'].map(name => {
+    const match = new RegExp(`^(?:export )?function ${name}\\(`, 'm').exec(source);
+    assert.ok(match, name); const end = source.indexOf('\n}\n', match.index);
+    return source.slice(match.index, end + 2).replace(/^export /, '');
+  }).join('\n');
+  vm.createContext(c); vm.runInContext(functions, c);
+  return { c, editor, marker, historyApi, pm, markerInitializations: () => markerInitializations };
+}
+
+const treeParagraph = text => ({ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] });
+
+test('actual PM root split observation excludes first, nested, range and interior selections', async () => {
+  const doc = { type: 'doc', content: [treeParagraph('Left 🧭'), { type: 'heading', attrs: { level: 2 },
+    content: [{ type: 'text', text: 'Right' }] }, { type: 'bulletList', content: [
+    { type: 'listItem', content: [treeParagraph('Nested')] },
+  ] }] };
+  const { c, editor, pm } = await treeDocumentAdapter(doc);
+  const at = (from, to = from) => editor.view.dispatch(editor.state.tr.setSelection(pm.TextSelection.create(editor.state.doc, from, to)));
+  at(1); assert.equal(c.getTiptapRootSplitBoundary(), null);
+  const rootStart = editor.state.doc.child(0).nodeSize + 1;
+  at(rootStart);
+  assert.deepEqual(JSON.parse(JSON.stringify(c.getTiptapRootSplitBoundary())), { boundaryRootIndex: 1, position: rootStart });
+  at(rootStart, rootStart + 2); assert.equal(c.getTiptapRootSplitBoundary(), null);
+  at(rootStart + 1); assert.equal(c.getTiptapRootSplitBoundary(), null);
+  const nestedStart = editor.state.doc.child(0).nodeSize + editor.state.doc.child(1).nodeSize + 3;
+  at(nestedStart); assert.equal(c.getTiptapRootSplitBoundary(), null);
+  at(rootStart); c.getFocusedManuscriptBodyEditor = () => ({});
+  assert.equal(c.getTiptapRootSplitBoundary(), null);
+  editor.destroy();
+});
+
+test('actual Tiptap checked structural replacement resets only text history and preserves extensions and subsequent Undo', async () => {
+  const { c, editor, marker, historyApi, markerInitializations } = await treeDocumentAdapter({ type: 'doc', content: [treeParagraph('Left'), treeParagraph('Right')] });
+  editor.view.dispatch(editor.state.tr.insertText(' edit', 5));
+  assert.equal(historyApi.undoDepth(editor.state), 1);
+  const originalPlugins = editor.state.plugins, markerState = marker.getState(editor.state);
+  const registry = { schemaVersion: 'yalken.word-user-bookmarks.v1', sceneId: 'scene', revision: 0, bookmarks: [] };
+  const next = { type: 'doc', attrs: { wordUserBookmarks: registry }, content: [treeParagraph('Left')] };
+  assert.equal(c.replaceTiptapTreeDocumentSnapshot({ doc: next }), true);
+  assert.equal(editor.state.doc.textContent, 'Left');
+  assert.deepEqual(editor.state.doc.attrs.wordUserBookmarks, registry);
+  assert.deepEqual(editor.state.plugins, originalPlugins);
+  assert.equal(marker.getState(editor.state), markerState); assert.equal(markerInitializations(), 1);
+  assert.equal(historyApi.undoDepth(editor.state), 0); assert.equal(historyApi.redoDepth(editor.state), 0);
+  assert.equal(editor.commands.undo(), false); assert.equal(editor.state.doc.textContent, 'Left');
+  editor.view.dispatch(editor.state.tr.insertText('!', 5));
+  assert.equal(editor.commands.undo(), true); assert.equal(editor.state.doc.textContent, 'Left');
+  assert.equal(editor.commands.redo(), true); assert.equal(editor.state.doc.textContent, 'Left!');
+  const before = editor.state;
+  assert.equal(c.replaceTiptapTreeDocumentSnapshot({ doc: { type: 'doc', content: [{ type: 'not-a-schema-node' }] } }), false);
+  assert.equal(editor.state, before); assert.equal(historyApi.undoDepth(editor.state), 1);
+  assert.equal(markerInitializations(), 1);
+  editor.destroy();
+});

@@ -142,7 +142,7 @@ function hasReviewSurfacePayload(value) {
 }
 
 function computeHash(text) {
-  return crypto.createHash('sha256').update(String(text || ''), 'utf8').digest('hex');
+  return crypto.createHash('sha256').update(Buffer.isBuffer(text) ? text : String(text || ''), 'utf8').digest('hex');
 }
 
 function readZipEntryBytes(zipBytes, entryName) {
@@ -212,6 +212,7 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
   const activationSection = extractMarkedSection(mainSource, ACTIVATION_SECTION_START, ACTIVATION_SECTION_END);
   const menuCommandHandlersSection = extractMenuCommandHandlersSection(mainSource);
   const runtimeCommands = [];
+  const manuscriptWrites = [];
   const sandbox = {
     activeDocxActivationRequestDigestGuard: options.activeDocxActivationRequestDigestGuard
       || createDocxActivationRequestDigestGuard(),
@@ -234,6 +235,9 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
     validateFullManuscriptDocumentMetadataReturn,
     validateFullManuscriptDocumentSectionsReturn,
     validateDocumentNotesReturn,
+    pendingTextRevisions: require('../../src/core/word-pending-text-revisions-v1.cjs'),
+    userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
+    loadDocumentContentEnvelopeModule: () => import(pathToFileURL(path.join(REPO_ROOT, 'src/renderer/documentContentEnvelope.mjs')).href),
     computeHash,
     fs: options.fs || { readFile: async () => 'Anchored text' },
     fsSync: options.fsSync || {
@@ -266,6 +270,7 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
     verifyFullManuscriptCurrentSceneBindings: options.verifyFullManuscriptCurrentSceneBindings
       || (() => ({ ok: true, status: 'verified', sceneCount: 1, sceneReadback: [] })),
     runtimeCommands,
+    queueDiskOperation() { manuscriptWrites.push('queueDiskOperation'); throw new Error('UNEXPECTED_ACTIVATION_MANUSCRIPT_WRITE'); },
     sendCanonicalRuntimeCommand(commandId, payload = {}, legacyCommand = '') {
       runtimeCommands.push({ commandId, payload, legacyCommand });
       return true;
@@ -299,6 +304,7 @@ module.exports = {
   handleDocxReviewPreviewSessionActivationCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
   handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+  inspectDocxReviewReturnIntakeV2, sanitizeDocxReviewReturnIntakeForResult, prepareAuthenticatedPendingReturn,
   getState() {
     return {
       activeReviewSessionStore,
@@ -312,7 +318,27 @@ module.exports = {
     sandbox,
     { filename: MAIN_PATH },
   );
-  return sandbox.module.exports;
+  const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority.js');
+  if (options.roundAuthority) installMainDocxRoundAuthority(sandbox, options.roundAuthority);
+  const port = sandbox.module.exports;
+  const activate = port.handleDocxReviewPreviewSessionActivationCommandSurface;
+  port.handleDocxReviewPreviewSessionActivationCommandSurface = async (payload, runtimeOptions = {}) => {
+    // These tests supply a previously published local round. Materialize its
+    // durable record and execute Main's real freshness/path validation.
+    const references = Object.values(runtimeOptions.activeReviewDocxExportAuthorityStore?.roundsById || {});
+    let prepared = runtimeOptions;
+    if (references.length && !options.roundAuthority) {
+      const context = await runtimeOptions.buildMainReviewContext();
+      sandbox.getProjectRootPath = () => context.projectRoot;
+      installMainDocxRoundAuthority(sandbox, { projectRoot: context.projectRoot,
+        projectId: context.projectId, references });
+      prepared = { ...runtimeOptions, buildMainReviewContext: async () => context };
+    }
+    const result = await activate(payload, prepared);
+    assert.deepEqual(manuscriptWrites, [], 'activation must not execute a manuscript writer');
+    return result;
+  };
+  return port;
 }
 
 function asciiBytes(value) {
@@ -1918,6 +1944,7 @@ test('DOCX review preview session command: non-overlap tracked replacements reac
   assert.equal(result.canAutoApply, false);
   assert.equal(result.canImportMutate, false);
   assert.equal(result.canWriteStorage, false);
+  assert.ok(result.nonOverlapTrackedReplacementProductPath, JSON.stringify(result));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.status, 'preview-ready');
   assert.equal(result.nonOverlapTrackedReplacementProductPath.writerCalled, false);
@@ -2147,6 +2174,7 @@ test('DOCX review preview session command: full-manuscript return exposes only e
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.ok(result.nonOverlapTrackedReplacementProductPath, JSON.stringify(result));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.reason, 'RTK_FULL_MANUSCRIPT_EXACT_PRODUCT_PATH_READY');
   assert.equal(result.nonOverlapTrackedReplacementProductPath.writerCalled, false);
@@ -2270,6 +2298,7 @@ test('DOCX review preview session command: current-profile YRTK carrier authenti
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.ok(result.returnIntake, JSON.stringify(result));
   assert.equal(result.returnIntake.authenticated, true);
   assert.equal(result.returnIntake.status, 'authenticated-return-ir-ready');
   assert.equal(result.returnIntake.authorityCarrierStatus, 'verified-baseline-bound');
@@ -2325,8 +2354,10 @@ test('DOCX review preview session command: authenticated return IR drives visibl
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.ok(result.returnIntake, JSON.stringify(result));
   assert.equal(result.returnIntake.authenticated, true);
   assert.equal(result.returnIntake.status, 'authenticated-return-ir-ready');
+  assert.ok(result.nonOverlapTrackedReplacementProductPath, JSON.stringify(result));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
   assert.equal(result.reviewSurface.rtkNonOverlapTrackedReplacementProductPath.productRuntimeWired, true);
   assert.equal(result.reviewSurface.rtkNonOverlapTrackedReplacementProductPath.automaticApplyCertified, false);
@@ -2756,6 +2787,7 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
   assert.equal(result.returnIntake.authenticated, true, JSON.stringify(result.returnIntake, null, 2));
+  assert.ok(result.nonOverlapTrackedReplacementProductPath, JSON.stringify(result));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
   const textChanges = result.reviewSurface.revisionSession.reviewGraph.textChanges;
   assert.equal(textChanges.length, 1);
@@ -3263,7 +3295,9 @@ test('DOCX review preview session command: Google-rewritten scene bookmarks bind
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.ok(result.returnIntake, JSON.stringify(result));
   assert.equal(result.returnIntake.authenticated, true);
+  assert.ok(result.nonOverlapTrackedReplacementProductPath, JSON.stringify(result));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
   assert.equal(result.nonOverlapTrackedReplacementProductPath.rendererAuthority, false);
   assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
@@ -3401,6 +3435,7 @@ test('DOCX review preview session command: authenticated product return intake g
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.ok(result.returnIntake, JSON.stringify(result));
   assert.equal(result.returnIntake.authenticated, true);
   assert.equal(result.returnIntake.status, 'authenticated-return-ir-ready');
   assert.equal(result.returnIntake.authority.validSignedLocator, true);
@@ -4082,11 +4117,10 @@ test('DOCX review preview session command: return intake worker accepts Electron
   assert.equal(Object.prototype.hasOwnProperty.call(stripped, 'hmacSecret'), false);
 });
 
-test('DOCX review preview session command: source section has no storage write authority', () => {
+test('DOCX review preview session command: activation declares no direct storage writes; execution is guarded separately', () => {
   const source = extractMarkedSection(readMainSource(), ACTIVATION_SECTION_START, ACTIVATION_SECTION_END);
   assert.match(source, /persistDocxReviewReturnAuthorityStore/u);
   for (const forbidden of [
-    'queueDiskOperation',
     'applyExactTextMinSafeWrite',
     'applyDocxImportSafeCreate',
     'buildDocxMinBuffer',
@@ -4094,5 +4128,67 @@ test('DOCX review preview session command: source section has no storage write a
     'recovery:',
   ]) {
     assert.equal(source.includes(forbidden), false, forbidden);
+  }
+});
+
+test('authenticated Main intake reports provider document creation date loss without altering signed project metadata', async()=>{
+  const bridge=await loadBridge(), {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'project-date',projectRoot:'/project',manifestPath:'/project/manifest.json',projectCreatedAtUtc:'2026-10-02T06:23:15.656Z',scenes:[{sceneId:'roman/one.txt',scenePath:'/project/roman/one.txt',text:'Alpha',order:0}]},{roundIdHex:'d'.repeat(32),keyIdHex:'e'.repeat(32),hmacSecret:'date-fixture-secret',cryptoPort:c05CryptoPort,revisionBridge:bridge});
+  const authority=source.localAuthorityCapsule;
+  authority.keyRef=importTestRoundKeyRef(authority.roundId,authority.hmacSecret);const key=testDurableKeys.get(authority.keyRef);
+  authority.keyIdHex=key.keyIdHex;authority.roundIdHex=key.roundIdHex;authority.lifecycleState='PUBLISHED_ACTIVE';
+  const bytes=fullManuscriptReturnFixture(source,bridge);
+  const parser=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:authority.hmacSecret,expectedAuthority:authority.expectedAuthority},{cryptoPort:c05CryptoPort});
+  assert.equal(parser.ok,true);
+  parser.reviewIr.documentMetadata.coreProtectedProperties.createdAtUtc='2026-10-02T07:34:00Z';
+  const original=structuredClone(source.documentMetadata);
+  const port=instantiateDocxReviewPreviewSessionPort({roundAuthority:{projectRoot:'/project',projectId:'project-date',references:[authority]}});
+  const result=await port.inspectDocxReviewReturnIntakeV2({context:reviewContext({projectId:'project-date',projectRoot:'/project'}),docxBytes:bytes,revisionBridge:bridge,options:{activeReviewDocxExportAuthorityStore:{lastRoundId:authority.roundId,roundsById:{[authority.roundId]:authority}},runDocxReviewReturnIntakeInUtilityProcess:async input=>wrapParserResultAsPacketResult(parser,{returnedArtifactSha256:input.returnedArtifactSha256,yrtk2Token:customPropertyFromSource(source,'YRTK2_TOKEN'),coreManifestDigest:authority.coreManifestDigest})}});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.authenticated,true);assert.equal(result.canWriteStorage,false);
+  const projected=port.sanitizeDocxReviewReturnIntakeForResult(result).documentMetadata;
+  assert.equal(projected.status,'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_CHANGES');assert.equal(projected.coreMetadataPreserved,false);
+  assert.deepEqual(cloneJsonSafe(projected.coreCreatedAtChange),{expected:'2026-10-02T06:23:15.656Z',returned:'2026-10-02T07:34:00Z',policy:'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'});
+  assert.deepEqual(cloneJsonSafe(projected.lossLedger.coreCreatedAtChange),cloneJsonSafe(projected.coreCreatedAtChange));
+  assert.equal(projected.protectedProperties.createdAtUtc,'2026-10-02T06:23:15.656Z');assert.deepEqual(source.documentMetadata,original);
+});
+
+
+test('pending applicability preserves legacy exact routes and never downgrades retained ledger or rich authority failures', async () => {
+  const bridge = await loadBridge();
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const docx = productReviewDocxWithTrackedReplacement();
+  const base = productAuthorityStoreFromDocx(docx).roundsById[docx.payload.roundId];
+  const document = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: docx.sceneText }] }] };
+  const rich = envelope.composeObservablePayload({ doc: document });
+  const ledger = envelope.composeObservablePayload({ doc: model.bindLedger({ schemaVersion: 2,
+    source: model.normalizeNode(document), revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] }) });
+  const cases = [
+    { name: 'legacy scene no retained rich source', baselines: {}, scenes: 1, fallback: true },
+    { name: 'legacy multiscene no ledger', baselines: { first: rich, second: rich }, scenes: 2, fallback: true },
+    { name: 'single rich returned revisions', baselines: { first: rich }, scenes: 1, code: 'PENDING_RETURN_OPEN_SCENE_REQUIRED' },
+    { name: 'canonical ledger', baselines: { first: ledger }, scenes: 1, code: 'PENDING_RETURN_OPEN_SCENE_REQUIRED' },
+    { name: 'multiscene canonical ledger', baselines: { first: ledger, second: rich }, scenes: 2, code: 'PENDING_RETURN_SINGLE_SCENE_REQUIRED' },
+    { name: 'explicit pending route without baseline', baselines: {}, scenes: 1, pendingReturnOnly: true, code: 'PENDING_RETURN_SINGLE_SCENE_REQUIRED' },
+    { name: 'malformed retained rich source', baselines: { first: '[doc-v2 length=4]\nxxxx' }, scenes: 2, rejects: /PENDING_RETURN_BASELINE_INVALID/ },
+  ];
+  for (const value of cases) {
+    const capsule = { ...structuredClone(base), baselineObservableContentBySceneId: value.baselines,
+      exportMap: { scenes: Array.from({ length: value.scenes }, (_, i) => ({ sceneId: i ? 'second' : 'first' })) },
+      exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication',
+      returnedArtifactExportMapAccepted: false, pendingReturnOnly: value.pendingReturnOnly === true };
+    const port = instantiateDocxReviewPreviewSessionPort({ roundAuthority: {
+      projectRoot: '/project', projectId: 'project-1', references: [capsule] } });
+    const run = () => port.prepareAuthenticatedPendingReturn({ context: {
+      projectId: 'project-1', projectRoot: '/project', reviewTransportAuthorityCapsule: capsule,
+      reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + computeHash(docx.bytes) },
+    }, requestId: 'applicability', isCurrent: () => true, docxBytes: docx.bytes, revisionBridge: bridge });
+    if (value.rejects) await assert.rejects(run, value.rejects, value.name);
+    else {
+      const result = await run();
+      if (value.fallback) assert.equal(result, null, value.name + ': ' + JSON.stringify(result));
+      else { assert.equal(result?.ok, false, value.name); assert.equal(result?.code, value.code, value.name); }
+    }
+    assert.equal(port.runtimeCommands.length, 0, value.name);
   }
 });

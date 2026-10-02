@@ -23,7 +23,7 @@ const {
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
 const { normalizeOpaqueRgb, buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
-const { buildDocxTypographyPropertiesXml, readRunTypography } = require('./docxInlineTypography.js');
+const { buildDocxTypographyPropertiesXml, readRunTypography, buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
 
@@ -154,6 +154,7 @@ function readDocumentInlineRuns(node) {
 
 function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
+  require('../../core/word-language-v1.cjs').inspectDocumentLanguage(doc);
   const blocks = [];
   let nextListId = 1;
   let nextTableId = 0;
@@ -175,7 +176,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       }
       const paragraph = item.content[0];
       if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
-      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign) });
+      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
       for (const nested of item.content.slice(1)) visitList(nested, level + 1);
     }
   };
@@ -224,7 +225,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
-      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
       return;
     }
     if (node.type === 'codeBlock') {
@@ -237,7 +238,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       return;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
+      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
     }
   };
   for (const node of doc.content) visit(node);
@@ -384,10 +385,12 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const numbering = semanticBlocks?.[index]?.numbering;
       if (numbering) numberings.set(numbering.numId, numbering);
       const textAlign = semanticBlocks?.[index]?.textAlign;
+      const markLanguage = buildDocxWordLanguageXml(semanticBlocks?.[index]?.wordParagraphMarkLanguage);
       const properties = (styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
-        + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
+        + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '')
+        + (markLanguage ? `<w:rPr>${markLanguage}</w:rPr>` : '');
       const paragraphRevision = pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
       let styleXml = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter), pendingExport?.paragraphs[index].boundaryRevision, revisionCounter);
       const rowRevision = pendingExport?.paragraphs[index].rowRevision;

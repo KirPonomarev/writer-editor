@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "SURFACE_MANIFEST_V1",
+  "surfaceId": "surface.projectTree.scenePartition",
+  "featureId": "WORD_SCENE_SPLIT_MERGE_MAC_20261002",
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "host": "Existing tree context menu and node name dialog",
+  "slotId": "Existing tree menu command contribution",
+  "newVisualLanguage": false,
+  "contributionKind": "Intent controls plus immutable revision-bound inventory",
+  "commands": [
+    "cmd.project.tree.splitScene",
+    "cmd.project.tree.mergeNextScene",
+    "cmd.project.tree.undoLastMutation",
+    "cmd.project.saveAs"
+  ],
+  "projection": "query.projectTree",
+  "activation": {
+    "explicitOpenRequired": true,
+    "backgroundRefresh": false,
+    "typingHotPath": false
+  },
+  "states": [
+    "ready",
+    "pending",
+    "unavailable",
+    "invalidName",
+    "stale",
+    "recoveryConflict"
+  ],
+  "authority": {
+    "rendererIntentOnly": true,
+    "productMutation": false,
+    "storageMutation": false,
+    "pathAuthority": false,
+    "networkMutation": false
+  },
+  "accessibility": {
+    "nativeControls": true,
+    "labelledInputs": true,
+    "keyboard": [
+      "Shift+F10",
+      "ContextMenu",
+      "Tab",
+      "Enter",
+      "Escape"
+    ],
+    "initialFocus": true,
+    "restoreTriggerFocus": true,
+    "errorsInline": true,
+    "statusUsesText": true,
+    "textUndoUnchanged": "Old whole-scene history reset only on accepted content transition; new edits keep ordinary text Undo."
+  },
+  "tokens": "Reuse existing Yalken CSS variables and palette/dialog classes; no global style or typography changes",
+  "fallback": "Unavailable or stale cut/next scene gives explicit reason; cancelled dialog changes nothing; late old buffer remains protected for explicit Save As recovery",
+  "performance": "Read-only selection boundary on explicit snapshot; no added typing-path scans"
+}

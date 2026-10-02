@@ -90,6 +90,8 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'cmd.project.tree.reorderNode',
   'cmd.project.tree.moveNode',
   'cmd.project.tree.copyNode',
+  'cmd.project.tree.splitScene',
+  'cmd.project.tree.mergeNextScene',
   'cmd.project.tree.undoLastMutation',
   'cmd.project.metadata.update',
   'cmd.project.notes.create',

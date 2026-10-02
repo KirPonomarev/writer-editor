@@ -51,6 +51,9 @@ const PURE_RUNTIME_IMPORTS_BY_SOURCE = new Map([
   ['src/core/path-text-integrity-v1.mjs', new Set([
     "import path from 'node:path';",
   ])],
+  ['src/core/project-tree-cohort-v1.mjs', new Set([
+    "import path from 'node:path';",
+  ])],
   ['src/core/pdf-archive-review-profile-v1.mjs', new Set([
     "import crypto from 'node:crypto';",
     "import { types } from 'node:util';",

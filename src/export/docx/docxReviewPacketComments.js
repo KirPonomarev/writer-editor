@@ -198,25 +198,37 @@ function commentPackageParts(projection) {
 
 function commentMarkersForBlock(projection, block) {
   const markers = new Map();
-  const append = (offset, kind, xml) => {
-    const boundary = markers.get(offset) || { end: '', start: '' };
-    boundary[kind] += xml; markers.set(offset, boundary);
+  let ordinal = 0;
+  const append = (offset, kind, event) => {
+    const boundary = markers.get(offset) || { end: [], start: [] };
+    boundary[kind].push(event); markers.set(offset, boundary);
   };
   for (const thread of projection?.threads || []) {
     if (thread.anchor.blockId !== block.blockId) continue;
     const { startUtf16: start, endUtf16: end, selectedText } = thread.anchor;
     demand(thread.sceneId === block.sceneId && block.text.slice(start, end) === selectedText
       && start < end && isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_STALE');
-    // Word drops an unreferenced reply on save even when commentEx names its parent.
-    // Every message therefore has a matching range/reference on the same text.
-    for (const message of thread.messages) append(start, 'start', `<w:commentRangeStart w:id="${message.commentId}"/>`);
+    // Every reply needs its own range/reference for Word to retain it on save.
     for (const message of thread.messages) {
-      append(end, 'end', `<w:commentRangeEnd w:id="${message.commentId}"/><w:r><w:commentReference w:id="${message.commentId}"/></w:r>`);
+      const event = { start, end, ordinal: ordinal++, id: message.commentId };
+      append(start, 'start', event); append(end, 'end', event);
     }
   }
-  // Adjacent ranges share an offset, not an overlap. Close all previous
-  // messages before opening any next range regardless of graph storage order.
-  return new Map([...markers].map(([offset, boundary]) => [offset, boundary.end + boundary.start]));
+  // Outer ranges open first and close last. Reverse exact ties on close so
+  // identical root/reply ranges are nested too. This orders transport markers
+  // only; canonical thread/message order and genuinely crossing ranges stay intact.
+  return new Map([...markers].map(([offset, boundary]) => {
+    const ends = [...boundary.end].sort((a, b) => b.start - a.start || b.ordinal - a.ordinal)
+      .map(event => `<w:commentRangeEnd w:id="${event.id}"/>`).join('');
+    // Word uses reference order when materializing threads on save. Closing a
+    // reply's nested range first must not place its reference before its root.
+    const references = [...boundary.end].sort((a, b) => a.ordinal - b.ordinal)
+      .map(event => `<w:r><w:commentReference w:id="${event.id}"/></w:r>`).join('');
+    const starts = boundary.start.sort((a, b) => b.end - a.end || a.ordinal - b.ordinal)
+      .map(event => `<w:commentRangeStart w:id="${event.id}"/>`).join('');
+    // Adjacent ranges close before another range opens at the same offset.
+    return [offset, ends + references + starts];
+  }));
 }
 
 // Used only after local signed-round verification. Provider metadata and IDs

@@ -410,3 +410,43 @@ test('C5V2 return router rejects handcrafted operations without authenticated re
     }),
   }).code, 'FULL_MANUSCRIPT_RETURN_INTAKE_OPERATION_IDS_MISMATCH');
 });
+
+test('clean text router authenticates exact duplicate paragraph owner without inventing tracked revisions', () => {
+  const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const router = require('../../src/export/docx/fullManuscriptDocxReviewReturnRouter.js');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const doc = { type: 'doc', content: [0,1].map(() => ({ type: 'paragraph', content: [{ type: 'text', text: 'Twin target' }] })) };
+  const raw = envelope.composeObservablePayload({ doc }), sceneId = 'roman/twin.txt';
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'project-c5v2', projectRoot: '/project',
+    manifestPath: '/project/manifest.json', scenes: [{ sceneId, scenePath: '/project/' + sceneId,
+      text: 'Twin target\nTwin target', observableContent: raw, doc, order: 0 }] }, {
+    roundIdHex: '1'.repeat(32), keyIdHex: '2'.repeat(32), hmacSecret: 'clean-owner-test', cryptoPort: makeCryptoPort() });
+  const block = source.localAuthorityCapsule.exportMap.scenes[0].blocks[1];
+  const op = { id: 'docx-clean-block-text-twin', family: 'clean_text_edit', sceneId, anchor: { sceneId, selectedText: 'Twin target',
+    authenticatedBlock: { schemaVersion: 'yalken.rtk.authenticated-scene-block.v1', sceneId,
+      blockId: block.blockId, documentParagraphIndex: block.documentParagraphIndex, sceneParagraphIndex: 1,
+      baselineRawSha256: source.localAuthorityCapsule.exportMap.scenes[0].rawSha256,
+      blockTextSha256: block.canonicalTextSha256, blockLocalStart: 0, blockLocalEnd: 11 } },
+    semanticIntent: { kind: 'replace', replacementText: 'Twin changed' } };
+  const input = { localAuthorityCapsule: source.localAuthorityCapsule, returnedAuthority: returnedAuthority(source), operations: [op],
+    returnIntakeProof: returnIntakeProof(source, [op], { operationSource: 'authenticated-clean-block-text' }) };
+  const result = router.buildFullManuscriptReviewReturnApplyPlan(input);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.sceneCommands.length, 1);
+  const command = result.sceneCommands[0];
+  assert.equal(command.kind, 'authenticated-clean-text');
+  assert.equal(Object.hasOwn(command.input, 'reviewIr'), false);
+  assert.equal(command.input.writerInput.reviewItems[0].match.authenticatedBlock.sceneParagraphIndex, 1);
+  assert.equal(result.exactAuthorityBySceneId[sceneId].ranges[0].from, 12);
+  for (const [key, value] of [['blockId','foreign'], ['sceneId','foreign'], ['documentParagraphIndex',99],
+    ['sceneParagraphIndex',0], ['blockTextSha256','sha256:'+'0'.repeat(64)], ['baselineRawSha256','sha256:'+'0'.repeat(64)]]) {
+    const mutant = structuredClone(input); mutant.operations[0].anchor.authenticatedBlock[key] = value;
+    mutant.returnIntakeProof = returnIntakeProof(source, mutant.operations, { operationSource: 'authenticated-clean-block-text' });
+    assert.equal(router.buildFullManuscriptReviewReturnApplyPlan(mutant).ok, false, key);
+  }
+  const forged = structuredClone(input); forged.operations[0].semanticIntent.replacementText = 'FORGED';
+  assert.equal(router.buildFullManuscriptReviewReturnApplyPlan(forged).code, 'FULL_MANUSCRIPT_RETURN_INTAKE_PROOF_BINDING_MISMATCH');
+  const mixed = structuredClone(input); mixed.operations.push({ ...op, id: 'tracked', family: 'tracked_text_edit' });
+  mixed.returnIntakeProof = returnIntakeProof(source, mixed.operations, { operationSource: 'authenticated-clean-block-text' });
+  assert.equal(router.buildFullManuscriptReviewReturnApplyPlan(mixed).ok, false);
+});

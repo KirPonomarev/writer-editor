@@ -32,7 +32,10 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const warnings = [];
   const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
-  const electron = { app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
+  const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
+    encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
+    decryptString(value){const cipher=crypto.createDecipheriv('aes-256-gcm',Buffer.alloc(32,9),value.subarray(0,12));cipher.setAuthTag(value.subarray(-16));return Buffer.concat([cipher.update(value.subarray(12,-16)),cipher.final()]).toString('utf8');}},
+    app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
     dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: 0 }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
@@ -43,6 +46,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const hooks = `\nmodule.exports.__probe = {
     state(values = {}) {
       if ('filePath' in values) currentFilePath = values.filePath;
+      if ('projectName' in values) currentProjectName = values.projectName;
       if ('dirty' in values) isDirty = values.dirty;
       if ('generation' in values) lastSignaledEditGeneration = values.generation;
       if ('pending' in values) activePendingRecording = values.pending;
@@ -50,13 +54,40 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
       return { filePath: currentFilePath, dirty: isDirty, generation: lastSignaledEditGeneration };
     },
     dispatch: dispatchLegacyUiTreeDocumentCommand, shellUrl: getExpectedIpcShellUrl,
+    reviewBatchApply: handleReviewSurfaceApplyExactTextChangesBatchCommandSurface,
     bind: bindPendingDocxReviewPublication, activate: activateReviewDocxExportAuthority,
     buildAuthority: buildDocxReviewReturnAuthorityStoreRecord, authorityPath: docxReviewReturnAuthorityStorePath,
     fresh: assertFreshDocxReviewRoundAuthority, strict: readStrictDocxReviewAuthorityStore,
     persist: persistDocxReviewReturnAuthorityStore, expire: expireProjectWordRoundsBeforeTree,
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
+    exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
+    fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
+    reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    refreshReview:refreshActiveReviewExactTextUiPlan,reviewState:()=>cloneJsonSafe(activeReviewSessionStore),
+    captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
+    async observeLocalReviewReceipt(receipt) {
+      const statuses=[], opened=[], previousHandler=handleDocxReviewPreviewSessionLocalFileCommandSurface, previousStatus=updateStatus, previousSender=sendCanonicalRuntimeCommand;
+      handleDocxReviewPreviewSessionLocalFileCommandSurface=async()=>receipt;
+      updateStatus=value=>statuses.push(value); sendCanonicalRuntimeCommand=(...args)=>{opened.push(args);return true;};
+      try { return {result:await MENU_COMMAND_HANDLERS['cmd.project.review.openDocxReviewPreviewSession']({requestId:'observation'}),statuses,opened}; }
+      finally {handleDocxReviewPreviewSessionLocalFileCommandSurface=previousHandler;updateStatus=previousStatus;sendCanonicalRuntimeCommand=previousSender;}
+    },
     changeSession() { commentAuthoringSessionId += 1; },
+    queue: queueDiskOperation,
+    session: () => commentAuthoringSessionId,
+    clearBackupCaches() { backupHashes.clear(); treeBackupSeeds.clear(); },
+    captureQueued(label) {
+      const previous = queueDiskOperation; let captured = null;
+      queueDiskOperation = (operation, name) => {
+        if (name === label && !captured) {
+          captured = operation; queueDiskOperation = previous;
+          return Promise.resolve({success:false,code:'E_TEST_QUEUE_DEFERRED'});
+        }
+        return previous(operation, name);
+      };
+      return () => { if (!captured) throw Error('QUEUE_NOT_CAPTURED'); return previous(captured,label); };
+    },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
   try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
@@ -879,4 +910,472 @@ test('typing during detached Undo receipt read installs verified private recover
   assert.equal(await f.probe.saveAs(), true); assert.equal(read(f.alpha), r.original);
   assert.match(envelope.parseObservablePayload(read(target)).text, /receipt-race typing/u);
   assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(target)).doc).bookmarks.length, 7);
+});
+
+async function topologyFixture(t, { refuse = false, lateTarget = false } = {}) {
+  const f = await fixture(t); await installMixedScene(f);
+  let working = read(f.alpha), documentId = f.a.nodeId, publicationId = '', uiGeneration = 9;
+  let cut = { boundaryRootIndex: 1, position: 22 }, serial = 0, decline = refuse;
+  const publications = [];
+  const ui = mountRenderer(f, () => working, () => uiGeneration, null,
+    () => ({ projectId: f.query.projectId, documentId, treeContentPublicationId: publicationId, rootSplitBoundary: cut }),
+    payload => {
+      publications.push(payload);
+      if (payload.treeContentReplacement && !decline) {
+        assert.equal(payload.expectedContent, working);
+        assert.equal(payload.expectedDocumentId, documentId);
+        assert.equal(payload.expectedGeneration, uiGeneration);
+        assert.equal(payload.expectedTreeContentPublicationId, publicationId);
+        working = payload.content; documentId = payload.documentId; publicationId = payload.treeContentPublicationId;
+        cut = null;
+        if (lateTarget) {
+          lateTarget = false;
+          const parsed = envelope.parseObservablePayload(working);
+          parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'typed new partition 🧭'}]});
+          working = envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:parsed.doc});
+          uiGeneration++; f.probe.state({dirty:true,generation:uiGeneration});
+        }
+      }
+    });
+  // Main's open epoch is independent of the renderer's monotonic text epoch.
+  f.probe.state({ filePath: f.alpha, generation: 0 });
+  const request = (split, overrides = {}) => ({ projectId: f.query.projectId, nodeId: f.a.nodeId,
+    expectedTreeRevision: 0, expectedDocumentId: documentId, expectedGeneration: uiGeneration,
+    expectedTreeContentPublicationId: publicationId, ...(split ? { name: 'Right', boundaryRootIndex: 1 } : {}), ...overrides });
+  const dispatch = async (commandId, payload) => {
+    const protocol = require('../../src/core/ipc-envelope-v1.cjs');
+    const packet = protocol.createEnvelope('ui:command-bridge', commandId, payload,
+      { correlationId: 'topology-real-' + ++serial, issuedAt: '2026-10-02T00:00:00.000Z' });
+    const receipt = await f.handles.get('ui:command-bridge')(ui.event, packet);
+    return receipt.ok === true ? receipt.value : receipt;
+  };
+  return { f, ui, publications, request, dispatch,
+    working: () => working, identity: () => ({ projectId: f.query.projectId, documentId, treeContentPublicationId: publicationId }),
+    edit(fn) { working = fn(working); uiGeneration++; f.probe.state({ dirty: true, generation: uiGeneration }); },
+    observation(value) { if ('documentId' in value) documentId = value.documentId; if ('epoch' in value) publicationId = value.epoch; },
+    boundary(value) { cut = value; },
+    accept() { decline = false; },
+    refuse() { decline = true; },
+    deferNextSnapshot() {
+      const wc = ui.event.sender, send = wc.send;
+      let request = null;
+      wc.send = (channel, payload) => {
+        if (channel === 'editor:snapshot-request') { request = payload.requestId; wc.send = send; }
+        else send(channel, payload);
+      };
+      return snapshot => f.listeners.get('editor:snapshot-response')(ui.event, { requestId: request, snapshot });
+    },
+  };
+}
+
+test('topology actual versioned bridge splits the mixed graph, replaces same-ID content, merges and restores exact structural Undo', async t => {
+  const r = await topologyFixture(t), { f } = r, original = read(f.alpha);
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split));
+  const right = path.join(f.imported, '02_Right.txt');
+  assert.equal(fs.existsSync(right), true);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(right)).doc).bookmarks.length, 7);
+  assert.equal(f.probe.state().filePath, f.alpha);
+  assert.equal(r.publications[0].treeContentReplacement, true);
+  assert.equal(r.publications[0].documentId, f.a.nodeId);
+  assert.notEqual(r.identity().treeContentPublicationId, '');
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const merge = await r.dispatch('cmd.project.tree.mergeNextScene', r.request(false, { expectedTreeRevision: 1 }));
+  assert.equal(merge.ok, true, JSON.stringify(merge));
+  assert.equal(fs.existsSync(right), false);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, envelope.parseObservablePayload(original).text);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(f.alpha)).doc).bookmarks.length, 7);
+  const undoMerge = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 2, mutationId: merge.lastMutation.id });
+  assert.equal(undoMerge.ok, true, JSON.stringify(undoMerge));
+  assert.equal(fs.existsSync(right), true); assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  const state = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), comments = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(state.notes.length, 1); assert.equal(comments.threads.length, 1);
+});
+
+for (const variant of ['cut-position', 'cut-index', 'epoch', 'document', 'generation', 'foreign-path']) test(`topology raw/current ${variant} refuses before graph or authority writes`, async t => {
+  const r = await topologyFixture(t), { f } = r, before = f.capture();
+  const request = r.request(true);
+  if (variant === 'cut-position') r.boundary({ boundaryRootIndex: 1, position: 21 });
+  if (variant === 'cut-index') request.boundaryRootIndex = 2;
+  if (variant === 'epoch') request.expectedTreeContentPublicationId = 'forged';
+  if (variant === 'document') request.expectedDocumentId = f.b.nodeId;
+  if (variant === 'generation') request.expectedGeneration = 8;
+  if (variant === 'foreign-path') request.sourceRelativePath = 'roman/02_Beta.txt';
+  const result = await r.dispatch('cmd.project.tree.splitScene', request);
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(f.capture(), before);
+  assert.equal(r.publications.length, 0);
+});
+
+test('topology refused same-ID replacement cannot authorize old full buffer even with a forged target epoch', async t => {
+  const r = await topologyFixture(t, { refuse: true }), { f } = r;
+  const result = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  const before = f.capture(), targetEpoch = r.publications[0].treeContentPublicationId;
+  r.observation({ epoch: targetEpoch });
+  await assert.rejects(f.probe.snapshot(), /TREE_EDITOR_IDENTITY_UNCONFIRMED/u);
+  assert.equal((await f.probe.save()).ok, false);
+  const recoveryTarget = path.join(f.imported, 'ForgedTargetRecovery.txt'); f.chooseSavePath(recoveryTarget);
+  assert.equal(await f.probe.saveAs(), false); assert.equal(fs.existsSync(recoveryTarget), false);
+  assert.deepEqual(f.capture(), before);
+  assert.match(envelope.parseObservablePayload(r.working()).text, /Link destination/u);
+});
+
+test('topology old same-ID snapshot answered after new content ACK remains session-stale', async t => {
+  const r = await topologyFixture(t), { f } = r, original = r.working(), oldIdentity = r.identity();
+  const answer = r.deferNextSnapshot();
+  const old = f.probe.snapshot().then(value => ({ value }), error => ({ error }));
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split));
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const after = f.capture();
+  answer({ ...oldIdentity, content: original, generation: 9 });
+  assert.equal((await old).error?.code, 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED');
+  assert.deepEqual(f.capture(), after); assert.equal(f.probe.state().dirty, false);
+});
+
+test('topology refused old whole rich buffer forks through actual SaveAs using verified preimage; partitions stay exact', async t => {
+  const r = await topologyFixture(t, { refuse: true }), { f } = r;
+  const original = r.working(), split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, false); assert.equal(fs.existsSync(path.join(f.imported, '02_Right.txt')), true);
+  r.edit(raw => {
+    const parsed = envelope.parseObservablePayload(raw);
+    parsed.doc.content.push({ type: 'paragraph', content: [{ type: 'text', text: 'late original buffer 🧭' }] });
+    return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock, doc: parsed.doc });
+  });
+  const left = read(f.alpha), right = read(path.join(f.imported, '02_Right.txt'));
+  const target = path.join(f.imported, 'RecoveredOriginal.txt'); f.chooseSavePath(target); r.accept();
+  assert.equal(await f.probe.saveAs(), true);
+  assert.equal(read(f.alpha), left); assert.equal(read(path.join(f.imported, '02_Right.txt')), right);
+  const recovered = envelope.parseObservablePayload(read(target));
+  assert.match(recovered.text, /late original buffer 🧭/u);
+  assert.equal(bookmarks.readRegistry(recovered.doc).bookmarks.length, 7);
+  const originalIds = new Set(bookmarks.readRegistry(envelope.parseObservablePayload(original).doc).bookmarks.map(x => x.id));
+  assert.equal(bookmarks.readRegistry(recovered.doc).bookmarks.some(x => originalIds.has(x.id)), false);
+  const state = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), comments = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(state.notes.length, 2); assert.equal(comments.threads.length, 2);
+  assert.equal(f.probe.state().filePath, target); assert.equal(f.probe.state().dirty, false);
+  assert.equal((await f.probe.snapshot()).documentId, r.identity().documentId);
+});
+
+for (const kind of ['save', 'autosave']) test(`topology old ${kind} queue callback cannot write same-ID partitions after successful new ACK`, async t => {
+  const r = await topologyFixture(t), { f } = r, oldSession = f.probe.session();
+  const resume = f.probe.captureQueued(kind === 'save' ? 'save existing project transaction' : 'autosave project transaction');
+  if (kind === 'autosave') f.probe.state({ dirty: true });
+  const deferred = await f.probe[kind === 'save' ? 'save' : 'autosave']();
+  assert.notEqual(deferred, true); assert.equal(deferred.ok, false);
+  // A normal real Save settles the already durable unchanged buffer, without
+  // retiring the captured authoring session or fabricating a successful write.
+  assert.equal(await f.probe.save(), true); assert.equal(f.probe.session(), oldSession);
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split)); assert.notEqual(f.probe.session(), oldSession);
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const before = f.capture(), outcome = await resume();
+  assert.equal(outcome.success, false); assert.equal(outcome.code, 'E_SAVE_AUTHORING_TARGET_STALE');
+  assert.deepEqual(f.capture(), before); assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+});
+
+test('topology typing in an applied partition before initial ACK recovers only its verified afterimage through SaveAs', async t => {
+  const r = await topologyFixture(t,{lateTarget:true}), { f } = r;
+  const result = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(result.ok,false); assert.equal(result.value.committed,true);
+  const left = read(f.alpha), rightPath = path.join(f.imported,'02_Right.txt'), right = read(rightPath);
+  const partitionText = envelope.parseObservablePayload(r.working()).text;
+  assert.match(partitionText,/typed new partition 🧭/u); assert.doesNotMatch(partitionText,/Twin repeated text/u);
+  assert.equal((await f.probe.save()).ok,false);
+  const target = path.join(f.imported,'RecoveredPartition.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(),true);
+  assert.equal(read(f.alpha),left); assert.equal(read(rightPath),right);
+  const recovered = envelope.parseObservablePayload(read(target));
+  assert.equal(recovered.text,partitionText);
+  assert.equal(bookmarks.readRegistry(recovered.doc)?.bookmarks.length || 0,0);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(right).doc).bookmarks.length,7);
+  const noteState=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))), commentState=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  const sceneId=path.relative(f.root,target).split(path.sep).join('/');
+  assert.equal(noteState.notes.filter(n=>n.manuscript?.reference.sceneId===sceneId).length,1);
+  assert.equal(commentState.threads.filter(thread=>thread.sceneId===sceneId).length,1);
+  assert.equal(f.probe.state().dirty,false);
+});
+
+test('topology rejected afterimage recovery retries its retained partition graph without rebinding original IDs', async t => {
+  const r = await topologyFixture(t,{lateTarget:true}), { f } = r;
+  const split = await r.dispatch('cmd.project.tree.splitScene',r.request(true));
+  assert.equal(split.ok,false); assert.equal(split.value.committed,true);
+  const left=read(f.alpha), rightPath=path.join(f.imported,'02_Right.txt'), right=read(rightPath), working=r.working();
+  const first=path.join(f.imported,'RecoveryDeclined.txt'); f.chooseSavePath(first); r.refuse();
+  assert.equal(await f.probe.saveAs(),false); assert.equal(fs.existsSync(first),true);
+  const firstContent=read(first), second=path.join(f.imported,'RecoveryAccepted.txt'); f.chooseSavePath(second); r.accept();
+  assert.equal(await f.probe.saveAs(),true);
+  assert.equal(read(f.alpha),left); assert.equal(read(rightPath),right); assert.equal(read(first),firstContent);
+  assert.equal(envelope.parseObservablePayload(read(second)).text,envelope.parseObservablePayload(working).text);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(second)).doc)?.bookmarks.length || 0,0);
+  const notes=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))), comments=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(notes.notes.length,3); assert.equal(comments.threads.length,3);
+  assert.equal(new Set(notes.notes.map(n=>n.id)).size,3); assert.equal(new Set(comments.threads.map(thread=>thread.threadId)).size,3);
+  assert.equal(f.probe.state().filePath,second); assert.equal(f.probe.state().dirty,false);
+});
+
+for (const variant of ['wrong-target-epoch','wrong-target-owner']) test(`topology afterimage ${variant} refuses SaveAs without partition or graph writes`,async t=>{
+  const r=await topologyFixture(t,{lateTarget:true}), {f}=r;
+  const split=await r.dispatch('cmd.project.tree.splitScene',r.request(true));
+  assert.equal(split.ok,false); assert.equal(split.value.committed,true);
+  if(variant==='wrong-target-epoch') r.observation({epoch:'unowned-epoch'});
+  else r.observation({documentId:f.b.nodeId});
+  const before=f.capture(), working=r.working(), target=path.join(f.imported,'InvalidAfterimage.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(),false); assert.equal(fs.existsSync(target),false);
+  assert.deepEqual(f.capture(),before); assert.equal(r.working(),working);
+});
+
+for (const scope of ['exportReview','exportFullReview']) for (const stage of ['source','build','gate','cancel']) test(`actual ${scope} resolved ${stage} outcome surfaces safe diagnostics without altering receipt or writing`, async t=>{
+  const f=await fixture(t), statuses=[], logger=f.probe.captureExportLogs(); t.after(()=>logger.restore());
+  const detail=stage==='source'?'REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED':stage==='gate'?'RTK_V4_PUBLICATION_COMMENT_FINAL_MISMATCH':'private manuscript text /private/source/path';
+  let sourceCalls=0, writes=0;
+  const result=await f.probe[scope]({}, {
+    resolveDocxReviewPacketExportPath:async()=>stage==='cancel'?'':path.join(f.temp,'export.docx'),
+    validateDocxExportTarget:async()=>({ok:true}),
+    readDocxReviewPacketExportSource:async()=>{sourceCalls++; if(stage==='source')throw Error(detail); return {};},
+    buildDocxReviewPacketBuffer:async()=>{if(stage==='gate')return {documentBuffer:Buffer.from('gate-observation-only'),exportCapsule:{fullManuscript:true},publicationGate:{ok:false,code:detail,publishAllowed:false}};throw Error(detail);},
+    writeBufferAtomic:async()=>{writes++;}, updateStatus:value=>statuses.push(value),
+  });
+  assert.equal(result.ok,false); assert.equal(writes,0);
+  assert.equal(result.error.op,scope==='exportFullReview'?'cmd.project.review.exportFullManuscriptDocxReviewPacket':'cmd.project.review.exportDocxReviewPacket');
+  if(stage==='cancel'){
+    assert.equal(result.error.code,'E_REVIEW_DOCX_EXPORT_CANCELED'); assert.equal(sourceCalls,0);
+    assert.deepEqual(statuses,['Экспорт отменён.']); assert.deepEqual(logger.records,[]);
+  }else{
+    const code=stage==='source'?'E_REVIEW_DOCX_EXPORT_SOURCE_UNAVAILABLE':stage==='gate'?'E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED':'E_REVIEW_DOCX_EXPORT_BUILD_FAILED';
+    assert.equal(result.error.code,code);
+    if(stage==='gate'){assert.equal(result.error.reason,detail);assert.equal(result.error.details.code,detail);assert.equal(result.error.details.message,undefined);}else assert.equal(result.error.details.message,detail);
+    assert.equal(statuses.length,1); assert.ok(statuses[0].includes(code));
+    if(stage==='source'||stage==='gate')assert.ok(statuses[0].includes(detail)); else assert.equal(statuses[0].includes(detail),false);
+    assert.deepEqual(logger.records,[{context:'review-docx-export',error:{code,...(stage==='source'||stage==='gate'?{refusalCode:detail}:{})}}]);
+    assert.equal(JSON.stringify(logger.records).includes('/private'),false);
+  }
+});
+
+test('structural merge periodic backup dedupes durable afterimage even with cold process caches, while changed buffer still backs up',async t=>{
+  const r=await topologyFixture(t), {f}=r;
+  assert.equal((await r.dispatch('cmd.project.tree.splitScene',r.request(true))).ok,true);
+  const merged=await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:1})); assert.equal(merged.ok,true);
+  const manager=require('../../src/utils/backupManager'), original=manager.createBackup; let calls=0;
+  manager.createBackup=async(...args)=>{calls++;return original(...args);}; t.after(()=>{manager.createBackup=original;});
+  const before=f.capture(); assert.equal((await f.probe.backup()).unchanged,true); assert.equal(calls,0);
+  f.probe.clearBackupCaches();
+  assert.equal((await f.probe.backup()).unchanged,true); assert.equal(calls,0); assert.deepEqual(f.capture(),before);
+  const state=await require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  assert.equal(state.lastMutation.canUndo,true);
+  const undo=await f.main.handleUiTreeUndoCommand({projectId:f.query.projectId,expectedTreeRevision:2,mutationId:merged.lastMutation.id});
+  assert.equal(undo.ok,true,JSON.stringify(undo));
+  assert.equal((await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:3}))).ok,true);
+  const durable=read(f.alpha), callsBeforeEdit=calls;
+  r.edit(raw=>{const parsed=envelope.parseObservablePayload(raw); parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'actual changed backup'}]});return envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock});});
+  assert.equal((await f.probe.backup()).success,true); assert.equal(calls,callsBeforeEdit+1);
+  assert.equal(read(f.alpha),durable);
+});
+
+test('structural backup dedupe preserves foreign history bytes and exact Undo refusal',async t=>{
+  const r=await topologyFixture(t), {f}=r;
+  assert.equal((await r.dispatch('cmd.project.tree.splitScene',r.request(true))).ok,true);
+  const merged=await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:1})); assert.equal(merged.ok,true);
+  const foreign=path.join(f.root,'backups',sha(f.alpha),'1790924312766_01_Alpha.txt'); fs.mkdirSync(path.dirname(foreign),{recursive:true}); fs.writeFileSync(foreign,'foreign history');
+  f.probe.clearBackupCaches(); assert.equal((await f.probe.backup()).unchanged,true);
+  const tx=require('../../src/core/project-transaction-v1.cjs'),state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  assert.equal(state.lastMutation.canUndo,false); assert.equal(state.lastMutation.unavailableReason,'E_TREE_COHORT_FOREIGN_ENTRY');
+  const before=f.capture(),result=await f.main.handleUiTreeUndoCommand({projectId:f.query.projectId,expectedTreeRevision:2,mutationId:merged.lastMutation.id});
+  assert.equal(result.ok,false); assert.deepEqual(f.capture(),before); assert.equal(read(foreign),'foreign history');
+});
+
+for(const variant of ['typed-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
+  const f=await fixture(t), logger=f.probe.captureExportLogs();t.after(()=>logger.restore());
+  const receipt=variant==='typed-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_RETURN_INTAKE_PARSER_V2_BLOCKED',details:{nestedCode:'RTK_WORD_UNSUPPORTED',nestedReason:'RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH',message:'private manuscript /private/source'}}}
+    :variant==='secret-filter'?{ok:false,error:{code:'private secret /private/source',reason:'private manuscript text',details:{nestedCode:'RTK_WORD_'+'A'.repeat(170),nestedReason:'/private/source'}}}
+    :variant==='cancel'?{ok:true,activated:false,cancelled:true}
+    :variant==='pending'?{ok:true,activated:false,pendingProductPath:{ok:true,status:'preview-ready'}}
+    :{ok:true,activated:true,requestId:'actual-success'};
+  const before=structuredClone(receipt), out=await f.probe.observeLocalReviewReceipt(receipt);
+  assert.strictEqual(out.result,receipt);assert.deepEqual(receipt,before);
+  if(variant==='typed-failure'){
+    for(const code of [receipt.error.code,receipt.error.reason,receipt.error.details.nestedCode,receipt.error.details.nestedReason])assert.ok(out.statuses[0].includes(code));
+    assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:receipt.error.code,reason:receipt.error.reason,nestedCode:receipt.error.details.nestedCode,nestedReason:receipt.error.details.nestedReason}}]);
+    assert.deepEqual(out.opened,[]);assert.equal(out.statuses.length,1);
+  }else if(variant==='secret-filter'){
+    assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_FAILED'}}]);
+    assert.equal(out.statuses.length,1);assert.ok(out.statuses[0].includes('E_DOCX_REVIEW_PREVIEW_SESSION_FAILED'));assert.deepEqual(out.opened,[]);
+  }else{
+    assert.deepEqual(out.statuses,[]);assert.deepEqual(logger.records,[]);
+    assert.deepEqual(out.opened,variant==='success'?[['cmd.project.review.openComments',{source:'review-docx-local-file-preview-session',requestId:'actual-success'},'review-comment']]:[]);
+  }
+  assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('/private'),false);
+  assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
+});
+
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn}={}) {
+  const f=await fixture(t); if(bookmarked)await installMixedScene(f);
+  const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
+  if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
+  const beforeDoc=structuredClone(parsed.doc);
+  const target=bookmarked?'Unannotated target':'Alpha';
+  if(bookmarked){
+    parsed.doc.content.unshift({type:'paragraph',content:[{type:'text',text:target}]});
+    parsed.doc=bookmarks.planSave({beforeDoc,workingDoc:parsed.doc}).doc;
+  }
+  const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
+  const beforeAppend=structuredClone(parsed.doc);
+  // Repeated quote belongs to a different signed block, not this operation.
+  parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
+  parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
+  if(bookmarked){
+    const notePath=path.join(f.root,'notes.craftsman.json'),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
+    let beforeContent=initial;
+    for(const afterContent of [intermediate,read(f.alpha)]){
+      const notePlan=notes.planManuscriptNoteAnchorSave({beforeText:read(notePath),projectId:f.query.projectId,sceneId:'roman/Imported/01_Alpha.txt',beforeContent,afterContent});
+      fs.writeFileSync(notePath,notePlan.afterText);
+      const commentPlan=require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave({beforeText:read(commentPath),projectId:f.query.projectId,sceneId:'roman/Imported/01_Alpha.txt',beforeContent,afterContent});
+      if(commentPlan)fs.writeFileSync(commentPath,commentPlan.afterText);
+      beforeContent=afterContent;
+    }
+  }
+  f.source=read(f.alpha); let observed=f.source;
+  const ui=mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+  f.probe.state({filePath:f.alpha,projectName:'Роман'});
+  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  await f.probe.activate(source.pendingAuthorityStore);
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+  assert.ok(zip['word/document.xml'].includes(target));
+  zip['word/document.xml']=zip['word/document.xml'].replace(target,target+' CLEAN_EDIT');
+  if(mutateReturn)mutateReturn(zip);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
+  const beforeActivation=f.capture();
+  const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  return {f,ui,source,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
+}
+for(const bookmarked of [true,false])test(`actual whole Main clean return activation, owner preview, full Apply and replay with bookmarks ${bookmarked}`,async t=>{
+  const {f,ui,activated}=await cleanTextReturnFixture(t,{bookmarked});
+  assert.equal(activated.ok,true,JSON.stringify(activated)); assert.equal(activated.activated,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  assert.equal(activated.noteProductPath?.status,'unchanged',JSON.stringify(activated.noteProductPath));
+  const before=f.capture(), sibling=read(f.beta);
+  await f.probe.refreshReview();
+  assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');assert.deepEqual(f.capture(),before);
+  const result=await f.probe.fullApply({requestId:'clean-full-apply'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.applied,true,JSON.stringify(result));
+  assert.equal(read(f.beta),sibling);
+  const doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  assert.match(doc.content[0].content[0].text,/CLEAN_EDIT/);assert.equal(doc.content.at(-1).content[0].text,'STARTBOUND_'+(bookmarked?'Unannotated target':'Alpha')+'_ENDBOUND');
+  if(bookmarked){assert.equal(bookmarks.readRegistry(doc).bookmarks.length,7);
+    const state=JSON.parse(read(path.join(f.root,'notes.craftsman.json')));
+    const old=JSON.parse(Buffer.from(before.files['notes.craftsman.json'],'base64').toString());
+    assert.equal(state.notes[0].manuscript.reference.sourceTextSha256,sha(envelope.deriveVisibleTextFromDocument(doc)));
+    assert.equal(state.notes[0].manuscript.reference.offsetUtf16,old.notes[0].manuscript.reference.offsetUtf16+' CLEAN_EDIT'.length);}
+  assert.equal(result.editorSync.ok,true,JSON.stringify(result));assert.ok(ui.sends.some(x=>x.channel==='editor:set-text'));
+  const after=f.capture(),replay=await f.probe.fullApply({requestId:'clean-full-apply'});
+  assert.notEqual(replay.applied,true);assert.ok(replay.ok===false || replay.status==='blocked');assert.deepEqual(f.capture(),after);
+});
+
+for (const languageOnly of [false,true]) test(`actual whole Main clean Word language return preserves the run boundary through Apply and re-export; language-only ${languageOnly}`,async t=>{
+  const originalPart=languageOnly?'Unannotated':'Unannotated target',changedPart=languageOnly?' target':' CLEAN_EDIT';
+  const {f,activated}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml']
+      .replace(/(<w:p\b[^>]*>)/u,'$1<w:pPr><w:rPr><w:lang w:val="en-US"/></w:rPr></w:pPr>')
+      .replace('Unannotated target CLEAN_EDIT',originalPart+'</w:t></w:r><w:r><w:rPr><w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart);
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.activated,true,JSON.stringify(activated));
+  const before=f.capture(),sibling=read(f.beta);await f.probe.refreshReview();
+  const result=await f.probe.fullApply({requestId:'clean-language-apply'});
+  assert.equal(result.applied,true,JSON.stringify(result));assert.equal(read(f.beta),sibling);
+  const reopened=envelope.parseObservablePayload(read(f.alpha));assert.equal(reopened.issue,null);
+  const paragraph=reopened.doc.content[0];
+  assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,{val:'en-US'});
+  assert.equal(paragraph.content[0].text,originalPart);assert.equal(paragraph.content[0].marks,undefined);
+  assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]);
+  assert.equal(bookmarks.readRegistry(reopened.doc).bookmarks.length,7);
+  const notesAfter=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))),notesBefore=JSON.parse(Buffer.from(before.files['notes.craftsman.json'],'base64').toString());
+  assert.equal(notesAfter.notes[0].manuscript.reference.offsetUtf16,notesBefore.notes[0].manuscript.reference.offsetUtf16+(languageOnly?0:' CLEAN_EDIT'.length));
+  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];
+  assert.match(xml,/<w:pPr><w:rPr><w:lang w:val="en-US"\/><\/w:rPr><\/w:pPr>/u);
+  assert.ok(xml.includes('<w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart+'</w:t></w:r>'));
+});
+
+for(const variant of ['comment-body','note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    if(variant==='comment-body'){
+      assert.ok(parts['word/comments.xml'].includes('Mixed comment'));
+      parts['word/comments.xml']=parts['word/comments.xml'].replace('Mixed comment','Changed comment');
+    }else if(variant==='note-body'){
+      assert.ok(parts['word/footnotes.xml'].includes('Mixed footnote'));
+      parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('Mixed footnote','Changed footnote');
+    }else{
+      const run=/<w:r(?:\s[^>]*)?>(?:(?!<\/w:r>)[\s\S])*?Unannotated target CLEAN_EDIT(?:(?!<\/w:r>)[\s\S])*?<\/w:r>/u;
+      assert.ok(run.test(parts['word/document.xml']));
+      parts['word/document.xml']=parts['word/document.xml'].replace(run,match=>'<w:ins w:id="901" w:author="Review" w:date="2026-10-02T00:00:00Z">'+match+'</w:ins>');
+    }
+  }});
+  assert.equal(activated.ok,false,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  const apply=await f.probe.fullApply({requestId:'refused-full-apply'});
+  assert.equal(apply.ok,false,JSON.stringify(apply));assert.deepEqual(f.capture(),beforeActivation);
+});
+
+for(const variant of ['dirty','sibling','note-state','session'])test(`actual whole Main clean return revalidates ${variant} before Apply`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t);
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  if(variant==='dirty')f.probe.state({dirty:true,generation:1});
+  if(variant==='sibling')fs.writeFileSync(f.beta,'New unrelated owner edit');
+  if(variant==='note-state'){
+    const target=path.join(f.root,'notes.craftsman.json'),document=JSON.parse(read(target));
+    document.notes[0].title='Owner note change';fs.writeFileSync(target,JSON.stringify(document));
+  }
+  if(variant==='session')f.probe.changeSession();
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'stale-full-apply'});
+  assert.notEqual(result.applied,true,JSON.stringify({status:result.status,reason:result.reason,error:result.error}));
+  assert.ok(result.ok===false || result.status==='blocked');assert.deepEqual(f.capture(),before);
+});
+
+test('actual clean-return renderer click uses admitted Free batch and actual Main writes once',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t);assert.equal(activated.ok,true);
+  const changeId=f.probe.reviewState().revisionSession.reviewGraph.textChanges[0].changeId;
+  const source=read(path.join(ROOT,'src/renderer/editor.js'));
+  const fn=name=>{const a=source.indexOf('function '+name+'('),b=source.indexOf('\n}\n',a)+3;
+    assert(a>=0&&b>a);return source.slice(source.slice(a-6,a)==='async '?a-6:a,b);};
+  class Element{} class HTMLElement extends Element{} class HTMLButtonElement extends HTMLElement{}
+  const button=new HTMLButtonElement();button.dataset={changeId};button.disabled=false;
+  button.closest=selector=>selector==='[data-review-apply-exact-change]'?button:null;
+  const host=new HTMLElement();host.contains=value=>value===button;const calls=[];
+  const ui={Element,HTMLElement,HTMLButtonElement,reviewSurfaceHost:host,
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID:'cmd.project.review.applyExactTextChange',
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:'cmd.project.review.applyExactTextChangesBatch',
+    reviewSurfaceText:x=>typeof x==='string'?x:'',reviewSurfaceArray:x=>Array.isArray(x)?x:[],
+    reviewSurfaceCreateExactTextApplyRequestId:()=> 'explicit-clean-click',setReviewSurfaceExactTextApplyTransientState:()=>{},
+    invokePreloadUiCommandBridge:async(id,payload)=>{
+      assert.equal(require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement(id,'free').available,true);
+      const local=require('../../src/core/writer-local-profile-v1.cjs');
+      assert.equal(local.evaluateWriterLocalCommandAccess({profile:local.createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),commandId:id}).allowed,true);
+      calls.push({id,payload});assert.equal(id,'cmd.project.review.applyExactTextChangesBatch');
+      const result=await f.probe.reviewBatchApply(JSON.parse(JSON.stringify(payload)));
+      assert.equal(result.applied,true,JSON.stringify({status:result.status,reason:result.reason,error:result.error}));
+      return {ok:true,value:result};
+    },reviewSurfaceUnwrapCommandResult:x=>x.value,reviewSurfaceIsPlainObject:x=>!!x&&typeof x==='object',
+    setReviewSurfaceState:()=>{}};
+  const vm=require('node:vm');vm.createContext(ui);
+  for(const name of ['reviewSurfaceBuildExactTextApplyPayload','reviewSurfaceBuildExactTextApplyBatchPayload','handleReviewSurfaceExactTextApplyClick'])vm.runInContext(fn(name),ui);
+  await ui.handleReviewSurfaceExactTextApplyClick({target:button});assert.equal(calls.length,1);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].content[0].text,'Unannotated target CLEAN_EDIT');
+  const refreshed=await f.probe.refreshReview();
+  assert.equal(refreshed.status,'applied');
+  assert.equal(refreshed.reviewSurface.exactTextPlanPreview.status,'ready');
+  assert.deepEqual(refreshed.reviewSurface.exactTextAppliedChangeIds,[changeId]);
+  assert.equal(refreshed.reviewSurface.exactTextBatchApplyResult.totals.applied,1);
+  vm.runInContext(fn('reviewSurfaceBuildTerminalSummary'),ui);
+  const terminal=ui.reviewSurfaceBuildTerminalSummary(refreshed.reviewSurface);
+  assert.equal(terminal.status,'applied');assert.match(terminal.detail,/1 applied/);
+  const after=f.capture();button.disabled=true;await ui.handleReviewSurfaceExactTextApplyClick({target:button});
+  assert.equal(calls.length,1);assert.deepEqual(f.capture(),after);
+  const replay=await f.probe.reviewBatchApply({requestId:'new-repeat-request',changeIds:[changeId]});
+  assert.notEqual(replay.applied,true);assert.deepEqual(f.capture(),after);
 });

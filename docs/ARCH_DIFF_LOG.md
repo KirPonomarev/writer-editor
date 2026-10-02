@@ -138,3 +138,12 @@ W6 composite follow-up: authenticated media text Apply preserves unchanged hyper
 ## 2026-09-25 — W7 implicit auto-fit table review
 
 Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word return blocked by derived grid widths in an implicit legacy auto-fit table. Only the authenticated local map can establish absence of stored geometry; explicit properties, cell topology and no-write preview remain strict. No canon or oracle exception, new dependency or authority. This is a runtime repair requiring fresh physical evidence, not proof-only promotion. Rollback: revert the bounded W7 delivery; all original DOCX and failed/successful evidence retained.
+
+## 2026-10-02 — Word SaveAs file creation timestamp versus project creation
+
+- Scope: owner-authorized complete Mac Word plan, current WORD_SCENE_SPLIT_MERGE_MAC_20261002 delivery. Clean45path preflight on d334ad34c314cd1e3da38e11449184a8530b01e4 precedes new metadata files.
+- Amended historical assumption: the2026-09-18 metadata task required the redundant core creation carrier to remain within the canonical project's creation minute. Actual Word SaveAs replaces that carrier with the new file creation minute. Both the ordinary product DOCX and a seconds-only diagnostic reproduce this. Historical results are not promoted to new acceptance.
+- Decision: distinguish canonical project creation (exact signed custom property and digest) from provider file creation. Only the already authenticated Main return route may explicitly admit the latter change. The default validator remains strict. Missing or invalid dates, wrong timestamp types, duplicates, changed project properties and forged signatures still reject. Returned metadata never writes project truth.
+- Observation: accepted provider changes report both timestamps, an explicit loss entry and coreMetadataPreserved:false through the read-only projection; they cannot count as full preservation of the redundant core carrier.
+- Risk and rollback: accepting arbitrary unvalidated metadata or enabling this before authentication would cross authority boundaries and is prohibited. Revert this opt-in and its projection while retaining original documents and failed/successful evidence. No migration or new writer.
+- Closure: this evidence-backed distinction replaces the historical carrier assumption for authenticated Word SaveAs only; it does not change frozen acceptance denominators or grant any whole-plan completion claim.

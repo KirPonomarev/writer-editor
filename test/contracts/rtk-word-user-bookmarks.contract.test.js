@@ -1028,3 +1028,33 @@ test('real DOCX analysis admits only proven label boundary shifts and Core reche
     for(const fragment of ['>Before <','>after<']){const forged=xml.replace(fragment,fragment.toUpperCase());assert.notEqual(forged,xml);assert.equal(analyze(forged).ok,false);}
   }
 });
+
+test('ordinary clean block text is separately analyzed against literal bookmark endpoints, with strict default',async()=>{
+  const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const baselineDoc=create(doc('Target Twin Alpha','STARTBOUND_Target Twin Alpha_ENDBOUND'),'Other',ep(0,1),ep(10,1)).doc;
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'clean-block',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-10-02T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
+  const xml=parts['word/document.xml'].replace('>Target Twin Alpha<','>Target Twin Alpha ADDED<');assert.notEqual(xml,parts['word/document.xml']);
+  const bytes=buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})));
+  const parsed=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
+  const input={baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS};
+  assert.equal(analyzer.analyzeUserBookmarksReturn(input).detail,'label-footprint-ambiguous');
+  const result=analyzer.analyzeUserBookmarksReturn({...input,ordinaryTextMode:true});assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.canWriteManuscript,false);assert.equal(result.ordinaryTextChanges.length,1);
+  assert.equal(result.ordinaryTextChanges[0].blockId,exportMap.scenes[0].blocks[0].blockId);
+  assert.equal(result.ordinaryTextChanges[0].sceneParagraphIndex,0);
+  assert.deepEqual(result.registry,model.readRegistry(baselineDoc));
+  assert.equal(result.doc.content[0].content[0].text,'Target Twin Alpha ADDED');
+  for(const mutate of [
+    ir=>ir.userBookmarkInventory.bookmarks[0].end.offsetUtf16++,
+    ir=>ir.formattingParagraphs[0].formattedRuns[0].inlineState.color='#ff0000',
+    ir=>ir.formattingParagraphs[0].formattedRuns[0].unsupportedNames.push('lang'),
+    ir=>ir.formattingParagraphs[0].bookmarkNames=[],
+    ir=>ir.textRevisions=[{operation:'insert',text:'untrusted'}],
+  ]){const ir=copy(parsed.reviewIr);mutate(ir);const rejected=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:ir,ordinaryTextMode:true});assert.equal(rejected.ok,false,JSON.stringify(rejected));}
+  assert.deepEqual(model.readRegistry(baselineDoc),result.registry);
+});

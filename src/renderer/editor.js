@@ -2,6 +2,8 @@ import {
   applyTiptapUserBookmarkPublication,
   applyTiptapLocalImagePublication,
   getTiptapImageInsertionPosition,
+  getTiptapRootSplitBoundary,
+  replaceTiptapTreeDocumentSnapshot,
   applyTiptapCharacterStyle,
   applyTiptapParagraphStyle,
   focusTiptapSurface,
@@ -1128,6 +1130,7 @@ let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
 let treeDetachedOrigin = null;
+let currentTreeContentPublicationId = '';
 let currentDocumentKind = null;
 let currentDocumentTitle = '';
 let currentProjectId = '';
@@ -8516,11 +8519,13 @@ function composeEditorSnapshot() {
   return {
     projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
     documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '',
+    treeContentPublicationId: currentTreeContentPublicationId,
     content: composeDocumentContent(),
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
     selectionRange: getSelectionOffsets(),
     imageInsertionPosition: isTiptapMode ? getTiptapImageInsertionPosition() : null,
+    rootSplitBoundary: isTiptapMode ? getTiptapRootSplitBoundary() : null,
     generation: localEditGeneration,
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
     manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending),
@@ -10227,6 +10232,84 @@ async function handleCopyNode(node) {
   }
 }
 
+function findNextTreeScene(node) {
+  const nodeId = getEffectiveDocumentId(node);
+  if (!nodeId || !treeRoot) return null;
+  // Presentation clones carry parentNodeId; canonical query nodes do not.
+  // Resolve adjacency from the current immutable tree for both callers.
+  const stack = [treeRoot];
+  while (stack.length) {
+    const parent = stack.pop();
+    const children = Array.isArray(parent?.children) ? parent.children : [];
+    const index = children.findIndex(child => getEffectiveDocumentId(child) === nodeId);
+    if (index >= 0) {
+      const next = children[index + 1];
+      return next && ['scene', 'chapter-file'].includes(next.kind) ? next : null;
+    }
+    for (let index = children.length - 1; index >= 0; index -= 1) stack.push(children[index]);
+  }
+  return null;
+}
+
+function treeContentUnavailableReason(node, split) {
+  if (!captureTreeMutationProjection() || treeMutationPending) return 'дождитесь обновления дерева';
+  if (!node || !['scene', 'chapter-file'].includes(node.kind)
+    || getEffectiveDocumentId(node) !== currentDocumentId) return 'сначала откройте эту сцену';
+  if (!isTiptapMode || flowModeState.active) return 'откройте отдельную сцену';
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'завершите правку комментария или сноски';
+  if (split && !getTiptapRootSplitBoundary()) return 'курсор нужен в начале обычного абзаца или заголовка после первого блока';
+  if (!split && !findNextTreeScene(node)) return 'нет следующей сцены в этой главе';
+  return '';
+}
+
+function captureTreeContentTarget(node, split) {
+  const target = captureNodeNameTarget(node);
+  if (!target || treeContentUnavailableReason(node, split)) return null;
+  return { ...target, documentId: currentDocumentId, generation: localEditGeneration,
+    publicationId: currentTreeContentPublicationId, content: composeDocumentContent(),
+    boundary: split ? getTiptapRootSplitBoundary() : null,
+    nextNodeId: split ? null : getEffectiveDocumentId(findNextTreeScene(node)) };
+}
+
+function isTreeContentTargetCurrent(target, split) {
+  if (!isNodeNameTargetCurrent(target) || currentDocumentId !== target.documentId
+    || localEditGeneration !== target.generation || currentTreeContentPublicationId !== target.publicationId
+    || composeDocumentContent() !== target.content) return false;
+  const node = findTreeNodeById(treeRoot, target.nodeId);
+  if (treeContentUnavailableReason(node, split)) return false;
+  if (!split) return getEffectiveDocumentId(findNextTreeScene(node)) === target.nextNodeId;
+  const boundary = getTiptapRootSplitBoundary();
+  return Boolean(boundary && target.boundary && boundary.boundaryRootIndex === target.boundary.boundaryRootIndex
+    && boundary.position === target.boundary.position);
+}
+
+async function handleTreeContentMutation(node, split) {
+  const commandId = split ? EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE : EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE;
+  const target = captureTreeContentTarget(node, split);
+  if (!target || !isNavigatorContextCommandAvailable(commandId)) {
+    updateStatusText('Изменение сцены недоступно: ' + (treeContentUnavailableReason(node, split) || 'команда недоступна'), { visible: true });
+    return;
+  }
+  const name = split ? await openNodeNameDialog({ title: 'Название новой сцены',
+    initialValue: `${(target.label || '').slice(0, 65)} — часть 2`, submitLabel: 'Разделить' }) : null;
+  if (split && name === null) return;
+  if ((split && !normalizeNodeName(name).ok) || !isTreeContentTargetCurrent(target, split)
+    || !isNavigatorContextCommandAvailable(commandId)) {
+    updateStatusText('Изменение сцены отменено: состояние проекта или положение курсора изменилось', { visible: true });
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(commandId, {
+      projectId: target.projectId, nodeId: target.nodeId, expectedTreeRevision: target.treeRevision,
+      expectedDocumentId: target.documentId, expectedGeneration: target.generation,
+      expectedTreeContentPublicationId: target.publicationId,
+      ...(split ? { name: name.trim(), boundaryRootIndex: target.boundary.boundaryRootIndex } : {}),
+    });
+    if (result?.ok && currentProjectId === target.projectId) await loadTree();
+  } finally { treeMutationPending = false; }
+}
+
 async function handleUndoTreeMutation(expectedProjection = treeMutationProjection) {
   const projection = captureTreeMutationProjection();
   if (!projection || !expectedProjection
@@ -10406,6 +10489,13 @@ function buildContextMenuItems(node) {
       { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
     append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Переместить…', () => handleChooseSceneMove(node),
       { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
+    const splitReason = treeContentUnavailableReason(node, true);
+    const mergeReason = treeContentUnavailableReason(node, false);
+    const next = findNextTreeScene(node);
+    append(EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE, 'Разделить перед текущим абзацем…' + (splitReason ? ` — ${splitReason}` : ''),
+      () => handleTreeContentMutation(node, true), { enabled: !splitReason });
+    append(EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE, 'Объединить со следующей сценой' + (mergeReason ? ` — ${mergeReason}` : ` «${next.label || ''}»`),
+      () => handleTreeContentMutation(node, false), { enabled: !mergeReason });
     append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
     append(
       EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
@@ -19353,7 +19443,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;
@@ -23632,6 +23722,29 @@ window.addEventListener('resize', () => {
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });
 
+function treeContentReplacementRefusalReason(payload) {
+  if (payload?.treeContentReplacement !== true || payload.treePublication === true
+    || payload.treeReplacement === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
+  if (!isTiptapMode || flowModeState.active || wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_PENDING';
+  if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
+  const detachedRecovery = payload.treeRecovery === true && currentDocumentId === ''
+    && treeDetachedOrigin?.projectId === currentProjectId && treeDetachedOrigin.documentId === payload.expectedDocumentId;
+  if (!detachedRecovery && (!currentDocumentId || payload.expectedDocumentId !== currentDocumentId)) return 'SOURCE_DOCUMENT_MISMATCH';
+  if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
+    || payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
+  if (typeof payload.expectedTreeContentPublicationId !== 'string'
+    || payload.expectedTreeContentPublicationId !== currentTreeContentPublicationId) return 'PUBLICATION_EPOCH_MISMATCH';
+  if (typeof payload.treeContentPublicationId !== 'string' || !payload.treeContentPublicationId
+    || payload.treeContentPublicationId.length > 192 || /[\u0000-\u001f\u007f]/u.test(payload.treeContentPublicationId)
+    || payload.treeContentPublicationId === currentTreeContentPublicationId) return 'TARGET_EPOCH_INVALID';
+  if (typeof payload.documentId !== 'string' || !payload.documentId
+    || !['scene', 'chapter-file'].includes(payload.kind) || payload.metaEnabled !== true
+    || typeof payload.title !== 'string' || !payload.title.trim()) return 'TARGET_DOCUMENT_INVALID';
+  if (typeof payload.expectedContent !== 'string' || typeof payload.content !== 'string'
+    || composeDocumentContent() !== payload.expectedContent) return 'CONTENT_MISMATCH';
+  return '';
+}
+
 function treeReplacementRefusalReason(payload) {
   if (payload?.treeReplacement !== true || payload.treePublication === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
   if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_DRAFT_PENDING';
@@ -23703,6 +23816,20 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    let treeContentParsed = null;
+    if (payload?.treeContentReplacement === true) {
+      const reason = treeContentReplacementRefusalReason(payload);
+      if (!reason) {
+        treeContentParsed = parseDocumentContent(payload.content);
+        if (treeContentParsed.issue || !treeContentParsed.doc
+          || !replaceTiptapTreeDocumentSnapshot({ doc: treeContentParsed.doc })) treeContentParsed = null;
+      }
+      if (!treeContentParsed) {
+        console.warn(`TREE_CONTENT_REPLACEMENT_REJECTED reason=${reason || 'DOCUMENT_INVALID'}`);
+        updateStatusText('Сцена изменилась, но текущий текст остался в редакторе. Сохраните его отдельно перед закрытием.', { visible: true });
+        return;
+      }
+    }
     if (payload?.treeDetached === true) {
       if (!applyTreeDetachedPublication(payload)) updateStatusText('Восстановленная копия не привязана: состояние изменилось', { visible: true });
       return;
@@ -23782,7 +23909,7 @@ if (window.electronAPI) {
     }
     setReviewSurfaceState(reviewSurfaceResolveIncomingPayload(payload));
 
-    const parsed = parseDocumentContent(content);
+    const parsed = treeContentParsed || parseDocumentContent(content);
     currentMeta = parsed.meta;
     currentCards = parsed.cards;
     plainTextBuffer = parsed.text || '';
@@ -23795,10 +23922,12 @@ if (window.electronAPI) {
     }
     if (isTiptapMode) {
       resetCentralSheetStripForIncomingPayload();
-      setTiptapDocumentSnapshot({
-        doc: parsed.doc,
-        text: parsed.text || '',
-      });
+      if (!treeContentParsed) {
+        setTiptapDocumentSnapshot({
+          doc: parsed.doc,
+          text: parsed.text || '',
+        });
+      }
       resetCentralSheetStripForIncomingPayload();
       if (useLargePayloadFastPath) {
         applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
@@ -23816,6 +23945,7 @@ if (window.electronAPI) {
 
     localDirty = false;
     lastAckedGeneration = localEditGeneration;
+    currentTreeContentPublicationId = treeContentParsed ? payload.treeContentPublicationId : '';
     updateWordCount();
     if (!useLargePayloadFastPath) {
       scheduleCentralSheetStripProofRefresh();

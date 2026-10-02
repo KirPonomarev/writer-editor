@@ -2,9 +2,17 @@
 
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 const { escapeXml } = require('./docxTextXml.js');
+const { normalizeWordLanguage } = require('../../core/word-language-v1.cjs');
+
+function buildDocxWordLanguageXml(value) {
+  if (value == null) return '';
+  const language = normalizeWordLanguage(value);
+  return `<w:lang${Object.entries(language).map(([key, tag]) => ` w:${key}="${escapeXml(tag)}"`).join('')}/>`;
+}
 
 function buildDocxTypographyPropertiesXml(inline = {}) {
   const properties = [];
+  if (inline.wordLanguage != null) properties.push(buildDocxWordLanguageXml(inline.wordLanguage));
   if (inline.fontFamily != null && inline.fontFamily !== '') {
     const family = escapeXml(normalizeFontFamily(inline.fontFamily));
     properties.push(`<w:rFonts w:ascii="${family}" w:hAnsi="${family}" w:eastAsia="${family}" w:cs="${family}"/>`);
@@ -20,15 +28,15 @@ function readRunTypography(run) {
   const typography = {};
   for (const mark of Array.isArray(run.marks) ? run.marks : []) {
     if (mark?.type !== 'textStyle') continue;
-    for (const [key, normalize] of [['fontFamily', normalizeFontFamily], ['fontSize', normalizeFontSize]]) {
+    for (const [key, normalize] of [['fontFamily', normalizeFontFamily], ['fontSize', normalizeFontSize], ['wordLanguage', normalizeWordLanguage]]) {
       const value = mark.attrs?.[key];
       if (value == null || value === '') continue;
       const normalized = normalize(value);
-      if (Object.hasOwn(typography, key) && typography[key] !== normalized) throw new Error('DOCX_FONT_MARK_CONFLICT');
+      if (Object.hasOwn(typography, key) && JSON.stringify(typography[key]) !== JSON.stringify(normalized)) throw new Error('DOCX_FONT_MARK_CONFLICT');
       typography[key] = normalized;
     }
   }
   return typography;
 }
 
-module.exports = { buildDocxTypographyPropertiesXml, readRunTypography };
+module.exports = { buildDocxTypographyPropertiesXml, readRunTypography, buildDocxWordLanguageXml };

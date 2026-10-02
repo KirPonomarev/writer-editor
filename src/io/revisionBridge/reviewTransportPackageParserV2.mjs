@@ -1,4 +1,5 @@
 import docxHyperlinks from '../docxHyperlinks.cjs';
+import wordLanguage from '../../core/word-language-v1.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentTables from '../documentTables.js';
 import {
@@ -2542,6 +2543,36 @@ function reviewDefaultFontSize(stylesScan) {
   return size;
 }
 
+function reviewDefaultFontFamily(stylesScan) {
+  // A deliberately closed inheritance proof: literal document defaults with
+  // identical script fonts and no default-style override. Theme resolution,
+  // named styles and table styles are separate, unsupported authorities.
+  const tokens = stylesScan.tokens;
+  if (tokens.filter(t => isWordToken(t, 'styles') && t.depth === 0).length !== 1) return null;
+  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults'));
+  if (defaults.length !== 1 || defaults[0].depth !== 1) return null;
+  const children = childTokensWithin(stylesScan, defaults[0]);
+  const runDefaults = children.filter(t => isWordToken(t, 'rPrDefault'));
+  if (runDefaults.length !== 1 || runDefaults[0].depth !== 2) return null;
+  const properties = childTokensWithin(stylesScan, runDefaults[0]).filter(t => isWordToken(t, 'rPr'));
+  if (properties.length !== 1 || properties[0].depth !== 3) return null;
+  const fonts = childTokensWithin(stylesScan, properties[0]).filter(t => isWordToken(t, 'rFonts'));
+  if (fonts.length !== 1 || fonts[0].depth !== 4) return null;
+  const attributes = fonts[0].attributes.filter(a => a.prefix !== 'xmlns' && a.qName !== 'xmlns');
+  const names = ['ascii', 'hAnsi', 'eastAsia', 'cs'];
+  if (attributes.length !== names.length || attributes.some(a => a.namespaceUri !== W_NS || !names.includes(a.localName))) return null;
+  const values = names.map(name => attr(fonts[0], name, W_NS));
+  if (new Set(values).size !== 1 || !values[0] || values[0].length > 128
+    || values[0].trim() !== values[0] || /[\u0000-\u001f\u007f]/u.test(values[0])) return null;
+  for (const kind of ['paragraph', 'character']) {
+    const styles = tokens.filter(t => isWordToken(t, 'style') && attr(t, 'type', W_NS) === kind
+      && ['1', 'true', 'on'].includes(attr(t, 'default', W_NS)));
+    if (styles.length > 1) return null;
+    if (styles.length && childTokensWithin(stylesScan, styles[0]).some(t => isWordToken(t, 'basedOn') || isWordToken(t, 'rFonts'))) return null;
+  }
+  return values[0];
+}
+
 function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan, cache) {
   const refs = direct.filter(t => isWordToken(t, 'rStyle'));
   if (refs.length === 0) return direct;
@@ -2614,6 +2645,26 @@ function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsSc
   return [...inherited.values()];
 }
 
+// Literal language evidence does not itself grant a formatting writer scope.
+// Consumers must preserve it explicitly before admitting the enclosing property.
+function readWordLanguageProperties(scan, properties, xml) {
+  if (!properties) return {};
+  const children = childTokensWithin(scan, properties).filter(t => t.depth === properties.depth + 1);
+  const languages = children.filter(t => t.localName === 'lang');
+  if (!languages.length) return {};
+  try {
+    if (languages.length !== 1 || languages[0].namespaceUri !== W_NS) throw Error();
+    const token = languages[0], value = {};
+    if (childTokensWithin(scan, token).length || (!token.selfClosing && xml.slice(token.openEnd, token.closeStart).trim())) throw Error();
+    for (const a of token.attributes) {
+      if (a.qName === 'xmlns' || a.prefix === 'xmlns') continue;
+      if (a.namespaceUri !== W_NS || !wordLanguage.KEYS.includes(a.localName) || Object.hasOwn(value, a.localName)) throw Error();
+      value[a.localName] = attr(token, a.localName, W_NS);
+    }
+    return { value: wordLanguage.normalizeWordLanguage(value) };
+  } catch { return { invalid: true }; }
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2661,6 +2712,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const results = [];
   const leadingBookmarks = leadingBodyBookmarkNames(documentScan.tokens);
   const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
+  const defaultFontFamily = reviewDefaultFontFamily(visibilityStyles);
   const linkStyleCache = {};
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
@@ -2683,7 +2735,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       && token.namespaceUri === W_NS
     ));
     const paragraphPropertyChildren = paragraphProperties
-      ? childTokensWithin(paragraphScan, paragraphProperties).filter((token) => token.namespaceUri === W_NS)
+      ? childTokensWithin(paragraphScan, paragraphProperties).filter((token) => token.namespaceUri === W_NS && token.depth === paragraphProperties.depth + 1)
       : [];
     const paragraphSemanticNames = [...new Set(paragraphPropertyChildren.map((token) => token.localName))];
     const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl'].includes(name));
@@ -2693,6 +2745,15 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     const paragraphFormattingInvalid = paragraphSemanticNames.includes('jc')
       && !Object.hasOwn(paragraphState, 'textAlign');
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
+    const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
+      .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
+    const markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
+    if (markProperties.length > 1 || markProperties.some(t => t.namespaceUri !== W_NS)) markLanguage.invalid = true;
+    const markLanguageOnly = markProperties.length === 1 && markLanguage.value && !markLanguage.invalid
+      && markProperties[0].attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns')
+      && childTokensWithin(paragraphScan, markProperties[0]).every(t => t.depth === markProperties[0].depth + 1 && isWordToken(t, 'lang')
+        && !documentXml.slice(markProperties[0].openEnd, t.openStart).trim()
+        && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
     let cursor = 0;
     const formattedRuns = [];
     for (const runRecord of paragraphRecord.runs) {
@@ -2706,6 +2767,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         token.localName === 'rPr'
         && token.namespaceUri === W_NS
       ));
+      const language = readWordLanguageProperties(runScan, properties, documentXml);
       if (!text) continue;
       const directChildren = properties
         ? childTokensWithin(runScan, properties).filter((token) => token.namespaceUri === W_NS)
@@ -2737,10 +2799,16 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         text,
         inline,
         inlineState: formattingInlineState(inline),
+        ...(language.value ? { wordLanguage: language.value } : {}),
+        ...(language.invalid ? { wordLanguageInvalid: true } : {}),
         ...(defaultFontSize && !paragraphRecord.table
           && !paragraphSemanticNames.includes('pStyle') && !semanticNames.includes('rStyle')
           && !semanticNames.includes('sz') && !semanticNames.includes('szCs')
           ? { inheritedFontSize: defaultFontSize } : {}),
+        ...(defaultFontFamily && !paragraphRecord.table
+          && !paragraphSemanticNames.includes('pStyle')
+          && !directChildren.some(token => isWordToken(token, 'rStyle') || isWordToken(token, 'rFonts'))
+          ? { resolvedFontFamily: defaultFontFamily } : {}),
         unsupportedNames,
         invalidSupportedValue,
         sourceXmlProvenance: provenance(properties || run),
@@ -2755,6 +2823,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       textId: attr(paragraph, 'textId'),
       bookmarkNames: bookmarks,
       paragraphState,
+      ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),
+      ...(markLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
+      ...(markLanguage.invalid ? { wordLanguageInvalid: true } : {}),
       paragraphActions,
       paragraphStructure: paragraphStructure || {},
       unsupportedParagraphNames,
@@ -2776,6 +2847,9 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     textId: paragraph.textId,
     bookmarkNames: paragraph.bookmarkNames,
     paragraphState: paragraph.paragraphState,
+    ...(paragraph.wordParagraphMarkLanguage ? { wordParagraphMarkLanguage: paragraph.wordParagraphMarkLanguage } : {}),
+    ...(paragraph.wordParagraphMarkLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
+    ...(paragraph.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),
     paragraphActions: paragraph.paragraphActions,
     paragraphStructure: paragraph.paragraphStructure,
     unsupportedParagraphNames: paragraph.unsupportedParagraphNames,
@@ -2787,7 +2861,10 @@ function formattingParagraphsSemanticProjection(paragraphs) {
       text: run.text,
       inline: run.inline,
       inlineState: run.inlineState,
+      ...(run.wordLanguage ? { wordLanguage: run.wordLanguage } : {}),
+      ...(run.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),
       ...(run.inheritedFontSize ? { inheritedFontSize: run.inheritedFontSize } : {}),
+      ...(run.resolvedFontFamily ? { resolvedFontFamily: run.resolvedFontFamily } : {}),
       unsupportedNames: run.unsupportedNames,
       invalidSupportedValue: run.invalidSupportedValue,
     })),

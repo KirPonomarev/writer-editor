@@ -1,3 +1,4 @@
+import wordLanguage from '../../core/word-language-v1.cjs';
 import core from '../../core/word-user-bookmarks-v1.cjs';
 import source from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
@@ -26,22 +27,23 @@ const linksOf = doc => {
     offset+=text.length;
   }}); return out;
 };
-function style(state,defaultFontSize) {
+function style(state,defaultFontSize,languageMode=false) {
   const out={...state}; delete out.link; delete out.wordBookmarkName;
+  if(languageMode) delete out.wordLanguage;
   if (defaultFontSize && !out.fontSize) out.fontSize=defaultFontSize;
   return out;
 }
-function runsForBase(block,defaultFontSize) {
+function runsForBase(block,defaultFontSize,languageMode=false) {
   return block.formatIr.runs.map(run=>{
     const links=(run.preservedMarks||[]).filter(mark=>mark.type==='link');
     if((run.preservedMarks||[]).some(mark=>!['link'].includes(mark.type)) || links.length>1) throw Error('rich-mark-unsupported');
-    return {...run,link:links[0]?.attrs?.href||null,style:style(run.inline,defaultFontSize)};
+    return {...run,link:links[0]?.attrs?.href||null,style:style(run.inline,defaultFontSize,languageMode)};
   });
 }
-function runsForReturn(paragraph,defaultFontSize) {
+function runsForReturn(paragraph,defaultFontSize,languageMode=false) {
   return paragraph.formattedRuns.map(run=>{
-    if(run.invalidSupportedValue || run.unsupportedNames?.length) throw Error('rich-run-unsupported');
-    return {...run,link:run.inlineState?.link||null,style:style(run.inlineState||{},defaultFontSize)};
+    if(run.invalidSupportedValue || run.wordLanguageInvalid || run.unsupportedNames?.some(name=>!(languageMode && name==='lang' && run.wordLanguage))) throw Error('rich-run-unsupported');
+    return {...run,link:run.inlineState?.link||null,style:style(run.inlineState||{},defaultFontSize,languageMode)};
   });
 }
 function uniformAt(runs,from,to,signature) {
@@ -56,7 +58,10 @@ function compareStyles(before,after,shift=0,start=0,end=Infinity) {
     if(bounds[i]===bounds[i+1])continue;
     const a=before.find(run=>run.from<=bounds[i]&&run.to>=bounds[i+1]);
     const b=after.find(run=>run.from<=bounds[i]+shift&&run.to>=bounds[i+1]+shift);
-    if(!a||!b||!same(a.style,b.style))throw Error('non-link-style-change');
+    const returnedStyle=b?.style&&{...b.style};
+    if(a?.style.fontFamily&&!returnedStyle?.fontFamily&&b?.resolvedFontFamily===a.style.fontFamily)
+      returnedStyle.fontFamily=b.resolvedFontFamily;
+    if(!a||!b||!same(a.style,returnedStyle))throw Error('non-link-style-change');
   }
 }
 function replaceText(p,from,to,text) {
@@ -78,7 +83,9 @@ function replaceText(p,from,to,text) {
 function replaceLinks(p,runs,registry) {
   let offset=0;const out=[];
   for(const node of p.content||[]) {
-    const value=node.type==='hardBreak'?'\n':node.text,end=offset+value.length;
+    if(node.type==='text'&&typeof node.text!=='string')throw Error('rich-inline-invalid');
+    if(!['text','hardBreak','manuscriptNoteReference'].includes(node.type))throw Error('rich-inline-unsupported');
+    const value=node.type==='hardBreak'?'\n':node.type==='text'?node.text:'',end=offset+value.length;
     if(node.type!=='text'){out.push(node);offset=end;continue;}
     const cuts=[offset,...new Set(runs.flatMap(run=>[run.from,run.to]).filter(x=>x>offset&&x<end)),end].sort((a,b)=>a-b);
     for(let i=0;i<cuts.length-1;i++) {
@@ -106,7 +113,7 @@ function replaceLinks(p,runs,registry) {
 
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
-export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography}={}) {
+export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,ordinaryTextMode=false}={}) {
   try {
     const registry=core.readRegistry(baselineDoc);
     if(baselineRegistry!==undefined&&!same(registry,baselineRegistry))return reject('baseline-registry');
@@ -221,21 +228,50 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     for(const old of resultRegistry.bookmarks)if(old.state==='active'&&!retained.has(old.id)){effects.push({kind:'delete',id:old.id});old.state='deleted';delete old.start;delete old.end;}
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='deleted'))if(!resultRegistry.bookmarks.some(item=>key(item.name)===key(record.name)))return reject('unknown-broken-target');
-    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc);
+    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[];
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
-      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.unsupportedParagraphNames?.length)return reject('rich-paragraph-unsupported');
+      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && name==='rPr' && p.wordParagraphMarkLanguageOnly)))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
-      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign'].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
+      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage']:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');
-      const before=runsForBase(block,defaultFontSize),after=runsForReturn(p,defaultFontSize);
+      const before=runsForBase(block,defaultFontSize,ordinaryTextMode),after=runsForReturn(p,defaultFontSize,ordinaryTextMode);
+      const languageChange={schemaVersion:1,paragraphMark:p.wordParagraphMarkLanguage||null,
+        runs:after.map(run=>({from:run.from,to:run.to,language:run.wordLanguage||null}))};
+      const languages = runs => {
+        const merged=[];
+        for(const run of runs){const last=merged.at(-1);if(last&&same(last.language,run.language)&&last.to===run.from)last.to=run.to;else merged.push({...run});}
+        return merged;
+      };
+      const languageChanged=!same(baseP.wordParagraphMarkLanguage||null,languageChange.paragraphMark)
+        || !same(languages(before.map(run=>({from:run.from,to:run.to,language:run.inline?.wordLanguage||null}))),languages(languageChange.runs));
+      const hasLanguage=languageChange.paragraphMark!==null || languageChange.runs.some(run=>run.language!==null)
+        || baseP.wordParagraphMarkLanguage!=null || before.some(run=>run.inline?.wordLanguage!=null);
+      if(!ordinaryTextMode && hasLanguage) return reject('language-composite-unsupported');
       let from=0,to=block.text.length,afterTo=p.paragraphText.length;
-      if(block.text!==p.paragraphText){
+      if(block.text!==p.paragraphText || (ordinaryTextMode && hasLanguage && languageChanged)){
         const groups=[];
         for(const run of before){const last=groups.at(-1);if(last&&last.link===run.link&&same(last.style,run.style)&&last.to===run.from){last.to=run.to;}else groups.push({...run});}
         const possible=groups.filter(run=>run.link&&block.text.slice(0,run.from)===p.paragraphText.slice(0,run.from)&&block.text.slice(run.to)===p.paragraphText.slice(p.paragraphText.length-(block.text.length-run.to)));
-        if(possible.length!==1)return reject('label-footprint-ambiguous');
+        if(possible.length!==1){
+          if(ordinaryTextMode!==true)return reject('label-footprint-ambiguous');
+          // Ordinary text has no bookmark mutation authority. Keep original
+          // rich nodes/marks and prove a single uniform text leaf footprint;
+          // linked labels and opaque inline objects retain their own lanes.
+          if(!block.text||!p.paragraphText||p.paragraphText.includes('\n')
+            ||before.some(run=>run.link)||after.some(run=>run.link)
+            ||resultPs[i].content.some(node=>node.type!=='text')
+            ||!before.length||!after.length
+            ||before.some(run=>!same(run.style,before[0].style))
+            ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
+          replaceText(resultPs[i],0,block.text.length,p.paragraphText);
+          if(hasLanguage){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
+          ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
+            sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
+          continue;
+        }
+        if(hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);
@@ -248,6 +284,22 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       resultPs[i].content=merged;
       if(same(semanticParagraph(resultPs[i]),semanticParagraph(basePs[i])))resultPs[i].content=clone(basePs[i].content||[]);
       else if(!effects.some(e=>e.kind==='linkLabel'&&e.paragraphIndex===i))effects.push({kind:'linkTarget',paragraphIndex:i});
+    }
+    if(ordinaryTextChanges.length){
+      // No rename/create/delete/retarget composite can enter the ordinary
+      // writer. Raw registry equality is required before the Core mapper;
+      // the independently parsed Word endpoints must match its result.
+      if(effects.length)return reject('ordinary-text-bookmark-composite');
+      const mapped=core.planSave({beforeDoc:baselineDoc,workingDoc:doc});
+      const literal=resultRegistry.bookmarks.filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
+      const expected=(mapped.registry?.bookmarks||[]).filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
+      if(literal.length!==expected.length||literal.some((record,index)=>{
+        const target=expected[index];
+        return record.id!==target.id||record.name!==target.name||record.state!==target.state
+          ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
+      }))return reject('ordinary-text-bookmark-endpoint-mismatch');
+      return {ok:true,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
     }
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};

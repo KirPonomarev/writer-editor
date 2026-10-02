@@ -1,5 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { normalizeParagraphAlignment } from '../../io/paragraphAlignment.mjs';
+import wordLanguage from '../../core/word-language-v1.cjs';
 
 function selectedTextBlocks(state) {
   if (!state?.doc || !state.selection) return [];
@@ -27,6 +28,17 @@ export const DocumentParagraphAlignment = Extension.create({
     return [{
       types: ['paragraph', 'heading'],
       attributes: {
+        wordParagraphMarkLanguage: {
+          default: null,
+          parseHTML: element => {
+            const raw = element.getAttribute('data-word-paragraph-mark-language');
+            if (raw == null) return null;
+            try { return wordLanguage.normalizeWordLanguage(JSON.parse(raw)); } catch { return null; }
+          },
+          renderHTML: attributes => attributes.wordParagraphMarkLanguage == null ? {} : {
+            'data-word-paragraph-mark-language': JSON.stringify(wordLanguage.normalizeWordLanguage(attributes.wordParagraphMarkLanguage)),
+          },
+        },
         textAlign: {
           default: null,
           parseHTML: element => {

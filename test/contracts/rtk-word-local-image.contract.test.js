@@ -111,6 +111,7 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   const section=renderer.slice(renderer.indexOf('function composeEditorSnapshot('),renderer.indexOf('function applyIncomingBookProfile('));
   const context=vm.createContext({composeDocumentContent:()=> 'text',getPlainText:()=> 'text',getActiveBookProfile:()=>null,
     getSelectionOffsets:()=>({start:1,end:1}),isTiptapMode:true,getTiptapImageInsertionPosition:()=>7,
+    currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,
     localEditGeneration:2,wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(section,context);
   const main=f.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
@@ -118,6 +119,10 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   context.isPlainObjectValue=x=>x&&typeof x==='object'&&!Array.isArray(x);
   context.normalizeSelectionRangeForSettings=x=>x;
   assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).imageInsertionPosition,7);
+  assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).treeContentPublicationId,'');
+  assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).rootSplitBoundary,null);
+  assert.throws(()=>context.normalizeEditorSnapshotPayload({content:'x',treeContentPublicationId:{id:'forged'}}),/SNAPSHOT_DOCUMENT_IDENTITY_INVALID/);
+  assert.throws(()=>context.normalizeEditorSnapshotPayload({content:'x',rootSplitBoundary:{boundaryRootIndex:1,position:2,path:'foreign'}}),/SNAPSHOT_ROOT_BOUNDARY_INVALID/);
   assert.equal(context.normalizeEditorSnapshotPayload({content:'x',imageInsertionPosition:-1}).imageInsertionPosition,null);
 });
 test('physical toolbar image button routes the live catalog entry through the command bus', async () => {

@@ -568,3 +568,140 @@ test('C05 public sources do not claim HMAC signing or add renderer network autho
     assert.equal(writerSource.includes(forbidden), false, forbidden);
   }
 });
+
+function languageWriterFixture(t, { languageOnly = false } = {}) {
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const doc = { type: 'doc', content: [{ type: 'paragraph', attrs: { wordParagraphMarkLanguage: { val: 'ru-RU' } },
+    content: [{ type: 'text', text: 'Language target', marks: [{ type: 'bold' }, { type: 'textStyle', attrs: { wordLanguage: { val: 'ru-RU', bidi: 'ar-SA' } } }] }] }] };
+  const raw = envelope.composeObservablePayload({ doc });
+  const project = tmpProject(raw); t.after(() => fs.rmSync(project.projectRoot, { recursive: true, force: true }));
+  const replacementText = languageOnly ? 'Language target' : 'Language target changed';
+  const item = { changeId: 'language-owned', targetScope: { type: 'scene', id: 'scene-c05' }, replacementText,
+    wordLanguageChange: { schemaVersion: 1, paragraphMark: { val: 'en-US' }, runs: [{ from: 0, to: replacementText.length, language: { val: 'en-US', eastAsia: 'ja-JP' } }] },
+    match: { kind: 'exact', quote: 'Language target', authenticatedBlock: { schemaVersion: 'yalken.rtk.authenticated-scene-block.v1',
+      sceneId: 'scene-c05', blockId: 'language-block', documentParagraphIndex: 0, sceneParagraphIndex: 0,
+      baselineRawSha256: sha256Text(raw), blockTextSha256: sha256Text('Language target'), blockLocalStart: 0, blockLocalEnd: 15 } } };
+  return { project, raw, doc, item, envelope, input: directWriterInput(project, [item]),
+    options: { operationId: 'op_language_owned', trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(item))] } };
+}
+
+test('authenticated language-only write changes durable semantics without changing visible text', async t => {
+  const f = languageWriterFixture(t, { languageOnly: true }), writer = await loadExactWriter();
+  const result = await writer.applyExactTextBatchMinSafeWrite(f.input, f.options);
+  assert.equal(result.applied, true, JSON.stringify(result));
+  const raw = fs.readFileSync(f.project.scenePath, 'utf8'), parsed = f.envelope.parseObservablePayload(raw);
+  assert.equal(parsed.text, 'Language target'); assert.notEqual(raw, f.raw);
+  assert.deepEqual(parsed.doc.content[0].attrs.wordParagraphMarkLanguage, { val: 'en-US' });
+  assert.deepEqual(parsed.doc.content[0].content[0].marks, [{ type: 'bold' }, { type: 'textStyle', attrs: { wordLanguage: { eastAsia: 'ja-JP', val: 'en-US' } } }]);
+  assert.equal(fs.readFileSync(result.receipt.recovery.snapshotPath, 'utf8'), f.raw);
+});
+
+test('identical authenticated language tuple remains a no-op without snapshots or receipts', async t => {
+  const f = languageWriterFixture(t, { languageOnly: true }), writer = await loadExactWriter();
+  f.item.wordLanguageChange = { schemaVersion: 1, paragraphMark: { val: 'ru-RU' }, runs: [{ from: 0, to: 15, language: { val: 'ru-RU', bidi: 'ar-SA' } }] };
+  const result = await writer.applyExactTextBatchMinSafeWrite(f.input, {
+    trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(f.item))],
+    beforeWrite: () => assert.fail('identical language attempted a write'),
+  });
+  assert.equal(result.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_NO_OP');
+  assert.equal(fs.readFileSync(f.project.scenePath, 'utf8'), f.raw);
+  assert.deepEqual(fs.readdirSync(f.project.projectRoot), ['scene.md']);
+});
+
+for (const fault of ['tuple-after-digest', 'boundary-after-digest', 'remove-owner', 'empty-trust', 'malformed-trusted']) test(`language patch ${fault} cannot write or create recovery state`, async t => {
+  const f = languageWriterFixture(t), writer = await loadExactWriter();
+  if (fault === 'tuple-after-digest') f.item.wordLanguageChange.runs[0].language.val = 'de-DE';
+  if (fault === 'boundary-after-digest') f.item.wordLanguageChange.runs[0].to--;
+  if (fault === 'remove-owner') delete f.item.match.authenticatedBlock;
+  if (fault === 'empty-trust') f.options.trustedAuthenticatedBlockDigests = [];
+  if (fault === 'malformed-trusted') {
+    f.item.wordLanguageChange.runs[0].language.extra = 'discard';
+    f.options.trustedAuthenticatedBlockDigests = [cryptoPort.sha256Text(JSON.stringify(f.item))];
+  }
+  const result = await writer.applyExactTextBatchMinSafeWrite(f.input, f.options);
+  assert.equal(result.applied, false, JSON.stringify(result));
+  assert.equal(fs.readFileSync(f.project.scenePath, 'utf8'), f.raw);
+  const files = fs.readdirSync(f.project.projectRoot, { recursive: true, withFileTypes: true }).filter(entry => entry.isFile());
+  assert.deepEqual(files.map(entry => entry.name), ['scene.md']);
+});
+
+for (const hook of ['afterTempWrite', 'afterRenameBeforeReceipt']) test(`language transaction ${hook} keeps verified beforeimage and reconciles without duplicate write`, async t => {
+  const f = languageWriterFixture(t), writer = await loadExactWriter(); let injected = 0;
+  const result = await writer.applyExactTextBatchMinSafeWrite(f.input, { ...f.options, [hook]: () => { injected++; throw Error('controlled-language-crash'); } });
+  assert.equal(injected, 1); assert.equal(result.applied, false);
+  const current = fs.readFileSync(f.project.scenePath, 'utf8');
+  if (hook === 'afterTempWrite') assert.equal(current, f.raw);
+  else {
+    const parsed = f.envelope.parseObservablePayload(current); assert.equal(parsed.issue, null);
+    assert.equal(parsed.text, 'Language target changed');
+    assert.deepEqual(parsed.doc.content[0].content[0].marks[1].attrs.wordLanguage, { eastAsia: 'ja-JP', val: 'en-US' });
+  }
+  // A fresh Node process executes the existing journal reconciler; no test-produced receipt.
+  const { execFileSync } = require('node:child_process');
+  const journalUrl = pathToFileURL(path.join(process.cwd(), 'src/io/revisionBridge/exactTextApplyJournal.mjs')).href;
+  const script = `import { reconcileExactTextApplyJournal } from ${JSON.stringify(journalUrl)}; console.log(JSON.stringify(await reconcileExactTextApplyJournal(process.argv[1],process.argv[2])));`;
+  const reconciled = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e', script, f.project.projectRoot, f.options.operationId], { encoding: 'utf8' }));
+  assert.equal(reconciled.recoveryVerified, true, JSON.stringify(reconciled));
+  assert.equal(fs.readFileSync(f.project.scenePath, 'utf8'), current);
+  const snapshots = fs.readdirSync(f.project.projectRoot).filter(name => name.startsWith('.scene.md.bak.'));
+  assert.equal(snapshots.length, 1); assert.equal(fs.readFileSync(path.join(f.project.projectRoot, snapshots[0]), 'utf8'), f.raw);
+  assert.deepEqual(f.envelope.parseObservablePayload(fs.readFileSync(path.join(f.project.projectRoot, snapshots[0]), 'utf8')).doc, f.doc);
+  const replay = await writer.applyExactTextBatchMinSafeWrite(f.input, f.options);
+  if (hook === 'afterTempWrite') {
+    assert.equal(replay.applied, true, JSON.stringify(replay));
+    const afterRetry = fs.readFileSync(f.project.scenePath, 'utf8');
+    assert.equal(f.envelope.parseObservablePayload(afterRetry).text, 'Language target changed');
+    const repeated = await writer.applyExactTextBatchMinSafeWrite(f.input, { ...f.options, beforeWrite: () => assert.fail('replay attempted a second write') });
+    assert.equal(repeated.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_REPLAY');
+    assert.equal(fs.readFileSync(f.project.scenePath, 'utf8'), afterRetry);
+  } else {
+    assert.equal(replay.applied, false, JSON.stringify(replay)); assert.equal(fs.readFileSync(f.project.scenePath, 'utf8'), current);
+  }
+});
+
+test('authenticated clean owner replaces only selected duplicate rich paragraph and refuses forged ownership', async t => {
+  const writer = await loadExactWriter();
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs');
+  const initialDoc = bookmarks.planMutation({ doc: { type: 'doc', content: [0,1].map(() => ({ type: 'paragraph', content: [
+    { type: 'text', text: 'Twin ', marks: [{ type: 'bold' }] }, { type: 'text', text: 'target tail' }] })) },
+    action: 'create', name: 'OwnedSecond', requestId: 'seed', projectId: 'project-c05', sceneId: 'scene-c05',
+    start: { paragraphIndex: 1, offsetUtf16: 12, edge: 'text' }, end: { paragraphIndex: 1, offsetUtf16: 16, edge: 'text' } }).doc;
+  const raw = envelope.composeObservablePayload({ doc: initialDoc });
+  const make = () => {
+    const project = tmpProject(raw); t.after(() => fs.rmSync(project.projectRoot, { recursive: true, force: true }));
+    const item = { changeId: 'clean-owner', targetScope: { type: 'scene', id: 'scene-c05' }, replacementText: 'Twin changed tail',
+      match: { kind: 'exact', quote: 'Twin target tail', authenticatedBlock: { schemaVersion: 'yalken.rtk.authenticated-scene-block.v1',
+        sceneId: 'scene-c05', blockId: 'owned-second', documentParagraphIndex: 1, sceneParagraphIndex: 1,
+        baselineRawSha256: sha256Text(raw), blockTextSha256: sha256Text('Twin target tail'), blockLocalStart: 0, blockLocalEnd: 16 } } };
+    return { project, item, input: directWriterInput(project, [item]) };
+  };
+  for (const mode of ['untrusted', 'wrongRaw', 'wrongIndex', 'wrongText', 'injectedPath', 'mutatedAfterDigest', 'rawCAS']) {
+    const h = make(), originalDigest = cryptoPort.sha256Text(JSON.stringify(h.item));
+    if (mode === 'mutatedAfterDigest') h.item.match.authenticatedBlock.sceneParagraphIndex = 0;
+    if (mode === 'rawCAS') fs.writeFileSync(h.project.scenePath, raw + '\n');
+    const unchanged = fs.readFileSync(h.project.scenePath, 'utf8');
+    if (mode === 'wrongRaw') h.item.match.authenticatedBlock.baselineRawSha256 = sha256Text('foreign');
+    if (mode === 'wrongIndex') h.item.match.authenticatedBlock.sceneParagraphIndex = 9;
+    if (mode === 'wrongText') h.item.match.authenticatedBlock.blockTextSha256 = sha256Text('foreign');
+    if (mode === 'injectedPath') h.item.match.authenticatedBlock.nodePath = ['content', 0];
+    const result = await writer.applyExactTextBatchMinSafeWrite(h.input, {
+      trustedAuthenticatedBlockDigests: mode === 'untrusted' ? [] : [mode === 'mutatedAfterDigest' ? originalDigest : cryptoPort.sha256Text(JSON.stringify(h.item))] });
+    assert.equal(result.applied, false, mode); assert.equal(fs.readFileSync(h.project.scenePath, 'utf8'), unchanged, mode);
+  }
+  const h = make();
+  const applied = await writer.applyExactTextBatchMinSafeWrite(h.input, { trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(h.item))] });
+  assert.equal(applied.applied, true, JSON.stringify(applied));
+  const reopened = envelope.parseObservablePayload(fs.readFileSync(h.project.scenePath, 'utf8'));
+  assert.equal(reopened.text, 'Twin target tail\nTwin changed tail');
+  assert.deepEqual(reopened.doc.content[0], initialDoc.content[0]);
+  assert.deepEqual(reopened.doc.content[1].content[0], initialDoc.content[1].content[0]);
+  const registry = bookmarks.readRegistry(reopened.doc);
+  assert.equal(registry.bookmarks[0].id, bookmarks.readRegistry(initialDoc).bookmarks[0].id);
+  assert.equal(registry.bookmarks[0].start.offsetUtf16, 13);
+  assert.equal(registry.bookmarks[0].end.offsetUtf16, 17);
+  const after = fs.readFileSync(h.project.scenePath, 'utf8');
+  const replay = await writer.applyExactTextBatchMinSafeWrite(h.input, { trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(h.item))] });
+  assert.equal(replay.applied, false);
+  assert.equal(fs.readFileSync(h.project.scenePath, 'utf8'), after);
+});

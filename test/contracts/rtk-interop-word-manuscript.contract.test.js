@@ -139,6 +139,39 @@ test('Full-manuscript DOCX metadata is dual-carried, signed, parsed independentl
  assert.equal(verify(metadata).ok,true);
  const minuteNormalized=structuredClone(metadata);minuteNormalized.coreProtectedProperties.createdAtUtc='2026-09-17T10:11:00Z';minuteNormalized.lossLedger.providerNormalizedFields=['createdAtUtc.minutePrecision'];assert.equal(verify(minuteNormalized).ok,true);
  const wrongMinute=structuredClone(minuteNormalized);wrongMinute.coreProtectedProperties.createdAtUtc='2026-09-17T10:12:00Z';assert.equal(verify(wrongMinute).ok,false);
+ const verifyProvider=(value,overrides={})=>validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:value,signedDigest:payload.documentMetadataDigest,allowProviderCoreCreatedAtChange:true,...overrides});
+ const changedDocumentDate=structuredClone(metadata);changedDocumentDate.coreProtectedProperties.createdAtUtc='2026-10-02T07:34:00Z';
+ const sameInstant=structuredClone(metadata);sameInstant.coreProtectedProperties.createdAtUtc=metadata.coreProtectedProperties.createdAtUtc.replace('.000Z','Z');
+ const sameProof=verifyProvider(sameInstant);assert.equal(sameProof.ok,true);assert.equal(sameProof.proof.coreMetadataPreserved,true);assert.equal(sameProof.proof.coreCreatedAtChange,undefined);
+ const preservedSource=structuredClone(source.documentMetadata),preservedReturn=structuredClone(changedDocumentDate);
+ const provider=verifyProvider(changedDocumentDate);
+ assert.equal(provider.ok,true,JSON.stringify(provider));assert.equal(provider.status,'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_CHANGES');
+ const dateChange={expected:metadata.coreProtectedProperties.createdAtUtc,returned:'2026-10-02T07:34:00Z',policy:'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'};
+ assert.deepEqual(provider.proof.coreCreatedAtChange,dateChange);assert.deepEqual(provider.proof.lossLedger.coreCreatedAtChange,dateChange);
+ assert.equal(provider.proof.coreMetadataPreserved,false);assert.deepEqual(provider.proof.protectedProperties,metadata.protectedProperties);
+ assert.deepEqual(source.documentMetadata,preservedSource);assert.deepEqual(changedDocumentDate,preservedReturn);
+ assert.equal(verifyProvider(changedDocumentDate,{allowProviderCoreCreatedAtChange:false}).ok,false);
+ assert.equal(verifyOfficeDateOnly(changedDocumentDate).ok,false);
+ function verifyOfficeDateOnly(value){return validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:value,signedDigest:payload.documentMetadataDigest,allowAdvisoryCoreOmissions:true});}
+ for(const mutate of [
+  value=>delete value.coreProtectedProperties.createdAtUtc,
+  value=>value.coreProtectedProperties.createdAtUtc='not a date',
+  value=>value.coreProtectedProperties.createdAtUtc='2026-02-30T07:34:00Z',
+  value=>value.coreProtectedProperties.createdAtUtc='2026-10-02T07:34:00+00:00',
+  value=>value.coreProtectedProperties.createdAtUtc=1790926440000,
+  value=>value.createdTimestampType='wrong-type',
+  value=>value.duplicateCorePropertyNames=['createdAtUtc'],
+  value=>value.corePropertiesPresent=false,
+  value=>value.corePropertiesRootValid=false,
+  value=>value.coreProtectedProperties.title='forged-title',
+  value=>value.coreProtectedProperties.projectId='forged-project',
+  value=>value.coreProtectedProperties.creator='forged-creator',
+  value=>value.protectedProperties.createdAtUtc='2026-10-02T07:34:00Z',
+  value=>value.publicCustomProperties.YALKEN_PROJECT_CREATED_AT_UTC='2026-10-02T07:34:00Z',
+  value=>value.protectedDigest='sha256:'+'0'.repeat(64),
+  value=>value.duplicateCustomPropertyNames=['YALKEN_PROJECT_CREATED_AT_UTC'],
+ ]){const mutant=structuredClone(changedDocumentDate);mutate(mutant);assert.equal(verifyProvider(mutant).ok,false,JSON.stringify(mutant));}
+ assert.equal(verifyProvider(changedDocumentDate,{signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
  const volatile=structuredClone(metadata);volatile.volatileCoreProperties={lastModifiedBy:'Native Word User',modifiedAtUtc:'2026-09-18T02:03:04Z',revision:'9'};volatile.lossLedger.unknownCustomPropertyNames=['WORD_PROVIDER_PROPERTY'];assert.equal(verify(volatile).ok,true);assert.deepEqual(verify(volatile).proof.lossLedger.unknownCustomPropertyNames,['WORD_PROVIDER_PROPERTY']);
  const mutations=[
   value=>value.protectedProperties.title='Changed title',

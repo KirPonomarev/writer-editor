@@ -134,6 +134,8 @@ test('actual editor snapshot normalization retains the no-loss note draft flag',
   const context = { isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v), normalizeSelectionRangeForSettings: () => null };
   vm.createContext(context); vm.runInContext(snapshotNormalizer + `\nglobalThis.normalize = ${name};`, context);
   assert.equal(context.normalize({ content: 'x', generation: 1, manuscriptNoteAuthoringPending: true }).manuscriptNoteAuthoringPending, true);
+  assert.equal(context.normalize({content:'x',generation:1,treeContentPublicationId:'bound-epoch'}).treeContentPublicationId,'bound-epoch');
+  assert.throws(()=>context.normalize({content:'x',treeContentPublicationId:'bad\u0000epoch'}),/SNAPSHOT_DOCUMENT_IDENTITY_INVALID/);
   const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
   assert(renderer.includes('manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending)'));
 });

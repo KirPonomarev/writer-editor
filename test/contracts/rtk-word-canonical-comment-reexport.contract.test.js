@@ -192,6 +192,7 @@ test('native Word package requirements include exact MIME types and a reference 
     assert.ok(xml['[Content_Types].xml'].includes('application/vnd.openxmlformats-officedocument.wordprocessingml.'+suffix+'+xml'));
   }
   const ids=[...xml['word/document.xml'].matchAll(/<w:commentReference w:id="(\d+)"\/>/gu)].map(m=>m[1]);
+  // References retain root-before-reply order independently of range closure.
   assert.deepEqual(ids,source.commentExport.threads[0].messages.map(m=>m.commentId));
 });
 
@@ -417,4 +418,69 @@ test('comment publication proof boundary is exact for both scene and full export
       }
     }
   }
+});
+
+test('nested comment marker ordering preserves exact ranges through XML, parser and publication', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const ctx = mainHarness(['buildFullManuscriptPublicationGate']);
+  const text = 'Bookmark canary 🧭 end';
+  for (const [label, ranges, allowed] of [
+    ['shared-start-native', [[0, 13], [0, 14]], true],
+    ['shared-end', [[0, 14], [3, 14]], true],
+    ['identical-with-replies', [[0, 14], [0, 14]], true],
+    ['adjacent', [[0, 13], [13, 14]], true],
+    ['true-crossing', [[0, 10], [5, 14]], false],
+  ]) {
+    const input = inputs();
+    input.scenes[0].text = text;
+    input.scenes[0].doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] };
+    const block = makeSource({ ...input, nonTextReturnState: undefined }).blocks[0];
+    input.nonTextReturnState.threads = ranges.map(([start, end], index) => ({
+      threadId: `nested-thread-${index}`, sceneId: input.scenes[0].sceneId,
+      rootCommentId: `nested-root-${index}`, status: index === 0 ? 'resolved' : 'open',
+      anchor: { sceneId: input.scenes[0].sceneId, blockId: block.blockId, paragraphIndex: 0,
+        startUtf16: start, selectedText: text.slice(start, end), selectedTextSha256: sha(text.slice(start, end)) },
+      messages: [{ commentId: `nested-root-${index}`, kind: 'root', body: `Root ${index}`, provenance },
+        { commentId: `nested-reply-${index}`, kind: 'reply', body: `Reply ${index}`, provenance }],
+    }));
+    const original = structuredClone(input.nonTextReturnState);
+    const source = makeSource(input, { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
+    const bytes = buildDocxReviewPacketBuffer(source), xml = parts(bytes)['word/document.xml'];
+    const returned = await parsed(bytes);
+    const gate = await ctx.buildFullManuscriptPublicationGate(source, bytes, bridge);
+    assert.equal(gate.publishAllowed, allowed, label + ': ' + JSON.stringify(gate));
+    assert.deepEqual(input.nonTextReturnState, original, label + ': canonical state changed');
+    if (allowed) {
+      assert.equal(compareCommentExportReadback(source.commentExport, returned).ok, true, label);
+      assert.equal(gate.commentProofs.length, 2, label);
+      // Literal XML nesting oracle independent of parser's semantic-range exception.
+      const stack = [];
+      for (const match of xml.matchAll(/<w:commentRange(Start|End) w:id="([^"]+)"\/>/gu)) {
+        if (match[1] === 'Start') stack.push(match[2]);
+        else assert.equal(stack.pop(), match[2], label + ': crossed emitted marker order');
+      }
+      assert.deepEqual(stack, [], label);
+      for (const thread of source.commentExport.threads) {
+        const references = thread.messages.map(message => xml.indexOf(`<w:commentReference w:id="${message.commentId}"/>`));
+        assert.equal(references.every((position, index) => position >= 0
+          && (index === 0 || references[index - 1] < position)), true, label + ': root must precede replies');
+        const lastEnd = Math.max(...thread.messages.map(message => xml.indexOf(`<w:commentRangeEnd w:id="${message.commentId}"/>`)));
+        assert.equal(lastEnd < references[0], true, label + ': close all thread ranges before reference runs');
+      }
+    } else {
+      assert.equal(gate.code, 'RTK_V4_PUBLICATION_COMMENT_PROVISIONAL_MISMATCH');
+      assert.equal(returned.every(thread => thread.status === 'UNSUPPORTED_BLOCKED'
+        && thread.reasonCodes.includes('RTK_COMMENT_ANCHOR_CROSSING')), true);
+    }
+  }
+});
+
+test('point comment anchors remain refused without source mutation', () => {
+  const input = inputs(), original = structuredClone(input);
+  input.nonTextReturnState.threads[0].anchor.selectedText = '';
+  input.nonTextReturnState.threads[0].anchor.selectedTextSha256 = sha('');
+  const rejected = structuredClone(input);
+  assert.throws(() => makeSource(input), /DOCX_COMMENT_ANCHOR_INVALID/);
+  assert.deepEqual(input, rejected);
+  assert.notDeepEqual(input, original);
 });
