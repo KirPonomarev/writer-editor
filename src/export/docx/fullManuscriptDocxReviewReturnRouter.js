@@ -128,6 +128,7 @@ function buildFullManuscriptReturnIntakeProofBindingPayload({ proof, localAuthor
     .filter(Boolean);
   return {
     schemaVersion: 'yalken.rtk.word.full-manuscript-return-intake-proof-binding.v1',
+    ...(localAuthority?.scope === 'scene' ? { scope: 'scene', sceneId: normalizeString(localAuthority.expectedAuthority?.sceneId) } : {}),
     roundId: normalizeString(localAuthority?.roundId || localAuthority?.expectedAuthority?.roundId),
     exportIdentity: normalizeString(localAuthority?.exportIdentity || localAuthority?.expectedAuthority?.exportId),
     returnedArtifactSha256: normalizeSignedSha256(proof?.returnedArtifactSha256),
@@ -600,7 +601,25 @@ function buildSceneCommand({
 function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
   const localAuthorityCapsule = isPlainObjectValue(input.localAuthorityCapsule) ? input.localAuthorityCapsule : {};
   const returnedAuthority = isPlainObjectValue(input.returnedAuthority) ? input.returnedAuthority : {};
-  const validation = validateFullManuscriptAuthorityReturn(returnedAuthority, localAuthorityCapsule);
+  // Reuse the existing block-bound writer for a scene, retaining its actual
+  // signed scope. Never manufacture a full-manuscript carrier for a scene.
+  const sceneCleanReturn = localAuthorityCapsule.scope === 'scene';
+  const sceneId = normalizeString(localAuthorityCapsule.expectedAuthority?.sceneId);
+  const sceneMap = localAuthorityCapsule.authenticatedSceneExportMap;
+  const expectedScene = localAuthorityCapsule.expectedAuthority || {};
+  const sceneValid = sceneCleanReturn && sceneId
+    && (returnedAuthority.scope === undefined || returnedAuthority.scope === 'scene')
+    && ['sceneId', 'roundId', 'exportId', 'rawSha256'].every(key =>
+      normalizeString(expectedScene[key]) && returnedAuthority[key] === expectedScene[key])
+    && sceneMap?.scope === 'scene' && sceneMap.scenes?.length === 1
+    && sceneMap.scenes[0].sceneId === sceneId
+    && sceneMap.scenes[0].rawSha256 === expectedScene.rawSha256
+    && authorityDigest(sceneMap) === authorityDigest(localAuthorityCapsule.exportMap)
+    && localAuthorityCapsule.cleanTextChanges?.length > 0
+    && input.returnIntakeProof?.operationSource === 'authenticated-clean-block-text';
+  const validation = sceneCleanReturn
+    ? { ok: !!sceneValid, code: 'SCENE_CLEAN_RETURN_AUTHORITY_INVALID' }
+    : validateFullManuscriptAuthorityReturn(returnedAuthority, localAuthorityCapsule);
   if (!validation.ok) {
     return makeBlocked(validation.code || 'FULL_MANUSCRIPT_RETURN_AUTHORITY_INVALID');
   }
@@ -616,7 +635,7 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
     return makeBlocked('FULL_MANUSCRIPT_ROUND_LIFECYCLE_NOT_ELIGIBLE', { lifecycleState: roundLifecycleState });
   }
   const expected = localAuthorityCapsule.expectedAuthority || {};
-  const orderedSceneIds = list(expected.orderedSceneIds);
+  const orderedSceneIds = sceneCleanReturn ? [sceneId] : list(expected.orderedSceneIds);
   if (orderedSceneIds.length === 0) {
     return makeBlocked('FULL_MANUSCRIPT_LOCAL_AUTHORITY_SCENES_REQUIRED');
   }

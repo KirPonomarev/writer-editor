@@ -33,6 +33,8 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
 
+- `src/export/docx/fullManuscriptDocxReviewReturnRouter.js`
+
 ## DENYLIST
 
 No owner document changes, dependencies, UI layout, workflows, new writer or loosened authentication.
@@ -66,6 +68,8 @@ Performance: bounded return processing off typing hot path.
 Accessibility: existing native menu and Review controls.
 Current: native single-scene ordinary edit rejected; target repair unaccepted until proof.
 References: brain:refs returned general UI references, not relevant to this backend defect; exact Main source and existing clean-text tests are implementation references.
+
+Router scope added after reproducer commit daca4438 and renewed clean preflight; original delivery base remains aafacb67.
 
 ## IMPLEMENTATION_STEPS
 

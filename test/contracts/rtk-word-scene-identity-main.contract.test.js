@@ -1545,8 +1545,15 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-test('actual Main single-scene ordinary Word return reaches preview and guarded Apply',async t=>{
-  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false});
+for(const variant of ['plain','outside-bookmark','continued-list']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,
+    ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
+    ...(variant==='outside-bookmark'?{mutateReturn:parts=>{
+      const xml=parts['word/document.xml'];
+      parts['word/document.xml']=xml.replace(/Alpha CLEAN_EDIT(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,
+        'Alpha$1<w:r><w:t xml:space="preserve"> CLEAN_EDIT</w:t></w:r>');
+      assert.notEqual(parts['word/document.xml'],xml,'append must be outside transport bookmark');
+    }}:{})});
   assert.equal(activated.ok,true,JSON.stringify(activated));
   assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
   const before=f.capture(),sibling=read(f.beta);
@@ -1556,8 +1563,35 @@ test('actual Main single-scene ordinary Word return reaches preview and guarded 
   const result=await f.probe.fullApply({requestId:'scene-clean-apply'});
   assert.equal(result.applied,true,JSON.stringify(result));
   assert.equal(read(f.beta),sibling);
-  assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].content[0].text,'Alpha CLEAN_EDIT');
+  assert.match(envelope.parseObservablePayload(read(f.alpha)).text,/Alpha CLEAN_EDIT/u);
+  if(variant==='continued-list'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[2].attrs.start,4);assert.equal(doc.content[2].attrs.wordListId,'chain');}
+  const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
   const after=f.capture();
   assert.notEqual((await f.probe.fullApply({requestId:'scene-clean-replay'})).applied,true);
   assert.deepEqual(f.capture(),after);
+});
+
+for(const variant of ['dirty','scene','session','annotation-state']) test(`single-scene clean return revalidates ${variant} before Apply`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  if(variant==='dirty')f.probe.state({dirty:true,generation:1});
+  if(variant==='scene')fs.writeFileSync(f.alpha,'Owner changed this scene');
+  if(variant==='session')f.probe.changeSession();
+  if(variant==='annotation-state')fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),'{}');
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'scene-stale-apply'});
+  assert.notEqual(result.applied,true,JSON.stringify(result));
+  assert.deepEqual(f.capture(),before);
+});
+for(const variant of ['topology','format','tracked','stale-baseline']) test(`single-scene clean return rejects ${variant} without writing`,async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,
+    ...(variant==='stale-baseline'?{localCase:'overlap'}:{}),
+    mutateReturn:parts=>{
+      if(variant==='topology')parts['word/document.xml']=parts['word/document.xml'].replace('</w:body>','<w:p><w:r><w:t>Injected paragraph</w:t></w:r></w:p></w:body>');
+      if(variant==='format')parts['word/document.xml']=parts['word/document.xml'].replace('<w:t xml:space="preserve">Alpha CLEAN_EDIT','<w:rPr><w:b/></w:rPr><w:t xml:space="preserve">Alpha CLEAN_EDIT');
+      if(variant==='tracked')parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha CLEAN_EDIT</w:t></w:r><w:ins w:id="901" w:author="Review" w:date="2026-10-03T00:00:00Z"><w:r><w:t>Tracked</w:t></w:r></w:ins><w:r><w:t>');
+    }});
+  assert.ok(activated.ok===false || activated.nonOverlapTrackedReplacementProductPath?.prepared!==true,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  assert.notEqual((await f.probe.fullApply({requestId:'scene-rejected'})).applied,true);
+  assert.deepEqual(f.capture(),beforeActivation);
 });

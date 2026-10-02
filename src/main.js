@@ -7080,6 +7080,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
   context,
   localAuthority,
   parserResult,
+  returnContext,
 } = {}) {
   const payload = isPlainObjectValue(parserResult?.authorityCarrier?.selectedCarrier?.payload)
     ? parserResult.authorityCarrier.selectedCarrier.payload
@@ -7246,11 +7247,11 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
     ordinalBinding,
   );
   let cleanLinkLabel = null;
+  let cleanTextReturnFields = null;
   if (returnedTexts.ok === false) {
-    // This exception is limited to a separately compared label-only semantic
-    // effect, after signed local scene identity, topology and baseline checks.
-    if (returnedTexts.reason !== 'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH'
-      || !baselineFinalText.includes('[doc-v2')) return returnedTexts;
+    // A changed paragraph requires a separately verified semantic effect,
+    // after signed local scene identity, topology and baseline checks.
+    if (returnedTexts.reason !== 'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH') return returnedTexts;
     const envelope = await loadDocumentContentEnvelopeModule();
     const parsed = envelope.parseObservablePayload(baselineFinalText);
     const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportCleanLinkLabel.mjs')).href);
@@ -7260,7 +7261,21 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
       exportTypography: exportMap.exportTypography,
       allowTargetChange: true,
     });
-    if (!cleanLinkLabel.ok) return returnedTexts;
+    if (!cleanLinkLabel.ok) {
+      cleanLinkLabel = null;
+      // The exact local scene and topology were checked above. Changed text
+      // still needs the same independent semantic/annotation checks as a book
+      // return; a paragraph mismatch alone never authorizes a write.
+      if (exportMap.scenes?.length !== 1) return returnedTexts;
+      const clean = await prepareCleanUserBookmarksCapsule({ ...localAuthority,
+        baselineObservableContentBySceneId: { [sceneId]: baselineFinalText },
+      }, parserResult, { ...context, ...returnContext });
+      if (!clean.ok || !clean.fields?.cleanTextChanges?.length) return returnedTexts;
+      cleanTextReturnFields = { ...clean.fields,
+        baselineObservableContentBySceneId: { [sceneId]: baselineFinalText },
+        baselineFinalTextBySceneId: { [sceneId]: parsed.text },
+      };
+    }
   }
   const targetOrdinal = cleanLinkLabel ? cleanLinkLabel.effect.paragraphOrdinal : ordinalBinding.ordinal;
   const targetBlock = targetOrdinal === null
@@ -7368,6 +7383,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
     },
     sceneOrdinalAuthority,
     cleanLinkLabel,
+    cleanTextReturnFields,
   };
 }
 
@@ -7629,7 +7645,8 @@ async function buildDocxReviewPreviewSessionDefaultRtkApplyInput({
     };
   }
 
-  if (authorityCapsule.scope === 'full-manuscript') {
+  if (authorityCapsule.scope === 'full-manuscript'
+    || (authorityCapsule.scope === 'scene' && authorityCapsule.cleanTextChanges?.length)) {
     const returnedAuthority = isPlainObjectValue(analysis.authorityCarrier?.selectedCarrier?.payload)
       ? analysis.authorityCarrier.selectedCarrier.payload
       : {};
@@ -9667,6 +9684,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
     context: options.context,
     localAuthority,
     parserResult,
+    returnContext: { returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes },
   });
   if (sceneAuthority.ok === false) return sceneAuthority;
   // ROUND-01 (V3): the session-time capsule carries the vault-resolved hmacSecret
@@ -9684,6 +9702,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       writerContext: sceneAuthority.writerContext,
       sceneOrdinalAuthority: sceneAuthority.sceneOrdinalAuthority,
       cleanLinkLabel: sceneAuthority.cleanLinkLabel,
+      ...(sceneAuthority.cleanTextReturnFields || {}),
     }
     : {};
   if (options.mediaReturnFields) Object.assign(sceneAuthorityFields, options.mediaReturnFields);
@@ -10834,7 +10853,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     };
   }
   const cleanTextChanges = returnIntake.authenticated === true ? returnIntake.localAuthorityCapsule?.cleanTextChanges : null;
-  if (Array.isArray(cleanTextChanges) && cleanTextChanges.length && authenticatedFullManuscriptExportMap) {
+  if (Array.isArray(cleanTextChanges) && cleanTextChanges.length && (authenticatedFullManuscriptExportMap || authenticatedSceneExportMap)) {
     const changes = cleanTextChanges.map(change => ({changeId:change.changeId,targetScope:{type:'scene',id:change.sceneId},
       match:{kind:'exact',quote:change.expectedText},replacementText:change.replacementText,
       paragraphIndex:change.sceneParagraphIndex,documentParagraphIndex:change.documentParagraphIndex,
