@@ -65,7 +65,7 @@ function paragraphs(doc) {
     assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type'] : []));
     const start = node.attrs?.start ?? 1;
     assert(Number.isSafeInteger(start) && start >= 0 && start + node.content.length - 1 <= 2147483647
-      && (node.attrs?.type == null || node.attrs.type === '1'));
+      && (node.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(node.attrs.type)));
     for (const item of node.content) {
       assert(exact(item, ['type', 'attrs', 'content']) && item.type === 'listItem'
         && (!item.attrs || exact(item.attrs, [])) && Array.isArray(item.content)

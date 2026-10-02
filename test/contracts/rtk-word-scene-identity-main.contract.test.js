@@ -1210,10 +1210,11 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
+  if(listType)parsed.doc.content=[{type:'orderedList',attrs:{start:3,type:listType},content:[{type:'listItem',content:parsed.doc.content}]}];
   const beforeDoc=structuredClone(parsed.doc);
   const target=bookmarked?'Unannotated target':'Alpha';
   if(bookmarked){
@@ -1454,4 +1455,16 @@ for(const variant of ['scene','sibling','dirty','session','notes'])test(`actual 
   if(variant==='notes')fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),'LATER NOTES');
   const before=f.capture(),applied=await f.probe.fullApply({requestId:'stale-concurrent'});
   assert.notEqual(applied.applied,true);assert.deepEqual(f.capture(),before);
+});
+
+for(const type of ['I','i','A','a'])test(`actual whole Main numbered-list ${type} clean return preserves format through Apply and re-export`,async t=>{
+ const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,listType:type});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.activated,true,JSON.stringify(activated));
+ const sibling=read(f.beta);await f.probe.refreshReview();assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');
+ const result=await f.probe.fullApply({requestId:'list-format-apply'});assert.equal(result.applied,true,JSON.stringify(result));
+ const parsed=envelope.parseObservablePayload(read(f.alpha));assert.equal(parsed.issue,null);assert.equal(parsed.doc.content[0].attrs.type,type);assert.equal(parsed.doc.content[0].attrs.start,3);
+ assert.equal(parsed.doc.content[0].content[0].content[0].content[0].text,'Alpha CLEAN_EDIT');assert.equal(read(f.beta),sibling);
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.ok(zip['word/numbering.xml'].includes(`w:numFmt w:val="${{I:'upperRoman',i:'lowerRoman',A:'upperLetter',a:'lowerLetter'}[type]}"`));
 });

@@ -22,6 +22,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 ## ALLOWLIST
 
 - `src/core/word-list-format-v1.cjs`
+- `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/document-content-envelope-v1.cjs`
 - `src/core/word-manuscript-notes-v1.cjs`
 - `src/io/documentTables.js`
@@ -36,6 +37,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/renderer/tiptap/manuscriptNotes.mjs`
 - `test/contracts/revision-bridge-docx-lists.contract.test.js`
 - `test/contracts/rtk-word-list-format.contract.test.js`
+- `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-table-cell-lists.contract.test.js`
 - `docs/tasks/2026-10-02--word-list-formats-mac.md`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
@@ -122,3 +124,7 @@ refusals and absence of an import plan; no positive tracked-numbering claim is m
 
 Mechanical renderer bundle rebuild admitted by same-contour preflight on 1f1b8f38.
 No renderer source or visual design changed; runtime copy must match rebuilt Core.
+
+Affected-chain amendment on e7ceef9a adds the pending-list validator and real Main
+round-trip regression. It reproduced a pre-existing refusal of clean text edits
+inside lists; the packet must prove unchanged numbering semantics before admission.

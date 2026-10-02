@@ -39,3 +39,9 @@ test('P3d list inspection rejects accessors and cycles without invoking code',()
  assert.throws(()=>model.inspectDocument(doc(hostile)),/WORD_LIST_FORMAT_INVALID/);assert.equal(calls,0);
  const cyclic=doc();cyclic.content.push(cyclic);assert.throws(()=>model.inspectDocument(cyclic),/WORD_LIST_FORMAT_BUDGET/);
 });
+
+test('P3d pending revision paragraph traversal accepts supported list formats and rejects unknown types',()=>{
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ for(const type of ['I','i','A','a'])assert.equal(pending.paragraphs(doc(list(type))).length,1);
+ assert.throws(()=>pending.paragraphs(doc(list('unknown'))),/PENDING_REVISIONS/);
+});
