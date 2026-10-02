@@ -254,6 +254,7 @@ function buildFormatIrParagraphs(scene) {
         itemOrdinal: activeList.itemOrdinal,
         start: activeList.start,
         numId: activeList.numId,
+        ...(activeList.type ? { type: activeList.type } : {}),
       };
     }
     if (attrs.textAlign !== null && attrs.textAlign !== undefined && attrs.textAlign !== '') {
@@ -318,7 +319,7 @@ function buildFormatIrParagraphs(scene) {
           if (list.start < 1 || list.start > 32767) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
           if (!listIds.has(list.listId)) listIds.set(list.listId, nextListNumId++);
           return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.start,
-            itemOrdinal: list.itemOrdinal, numId: listIds.get(list.listId) };
+            itemOrdinal: list.itemOrdinal, numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
         });
         appendTextBlock(entry.node, { ...context, listStack });
         result.at(-1).formatIr.table = entry.table;
@@ -354,9 +355,9 @@ function buildFormatIrParagraphs(scene) {
     }
     if (node.type === 'bulletList' || node.type === 'orderedList') {
       const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
-      const unknownAttrs = Object.keys(attrs).filter((key) => key !== 'start' && attrs[key] !== null && attrs[key] !== undefined);
+      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
       const start = node.type === 'orderedList' ? Number(attrs.start ?? 1) : 1;
-      if (unknownAttrs.length > 0 || !Number.isSafeInteger(start) || start < 1 || start > 32767) {
+      if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || start < 1 || start > 32767) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED', { sceneId: scene.sceneId, unknownAttrs });
       }
       const items = Array.isArray(node.content) ? node.content : [];
@@ -369,6 +370,7 @@ function buildFormatIrParagraphs(scene) {
         const listStack = [...context.listStack, {
           kind: node.type === 'orderedList' ? 'ordered' : 'bullet',
           start,
+          ...(attrs.type ? { type: attrs.type } : {}),
           itemOrdinal,
           numId,
         }];

@@ -1,3 +1,4 @@
+import listFormat from '../../core/word-list-format-v1.cjs';
 import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
@@ -4214,7 +4215,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     const { sha256, width, height, mimeType } = createImageAttrs(bytes);
     const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
   };
-  return {
+  const result = {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     // Private adapter attachment, never part of semantic ReviewIR. The worker
@@ -4234,6 +4235,29 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // reads YRTK2 properties from the verified packet (V3 single parse).
     docPropsCustomXml: normalizeString(extracted.parts?.['docProps/custom.xml']),
   };
+  // Resolve the literal numbering in the worker, before its evidence packet is
+  // constructed and bound by the existing integrity checks. Main consumes the same-byte projection; it never reparses this ZIP.
+  // Missing/unsupported numbering remains absent evidence, never permission.
+  if (result.ok && result.reviewIr?.formattingParagraphs?.some(p => p.unsupportedParagraphNames?.includes('numPr'))) {
+    // Use the literal main-document parser, not the generic import pipeline:
+    // generic note/comment admission calls this analyzer and would recurse.
+    const bytes = Buffer.isBuffer(input) ? input : input.bytes;
+    const preview = docxContentPreviewParseMainDocumentXml(
+      extracted.parts['word/document.xml'], docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+    const paragraphs = !preview.failure ? preview.contentPreview?.paragraphs : null;
+    const observed = result.reviewIr.formattingParagraphs;
+    if (Array.isArray(paragraphs) && paragraphs.length === observed.length
+      && paragraphs.every((p, i) => p.text === observed[i].paragraphText)
+      && !preview.diagnostics?.some(d => d.code.includes('LIST_NUMBERING'))) {
+      result.reviewIr.listNumbering = {
+        schemaVersion: 'yalken.word-list-numbering-proof.v1',
+        paragraphs: paragraphs.map(p => ({ textSha256: sha256Hex(p.text), list: p.list || null })),
+      };
+      result.supportedSemanticDigest = `sha256:${hashCanonicalValue({ previous: result.supportedSemanticDigest, listNumbering: result.reviewIr.listNumbering })}`;
+      result.analysisDigest = `sha256:${hashCanonicalValue({ previous: result.analysisDigest, supportedSemanticDigest: result.supportedSemanticDigest })}`;
+    }
+  }
+  return result;
 }
 
 // Bind only the actual produced package. Main stores this result in its
@@ -9139,11 +9163,12 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
   // Even an unrepresentable numbered heading consumes its Word ordinal. Do
   // not renumber a later supported paragraph when reporting that earlier loss.
   if (definition.unsupported || metadata.headingLevel !== undefined
-    || !(definition.numFmt === 'bullet' || ((definition.numFmt ?? 'decimal') === 'decimal' && definition.lvlText === `%${level + 1}.`))) {
+    || !(definition.numFmt === 'bullet' || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {
     declareLoss();
     return;
   }
-  metadata.list = { numId: reference.numId, level, kind, ordinal };
+  const type = listFormat.fromWordFormat(definition.numFmt ?? 'decimal');
+  metadata.list = { numId: reference.numId, level, kind, ordinal, ...(kind === 'orderedList' && type !== '1' ? { type } : {}) };
 }
 
 const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
@@ -9812,8 +9837,9 @@ function docxInlineCanonicalContent(paragraphs) {
       target.push(block);
       return;
     }
-    if (!isPlainObject(list) || Object.keys(list).length !== 4
-      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal'].includes(key))
+    if (!isPlainObject(list) || !['numId', 'level', 'kind', 'ordinal'].every(key => Object.hasOwn(list, key))
+      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal', 'type'].includes(key))
+      || (Object.hasOwn(list, 'type') && (list.kind !== 'orderedList' || typeof list.type !== 'string' || !['I', 'i', 'A', 'a'].includes(list.type)))
       || !/^[1-9]\d{0,9}$/u.test(list.numId) || typeof list.numId !== 'string' || Number(list.numId) > 2147483647
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
@@ -9822,9 +9848,9 @@ function docxInlineCanonicalContent(paragraphs) {
     needsRichContent = true;
     listStack.length = Math.min(listStack.length, list.level + 1);
     let active = listStack[list.level];
-    if (!active || active.numId !== list.numId || active.node.type !== list.kind
+    if (!active || active.numId !== list.numId || active.node.type !== list.kind || active.node.attrs?.type !== list.type
       || (list.kind === 'orderedList' && active.nextOrdinal !== list.ordinal)) {
-      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal } } : {}), content: [] };
+      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal, ...(list.type ? { type: list.type } : {}) } } : {}), content: [] };
       if (list.level === 0) target.push(node);
       else {
         const parentItem = listStack[list.level - 1]?.node.content.at(-1);

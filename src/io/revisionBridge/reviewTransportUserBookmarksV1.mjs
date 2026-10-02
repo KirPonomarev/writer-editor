@@ -80,6 +80,26 @@ function replaceText(p,from,to,text) {
   }
   if(!emitted)throw Error('label-footprint-missing');p.content=out;
 }
+// Keep unchanged source runs exactly as the authenticated text writer does.
+// Whole-paragraph replacement would copy the first leaf's schema defaults over
+// later leaves, producing a different private candidate after native editing.
+function replaceOrdinaryText(p,before,after) {
+  const segmenter=new Intl.Segmenter('und',{granularity:'grapheme'});
+  const boundaries=text=>new Set([0,text.length,...Array.from(segmenter.segment(text),part=>part.index)]);
+  const oldBounds=boundaries(before),newBounds=boundaries(after);
+  let prefix=0,suffix=0;
+  while(prefix<Math.min(before.length,after.length)&&before[prefix]===after[prefix])prefix++;
+  while(prefix>0&&(!oldBounds.has(prefix)||!newBounds.has(prefix)))prefix--;
+  while(suffix<Math.min(before.length-prefix,after.length-prefix)
+    &&before[before.length-suffix-1]===after[after.length-suffix-1])suffix++;
+  while(suffix>0&&(!oldBounds.has(before.length-suffix)||!newBounds.has(after.length-suffix)))suffix--;
+  if(prefix+suffix===before.length&&before!==after){
+    if(prefix>0){prefix--;while(prefix>0&&!oldBounds.has(prefix))prefix--;}
+    else if(suffix>0){suffix--;while(suffix>0&&!oldBounds.has(before.length-suffix))suffix--;}
+  }
+  if(before!==after)replaceText(p,prefix,before.length-suffix,after.slice(prefix,after.length-suffix));
+  p.content=semanticParagraph(p).content;
+}
 function replaceLinks(p,runs,registry) {
   let offset=0;const out=[];
   for(const node of p.content||[]) {
@@ -164,6 +184,29 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       seen.add(names[0]);
       if(observed.filter(item=>(item.bookmarkNames||[]).includes(names[0])).length!==1)return reject('transport-owner-duplicate');
     }
+    const hasLists = allBlocks.some(block => block.formatIr?.paragraph?.list)
+      || observed.some(p => p.unsupportedParagraphNames?.includes('numPr'));
+    if (hasLists) {
+      const proof = reviewIr.listNumbering;
+      if (!ordinaryTextMode || proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1'
+        || !Array.isArray(proof.paragraphs) || proof.paragraphs.length !== allBlocks.length) return reject('list-numbering-proof-required');
+      const forward = new Map(), reverse = new Map();
+      const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
+      for (let j = 0; j < allBlocks.length; j++) {
+        const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
+        if (actual?.textSha256 !== sha256Hex(observed[j].paragraphText)) return reject('list-text-binding');
+        const list = actual.list;
+        if (!expected) { if (list !== null) return reject('list-added'); continue; }
+        if (!list || list.kind !== (expected.kind === 'ordered' ? 'orderedList' : 'bulletList')
+          || list.level !== expected.level || (list.type || '1') !== (expected.type || '1')
+          || (expected.kind === 'ordered' && list.ordinal !== expected.start + expected.itemOrdinal)
+          || typeof list.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(list.numId)) return reject('list-semantics-change');
+        const identity = `${owners[j]}:${expected.numId}`;
+        if ((forward.has(identity) && forward.get(identity) !== list.numId)
+          || (reverse.has(list.numId) && reverse.get(list.numId) !== identity)) return reject('list-identity-change');
+        forward.set(identity, list.numId); reverse.set(list.numId, identity);
+      }
+    }
     const basePs=core.paragraphs(baselineDoc);
     if(basePs.length!==scene.blocks.length)return reject('scene-topology');
     const baseFormats=source.buildFormatIrParagraphs({sceneId,doc:baselineDoc,text:basePs.map(core.textOf).join('\n')});
@@ -232,9 +275,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
-      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && name==='rPr' && p.wordParagraphMarkLanguageOnly)))return reject('rich-paragraph-unsupported');
+      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
-      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage']:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
+      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage',...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');
       const before=runsForBase(block,defaultFontSize,ordinaryTextMode),after=runsForReturn(p,defaultFontSize,ordinaryTextMode);
       const languageChange={schemaVersion:1,paragraphMark:p.wordParagraphMarkLanguage||null,
@@ -265,7 +308,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             ||!before.length||!after.length
             ||before.some(run=>!same(run.style,before[0].style))
             ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
-          replaceText(resultPs[i],0,block.text.length,p.paragraphText);
+          replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
           if(hasLanguage){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
           ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});

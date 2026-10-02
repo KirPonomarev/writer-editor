@@ -628,6 +628,7 @@ function collectNumberingDefinitions(blocks) {
     const definition = {
       numId,
       kind: normalizeString(list.kind),
+      type: require('../../core/word-list-format-v1.cjs').normalizeType(list.type),
       start: Number.isSafeInteger(start) ? start : 1,
     };
     const existing = byNumId.get(numId);
@@ -644,7 +645,7 @@ function buildNumberingXml(definitions) {
     const levels = Array.from({ length: 9 }, (_, level) => {
       const ordered = definition.kind === 'ordered';
       const levelText = ordered ? `%${level + 1}.` : ['•', '◦', '▪'][level % 3];
-      return `<w:lvl w:ilvl="${level}"><w:start w:val="${definition.start}"/><w:numFmt w:val="${ordered ? 'decimal' : 'bullet'}"/><w:lvlText w:val="${escapeXml(levelText)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${720 + level * 360}"/></w:tabs><w:ind w:left="${720 + level * 360}" w:hanging="360"/></w:pPr></w:lvl>`;
+      return `<w:lvl w:ilvl="${level}"><w:start w:val="${definition.start}"/><w:numFmt w:val="${ordered ? require('../../core/word-list-format-v1.cjs').wordFormat(definition.type) : 'bullet'}"/><w:lvlText w:val="${escapeXml(levelText)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${720 + level * 360}"/></w:tabs><w:ind w:left="${720 + level * 360}" w:hanging="360"/></w:pPr></w:lvl>`;
     }).join('');
     return `<w:abstractNum w:abstractNumId="${definition.numId}"><w:multiLevelType w:val="hybridMultilevel"/>${levels}</w:abstractNum>`;
   }).join('');

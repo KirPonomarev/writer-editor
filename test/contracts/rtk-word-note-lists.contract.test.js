@@ -72,14 +72,19 @@ test('unchanged text with changed numbering is an explicit identity-preserving r
     exportMap: { scenes: [{ sceneId: block.sceneId, blocks: [block] }] }, returnedParagraphs: [{ paragraphIndex: 0, paragraphText: 'Text', trackedRevision: false }], returnedNotes: malformed }), /NOTE_BODY_LIST_START/);
 });
 
-test('actual Tiptap list schema decimal defaults remain admissible; other markers fail closed', async () => {
+test('actual Tiptap list schema preserves admitted formats; unknown markers fail closed', async () => {
   const { getSchema } = await import('@tiptap/core');
   const { default: StarterKit } = await import('@tiptap/starter-kit');
   const schema = getSchema([StarterKit]);
   const authored = schema.nodeFromJSON(body()).toJSON();
   assert.equal(authored.content[1].attrs.type, null);
   assert.doesNotThrow(() => model.validateNoteBody(authored));
-  for (const type of ['a', 'I', 'i', 'A', 'x', 1]) {
+  for (const type of ['a', 'I', 'i', 'A']) {
+    const formatted = structuredClone(authored); formatted.content[1].attrs.type = type;
+    assert.doesNotThrow(() => model.validateNoteBody(formatted));
+    assert.equal(schema.nodeFromJSON(formatted).toJSON().content[1].attrs.type, type);
+  }
+  for (const type of ['x', 1]) {
     const invalid = structuredClone(authored); invalid.content[1].attrs.type = type;
     assert.throws(() => model.validateNoteBody(invalid), /NOTE_BODY_LIST_FORMAT/);
   }
@@ -124,7 +129,15 @@ test('literal Word numbering in footnotes imports without a Yalken export; unsup
   assert.equal(note.body.content[0].type, 'orderedList');
   assert.equal(note.body.content[0].attrs.start, 4);
   assert.equal(model.validateNoteBody(note.body).text, 'First\nSecond');
-  for (const format of ['upperRoman', 'lowerLetter', 'none', 'decimalZero']) {
+  for (const [format, type] of [['upperRoman', 'I'], ['lowerRoman', 'i'], ['upperLetter', 'A'], ['lowerLetter', 'a']]) {
+    const parsed = bridge.buildDocxContentPreviewFromZipBytes(bytes(format));
+    assert.equal(parsed.ok, true, JSON.stringify(parsed));
+    const formatted = parsed.contentPreview.manuscriptNotes[0].body;
+    assert.equal(formatted.content[0].attrs.type, type);
+    assert.equal(formatted.content[0].attrs.start, 4);
+    assert.equal(model.validateNoteBody(formatted).text, 'First\nSecond');
+  }
+  for (const format of ['none', 'decimalZero']) {
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes(format)).ok, false, format);
   }
 });

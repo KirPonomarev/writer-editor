@@ -59,10 +59,10 @@ function validateNoteBody(body) {
       need(stack.length <= 8 && Array.isArray(block.content) && block.content.length > 0
         && block.content.length <= LIMITS.paragraphs, 'NOTE_BODY_LIST_STRUCTURE');
       need(block.attrs === undefined || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_BODY_LIST_ATTRIBUTES');
-      need(block.attrs?.type == null || block.attrs.type === '1', 'NOTE_BODY_LIST_FORMAT');
+      need(block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type), 'NOTE_BODY_LIST_FORMAT');
       const start = block.type === 'orderedList' ? (block.attrs?.start ?? 1) : 1;
       need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647, 'NOTE_BODY_LIST_START');
-      const list = { numId: nextListId++, level: stack.length, kind: block.type, start };
+      const list = { numId: nextListId++, level: stack.length, kind: block.type, start, ...(block.attrs?.type ? { type: block.attrs.type } : {}) };
       for (const item of block.content) {
         need(keys(item, ['type', 'content']) && item.type === 'listItem' && Array.isArray(item.content)
           && item.content.length > 0 && item.content.length <= LIMITS.paragraphs
@@ -152,7 +152,7 @@ function sceneParagraphs(doc) {
     need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
     const start = block.attrs?.start ?? 1;
     need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647
-      && (block.attrs?.type == null || block.attrs.type === '1'), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+      && (block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
     for (const item of block.content) {
       need(item?.type === 'listItem' && Array.isArray(item.content) && item.content[0]?.type === 'paragraph'
         && item.content.slice(1).every(child => ['bulletList', 'orderedList'].includes(child?.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
