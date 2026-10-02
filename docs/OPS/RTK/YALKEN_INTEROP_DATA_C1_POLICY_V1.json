@@ -1700,7 +1700,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "55904c95df3d1cca2f0fe5e52012441b482b2bf51560b2cbe4181951e375c60b"
+        "sha256": "89477868f33e1f59a067f6a4f02e96cd67f1d7cb614bbed61c54b955033a580b"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1896,7 +1896,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "0d8f6b090fc8a394d51c64c0ec8a309d32f20de2bf4bb2d464508b32a8d47342"
+        "sha256": "da63146218a1cad18feed9afaede56277d21fbbe94046d590297a375bb27f6a1"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2032,7 +2032,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-list-formats-mac.md",
-        "sha256": "05c2bb23b0340280d485e8dc20dfba7bd16a8e9ad7cc55c105655318918ca073"
+        "sha256": "611d97b3e9d7679ce0e7179efb78948bb788d7180779ab4481ba2c9bfd5c0fe5"
       }
     ],
     "followupRepair": {

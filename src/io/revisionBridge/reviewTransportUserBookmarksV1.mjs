@@ -80,6 +80,26 @@ function replaceText(p,from,to,text) {
   }
   if(!emitted)throw Error('label-footprint-missing');p.content=out;
 }
+// Keep unchanged source runs exactly as the authenticated text writer does.
+// Whole-paragraph replacement would copy the first leaf's schema defaults over
+// later leaves, producing a different private candidate after native editing.
+function replaceOrdinaryText(p,before,after) {
+  const segmenter=new Intl.Segmenter('und',{granularity:'grapheme'});
+  const boundaries=text=>new Set([0,text.length,...Array.from(segmenter.segment(text),part=>part.index)]);
+  const oldBounds=boundaries(before),newBounds=boundaries(after);
+  let prefix=0,suffix=0;
+  while(prefix<Math.min(before.length,after.length)&&before[prefix]===after[prefix])prefix++;
+  while(prefix>0&&(!oldBounds.has(prefix)||!newBounds.has(prefix)))prefix--;
+  while(suffix<Math.min(before.length-prefix,after.length-prefix)
+    &&before[before.length-suffix-1]===after[after.length-suffix-1])suffix++;
+  while(suffix>0&&(!oldBounds.has(before.length-suffix)||!newBounds.has(after.length-suffix)))suffix--;
+  if(prefix+suffix===before.length&&before!==after){
+    if(prefix>0){prefix--;while(prefix>0&&!oldBounds.has(prefix))prefix--;}
+    else if(suffix>0){suffix--;while(suffix>0&&!oldBounds.has(before.length-suffix))suffix--;}
+  }
+  if(before!==after)replaceText(p,prefix,before.length-suffix,after.slice(prefix,after.length-suffix));
+  p.content=semanticParagraph(p).content;
+}
 function replaceLinks(p,runs,registry) {
   let offset=0;const out=[];
   for(const node of p.content||[]) {
@@ -288,7 +308,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             ||!before.length||!after.length
             ||before.some(run=>!same(run.style,before[0].style))
             ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
-          replaceText(resultPs[i],0,block.text.length,p.paragraphText);
+          replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
           if(hasLanguage){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
           ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});

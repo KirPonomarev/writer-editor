@@ -148,3 +148,12 @@ with notes/comments. Numbering extraction now uses the bounded literal main XML
 parser directly. The failed run remains failure evidence; native qualification
 and a fresh complete RTK run remain required. Existing note-list negative fixtures
 also still classify newly supported formats as invalid and need exact correction.
+
+Native SOURCE on cd7ffcc5 preserved four list formats through import, edit,
+Undo/Redo, Save, process reopen and Word export. Full Word return reached ready
+preview but Apply refused before rename: the analyzer replaced an entire uniform
+paragraph with the first raw textStyle leaf, while the writer retained unchanged
+runs (including native null versus empty color defaults). A failing actual Main
+regression reproduces this. The analyzer now preserves unchanged runs with the
+same grapheme-bounded footprint; strict candidate equality and all write guards
+remain unchanged. Native acceptance is still required on the repaired candidate.

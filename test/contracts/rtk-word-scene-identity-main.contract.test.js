@@ -1210,11 +1210,18 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
   if(listType)parsed.doc.content=[{type:'orderedList',attrs:{start:3,type:listType},content:[{type:'listItem',content:parsed.doc.content}]}];
+  if(nativeStyle) {
+    parsed.doc.attrs={wordPendingRevisions:null,wordUserBookmarks:null};
+    const paragraph=parsed.doc.content[0].content[0].content[0];
+    paragraph.attrs={textAlign:null};
+    paragraph.content=[{type:'text',text:'Alpha',marks:[{type:'textStyle',attrs:{color:null,fontFamily:'Aptos',fontSize:'12pt'}}]},
+      {type:'text',text:' SourceEdit02',marks:[{type:'textStyle',attrs:{color:'',fontFamily:'Aptos',fontSize:'12pt'}}]}];
+  }
   const beforeDoc=structuredClone(parsed.doc);
   const target=bookmarked?'Unannotated target':'Alpha';
   if(bookmarked){
@@ -1251,7 +1258,7 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
   const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
   assert.ok(zip['word/document.xml'].includes(target));
-  const editedText=mixedLanguage?target.slice(1):target;
+  const editedText=nativeSuffix?'SourceEdit02':mixedLanguage?target.slice(1):target;
   zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
   if(mutateReturn)mutateReturn(zip);
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
@@ -1503,4 +1510,18 @@ test('numbered-list worker module binds numbering projection into packet integri
  const paragraph=altered.returnedProjection.listNumbering.paragraphs.find(p=>p.list);
  assert.equal(paragraph.list.type,'I');paragraph.list.type='a';
  assert.equal(verifyReturnEvidencePacketV1(altered,{expectedArtifactSha256:artifactSha256}).ok,false);
+});
+
+for(const nativeSuffix of [false,true])test(`actual whole Main native styled list clean return preserves split textStyle runs suffix ${nativeSuffix}`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,listType:'a',nativeStyle:true,nativeSuffix});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  await f.probe.refreshReview();
+  const before=envelope.parseObservablePayload(read(f.alpha)).doc;
+  const result=await f.probe.fullApply({requestId:'native-styled-list'});
+  assert.equal(result.applied,true,JSON.stringify(result));
+  const doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  const expected=structuredClone(before);
+  expected.content[0].content[0].content[0].content[1].text=nativeSuffix?' SourceEdit02 CLEAN_EDIT':' CLEAN_EDIT SourceEdit02';
+  assert.deepEqual(doc,expected);
+  const after=f.capture();assert.notEqual((await f.probe.fullApply({requestId:'native-styled-list-replay'})).applied,true);assert.deepEqual(f.capture(),after);
 });
