@@ -192,9 +192,8 @@ test('native Word package requirements include exact MIME types and a reference 
     assert.ok(xml['[Content_Types].xml'].includes('application/vnd.openxmlformats-officedocument.wordprocessingml.'+suffix+'+xml'));
   }
   const ids=[...xml['word/document.xml'].matchAll(/<w:commentReference w:id="(\d+)"\/>/gu)].map(m=>m[1]);
-  // Identical root/reply ranges close in reverse start order. Every identity
-  // still has exactly one reference; canonical message ordering stays intact.
-  assert.deepEqual(ids,source.commentExport.threads[0].messages.map(m=>m.commentId).reverse());
+  // References retain root-before-reply order independently of range closure.
+  assert.deepEqual(ids,source.commentExport.threads[0].messages.map(m=>m.commentId));
 });
 
 test('authenticated new root and reply save, reopen and reexport without losing metadata or exact range', async () => {
@@ -461,6 +460,13 @@ test('nested comment marker ordering preserves exact ranges through XML, parser 
         else assert.equal(stack.pop(), match[2], label + ': crossed emitted marker order');
       }
       assert.deepEqual(stack, [], label);
+      for (const thread of source.commentExport.threads) {
+        const references = thread.messages.map(message => xml.indexOf(`<w:commentReference w:id="${message.commentId}"/>`));
+        assert.equal(references.every((position, index) => position >= 0
+          && (index === 0 || references[index - 1] < position)), true, label + ': root must precede replies');
+        const lastEnd = Math.max(...thread.messages.map(message => xml.indexOf(`<w:commentRangeEnd w:id="${message.commentId}"/>`)));
+        assert.equal(lastEnd < references[0], true, label + ': close all thread ranges before reference runs');
+      }
     } else {
       assert.equal(gate.code, 'RTK_V4_PUBLICATION_COMMENT_PROVISIONAL_MISMATCH');
       assert.equal(returned.every(thread => thread.status === 'UNSUPPORTED_BLOCKED'

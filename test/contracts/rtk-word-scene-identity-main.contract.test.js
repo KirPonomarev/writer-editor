@@ -58,6 +58,13 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
+    async observeLocalReviewReceipt(receipt) {
+      const statuses=[], opened=[], previousHandler=handleDocxReviewPreviewSessionLocalFileCommandSurface, previousStatus=updateStatus, previousSender=sendCanonicalRuntimeCommand;
+      handleDocxReviewPreviewSessionLocalFileCommandSurface=async()=>receipt;
+      updateStatus=value=>statuses.push(value); sendCanonicalRuntimeCommand=(...args)=>{opened.push(args);return true;};
+      try { return {result:await MENU_COMMAND_HANDLERS['cmd.project.review.openDocxReviewPreviewSession']({requestId:'observation'}),statuses,opened}; }
+      finally {handleDocxReviewPreviewSessionLocalFileCommandSurface=previousHandler;updateStatus=previousStatus;sendCanonicalRuntimeCommand=previousSender;}
+    },
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -1169,4 +1176,28 @@ test('structural backup dedupe preserves foreign history bytes and exact Undo re
   assert.equal(state.lastMutation.canUndo,false); assert.equal(state.lastMutation.unavailableReason,'E_TREE_COHORT_FOREIGN_ENTRY');
   const before=f.capture(),result=await f.main.handleUiTreeUndoCommand({projectId:f.query.projectId,expectedTreeRevision:2,mutationId:merged.lastMutation.id});
   assert.equal(result.ok,false); assert.deepEqual(f.capture(),before); assert.equal(read(foreign),'foreign history');
+});
+
+for(const variant of ['typed-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
+  const f=await fixture(t), logger=f.probe.captureExportLogs();t.after(()=>logger.restore());
+  const receipt=variant==='typed-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_RETURN_INTAKE_PARSER_V2_BLOCKED',details:{nestedCode:'RTK_WORD_UNSUPPORTED',nestedReason:'RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH',message:'private manuscript /private/source'}}}
+    :variant==='secret-filter'?{ok:false,error:{code:'private secret /private/source',reason:'private manuscript text',details:{nestedCode:'RTK_WORD_'+'A'.repeat(170),nestedReason:'/private/source'}}}
+    :variant==='cancel'?{ok:true,activated:false,cancelled:true}
+    :variant==='pending'?{ok:true,activated:false,pendingProductPath:{ok:true,status:'preview-ready'}}
+    :{ok:true,activated:true,requestId:'actual-success'};
+  const before=structuredClone(receipt), out=await f.probe.observeLocalReviewReceipt(receipt);
+  assert.strictEqual(out.result,receipt);assert.deepEqual(receipt,before);
+  if(variant==='typed-failure'){
+    for(const code of [receipt.error.code,receipt.error.reason,receipt.error.details.nestedCode,receipt.error.details.nestedReason])assert.ok(out.statuses[0].includes(code));
+    assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:receipt.error.code,reason:receipt.error.reason,nestedCode:receipt.error.details.nestedCode,nestedReason:receipt.error.details.nestedReason}}]);
+    assert.deepEqual(out.opened,[]);assert.equal(out.statuses.length,1);
+  }else if(variant==='secret-filter'){
+    assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_FAILED'}}]);
+    assert.equal(out.statuses.length,1);assert.ok(out.statuses[0].includes('E_DOCX_REVIEW_PREVIEW_SESSION_FAILED'));assert.deepEqual(out.opened,[]);
+  }else{
+    assert.deepEqual(out.statuses,[]);assert.deepEqual(logger.records,[]);
+    assert.deepEqual(out.opened,variant==='success'?[['cmd.project.review.openComments',{source:'review-docx-local-file-preview-session',requestId:'actual-success'},'review-comment']]:[]);
+  }
+  assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('/private'),false);
+  assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });

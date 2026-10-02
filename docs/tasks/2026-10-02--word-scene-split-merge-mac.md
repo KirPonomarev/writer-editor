@@ -293,3 +293,24 @@ Focused current Main89of89 and canonical comment16of16 pass without skips or
 todos; these are bounded proofs, not full acceptance. Current candidate still
 requires actual Word save and return, PACKAGED qualification, companion refresh,
 mandatory stable-candidate checks and full delivery. No whole-plan percentage.
+
+Native Word SOURCE05 SaveAs preserves all four comment bodies and literal ranges
+but removes the reply paraIdParent, yielding four roots instead of three threads.
+Independent ZIP and actual parser agree; full graph acceptance is FAIL. Root
+cause hypothesis: reversed nested range closure also reversed embedded references,
+placing a reply reference before its root. SOURCE06 keeps properly nested closing
+markers and separately emits references in original canonical message order.
+No parser or Apply relaxation. Literal marker-stack and reference-order checks
+pass; native Word preservation remains unproven until its new saved file readback.
+
+SOURCE06 Word SaveAs confirms all three threads, four messages, original reply
+parent, resolved state, comment ranges, footnote and seven bookmark names. The
+only intended text change is paragraph1 suffix SOURCE06_WORD_EDIT. One bookmark
+uses the already-supported paragraph-end versus next-start Word representation.
+The native DOCX return chooser then closes without activating a new session;
+manual Comments shows the original canonical session. Keyboard confirmation
+reproduces this, ruling out a mistaken mouse click. Do not repeat this route
+until a new observation exists. Extend the existing Main bounded status/log
+observation to the actual local DOCX activation result; preserve receipt, all
+checks and success/cancel/pending behavior, expose only validated codes and
+reasons. Same Main and existing actual-handler contract test scope.

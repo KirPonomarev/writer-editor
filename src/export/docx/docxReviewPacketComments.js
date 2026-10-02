@@ -218,12 +218,16 @@ function commentMarkersForBlock(projection, block) {
   // identical root/reply ranges are nested too. This orders transport markers
   // only; canonical thread/message order and genuinely crossing ranges stay intact.
   return new Map([...markers].map(([offset, boundary]) => {
-    const ends = boundary.end.sort((a, b) => b.start - a.start || b.ordinal - a.ordinal)
-      .map(event => `<w:commentRangeEnd w:id="${event.id}"/><w:r><w:commentReference w:id="${event.id}"/></w:r>`).join('');
+    const ends = [...boundary.end].sort((a, b) => b.start - a.start || b.ordinal - a.ordinal)
+      .map(event => `<w:commentRangeEnd w:id="${event.id}"/>`).join('');
+    // Word uses reference order when materializing threads on save. Closing a
+    // reply's nested range first must not place its reference before its root.
+    const references = [...boundary.end].sort((a, b) => a.ordinal - b.ordinal)
+      .map(event => `<w:r><w:commentReference w:id="${event.id}"/></w:r>`).join('');
     const starts = boundary.start.sort((a, b) => b.end - a.end || a.ordinal - b.ordinal)
       .map(event => `<w:commentRangeStart w:id="${event.id}"/>`).join('');
     // Adjacent ranges close before another range opens at the same offset.
-    return [offset, ends + starts];
+    return [offset, ends + references + starts];
   }));
 }
 

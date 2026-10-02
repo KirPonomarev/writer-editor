@@ -34473,6 +34473,18 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.review.openDocxReviewPreviewSession': async (payload = {}) => {
     const result = await handleDocxReviewPreviewSessionLocalFileCommandSurface(payload);
+    if (result?.ok === false) {
+      // Only bounded machine codes enter the shell/log; the full private receipt
+      // remains unchanged and never supplies authority through observation.
+      const safeCode = value => typeof value === 'string' && value.length <= 160
+        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING_RETURN)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(value);
+      const codes = { code: safeCode(result.error?.code) ? result.error.code : 'E_DOCX_REVIEW_PREVIEW_SESSION_FAILED' };
+      for (const [key, value] of [['reason', result.error?.reason], ['nestedCode', result.error?.details?.nestedCode], ['nestedReason', result.error?.details?.nestedReason]]) {
+        if (safeCode(value)) codes[key] = value;
+      }
+      updateStatus(`Не удалось открыть возврат Word (${[...new Set(Object.values(codes))].join(': ')}).`);
+      logDevError('review-docx-return', codes);
+    }
     if (result && result.ok === true && result.activated === true) {
       sendCanonicalRuntimeCommand(
         'cmd.project.review.openComments',
