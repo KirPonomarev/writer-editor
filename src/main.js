@@ -8140,11 +8140,17 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
       }
       const command = plan.sceneCommands[0], token = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
       const capsule = readDocxReviewPreviewSessionRtkAuthorityCapsule(context);
-      const ranges = plan.exactAuthorityBySceneId[command.sceneId].ranges;
+      let ranges = plan.exactAuthorityBySceneId[command.sceneId].ranges;
+      if (capsule.cleanTextComparisonBindings) {
+        const rebased = prepareCleanTextConcurrentWriterInput(command, capsule);
+        if (!rebased.ok) return {prepared:false,status:'blocked',reason:rebased.code};
+        command.input.writerInput = rebased.input;
+        ranges = rebased.ranges;
+      }
       const publicItems = command.input.writerInput.reviewItems.map(item => ({changeId:item.changeId,
         targetScope:cloneJsonSafe(item.targetScope),match:{kind:'exact',quote:item.match.quote},replacementText:item.replacementText}));
       activeRtkCleanLinkLabelApplyStore = {input:cloneJsonSafe(command.input.writerInput),keyAuthority:cloneJsonSafe(capsule),
-        cleanTextCandidateDoc:capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
+        cleanTextCandidateDoc:capsule.cleanTextMergedDocsBySceneId?.[command.sceneId] || capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
         cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,
         cleanTextAuthoringBinding:{subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,
           generation:lastSignaledEditGeneration},
@@ -9550,7 +9556,8 @@ function findDocxReviewReturnIntakeRoundAuthority(store, roundId) {
   return capsule;
 }
 
-function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, parserResult } = {}) {
+function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, parserResult, captureForComparison = false } = {}) {
+  let comparisonBindings = null;
   const payload = isPlainObjectValue(parserResult?.authorityCarrier?.selectedCarrier?.payload)
     ? parserResult.authorityCarrier.selectedCarrier.payload
     : {};
@@ -9581,6 +9588,7 @@ function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, par
     const currentBindings = verifyFullManuscriptCurrentSceneBindings({
       projectRoot: context?.projectRoot,
       exportMapScenes: mapScenes,
+      captureForComparison,
       scenePathBySceneId: localAuthority?.scenePathBySceneId,
     }, {
       readFileSync: fsSync.readFileSync,
@@ -9592,6 +9600,9 @@ function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, par
         currentBindings.reason || 'RTK_RETURN_INTAKE_LOCAL_FULL_MANUSCRIPT_CURRENT_BINDING_REQUIRED',
         isPlainObjectValue(currentBindings.details) ? currentBindings.details : {},
       );
+    }
+    if (captureForComparison && currentBindings.sceneReadback.some(scene => scene.changedSinceExport)) {
+      comparisonBindings = currentBindings.sceneReadback;
     }
   }
   if (
@@ -9636,7 +9647,7 @@ function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, par
   ) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_TRANSPORT_MANIFEST_MISMATCH');
   }
-  return { ok: true };
+  return { ok: true, comparisonBindings };
 }
 
 async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, parserResult, options = {}) {
@@ -9687,7 +9698,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       || parserResult.reviewIr?.userBookmarkInventory?.bookmarks?.length
       || parserResult.reviewIr?.userBookmarkInventory?.links?.length) {
       const bookmarks = await prepareCleanUserBookmarksCapsule(localAuthority, parserResult,
-        { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes });
+        { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes, comparisonBindings: options.comparisonBindings });
       if (!bookmarks.ok) return docxReviewReturnIntakeBlocked(bookmarks.code, { detail: bookmarks.detail });
       if (bookmarks.changed) Object.assign(sceneAuthorityFields, bookmarks.fields);
     }
@@ -9710,6 +9721,9 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
             structuralChanges: [], diagnosticItems: [], decisionStates: [] } },
       };
     }
+  }
+  if (options.comparisonBindings && !sceneAuthorityFields.cleanTextChanges?.length) {
+    return docxReviewReturnIntakeBlocked('RTK_WORD_CONCURRENT_COMPOSITE_UNSUPPORTED');
   }
   return {
     ...cloneJsonSafe(localAuthority),
@@ -9737,7 +9751,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
 async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
-  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {};
+  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {}, cleanTextMergedDocsBySceneId = {};
   for (const scene of authority.exportMap.scenes) {
     const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId] ?? authority.baselineFinalTextBySceneId?.[scene.sceneId];
     if (typeof raw !== 'string') return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_REQUIRED' };
@@ -9751,6 +9765,15 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     if (!analysis.ok) return analysis;
     if (analysis.ordinaryTextChanges?.length) {
       cleanTextDocsBySceneId[scene.sceneId] = analysis.doc;
+      const current = context.comparisonBindings?.find(binding => binding.sceneId === scene.sceneId);
+      if (current && current.rawContent !== raw) {
+        const local = envelope.parseObservablePayload(current.rawContent);
+        if (local.issue || !local.doc) return {ok:false,code:'RTK_WORD_CONCURRENT_LOCAL_INVALID'};
+        const merged = require('./core/word-concurrent-return-v1.cjs').planConcurrentReturn({
+          baselineDoc: beforeDoc, currentDoc: local.doc, returnedDoc: analysis.doc });
+        if (!merged.ok) return merged;
+        cleanTextMergedDocsBySceneId[scene.sceneId] = merged.doc;
+      }
       for (const change of analysis.ordinaryTextChanges) {
         const changeId = 'docx-clean-block-text-' + computeHash(JSON.stringify({ roundId: authority.roundId, raw, change })).slice(0,24);
         cleanTextChanges.push({ ...change, changeId, baselineRawSha256: scene.rawSha256 });
@@ -9815,8 +9838,24 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
         const storage = await loadNotesStorageModule();
         const saved = await storage.readNotesStorage({ projectRoot: authority.projectRoot, projectId: context.projectId });
         if (!saved.ok) throw Error('NOTE_STORAGE_CORRUPT');
+        // Local text saves legitimately move note anchors and their source hash.
+        // Project those coordinates back through the existing strict Core map
+        // only for return comparison. The note validator still requires the
+        // COMPLETE recovered document digest to equal the authenticated export.
+        // Never publish this baseline projection or substitute current bodies.
+        let noteComparisonDocument = saved.document;
+        for (const current of context.comparisonBindings || []) {
+          if (!current.changedSinceExport) continue;
+          const baseline = authority.baselineObservableContentBySceneId?.[current.sceneId]
+            ?? authority.baselineFinalTextBySceneId?.[current.sceneId];
+          if (typeof baseline !== 'string') throw Error('RTK_WORD_CONCURRENT_BASELINE_REQUIRED');
+          const projected = require('./core/word-manuscript-notes-v1.cjs').planManuscriptNoteAnchorSave({
+            beforeText:JSON.stringify(noteComparisonDocument),projectId:context.projectId,sceneId:current.sceneId,
+            beforeContent:current.rawContent,afterContent:baseline });
+          if (projected) noteComparisonDocument = JSON.parse(projected.afterText);
+        }
         const plan = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
-          document: saved.document, projectId: context.projectId, roundId: authority.roundId,
+          document: noteComparisonDocument, projectId: context.projectId, roundId: authority.roundId,
           artifactSha256: context.returnedArtifactSha256, baseline: authority.documentNotes,
           exportMap: authority.exportMap, returnedNotes, returnedParagraphs: annotationParagraphs,
           now: new Date().toISOString(),
@@ -9826,7 +9865,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     } catch (error) {
       return {ok:false,code:'RTK_CLEAN_TEXT_NOTE_BINDING_CONFLICT',detail:error.code || error.message};
     }
-    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextCommentUnchanged,
+    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,
+      cleanTextComparisonBindings:context.comparisonBindings || null,cleanTextCommentUnchanged,
       cleanTextNotesUnchanged:true,cleanTextCommentSourceText,cleanTextNoteSourceText}};
   }
   if (!candidates.length) return { ok: true, changed: false };
@@ -10467,6 +10507,8 @@ async function inspectDocxReviewReturnIntakeV2({
     context,
     localAuthority,
     parserResult: verifiedParserResult,
+    captureForComparison: localAuthority.scope === 'full-manuscript'
+      && !['textRevisions', 'moveRevisions', 'propertyRevisions'].some(name => verifiedParserResult.reviewIr?.[name]?.length),
   });
   if (!localBinding.ok) return localBinding;
   // Only a verified return and the main-owned current export map can account
@@ -10587,7 +10629,7 @@ async function inspectDocxReviewReturnIntakeV2({
   const localAuthorityCapsule = await buildDocxReviewReturnIntakeLocalAuthorityCapsule(
     localAuthority,
     verifiedParserResult,
-    { hmacSecret, context, mediaReturnFields, returnedArtifactSha256, docxBytes },
+    { hmacSecret, context, mediaReturnFields, returnedArtifactSha256, docxBytes, comparisonBindings: localBinding.comparisonBindings },
   );
   if (localAuthorityCapsule?.ok === false) return localAuthorityCapsule;
   try { assertFreshDocxReviewRoundAuthority(localAuthority); }
@@ -25353,7 +25395,10 @@ async function revalidateCleanLinkLabelApplyInput(input) {
   catch (error) { return blocked(error.message); }
   if (store.keyAuthority.scope === 'full-manuscript') {
     const current = verifyFullManuscriptCurrentSceneBindings({
-      projectRoot: input.projectRoot, exportMapScenes: store.keyAuthority.exportMap?.scenes,
+      projectRoot: input.projectRoot, exportMapScenes: store.keyAuthority.exportMap?.scenes?.map(scene => {
+        const captured = store.cleanTextCandidateDoc && store.keyAuthority.cleanTextComparisonBindings?.find(binding => binding.sceneId === scene.sceneId);
+        return captured ? {...scene,rawSha256:captured.actualRawSha256} : scene;
+      }),
       scenePathBySceneId: store.keyAuthority.scenePathBySceneId,
     }, { readFileSync: fsSync.readFileSync, sha256Text: value => `sha256:${computeHash(String(value || ''))}`,
       isPathInsideBoundary });
@@ -25411,6 +25456,47 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
     },
     'review exact text batch safe apply',
   );
+}
+
+function prepareCleanTextConcurrentWriterInput(command, capsule) {
+  const blocked = code => ({ok:false,code});
+  const captured = capsule.cleanTextComparisonBindings?.find(binding => binding.sceneId === command.sceneId);
+  if (!captured || `sha256:${computeHash(captured.rawContent)}` !== captured.actualRawSha256) {
+    return blocked('RTK_WORD_CONCURRENT_CURRENT_BINDING_INVALID');
+  }
+  const envelope = require('./core/document-content-envelope-v1.cjs');
+  const current = envelope.parseObservablePayload(captured.rawContent);
+  const candidate = capsule.cleanTextMergedDocsBySceneId?.[command.sceneId] || capsule.cleanTextDocsBySceneId[command.sceneId];
+  if (current.issue || !current.doc || !candidate) return blocked('RTK_WORD_CONCURRENT_LOCAL_INVALID');
+  const currentParagraphs = userBookmarkModel.paragraphs(current.doc), mergedParagraphs = userBookmarkModel.paragraphs(candidate);
+  const input = cloneJsonSafe(command.input.writerInput), ranges = [];
+  for (const item of input.reviewItems) {
+    const owner = item.match.authenticatedBlock, index = owner.sceneParagraphIndex;
+    if (!currentParagraphs[index] || !mergedParagraphs[index]) return blocked('RTK_WORD_CONCURRENT_BLOCK_MISSING');
+    const text = paragraph => envelope.deriveVisibleTextFromDocument({type:'doc',content:[paragraph]});
+    const expectedText = text(currentParagraphs[index]), replacementText = text(mergedParagraphs[index]);
+    if (!expectedText || !replacementText) return blocked('RTK_WORD_CONCURRENT_EMPTY_BLOCK_UNSUPPORTED');
+    item.match.quote = expectedText;
+    item.replacementText = replacementText;
+    Object.assign(owner, {baselineRawSha256:captured.actualRawSha256,
+      blockTextSha256:`sha256:${computeHash(expectedText)}`,blockLocalEnd:expectedText.length});
+    const marked = cloneJsonSafe(current.doc);
+    let marker = 'YALKEN_CONCURRENT_BLOCK_POSITION';
+    while (current.text.includes(marker)) marker += '_';
+    userBookmarkModel.paragraphs(marked)[index].content = [{type:'text',text:marker}];
+    const visible = envelope.deriveVisibleTextFromDocument(marked), from = visible.indexOf(marker);
+    if (from < 0 || visible.lastIndexOf(marker) !== from
+      || visible.slice(0,from) + expectedText + visible.slice(from+marker.length) !== current.text) {
+      return blocked('RTK_WORD_CONCURRENT_BLOCK_POSITION_INVALID');
+    }
+    ranges.push({operationId:item.changeId,from,to:from+expectedText.length});
+  }
+  input.projectSnapshot.baselineHash = captured.actualRawSha256;
+  input.projectSnapshot.scenes = [{sceneId:command.sceneId,text:captured.rawContent}];
+  input.revisionSession.baselineHash = captured.actualRawSha256;
+  input.revisionSession.reviewGraph.textChanges = cloneJsonSafe(input.reviewItems);
+  input.textChanges = cloneJsonSafe(input.reviewItems);
+  return {ok:true,input,ranges};
 }
 
 async function applyPrivateCleanBlockTextReturn(writer,input,options) {

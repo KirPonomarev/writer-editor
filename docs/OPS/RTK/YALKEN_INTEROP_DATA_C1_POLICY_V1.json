@@ -471,7 +471,11 @@
     "test/unit/sector-m-s22-replace-mass-reversible.test.js",
     "test/unit/sector-m-s24-history-restore-recovery.test.js",
     "test/unit/project-tree-derived-counters-main.test.js",
-    "test/unit/metadata-inspector-read-model-main.test.js"
+    "test/unit/metadata-inspector-read-model-main.test.js",
+    "src/core/word-concurrent-return-v1.cjs",
+    "src/main/rtkDocxActivationGuards.cjs",
+    "test/contracts/rtk-word-concurrent-return.contract.test.js",
+    "docs/tasks/2026-10-02--word-concurrent-return-mac.md"
   ],
   "protectedFiles": [
     {
@@ -700,7 +704,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6c36146ee1817a5bdf1134524f1099ebbfcf9aae953546a1de2ff1063475d94e"
+        "sha256": "ae0b7c49d89e83b7d52b868a76229346118022c196a6eb8c58aa6898a6c0306f"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1888,7 +1892,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "9136e3423af6138022ca4df17d5c408d90b6f6775d71f74b137349ae9ddb6d72"
+        "sha256": "4f1325911c8b57fe4279911e9bcd350a94bfe0743a98385f321f3937f775b2cf"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -1997,6 +2001,22 @@
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
         "sha256": "9b6269cedca78f9ea59806135bfdc7e49d210f640698a95e017b7ff9484e0659"
+      },
+      {
+        "path": "src/core/word-concurrent-return-v1.cjs",
+        "sha256": "da07a226faaeed473eecf11918ba9f78143c4ffa1d461e051c37906373f29302"
+      },
+      {
+        "path": "src/main/rtkDocxActivationGuards.cjs",
+        "sha256": "3dc6fb6e32df671a582d61fc6b2fd4d2bc255339b42e0e86c3f186c603f384c5"
+      },
+      {
+        "path": "test/contracts/rtk-word-concurrent-return.contract.test.js",
+        "sha256": "3e04b0f7b55328a437aa20b62aba08aa5d860925daefdbf7575707c8d22e1315"
+      },
+      {
+        "path": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
+        "sha256": "89ea2eb56fce2ee34dd7b0d75bd1ba268cdbb0f51877db73a7fcae8764a0ca8c"
       }
     ],
     "followupRepair": {
