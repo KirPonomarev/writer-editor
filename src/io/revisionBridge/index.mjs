@@ -5432,7 +5432,7 @@ function buildDocxReviewStructuralReturnCandidatesFromFormattingParagraphs(
     }
     if (
       returnedStructure.nodeType === 'heading'
-      && (!Number.isSafeInteger(returnedStructure.headingLevel) || returnedStructure.headingLevel < 1 || returnedStructure.headingLevel > 6)
+      && (!Number.isSafeInteger(returnedStructure.headingLevel) || returnedStructure.headingLevel < 1 || returnedStructure.headingLevel > 9)
     ) {
       diagnostics.push({
         code: 'RTK_STRUCTURAL_RETURN_HEADING_LEVEL_UNSUPPORTED',
@@ -9695,7 +9695,6 @@ function docxResolveHeadingLevel(metadata, catalog) {
     id = style.basedOn;
   }
   outline ??= catalog.defaultOutlineLevel ?? 9;
-  if (outline >= 6 && outline < 9) throw new Error('DOCX_HEADING_LEVEL_UNSUPPORTED');
   return outline === 9 ? undefined : outline + 1;
 }
 
@@ -9735,7 +9734,7 @@ function docxInlineCanonicalContent(paragraphs) {
       throw new Error('DOCX_BLOCK_STYLE_PROJECTION_INVALID');
     }
     const level = paragraph.headingLevel;
-    if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 6)) {
+    if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 9)) {
       throw new Error('DOCX_HEADING_LEVEL_INVALID');
     }
     const textAlign = paragraph.textAlign;
@@ -11907,7 +11906,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
     formatting.code = hasLists ? 'DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS' : hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
     formatting.message = hasLists
-      ? 'Supported bullet and decimal lists, start numbers, nesting, heading levels 1 to 6 and inline marks are preserved. List marker appearance, paragraph appearance, fonts, colors and other formatting are not imported; unsupported numbering is listed separately.'
+      ? 'Supported bullet and decimal lists, start numbers, nesting, heading levels 1 to 9 and inline marks are preserved. List marker appearance, paragraph appearance, fonts, colors and other formatting are not imported; unsupported numbering is listed separately.'
       : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';

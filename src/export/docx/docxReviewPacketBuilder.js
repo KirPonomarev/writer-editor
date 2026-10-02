@@ -376,7 +376,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     paragraphPropertyParts.push(`<w:jc w:val="${textAlign}"/>`);
   }
   if (block.formatIr?.paragraph?.nodeType === 'heading') {
-    if (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
+    if (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 9) {
       throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_HEADING_LEVEL_UNSUPPORTED');
     }
     paragraphPropertyParts.push(`<w:outlineLvl w:val="${headingLevel - 1}"/>`);

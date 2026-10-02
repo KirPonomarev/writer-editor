@@ -1,4 +1,5 @@
 import { DocumentListNumbering } from './documentListNumbering.mjs';
+import { DocumentHeadings } from './documentHeadings.mjs';
 import { applyLocalImagePublication } from './localImage.mjs'
 import { textOffsetForPosition, positionForTextOffset } from './textCoordinates.mjs'
 import { WordPendingRevisions, setCheckedDocument as setCheckedReviewDocument } from './wordPendingRevisions.mjs'
@@ -571,10 +572,12 @@ export function initTiptap(mountEl, options = {}) {
         // Loading or focusing a document must not invent authored paragraphs.
         // Enter, list splitting and exitCode remain explicit authoring commands.
         trailingNode: false,
+        heading: false,
         link: false,
         underline: false,
       }),
       DocumentListNumbering,
+      DocumentHeadings,
       DocumentTextStyle,
       DocumentParagraphAlignment,
       DocumentTables,

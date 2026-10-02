@@ -231,7 +231,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
     }
     if (node.type === 'heading') {
       const headingLevel = Number(node.attrs?.level);
-      if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
+      if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
       blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
@@ -382,7 +382,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const blockStyle = docxBlockStyleId(semanticKind === 'codeBlock', semanticBlocks?.[index]?.blockquoteDepth || 0);
       const styleId = blockStyle || (headingLevel ? `Heading${headingLevel}` : resolveDocxParagraphStyleId(styleDescriptor, semanticKind));
       if (blockStyle) blockStyles.add(blockStyle);
-      if (/^Heading[1-6]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
+      if (/^Heading[1-9]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
       if (semanticKind === 'pageBreak' || (semanticKind !== 'codeBlock' && String(entry?.text || '').trim() === pageBreakToken)) {
         if (deps.commentExport?.threads?.some(thread => thread.anchor.blockId === deps.commentBlocks?.[index]?.blockId)) {
           throw Error('DOCX_COMMENT_ANCHOR_UNSUPPORTED');

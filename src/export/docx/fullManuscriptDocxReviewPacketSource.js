@@ -233,7 +233,7 @@ function buildFormatIrParagraphs(scene) {
     if (attrs.wordParagraphMarkLanguage != null) paragraphFormat.wordParagraphMarkLanguage = normalizeWordLanguage(attrs.wordParagraphMarkLanguage);
     if (node.type === 'heading') {
       const headingLevel = Number(attrs.level);
-      if (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
+      if (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 9) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_HEADING_LEVEL_UNSUPPORTED', {
           sceneId: scene.sceneId,
           paragraphOrdinal,

@@ -2132,13 +2132,15 @@ function formattingParagraphActions(children) {
 }
 
 function formattingParagraphStructure(children) {
-  const outline = children.find((item) => item.localName === 'outlineLvl');
+  const outlines = children.filter((item) => item.localName === 'outlineLvl');
+  if (outlines.length > 1) return null;
+  const outline = outlines[0];
   if (!outline) return { nodeType: 'paragraph' };
   const value = attr(outline, 'val').trim();
   if (!/^\d$/u.test(value)) return null;
   const outlineLevel = Number(value);
-  if (!Number.isSafeInteger(outlineLevel) || outlineLevel < 0 || outlineLevel > 5) return null;
-  return { nodeType: 'heading', headingLevel: outlineLevel + 1 };
+  if (!Number.isSafeInteger(outlineLevel) || outlineLevel < 0 || outlineLevel > 9) return null;
+  return outlineLevel === 9 ? { nodeType: 'paragraph' } : { nodeType: 'heading', headingLevel: outlineLevel + 1 };
 }
 
 function indexFormattingDocumentTokens(tokens) {
