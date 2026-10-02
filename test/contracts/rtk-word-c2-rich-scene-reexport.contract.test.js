@@ -24,7 +24,11 @@ async function harness(raw, changes = {}) {
   let keyImports = 0;
   const context = vm.createContext({
     Buffer, crypto, path, Date,
+    isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary,
     currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
+    userBookmarkCapability() {},
+    REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportDocxReviewPacket',
+    ...require('../../src/export/docx/docxReviewPacketComments.js'),
     loadNotesStorageModule: async () => ({}),
     readProjectNotesDocument: async () => ({ ok: true, current: { sourceExists: Boolean(changes.notesDocument), state: 'ready', document: changes.notesDocument } }),
     ...require('../../src/export/docx/docxReviewPacketNotes.js'),
@@ -33,7 +37,7 @@ async function harness(raw, changes = {}) {
     isAllowedFilePath: () => true,
     getDocumentContextFromPath: () => ({ kind: 'scene' }),
     DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS: new Set(['scene']),
-    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'project-test', projectRoot: '/synthetic', manifestPath: '/synthetic/manifest.json' }),
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'project-test', projectRoot: '/synthetic', manifestPath: '/synthetic/project.craftsman.json' }),
     getProjectRelativeFilePath: () => 'roman/scene.txt',
     docxReviewPreviewSessionDetailString: value => typeof value === 'string' ? value : '',
     loadDocumentContentEnvelopeModule: async () => envelope,
@@ -57,6 +61,12 @@ async function harness(raw, changes = {}) {
   vm.runInContext(slice('function readActiveDocxReviewReturnAuthorityStore(', '// ROUND-01 (V3): import an export-time'), context);
   context.getProjectRootPath ||= () => '/synthetic';
   installMainDocxRoundAuthority(context, { projectRoot: '/synthetic', projectId: 'project-test' });
+  const readBoundFixture = context.fsSync.readFileSync;
+  context.fsSync.readFileSync = (target, ...args) => {
+    if (target === '/synthetic/roman/scene.txt') return raw;
+    if (target === '/synthetic/notes.craftsman.json' && changes.notesDocument) return JSON.stringify(changes.notesDocument);
+    return readBoundFixture(target, ...args);
+  };
   vm.runInContext(source, context);
   return { run: () => context.readDocxReviewPacketExportSource(), keys: () => keyImports, context, envelope };
 }
