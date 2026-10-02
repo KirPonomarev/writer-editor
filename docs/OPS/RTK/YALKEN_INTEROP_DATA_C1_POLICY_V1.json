@@ -665,7 +665,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "24e5509fe0ce95ff29053bb144b95e5635e0712933c6184e577f9d7c289cb381"
+        "sha256": "2eb5aa34c1f773bdd520a6e9a9453c790d39d9295028e660f5f8a7801bae58b1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1357,7 +1357,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "e60c71b93a06c15ca4671fd7db27f0f8b6f5566050959c65c3eb3c293c59c932"
+        "sha256": "ad53ee89fda07ee8f6da7cbbcbad1496d4791a2efc50500dcb475ae69f9aebe4"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1813,11 +1813,11 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "c5be10ba0fc8820c87c930fa4e2cd9126fc22d9be7af25b3d9e23fe34f8ebe84"
+        "sha256": "6e84491d8c621daf00d24526e1b0aea1e1f609deb5a6167ee2a33f2d2a1f6f95"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
-        "sha256": "21d0a13e5708cc4e1341dc8232a0a8f8eb88c217f50643d3e2543517c3b78831"
+        "sha256": "76d7bbe64bf5bb92cbab2eb6da78761118e137aed3c660b002725fc71d94f0ff"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json",

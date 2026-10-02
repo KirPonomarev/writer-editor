@@ -227,6 +227,37 @@ function nMinusOneDecode(serializedDoc) {
     ||declaration.requiredFeatures[0]!=='word-user-bookmarks.v1')fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   return JSON.parse(serializedDoc.slice(newline+1));
 }
+test('bookmark working envelope retains inherited endpoints until authenticated save rebase after deletion', () => {
+  const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs');
+  const endpoint = offsetUtf16 => ({ paragraphIndex: 0, offsetUtf16, edge: 'text' });
+  const before = bookmarks.planMutation({ doc: d(p('Prefix Keep Target')), action: 'create',
+    requestId: 'bookmark-delete-before', projectId, sceneId, name: 'Target',
+    start: endpoint(12), end: endpoint(18) }).doc;
+  const inherited = bookmarks.readRegistry(before);
+  const working = plain(before); working.content[0].content[0].text = 'Keep Target';
+  const raw = envelope.composeObservablePayload({ doc: working });
+  const parsed = envelope.parseObservablePayload(raw);
+  assert.equal(parsed.issue, null);
+  assert.deepEqual(bookmarks.readRegistry(parsed.doc, { checkBounds: false }), inherited);
+  assert.throws(() => bookmarks.readRegistry(parsed.doc), /USER_BOOKMARK_ENDPOINT_BOUNDARY/);
+  const saved = bookmarks.planSave({ beforeDoc: before, workingDoc: parsed.doc });
+  const record = saved.registry.bookmarks[0];
+  assert.equal(record.id, inherited.bookmarks[0].id);
+  assert.deepEqual(record.start, endpoint(5)); assert.deepEqual(record.end, endpoint(11));
+  const reopened = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc: saved.doc }));
+  assert.equal(reopened.issue, null);
+  assert.deepEqual(bookmarks.readRegistry(reopened.doc), saved.registry);
+  assert.deepEqual(bookmarks.planSave({ beforeDoc: reopened.doc, workingDoc: reopened.doc }).doc, saved.doc);
+  const forged = plain(working); forged.attrs[bookmarks.KEY].bookmarks[0].name = 'Forged';
+  const forgedParsed = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc: forged }));
+  assert.equal(forgedParsed.issue, null);
+  assert.throws(() => bookmarks.planSave({ beforeDoc: before, workingDoc: forgedParsed.doc }), /USER_BOOKMARK_SAVE_AUTHORITY/);
+  const malformed = raw.replace('"edge": "text"', '"edge": "xxxx"');
+  assert.notEqual(malformed, raw);
+  assert.equal(envelope.parseObservablePayload(malformed).issue?.details?.message, 'USER_BOOKMARK_ENDPOINT_INVALID');
+  assert.deepEqual(bookmarks.readRegistry(before), inherited);
+});
+
 test('new semantic envelope refuses N-1 readers, missing declaration and unknown future state without flattening',()=>{
   const doc=pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('AxxB')),[revision(1,3)])),[{noteId:'n',paragraphIndex:0,offsetUtf16:1}]);
   const raw=envelope.composeObservablePayload({doc}), body=raw.slice(raw.indexOf('\n')+1);

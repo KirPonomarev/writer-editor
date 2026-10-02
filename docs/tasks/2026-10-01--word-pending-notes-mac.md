@@ -96,6 +96,9 @@ before the two saved parent task/manifest drafts; do not rerun PRE on dirty WIP)
 CHECK_02_POST_CORE: schema upgrade and old-reader refusal; both deletion endpoints,
 disjoint edits, repeated/empty/nested leaves, Unicode boundaries, all decision
 states, round Undo/Redo and envelope reparse preserve each note identity.
+Preserve the existing inherited bookmark-registry decode boundary: deleting text
+before a bookmark must reach authoritative planSave rebasing, while forged
+registry changes and missing required feature declarations still refuse.
 CHECK_03_POST_CHAIN: actual authenticated Main Apply/export and atomic scene/notes
 writer; reject changed note body/id, missing/duplicate/consumed points, stale
 notes digest, bypass, replay, CAS and transaction failure without partial writes.

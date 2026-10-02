@@ -310,7 +310,7 @@ function decodeSceneDocument(serializedDoc) {
     || JSON.stringify(requiredSceneFeatures(rawDoc)) !== JSON.stringify(declaration.requiredFeatures)) fail('DOC_BLOCK_REQUIRED_FEATURE_MISSING');
   const expected = JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: requiredSceneFeatures(rawDoc) });
   if (firstLine !== expected || newline < 0) fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
-  if (rawDoc.attrs?.wordUserBookmarks != null) require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc);
+  if (rawDoc.attrs?.wordUserBookmarks != null) require('./word-user-bookmarks-v1.cjs').readRegistry(rawDoc, { checkBounds: false });
   return { doc: canonicalizeDocumentJson(rawDoc), payloadVersion: 3 };
 }
 
