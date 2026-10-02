@@ -66,3 +66,44 @@ test('real review export declares default bytes and parser independently resolve
   assert.equal(m.analyzeCleanLinkLabelReturn(input).ok,size==='24',JSON.stringify({analysis:m.analyzeCleanLinkLabelReturn(input),paragraphs:input.returnedParagraphs,unsupported:input.reviewIr.opaqueUnsupported,structure:input.reviewIr.structureChanges}));
  }
 });
+
+function fontDefaultsPackage({fonts='<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>',extraDefaults='',styles='',paragraphProperties='',runProperties='',table=false}={}) {
+ const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+ const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+ const paragraph='<w:p>'+paragraphProperties+'<w:r>'+runProperties+'<w:t xml:space="preserve"> </w:t></w:r></w:p>';
+ return buildStoredZip([
+  {name:'word/document.xml',data:'<w:document xmlns:w="'+ns+'"><w:body>'+(table?'<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="1000"/></w:tblGrid><w:tr><w:tc><w:tcPr/>'+paragraph+'</w:tc></w:tr></w:tbl>':paragraph)+'</w:body></w:document>'},
+  {name:'word/styles.xml',data:'<w:styles xmlns:w="'+ns+'"><w:docDefaults><w:rPrDefault><w:rPr>'+fonts+'</w:rPr></w:rPrDefault></w:docDefaults>'+extraDefaults+styles+'</w:styles>'},
+  {name:'[Content_Types].xml',data:'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+  {name:'_rels/.rels',data:'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="doc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+ ]);
+}
+test('literal document font defaults are separate digest-bound evidence, never fabricated inline formatting',async()=>{
+ const [,b]=await modules;
+ const parse=options=>b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:fontDefaultsPackage(options)},{cryptoPort});
+ const result=parse(),run=result.reviewIr?.formattingParagraphs[0].formattedRuns[0];
+ assert.ok(run,JSON.stringify(result));assert.equal(run.resolvedFontFamily,'Times New Roman');
+ assert.equal(Object.hasOwn(run.inlineState,'fontFamily'),false);
+ const other=parse({fonts:'<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>'});
+ assert.equal(other.reviewIr.formattingParagraphs[0].formattedRuns[0].resolvedFontFamily,'Arial');
+ assert.notEqual(result.supportedSemanticDigest,other.supportedSemanticDigest);
+});
+for(const fault of ['theme','duplicate-font','mixed-font','missing-script-font','duplicate-defaults','based-on','character-override','duplicate-style','paragraph-style','run-style','explicit-font','table'])test('font defaults evidence refuses '+fault,async()=>{
+ const [,b]=await modules,options={};
+ const fonts='<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>';
+ if(fault==='theme')options.fonts=fonts.replace('/>',' w:asciiTheme="minorHAnsi"/>');
+ if(fault==='duplicate-font')options.fonts=fonts+fonts;
+ if(fault==='mixed-font')options.fonts=fonts.replace('w:cs="Times New Roman"','w:cs="Arial"');
+ if(fault==='missing-script-font')options.fonts=fonts.replace(' w:cs="Times New Roman"','');
+ if(fault==='duplicate-defaults')options.extraDefaults='<w:docDefaults><w:rPrDefault><w:rPr>'+fonts+'</w:rPr></w:rPrDefault></w:docDefaults>';
+ if(fault==='based-on')options.styles='<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:basedOn w:val="Other"/></w:style>';
+ if(fault==='character-override')options.styles='<w:style w:type="character" w:default="1" w:styleId="Default"><w:rPr>'+fonts+'</w:rPr></w:style>';
+ if(fault==='duplicate-style')options.styles='<w:style w:type="paragraph" w:default="1" w:styleId="A"/><w:style w:type="paragraph" w:default="1" w:styleId="B"/>';
+ if(fault==='paragraph-style')options.paragraphProperties='<w:pPr><w:pStyle w:val="Normal"/></w:pPr>';
+ if(fault==='run-style')options.runProperties='<w:rPr><w:rStyle w:val="Default"/></w:rPr>';
+ if(fault==='explicit-font')options.runProperties='<w:rPr>'+fonts+'</w:rPr>';
+ if(fault==='table')options.table=true;
+ const result=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:fontDefaultsPackage(options)},{cryptoPort});
+ const run=result.reviewIr?.formattingParagraphs[0]?.formattedRuns[0];
+ assert.ok(run,JSON.stringify(result));assert.equal(Object.hasOwn(run,'resolvedFontFamily'),false);
+});

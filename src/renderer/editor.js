@@ -19443,7 +19443,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;

@@ -82,6 +82,8 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/rtk-word-user-bookmarks.contract.test.js`
 - `test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js`
 - `test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js`
+- `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
+- `test/contracts/rtk-word-review-default-typography.contract.test.js`
 
 ## DENYLIST
 
@@ -386,3 +388,49 @@ planSave maps bookmark endpoints, which must independently match the literal
 return inventory. Keep unchanged protected nodes, notes, comments, provenance
 and document metadata, then observe explicit native Apply and durable readback.
 The original strict bookmark-edit and quote-only paths retain their checks.
+
+Checkpointc71fd186 preserves clean router/writer and analyzer work. Router/writer
+whole contracts14of14 pass without skips: duplicate paragraph ownership,
+preserved marks and stable mapped bookmark ID, forged owner, altered private
+digest, stale raw source and no repeated write. Main integration is not yet
+observed. Clean53path preflight admits inherited return font evidence in the
+existing parser and typography contract: exact frozen Word styles.xml sets
+Times New Roman in docDefaults; paragraph7's space omits direct rFonts while
+the canonical space has explicit Times New Roman. Resolve returned effective
+font from validated XML, preserving raw inlineState; do not infer an unspecified
+baseline font from returned defaults or exempt whitespace from comparison.
+Ambiguous, duplicate, themed or unresolved style sources cannot prove equality.
+
+Native SOURCE11 applied the frozen fa0a95004c0b Word return through the actual
+single-change button and the existing Free batch command. Independent literal
+file readback verifies exactly the paragraph1 suffix, eight rich roots, seven
+bookmarks, both internal links, three comment threads and four messages, the
+footnote identity/body and offset90to109, unchanged right-scene bytes, project
+identity and provenance. The live editor displayed the saved suffix. This is a
+bounded SOURCE observation, not whole-plan or delivery acceptance.
+
+The first successful Apply exposed a separate feedback defect: subsequent
+read-only refresh replanned a completed operation against the old source and
+displayed RTK_CLEAN_TEXT_SOURCE_STALE. Retain the Main-produced completed batch
+projection and its operation counts; the private dispatch revalidation remains
+mandatory and a new repeat request still cannot write. Actual renderer click,
+Main batch, refresh, terminal summary and repeat refusal are covered together.
+The new assertion failed before repair; focused10of10 and the whole actual Main
+file104of104 pass after repair, with zero skips and todos. No broader mandatory
+suite or final candidate acceptance is implied.
+
+PACKAGED12 source-copy digest
+56fec58e5d206a2db731bf7e2954a955fe6e2f241654188d8f16c392ece37107
+reopened the saved SOURCE result, exported both scenes and opened them in Word.
+Word saved the next paragraph1 suffix PACKAGED12_WORD_EDIT at artifact SHA256
+af415466a998d154eec66729e37e5f45ac8ae49d8094607e6a21cfdcbd737a4e,
+round0895e9c51c830046385c09bb789eb033. Actual intake refuses with
+RTK_USER_BOOKMARK_RETURN_CONFLICT; a read-only analyzer isolates
+rich-paragraph-unsupported. Word added pPr-rPr-lang and run language en-US in
+the edited paragraph. This language composition is NOT admitted by the current
+clean-text lane. Preserve the original artifact and all checks; do not remove
+the language tags, simplify this fixture or label the blocked cycle successful.
+The original SOURCE graph oracle still passes: no second Word edit was written.
+The same packaged bytes were relaunched with the existing dev logging flag only
+to observe the refusal; this diagnostic is not release acceptance. Next work is
+the exact language-composition boundary, before any repeated broad suite.

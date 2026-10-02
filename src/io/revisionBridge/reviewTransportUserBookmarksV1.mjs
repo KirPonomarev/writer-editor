@@ -56,7 +56,10 @@ function compareStyles(before,after,shift=0,start=0,end=Infinity) {
     if(bounds[i]===bounds[i+1])continue;
     const a=before.find(run=>run.from<=bounds[i]&&run.to>=bounds[i+1]);
     const b=after.find(run=>run.from<=bounds[i]+shift&&run.to>=bounds[i+1]+shift);
-    if(!a||!b||!same(a.style,b.style))throw Error('non-link-style-change');
+    const returnedStyle=b?.style&&{...b.style};
+    if(a?.style.fontFamily&&!returnedStyle?.fontFamily&&b?.resolvedFontFamily===a.style.fontFamily)
+      returnedStyle.fontFamily=b.resolvedFontFamily;
+    if(!a||!b||!same(a.style,returnedStyle))throw Error('non-link-style-change');
   }
 }
 function replaceText(p,from,to,text) {
@@ -78,7 +81,9 @@ function replaceText(p,from,to,text) {
 function replaceLinks(p,runs,registry) {
   let offset=0;const out=[];
   for(const node of p.content||[]) {
-    const value=node.type==='hardBreak'?'\n':node.text,end=offset+value.length;
+    if(node.type==='text'&&typeof node.text!=='string')throw Error('rich-inline-invalid');
+    if(!['text','hardBreak','manuscriptNoteReference'].includes(node.type))throw Error('rich-inline-unsupported');
+    const value=node.type==='hardBreak'?'\n':node.type==='text'?node.text:'',end=offset+value.length;
     if(node.type!=='text'){out.push(node);offset=end;continue;}
     const cuts=[offset,...new Set(runs.flatMap(run=>[run.from,run.to]).filter(x=>x>offset&&x<end)),end].sort((a,b)=>a-b);
     for(let i=0;i<cuts.length-1;i++) {
@@ -272,7 +277,11 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const mapped=core.planSave({beforeDoc:baselineDoc,workingDoc:doc});
       const literal=resultRegistry.bookmarks.filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
       const expected=(mapped.registry?.bookmarks||[]).filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
-      if(!same(literal,expected))return reject('ordinary-text-bookmark-endpoint-mismatch');
+      if(literal.length!==expected.length||literal.some((record,index)=>{
+        const target=expected[index];
+        return record.id!==target.id||record.name!==target.name||record.state!==target.state
+          ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
+      }))return reject('ordinary-text-bookmark-endpoint-mismatch');
       return {ok:true,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
         doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
     }

@@ -2542,6 +2542,36 @@ function reviewDefaultFontSize(stylesScan) {
   return size;
 }
 
+function reviewDefaultFontFamily(stylesScan) {
+  // A deliberately closed inheritance proof: literal document defaults with
+  // identical script fonts and no default-style override. Theme resolution,
+  // named styles and table styles are separate, unsupported authorities.
+  const tokens = stylesScan.tokens;
+  if (tokens.filter(t => isWordToken(t, 'styles') && t.depth === 0).length !== 1) return null;
+  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults'));
+  if (defaults.length !== 1 || defaults[0].depth !== 1) return null;
+  const children = childTokensWithin(stylesScan, defaults[0]);
+  const runDefaults = children.filter(t => isWordToken(t, 'rPrDefault'));
+  if (runDefaults.length !== 1 || runDefaults[0].depth !== 2) return null;
+  const properties = childTokensWithin(stylesScan, runDefaults[0]).filter(t => isWordToken(t, 'rPr'));
+  if (properties.length !== 1 || properties[0].depth !== 3) return null;
+  const fonts = childTokensWithin(stylesScan, properties[0]).filter(t => isWordToken(t, 'rFonts'));
+  if (fonts.length !== 1 || fonts[0].depth !== 4) return null;
+  const attributes = fonts[0].attributes.filter(a => a.prefix !== 'xmlns' && a.qName !== 'xmlns');
+  const names = ['ascii', 'hAnsi', 'eastAsia', 'cs'];
+  if (attributes.length !== names.length || attributes.some(a => a.namespaceUri !== W_NS || !names.includes(a.localName))) return null;
+  const values = names.map(name => attr(fonts[0], name, W_NS));
+  if (new Set(values).size !== 1 || !values[0] || values[0].length > 128
+    || values[0].trim() !== values[0] || /[\u0000-\u001f\u007f]/u.test(values[0])) return null;
+  for (const kind of ['paragraph', 'character']) {
+    const styles = tokens.filter(t => isWordToken(t, 'style') && attr(t, 'type', W_NS) === kind
+      && ['1', 'true', 'on'].includes(attr(t, 'default', W_NS)));
+    if (styles.length > 1) return null;
+    if (styles.length && childTokensWithin(stylesScan, styles[0]).some(t => isWordToken(t, 'basedOn') || isWordToken(t, 'rFonts'))) return null;
+  }
+  return values[0];
+}
+
 function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan, cache) {
   const refs = direct.filter(t => isWordToken(t, 'rStyle'));
   if (refs.length === 0) return direct;
@@ -2661,6 +2691,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const results = [];
   const leadingBookmarks = leadingBodyBookmarkNames(documentScan.tokens);
   const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
+  const defaultFontFamily = reviewDefaultFontFamily(visibilityStyles);
   const linkStyleCache = {};
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
@@ -2741,6 +2772,10 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
           && !paragraphSemanticNames.includes('pStyle') && !semanticNames.includes('rStyle')
           && !semanticNames.includes('sz') && !semanticNames.includes('szCs')
           ? { inheritedFontSize: defaultFontSize } : {}),
+        ...(defaultFontFamily && !paragraphRecord.table
+          && !paragraphSemanticNames.includes('pStyle')
+          && !directChildren.some(token => isWordToken(token, 'rStyle') || isWordToken(token, 'rFonts'))
+          ? { resolvedFontFamily: defaultFontFamily } : {}),
         unsupportedNames,
         invalidSupportedValue,
         sourceXmlProvenance: provenance(properties || run),
@@ -2788,6 +2823,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
       inline: run.inline,
       inlineState: run.inlineState,
       ...(run.inheritedFontSize ? { inheritedFontSize: run.inheritedFontSize } : {}),
+      ...(run.resolvedFontFamily ? { resolvedFontFamily: run.resolvedFontFamily } : {}),
       unsupportedNames: run.unsupportedNames,
       invalidSupportedValue: run.invalidSupportedValue,
     })),

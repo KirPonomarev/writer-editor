@@ -32,7 +32,10 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const warnings = [];
   const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
-  const electron = { app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
+  const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
+    encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
+    decryptString(value){const cipher=crypto.createDecipheriv('aes-256-gcm',Buffer.alloc(32,9),value.subarray(0,12));cipher.setAuthTag(value.subarray(-16));return Buffer.concat([cipher.update(value.subarray(12,-16)),cipher.final()]).toString('utf8');}},
+    app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
     dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: 0 }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
@@ -43,6 +46,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const hooks = `\nmodule.exports.__probe = {
     state(values = {}) {
       if ('filePath' in values) currentFilePath = values.filePath;
+      if ('projectName' in values) currentProjectName = values.projectName;
       if ('dirty' in values) isDirty = values.dirty;
       if ('generation' in values) lastSignaledEditGeneration = values.generation;
       if ('pending' in values) activePendingRecording = values.pending;
@@ -50,6 +54,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
       return { filePath: currentFilePath, dirty: isDirty, generation: lastSignaledEditGeneration };
     },
     dispatch: dispatchLegacyUiTreeDocumentCommand, shellUrl: getExpectedIpcShellUrl,
+    reviewBatchApply: handleReviewSurfaceApplyExactTextChangesBatchCommandSurface,
     bind: bindPendingDocxReviewPublication, activate: activateReviewDocxExportAuthority,
     buildAuthority: buildDocxReviewReturnAuthorityStoreRecord, authorityPath: docxReviewReturnAuthorityStorePath,
     fresh: assertFreshDocxReviewRoundAuthority, strict: readStrictDocxReviewAuthorityStore,
@@ -57,6 +62,9 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
+    fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
+    reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    refreshReview:refreshActiveReviewExactTextUiPlan,reviewState:()=>cloneJsonSafe(activeReviewSessionStore),
     captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
     async observeLocalReviewReceipt(receipt) {
       const statuses=[], opened=[], previousHandler=handleDocxReviewPreviewSessionLocalFileCommandSurface, previousStatus=updateStatus, previousSender=sendCanonicalRuntimeCommand;
@@ -1200,4 +1208,148 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   }
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('/private'),false);
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
+});
+
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn}={}) {
+  const f=await fixture(t); if(bookmarked)await installMixedScene(f);
+  const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
+  if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
+  const beforeDoc=structuredClone(parsed.doc);
+  const target=bookmarked?'Unannotated target':'Alpha';
+  if(bookmarked){
+    parsed.doc.content.unshift({type:'paragraph',content:[{type:'text',text:target}]});
+    parsed.doc=bookmarks.planSave({beforeDoc,workingDoc:parsed.doc}).doc;
+  }
+  const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
+  const beforeAppend=structuredClone(parsed.doc);
+  // Repeated quote belongs to a different signed block, not this operation.
+  parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
+  parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
+  if(bookmarked){
+    const notePath=path.join(f.root,'notes.craftsman.json'),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
+    let beforeContent=initial;
+    for(const afterContent of [intermediate,read(f.alpha)]){
+      const notePlan=notes.planManuscriptNoteAnchorSave({beforeText:read(notePath),projectId:f.query.projectId,sceneId:'roman/Imported/01_Alpha.txt',beforeContent,afterContent});
+      fs.writeFileSync(notePath,notePlan.afterText);
+      const commentPlan=require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave({beforeText:read(commentPath),projectId:f.query.projectId,sceneId:'roman/Imported/01_Alpha.txt',beforeContent,afterContent});
+      if(commentPlan)fs.writeFileSync(commentPath,commentPlan.afterText);
+      beforeContent=afterContent;
+    }
+  }
+  f.source=read(f.alpha); let observed=f.source;
+  const ui=mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+  f.probe.state({filePath:f.alpha,projectName:'Роман'});
+  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  await f.probe.activate(source.pendingAuthorityStore);
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+  assert.ok(zip['word/document.xml'].includes(target));
+  zip['word/document.xml']=zip['word/document.xml'].replace(target,target+' CLEAN_EDIT');
+  if(mutateReturn)mutateReturn(zip);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
+  const beforeActivation=f.capture();
+  const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  return {f,ui,source,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
+}
+for(const bookmarked of [true,false])test(`actual whole Main clean return activation, owner preview, full Apply and replay with bookmarks ${bookmarked}`,async t=>{
+  const {f,ui,activated}=await cleanTextReturnFixture(t,{bookmarked});
+  assert.equal(activated.ok,true,JSON.stringify(activated)); assert.equal(activated.activated,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  assert.equal(activated.noteProductPath?.status,'unchanged',JSON.stringify(activated.noteProductPath));
+  const before=f.capture(), sibling=read(f.beta);
+  await f.probe.refreshReview();
+  assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');assert.deepEqual(f.capture(),before);
+  const result=await f.probe.fullApply({requestId:'clean-full-apply'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.applied,true,JSON.stringify(result));
+  assert.equal(read(f.beta),sibling);
+  const doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  assert.match(doc.content[0].content[0].text,/CLEAN_EDIT/);assert.equal(doc.content.at(-1).content[0].text,'STARTBOUND_'+(bookmarked?'Unannotated target':'Alpha')+'_ENDBOUND');
+  if(bookmarked){assert.equal(bookmarks.readRegistry(doc).bookmarks.length,7);
+    const state=JSON.parse(read(path.join(f.root,'notes.craftsman.json')));
+    const old=JSON.parse(Buffer.from(before.files['notes.craftsman.json'],'base64').toString());
+    assert.equal(state.notes[0].manuscript.reference.sourceTextSha256,sha(envelope.deriveVisibleTextFromDocument(doc)));
+    assert.equal(state.notes[0].manuscript.reference.offsetUtf16,old.notes[0].manuscript.reference.offsetUtf16+' CLEAN_EDIT'.length);}
+  assert.equal(result.editorSync.ok,true,JSON.stringify(result));assert.ok(ui.sends.some(x=>x.channel==='editor:set-text'));
+  const after=f.capture(),replay=await f.probe.fullApply({requestId:'clean-full-apply'});
+  assert.notEqual(replay.applied,true);assert.ok(replay.ok===false || replay.status==='blocked');assert.deepEqual(f.capture(),after);
+});
+
+for(const variant of ['comment-body','note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    if(variant==='comment-body'){
+      assert.ok(parts['word/comments.xml'].includes('Mixed comment'));
+      parts['word/comments.xml']=parts['word/comments.xml'].replace('Mixed comment','Changed comment');
+    }else if(variant==='note-body'){
+      assert.ok(parts['word/footnotes.xml'].includes('Mixed footnote'));
+      parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('Mixed footnote','Changed footnote');
+    }else{
+      const run=/<w:r(?:\s[^>]*)?>(?:(?!<\/w:r>)[\s\S])*?Unannotated target CLEAN_EDIT(?:(?!<\/w:r>)[\s\S])*?<\/w:r>/u;
+      assert.ok(run.test(parts['word/document.xml']));
+      parts['word/document.xml']=parts['word/document.xml'].replace(run,match=>'<w:ins w:id="901" w:author="Review" w:date="2026-10-02T00:00:00Z">'+match+'</w:ins>');
+    }
+  }});
+  assert.equal(activated.ok,false,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  const apply=await f.probe.fullApply({requestId:'refused-full-apply'});
+  assert.equal(apply.ok,false,JSON.stringify(apply));assert.deepEqual(f.capture(),beforeActivation);
+});
+
+for(const variant of ['dirty','sibling','note-state','session'])test(`actual whole Main clean return revalidates ${variant} before Apply`,async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t);
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  if(variant==='dirty')f.probe.state({dirty:true,generation:1});
+  if(variant==='sibling')fs.writeFileSync(f.beta,'New unrelated owner edit');
+  if(variant==='note-state'){
+    const target=path.join(f.root,'notes.craftsman.json'),document=JSON.parse(read(target));
+    document.notes[0].title='Owner note change';fs.writeFileSync(target,JSON.stringify(document));
+  }
+  if(variant==='session')f.probe.changeSession();
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'stale-full-apply'});
+  assert.notEqual(result.applied,true,JSON.stringify({status:result.status,reason:result.reason,error:result.error}));
+  assert.ok(result.ok===false || result.status==='blocked');assert.deepEqual(f.capture(),before);
+});
+
+test('actual clean-return renderer click uses admitted Free batch and actual Main writes once',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t);assert.equal(activated.ok,true);
+  const changeId=f.probe.reviewState().revisionSession.reviewGraph.textChanges[0].changeId;
+  const source=read(path.join(ROOT,'src/renderer/editor.js'));
+  const fn=name=>{const a=source.indexOf('function '+name+'('),b=source.indexOf('\n}\n',a)+3;
+    assert(a>=0&&b>a);return source.slice(source.slice(a-6,a)==='async '?a-6:a,b);};
+  class Element{} class HTMLElement extends Element{} class HTMLButtonElement extends HTMLElement{}
+  const button=new HTMLButtonElement();button.dataset={changeId};button.disabled=false;
+  button.closest=selector=>selector==='[data-review-apply-exact-change]'?button:null;
+  const host=new HTMLElement();host.contains=value=>value===button;const calls=[];
+  const ui={Element,HTMLElement,HTMLButtonElement,reviewSurfaceHost:host,
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID:'cmd.project.review.applyExactTextChange',
+    REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:'cmd.project.review.applyExactTextChangesBatch',
+    reviewSurfaceText:x=>typeof x==='string'?x:'',reviewSurfaceArray:x=>Array.isArray(x)?x:[],
+    reviewSurfaceCreateExactTextApplyRequestId:()=> 'explicit-clean-click',setReviewSurfaceExactTextApplyTransientState:()=>{},
+    invokePreloadUiCommandBridge:async(id,payload)=>{
+      assert.equal(require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement(id,'free').available,true);
+      const local=require('../../src/core/writer-local-profile-v1.cjs');
+      assert.equal(local.evaluateWriterLocalCommandAccess({profile:local.createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),commandId:id}).allowed,true);
+      calls.push({id,payload});assert.equal(id,'cmd.project.review.applyExactTextChangesBatch');
+      const result=await f.probe.reviewBatchApply(JSON.parse(JSON.stringify(payload)));
+      assert.equal(result.applied,true,JSON.stringify({status:result.status,reason:result.reason,error:result.error}));
+      return {ok:true,value:result};
+    },reviewSurfaceUnwrapCommandResult:x=>x.value,reviewSurfaceIsPlainObject:x=>!!x&&typeof x==='object',
+    setReviewSurfaceState:()=>{}};
+  const vm=require('node:vm');vm.createContext(ui);
+  for(const name of ['reviewSurfaceBuildExactTextApplyPayload','reviewSurfaceBuildExactTextApplyBatchPayload','handleReviewSurfaceExactTextApplyClick'])vm.runInContext(fn(name),ui);
+  await ui.handleReviewSurfaceExactTextApplyClick({target:button});assert.equal(calls.length,1);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].content[0].text,'Unannotated target CLEAN_EDIT');
+  const refreshed=await f.probe.refreshReview();
+  assert.equal(refreshed.status,'applied');
+  assert.equal(refreshed.reviewSurface.exactTextPlanPreview.status,'ready');
+  assert.deepEqual(refreshed.reviewSurface.exactTextAppliedChangeIds,[changeId]);
+  assert.equal(refreshed.reviewSurface.exactTextBatchApplyResult.totals.applied,1);
+  vm.runInContext(fn('reviewSurfaceBuildTerminalSummary'),ui);
+  const terminal=ui.reviewSurfaceBuildTerminalSummary(refreshed.reviewSurface);
+  assert.equal(terminal.status,'applied');assert.match(terminal.detail,/1 applied/);
+  const after=f.capture();button.disabled=true;await ui.handleReviewSurfaceExactTextApplyClick({target:button});
+  assert.equal(calls.length,1);assert.deepEqual(f.capture(),after);
+  const replay=await f.probe.reviewBatchApply({requestId:'new-repeat-request',changeIds:[changeId]});
+  assert.notEqual(replay.applied,true);assert.deepEqual(f.capture(),after);
 });
