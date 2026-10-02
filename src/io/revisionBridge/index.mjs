@@ -4239,8 +4239,12 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   // constructed and bound by the existing integrity checks. Main consumes the same-byte projection; it never reparses this ZIP.
   // Missing/unsupported numbering remains absent evidence, never permission.
   if (result.ok && result.reviewIr?.formattingParagraphs?.some(p => p.unsupportedParagraphNames?.includes('numPr'))) {
-    const preview = buildDocxContentPreviewFromZipBytes(Buffer.isBuffer(input) ? input : input.bytes);
-    const paragraphs = preview.ok ? preview.contentPreview?.paragraphs : null;
+    // Use the literal main-document parser, not the generic import pipeline:
+    // generic note/comment admission calls this analyzer and would recurse.
+    const bytes = Buffer.isBuffer(input) ? input : input.bytes;
+    const preview = docxContentPreviewParseMainDocumentXml(
+      extracted.parts['word/document.xml'], docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+    const paragraphs = !preview.failure ? preview.contentPreview?.paragraphs : null;
     const observed = result.reviewIr.formattingParagraphs;
     if (Array.isArray(paragraphs) && paragraphs.length === observed.length
       && paragraphs.every((p, i) => p.text === observed[i].paragraphText)

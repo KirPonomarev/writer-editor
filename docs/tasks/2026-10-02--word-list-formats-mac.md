@@ -140,3 +140,9 @@ On 30b9b9c3 preflight admitted the reproduced clean-list return repair. A worker
 projection resolves literal returned numbering before evidence packet construction and integrity validation; Main does
 not re-extract the ZIP. Admission requires the complete unchanged format, start,
 level and bijective list ownership vector, bound to every returned paragraph hash.
+
+Full RTK on 46686672 exposed recursive generic-import reentry for lists combined
+with notes/comments. Numbering extraction now uses the bounded literal main XML
+parser directly. The failed run remains failure evidence; native qualification
+and a fresh complete RTK run remain required. Existing note-list negative fixtures
+also still classify newly supported formats as invalid and need exact correction.

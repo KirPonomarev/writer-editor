@@ -744,7 +744,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "c998b09ede50be05811e1bb61917a41d5cd21b4de90e751be42efcbb696c0d50"
+        "sha256": "368bed2756830174b1894163ef9d5c7adbc03b54e98381bf6efc1ba20b6a39eb"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -2032,7 +2032,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-list-formats-mac.md",
-        "sha256": "eb790d7d42a0e7c118be32bfb68a6811403b0cbca53721d19272448e6ff6e05a"
+        "sha256": "415f6095b778db4a4c1830d90451ae7bb7a87b6f8d9d774c4ff951b72d14c3f1"
       }
     ],
     "followupRepair": {
