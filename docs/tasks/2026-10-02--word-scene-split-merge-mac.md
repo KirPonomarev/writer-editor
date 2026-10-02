@@ -69,6 +69,9 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 
 - `docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json`
 
+- `src/export/docx/docxReviewPacketComments.js`
+- `test/contracts/rtk-word-canonical-comment-reexport.contract.test.js`
+
 ## DENYLIST
 
 No new writer, registry, IPC channel, dependency, network, project schema or
@@ -263,3 +266,30 @@ committed structural scene afterimages, including verified restart rehydration;
 retain backups for genuine changed buffers. No Core foreign-entry relaxation or
 removal of the observed file. Predicted proof: merge, idle backup tick, restart
 and Undo; changed-buffer backup and actual foreign-file refusal remain intact.
+
+SOURCE04 full-manuscript export reproduces publication refusal on imported comment
+ranges sharing paragraph0 start: [0,13] and [0,14]. Builder emits shorter range
+start before outer start, causing crossing marker order despite nested canonical
+anchors. Current parser and publication gate correctly reject that XML. Clean
+owned checkpoint87af78085bfe68e312adcec4fd02144f11c0d1c0 and41path preflight
+admit only the existing DOCX comment producer and its canonical re-export test.
+Order outer starts before inner starts, inner ends before outer ends, and close
+exact ties in reverse start order. Preserve canonical thread/reply order, adjacent
+ranges and existing genuine-crossing or point-anchor refusal. Actual emitted XML,
+parser and publication gate must agree before native export retry. No parser or
+gate weakening; original delivery base remains a2a5ae6c.
+
+SOURCE05 bounded observations: existing two-scene merged state reopened in a new
+process; structural Undo restored the exact split graph after the idle interval.
+Independent canonical readback confirms nine roots, seven user bookmarks, two
+internal links, three comment threads with reply and one footnote. SOURCE04
+previously passed the same Undo after its idle timer without process restart.
+SOURCE05 full-manuscript native export now creates a29996byte DOCX, SHA256
+4a45a5b300033e51b736d7eba089c4349ba75bcdee42cbdc6b314d0b1eb3eb25.
+Independent ZIP readback finds the represented text, all seven user bookmarks,
+two internal links, four comment messages and the footnote. Source runtime
+3433file copy digest67015c20e2aa57571a00bc7d92d8521dab1690fe995137d770ebd410f30c7560.
+Focused current Main89of89 and canonical comment16of16 pass without skips or
+todos; these are bounded proofs, not full acceptance. Current candidate still
+requires actual Word save and return, PACKAGED qualification, companion refresh,
+mandatory stable-candidate checks and full delivery. No whole-plan percentage.
