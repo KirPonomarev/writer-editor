@@ -93,6 +93,18 @@ test('C1 headings: malformed and unrepresentable outline values fail without a s
    assert.equal(report.ok,false,value);assert.match(JSON.stringify(report),/DOCX_(?:OUTLINE_LEVEL_INVALID|HEADING_LEVEL_UNSUPPORTED)/);
  }
 });
+test('C1 headings: duplicate direct, style and default outline properties reject without choosing a winner',async()=>{
+ const [bridge]=await modules;
+ const duplicate='<w:outlineLvl w:val="6"/><w:outlineLvl w:val="7"/>';
+ for(const [body,styles] of [
+   ['<w:p><w:pPr>'+duplicate+'</w:pPr>'+r('heading')+'</w:p>',''],
+   ['<w:p><w:pPr><w:pStyle w:val="H"/></w:pPr>'+r('heading')+'</w:p>',styleXml('<w:style w:type="paragraph" w:styleId="H"><w:pPr>'+duplicate+'</w:pPr></w:style>')],
+   ['<w:p>'+r('heading')+'</w:p>',styleXml('<w:docDefaults><w:pPrDefault><w:pPr>'+duplicate+'</w:pPr></w:pPrDefault></w:docDefaults>')],
+ ]){
+   const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes(body,styles));
+   assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_OUTLINE_LEVEL_INVALID');
+ }
+});
 test('C1 headings: used style cycles are rejected even for empty headings',async()=>{
  const [bridge]=await modules;const styles=styleXml('<w:style w:type="paragraph" w:styleId="loop"><w:basedOn w:val="loop"/><w:pPr><w:outlineLvl w:val="0"/></w:pPr></w:style>');
  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(packageBytes('<w:p><w:pPr><w:pStyle w:val="loop"/></w:pPr></w:p>',styles)).ok,false);

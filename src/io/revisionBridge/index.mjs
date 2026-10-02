@@ -9539,8 +9539,10 @@ function docxInlineStyleCatalog(bytes) {
     } else if (tag === 'w:outlineLvl' && parent === 'w:pPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current?.type === 'paragraph') {
+        if (Object.hasOwn(current, 'outlineLevel')) throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
         current.outlineLevel = docxReadOutlineLevel(token, parsed.namespaceMap);
       } else if (owner === 'w:pPrDefault') {
+        if (Object.hasOwn(catalog, 'defaultOutlineLevel')) throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
         catalog.defaultOutlineLevel = docxReadOutlineLevel(token, parsed.namespaceMap);
       }
     } else if (parent === 'w:rPr') {
@@ -10352,6 +10354,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       activeListNumbering = null;
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
+      if (Object.hasOwn(activeParagraphMetadata, 'outlineLevel')) throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
       activeParagraphMetadata.outlineLevel = docxReadOutlineLevel(token, tokenNamespaceMap);
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:jc') {
