@@ -351,3 +351,15 @@ failure is the expected stale Main hash in mandatory historical companion
 bindings; refresh only after the product candidate is stable. The actual Main
 activation contract separately exposed outdated test filesystem/round fixtures
 and two pinned provider parser failures; these remain open, not green.
+
+Checkpoint d1f99734 preserves the metadata repair and meaningful activation
+fixture repairs. Whole activation suite now has32passes and5failures: three
+legacy authenticated text returns are intercepted by the pending-only lane;
+the two Google parser failures reproduce on exact delivery base a2a5ae6c.
+Clean45path preflight admits a bounded applicability repair in existing Main:
+baseline pending state or pendingReturnOnly always selects the pending lane;
+the current single rich-scene route also stays there. Legacy text-only rounds
+may continue through their existing exact route before any pending admission.
+Never fall back after a validation failure, malformed rich baseline or stale
+authority. Preserve the original end-to-end Apply assertions and add direct
+no-downgrade counterexamples. No Google acceptance or whole-suite green claim.

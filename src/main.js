@@ -6067,6 +6067,11 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     if (parsed.issue) throw Error('PENDING_RETURN_BASELINE_INVALID');
     return !!pendingTextRevisions.readLedger(parsed.doc);
   });
+  // Retained ledgers and explicitly bound pending returns never downgrade.
+  // Older plain-text or multi-scene packets keep their authenticated exact
+  // lane when no canonical pending state requires this single-scene writer.
+  const hasSingleRichBaseline = capsule?.exportMap?.scenes?.length === 1 && baselines.length === 1;
+  if (!baselinePending && capsule?.pendingReturnOnly !== true && !hasSingleRichBaseline) return null;
   const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
   const returnedPending = !!preview?.contentPreview?.pendingRevisionDocument;
   if (!baselinePending && !returnedPending) return null;

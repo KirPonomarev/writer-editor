@@ -304,7 +304,7 @@ module.exports = {
   handleDocxReviewPreviewSessionActivationCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
   handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
-  inspectDocxReviewReturnIntakeV2, sanitizeDocxReviewReturnIntakeForResult,
+  inspectDocxReviewReturnIntakeV2, sanitizeDocxReviewReturnIntakeForResult, prepareAuthenticatedPendingReturn,
   getState() {
     return {
       activeReviewSessionStore,
@@ -4150,4 +4150,45 @@ test('authenticated Main intake reports provider document creation date loss wit
   assert.deepEqual(cloneJsonSafe(projected.coreCreatedAtChange),{expected:'2026-10-02T06:23:15.656Z',returned:'2026-10-02T07:34:00Z',policy:'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'});
   assert.deepEqual(cloneJsonSafe(projected.lossLedger.coreCreatedAtChange),cloneJsonSafe(projected.coreCreatedAtChange));
   assert.equal(projected.protectedProperties.createdAtUtc,'2026-10-02T06:23:15.656Z');assert.deepEqual(source.documentMetadata,original);
+});
+
+
+test('pending applicability preserves legacy exact routes and never downgrades retained ledger or rich authority failures', async () => {
+  const bridge = await loadBridge();
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const docx = productReviewDocxWithTrackedReplacement();
+  const base = productAuthorityStoreFromDocx(docx).roundsById[docx.payload.roundId];
+  const document = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: docx.sceneText }] }] };
+  const rich = envelope.composeObservablePayload({ doc: document });
+  const ledger = envelope.composeObservablePayload({ doc: model.bindLedger({ schemaVersion: 2,
+    source: model.normalizeNode(document), revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] }) });
+  const cases = [
+    { name: 'legacy scene no retained rich source', baselines: {}, scenes: 1, fallback: true },
+    { name: 'legacy multiscene no ledger', baselines: { first: rich, second: rich }, scenes: 2, fallback: true },
+    { name: 'single rich returned revisions', baselines: { first: rich }, scenes: 1, code: 'PENDING_RETURN_OPEN_SCENE_REQUIRED' },
+    { name: 'canonical ledger', baselines: { first: ledger }, scenes: 1, code: 'PENDING_RETURN_OPEN_SCENE_REQUIRED' },
+    { name: 'multiscene canonical ledger', baselines: { first: ledger, second: rich }, scenes: 2, code: 'PENDING_RETURN_SINGLE_SCENE_REQUIRED' },
+    { name: 'explicit pending route without baseline', baselines: {}, scenes: 1, pendingReturnOnly: true, code: 'PENDING_RETURN_SINGLE_SCENE_REQUIRED' },
+    { name: 'malformed retained rich source', baselines: { first: '[doc-v2 length=4]\nxxxx' }, scenes: 2, rejects: /PENDING_RETURN_BASELINE_INVALID/ },
+  ];
+  for (const value of cases) {
+    const capsule = { ...structuredClone(base), baselineObservableContentBySceneId: value.baselines,
+      exportMap: { scenes: Array.from({ length: value.scenes }, (_, i) => ({ sceneId: i ? 'second' : 'first' })) },
+      exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication',
+      returnedArtifactExportMapAccepted: false, pendingReturnOnly: value.pendingReturnOnly === true };
+    const port = instantiateDocxReviewPreviewSessionPort({ roundAuthority: {
+      projectRoot: '/project', projectId: 'project-1', references: [capsule] } });
+    const run = () => port.prepareAuthenticatedPendingReturn({ context: {
+      projectId: 'project-1', projectRoot: '/project', reviewTransportAuthorityCapsule: capsule,
+      reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + computeHash(docx.bytes) },
+    }, requestId: 'applicability', isCurrent: () => true, docxBytes: docx.bytes, revisionBridge: bridge });
+    if (value.rejects) await assert.rejects(run, value.rejects, value.name);
+    else {
+      const result = await run();
+      if (value.fallback) assert.equal(result, null, value.name + ': ' + JSON.stringify(result));
+      else { assert.equal(result?.ok, false, value.name); assert.equal(result?.code, value.code, value.name); }
+    }
+    assert.equal(port.runtimeCommands.length, 0, value.name);
+  }
 });
