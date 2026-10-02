@@ -192,7 +192,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal, registry
 function buildFormatIrParagraphs(scene) {
   const registry = sceneBookmarkRegistry(scene);
   const sourceDoc = isPlainObjectValue(scene.doc) ? cloneJson(scene.doc) : null;
-  if (sourceDoc) { documentMedia(sourceDoc); inspectDocumentLanguage(sourceDoc); }
+  if (sourceDoc) { documentMedia(sourceDoc); inspectDocumentLanguage(sourceDoc); require('../../core/word-list-numbering-v1.cjs').normalize(sourceDoc); }
   const topLevelNodes = sourceDoc
     ? (sourceDoc.type === 'doc' && Array.isArray(sourceDoc.content) ? sourceDoc.content : null)
     : scene.text.split('\n').map((line) => ({
@@ -204,6 +204,12 @@ function buildFormatIrParagraphs(scene) {
   }
   const result = [];
   let nextListNumId = 1;
+  const linkedIds = new Map();
+  const numberId = attrs => {
+    if (!attrs?.wordListId) return nextListNumId++;
+    if (!linkedIds.has(attrs.wordListId)) linkedIds.set(attrs.wordListId, nextListNumId++);
+    return linkedIds.get(attrs.wordListId);
+  };
   let nextTableId = 0;
   const appendTextBlock = (node, context) => {
     const paragraphOrdinal = result.length;
@@ -317,9 +323,9 @@ function buildFormatIrParagraphs(scene) {
       for (const entry of tableParagraphs(node, `${scene.sceneId}:table-${nextTableId++}`)) {
         const listStack = entry.listStack.map(list => {
           if (list.start < 1 || list.start > 32767) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
-          if (!listIds.has(list.listId)) listIds.set(list.listId, nextListNumId++);
-          return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.start,
-            itemOrdinal: list.itemOrdinal, numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
+          if (!listIds.has(list.listId)) listIds.set(list.listId, numberId(list));
+          return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
+            itemOrdinal: list.itemOrdinal + (list.wordListStart == null ? 0 : list.start - list.wordListStart), numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
         });
         appendTextBlock(entry.node, { ...context, listStack });
         result.at(-1).formatIr.table = entry.table;
@@ -355,23 +361,22 @@ function buildFormatIrParagraphs(scene) {
     }
     if (node.type === 'bulletList' || node.type === 'orderedList') {
       const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
-      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
+      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type', 'wordListId', 'wordListStart'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
       const start = node.type === 'orderedList' ? Number(attrs.start ?? 1) : 1;
       if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || start < 1 || start > 32767) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED', { sceneId: scene.sceneId, unknownAttrs });
       }
       const items = Array.isArray(node.content) ? node.content : [];
-      const numId = nextListNumId;
-      nextListNumId += 1;
+      const numId = numberId(attrs);
       for (const [itemOrdinal, item] of items.entries()) {
         if (!isPlainObjectValue(item) || item.type !== 'listItem') {
           throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ITEM_UNSUPPORTED', { sceneId: scene.sceneId });
         }
         const listStack = [...context.listStack, {
           kind: node.type === 'orderedList' ? 'ordered' : 'bullet',
-          start,
+          start: attrs.wordListStart ?? start,
           ...(attrs.type ? { type: attrs.type } : {}),
-          itemOrdinal,
+          itemOrdinal: itemOrdinal + (attrs.wordListStart == null ? 0 : start - attrs.wordListStart),
           numId,
         }];
         for (const child of Array.isArray(item.content) ? item.content : []) {

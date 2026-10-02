@@ -19,6 +19,9 @@ const boundary = (text, offset) => Number.isSafeInteger(offset) && offset >= 0 &
   && !(offset > 0 && offset < text.length && /[\uD800-\uDBFF]/u.test(text[offset - 1]) && /[\uDC00-\uDFFF]/u.test(text[offset]));
 
 function validateNoteBody(body) {
+  const numbering = require('./word-list-numbering-v1.cjs');
+  if (numbering.resolve(body).size) body = numbering.normalize(clone(body));
+  const linkedIds = new Map();
   need(keys(body, ['type', 'content']) && body.type === 'doc' && Array.isArray(body.content)
     && body.content.length > 0 && body.content.length <= LIMITS.paragraphs, 'NOTE_BODY_STRUCTURE');
   let size = 0;
@@ -58,11 +61,18 @@ function validateNoteBody(body) {
       need(keys(block, ['type', 'attrs', 'content']) && ['bulletList', 'orderedList'].includes(block.type), 'NOTE_BODY_BLOCK');
       need(stack.length <= 8 && Array.isArray(block.content) && block.content.length > 0
         && block.content.length <= LIMITS.paragraphs, 'NOTE_BODY_LIST_STRUCTURE');
-      need(block.attrs === undefined || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_BODY_LIST_ATTRIBUTES');
+      need(block.attrs === undefined || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []), 'NOTE_BODY_LIST_ATTRIBUTES');
       need(block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type), 'NOTE_BODY_LIST_FORMAT');
       const start = block.type === 'orderedList' ? (block.attrs?.start ?? 1) : 1;
       need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647, 'NOTE_BODY_LIST_START');
-      const list = { numId: nextListId++, level: stack.length, kind: block.type, start, ...(block.attrs?.type ? { type: block.attrs.type } : {}) };
+      const identity = numbering.attributes(block.attrs);
+      let numId;
+      if (!identity) numId = nextListId++;
+      else {
+        if (!linkedIds.has(identity.id)) linkedIds.set(identity.id, nextListId++);
+        numId = linkedIds.get(identity.id);
+      }
+      const list = { numId, level: stack.length, kind: block.type, start: identity?.start ?? start, ...(block.attrs?.type ? { type: block.attrs.type } : {}) };
       for (const item of block.content) {
         need(keys(item, ['type', 'content']) && item.type === 'listItem' && Array.isArray(item.content)
           && item.content.length > 0 && item.content.length <= LIMITS.paragraphs
@@ -149,7 +159,7 @@ function sceneParagraphs(doc) {
     }
     need(['bulletList', 'orderedList'].includes(block?.type) && depth <= 8 && ++lists <= 2048
       && Array.isArray(block.content) && block.content.length > 0, 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
-    need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
     const start = block.attrs?.start ?? 1;
     need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647
       && (block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');

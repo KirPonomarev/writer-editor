@@ -42,6 +42,7 @@ function normalizeNode(node) {
 // One paragraph occurrence order for text revisions, independent of repeated
 // text, list nesting and table coordinates. Returns references into this doc.
 function paragraphs(doc) {
+  require('./word-list-numbering-v1.cjs').resolve(doc);
   assert(exact(doc, ['type', 'content']) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
   const result = []; let lists = 0;
   const visit = (node, depth = 0, inCell = false) => {
@@ -62,7 +63,7 @@ function paragraphs(doc) {
     assert(['bulletList', 'orderedList'].includes(node.type), 'PENDING_REVISIONS_BLOCK_UNSUPPORTED');
     assert(depth <= 8 && ++lists <= 2048, 'PENDING_REVISIONS_BUDGET');
     assert(Array.isArray(node.content) && node.content.length > 0);
-    assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type'] : []));
+    assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []));
     const start = node.attrs?.start ?? 1;
     assert(Number.isSafeInteger(start) && start >= 0 && start + node.content.length - 1 <= 2147483647
       && (node.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(node.attrs.type)));

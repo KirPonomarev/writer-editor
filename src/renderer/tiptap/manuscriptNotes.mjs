@@ -1,3 +1,4 @@
+import { DocumentListNumbering } from './documentListNumbering.mjs';
 import { Editor, Extension } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -61,7 +62,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave } = {}) {
   const editor = new Editor({ element: surface,
     extensions: [StarterKit.configure({ heading: false,
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
-    DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
+    DocumentListNumbering, DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
     DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' }),
     Highlight.configure({ multicolor: true }), Underline,
     Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })],
