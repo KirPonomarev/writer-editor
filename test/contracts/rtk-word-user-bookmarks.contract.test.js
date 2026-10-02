@@ -205,10 +205,10 @@ test('grapheme-aware replacement widens edit around shared surrogate prefix', ()
   assert.deepEqual(after.registry, model.readRegistry(before));
 });
 
-test('split, move, copy and kind changes produce typed zero-write plans', () => {
+test('unsupported block moves and kind changes produce typed zero-write plans', () => {
   const before = create(doc('abcDEF', 'other'), 'Target', ep(2), ep(5)).doc;
   for (const mutate of [
-    x => x.content.push(copy(x.content[0])), x => x.content[0].type = 'heading',
+    x => x.content[0].type = 'heading',
     x => x.content[0] = { type: 'blockquote', content: [x.content[0]] },
     x => x.content.reverse(),
   ]) {
@@ -216,6 +216,119 @@ test('split, move, copy and kind changes produce typed zero-write plans', () => 
     typed(() => model.planSave({ beforeDoc: before, workingDoc: work }));
     assert.deepEqual(before, create(doc('abcDEF', 'other'), 'Target', ep(2), ep(5)).doc);
   }
+});
+
+test('root text duplication is insertion, never a copied bookmark identity', () => {
+  const before = create(doc('abcDEF', 'other'), 'Target', ep(2), ep(5)).doc;
+  const work = copy(before); work.content.push(copy(work.content[0]));
+  const result = model.planSave({ beforeDoc: before, workingDoc: work });
+  assert.deepEqual(result.registry, model.readRegistry(before));
+  assert.equal(result.registry.bookmarks.length, 1);
+  assert.deepEqual(result.doc.content, work.content);
+});
+
+test('root paragraph split, join and multiline insertion preserve exact bookmark endpoints', () => {
+  const before = create(doc('Left target right'), 'Target', ep(5), ep(11)).doc;
+  const split = copy(before); split.content = doc('Left', ' target right').content;
+  const saved = model.planSave({ beforeDoc: before, workingDoc: split });
+  assert.deepEqual(saved.registry.bookmarks[0].start, ep(1, 1));
+  assert.deepEqual(saved.registry.bookmarks[0].end, ep(7, 1));
+  const join = copy(saved.doc); join.content = copy(before.content);
+  assert.deepEqual(model.planSave({ beforeDoc: saved.doc, workingDoc: join }).registry.bookmarks[0], model.readRegistry(before).bookmarks[0]);
+  const paste = copy(before); paste.content = doc('NEW', 'Left target right').content;
+  const pasted = model.planSave({ beforeDoc: before, workingDoc: paste });
+  assert.deepEqual(pasted.registry.bookmarks[0].start, ep(5, 1));
+  assert.deepEqual(pasted.registry.bookmarks[0].end, ep(11, 1));
+  assert.equal(pasted.registry.bookmarks[0].id, model.readRegistry(before).bookmarks[0].id);
+});
+
+test('paragraph terminator endpoints preserve owner and refuse deleted or ambiguous ownership', () => {
+  const before = create(doc('abcdef'), 'Mark', ep(2), ep(6, 0, 'afterParagraph')).doc;
+  const split = copy(before); split.content = doc('abc', 'def').content;
+  const result = model.planSave({ beforeDoc: before, workingDoc: split });
+  assert.deepEqual(result.registry.bookmarks[0].end, ep(3, 1, 'afterParagraph'));
+  const joined = copy(result.doc); joined.content = copy(before.content);
+  assert.deepEqual(model.planSave({ beforeDoc: result.doc, workingDoc: joined }).registry.bookmarks[0], model.readRegistry(before).bookmarks[0]);
+  const ambiguous = copy(before); ambiguous.content = doc('abcdef', '').content;
+  typed(() => model.planSave({ beforeDoc: before, workingDoc: ambiguous }), 'USER_BOOKMARK_EDIT_AMBIGUOUS');
+  const deleted = create(doc('abc', 'def'), 'DeletedMark', ep(3, 0, 'afterParagraph'), ep(3, 0, 'afterParagraph')).doc;
+  const work = copy(deleted); work.content = doc('abcdef').content;
+  typed(() => model.planSave({ beforeDoc: deleted, workingDoc: work }), 'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+  const nextStart = create(doc('abc', 'def'), 'NextStart', ep(0, 1), ep(2, 1)).doc;
+  work.attrs = copy(nextStart.attrs);
+  const nextJoined = model.planSave({ beforeDoc: nextStart, workingDoc: work });
+  assert.deepEqual(nextJoined.registry.bookmarks[0].start, ep(3));
+  assert.deepEqual(nextJoined.registry.bookmarks[0].end, ep(5));
+});
+
+test('root structural edit shifts unchanged table/list leaves by occurrence and rejects protected mutations', () => {
+  const table = { type: 'table', content: [{ type: 'tableRow', content: [0, 1].map(() => ({ type: 'tableCell', content: doc('same').content })) }] };
+  table.content[0].content[0].content[0].content[0].marks = [{ type: 'italic' }];
+  const list = { type: 'orderedList', attrs: { start: 3 }, content: [{ type: 'listItem', content: doc('same').content }] };
+  let before = create({ type: 'doc', content: [doc('before root').content[0], table, list, doc('after').content[0]] }, 'SecondCell', ep(1, 2), ep(3, 2)).doc;
+  before = create(before, 'List', ep(0, 3), ep(4, 3), 'list').doc;
+  const work = copy(before); work.content.splice(0, 1, ...doc('before', ' root').content);
+  const result = model.planSave({ beforeDoc: before, workingDoc: work });
+  assert.deepEqual(result.registry.bookmarks.map(b => b.start.paragraphIndex), [3, 4]);
+  assert.deepEqual(result.doc.content.slice(2), before.content.slice(1));
+  for (const mutate of [
+    x => x.content.push(copy(table)), x => x.content[2].content[0].content.reverse(),
+    x => x.content[2].content[0].content[0].attrs = { colspan: 2 },
+    x => x.content[3].attrs.start++, x => x.content[2].content[0].content[0].content[0].content[0].text = 'moved',
+    x => x.content[x.content.length - 1].content[0].text = 'changed too',
+  ]) {
+    const bad = copy(work); mutate(bad);
+    typed(() => model.planSave({ beforeDoc: before, workingDoc: bad }), 'USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  }
+});
+
+test('root structural proof retains rich marks, grapheme bounds and rejects replacement or hardBreak substitution', () => {
+  const before = create(doc('A😀e\u0301 target'), 'Target', ep(6), ep(12)).doc;
+  const work = copy(before); work.content = doc('A😀e\u0301', ' target').content;
+  const result = model.planSave({ beforeDoc: before, workingDoc: work });
+  assert.deepEqual(result.registry.bookmarks[0].start, ep(1, 1));
+  for (const mutate of [
+    x => x.content[1].content[0].marks = [{ type: 'italic' }],
+    x => x.content[0].content[0].text = 'other',
+    x => x.content[1].attrs.textAlign = 'right',
+    x => x.content[0].content[0].text = 'A\ud83d',
+  ]) { const bad = copy(work); mutate(bad); typed(() => model.planSave({ beforeDoc: before, workingDoc: bad })); }
+  const hard = create(doc('ab\ncd'), 'End', ep(4), ep(5)).doc;
+  hard.content[0].content = [{ type: 'text', text: 'ab', marks: [{ type: 'bold' }] }, { type: 'hardBreak' }, { type: 'text', text: 'cd', marks: [{ type: 'bold' }] }];
+  const fake = copy(hard); fake.content = doc('ab', 'cd').content;
+  typed(() => model.planSave({ beforeDoc: hard, workingDoc: fake }), 'USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+});
+
+test('root mapping permits unrelated paragraph attrs and rejects consumed endpoints in inverse paste', () => {
+  const before = create(doc('prefix target', 'Different style'), 'Target', ep(7), ep(13)).doc;
+  before.content[1].attrs.textAlign = 'right';
+  const working = copy(before); working.content.splice(0, 1, ...doc('pre', 'fix target').content);
+  const saved = model.planSave({ beforeDoc: before, workingDoc: working });
+  assert.deepEqual(saved.registry.bookmarks[0].start, ep(4, 1));
+  assert.equal(saved.doc.content[2].attrs.textAlign, 'right');
+  const consumed = create(doc('abXX', 'YYcd'), 'Inside', ep(3), ep(3)).doc;
+  const deletion = copy(consumed); deletion.content = doc('abcd').content;
+  typed(() => model.planSave({ beforeDoc: consumed, workingDoc: deletion }), 'USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+  const repeated = create(doc('a', 'a'), 'Second', ep(0, 1), ep(1, 1)).doc;
+  const removed = copy(repeated); removed.content = doc('a').content;
+  typed(() => model.planSave({ beforeDoc: repeated, workingDoc: removed }));
+});
+
+test('literal split-position oracle covers text points, empty paragraphs and surrogate boundaries', () => {
+  const text = 'A😀BC', positions = [0, 1, 3, 4, 5];
+  let before = doc(text);
+  for (const position of positions) before = create(before, 'Point' + position, ep(position), ep(position), 'point-' + position).doc;
+  for (const cut of positions) {
+    const work = copy(before); work.content = doc(text.slice(0, cut), text.slice(cut)).content;
+    const saved = model.planSave({ beforeDoc: before, workingDoc: work });
+    assert.deepEqual(saved.registry.bookmarks.map(b => b.start), positions.map(position =>
+      position <= cut ? ep(position) : ep(position - cut, 1)));
+    const joined = copy(saved.doc); joined.content = copy(before.content);
+    assert.deepEqual(model.planSave({ beforeDoc: saved.doc, workingDoc: joined }).registry.bookmarks, model.readRegistry(before).bookmarks);
+  }
+  const empty = create(doc('', ''), 'EmptySecond', ep(0, 1), ep(0, 1)).doc;
+  const collapsed = copy(empty); collapsed.content = doc('').content;
+  typed(() => model.planSave({ beforeDoc: empty, workingDoc: collapsed }), 'USER_BOOKMARK_EDIT_AMBIGUOUS');
 });
 
 test('internal links require exact declared ID and name; external links remain ordinary', () => {

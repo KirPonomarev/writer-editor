@@ -407,6 +407,147 @@ function structure(doc) {
   });
   return result;
 }
+
+// Root paragraph runs are separated by immutable blocks. A table/list is one
+// protected occurrence, including every leaf, cell owner, property and mark.
+function paragraphComparisonNode(node) {
+  // Only defaults of the pinned editor schema are representation-equivalent.
+  // Keep every unknown key and every explicit non-default value in the proof.
+  const defaults = {
+    paragraph: { textAlign: null }, heading: { textAlign: null, level: 1 }, codeBlock: { language: null },
+    orderedList: { start: 1, type: null }, table: { wordTable: null },
+    tableCell: { colspan: 1, rowspan: 1, colwidth: null, wordCell: null },
+    tableHeader: { colspan: 1, rowspan: 1, colwidth: null, wordCell: null },
+    textStyle: { color: null, fontFamily: null, fontSize: null },
+    link: { target: '_blank', rel: 'noopener noreferrer nofollow', class: null, title: null },
+  };
+  const out = { ...node }, known = own(defaults, node.type) ? defaults[node.type] : {};
+  if (out.attrs) {
+    out.attrs = Object.fromEntries(Object.entries(out.attrs).filter(([key, value]) => !own(known, key) || value !== known[key]));
+    if (!Object.keys(out.attrs).length) delete out.attrs;
+  }
+  if (out.marks) out.marks = out.marks.map(paragraphComparisonNode).sort((a, b) => canonicalSerialize(a).localeCompare(canonicalSerialize(b)));
+  if (out.content) {
+    out.content = out.content.map(paragraphComparisonNode).reduce((children, child) => {
+      const previous = children.at(-1);
+      if (previous?.type === 'text' && child.type === 'text' && same({ ...previous, text: '' }, { ...child, text: '' })) previous.text += child.text;
+      else children.push(child);
+      return children;
+    }, []);
+    if (!out.content.length) delete out.content;
+  }
+  return out;
+}
+
+function rootParagraphLayout(doc) {
+  const zones = [[]], protectedBlocks = [], leaves = []; let index = 0;
+  for (const node of doc.content) {
+    if (node.type === 'paragraph') {
+      const zone = zones.length - 1, local = zones[zone].length;
+      zones[zone].push(node); leaves.push({ zone, local, index: index++ });
+    } else {
+      const owner = protectedBlocks.length;
+      protectedBlocks.push(node);
+      const owned = [];
+      walk({ type: 'doc', content: [node] }, child => {
+        if (['paragraph', 'heading', 'codeBlock'].includes(child.type)) owned.push(child);
+      });
+      owned.forEach((_, local) => leaves.push({ owner, local, index: index++ }));
+      zones.push([]);
+    }
+  }
+  return { zones, protectedBlocks, leaves };
+}
+
+function paragraphRunTape(blocks) {
+  const starts = [], spans = [], properties = []; let text = '';
+  for (const block of blocks) {
+    const props = { ...block }; delete props.content; properties.push(props);
+    starts.push(text.length);
+    for (const node of block.content || []) {
+      if (!['text', 'hardBreak'].includes(node.type)) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+      const value = node.type === 'text' ? node.text : '\n';
+      const from = text.length; text += value;
+      spans.push({ from, to: text.length, node, props });
+    }
+    // NUL is forbidden in document text, unlike a legitimate hardBreak newline.
+    spans.push({ from: text.length, to: text.length + 1, node: { type: 'paragraphEnd' }, props });
+    text += '\0';
+  }
+  const rich = (from, to) => {
+    const out = [];
+    for (const span of spans) {
+      if (span.to <= from || span.from >= to) continue;
+      const node = { ...span.node };
+      if (node.type === 'text') node.text = text.slice(Math.max(from, span.from), Math.min(to, span.to));
+      const previous = out.at(-1);
+      if (node.type === 'text' && previous?.node.type === 'text' && same(previous.props, span.props)
+        && same({ ...node, text: '' }, { ...previous.node, text: '' })) previous.node.text += node.text;
+      else out.push({ node, props: span.props });
+    }
+    return out;
+  };
+  const blockAt = offset => {
+    let low = 0, high = starts.length;
+    while (low < high) { const mid = (low + high) >>> 1; if (starts[mid] <= offset) low = mid + 1; else high = mid; }
+    return Math.max(0, low - 1);
+  };
+  return { text, starts, properties, rich, blockAt };
+}
+
+function rootParagraphEndpointMapper(beforeDoc, workingDoc) {
+  const before = rootParagraphLayout(paragraphComparisonNode(beforeDoc)), after = rootParagraphLayout(paragraphComparisonNode(workingDoc));
+  if (!same(before.protectedBlocks, after.protectedBlocks)) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  const changed = before.zones.flatMap((zone, i) => same(zone, after.zones[i]) ? [] : [i]);
+  if (changed.length !== 1) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  const zone = changed[0], oldBlocks = before.zones[zone], newBlocks = after.zones[zone];
+  if (!oldBlocks.length || !newBlocks.length || oldBlocks.length === newBlocks.length) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  const old = paragraphRunTape(oldBlocks), next = paragraphRunTape(newBlocks);
+  const candidates = editCandidates(old.text, next.text);
+  if (candidates.length * (old.text.length + next.text.length) > MAX_TEXT * 4) fail('USER_BOOKMARK_EDIT_AMBIGUOUS');
+  for (const edit of candidates) {
+    const removed = old.text.slice(edit.start, edit.end), inserted = next.text.slice(edit.start, edit.start + edit.inserted);
+    const insertion = !removed && inserted.includes('\0');
+    const deletion = removed.includes('\0') && !inserted;
+    if ((!insertion && !deletion)
+      || !same(old.rich(0, edit.start), next.rich(0, edit.start))
+      || !same(old.rich(edit.end, old.text.length), next.rich(edit.start + edit.inserted, next.text.length))) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+    if (insertion) {
+      const props = old.properties[old.blockAt(edit.start)];
+      for (let i = next.blockAt(edit.start); i < newBlocks.length && next.starts[i] < edit.start + edit.inserted; i++) {
+        if (!same(props, next.properties[i])) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+      }
+    }
+  }
+  const mappedLeaves = new Map(after.leaves.map(leaf => [leaf.owner === undefined ? `z${leaf.zone}:${leaf.local}` : `o${leaf.owner}:${leaf.local}`, leaf.index]));
+  return endpoint => {
+    const leaf = before.leaves[endpoint.paragraphIndex];
+    if (leaf.zone !== zone) {
+      const key = leaf.owner === undefined ? `z${leaf.zone}:${leaf.local}` : `o${leaf.owner}:${leaf.local}`;
+      return { ...endpoint, paragraphIndex: mappedLeaves.get(key) };
+    }
+    const offset = old.starts[leaf.local] + endpoint.offsetUtf16, outcomes = new Map();
+    for (const edit of candidates) {
+      let mapped;
+      if (endpoint.edge === 'afterParagraph') {
+        // Map the terminator itself, not the numerically equal next-text gap.
+        if (offset >= edit.start && offset < edit.end) fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+        mapped = offset >= edit.end ? offset + edit.delta : offset;
+      } else {
+        if (edit.end > edit.start && old.text.slice(edit.start, edit.end) !== '\0'
+          && offset >= edit.start && offset <= edit.end) fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+        mapped = offset <= edit.start ? offset : offset >= edit.end ? offset + edit.delta : edit.start;
+      }
+      const local = next.blockAt(mapped);
+      const value = { paragraphIndex: mappedLeaves.get(`z${zone}:${local}`),
+        offsetUtf16: mapped - next.starts[local], edge: endpoint.edge };
+      if (endpoint.edge === 'afterParagraph' && next.text[mapped] !== '\0') fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+      outcomes.set(canonicalSerialize(value), value);
+    }
+    if (outcomes.size !== 1) fail('USER_BOOKMARK_EDIT_AMBIGUOUS');
+    return outcomes.values().next().value;
+  };
+}
 function prepareRenameLineage(workingDoc, registry, renameLineage) {
   const aliases = new Map(), records = new Map((registry?.bookmarks || []).map(record => [record.id, record]));
   if (renameLineage !== undefined) {
@@ -469,9 +610,9 @@ function planSave({ beforeDoc, workingDoc, renameLineage }) {
   }
   noPending(beforeDoc); noPending(workingDoc); validateLinks(beforeDoc, before); validateLinks(workingDoc, before);
   const oldBlocks = paragraphs(beforeDoc), newBlocks = paragraphs(workingDoc);
-  if (!same(structure(beforeDoc), structure(workingDoc))) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  const structuralMap = same(structure(beforeDoc), structure(workingDoc)) ? null : rootParagraphEndpointMapper(beforeDoc, workingDoc);
   const mapped = clone(before), edits = new Map();
-  for (let i = 0; i < oldBlocks.length; i++) {
+  for (let i = 0; !structuralMap && i < oldBlocks.length; i++) {
     const oldText = textOf(oldBlocks[i]), newText = textOf(newBlocks[i]);
     if (oldText !== newText) edits.set(i, { oldText, newText, candidates: editCandidates(oldText, newText) });
   }
@@ -479,7 +620,8 @@ function planSave({ beforeDoc, workingDoc, renameLineage }) {
     if (record.state !== 'active') continue;
     for (const key of ['start', 'end']) {
       const endpoint = record[key], edit = edits.get(endpoint.paragraphIndex);
-      if (edit) record[key] = mapEndpoint(endpoint, edit.candidates, edit.oldText, edit.newText);
+      if (structuralMap) record[key] = structuralMap(endpoint);
+      else if (edit) record[key] = mapEndpoint(endpoint, edit.candidates, edit.oldText, edit.newText);
     }
   }
   const changed = !same(before, mapped);
