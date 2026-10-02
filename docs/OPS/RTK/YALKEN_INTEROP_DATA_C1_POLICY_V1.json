@@ -483,7 +483,8 @@
     "src/core/word-list-numbering-v1.cjs",
     "src/renderer/tiptap/documentListNumbering.mjs",
     "test/contracts/rtk-word-list-continuation.contract.test.js",
-    "docs/tasks/2026-10-03--word-list-continuation-mac.md"
+    "docs/tasks/2026-10-03--word-list-continuation-mac.md",
+    "docs/tasks/2026-10-03--word-scene-clean-return-mac.md"
   ],
   "protectedFiles": [
     {
@@ -712,7 +713,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "02d1dfad45b6c86c8b973ce321d96edfd8a3ff12fc82fc5feb527060f357f6af"
+        "sha256": "000bf6b81fe8ca8b911fb996a95960a79fbe2e64042971231644911f04097e4c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1228,7 +1229,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
-        "sha256": "296f97ed92c38fbf7bdfe9b9955965b0da7f6684a35a9f392d7ee45066aa41c5"
+        "sha256": "f3c8c81f6b7b5eabd4af45d636a044d471809f67f1e2d20f5c4ed40a19ebc06f"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
@@ -1900,7 +1901,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "0029b827edaddcf7afce988b8616fa2fbcd06eea1c07aec9de4c2e04f259a420"
+        "sha256": "253e78c498aaaabf6082e27811e41bd90460573d18d6c3eafc61858a3e5d05ea"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2053,6 +2054,10 @@
       {
         "path": "docs/tasks/2026-10-03--word-list-continuation-mac.md",
         "sha256": "03acbea6d97c16db94b9474a1ca1e346fbe0c48554dc2ccf81684da09035a7b1"
+      },
+      {
+        "path": "docs/tasks/2026-10-03--word-scene-clean-return-mac.md",
+        "sha256": "30acc57a79385a6a68b775cc5b35c0f476706563854f473d3307066947012bb5"
       }
     ],
     "followupRepair": {

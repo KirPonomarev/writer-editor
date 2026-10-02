@@ -71,6 +71,8 @@ References: brain:refs returned general UI references, not relevant to this back
 
 Router scope added after reproducer commit daca4438 and renewed clean preflight; original delivery base remains aafacb67.
 
+Candidate observation at 69f648bf: 206 focused Main and bookmark contracts pass without skips; router contracts 6 pass. Native SOURCE and PACKAGED independently imported a synthetic list document, exported one scene, edited and saved it in Microsoft Word, previewed and explicitly applied the returned text, saved, restarted and re-exported the accepted text. List counters remained 1, 2, 3, 4 and independent 3. The first native attempt exposed schema-default root attributes falsely triggering SOURCE_STALE; a failing actual Main regression was repaired using the existing schema-default projection, with non-default root state refusal retained. Formatting diagnostics for unchanged lists remain outside this repair. Whole-plan acceptance is not established. Delivery gates remain pending.
+
 ## IMPLEMENTATION_STEPS
 
 1. Reproduce actual Main scene return refusal.
