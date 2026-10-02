@@ -106,7 +106,7 @@ function replaceLinks(p,runs,registry) {
 
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
-export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography}={}) {
+export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,ordinaryTextMode=false}={}) {
   try {
     const registry=core.readRegistry(baselineDoc);
     if(baselineRegistry!==undefined&&!same(registry,baselineRegistry))return reject('baseline-registry');
@@ -221,7 +221,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     for(const old of resultRegistry.bookmarks)if(old.state==='active'&&!retained.has(old.id)){effects.push({kind:'delete',id:old.id});old.state='deleted';delete old.start;delete old.end;}
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='deleted'))if(!resultRegistry.bookmarks.some(item=>key(item.name)===key(record.name)))return reject('unknown-broken-target');
-    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc);
+    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[];
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
@@ -235,7 +235,22 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         const groups=[];
         for(const run of before){const last=groups.at(-1);if(last&&last.link===run.link&&same(last.style,run.style)&&last.to===run.from){last.to=run.to;}else groups.push({...run});}
         const possible=groups.filter(run=>run.link&&block.text.slice(0,run.from)===p.paragraphText.slice(0,run.from)&&block.text.slice(run.to)===p.paragraphText.slice(p.paragraphText.length-(block.text.length-run.to)));
-        if(possible.length!==1)return reject('label-footprint-ambiguous');
+        if(possible.length!==1){
+          if(ordinaryTextMode!==true)return reject('label-footprint-ambiguous');
+          // Ordinary text has no bookmark mutation authority. Keep original
+          // rich nodes/marks and prove a single uniform text leaf footprint;
+          // linked labels and opaque inline objects retain their own lanes.
+          if(!block.text||!p.paragraphText||p.paragraphText.includes('\n')
+            ||before.some(run=>run.link)||after.some(run=>run.link)
+            ||resultPs[i].content.some(node=>node.type!=='text')
+            ||!before.length||!after.length
+            ||before.some(run=>!same(run.style,before[0].style))
+            ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
+          replaceText(resultPs[i],0,block.text.length,p.paragraphText);
+          ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
+            sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256});
+          continue;
+        }
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);
@@ -248,6 +263,18 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       resultPs[i].content=merged;
       if(same(semanticParagraph(resultPs[i]),semanticParagraph(basePs[i])))resultPs[i].content=clone(basePs[i].content||[]);
       else if(!effects.some(e=>e.kind==='linkLabel'&&e.paragraphIndex===i))effects.push({kind:'linkTarget',paragraphIndex:i});
+    }
+    if(ordinaryTextChanges.length){
+      // No rename/create/delete/retarget composite can enter the ordinary
+      // writer. Raw registry equality is required before the Core mapper;
+      // the independently parsed Word endpoints must match its result.
+      if(effects.length)return reject('ordinary-text-bookmark-composite');
+      const mapped=core.planSave({beforeDoc:baselineDoc,workingDoc:doc});
+      const literal=resultRegistry.bookmarks.filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
+      const expected=(mapped.registry?.bookmarks||[]).filter(record=>record.state==='active').map(record=>({id:record.id,name:record.name,state:record.state,start:record.start,end:record.end}));
+      if(!same(literal,expected))return reject('ordinary-text-bookmark-endpoint-mismatch');
+      return {ok:true,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
     }
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};

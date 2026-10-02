@@ -568,3 +568,50 @@ test('C05 public sources do not claim HMAC signing or add renderer network autho
     assert.equal(writerSource.includes(forbidden), false, forbidden);
   }
 });
+
+test('authenticated clean owner replaces only selected duplicate rich paragraph and refuses forged ownership', async t => {
+  const writer = await loadExactWriter();
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs');
+  const initialDoc = bookmarks.planMutation({ doc: { type: 'doc', content: [0,1].map(() => ({ type: 'paragraph', content: [
+    { type: 'text', text: 'Twin ', marks: [{ type: 'bold' }] }, { type: 'text', text: 'target tail' }] })) },
+    action: 'create', name: 'OwnedSecond', requestId: 'seed', projectId: 'project-c05', sceneId: 'scene-c05',
+    start: { paragraphIndex: 1, offsetUtf16: 12, edge: 'text' }, end: { paragraphIndex: 1, offsetUtf16: 16, edge: 'text' } }).doc;
+  const raw = envelope.composeObservablePayload({ doc: initialDoc });
+  const make = () => {
+    const project = tmpProject(raw); t.after(() => fs.rmSync(project.projectRoot, { recursive: true, force: true }));
+    const item = { changeId: 'clean-owner', targetScope: { type: 'scene', id: 'scene-c05' }, replacementText: 'Twin changed tail',
+      match: { kind: 'exact', quote: 'Twin target tail', authenticatedBlock: { schemaVersion: 'yalken.rtk.authenticated-scene-block.v1',
+        sceneId: 'scene-c05', blockId: 'owned-second', documentParagraphIndex: 1, sceneParagraphIndex: 1,
+        baselineRawSha256: sha256Text(raw), blockTextSha256: sha256Text('Twin target tail'), blockLocalStart: 0, blockLocalEnd: 16 } } };
+    return { project, item, input: directWriterInput(project, [item]) };
+  };
+  for (const mode of ['untrusted', 'wrongRaw', 'wrongIndex', 'wrongText', 'injectedPath', 'mutatedAfterDigest', 'rawCAS']) {
+    const h = make(), originalDigest = cryptoPort.sha256Text(JSON.stringify(h.item));
+    if (mode === 'mutatedAfterDigest') h.item.match.authenticatedBlock.sceneParagraphIndex = 0;
+    if (mode === 'rawCAS') fs.writeFileSync(h.project.scenePath, raw + '\n');
+    const unchanged = fs.readFileSync(h.project.scenePath, 'utf8');
+    if (mode === 'wrongRaw') h.item.match.authenticatedBlock.baselineRawSha256 = sha256Text('foreign');
+    if (mode === 'wrongIndex') h.item.match.authenticatedBlock.sceneParagraphIndex = 9;
+    if (mode === 'wrongText') h.item.match.authenticatedBlock.blockTextSha256 = sha256Text('foreign');
+    if (mode === 'injectedPath') h.item.match.authenticatedBlock.nodePath = ['content', 0];
+    const result = await writer.applyExactTextBatchMinSafeWrite(h.input, {
+      trustedAuthenticatedBlockDigests: mode === 'untrusted' ? [] : [mode === 'mutatedAfterDigest' ? originalDigest : cryptoPort.sha256Text(JSON.stringify(h.item))] });
+    assert.equal(result.applied, false, mode); assert.equal(fs.readFileSync(h.project.scenePath, 'utf8'), unchanged, mode);
+  }
+  const h = make();
+  const applied = await writer.applyExactTextBatchMinSafeWrite(h.input, { trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(h.item))] });
+  assert.equal(applied.applied, true, JSON.stringify(applied));
+  const reopened = envelope.parseObservablePayload(fs.readFileSync(h.project.scenePath, 'utf8'));
+  assert.equal(reopened.text, 'Twin target tail\nTwin changed tail');
+  assert.deepEqual(reopened.doc.content[0], initialDoc.content[0]);
+  assert.deepEqual(reopened.doc.content[1].content[0], initialDoc.content[1].content[0]);
+  const registry = bookmarks.readRegistry(reopened.doc);
+  assert.equal(registry.bookmarks[0].id, bookmarks.readRegistry(initialDoc).bookmarks[0].id);
+  assert.equal(registry.bookmarks[0].start.offsetUtf16, 13);
+  assert.equal(registry.bookmarks[0].end.offsetUtf16, 17);
+  const after = fs.readFileSync(h.project.scenePath, 'utf8');
+  const replay = await writer.applyExactTextBatchMinSafeWrite(h.input, { trustedAuthenticatedBlockDigests: [cryptoPort.sha256Text(JSON.stringify(h.item))] });
+  assert.equal(replay.applied, false);
+  assert.equal(fs.readFileSync(h.project.scenePath, 'utf8'), after);
+});

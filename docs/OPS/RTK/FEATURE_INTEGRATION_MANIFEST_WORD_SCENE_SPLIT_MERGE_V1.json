@@ -13,7 +13,9 @@
     "cmd.project.tree.splitScene",
     "cmd.project.tree.mergeNextScene",
     "cmd.project.tree.undoLastMutation",
-    "cmd.project.saveAs"
+    "cmd.project.saveAs",
+    "cmd.project.review.applyExactTextChangesBatch",
+    "cmd.project.review.applyFullManuscriptExactTextReturn"
   ],
   "eventTypes": [
     "Existing project tree changed and scene saved events; no new event bus"
@@ -41,12 +43,18 @@
     "sourceRevision",
     "authoringSession",
     "treeContentPublicationId",
-    "generation"
+    "generation",
+    "roundId",
+    "returnedArtifactSha256",
+    "blockId",
+    "documentParagraphIndex",
+    "baselineRawSha256"
   ],
   "revisionPolicy": "Main checks capability at dispatch and commit boundary; binds project/root/lifecycle/node/treeRevision/current rich bytes and private authoring session. Old queued snapshots/Save/autosave fail even after newer publication ACK; renderer accepts replacement only with exact previous context and buffer.",
   "writePath": [
     "Pathless explicit tree command -> capability/current project and scene revalidation -> dirty save barrier -> private canonical scene/annotation/resource inventory -> pure Core split/merge plan -> existing leased v7 journal/CAS writer -> synchronous private authoring-session rotation and target-content fence inside commit queue -> guarded renderer publication.",
-    "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched."
+    "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched.",
+    "Authenticated private export map and literal return -> Main-owned ordinary text delta with exact scene/block identity -> existing explicit Review Apply -> existing exact writer and project transaction. No provider tracked revision synthesis or renderer-supplied block authority."
   ],
   "readPath": [
     "Canonical manifest/treeRevision, scenes, notes/comments, exact resource receipts and transaction beforeimages -> validated partition plan -> immutable tree and editor projections."
@@ -93,7 +101,8 @@
     "Inside commit queue rotate existing private authoring session, install target-content fence even same ID/path before queued Save can run. Immutable request session captured before/after preparation; guarded actual write boundary.",
     "Renderer accepts content replacement only on exact prior rich buffer, project/node/generation/boundary and observed publication epoch. New epoch only after checked replacement.",
     "Reset only PM history via two EditorState.reconfigure operations removing then restoring original history plugin; final view.updateState only. Preserve other plugin state/doc/selection, declined replacement changes nothing.",
-    "Late/refused old buffer never overwrites newleft. Explicit SaveAs forks retained original preimage plus edited old buffer with fresh graph IDs; current partitions untouched; retry via bounded receipt lineage."
+    "Late/refused old buffer never overwrites newleft. Explicit SaveAs forks retained original preimage plus edited old buffer with fresh graph IDs; current partitions untouched; retry via bounded receipt lineage.",
+    "TARGET: clean Word text changes after split bind to exact private block ownership, including duplicate quotes; Core bookmark endpoint mapping must match returned literal inventory and unchanged annotations remain bound. No full-route acceptance until native Apply and independent durable readback."
   ],
   "negativeBypassChecks": [
     "Focused real planner/writer/PM tests; old queue save/autosave and delayed snapshot released after successful split ACK; source IDs/content unchanged on refusal.",

@@ -1,3 +1,4 @@
+import userBookmarkModel from '../../core/word-user-bookmarks-v1.cjs';
 import documentMediaData from '../documentMedia.js';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 import { assertExactTextCommentRebasePending } from './reviewTransportNonTextReturnRuntime.mjs';
@@ -799,7 +800,8 @@ function applyRichInlineReplacement(block, operation) {
     operation = { ...operation, expectedText: range.expectedText, replacementText: range.replacementText };
   }
 
-  if (!operation.richReplacementRange && (block.content || []).some(node => node.type === 'image')) {
+  if (!operation.richReplacementRange && (operation.authenticatedBlock
+    || (block.content || []).some(node => node.type === 'image'))) {
     // The authenticated range may include unchanged context (notably a whole
     // text segment next to an image). Keep that context's original marks rather
     // than treating a surviving hyperlink as part of the replacement. Authority
@@ -927,11 +929,43 @@ function applyRichInlineReplacement(block, operation) {
   return { ok: true, block: nextBlock };
 }
 
+function resolveAuthenticatedBlockOperation(item, parsed, raw, sceneId, trustedDigests) {
+  const owner = item.match.authenticatedBlock;
+  const keys = 'baselineRawSha256,blockId,blockLocalEnd,blockLocalStart,blockTextSha256,documentParagraphIndex,sceneId,sceneParagraphIndex,schemaVersion';
+  if (!parsed.doc || !isPlainObject(owner) || Object.keys(owner).sort().join(',') !== keys
+    || !trustedDigests.has(sha256Text(JSON.stringify(item)))
+    || owner.schemaVersion !== 'yalken.rtk.authenticated-scene-block.v1'
+    || owner.sceneId !== sceneId || typeof owner.blockId !== 'string' || !owner.blockId || owner.blockId.length > 256
+    || owner.baselineRawSha256 !== 'sha256:' + sha256Text(raw)
+    || !Number.isSafeInteger(owner.documentParagraphIndex) || owner.documentParagraphIndex < 0
+    || !Number.isSafeInteger(owner.sceneParagraphIndex) || owner.sceneParagraphIndex < 0) return null;
+  const selected = collectRichTextBlocks(parsed.doc)[owner.sceneParagraphIndex];
+  if (!selected) return null;
+  const text = richBlockVisibleText(selected.node);
+  if (owner.blockTextSha256 !== 'sha256:' + sha256Text(text)
+    || owner.blockLocalStart !== 0 || owner.blockLocalEnd !== text.length || item.match.quote !== text) return null;
+  // A marker in a private clone derives the exact rendered offset without
+  // choosing the first duplicate quote or changing paragraph normalization.
+  const projected = cloneJsonSafe(parsed.doc);
+  let marker = 'YALKEN_AUTHENTICATED_BLOCK_POSITION';
+  while (parsed.text.includes(marker)) marker += '_';
+  replaceDocumentNodeAtPath(projected, selected.nodePath, { ...selected.node, content: [{ type: 'text', text: marker }] });
+  const visible = deriveVisibleTextFromDocument(projected), from = visible.indexOf(marker);
+  if (from < 0 || visible.lastIndexOf(marker) !== from
+    || visible.slice(0, from) + text + visible.slice(from + marker.length) !== parsed.text) return null;
+  return { ok: true, from, to: from + text.length, operationAuthority: 'authenticatedSceneBlock',
+    authenticatedBlock: { nodePath: selected.nodePath, from: 0, to: text.length } };
+}
+
 function transformRichExactTextOperations(parsed, operations, nextVisibleText) {
-  const doc = cloneJsonSafe(parsed.doc);
+  let doc = cloneJsonSafe(parsed.doc);
   const blocks = collectRichTextBlocks(doc);
   const boundOperations = [];
   for (const operation of operations) {
+    if (operation.authenticatedBlock) {
+      boundOperations.push({ ...operation, ...operation.authenticatedBlock });
+      continue;
+    }
     const candidates = [];
     for (const block of blocks) {
       const blockText = richBlockVisibleText(block.node);
@@ -976,6 +1010,10 @@ function transformRichExactTextOperations(parsed, operations, nextVisibleText) {
         details: { nodePath: group.nodePath },
       };
     }
+  }
+  if (operations.some(operation => operation.authenticatedBlock)) {
+    try { doc = userBookmarkModel.planSave({ beforeDoc: parsed.doc, workingDoc: doc }).doc; }
+    catch (error) { return { ok: false, code: error.code || 'REVISION_BRIDGE_EXACT_TEXT_BOOKMARK_REBASE_FAILED' }; }
   }
   const observedVisibleText = deriveVisibleTextFromDocument(doc);
   if (observedVisibleText !== nextVisibleText) {
@@ -1212,6 +1250,8 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
 
   const operations = [];
   const trustedBlockRangeDigests = trustedBlockRangeDigestsFrom(options);
+  const trustedAuthenticatedBlockDigests = new Set(Array.isArray(options.trustedAuthenticatedBlockDigests)
+    ? options.trustedAuthenticatedBlockDigests : []);
   for (const item of reviewItems) {
     const changeId = normalizeString(item?.changeId);
     const matchKind = normalizeString(item?.match?.kind);
@@ -1273,7 +1313,14 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       ));
     }
 
-    const blockRangeOperation = resolveBlockRangeOperation({
+    const hasAuthenticatedBlock = Object.hasOwn(item?.match || {}, 'authenticatedBlock');
+    const authenticatedBlockOperation = hasAuthenticatedBlock
+      ? resolveAuthenticatedBlockOperation(item, currentObservable, currentText, sceneId, trustedAuthenticatedBlockDigests) : null;
+    if (hasAuthenticatedBlock && (!authenticatedBlockOperation || item.match.blockRange || hasLinkReplacement)) {
+      return block(buildReason('REVISION_BRIDGE_EXACT_TEXT_AUTHENTICATED_BLOCK_INVALID',
+        'reviewItems.match.authenticatedBlock', 'exact block ownership requires private intake trust and unchanged raw source', { changeId }));
+    }
+    const blockRangeOperation = authenticatedBlockOperation || resolveBlockRangeOperation({
       item,
       sceneId,
       currentText: currentExactText,
@@ -1323,6 +1370,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       expectedText,
       replacementText,
       authority: operationAuthority,
+      ...(authenticatedBlockOperation ? { authenticatedBlock: authenticatedBlockOperation.authenticatedBlock } : {}),
       ...(hasRichRange ? { richReplacementRange: cloneJsonSafe(richReplacementRange) } : {}),
       ...(hasLinkReplacement ? { richReplacementLink: cloneJsonSafe(linkReplacement) } : {}),
     };

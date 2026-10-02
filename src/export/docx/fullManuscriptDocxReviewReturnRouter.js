@@ -1,7 +1,8 @@
 'use strict';
 
 const crypto = require('crypto');
-const { deriveVisibleTextFromDocument } = require('../../core/document-content-envelope-v1.cjs');
+const userBookmarkModel = require('../../core/word-user-bookmarks-v1.cjs');
+const { deriveVisibleTextFromDocument, parseObservablePayload } = require('../../core/document-content-envelope-v1.cjs');
 
 const {
   validateFullManuscriptAuthorityReturn,
@@ -142,6 +143,8 @@ function buildFullManuscriptReturnIntakeProofBindingPayload({ proof, localAuthor
     reviewIrDigest: normalizeSignedSha256(proof?.reviewIrDigest),
     operationSource: normalizeString(proof?.operationSource),
     operationIds,
+    ...(proof?.operationSource === 'authenticated-clean-block-text'
+      ? { operationsDigest: authorityDigest(operations) } : {}),
   };
 }
 
@@ -178,7 +181,9 @@ function validateFullManuscriptReturnIntakeProof({ proof, localAuthority, operat
       return makeBlocked('FULL_MANUSCRIPT_RETURN_INTAKE_DIGEST_PROOF_REQUIRED', { field: key });
     }
   }
-  if (normalizeString(proof.operationSource) !== 'parsed-review-ir') {
+  const clean = normalizeString(proof.operationSource) === 'authenticated-clean-block-text';
+  if (clean ? !operations.length || operations.some(operation => operation.family !== 'clean_text_edit')
+    : normalizeString(proof.operationSource) !== 'parsed-review-ir' || operations.some(operation => operation.family === 'clean_text_edit')) {
     return makeBlocked('FULL_MANUSCRIPT_RETURN_INTAKE_OPERATION_SOURCE_REQUIRED');
   }
   const expectedProofBindingDigest = buildFullManuscriptReturnIntakeProofBindingDigest({ proof, localAuthority, operations });
@@ -204,6 +209,7 @@ function validateFullManuscriptReturnIntakeProof({ proof, localAuthority, operat
     reviewIrDigest: normalizeSignedSha256(proof.reviewIrDigest),
     coreManifestDigest: proofCoreManifestDigest,
     mainIntakeAuthorityDigest: expectedProofBindingDigest,
+    operationSource: proof.operationSource,
   };
 }
 
@@ -244,6 +250,12 @@ function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, baseli
   const ranges = [];
   for (const operation of operations) {
     const quote = typeof operation?.anchor?.selectedText === 'string' ? operation.anchor.selectedText : '';
+    if (operation.family === 'clean_text_edit') {
+      const bound = deriveAuthenticatedCleanBlockRange({ operation, sceneId, baselineText, baselineContent, mappedScene });
+      if (!bound.ok) return bound;
+      ranges.push({ operationId: normalizeString(operation.id), from: bound.from, to: bound.to, quote });
+      continue;
+    }
     const first = quote ? baselineText.indexOf(quote) : -1;
     const last = quote ? baselineText.lastIndexOf(quote) : -1;
     if (first < 0 || first !== last) {
@@ -293,6 +305,37 @@ function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, baseli
   };
 }
 
+function deriveAuthenticatedCleanBlockRange({ operation, sceneId, baselineText, baselineContent, mappedScene }) {
+  const owner = operation.anchor?.authenticatedBlock;
+  const invalid = () => makeBlocked('FULL_MANUSCRIPT_CLEAN_BLOCK_OWNER_INVALID', { sceneId, operationId: operation.id });
+  const keys = 'baselineRawSha256,blockId,blockLocalEnd,blockLocalStart,blockTextSha256,documentParagraphIndex,sceneId,sceneParagraphIndex,schemaVersion';
+  if (!isPlainObjectValue(owner) || Object.keys(owner).sort().join(',') !== keys
+    || owner.schemaVersion !== 'yalken.rtk.authenticated-scene-block.v1' || owner.sceneId !== sceneId
+    || operation.anchor.sceneId !== sceneId || !Number.isSafeInteger(owner.sceneParagraphIndex) || owner.sceneParagraphIndex < 0
+    || !Number.isSafeInteger(owner.documentParagraphIndex) || owner.documentParagraphIndex < 0
+    || owner.baselineRawSha256 !== sha256Text(baselineContent)) return invalid();
+  const blocks = list(mappedScene.blocks), block = blocks[owner.sceneParagraphIndex];
+  if (!block || blocks.filter(entry => entry.blockId === owner.blockId).length !== 1
+    || block.blockId !== owner.blockId || block.documentParagraphIndex !== owner.documentParagraphIndex
+    || block.canonicalTextSha256 !== owner.blockTextSha256) return invalid();
+  try {
+    const parsed = parseObservablePayload(baselineContent);
+    if (parsed.issue || !parsed.doc || parsed.text !== baselineText) return invalid();
+    const paragraphs = userBookmarkModel.paragraphs(parsed.doc), selected = paragraphs[owner.sceneParagraphIndex];
+    if (paragraphs.length !== blocks.length || !selected) return invalid();
+    const text = deriveVisibleTextFromDocument({ type: 'doc', content: [selected] });
+    if (!text || operation.anchor.selectedText !== text || owner.blockTextSha256 !== sha256Text(text)
+      || owner.blockLocalStart !== 0 || owner.blockLocalEnd !== text.length) return invalid();
+    let marker = 'YALKEN_AUTHENTICATED_BLOCK_POSITION';
+    while (baselineText.includes(marker)) marker += '_';
+    selected.content = [{ type: 'text', text: marker }];
+    const visible = deriveVisibleTextFromDocument(parsed.doc), from = visible.indexOf(marker);
+    if (from < 0 || visible.lastIndexOf(marker) !== from
+      || visible.slice(0, from) + text + visible.slice(from + marker.length) !== baselineText) return invalid();
+    return { ok: true, from, to: from + text.length };
+  } catch { return invalid(); }
+}
+
 function classifyFullManuscriptOperation(operation) {
   const family = normalizeString(operation?.family);
   if (family === 'root_comment') {
@@ -301,7 +344,7 @@ function classifyFullManuscriptOperation(operation) {
   if (family === 'reply' || family === 'comment_state') {
     return { supported: true, typedOutcome: 'SAFE_COMMENT_LIFECYCLE_APPLY' };
   }
-  if (family !== 'tracked_text_edit') {
+  if (family !== 'tracked_text_edit' && family !== 'clean_text_edit') {
     return {
       supported: false,
       typedOutcome: ['root_comment', 'reply', 'comment_state'].includes(family)
@@ -380,6 +423,22 @@ function buildSceneCommand({
   returnIntakeProof,
   returnLifecycleState,
 }) {
+  if (operations.every(operation => operation.family === 'clean_text_edit')) {
+    const reviewItems = operations.map(operation => ({ changeId: operation.id,
+      targetScope: { type: 'scene', id: sceneId }, replacementText: operation.semanticIntent.replacementText,
+      match: { kind: 'exact', quote: operation.anchor.selectedText,
+        authenticatedBlock: JSON.parse(JSON.stringify(operation.anchor.authenticatedBlock)) } }));
+    const baselineHash = verifiedAuthority.exactAuthority.baselineRawSha256;
+    return { sceneId, kind: 'authenticated-clean-text', input: {
+      commandId: 'cmd.project.review.applyExactTextChangesBatch',
+      exactAuthorityDigest: verifiedAuthority.authorityDigest,
+      writerInput: { projectRoot, scenePath, scenePathBySceneId: { [sceneId]: scenePath },
+        projectSnapshot: { projectId, baselineHash, scenes: [{ sceneId, text: baselineContent }] },
+        revisionSession: { projectId, sessionId: `session:${roundId}:${sceneId}`, baselineHash, status: 'open',
+          reviewGraph: { textChanges: reviewItems, commentThreads: [], commentPlacements: [], structuralChanges: [], diagnosticItems: [], decisionStates: [] } },
+        reviewItems, textChanges: reviewItems },
+    } };
+  }
   const rangeByOperationId = new Map(verifiedAuthority.ranges.map((range) => [range.operationId, range]));
   const reviewItems = operations.map((operation) => ({
     changeId: operation.id,
@@ -670,7 +729,8 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
   return {
     ok: true,
     schemaVersion: 'yalken.rtk.word.full-manuscript-docx-return-apply-plan.v1',
-    commandId: FULL_MANUSCRIPT_TRACKED_REPLACEMENT_APPLY_COMMAND_ID,
+    commandId: returnIntakeProof.operationSource === 'authenticated-clean-block-text'
+      ? 'cmd.project.review.applyFullManuscriptExactTextReturn' : FULL_MANUSCRIPT_TRACKED_REPLACEMENT_APPLY_COMMAND_ID,
     projectId: normalizeString(input.projectId || returnedAuthority.projectId || localAuthorityCapsule.projectId),
     roundId: returnedAuthority.roundId,
     requestId: normalizeString(input.requestId) || `request:${returnedAuthority.roundId}:full-manuscript`,
@@ -684,7 +744,7 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
       analysisDigest: returnIntakeProof.analysisDigest,
       reviewIrDigest: returnIntakeProof.reviewIrDigest,
       mainIntakeAuthorityDigest: returnIntakeProof.mainIntakeAuthorityDigest,
-      operationSource: 'parsed-review-ir',
+      operationSource: returnIntakeProof.operationSource,
     },
     rootCommentCommands,
     commentLifecycleCommands,

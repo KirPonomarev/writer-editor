@@ -76,6 +76,12 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/rtk-interop-word-manuscript.contract.test.js`
 - `test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js`
 - `docs/ARCH_DIFF_LOG.md`
+- `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
+- `src/export/docx/fullManuscriptDocxReviewReturnRouter.js`
+- `src/io/revisionBridge/exactTextMinSafeWrite.mjs`
+- `test/contracts/rtk-word-user-bookmarks.contract.test.js`
+- `test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js`
+- `test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js`
 
 ## DENYLIST
 
@@ -363,3 +369,20 @@ may continue through their existing exact route before any pending admission.
 Never fall back after a validation failure, malformed rich baseline or stale
 authority. Preserve the original end-to-end Apply assertions and add direct
 no-downgrade counterexamples. No Google acceptance or whole-suite green claim.
+
+Checkpoint1d456631 restores all three original authenticated text Apply/replay
+tests and passes the added no-downgrade matrix; whole activation36of38, with
+only the two independently reproduced baseline Google failures remaining.
+Clean51path preflight admits the native clean-text composition repair. The
+actual returned artifact is frozen at SHA256
+fa0a95004c0b468b19b25998eeaa171fafc4665ceeaa066b45d3690b98e18545.
+Its ordinary paragraph1 edit currently yields zero review text candidates.
+Main must derive a clean delta from the authenticated private scene/block map,
+not manufacture provider tracked revisions. The exact original paragraph must
+remain identifiable when another paragraph contains the same quote. Router and
+writer independently revalidate private block ownership, full raw baseline and
+local range; a caller-supplied ordinal/digest never authorizes mutation. Core
+planSave maps bookmark endpoints, which must independently match the literal
+return inventory. Keep unchanged protected nodes, notes, comments, provenance
+and document metadata, then observe explicit native Apply and durable readback.
+The original strict bookmark-edit and quote-only paths retain their checks.
