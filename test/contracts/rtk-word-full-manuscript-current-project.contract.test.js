@@ -2,6 +2,12 @@
 const { installMainDocxRoundAuthority } = require('../helpers/main-docx-round-authority');
 const test = require('node:test'), assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+const crypto = require('node:crypto');
+const { buildFullManuscriptDocxReviewPacketSource: buildArtifactSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+const { buildDocxReviewPacketBuffer: buildArtifactBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+const { compareCommentExportReadback } = require('../../src/export/docx/docxReviewPacketComments.js');
+const stable = value => Array.isArray(value) ? `[${value.map(stable).join(',')}]`
+  : value && typeof value === 'object' ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}` : JSON.stringify(value);
 const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
 const clone = value => JSON.parse(JSON.stringify(value));
 function loadFunctions(context) {
@@ -50,15 +56,18 @@ for (const phase of ['manifest', 'exists', 'enumeration']) for (const mutation o
 function exportHarness() {
   const h = harness(true), c = h.c;
   h.authorityActivations = 0; h.artifactWrites = 0; h.keyImports = 0; h.canonicalReads = 0; h.allowed = true;
-  const hash = value => require('node:crypto').createHash('sha256').update(value).digest('hex');
+  h.observedCanonicalPhases = []; h.commentReadbacks = 0;
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
   Object.assign(c, { isDirty: false, autoSaveInProgress: false,
     REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     userBookmarkCapability: () => { if (!h.allowed) throw Error('USER_BOOKMARK_CAPABILITY_DENIED'); },
     docxReviewPreviewSessionDetailString: value => typeof value === 'string' ? value.trim() : '',
-    readFullManuscriptDocxReviewExportDocumentContent: async candidate => { h.phase?.('scene'); return { text: 'Active text', doc: { type: 'doc', content: [] }, observableContent: 'Active text' }; },
+    readFullManuscriptDocxReviewExportDocumentContent: async candidate => { h.phase?.('scene'); return { text: 'Active text', doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Active text' }] }] }, observableContent: 'Active text' }; },
     verifyDocxMediaAssetFiles: async () => {}, createRtkReviewTransportCryptoPort: () => ({ sha256Text: hash }),
     loadRevisionBridgeModule: async () => ({ createReviewTransportManifestV2() {}, createWordV4CoreManifest() {}, createYrtk2RoundLocatorToken() {},
-      createRtkNonTextReturnFilePort: () => ({ readCanonical: async binding => { h.canonicalReads++; h.phase?.(h.canonicalReads === 1 ? 'sourceCanonical' : 'finalCanonical');
+      createRtkNonTextReturnFilePort: () => ({ readCanonical: async binding => { h.canonicalReads++;
+        const phase = h.canonicalReads === 1 ? 'sourceCanonical' : 'finalCanonical';
+        h.observedCanonicalPhases.push(phase); h.phase?.(phase);
         assert.equal(binding.projectId, 'active-id'); assert.equal(binding.projectRoot, '/owned/Active project'); return { threads: [] }; } }) }),
     normalizeDocumentNoteSelections: () => [], readCanonicalNotesForDocxExport: async () => { h.phase?.('notes'); return undefined; },
     buildFullManuscriptDocxReviewPacketSource: input => ({
@@ -94,11 +103,31 @@ function exportHarness() {
     resolveDocxReviewPacketExportPath: async () => '/external/export.docx', validateDocxExportTarget: async () => ({ ok: true }),
     readDocxReviewPacketExportSource: c.readFullManuscriptDocxReviewPacketExportSource,
     revalidateDocxReviewPacketExportSource: c.revalidateFullManuscriptDocxReviewPacketExportSource,
-    buildDocxReviewPacketBuffer: async source => ({ documentBuffer: Buffer.from('controlled-build'), exportCapsule: source.exportCapsule,
-      publicationGate: { publishAllowed: true, ok: true, provisionalSelfParse: { verified: true }, finalSelfParse: { semanticEquivalent: true },
-        yrtk2Verification: { code: 'RTK_RETURN_INTAKE_YRTK2_VERIFIED' }, commentProofs: [{ ok: true }] } }),
-    queueDiskOperation: fn => fn(), writeBufferAtomic: async () => { h.artifactWrites++; }, updateStatus: () => {},
-    readWrittenBuffer: async () => Buffer.from('controlled-build'), activateReviewDocxExportAuthority: async () => { h.authorityActivations++; return {}; },
+    buildDocxReviewPacketBuffer: async source => {
+      // Keep this harness's project/round authority seams controlled, while the
+      // absence proof comes from parsing an actual emitted Review DOCX.
+      const artifactSource = buildArtifactSource({ projectId: source.input.projectId,
+        projectRoot: source.input.projectRoot, scenes: source.input.scenes });
+      const documentBuffer = buildArtifactBuffer(artifactSource);
+      const bridge = await import('../../src/io/revisionBridge/index.mjs');
+      const analysis = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: documentBuffer }, {
+        cryptoPort: { sha256Text: hash, sha256Json: value => `sha256:${hash(stable(value))}`,
+          byteLength: value => Buffer.byteLength(value) },
+      });
+      assert.equal(analysis.ok, true, JSON.stringify(analysis.reasons));
+      assert.deepEqual(analysis.reviewIr.commentThreads, []);
+      const proof = compareCommentExportReadback(source.commentExport, analysis.reviewIr.commentThreads);
+      assert.equal(proof.ok, true, JSON.stringify(proof)); h.commentReadbacks++;
+      h.builtBuffer = documentBuffer;
+      return { documentBuffer, exportCapsule: source.exportCapsule,
+        publicationGate: { publishAllowed: true, ok: true, provisionalSelfParse: { verified: true }, finalSelfParse: { semanticEquivalent: true },
+          yrtk2Verification: { code: 'RTK_RETURN_INTAKE_YRTK2_VERIFIED' },
+          finalArtifactSha256: `sha256:${hash(documentBuffer)}`, commentProofs: [{ phase: 'final', ...proof }] } };
+    },
+    queueDiskOperation: fn => fn(), writeBufferAtomic: async (_outPath, bytes) => {
+      assert.deepEqual(bytes, h.builtBuffer); h.writtenBuffer = Buffer.from(bytes); h.artifactWrites++;
+    }, updateStatus: () => {},
+    readWrittenBuffer: async () => h.writtenBuffer, activateReviewDocxExportAuthority: async () => { h.authorityActivations++; return {}; },
   });
   return h;
 }
@@ -116,6 +145,8 @@ test('full export after a project switch retains its durable rounds and excludes
 test('actual full export reader and handler publish only active project source and authority', async () => {
   const h = exportHarness(), result = await h.run(); assert.equal(result.ok, true, JSON.stringify(result));
   assert.equal(h.artifactWrites, 1); assert.equal(h.authorityActivations, 1); assert.equal(h.keyImports, 1);
+  assert.equal(h.commentReadbacks, 1);
+  assert.deepEqual(h.observedCanonicalPhases, ['sourceCanonical', 'finalCanonical']);
   assert.ok(h.reads.every(name => name === 'Active project'));
 });
 for (const phase of ['notes', 'sourceCanonical', 'keyImport', 'finalCanonical']) for (const mutation of ['project', 'lifecycle', 'session', 'owner', 'capability']) {
@@ -124,6 +155,10 @@ for (const phase of ['notes', 'sourceCanonical', 'keyImport', 'finalCanonical'])
     const result = await h.run(); assert.equal(result.ok, false, JSON.stringify(result));
     assert.equal(result.details.message, mutation === 'capability' ? 'USER_BOOKMARK_CAPABILITY_DENIED' : 'REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
     assert.equal(h.artifactWrites, 0); assert.equal(h.authorityActivations, 0);
+    if (phase === 'finalCanonical') {
+      assert.equal(h.commentReadbacks, 1);
+      assert.deepEqual(h.observedCanonicalPhases, ['sourceCanonical', 'finalCanonical']);
+    }
     if (phase !== 'keyImport' && phase !== 'finalCanonical') assert.equal(h.keyImports, 0);
     if (phase !== 'finalCanonical') assert.equal(h.c.activeReviewDocxExportAuthorityStore, null);
   });

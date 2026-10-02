@@ -1337,7 +1337,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "4a4c1df6423ecb403135b8bde350db0bd60569a8f5f31c8c51cdfdedbdb3da50"
+        "sha256": "e82890297e6f09e1da189309febd541e27684ac37f0adbb55aac6d83a89c4847"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
@@ -1653,7 +1653,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
-        "sha256": "3db56efa908fcf9362725a24181b891b32c3939bafc55656e594613845375c71"
+        "sha256": "0a403187632a54e96ea34b320407dfb40d3aa3eb912a8ff033e78ef1087132d3"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
@@ -1889,7 +1889,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
-        "sha256": "75b666b3e3b8d37274edba55fac88a47150ac44b9af7666d68e188422f24a753"
+        "sha256": "00d3f24519d0164a7f13fe730acb6056a5a640826e6930a796af9009218c433d"
       },
       {
         "path": "test/unit/docx-scene-comments.test.js",
@@ -1897,7 +1897,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-single-scene-comments-mac.md",
-        "sha256": "04b335580789be1ddfec29f1207b8461a1436a3d2bf89b40b99eb08a4e154bd7"
+        "sha256": "e53d0bda33172104c41c58d460eb883483393f8cbe132ce43a23388e1f27e5cd"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SINGLE_SCENE_COMMENTS_V1.json",

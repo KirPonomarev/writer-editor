@@ -22,6 +22,8 @@ Existing comment projection, Minimal builder, Review publication gate and Main e
 - `src/export/docx/docxReviewPacketComments.js`
 - `src/export/docx/docxReviewPacketExportHandler.js`
 - `test/contracts/rtk-word-scene-comment-export.contract.test.js`
+- `test/contracts/rtk-word-full-manuscript-current-project.contract.test.js`
+- `test/contracts/rtk-word-generic-comments.contract.test.js`
 - `test/contracts/rtk-word-canonical-comment-reexport.contract.test.js`
 - `test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js`
 - `test/contracts/rtk-word-note-lists.contract.test.js`
@@ -91,3 +93,5 @@ Actual Main focused and affected chains report140distinct tests, zero failures/s
 ## BASELINE_HARNESS_REPAIR
 
 The first frozen baseline executed2121unit cases:2120passed,1failed,59existing skipped. The failing actual Main book-profile VM omitted the new export owner/generation and captured-source dependencies, returning E_EXPORT_CANONICAL_SOURCE_UNAVAILABLE before export. The bounded test repair supplies actual helpers and a fixed canonical filesystem adapter, preserves default/invalid profile and no-manifest-write assertions, and does not change native-qualified product bytes. Baseline rerun and final-head CI remain required.
+
+The repaired local baseline completed successfully:2121executed unit tests passed,59existing skips were excluded, and the additional20assertions/required local guards completed. Linux RTK then exposed18failures in three harness contracts: the disposable encrypted key-store adapter omitted Linux backend metadata; the full-manuscript gate fixture supplied controlled-build bytes with a narrative proof; and one generic-comment test still expected the superseded scene-export refusal. These are repaired as one test-only batch using actual ZIP parse/proof and explicit no-write checks; native-qualified product bytes remain frozen. Actual final Linux CI remains the required oracle.

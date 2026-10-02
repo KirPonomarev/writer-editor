@@ -19,6 +19,7 @@ async function fixture(t,{empty=false}={}) {
   // writer/reader without accessing the owner's OS keychain.
   source=source.replace('const electron = { app,',`const electron = { safeStorage: {
     isEncryptionAvailable:()=>true,
+    getSelectedStorageBackend:()=> 'gnome_libsecret',
     encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
     decryptString(value){const cipher=crypto.createDecipheriv('aes-256-gcm',Buffer.alloc(32,9),value.subarray(0,12));cipher.setAuthTag(value.subarray(-16));return Buffer.concat([cipher.update(value.subarray(12,-16)),cipher.final()]).toString('utf8');},
   }, app,`);
