@@ -30,6 +30,7 @@ Existing comment projection, Minimal builder, Review publication gate and Main e
 - `test/unit/docx-min-builder.test.js`
 - `test/unit/docx-min-export-handler.test.js`
 - `test/unit/docx-scene-comments.test.js`
+- `test/unit/export-book-profile-binding.test.js`
 - `docs/tasks/2026-10-02--word-single-scene-comments-mac.md`
 - `docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SINGLE_SCENE_COMMENTS_V1.json`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
@@ -86,3 +87,7 @@ SOURCE02 and PACKAGED02 each completed actual selected Review export, Word Save 
 Frozen runtime copy covers3433files, digestd3983b8efdb07b0c912ad08a35fb419a3951d504f66bd43c0f4ff4fb2689210b. Packaged app.asar SHA256ff3f41e254cce3f88962de816f306259948abb3f9394bb1fd482cb43049c37e1. Main SHA256dff4386b383738372ab7d55d19afccc39b9536cf7b938503030a942a7514811a. Native evidence is retained in the task's external single-scene-comments evidence directory, including four Word readbacks and separate SOURCE02/PACKAGED02 apply, generic-import and restart records. These observations require final candidate/merged binding and required gates; they are not whole-feature or distributable-release acceptance.
 
 Actual Main focused and affected chains report140distinct tests, zero failures/skips/todos. Existing independent reviews found no blocking defect in final coherent source CAS or selected return mapping. Pending composite remains explicit refusal. Word font/theme/style diagnostics and independent note default-font changes remain accurately reported and are outside this comment projection delta. No UI, schema, dependency or renderer authority was added.
+
+## BASELINE_HARNESS_REPAIR
+
+The first frozen baseline executed2121unit cases:2120passed,1failed,59existing skipped. The failing actual Main book-profile VM omitted the new export owner/generation and captured-source dependencies, returning E_EXPORT_CANONICAL_SOURCE_UNAVAILABLE before export. The bounded test repair supplies actual helpers and a fixed canonical filesystem adapter, preserves default/invalid profile and no-manifest-write assertions, and does not change native-qualified product bytes. Baseline rerun and final-head CI remain required.

@@ -1573,7 +1573,7 @@
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
-        "sha256": "2af4b59cb10a06b49fbcbbfce40ab5768e34079e0439a3aae5527d1ba73d6163"
+        "sha256": "0499d74d8c6076aca74065518ad4c657775bc1f523a5e3aa730f55f607854c10"
       },
       {
         "path": "test/contracts/rtk-word-pending-return.contract.test.js",
@@ -1897,7 +1897,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-single-scene-comments-mac.md",
-        "sha256": "cde65d4a1838821a97f7c018d03ea314ca4206f21b86bb06f84365b9744c853e"
+        "sha256": "04b335580789be1ddfec29f1207b8461a1436a3d2bf89b40b99eb08a4e154bd7"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SINGLE_SCENE_COMMENTS_V1.json",
