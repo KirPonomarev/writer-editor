@@ -231,6 +231,28 @@ function canonicalizeJsonValue(value) {
   return value;
 }
 
+// Keep the N-1 absent-feature path usable by isolated older consumers. Detect
+// presence from raw data descriptors before loading the feature validator.
+function documentHasWordLanguage(doc) {
+  const stack = [doc], seen = new Set();
+  const data = (object, key) => {
+    const d = Object.getOwnPropertyDescriptor(object, key);
+    if (d && !Object.hasOwn(d, 'value')) throw Error('WORD_LANGUAGE_INVALID');
+    return d?.value;
+  };
+  while (stack.length) {
+    const node = stack.pop();
+    if (!node || typeof node !== 'object') continue;
+    if (seen.has(node) || seen.size >= 200000) throw Error('WORD_LANGUAGE_INVALID');
+    seen.add(node);
+    const attrs = data(node, 'attrs');
+    if (attrs && typeof attrs === 'object'
+      && ['wordLanguage', 'wordParagraphMarkLanguage'].some(key => data(attrs, key) != null)) return true;
+    for (const key of ['content', 'marks']) { const children = data(node, key); if (Array.isArray(children)) for (const child of children) stack.push(child); }
+  }
+  return false;
+}
+
 function canonicalizeDocumentJson(doc) {
   if (!isPlainObject(doc)) {
     return buildParagraphDocumentFromText('');
@@ -248,12 +270,17 @@ function canonicalizeDocumentJson(doc) {
     require('./word-user-bookmarks-v1.cjs').readRegistry(doc, { checkBounds: false });
   }
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
+  if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
   const copied = cloneJsonValue(doc);
   const pending = [copied];
   while (pending.length) {
     const node = pending.pop();
+    // New optional schema defaults are representation-only; preserve every
+    // explicit tuple, including its separate paragraph-mark scope.
+    if (node?.attrs?.wordParagraphMarkLanguage === null) delete node.attrs.wordParagraphMarkLanguage;
+    for (const mark of node?.marks || []) if (mark?.attrs?.wordLanguage === null) delete mark.attrs.wordLanguage;
     if (node?.type === 'table') require('../io/documentTables.js').inspectTable(node);
-    else if (Array.isArray(node?.content)) for (const child of node.content) pending.push(child);
+    if (Array.isArray(node?.content)) for (const child of node.content) pending.push(child);
   }
   return canonicalizeJsonValue(copied);
 }
@@ -267,7 +294,8 @@ function serializeDocumentJson(doc) {
 // a scene whose semantic registry they cannot preserve.
 function requiredSceneFeatures(doc) {
   return [...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
-    ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : [])];
+    ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
+    ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : [])];
 }
 function encodeSceneDocument(doc) {
   const json = serializeDocumentJson(doc), requiredFeatures = requiredSceneFeatures(doc);
@@ -301,8 +329,8 @@ function decodeSceneDocument(serializedDoc) {
   if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
-    || declaration.requiredFeatures.length > 2 || declaration.requiredFeatures.some(feature =>
-      !['word-user-bookmarks.v1', 'word-pending-note-points.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+    || declaration.requiredFeatures.length > 3 || declaration.requiredFeatures.some(feature =>
+      !['word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

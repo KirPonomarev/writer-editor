@@ -17,6 +17,7 @@ const { buildDocxReviewPacketBuffer, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require
 const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
 const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
+const { normalizeWordLanguage, inspectDocumentLanguage } = require('../../core/word-language-v1.cjs');
 const { normalizeOpaqueRgb } = require('./docxInlineColors.js');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
@@ -32,7 +33,7 @@ const WORD_DOCUMENT_SECTIONS_SCHEMA = 'yalken.rtk.word.document-sections.v1';
 const WORD_DOCUMENT_SECTIONS_POLICY = 'CANONICAL_SCENE_GROUPS_TO_WORD_SECTIONS_V1';
 const FULL_MANUSCRIPT_FORMAT_IR_SCHEMA = 'yalken.rtk.format-ir.v1';
 const FORMAT_IR_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
-const FORMAT_IR_TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize']);
+const FORMAT_IR_TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguage']);
 const FORMAT_IR_TEXT_ALIGNMENTS = new Set(['left', 'center', 'right', 'justify']);
 
 // EXPORT-01 (P0-20): unified bookmark-name generator. The single source of
@@ -130,6 +131,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal, registry
       if (attrs.fontSize !== null && attrs.fontSize !== undefined && attrs.fontSize !== '') {
         inline.fontSize = normalizeFormatFontSize(attrs.fontSize);
       }
+      if (attrs.wordLanguage != null) inline.wordLanguage = normalizeWordLanguage(attrs.wordLanguage);
       continue;
     }
     if (type === 'highlight') {
@@ -190,7 +192,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal, registry
 function buildFormatIrParagraphs(scene) {
   const registry = sceneBookmarkRegistry(scene);
   const sourceDoc = isPlainObjectValue(scene.doc) ? cloneJson(scene.doc) : null;
-  if (sourceDoc) documentMedia(sourceDoc);
+  if (sourceDoc) { documentMedia(sourceDoc); inspectDocumentLanguage(sourceDoc); }
   const topLevelNodes = sourceDoc
     ? (sourceDoc.type === 'doc' && Array.isArray(sourceDoc.content) ? sourceDoc.content : null)
     : scene.text.split('\n').map((line) => ({
@@ -207,10 +209,10 @@ function buildFormatIrParagraphs(scene) {
     const paragraphOrdinal = result.length;
     const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
     const allowedAttrs = node.type === 'heading'
-      ? new Set(['textAlign', 'level'])
+      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage'])
       : node.type === 'codeBlock'
         ? new Set(['language'])
-        : new Set(['textAlign']);
+        : new Set(['textAlign', 'wordParagraphMarkLanguage']);
     const unknownAttrs = Object.keys(attrs).filter((key) => (
       !allowedAttrs.has(key) && attrs[key] !== null && attrs[key] !== undefined
     ));
@@ -222,6 +224,7 @@ function buildFormatIrParagraphs(scene) {
       });
     }
     const paragraphFormat = { nodeType: node.type };
+    if (attrs.wordParagraphMarkLanguage != null) paragraphFormat.wordParagraphMarkLanguage = normalizeWordLanguage(attrs.wordParagraphMarkLanguage);
     if (node.type === 'heading') {
       const headingLevel = Number(attrs.level);
       if (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {

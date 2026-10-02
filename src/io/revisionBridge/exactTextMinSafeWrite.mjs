@@ -1,3 +1,4 @@
+import wordLanguage from '../../core/word-language-v1.cjs';
 import userBookmarkModel from '../../core/word-user-bookmarks-v1.cjs';
 import documentMediaData from '../documentMedia.js';
 import docxHyperlinks from '../docxHyperlinks.cjs';
@@ -790,6 +791,11 @@ function applyRichInlineReplacement(block, operation) {
     };
   }
 
+  // A private language-only delta has no inline text replacement footprint.
+  // Keep the original leaves; the caller applies and validates its scoped tuple.
+  if (operation.authenticatedBlock && operation.wordLanguageChange
+    && operation.expectedText === operation.replacementText) return { ok: true, block };
+
   if (operation.richReplacementRange) {
     const range = operation.richReplacementRange;
     if (!validateRichReplacementRange(range, operation.expectedText, operation.replacementText)) {
@@ -1002,6 +1008,10 @@ function transformRichExactTextOperations(parsed, operations, nextVisibleText) {
       const applied = applyRichInlineReplacement(block, operation);
       if (!applied.ok) return applied;
       block = applied.block;
+      if (operation.wordLanguageChange) {
+        try { block = wordLanguage.applyParagraphLanguage(block, operation.wordLanguageChange); }
+        catch { return { ok: false, code: 'REVISION_BRIDGE_EXACT_TEXT_WORD_LANGUAGE_INVALID' }; }
+      }
     }
     if (!replaceDocumentNodeAtPath(doc, group.nodePath, block)) {
       return {
@@ -1314,6 +1324,8 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
     }
 
     const hasAuthenticatedBlock = Object.hasOwn(item?.match || {}, 'authenticatedBlock');
+    if (Object.hasOwn(item, 'wordLanguageChange') && !hasAuthenticatedBlock) return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_WORD_LANGUAGE_UNTRUSTED', 'reviewItems.wordLanguageChange', 'language requires private authenticated block ownership', { changeId }));
     const authenticatedBlockOperation = hasAuthenticatedBlock
       ? resolveAuthenticatedBlockOperation(item, currentObservable, currentText, sceneId, trustedAuthenticatedBlockDigests) : null;
     if (hasAuthenticatedBlock && (!authenticatedBlockOperation || item.match.blockRange || hasLinkReplacement)) {
@@ -1370,7 +1382,8 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       expectedText,
       replacementText,
       authority: operationAuthority,
-      ...(authenticatedBlockOperation ? { authenticatedBlock: authenticatedBlockOperation.authenticatedBlock } : {}),
+      ...(authenticatedBlockOperation ? { authenticatedBlock: authenticatedBlockOperation.authenticatedBlock,
+        ...(item.wordLanguageChange ? { wordLanguageChange: cloneJsonSafe(item.wordLanguageChange) } : {}) } : {}),
       ...(hasRichRange ? { richReplacementRange: cloneJsonSafe(richReplacementRange) } : {}),
       ...(hasLinkReplacement ? { richReplacementLink: cloneJsonSafe(linkReplacement) } : {}),
     };
@@ -1400,7 +1413,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
     nextExactText = `${nextExactText.slice(0, operation.from)}${operation.replacementText}${nextExactText.slice(operation.to)}`;
   }
 
-  if (nextExactText === currentExactText) {
+  if (nextExactText === currentExactText && !operations.some(operation => operation.wordLanguageChange)) {
     return block(buildReason(
       'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_NO_OP',
       'reviewItems.replacementText',
@@ -1420,6 +1433,14 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       ));
     }
     nextText = transformed.content;
+  }
+
+  if (nextText === currentText) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_NO_OP',
+      'reviewItems.wordLanguageChange',
+      'batch replacement must change the canonical scene',
+    ));
   }
 
   const inputHash = buildBatchInputHash(input, operations);

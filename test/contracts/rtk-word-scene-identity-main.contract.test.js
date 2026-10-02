@@ -1276,6 +1276,32 @@ for(const bookmarked of [true,false])test(`actual whole Main clean return activa
   assert.notEqual(replay.applied,true);assert.ok(replay.ok===false || replay.status==='blocked');assert.deepEqual(f.capture(),after);
 });
 
+for (const languageOnly of [false,true]) test(`actual whole Main clean Word language return preserves the run boundary through Apply and re-export; language-only ${languageOnly}`,async t=>{
+  const originalPart=languageOnly?'Unannotated':'Unannotated target',changedPart=languageOnly?' target':' CLEAN_EDIT';
+  const {f,activated}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml']
+      .replace(/(<w:p\b[^>]*>)/u,'$1<w:pPr><w:rPr><w:lang w:val="en-US"/></w:rPr></w:pPr>')
+      .replace('Unannotated target CLEAN_EDIT',originalPart+'</w:t></w:r><w:r><w:rPr><w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart);
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.activated,true,JSON.stringify(activated));
+  const before=f.capture(),sibling=read(f.beta);await f.probe.refreshReview();
+  const result=await f.probe.fullApply({requestId:'clean-language-apply'});
+  assert.equal(result.applied,true,JSON.stringify(result));assert.equal(read(f.beta),sibling);
+  const reopened=envelope.parseObservablePayload(read(f.alpha));assert.equal(reopened.issue,null);
+  const paragraph=reopened.doc.content[0];
+  assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,{val:'en-US'});
+  assert.equal(paragraph.content[0].text,originalPart);assert.equal(paragraph.content[0].marks,undefined);
+  assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]);
+  assert.equal(bookmarks.readRegistry(reopened.doc).bookmarks.length,7);
+  const notesAfter=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))),notesBefore=JSON.parse(Buffer.from(before.files['notes.craftsman.json'],'base64').toString());
+  assert.equal(notesAfter.notes[0].manuscript.reference.offsetUtf16,notesBefore.notes[0].manuscript.reference.offsetUtf16+(languageOnly?0:' CLEAN_EDIT'.length));
+  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];
+  assert.match(xml,/<w:pPr><w:rPr><w:lang w:val="en-US"\/><\/w:rPr><\/w:pPr>/u);
+  assert.ok(xml.includes('<w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart+'</w:t></w:r>'));
+});
+
 for(const variant of ['comment-body','note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
   const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
     if(variant==='comment-body'){

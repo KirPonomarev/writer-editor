@@ -84,10 +84,18 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js`
 - `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
 - `test/contracts/rtk-word-review-default-typography.contract.test.js`
+- `src/core/word-language-v1.cjs`
+- `src/core/document-content-envelope-v1.cjs`
+- `src/core/word-user-bookmarks-v1.cjs`
+- `src/renderer/tiptap/documentTextStyle.mjs`
+- `src/renderer/tiptap/documentParagraphAlignment.mjs`
+- `src/export/docx/docxInlineTypography.js`
+- `src/export/docx/docxMinBuilder.js`
+- `src/export/docx/docxReviewPacketBuilder.js`
 
 ## DENYLIST
 
-No new writer, registry, IPC channel, dependency, network, project schema or
+No new writer, registry, IPC channel, dependency, network, project layout or
 broad refactor. No changes to owner checkout, HTML, CSS, toolbar geometry,
 Atlas, Pulse, Google or general distribution. Do not convert safe refusal or
 test counts into feature acceptance. No guessed project reconstruction from
@@ -434,3 +442,55 @@ The original SOURCE graph oracle still passes: no second Word edit was written.
 The same packaged bytes were relaunched with the existing dev logging flag only
 to observe the refusal; this diagnostic is not release acceptance. Next work is
 the exact language-composition boundary, before any repeated broad suite.
+
+Continuation on56de05bf passed clean61path architecture preflight. Native
+language properties are canonical rich data: textStyle.wordLanguage and
+paragraph/heading.wordParagraphMarkLanguage, each a bounded val/eastAsia/bidi
+tuple. Paragraph-mark properties never become text inheritance. The existing
+v3 scene envelope gains required feature word-language.v1 so old readers
+refuse unsupported state rather than silently dropping it. This is an explicit
+TierA document feature extension within native return acceptance, not a new
+project layout. N-1 reads, old-reader rejection, roundtrip, recovery and negative
+corruption proofs are required. All private identity, source, graph and writer
+checks remain; language/RTL full-family acceptance remains unclaimed.
+
+PACKAGED13 diagnostic candidate preserves the native language tuple through
+actual intake, the single-change Apply button, durable save and native full
+manuscript re-export. Frozen Word input af415466 is unchanged. The independent
+literal graph oracle failed before Apply and passed afterward, retaining eight
+roots, seven bookmarks, two links, three threads/four messages, note identity
+and reanchored offset, exact right-scene bytes and project provenance. Ten
+oracle mutants (including language loss, scope spill, paragraph-mark loss and
+run-boundary drift) were rejected. Source-copy digest is
+0ada938cda509a13001a2c2b45cdc1833bb42af2dd5fd5589736e7f5841c7a17.
+Re-export SHA256 is
+c49ad9b70187d64df0de2817342c655c116acd1f3a51e455c0fd8bd1aa88689c.
+Independent OOXML readback finds exactly the paragraph-mark en-US and suffix
+run en-US, with no language property on the original text and the right scene
+present. Native terminal summary reports one applied, zero blocked/failed.
+The separate formatting lane still reports two manual observations; this is
+not general formatting, language/RTL or whole-plan acceptance. Dirty diagnostic
+build only: stable candidate, recovery/forgery proofs, required gates and full
+delivery remain open. Targeted four-file chain113of113 passed with no skips or
+todos; the new actual whole-Main language Apply/re-export test also passed.
+
+Whole actual Main contract105of105 now passes on this dirty candidate, zero
+skips/todos. PACKAGED13 process11209 terminated after evidence capture; no
+product acceptance process remains running. No PR or merge claim.
+
+Language-only regression reproduced the writer's visible-text NO_OP gate, then
+its empty replacement footprint. The authenticated language-only path now keeps
+original leaves and decides no-op against the resulting canonical bytes, after
+private range validation. Actual Main language-only Apply/re-export passes.
+Five forged/malformed patch cases retain source bytes and create no recovery
+files. Injected faults before rename and after rename preserve the exact
+language-bearing snapshot; a fresh Node process reconciles the real journal.
+A pre-rename retry writes once, then returns the existing receipt without another
+write; a post-rename ambiguous retry preserves the already-written afterimage.
+Ten focused tests passed before adding the identical-tuple no-op regression.
+
+Complete affected chain228of228 passes, zero skips/todos, including actual Main
+text-plus-language and language-only Apply/re-export, forged patch refusals,
+crash reconciliation and identical canonical tuple no-op. Guardrails and OSS
+policy pass. Native PACKAGED13 remains bound to its earlier source-copy digest;
+these later language-only writer changes require stable-candidate verification.

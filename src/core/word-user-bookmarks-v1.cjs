@@ -424,11 +424,11 @@ function paragraphComparisonNode(node) {
   // Only defaults of the pinned editor schema are representation-equivalent.
   // Keep every unknown key and every explicit non-default value in the proof.
   const defaults = {
-    paragraph: { textAlign: null }, heading: { textAlign: null, level: 1 }, codeBlock: { language: null },
+    paragraph: { textAlign: null, wordParagraphMarkLanguage: null }, heading: { textAlign: null, wordParagraphMarkLanguage: null, level: 1 }, codeBlock: { language: null },
     orderedList: { start: 1, type: null }, table: { wordTable: null },
     tableCell: { colspan: 1, rowspan: 1, colwidth: null, wordCell: null },
     tableHeader: { colspan: 1, rowspan: 1, colwidth: null, wordCell: null },
-    textStyle: { color: null, fontFamily: null, fontSize: null },
+    textStyle: { color: null, fontFamily: null, fontSize: null, wordLanguage: null },
     link: { target: '_blank', rel: 'noopener noreferrer nofollow', class: null, title: null },
   };
   const out = { ...node }, known = own(defaults, node.type) ? defaults[node.type] : {};

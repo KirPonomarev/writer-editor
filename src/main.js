@@ -7665,6 +7665,7 @@ async function buildDocxReviewPreviewSessionDefaultRtkApplyInput({
       semanticIntent: {
         kind: 'replace',
         replacementText: typeof change.replacementText === 'string' ? change.replacementText : '',
+        ...(clean?.wordLanguageChange ? { wordLanguageChange: cloneJsonSafe(clean.wordLanguageChange) } : {}),
       },
     }); });
     if (privateCleanChanges.length && (operations.length !== privateCleanChanges.length

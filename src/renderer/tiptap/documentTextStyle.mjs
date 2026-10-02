@@ -1,5 +1,6 @@
 import { TextStyle } from '@tiptap/extension-text-style';
 import { normalizeFontFamily, normalizeFontSize } from '../../io/inlineTypography.mjs';
+import wordLanguage from '../../core/word-language-v1.cjs';
 
 function readStyle(element, property, normalize) {
   const value = element.style[property];
@@ -13,6 +14,18 @@ export const DocumentTextStyle = TextStyle.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
+      wordLanguage: {
+        default: null,
+        parseHTML: element => {
+          const raw = element.getAttribute('data-word-language');
+          if (raw == null) return null;
+          try { return wordLanguage.normalizeWordLanguage(JSON.parse(raw)); } catch { return null; }
+        },
+        renderHTML: attributes => attributes.wordLanguage == null ? {} : {
+          'data-word-language': JSON.stringify(wordLanguage.normalizeWordLanguage(attributes.wordLanguage)),
+          ...(attributes.wordLanguage.val ? { lang: attributes.wordLanguage.val } : {}),
+        },
+      },
       fontFamily: {
         default: null,
         parseHTML: element => readStyle(element, 'fontFamily', normalizeFontFamily),

@@ -5,7 +5,7 @@
   "integrationMode": "EXISTING_SEAM",
   "bindingBaseSha": "a2a5ae6cbefffce13475a0f71a3de3252d9deac6",
   "domainOwner": "Product Core",
-  "authoritativeData": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project schema.",
+  "authoritativeData": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project layout. Native Word language tuples use the existing v3 scene envelope with required feature word-language.v1.",
   "derivedData": [
     "Current project/node/treeRevision, root split boundary, exact previous buffer and publication epoch; renderer selection is an intent, not source truth."
   ],
@@ -32,7 +32,7 @@
     "cap.project.tree.undoLastMutation"
   ],
   "authorityMap": {
-    "product": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project schema.",
+    "product": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project layout. Native Word language tuples use the existing v3 scene envelope with required feature word-language.v1.",
     "command": "cmd.project.tree.splitScene and cmd.project.tree.mergeNextScene through existing Command Kernel, capability policy and Main tree coordinator; existing tree Undo and explicit Save As recovery. Main independently resolves current scene, adjacent sibling and paths; UI carries IDs and observed cut only.",
     "design": "Existing project tree context-menu contribution and existing labelled node name dialog, immutable query.projectTree and editor publication. Reuse previous Lazyweb/ui-craft research and existing Yalken controls; no CSS, layout, typography or new IPC surface."
   },
@@ -54,7 +54,8 @@
   "writePath": [
     "Pathless explicit tree command -> capability/current project and scene revalidation -> dirty save barrier -> private canonical scene/annotation/resource inventory -> pure Core split/merge plan -> existing leased v7 journal/CAS writer -> synchronous private authoring-session rotation and target-content fence inside commit queue -> guarded renderer publication.",
     "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched.",
-    "Authenticated private export map and literal return -> Main-owned ordinary text delta with exact scene/block identity -> existing explicit Review Apply -> existing exact writer and project transaction. No provider tracked revision synthesis or renderer-supplied block authority."
+    "Authenticated private export map and literal return -> Main-owned ordinary text delta with exact scene/block identity -> existing explicit Review Apply -> existing exact writer and project transaction. No provider tracked revision synthesis or renderer-supplied block authority.",
+    "Validated literal run and paragraph-mark proofing language -> private digest-bound clean paragraph delta -> existing authenticated block writer -> canonical textStyle.wordLanguage and paragraph/heading.wordParagraphMarkLanguage -> v3 required-feature persistence. Paragraph-mark language never becomes inherited text language; language-only changes still require explicit Apply and full private ownership checks."
   ],
   "readPath": [
     "Canonical manifest/treeRevision, scenes, notes/comments, exact resource receipts and transaction beforeimages -> validated partition plan -> immutable tree and editor projections."
@@ -87,9 +88,9 @@
     "TRANSIENT_STATE"
   ],
   "persistenceClass": "Existing v7 project transaction and exact cohort beforeimages",
-  "migrations": "No project schema or journal version change; old operations remain readable",
+  "migrations": "TierA optional v3 document feature word-language.v1; existing v2 and v3 documents remain readable, absent editor defaults are omitted, older readers refuse the explicit required feature. No project layout or journal version change.",
   "recovery": "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched.",
-  "rollback": "Revert split/merge command contributions while preserving readable v7 journal/recovery support. Complete existing journals before downgrade; preserve exact originals and dedicated fixture backups. No private owner documents used.",
+  "rollback": "Revert split/merge command contributions while preserving readable v7 journal/recovery support. Complete existing journals before downgrade; preserve exact originals and dedicated fixture backups. No private owner documents used. Preserve new language-bearing scenes and backups; older readers reject the required feature. Do not strip tuples to force a downgrade.",
   "performanceBudget": "Existing bounded cohort: at most2048files,512scenes,32MiB; no extra typing-path scans. Existing keyboard context menu and labelled dialog support Tab/Enter/Escape and focus return; precise split label and adjacent scene label.",
   "securityBoundary": "Validate raw command keys and bounded integers before interpretation. Main resolves paths from canonical IDs, Core revalidates full plan and asset evidence. No renderer path/fragment authority, new IPC, dependency, secret, network or writer.",
   "lifecycle": [
@@ -110,14 +111,17 @@
     "PACKAGED same then DOCX through actual Word and independent ZIP/canonical readback before expensive stable suite.",
     "Frozen candidate mandatory baseline/RTK/CI; exact merged proof.",
     "Fault each v7 commit/recovery phase; split and merge then new-process Undo restore exact graph. Same-ID old buffer, stale queued Save/snapshot released after new ACK, changed resources/receipt, project switch, bypass and capability revocation cannot overwrite partitions.",
-    "Real PM history reset removes only old history plugin state; preserves other plugin state, new text and selection, and subsequent Undo cannot resurrect whole old source."
+    "Real PM history reset removes only old history plugin state; preserves other plugin state, new text and selection, and subsequent Undo cannot resurrect whole old source.",
+    "Language patch digest tampering, forged block ownership, malformed tuples, scope spill and surrogate boundaries refuse. Real writer faults before rename and after rename retain the exact readable language-bearing beforeimage; fresh-process journal reconciliation and repeated invocation do not duplicate changes. Identical canonical tuples remain no-ops."
   ],
   "evidenceBindings": [
     "rtk-word-project-tree-cohort.contract.test.js",
     "rtk-word-scene-identity-main.contract.test.js",
     "sector-m-tiptap-runtime-bridge.test.js",
     "Native SOURCE/PACKAGED and independent Word/canonical readback",
-    "Frozen CI and exact merged verification"
+    "Frozen CI and exact merged verification",
+    "rtk-word-review-default-typography.contract.test.js",
+    "rtk-word-saturation-c05-block-range-writer.contract.test.js"
   ],
   "currentReality": [
     "PR2059 delivered at exact base with native comment export/return and merged222tests. Existing Core tree planner admits only rename/move/reorder/copy; no scene split/merge. Prepared same-ID content-publication and queued-save hazards are bound by upcoming actual Main tests."

@@ -426,6 +426,7 @@ function buildSceneCommand({
   if (operations.every(operation => operation.family === 'clean_text_edit')) {
     const reviewItems = operations.map(operation => ({ changeId: operation.id,
       targetScope: { type: 'scene', id: sceneId }, replacementText: operation.semanticIntent.replacementText,
+      ...(operation.semanticIntent.wordLanguageChange ? { wordLanguageChange: JSON.parse(JSON.stringify(operation.semanticIntent.wordLanguageChange)) } : {}),
       match: { kind: 'exact', quote: operation.anchor.selectedText,
         authenticatedBlock: JSON.parse(JSON.stringify(operation.anchor.authenticatedBlock)) } }));
     const baselineHash = verifiedAuthority.exactAuthority.baselineRawSha256;
