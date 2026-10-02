@@ -547,7 +547,7 @@ test('actual PM root Enter, join and multiline paste preserve bookmarks through 
   assert.ok(h.pm.state.doc.lastChild.firstChild.marks.some(mark => mark.attrs.wordBookmarkId === id));
 });
 
-test('Word-derived rich paragraphs split through actual editor schema defaults and Main without weakening explicit properties', async t => {
+for (const withLanguage of [false, true]) test(`Word-derived rich paragraphs split through actual editor schema defaults and Main without weakening explicit properties; language ${withLanguage}`, async t => {
   const { getSchema } = await import('@tiptap/core'), { EditorState } = await import('@tiptap/pm/state');
   const { default: StarterKit } = await import('@tiptap/starter-kit');
   const api = await import('../../src/renderer/tiptap/userBookmarks.mjs');
@@ -559,8 +559,8 @@ test('Word-derived rich paragraphs split through actual editor schema defaults a
   extensions.push(api.UserBookmarks, (await import('@tiptap/extension-color')).default,
     (await import('@tiptap/extension-highlight')).default.configure({ multicolor: true }),
     (await import('@tiptap/extension-underline')).default, api.UserBookmarkLink);
-  const schema = getSchema(extensions), paragraph = text => ({ type: 'paragraph', content: [
-    { type: 'text', text, marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] },
+  const schema = getSchema(extensions), paragraph = text => ({ type: 'paragraph', ...(withLanguage ? { attrs: { wordParagraphMarkLanguage: { val: 'ru-RU' } } } : {}), content: [
+    { type: 'text', text, marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt', ...(withLanguage ? { wordLanguage: { val: 'en-US' } } : {}) } }] },
   ] });
   let initial = { type: 'doc', content: ['Bookmark canary', 'STARTBOUND_Target Twin Alpha_ENDBOUND', 'Link One', 'Cross Block Start'].map(paragraph) };
   initial = core.planMutation({ doc: initial, action: 'create', requestId: 'word-range', projectId: 'p', sceneId: 'a.txt', name: 'UserTwinSecond',
@@ -583,10 +583,21 @@ test('Word-derived rich paragraphs split through actual editor schema defaults a
     value => value.content[0].attrs.textAlign = 'right',
     value => value.content[0].attrs.unknownDefault = null,
     value => value.content[0].content[0].marks.find(mark => mark.type === 'textStyle').attrs.fontSize = '13pt',
+    value => value.content[0].content[0].marks.find(mark => mark.type === 'textStyle').attrs.wordLanguage = { val: 'fr-FR' },
+    value => value.content[0].attrs.wordParagraphMarkLanguage = { val: 'fr-FR' },
     value => value.content[3].content[0].marks.find(mark => mark.type === 'link').attrs.target = '_self',
   ]) {
     const bad = clone(snapshot); mutate(bad);
     assert.throws(() => core.planSave({ beforeDoc: initial, workingDoc: bad }), /USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT/);
+  }
+  for (const mutate of [
+    value => value.content[0].content[0].marks.find(mark => mark.type === 'textStyle').attrs.wordLanguage = { val: 'fr-FR' },
+    value => value.content[0].attrs.wordParagraphMarkLanguage = { val: 'fr-FR' },
+    value => value.content[0].content[0].marks.find(mark => mark.type === 'textStyle').attrs.unknownDefault = null,
+  ]) {
+    const bad = clone(saved), beforePublication = editor.state.doc.toJSON(); mutate(bad);
+    assert.equal(api.applyUserBookmarkPublication(editor, bad), false);
+    assert.deepEqual(editor.state.doc.toJSON(), beforePublication);
   }
 });
 

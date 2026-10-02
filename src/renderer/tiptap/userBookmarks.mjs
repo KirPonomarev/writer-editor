@@ -43,7 +43,13 @@ function protectedShape(node) {
     if (!Object.keys(out.attrs).length) delete out.attrs;
   }
   if (out.marks) {
-    out.marks = out.marks.filter(mark => mark.type !== 'link');
+    out.marks = out.marks.filter(mark => mark.type !== 'link').map(mark => {
+      // The pinned schema adds this absent-value default; durable canonical
+      // storage omits it. Every explicit language tuple remains protected.
+      if (mark.type !== 'textStyle' || mark.attrs?.wordLanguage !== null) return mark;
+      const attrs = { ...mark.attrs }; delete attrs.wordLanguage;
+      return { ...mark, attrs };
+    });
     if (!out.marks.length) delete out.marks;
   }
   if (out.content) {

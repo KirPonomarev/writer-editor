@@ -88,6 +88,8 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/core/document-content-envelope-v1.cjs`
 - `src/core/word-user-bookmarks-v1.cjs`
 - `src/renderer/tiptap/documentTextStyle.mjs`
+- `src/renderer/tiptap/userBookmarks.mjs`
+- `test/unit/toolbar-configurator-foundation.integration.test.js`
 - `src/renderer/tiptap/documentParagraphAlignment.mjs`
 - `src/export/docx/docxInlineTypography.js`
 - `src/export/docx/docxMinBuilder.js`
@@ -506,3 +508,43 @@ per-owner validation. The unchanged failing table oracle plus language tests
 pass55of55; added repeated-value, real-cycle and shared-wrong-owner cases pass.
 The dependency audit reports13 findings (5moderate,8high); no dependency or
 lockfile change is introduced, and the audit is not reported green.
+
+PR2060 is a draft at fceb4365, pushed with clean scope and no merge conflict.
+PACKAGED15 from exact fceb4365/source-copy digest
+ d1d4ac2fed691389280d0239d17de9834ae28b5dec874e2779f9c9a281556f22
+reopened the language-bearing saved graph, exported the full manuscript and
+opened in actual Word. Native paste appended PACKAGED15_WORD_EDIT to paragraph1;
+SaveAs returned artifact SHA256
+ a1bc1c5d71b25d8f5ba6a11f693319d36b1c74838b769a0cd2422b5dea51f65c.
+Explicit native Apply reported1applied,0blocked,0failed. Independent literal
+oracle failed before and passed after Apply, retaining the full protected graph.
+Native re-export SHA256
+ 8f89a786748dd35da41acfa492aae999e9bae1bc1587f130b9e61af80f14441b
+retains the exact original untagged run, cumulative en-US suffix and separate
+en-US paragraph mark. Original export SHA256
+ 1c747eb7e5cebdc03a770f3315371cb8d3d6c1430eb683026e7469088cc992a8.
+PACKAGED15 terminated after proof capture. These bounded observations do not
+establish complete plan acceptance.
+
+Exact fceb4365 RTK completed2657pass/1fail/0skip of2658. The failure is the new
+null wordLanguage schema default retained in editor marks but omitted from
+canonical storage: bookmark metadata publication declined after a real PM Enter
+and Main save. Clean63path preflight admits a narrow renderer comparison fix:
+only textStyle.wordLanguage:null is representation-equivalent to absence;
+explicit language tuples and all unknown mark properties remain protected.
+Whole runtime bookmark and toolbar contracts141of141 pass with no skips/todos,
+including explicit-language documents and forged-publication refusals.
+Baseline completed2126pass/3fail/59skip (2188total). Two timing bounds failed
+under simultaneous broad local runs; the other is the old toolbar lexical test
+boundary after this package's treeContentParsed reuse. Update only that locator,
+retaining all project switch assertions. Preserve the51test-generated integrity
+anchor files outside the checkout; they are neither owner work nor source edits.
+The baseline and CI remain non-green until final-candidate checks complete.
+
+Isolated unchanged performance contracts pass6of6 with zero skips/todos; no
+threshold changed. CI on fceb4365 confirms the same runtime publication failure
+and toolbar locator failure. A separate Q0 read-only failure reports treeChanged
+but omits the path delta; exact standalone diagnostic exits0 with identical
+before/after Git-status digest and treeChanged:false. This does not certify the
+CI race as repaired. Preserve that failure until the next complete candidate
+passes; no readonly guard, oracle or skip policy is weakened.

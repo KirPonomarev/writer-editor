@@ -462,7 +462,8 @@
     "test/contracts/ops-gate-core-purity-exception.contract.test.js",
     "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
     "test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js",
-    "src/core/word-language-v1.cjs"
+    "src/core/word-language-v1.cjs",
+    "test/unit/toolbar-configurator-foundation.integration.test.js"
   ],
   "protectedFiles": [
     {
@@ -703,7 +704,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "d6747405aaf0d620d8f2f5e4e0d79343d67362738b0b20c71fd735968e5713d0"
+        "sha256": "e2424f56ba67aad4720661cc250164ec50642acc9e9c9c97ad2030980e9762aa"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1687,7 +1688,7 @@
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
-        "sha256": "cbfa9b4e8489ffd01e312857299c75869ce8cf9f9dcfa6ca3ba3c4d4960c611c"
+        "sha256": "08f88d242a6ab64b0fbc61f4606fa0c263755b8bc2c8f83622eabc9ea76a0429"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
@@ -1695,7 +1696,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "f5e027e77d97ea9c1f6a5e5002b6379c74e2501805b8c7d3f08a0b444c04ae94"
+        "sha256": "7aec9d5177e185215dcfc72f197e75c5a1c1d6dd8104fe242e2baa089a77629c"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -1915,7 +1916,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-split-merge-mac.md",
-        "sha256": "4a59d016bb742f9f4b9725465ec68a33d96971b34664eb815b7beecf6ca23510"
+        "sha256": "b6de68cf1033892605a7303a23b7ed0e867982a6e967e36a1250f54cb022f3fd"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json",
@@ -1948,6 +1949,10 @@
       {
         "path": "src/core/word-language-v1.cjs",
         "sha256": "0a64349ba3e09d0b4717f1c4b2d91ebd2742b79197f66fab8965122e4643c196"
+      },
+      {
+        "path": "test/unit/toolbar-configurator-foundation.integration.test.js",
+        "sha256": "848247e4de8c2f6bf28a77859c9358a8cbbb12722643dd55ec1469a558cf5e20"
       }
     ],
     "followupRepair": {
