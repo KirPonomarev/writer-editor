@@ -445,3 +445,110 @@ test('current verified recovery-copy continues into another independent scene an
   const deep=structuredClone(next);let chain={};for(let i=0;i<9;i++)chain={plan:{input:{recoveredCopy:{retainedPacket:chain}}}};deep.recoveredCopy.retainedPacket=chain;
   assert.throws(()=>f.m.planProjectTreeCohort(deep),{code:'E_TREE_RECOVERY_CHAIN_BUDGET'});
 });
+
+function topologyFixture(t) {
+  const f=fixture(t,true), parsed=envelope.parseObservablePayload(f.raw);
+  parsed.doc.content.push({type:'heading',attrs:{level:2},content:[{type:'text',text:'Right 😀'}]}, {type:'paragraph'});
+  const created=bookmarks.planMutation({doc:parsed.doc,action:'create',requestId:'right-bookmark',projectId:'project-test',sceneId:'roman/01 Alpha.txt',name:'RightAnchor',start:{paragraphIndex:2,offsetUtf16:6,edge:'text'},end:{paragraphIndex:2,offsetUtf16:8,edge:'text'}});
+  f.raw=envelope.composeObservablePayload({doc:created.doc,cards:[{title:'card',text:'value',tags:[]}]});
+  fs.writeFileSync(path.join(f.root,'roman/01 Alpha.txt'),f.raw);
+  const noteDoc=JSON.parse(text(path.join(f.root,'notes.craftsman.json')));
+  for(const note of noteDoc.notes)note.manuscript.reference.sourceTextSha256=notes.sha(notes.sceneText(f.raw));
+  noteDoc.notes.push({id:'note-right',scope:'manuscript',body:'right note',manuscript:notes.bindManuscriptPayload({kind:'footnote',body:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'right note'}]}]},sceneId:'roman/01 Alpha.txt',offsetUtf16:20,sceneContent:f.raw})});
+  fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify(noteDoc));
+  const commentModel=require('../../src/core/word-comment-authoring-v1.cjs');
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
+  let commentText=null;
+  for(const [index,selected] of [[0,'Alpha'],[2,'Right']]){
+    const authored=commentModel.planCommentAuthoring({beforeText:commentText,projectId:'project-test',sceneId:'roman/01 Alpha.txt',sceneSha256:sha(f.raw),paragraphs:bookmarks.paragraphs(created.doc).map(bookmarks.textOf),now,
+      input:{requestId:`topology-comment-${index}`,action:'create',projectId:'project-test',sceneId:'roman/01 Alpha.txt',expectedStateSha256:commentText===null?'':sha(commentText),expectedSceneSha256:sha(f.raw),body:`Comment ${index}`,anchor:{paragraphIndex:index,startUtf16:0,selectedText:selected}}});
+    commentText=authored.afterText;
+  }
+  fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,commentText);f.commentPath=commentPath;
+  const original=f.capture;
+  f.capture=extra=>original({operation:'split',bindings:[],commentsText:text(commentPath),topology:{sourceNodeId:'tree-node-a',sourceRelativePath:'roman/01 Alpha.txt',boundaryRootIndex:2,newRelativePath:'roman/01a Right.txt'},...extra});
+  return f;
+}
+test('rich root split and adjacent merge preserve occurrence anchors and exact structural Undo',async t=>{
+  const f=topologyFixture(t),m=await modelPromise,before=f.capture(),plan=m.planProjectTreeCohort(before);
+  assert.equal(plan.scenePartitions.length,2);assert.equal(plan.scenePublications[0].beforeContent,f.raw);
+  assert.equal(plan.createdNodeIds.length,1);assert.deepEqual(plan.sceneReceiptSources[1].sourceRelativePaths,['roman/01 Alpha.txt']);
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const left=text(path.join(f.root,'roman/01 Alpha.txt')),right=text(path.join(f.root,'roman/01a Right.txt'));
+  assert.equal(notes.sceneText(left)+'\n'+notes.sceneText(right),notes.sceneText(f.raw));
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(right).doc).bookmarks[0].start.paragraphIndex,0);
+  const noteDoc=JSON.parse(text(path.join(f.root,'notes.craftsman.json')));
+  assert.equal(noteDoc.notes[0].manuscript.reference.sceneId,'roman/01 Alpha.txt');
+  assert.equal(noteDoc.notes[1].manuscript.reference.sceneId,'roman/01a Right.txt');
+  assert.equal(noteDoc.notes[1].manuscript.reference.offsetUtf16,6);
+  const threads=JSON.parse(text(f.commentPath)).threads, originalThreads=JSON.parse(before.commentsText).threads;
+  assert.deepEqual(threads.map(t=>t.threadId),originalThreads.map(t=>t.threadId));
+  assert.deepEqual(threads[1].messages,originalThreads[1].messages);
+  assert.equal(threads[1].anchor.sceneParagraphIndex,0);assert.equal(threads[1].sceneId,'roman/01a Right.txt');
+  const merged=m.planProjectTreeCohort(f.capture({operation:'merge',operationId:'merge-one',expectedTreeRevision:1,topology:{leftNodeId:'tree-node-a',leftRelativePath:'roman/01 Alpha.txt',rightNodeId:plan.createdNodeIds[0],rightRelativePath:'roman/01a Right.txt'}}));
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:2,treeCohort:merged,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.deepEqual(envelope.parseObservablePayload(text(path.join(f.root,'roman/01 Alpha.txt'))).doc,envelope.parseObservablePayload(f.raw).doc);
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-merge',expectedTreeRevision:2,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:3,treeCohort:undo,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.equal(text(path.join(f.root,'roman/01 Alpha.txt')),left);assert.equal(text(path.join(f.root,'roman/01a Right.txt')),right);
+});
+
+test('split exact Undo publishes both old owners and restores bytes after reopening',async t=>{
+  const f=topologyFixture(t),m=await modelPromise,base=f.capture(),plan=m.planProjectTreeCohort(base);
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-split',expectedTreeRevision:1,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  assert.equal(undo.scenePublications.length,2);assert.equal(undo.scenePublications[1].beforeNodeId,plan.createdNodeIds[0]);
+  for(const row of undo.scenePublications){assert.equal(row.afterNodeId,'tree-node-a');assert.equal(row.afterContent,f.raw);}
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:2,treeCohort:undo,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.equal(text(f.manifestPath),base.beforeManifestText);assert.equal(text(path.join(f.root,'roman/01 Alpha.txt')),f.raw);
+  assert.equal(text(path.join(f.root,'notes.craftsman.json')),base.notesText);assert.deepEqual(inventory(f.root),base.inventory);
+});
+
+test('split current receipt recovers late full buffer into independent copy and preserves current partitions',async t=>{
+  const f=topologyFixture(t),m=await modelPromise,plan=m.planProjectTreeCohort(f.capture());
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const before=inventory(f.root),beforeNotes=JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes;
+  const recovery={receipt:state.receipt,retainedPacket:state.retainedPacket,sourceNodeId:'tree-node-a',workingContent:f.raw};
+  const input=f.capture({operation:'copy',operationId:'recovery-topology',topology:undefined,expectedTreeRevision:1,bindings:[{nodeId:'tree-node-a',fromRelativePath:'roman/01 Alpha.txt',toRelativePath:'roman/03 Recovered.txt'}],recoveredCopy:recovery});
+  for(const bad of [{...recovery,sourceNodeId:plan.createdNodeIds[0]},{...recovery,removedNodeId:'tree-node-a'},{...recovery,receipt:{...state.receipt,treeRevision:8}}])assert.throws(()=>m.planProjectTreeCohort({...input,recoveredCopy:bad}));
+  const recovered=m.planProjectTreeCohort(input);
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:2,treeCohort:recovered,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  for(const entry of before.filter(e=>e.role==='scene'))assert.equal(fs.readFileSync(path.join(f.root,entry.relativePath)).toString('base64'),entry.contentBase64);
+  const raw=text(path.join(f.root,'roman/03 Recovered.txt'));
+  assert.equal(notes.sceneText(raw),notes.sceneText(f.raw));
+  const fresh=bookmarks.readRegistry(envelope.parseObservablePayload(raw).doc).bookmarks;
+  const old=bookmarks.readRegistry(envelope.parseObservablePayload(f.raw).doc).bookmarks;
+  assert.equal(fresh.length,old.length);assert.ok(fresh.every(r=>!old.some(o=>o.id===r.id)));
+  const noteDoc=JSON.parse(text(path.join(f.root,'notes.craftsman.json')));
+  assert.deepEqual(noteDoc.notes.slice(0,2),beforeNotes);assert.equal(noteDoc.notes.length,4);
+  assert.ok(noteDoc.notes.slice(2).every(n=>n.manuscript.reference.sceneId==='roman/03 Recovered.txt'));
+});
+
+for(const conflict of ['bookmarkCrossing','linkCrossing','boundary','pending','staleNote','metadata','duplicateBookmark'])test(`topology ${conflict} refuses before filesystem mutation`,async t=>{
+  const f=topologyFixture(t),m=await modelPromise,p=path.join(f.root,'roman/01 Alpha.txt');let input=f.capture();
+  if(conflict==='boundary')input.topology.boundaryRootIndex=0;
+  if(conflict==='staleNote'){const value=JSON.parse(input.notesText);value.notes[0].manuscript.reference.sourceTextSha256='0'.repeat(64);input.notesText=JSON.stringify(value);}
+  if(['bookmarkCrossing','linkCrossing','pending'].includes(conflict)){
+    const parsed=envelope.parseObservablePayload(text(p));
+    if(conflict==='bookmarkCrossing')parsed.doc.attrs.wordUserBookmarks.bookmarks[0].end={paragraphIndex:2,offsetUtf16:1,edge:'text'};
+    if(conflict==='linkCrossing')parsed.doc.content[2].content[0].marks=[{type:'link',attrs:bookmarks.linkAttrs(parsed.doc.attrs.wordUserBookmarks.bookmarks[0])}];
+    if(conflict==='pending'){
+      delete parsed.doc.attrs.wordUserBookmarks;
+      parsed.doc.content[1].content[0].marks=[];
+      delete parsed.doc.attrs;
+      for(const block of parsed.doc.content)block.content ||= [];
+      parsed.doc=pending.bindLedger({schemaVersion:1,source:parsed.doc,revisions:[],undo:[],redo:[]});
+    }
+    fs.writeFileSync(p,envelope.composeObservablePayload({...parsed,doc:parsed.doc}));input=f.capture();
+  }
+  if(['metadata','duplicateBookmark'].includes(conflict)){
+    const a=envelope.parseObservablePayload(f.raw),b=envelope.parseObservablePayload(f.raw);
+    if(conflict==='metadata'){a.meta.synopsis='left';b.meta.synopsis='right';delete b.doc.attrs.wordUserBookmarks;b.doc.content[1].content[0].marks=[];}
+    fs.writeFileSync(p,envelope.composeObservablePayload({...a,metaEnabled:true}));fs.writeFileSync(path.join(f.root,'roman/02 Beta.txt'),envelope.composeObservablePayload({...b,metaEnabled:true}));
+    input=f.capture({operation:'merge',topology:{leftNodeId:'tree-node-a',leftRelativePath:'roman/01 Alpha.txt',rightNodeId:'tree-node-b',rightRelativePath:'roman/02 Beta.txt'}});
+  }
+  const before=inventory(f.root);assert.throws(()=>m.planProjectTreeCohort(input));assert.deepEqual(inventory(f.root),before);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});

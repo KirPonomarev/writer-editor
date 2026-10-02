@@ -400,7 +400,7 @@ export function rebindProjectTreeIdentityBatch({ registry, moves } = {}) {
 
 // One immutable before-map: a sibling permutation must never apply A→B and
 // then reinterpret the newly rebound B as the original B. Copy forks IDs.
-export function planProjectTreeIdentityCohort({ projectId, operationId, registry, bindings, copy = false } = {}) {
+export function planProjectTreeIdentityCohort({ projectId, operationId, registry, bindings, copy = false, operation, topology } = {}) {
   const checked = normalizeProjectTreeIdentity(registry);
   const bad = reason => ({ ok: false, value: null, error: makeError('E_TREE_COHORT_IDENTITY', reason) });
   if (!checked.ok) return checked;
@@ -428,6 +428,27 @@ export function planProjectTreeIdentityCohort({ projectId, operationId, registry
     next.nodes[nextId] = { ...cloneJson(node), bindingKey: move.to + node.bindingKey.slice(move.from.length), present: true };
     identityMap[nodeId] = nextId;
   }
+  const createdNodeIds = [], removedNodeIds = [];
+  if (operation === 'split' || operation === 'merge') {
+    const sourceId = operation === 'split' ? topology?.sourceNodeId : topology?.leftNodeId;
+    const sourcePath = operation === 'split' ? topology?.sourceRelativePath : topology?.leftRelativePath;
+    const source = checked.value.nodes[sourceId];
+    if (!source || source.present === false || source.kind !== 'scene' || source.bindingKey !== `file:${sourcePath}`
+      || moves.some(m => m.copy)) return bad('TOPOLOGY_SOURCE_INVALID');
+    if (operation === 'split') {
+      const target = normalizeTreeBindingKey(`file:${topology?.newRelativePath}`);
+      const id = `${PROJECT_TREE_IDENTITY_PREFIX}${sha256Hex(`${projectId}\n${operationId}\nsplit:${sourceId}`).slice(0, 32)}`;
+      if (!target || next.nodes[id] || target === next.nodes[sourceId].bindingKey) return bad('TOPOLOGY_DESTINATION_INVALID');
+      next.nodes[id] = { bindingKey: target, kind: 'scene', present: true }; createdNodeIds.push(id);
+    } else {
+      const right = checked.value.nodes[topology?.rightNodeId];
+      if (!right || right.present === false || right.kind !== 'scene' || topology.rightNodeId === sourceId
+        || right.bindingKey !== `file:${topology.rightRelativePath}`) return bad('TOPOLOGY_SOURCE_INVALID');
+      next.nodes[topology.rightNodeId] = { ...cloneJson(right), present: false, bindingKey: `virtual:retired:${topology.rightNodeId}` };
+      delete identityMap[topology.rightNodeId]; removedNodeIds.push(topology.rightNodeId);
+    }
+    identityMap[sourceId] = sourceId;
+  }
   const result = normalizeProjectTreeIdentity(next);
-  return { ...result, identityMap, changed: JSON.stringify(checked.value) !== JSON.stringify(result.value) };
+  return { ...result, identityMap, createdNodeIds, removedNodeIds, changed: JSON.stringify(checked.value) !== JSON.stringify(result.value) };
 }

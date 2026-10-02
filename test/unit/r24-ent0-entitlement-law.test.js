@@ -138,7 +138,7 @@ test('table integrity: sets are frozen, product registry commands are free autho
 });
 
 test('scene copy and explicit tree Undo remain free local authorship', () => {
-  for (const id of ['cmd.project.tree.copyNode', 'cmd.project.tree.undoLastMutation']) {
+  for (const id of ['cmd.project.tree.copyNode', 'cmd.project.tree.undoLastMutation', 'cmd.project.tree.splitScene', 'cmd.project.tree.mergeNextScene']) {
     const result = law.decideCommandEntitlement(id, 'free');
     assert.equal(result.ok, true);
     assert.equal(result.available, true);

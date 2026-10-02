@@ -3,6 +3,7 @@ import { textOffsetForPosition, positionForTextOffset } from './textCoordinates.
 import { WordPendingRevisions, setCheckedDocument as setCheckedReviewDocument } from './wordPendingRevisions.mjs'
 import { UserBookmarks, UserBookmarkLink, applyUserBookmarkPublication } from './userBookmarks.mjs'
 import { Editor } from '@tiptap/core'
+import { history } from '@tiptap/pm/history'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import { DocumentTextStyle } from './documentTextStyle.mjs'
@@ -38,6 +39,49 @@ export function getTiptapImageInsertionPosition() {
   const editor = currentEditorInstance
   if (!editor || getFocusedManuscriptBodyEditor(document)) return null
   return editor.state.selection.to
+}
+
+// Observed selection only. Main/Core independently validate the root boundary
+// against the exact captured document before any structural write.
+export function getTiptapRootSplitBoundary() {
+  const editor = currentEditorInstance
+  if (!editor || getFocusedManuscriptBodyEditor(document)) return null
+  const selection = editor.state.selection
+  const from = selection?.$from
+  if (!selection.empty || !from || from.depth !== 1 || from.parentOffset !== 0
+    || !['paragraph', 'heading'].includes(from.parent.type.name)) return null
+  const boundaryRootIndex = from.index(0)
+  if (boundaryRootIndex < 1 || boundaryRootIndex >= editor.state.doc.childCount) return null
+  return { boundaryRootIndex, position: selection.from }
+}
+
+// A committed partition must never be undone through the ordinary text stack.
+// Retain the original history plugin/config and every other plugin's state;
+// only the history field is removed and initialized again.
+export function replaceTiptapTreeDocumentSnapshot(snapshot = {}) {
+  const editor = currentEditorInstance
+  if (!editor || !snapshot.doc || typeof snapshot.doc !== 'object') return false
+  const before = editor.state
+  const historyKey = history().spec.key
+  const historyPlugins = before.plugins.filter(plugin => plugin.spec.key === historyKey)
+  if (historyPlugins.length !== 1) return false
+  try {
+    const expected = editor.schema.nodeFromJSON(snapshot.doc)
+    expected.check()
+    if (!setCheckedDocument(editor, snapshot.doc) || !editor.state.doc.eq(expected)) {
+      if (editor.state !== before) editor.view.updateState(before)
+      return false
+    }
+    const plugins = editor.state.plugins
+    const reset = editor.state.reconfigure({ plugins: plugins.filter(plugin => plugin !== historyPlugins[0]) })
+      .reconfigure({ plugins })
+    editor.view.updateState(reset)
+    notifyFormattingStateChange()
+    return true
+  } catch {
+    if (editor.state !== before) editor.view.updateState(before)
+    return false
+  }
 }
 
 export function applyTiptapLocalImagePublication(payload, currentContent) {

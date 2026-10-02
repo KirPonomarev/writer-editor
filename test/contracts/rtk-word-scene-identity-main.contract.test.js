@@ -57,6 +57,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     changeSession() { commentAuthoringSessionId += 1; },
+    queue: queueDiskOperation,
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
   try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
@@ -879,4 +880,94 @@ test('typing during detached Undo receipt read installs verified private recover
   assert.equal(await f.probe.saveAs(), true); assert.equal(read(f.alpha), r.original);
   assert.match(envelope.parseObservablePayload(read(target)).text, /receipt-race typing/u);
   assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(target)).doc).bookmarks.length, 7);
+});
+
+async function topologyFixture(t, { refuse = false } = {}) {
+  const f = await fixture(t); await installMixedScene(f);
+  let working = read(f.alpha), documentId = f.a.nodeId, publicationId = '', uiGeneration = 9;
+  let cut = { boundaryRootIndex: 1, position: 22 }, serial = 0;
+  const publications = [];
+  const ui = mountRenderer(f, () => working, () => uiGeneration, null,
+    () => ({ projectId: f.query.projectId, documentId, treeContentPublicationId: publicationId, rootSplitBoundary: cut }),
+    payload => {
+      publications.push(payload);
+      if (payload.treeContentReplacement && !refuse) {
+        assert.equal(payload.expectedContent, working);
+        assert.equal(payload.expectedDocumentId, documentId);
+        assert.equal(payload.expectedGeneration, uiGeneration);
+        assert.equal(payload.expectedTreeContentPublicationId, publicationId);
+        working = payload.content; documentId = payload.documentId; publicationId = payload.treeContentPublicationId;
+        cut = null;
+      }
+    });
+  // Main's open epoch is independent of the renderer's monotonic text epoch.
+  f.probe.state({ filePath: f.alpha, generation: 0 });
+  const request = (split, overrides = {}) => ({ projectId: f.query.projectId, nodeId: f.a.nodeId,
+    expectedTreeRevision: 0, expectedDocumentId: documentId, expectedGeneration: uiGeneration,
+    expectedTreeContentPublicationId: publicationId, ...(split ? { name: 'Right', boundaryRootIndex: 1 } : {}), ...overrides });
+  const dispatch = async (commandId, payload) => {
+    const protocol = require('../../src/core/ipc-envelope-v1.cjs');
+    const packet = protocol.createEnvelope('ui:command-bridge', commandId, payload,
+      { correlationId: 'topology-real-' + ++serial, issuedAt: '2026-10-02T00:00:00.000Z' });
+    const receipt = await f.handles.get('ui:command-bridge')(ui.event, packet);
+    return receipt.ok === true ? receipt.value : receipt;
+  };
+  return { f, ui, publications, request, dispatch,
+    working: () => working, identity: () => ({ projectId: f.query.projectId, documentId, treeContentPublicationId: publicationId }),
+    edit(fn) { working = fn(working); uiGeneration++; f.probe.state({ dirty: true, generation: uiGeneration }); },
+    observation(value) { if ('documentId' in value) documentId = value.documentId; if ('epoch' in value) publicationId = value.epoch; },
+    boundary(value) { cut = value; },
+  };
+}
+
+test('topology actual versioned bridge splits the mixed graph, replaces same-ID content, merges and restores exact structural Undo', async t => {
+  const r = await topologyFixture(t), { f } = r, original = read(f.alpha);
+  const split = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(split.ok, true, JSON.stringify(split));
+  const right = path.join(f.imported, '02_Right.txt');
+  assert.equal(fs.existsSync(right), true);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(right)).doc).bookmarks.length, 7);
+  assert.equal(f.probe.state().filePath, f.alpha);
+  assert.equal(r.publications[0].treeContentReplacement, true);
+  assert.equal(r.publications[0].documentId, f.a.nodeId);
+  assert.notEqual(r.identity().treeContentPublicationId, '');
+  assert.equal((await f.probe.snapshot()).treeContentPublicationId, r.identity().treeContentPublicationId);
+  const merge = await r.dispatch('cmd.project.tree.mergeNextScene', r.request(false, { expectedTreeRevision: 1 }));
+  assert.equal(merge.ok, true, JSON.stringify(merge));
+  assert.equal(fs.existsSync(right), false);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, envelope.parseObservablePayload(original).text);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(f.alpha)).doc).bookmarks.length, 7);
+  const undoMerge = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 2, mutationId: merge.lastMutation.id });
+  assert.equal(undoMerge.ok, true, JSON.stringify(undoMerge));
+  assert.equal(fs.existsSync(right), true); assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  const state = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), comments = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(state.notes.length, 1); assert.equal(comments.threads.length, 1);
+});
+
+for (const variant of ['cut-position', 'cut-index', 'epoch', 'document', 'generation', 'foreign-path']) test(`topology raw/current ${variant} refuses before graph or authority writes`, async t => {
+  const r = await topologyFixture(t), { f } = r, before = f.capture();
+  const request = r.request(true);
+  if (variant === 'cut-position') r.boundary({ boundaryRootIndex: 1, position: 21 });
+  if (variant === 'cut-index') request.boundaryRootIndex = 2;
+  if (variant === 'epoch') request.expectedTreeContentPublicationId = 'forged';
+  if (variant === 'document') request.expectedDocumentId = f.b.nodeId;
+  if (variant === 'generation') request.expectedGeneration = 8;
+  if (variant === 'foreign-path') request.sourceRelativePath = 'roman/02_Beta.txt';
+  const result = await r.dispatch('cmd.project.tree.splitScene', request);
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(f.capture(), before);
+  assert.equal(r.publications.length, 0);
+});
+
+test('topology refused same-ID replacement cannot authorize old full buffer even with a forged target epoch', async t => {
+  const r = await topologyFixture(t, { refuse: true }), { f } = r;
+  const result = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+  const before = f.capture(), targetEpoch = r.publications[0].treeContentPublicationId;
+  r.observation({ epoch: targetEpoch });
+  await assert.rejects(f.probe.snapshot(), /TREE_EDITOR_IDENTITY_UNCONFIRMED/u);
+  assert.equal((await f.probe.save()).ok, false);
+  assert.deepEqual(f.capture(), before);
+  assert.match(envelope.parseObservablePayload(r.working()).text, /Link destination/u);
 });

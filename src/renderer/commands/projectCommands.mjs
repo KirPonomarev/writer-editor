@@ -71,6 +71,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
   TREE_MOVE_NODE: 'cmd.project.tree.moveNode',
   TREE_COPY_NODE: 'cmd.project.tree.copyNode',
+  TREE_SPLIT_SCENE: 'cmd.project.tree.splitScene',
+  TREE_MERGE_NEXT_SCENE: 'cmd.project.tree.mergeNextScene',
   TREE_UNDO_LAST_MUTATION: 'cmd.project.tree.undoLastMutation',
   METADATA_UPDATE: 'cmd.project.metadata.update',
   NOTES_CREATE: 'cmd.project.notes.create',
@@ -2278,6 +2280,43 @@ export function registerProjectCommands(registry, options = {}) {
       return fail(code, EXTRA_COMMAND_IDS.TREE_MOVE_NODE, reason, { userMessage });
     },
   );
+
+  for (const [commandId, label, split] of [
+    [EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE, 'Split Scene', true],
+    [EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE, 'Merge Next Scene', false],
+  ]) {
+    registry.registerCommand({ id: commandId, label, group: 'edit', surface: ['internal'], hotkey: '' },
+      async (input = {}) => {
+        const { projectId, nodeId, expectedTreeRevision, expectedDocumentId, expectedGeneration,
+          expectedTreeContentPublicationId, boundaryRootIndex, name } = input;
+        if (typeof projectId !== 'string' || !projectId || typeof nodeId !== 'string' || !nodeId
+          || expectedDocumentId !== nodeId || !Number.isSafeInteger(expectedTreeRevision) || expectedTreeRevision < 0
+          || !Number.isSafeInteger(expectedGeneration) || expectedGeneration < 0
+          || typeof expectedTreeContentPublicationId !== 'string' || expectedTreeContentPublicationId.length > 192
+          || /[\u0000-\u001f\u007f]/u.test(expectedTreeContentPublicationId)
+          || (split && (typeof name !== 'string' || !name.trim() || name.length > 80
+            || !Number.isSafeInteger(boundaryRootIndex) || boundaryRootIndex < 1))) {
+          return fail('E_COMMAND_FAILED', commandId, 'TREE_CONTENT_PAYLOAD_INVALID');
+        }
+        const payload = { projectId, nodeId, expectedTreeRevision, expectedDocumentId, expectedGeneration,
+          expectedTreeContentPublicationId, ...(split ? { name: name.trim(), boundaryRootIndex } : {}) };
+        let response;
+        try { response = await invokeBridgeOnlyCommand(electronAPI, commandId, payload); }
+        catch { return fail('E_COMMAND_FAILED', commandId, 'TREE_CONTENT_IPC_FAILED'); }
+        const result = unwrapBridgeResponseValue(response);
+        if (result && (result.ok === true || result.ok === 1)) return ok({ projectId, split, merged: !split });
+        const reason = typeof result?.reason === 'string' && result.reason ? result.reason
+          : typeof result?.error === 'string' && result.error ? result.error
+            : typeof result?.code === 'string' && result.code ? result.code
+              : typeof response?.reason === 'string' && response.reason ? response.reason : 'TREE_CONTENT_FAILED';
+        const code = /^E_[A-Z0-9_]{1,95}$/u.test(reason) ? reason : 'E_COMMAND_FAILED';
+        const userMessage = result?.committed === true
+          ? 'Структура изменена, но редактор сохранил прежний текст. Сохраните его отдельно через «Сохранить как…» перед закрытием.'
+          : split ? 'Не удалось разделить сцену. Проверьте границу разделения и состояние проекта.'
+            : 'Не удалось объединить сцены. Проверьте соседнюю сцену и состояние проекта.';
+        return fail(code, commandId, reason, { userMessage });
+      });
+  }
 
   for (const [commandId, label, action] of [
     [EXTRA_COMMAND_IDS.TREE_COPY_NODE, 'Create Scene Copy', 'copy'],

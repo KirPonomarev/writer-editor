@@ -1556,20 +1556,29 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
     let commit = byPath.get(relative), previous = null;
     const originalPath = plan.affectedScenes.find(item => item.to === scene.relativePath)?.from || scene.relativePath;
     const recovery = plan.recoverySource && plan.affectedScenes.some(item => item.copy && item.to === scene.relativePath) ? plan.recoverySource : null;
-    const previousEntry = recovery ? { beforeBase64: recovery.commitBase64 } : byPath.get(originalPath + '.wp201-commit.json');
-    if (previousEntry?.beforeBase64) {
-      try { previous = JSON.parse(treeText(previousEntry.beforeBase64)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
-      treeNeed([COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION,
-        ANCHOR_COMMIT_SCHEMA_VERSION, NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(previous.schemaVersion)
-        && previous.scenePath === treeAbsolute(manifestPath, recovery ? recovery.relativePath : originalPath)
-        && previous.manifestPath === manifestPath && previous.sceneDigest === sha256hex(Buffer.from(recovery ? recovery.originalBase64 : byPath.get(originalPath).beforeBase64, 'base64'))
-        && isDigest(previous.transactionId), 'E_TREE_COHORT_COMMIT_INVALID');
+    const sourcePaths = plan.sceneReceiptSources?.find(row => row.targetRelativePath === scene.relativePath)?.sourceRelativePaths || [originalPath];
+    const resources = new Map();
+    for (const sourcePath of sourcePaths) {
+      const previousEntry = recovery ? { beforeBase64: recovery.commitBase64 } : byPath.get(sourcePath + '.wp201-commit.json');
+      previous = null;
+      if (previousEntry?.beforeBase64) {
+        try { previous = JSON.parse(treeText(previousEntry.beforeBase64)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
+        treeNeed([COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION,
+          ANCHOR_COMMIT_SCHEMA_VERSION, NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(previous.schemaVersion)
+          && previous.scenePath === treeAbsolute(manifestPath, recovery ? recovery.relativePath : sourcePath)
+          && previous.manifestPath === manifestPath && previous.sceneDigest === sha256hex(Buffer.from(recovery ? recovery.originalBase64 : byPath.get(sourcePath).beforeBase64, 'base64'))
+          && isDigest(previous.transactionId), 'E_TREE_COHORT_COMMIT_INVALID');
+        for (const resource of previous.resources || []) {
+          treeNeed(!resources.has(resource.path) || canonicalize(resources.get(resource.path)) === canonicalize(resource), 'E_TREE_COHORT_RESOURCE_CONFLICT');
+          resources.set(resource.path, resource);
+        }
+      }
     }
     const note = entries.find(entry => entry.role === 'notes'), comment = entries.find(entry => entry.role === 'comments');
     const record = { schemaVersion: TREE_COMMIT_SCHEMA_VERSION, transactionId, revision,
       scenePath: treeAbsolute(manifestPath, scene.relativePath), manifestPath,
       sceneDigest: sha256hex(Buffer.from(scene.afterBase64, 'base64')), manifestDigest: sha256hex(plan.manifestText),
-      ...(previous?.resources ? { resources: previous.resources } : {}),
+      ...(resources.size ? { resources: [...resources.values()].sort((a,b)=>a.path.localeCompare(b.path)) } : {}),
       ...(note && note.afterBase64 !== null ? { noteState: { mode: 'PROJECT_TREE_COHORT_V1', beforeDigest: digestOptional(treeText(note.beforeBase64)), afterDigest: sha256hex(Buffer.from(note.afterBase64, 'base64')) } } : {}),
       ...(comment && comment.afterBase64 !== null ? { commentState: { mode: 'PROJECT_TREE_COHORT_V1', beforeDigest: sha256hex(treeText(comment.beforeBase64) || ''), afterDigest: sha256hex(Buffer.from(comment.afterBase64, 'base64')) } } : {}) };
     if (!commit) { commit = { relativePath: relative, role: 'sceneCommit', beforeBase64: null, afterBase64: null }; entries.push(commit); byPath.set(relative, commit); }
@@ -1705,7 +1714,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   treeNeed(current.treeRevision === plan.expectedTreeRevision, 'E_TREE_REVISION_CAS');
   if (plan.kind === 'undo') treeNeed(current.lastMutation?.canUndo && current.lastMutation.id === plan.input.lastMutation
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.retainedPacket), 'E_TREE_UNDO_UNAVAILABLE');
-  if (plan.input.recoveredCopy) treeNeed(['undo', 'copy'].includes(current.receipt?.kind)
+  if (plan.input.recoveredCopy) treeNeed(['undo', 'copy', 'split', 'merge'].includes(current.receipt?.kind)
     && canonicalize(current.receipt) === canonicalize(plan.input.recoveredCopy.receipt)
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.recoveredCopy.retainedPacket), 'E_TREE_RECOVERY_BINDING');
   if (!plan.changed) return { success: true, changed: false, code: 'TREE_COHORT_UNCHANGED', treeRevision: current.treeRevision, lastMutation: current.lastMutation };

@@ -1,0 +1,116 @@
+{
+  "featureId": "WORD_SCENE_SPLIT_MERGE_MAC_20261002",
+  "featureVersion": 1,
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "a2a5ae6cbefffce13475a0f71a3de3252d9deac6",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project schema.",
+  "derivedData": [
+    "Current project/node/treeRevision, root split boundary, exact previous buffer and publication epoch; renderer selection is an intent, not source truth."
+  ],
+  "commandIds": [
+    "cmd.project.tree.splitScene",
+    "cmd.project.tree.mergeNextScene",
+    "cmd.project.tree.undoLastMutation",
+    "cmd.project.saveAs"
+  ],
+  "eventTypes": [
+    "Existing project tree changed and scene saved events; no new event bus"
+  ],
+  "queryIds": [
+    "query.projectTree"
+  ],
+  "productProjectionIds": [
+    "query.projectTree extended treeRevision and lastMutation {id,kind,canUndo,unavailableReason}; project/node/revision bound."
+  ],
+  "capabilityIds": [
+    "cap.project.tree.splitScene",
+    "cap.project.tree.mergeNextScene",
+    "cap.project.tree.undoLastMutation"
+  ],
+  "authorityMap": {
+    "product": "Owner-authorized complete Mac Word plan P2d. Product Core owns explicit scene partitions, stable identities, canonical rich documents and annotation graphs. Reuse current validated tree cohort, project lease and v7 atomic journal; no new writer or project schema.",
+    "command": "cmd.project.tree.splitScene and cmd.project.tree.mergeNextScene through existing Command Kernel, capability policy and Main tree coordinator; existing tree Undo and explicit Save As recovery. Main independently resolves current scene, adjacent sibling and paths; UI carries IDs and observed cut only.",
+    "design": "Existing project tree context-menu contribution and existing labelled node name dialog, immutable query.projectTree and editor publication. Reuse previous Lazyweb/ui-craft research and existing Yalken controls; no CSS, layout, typography or new IPC surface."
+  },
+  "identityKeys": [
+    "projectId",
+    "nodeId",
+    "treeRevision",
+    "sourceRevision",
+    "authoringSession",
+    "treeContentPublicationId",
+    "generation"
+  ],
+  "revisionPolicy": "Main checks capability at dispatch and commit boundary; binds project/root/lifecycle/node/treeRevision/current rich bytes and private authoring session. Old queued snapshots/Save/autosave fail even after newer publication ACK; renderer accepts replacement only with exact previous context and buffer.",
+  "writePath": [
+    "Pathless explicit tree command -> capability/current project and scene revalidation -> dirty save barrier -> private canonical scene/annotation/resource inventory -> pure Core split/merge plan -> existing leased v7 journal/CAS writer -> synchronous private authoring-session rotation and target-content fence inside commit queue -> guarded renderer publication.",
+    "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched."
+  ],
+  "readPath": [
+    "Canonical manifest/treeRevision, scenes, notes/comments, exact resource receipts and transaction beforeimages -> validated partition plan -> immutable tree and editor projections."
+  ],
+  "requiredProductPorts": [
+    "Existing Main canonical filesystem adapter, commitProjectTransaction/recoverProjectTransaction, project lease/save queue and durable Word round expiry."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing command intent bridge, query.projectTree, guarded editor:set-text publication and validated editor snapshot response."
+  ],
+  "adapterRequirements": "Existing local filesystem/project transaction adapter and durable Word authority CAS; no new writer",
+  "surfaceManifests": [
+    "SURFACE_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json"
+  ],
+  "slotRequirements": "Existing project tree context menu and labelled scene name dialog; no new visual zone",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS SOURCE and PACKAGED acceptance; no Windows product claim",
+  "accessibilityRequirements": "Existing bounded cohort: at most2048files,512scenes,32MiB; no extra typing-path scans. Existing keyboard context menu and labelled dialog support Tab/Enter/Escape and focus return; precise split label and adjacent scene label.",
+  "fallbacks": [
+    "Typed no-write refusal for invalid/noninitial/nested selection, missing next sibling, conflicting metadata, unsupported crossing anchors/links, pending-history composite, stale context or target collision. Each unsupported mandatory plan operation remains an open requirement, never counted as support.",
+    "Late edits keep the old buffer fenced; explicit Save As may recover from verified current retained topology beforeimage. Structural Undo after newer ordinary changed save refuses and preserves latest bytes."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "persistenceClass": "Existing v7 project transaction and exact cohort beforeimages",
+  "migrations": "No project schema or journal version change; old operations remain readable",
+  "recovery": "Existing structure Undo -> exact after-image CAS -> same writer and guarded publication. Explicit Save As of a refused late old buffer -> current verified retained beforeimage -> fresh scene graph through same Core copy writer; current partitions remain untouched.",
+  "rollback": "Revert split/merge command contributions while preserving readable v7 journal/recovery support. Complete existing journals before downgrade; preserve exact originals and dedicated fixture backups. No private owner documents used.",
+  "performanceBudget": "Existing bounded cohort: at most2048files,512scenes,32MiB; no extra typing-path scans. Existing keyboard context menu and labelled dialog support Tab/Enter/Escape and focus return; precise split label and adjacent scene label.",
+  "securityBoundary": "Validate raw command keys and bounded integers before interpretation. Main resolves paths from canonical IDs, Core revalidates full plan and asset evidence. No renderer path/fragment authority, new IPC, dependency, secret, network or writer.",
+  "lifecycle": [
+    "Split retains original left identity; creates right ID. Merge retains left and retires right. No fragment/path authority from renderer.",
+    "Bookmarks/comments/notes retain identities, contents and proven reanchored ownership. Cross-partition ranges/links not representable under current schema refuse with no write.",
+    "Cards have no IDs: left/right arrays concatenate preserving duplicates. Split scene metadata/cards remain left; right defaults. Conflicting meaningful merge metadata refuses.",
+    "Full original validated resource receipts preserved on split; merge unions exact same-path hashes/bytes or refuses. No assets deleted.",
+    "Same journal and writer; exact Undo after restart; ordinary changed save invalidates Undo and preserves new bytes.",
+    "Inside commit queue rotate existing private authoring session, install target-content fence even same ID/path before queued Save can run. Immutable request session captured before/after preparation; guarded actual write boundary.",
+    "Renderer accepts content replacement only on exact prior rich buffer, project/node/generation/boundary and observed publication epoch. New epoch only after checked replacement.",
+    "Reset only PM history via two EditorState.reconfigure operations removing then restoring original history plugin; final view.updateState only. Preserve other plugin state/doc/selection, declined replacement changes nothing.",
+    "Late/refused old buffer never overwrites newleft. Explicit SaveAs forks retained original preimage plus edited old buffer with fresh graph IDs; current partitions untouched; retry via bounded receipt lineage."
+  ],
+  "negativeBypassChecks": [
+    "Focused real planner/writer/PM tests; old queue save/autosave and delayed snapshot released after successful split ACK; source IDs/content unchanged on refusal.",
+    "Early native SOURCE split bothowners+annotations, CmdZ cannot resurrect oldwholetext, structuralUndo restoresgraph; merge+Undo; restart.",
+    "PACKAGED same then DOCX through actual Word and independent ZIP/canonical readback before expensive stable suite.",
+    "Frozen candidate mandatory baseline/RTK/CI; exact merged proof.",
+    "Fault each v7 commit/recovery phase; split and merge then new-process Undo restore exact graph. Same-ID old buffer, stale queued Save/snapshot released after new ACK, changed resources/receipt, project switch, bypass and capability revocation cannot overwrite partitions.",
+    "Real PM history reset removes only old history plugin state; preserves other plugin state, new text and selection, and subsequent Undo cannot resurrect whole old source."
+  ],
+  "evidenceBindings": [
+    "rtk-word-project-tree-cohort.contract.test.js",
+    "rtk-word-scene-identity-main.contract.test.js",
+    "sector-m-tiptap-runtime-bridge.test.js",
+    "Native SOURCE/PACKAGED and independent Word/canonical readback",
+    "Frozen CI and exact merged verification"
+  ],
+  "currentReality": [
+    "PR2059 delivered at exact base with native comment export/return and merged222tests. Existing Core tree planner admits only rename/move/reorder/copy; no scene split/merge. Prepared same-ID content-publication and queued-save hazards are bound by upcoming actual Main tests."
+  ]
+}

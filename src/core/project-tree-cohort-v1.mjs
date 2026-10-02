@@ -115,11 +115,149 @@ function rebindNote(note, to, nodeIds, freshId) {
   return out;
 }
 
+// Structural ownership is derived from conserved root blocks, never a text diff.
+function prepareTopology(input, files, identities, target, inventory) {
+  if (!['split', 'merge'].includes(input.operation)) { need(input.topology === undefined, 'E_TREE_TOPOLOGY_INPUT'); return null; }
+  const t = input.topology, split = input.operation === 'split';
+  need(t && Object.keys(t).sort().join(',') === (split
+    ? 'boundaryRootIndex,newRelativePath,sourceNodeId,sourceRelativePath'
+    : 'leftNodeId,leftRelativePath,rightNodeId,rightRelativePath'), 'E_TREE_TOPOLOGY_INPUT');
+  const paths = split ? [t.sourceRelativePath] : [t.leftRelativePath, t.rightRelativePath];
+  paths.forEach(treeRelativePath);
+  need(paths.every(p => files.get(p)?.role === 'scene' && path.posix.basename(p) !== '.index.txt'), 'E_TREE_TOPOLOGY_SOURCE');
+  need(split || path.posix.dirname(paths[0]) === path.posix.dirname(paths[1]), 'E_TREE_TOPOLOGY_PARENT');
+  if (!split) {
+    const siblings = [...inventory.values()].filter(item => path.posix.dirname(item.relativePath) === path.posix.dirname(paths[0])
+      && !path.posix.basename(item.relativePath).startsWith('.') && (item.role === 'directory' || item.role === 'scene' && item.relativePath.endsWith('.txt')));
+    const order = item => { const name = path.posix.basename(item.relativePath), prefix = name.match(/^(\d+)_/u);
+      return { number: prefix ? Number(prefix[1]) : Number.MAX_SAFE_INTEGER, name: name.replace(/\.txt$/iu, '').replace(/^\d+_/u, '') }; };
+    siblings.sort((a,b) => { const x = order(a), y = order(b); return x.number - y.number || x.name.localeCompare(y.name, 'ru'); });
+    const index = siblings.findIndex(item => item.relativePath === paths[0]);
+    need(index >= 0 && siblings[index + 1]?.relativePath === paths[1], 'E_TREE_TOPOLOGY_NOT_ADJACENT');
+  }
+  if (split) {
+    treeRelativePath(t.newRelativePath);
+    need(path.posix.dirname(target(paths[0])) === path.posix.dirname(t.newRelativePath), 'E_TREE_TOPOLOGY_PARENT');
+  }
+  const sources = paths.map((relativePath, i) => {
+    const raw = text(files.get(relativePath).contentBase64), parsed = parsedScene(raw);
+    const doc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
+    need(!pending.readLedger(doc), 'E_TREE_TOPOLOGY_PENDING_UNSUPPORTED');
+    const leaves = bookmarks.paragraphs(doc), leafTexts = leaves.map(bookmarks.textOf);
+    return { relativePath, raw, parsed, doc, leaves, leafTexts, visible: leafTexts.join('\n'),
+      nodeId: split ? t.sourceNodeId : i ? t.rightNodeId : t.leftNodeId };
+  });
+  const left = sources[0], outputs = [], partitions = [];
+  const rootLeaves = (doc, from, to) => {
+    const result = [];
+    const walk = node => { if (['paragraph','heading','codeBlock'].includes(node.type)) result.push(node); else for (const child of node.content || []) walk(child); };
+    doc.content.slice(from, to).forEach(walk); return result.length;
+  };
+  const part = (source, from, to, output, rootOffset, leafOffset) => {
+    const leafFrom = rootLeaves(source.doc, 0, from), leafTo = leafFrom + rootLeaves(source.doc, from, to);
+    partitions.push({ sourceNodeId: source.nodeId, sourceRelativePath: source.relativePath,
+      rootFrom: from, rootTo: to, targetNodeId: output.nodeId, targetRelativePath: output.relativePath,
+      targetRootFrom: rootOffset, leafFrom, leafTo, targetLeafFrom: leafOffset });
+  };
+  if (split) {
+    const cut = t.boundaryRootIndex;
+    need(Number.isSafeInteger(cut) && cut > 0 && cut < left.doc.content.length
+      && ['paragraph','heading'].includes(left.doc.content[cut]?.type), 'E_TREE_TOPOLOGY_BOUNDARY');
+    outputs.push({ nodeId: left.nodeId, relativePath: target(left.relativePath), doc: { ...clone(left.doc), content: clone(left.doc.content.slice(0, cut)) }, parsed: left.parsed });
+    outputs.push({ nodeId: identities.createdNodeIds[0], relativePath: t.newRelativePath, doc: { ...clone(left.doc), content: clone(left.doc.content.slice(cut)) }, parsed: { meta: envelope.createDefaultDocumentMeta(), cards: [], hasMetaBlock: false } });
+    part(left, 0, cut, outputs[0], 0, 0); part(left, cut, left.doc.content.length, outputs[1], 0, 0);
+  } else {
+    const right = sources[1];
+    const attrs = doc => { const a = { ...(doc.attrs || {}) }; delete a.wordUserBookmarks; return a; };
+    need(same(attrs(left.doc), attrs(right.doc)), 'E_TREE_TOPOLOGY_DOCUMENT_ATTRS');
+    const defaults = envelope.createDefaultDocumentMeta();
+    const leftMeta = !same(left.parsed.meta, defaults), rightMeta = !same(right.parsed.meta, defaults);
+    need(!leftMeta || !rightMeta || same(left.parsed.meta, right.parsed.meta), 'E_TREE_TOPOLOGY_METADATA_CONFLICT');
+    const parsed = { ...left.parsed, hasMetaBlock: left.parsed.hasMetaBlock || right.parsed.hasMetaBlock,
+      meta: leftMeta ? left.parsed.meta : right.parsed.meta, cards: [...left.parsed.cards, ...right.parsed.cards] };
+    outputs.push({ nodeId: left.nodeId, relativePath: target(left.relativePath),
+      doc: { ...clone(left.doc), content: clone([...left.doc.content, ...right.doc.content]) }, parsed });
+    part(left, 0, left.doc.content.length, outputs[0], 0, 0);
+    part(right, 0, right.doc.content.length, outputs[0], left.doc.content.length, left.leaves.length);
+  }
+  const locate = (relative, leaf) => partitions.find(p => p.sourceRelativePath === relative && leaf >= p.leafFrom && leaf < p.leafTo);
+  for (const output of outputs) {
+    const records = []; let revision = 0, hasRegistry = false;
+    for (const source of sources) {
+      const registry = bookmarks.readRegistry(source.doc); if (!registry) continue;
+      hasRegistry = true; revision = Math.max(revision, registry.revision);
+      for (const record of registry.bookmarks) {
+        if (record.state === 'deleted') { if (output === outputs[0]) records.push(clone(record)); continue; }
+        const start = locate(source.relativePath, record.start.paragraphIndex), end = locate(source.relativePath, record.end.paragraphIndex);
+        need(start && end && start.targetRelativePath === end.targetRelativePath, 'E_TREE_TOPOLOGY_BOOKMARK_CROSSING');
+        if (start.targetRelativePath !== output.relativePath) continue;
+        const rebound = clone(record);
+        for (const edge of ['start','end']) rebound[edge].paragraphIndex += start.targetLeafFrom - start.leafFrom;
+        records.push(rebound);
+      }
+    }
+    if (hasRegistry) output.doc.attrs = { ...(output.doc.attrs || {}), wordUserBookmarks: { schemaVersion: bookmarks.SCHEMA, revision, bookmarks: records } };
+    const registry = bookmarks.readRegistry(output.doc);
+    const walk = node => {
+      for (const mark of node.marks || []) if (mark.type === 'link') bookmarks.inspectInternalLink(mark, registry);
+      for (const child of node.content || []) walk(child);
+    }; walk(output.doc);
+    output.raw = envelope.composeObservablePayload({ ...output.parsed, metaEnabled: output.parsed.hasMetaBlock, doc: output.doc });
+    output.leafTexts = bookmarks.paragraphs(output.doc).map(bookmarks.textOf); output.visible = output.leafTexts.join('\n');
+  }
+  const publication = source => {
+    const output = outputs[0];
+    return { beforeNodeId: source.nodeId, afterNodeId: output.nodeId, fromRelativePath: source.relativePath,
+      toRelativePath: output.relativePath, beforeContent: source.raw, afterContent: output.raw, kind: input.operation };
+  };
+  return { sources, outputs, partitions, locate, publications: sources.map(publication),
+    receipts: outputs.map(output => ({ targetRelativePath: output.relativePath,
+      sourceRelativePaths: [...new Set(partitions.filter(p => p.targetRelativePath === output.relativePath).map(p => p.sourceRelativePath))] })) };
+}
+function topologyNote(note, topology, identityMap) {
+  const source = topology.sources.find(s => s.relativePath === noteScene(note)); if (!source) return null;
+  let partition = topology.partitions.find(p => p.sourceRelativePath === source.relativePath);
+  if (note.manuscript && !note.deleted) {
+    const reference = note.manuscript.reference;
+    need(reference.sourceTextSha256 === notesModel.sha(source.visible) && notesModel.boundary(source.visible, reference.offsetUtf16), 'E_TREE_COHORT_NOTE_STALE');
+    let start = 0, leaf = 0;
+    for (; leaf < source.leafTexts.length - 1 && reference.offsetUtf16 > start + source.leafTexts[leaf].length; leaf++) start += source.leafTexts[leaf].length + 1;
+    partition = topology.locate(source.relativePath, leaf); need(partition, 'E_TREE_TOPOLOGY_NOTE_OWNER');
+  }
+  const output = topology.outputs.find(o => o.relativePath === partition.targetRelativePath);
+  const out = rebindNote(note, output.relativePath, { ...identityMap, [source.nodeId]: output.nodeId });
+  if (note.manuscript && !note.deleted) {
+    const prefix = (values, count) => values.slice(0, count).reduce((n, value) => n + value.length + 1, 0);
+    out.manuscript.reference.offsetUtf16 += prefix(output.leafTexts, partition.targetLeafFrom) - prefix(source.leafTexts, partition.leafFrom);
+    out.manuscript.reference.sourceTextSha256 = notesModel.sha(output.visible);
+    need(notesModel.boundary(output.visible, out.manuscript.reference.offsetUtf16), 'E_TREE_TOPOLOGY_NOTE_OWNER');
+  }
+  return out;
+}
+function topologyComment(thread, topology) {
+  const source = topology.sources.find(s => s.relativePath === thread.sceneId); if (!source) return null;
+  const anchor = thread.anchor; need(anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
+  let partition = topology.partitions.find(p => p.sourceRelativePath === source.relativePath);
+  if (thread.status !== 'deleted') {
+    const proof = commentsModel.exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex, startUtf16: anchor.startUtf16, selectedText: anchor.selectedText }, source.relativePath, source.leafTexts);
+    need(proof.selectedTextSha256 === anchor.selectedTextSha256 && proof.blockTextSha256 === anchor.blockTextSha256, 'E_TREE_COHORT_COMMENT_STALE');
+    partition = topology.locate(source.relativePath, anchor.sceneParagraphIndex); need(partition, 'E_TREE_TOPOLOGY_COMMENT_OWNER');
+  }
+  const out = clone(thread); out.sceneId = partition.targetRelativePath; out.anchor.sceneId = out.sceneId;
+  if (thread.status !== 'deleted') {
+    out.anchor.sceneParagraphIndex += partition.targetLeafFrom - partition.leafFrom;
+    out.anchor.paragraphIndex = out.anchor.sceneParagraphIndex;
+  }
+  return out;
+}
+
 // Recovery consumes one removed-copy beforeimage, never a caller-provided graph.
 function recoveredCopySource(input) {
   const recovery = input.recoveredCopy;
   if (recovery === undefined) return null;
-  need(recovery && Object.keys(recovery).sort().join(',') === 'receipt,removedNodeId,retainedPacket,workingContent', 'E_TREE_RECOVERY_INPUT');
+  const topologyRecovery = recovery && Object.hasOwn(recovery, 'sourceNodeId');
+  need(recovery && Object.keys(recovery).sort().join(',') === (topologyRecovery ? 'receipt,retainedPacket,sourceNodeId,workingContent' : 'receipt,removedNodeId,retainedPacket,workingContent'), 'E_TREE_RECOVERY_INPUT');
+  const originNodeId = topologyRecovery ? recovery.sourceNodeId : recovery.removedNodeId;
   const { receipt, retainedPacket: packet } = recovery;
   let retained = packet, depth = 0;
   while (retained?.plan?.input?.recoveredCopy) {
@@ -127,7 +265,7 @@ function recoveredCopySource(input) {
     retained = retained.plan.input.recoveredCopy.retainedPacket;
   }
   need(Buffer.byteLength(stable(packet)) <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
-  need(input.operation === 'copy' && input.bindings?.length === 1 && (input.bindings[0].copy === undefined || input.bindings[0].copy === true) && ['undo', 'copy'].includes(receipt?.kind)
+  need(input.operation === 'copy' && input.bindings?.length === 1 && (input.bindings[0].copy === undefined || input.bindings[0].copy === true) && ['undo', 'copy', ...(topologyRecovery ? ['split', 'merge'] : [])].includes(receipt?.kind)
     && receipt.projectId === input.projectId && packet?.projectId === input.projectId
     && receipt.treeRevision === input.expectedTreeRevision && packet.transactionId === receipt.transactionId
     && sha(stable(packet)) === receipt.packetDigest && packet.plan?.kind === receipt.kind
@@ -135,19 +273,32 @@ function recoveredCopySource(input) {
   validateProjectTreeCohort(packet.plan);
   if (receipt.kind === 'copy') {
     const previous = packet.plan.input.recoveredCopy, copied = packet.plan.pathBindings.filter(x => x.copy);
-    need(previous?.removedNodeId === recovery.removedNodeId && copied.length === 1
+    need(previous && Object.hasOwn(previous, 'sourceNodeId') === topologyRecovery
+      && (topologyRecovery ? previous.sourceNodeId : previous.removedNodeId) === originNodeId && copied.length === 1
       && copied[0].newNodeId === input.bindings[0].nodeId
       && copied[0].toRelativePath === input.bindings[0].fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
     const original = recoveredCopySource({ ...packet.plan.input,
       recoveredCopy: { ...previous, workingContent: recovery.workingContent } });
     return { ...original, livePath: copied[0].toRelativePath };
   }
-  const binding = packet.plan.pathBindings.find(x => x.removedCopy && x.nodeId === recovery.removedNodeId);
-  need(binding && input.bindings[0].nodeId === binding.newNodeId
-    && input.bindings[0].fromRelativePath === binding.toRelativePath
-    && input.bindings[0].toRelativePath !== binding.fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
-  const entry = packet.entries.find(x => x.role === 'scene' && x.relativePath === binding.fromRelativePath);
-  need(entry?.beforeBase64 !== null && entry?.afterBase64 === null, 'E_TREE_RECOVERY_SOURCE');
+  let sourcePath, livePath;
+  if (topologyRecovery) {
+    need(['split','merge'].includes(receipt.kind) || (receipt.kind === 'undo'
+      && ['split','merge'].includes(packet.plan.input.retainedPacket?.plan?.kind)), 'E_TREE_RECOVERY_SOURCE');
+    const rows = packet.plan.scenePublications?.filter(row => row.beforeNodeId === originNodeId) || [];
+    need(rows.length === 1, 'E_TREE_RECOVERY_SOURCE');
+    const row = rows[0];
+    need(input.bindings[0].nodeId === row.afterNodeId && input.bindings[0].fromRelativePath === row.toRelativePath, 'E_TREE_RECOVERY_SOURCE');
+    sourcePath = row.fromRelativePath; livePath = row.toRelativePath;
+  } else {
+    const binding = packet.plan.pathBindings.find(x => x.removedCopy && x.nodeId === originNodeId);
+    need(binding && input.bindings[0].nodeId === binding.newNodeId
+      && input.bindings[0].fromRelativePath === binding.toRelativePath
+      && input.bindings[0].toRelativePath !== binding.fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
+    sourcePath = binding.fromRelativePath; livePath = binding.toRelativePath;
+  }
+  const entry = packet.entries.find(x => x.role === 'scene' && x.relativePath === sourcePath);
+  need(entry && entry.beforeBase64 !== null && (topologyRecovery || entry.afterBase64 === null), 'E_TREE_RECOVERY_SOURCE');
   validateInventory([{ relativePath: entry.relativePath, role: 'scene', contentBase64: entry.beforeBase64 }]);
   const raw = text(entry.beforeBase64), before = parsedScene(raw);
   need(typeof recovery.workingContent === 'string' && Buffer.byteLength(recovery.workingContent) <= TREE_COHORT_LIMITS.bytes
@@ -167,14 +318,14 @@ function recoveredCopySource(input) {
   if (commentsText !== null) commentsText = commentAnchors.planCommentAnchorSave({ ...args, beforeText: commentsText })?.afterText || commentsText;
   return { relativePath: entry.relativePath, content, originalBase64: entry.beforeBase64,
     commitBase64: packet.entries.find(x => x.role === 'sceneCommit' && x.relativePath === entry.relativePath + '.wp201-commit.json')?.beforeBase64 ?? null,
-    notesText, commentsText, livePath: binding.toRelativePath };
+    notesText, commentsText, livePath, originNodeId };
 }
 
 export function planProjectTreeCohort(input) {
   need(input && typeof input === 'object');
   need(typeof input.projectId === 'string' && input.projectId.length > 0 && input.projectId.length <= 128
     && typeof input.operationId === 'string' && /^[A-Za-z0-9._:-]{1,128}$/u.test(input.operationId), 'E_TREE_COHORT_IDENTITY');
-  need(['rename', 'move', 'reorder', 'copy'].includes(input.operation), 'E_TREE_COHORT_OPERATION');
+  need(['rename', 'move', 'reorder', 'copy', 'split', 'merge'].includes(input.operation), 'E_TREE_COHORT_OPERATION');
   need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath) && typeof input.beforeManifestText === 'string');
   need(Number.isSafeInteger(input.expectedTreeRevision ?? 0) && (input.expectedTreeRevision ?? 0) >= 0, 'E_TREE_REVISION_CAS');
   const manifest = JSON.parse(input.beforeManifestText);
@@ -192,6 +343,7 @@ export function planProjectTreeCohort(input) {
   need(identities.ok, identities.error?.code || 'E_TREE_COHORT_IDENTITY');
   const mapped = relative => bindings.find(b => matches(relative, b.fromRelativePath));
   const target = (relative, binding = mapped(relative)) => binding ? binding.toRelativePath + relative.slice(binding.fromRelativePath.length) : relative;
+  const topology = prepareTopology(input, files, identities, target, inventory);
   for (const binding of bindings) need(inventory.has(binding.fromRelativePath), 'E_TREE_COHORT_SOURCE_MISSING');
   const scenes = [...files.values()].filter(x => x.role === 'scene');
   need(scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_TREE_COHORT_BUDGET');
@@ -199,6 +351,7 @@ export function planProjectTreeCohort(input) {
   for (const scene of scenes) {
     const parsed = parsedScene(text(scene.contentBase64));
     for (const mark of bookmarks.readRegistry(parsed.doc || { type: 'doc', content: [] })?.bookmarks || []) occupiedNames.add(bookmarks.nameKey(mark.name));
+    if (topology?.sources.some(s => s.relativePath === scene.relativePath)) continue;
     const binding = mapped(scene.relativePath);
     if (!binding || (!binding.copy && scene.relativePath === target(scene.relativePath))) continue;
     const to = target(scene.relativePath);
@@ -216,6 +369,7 @@ export function planProjectTreeCohort(input) {
     const additions = [];
     const sourceNotes = recovery ? (recovery.notesText === null ? [] : notesModel.validateManuscriptDocument(JSON.parse(recovery.notesText), input.projectId).notes.filter(n => noteScene(n) === recovery.relativePath)) : notes.notes;
     const result = sourceNotes.map(note => {
+      if (topology) { const rebound = topologyNote(note, topology, identities.identityMap); if (rebound) return rebound; }
       const mapping = sceneMap[recovery ? recovery.livePath : noteScene(note)]; if (!mapping) return note;
       if (note.manuscript && !note.deleted) {
         const sceneContent = recovery ? recovery.content : text(files.get(noteScene(note))?.contentBase64 ?? null);
@@ -225,7 +379,7 @@ export function planProjectTreeCohort(input) {
       }
       if (!mapping.copy) return rebindNote(note, mapping.to, identities.identityMap);
       const id = newId('note-', input, note.id); need(!ids.has(id), 'E_TREE_COHORT_NOTE_ID'); ids.add(id); noteIds[note.id] = id;
-      additions.push(rebindNote(note, mapping.to, recovery ? { ...identities.identityMap, [input.recoveredCopy.removedNodeId]: identities.identityMap[input.bindings[0].nodeId] } : identities.identityMap, id)); return note;
+      additions.push(rebindNote(note, mapping.to, recovery ? { ...identities.identityMap, [recovery.originNodeId]: identities.identityMap[input.bindings[0].nodeId] } : identities.identityMap, id)); return note;
     });
     const next = { ...notes, notes: [...(recovery ? notes.notes : result), ...additions] }; notesModel.validateManuscriptDocument(next, input.projectId);
     if (!same(next, notes)) notesAfter = json(next);
@@ -235,7 +389,9 @@ export function planProjectTreeCohort(input) {
     const next = clone(before), additions = [];
     const sourceThreads = recovery ? (recovery.commentsText === null ? [] : commentsModel.readState(recovery.commentsText, input.projectId).threads.filter(t => t.sceneId === recovery.relativePath)) : before.threads;
     for (let i = 0; i < sourceThreads.length; i++) {
-      const thread = sourceThreads[i], mapping = sceneMap[recovery ? recovery.livePath : thread.sceneId]; if (!mapping) continue;
+      const thread = sourceThreads[i];
+      if (topology) { const rebound = topologyComment(thread, topology); if (rebound) { next.threads[i] = rebound; continue; } }
+      const mapping = sceneMap[recovery ? recovery.livePath : thread.sceneId]; if (!mapping) continue;
       need(thread.anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
       if (thread.status !== 'deleted') {
         const anchor = thread.anchor;
@@ -281,7 +437,16 @@ export function planProjectTreeCohort(input) {
     afterFiles.set(relative, { relativePath: relative, role, contentBase64 });
   };
   for (const item of files.values()) {
-    const owner = ownerOf(item), mapping = sceneMap[owner], binding = mapped(item.relativePath);
+    const owner = ownerOf(item);
+    if (topology?.sources.some(s => s.relativePath === owner)) {
+      const kept = topology.outputs.find(o => o.nodeId === topology.sources.find(s => s.relativePath === owner).nodeId);
+      if (item.role === 'scene') continue;
+      if (!kept) continue; // Beforeimages retain merged-away history for exact Undo.
+      // Existing left-side history remains with its owner; content checkpoints are historical.
+      if (kept.relativePath === owner) { put(item.relativePath, item.role, item.contentBase64); continue; }
+    }
+    const topologyOwner = topology?.sources.find(s => s.relativePath === owner);
+    const mapping = sceneMap[owner] || (topologyOwner ? { to: topology.outputs.find(o => o.nodeId === topologyOwner.nodeId).relativePath, copy: false } : null), binding = mapped(item.relativePath);
     if (mapping?.copy || (!mapping && !binding)) put(item.relativePath, item.role, item.contentBase64);
     if (mapping?.copy && item.role !== 'scene') continue; // Fork has a fresh checkpoint, never source history.
     if (!mapping && !binding) continue;
@@ -297,6 +462,10 @@ export function planProjectTreeCohort(input) {
       }
     }
     put(to, item.role, content);
+  }
+  if (topology) for (const output of topology.outputs) {
+    put(output.relativePath, 'scene', b64(output.raw));
+    affectedScenes.push(...topology.sources.filter(s => topology.partitions.some(p => p.sourceRelativePath === s.relativePath && p.targetRelativePath === output.relativePath)).map(s => ({ from: s.relativePath, to: output.relativePath, copy: false })));
   }
   const manifestText = identities.changed ? json({ ...manifest, treeIdentity: identities.value }) : input.beforeManifestText;
   // A destination starts at one current readable checkpoint. Imported Word
@@ -323,7 +492,8 @@ export function planProjectTreeCohort(input) {
   entries.push({ relativePath: NOTE_PATH, role: 'notes', beforeBase64: b64(notesBefore), afterBase64: b64(notesAfter) },
     { relativePath: COMMENT_PATH, role: 'comments', beforeBase64: b64(commentsBefore), afterBase64: b64(commentsAfter) });
   const changed = manifestText !== input.beforeManifestText || entries.some(x => x.beforeBase64 !== x.afterBase64);
-  const plan = { mode: TREE_COHORT_MODE, projectId: input.projectId, operationId: input.operationId,
+  const plan = { ...(topology ? { scenePartitions: topology.partitions, scenePublications: topology.publications,
+    sceneReceiptSources: topology.receipts, createdNodeIds: identities.createdNodeIds, removedNodeIds: identities.removedNodeIds } : {}), mode: TREE_COHORT_MODE, projectId: input.projectId, operationId: input.operationId,
     expectedTreeRevision: input.expectedTreeRevision ?? 0, kind: input.operation, changed,
     code: changed ? 'TREE_COHORT_READY' : 'TREE_COHORT_UNCHANGED', beforeManifestText: input.beforeManifestText, manifestText,
     entries, directories: [...new Set([...beforeDirs, ...afterDirs])].sort().map(relativePath => ({ relativePath, before: beforeDirs.has(relativePath), after: afterDirs.has(relativePath) })),
@@ -367,6 +537,24 @@ export function planProjectTreeUndo(input) {
     pathBindings: original.pathBindings.map(x => ({ nodeId: x.newNodeId, newNodeId: x.nodeId, fromRelativePath: x.toRelativePath, toRelativePath: x.fromRelativePath, copy: false, removedCopy: x.copy })),
     identityMap: { nodes: Object.fromEntries(Object.entries(original.identityMap.nodes).map(([a,b])=>[b,a])), scenes: {}, notes: {}, bookmarks: {}, threads: {}, messages: {} },
     input: clone(input) };
+  if (original.scenePartitions) {
+    inverse.scenePartitions = original.scenePartitions.map(p => ({ sourceNodeId: p.targetNodeId,
+      sourceRelativePath: p.targetRelativePath, rootFrom: p.targetRootFrom,
+      rootTo: p.targetRootFrom + p.rootTo - p.rootFrom, targetNodeId: p.sourceNodeId,
+      targetRelativePath: p.sourceRelativePath, targetRootFrom: p.rootFrom,
+      leafFrom: p.targetLeafFrom, leafTo: p.targetLeafFrom + p.leafTo - p.leafFrom, targetLeafFrom: p.leafFrom }));
+    inverse.scenePublications = [...new Set(original.scenePartitions.map(p => p.targetNodeId))].map(id => {
+      const p = inverse.scenePartitions.find(row => row.sourceNodeId === id);
+      const before = inverse.entries.find(e => e.role === 'scene' && e.relativePath === p.sourceRelativePath);
+      const after = inverse.entries.find(e => e.role === 'scene' && e.relativePath === p.targetRelativePath);
+      need(before?.beforeBase64 !== null && after?.afterBase64 !== null, 'E_TREE_UNDO_PACKET');
+      return { beforeNodeId: id, afterNodeId: p.targetNodeId, fromRelativePath: p.sourceRelativePath,
+        toRelativePath: p.targetRelativePath, beforeContent: text(before.beforeBase64), afterContent: text(after.afterBase64), kind: `undo-${original.kind}` };
+    });
+    inverse.createdNodeIds = original.removedNodeIds;
+    inverse.removedNodeIds = original.createdNodeIds;
+    inverse.sceneReceiptSources = []; // Exact original receipts are restored, never regenerated.
+  }
   inverse.planDigest = sha(stable(inverse));
   need(Buffer.byteLength(stable(inverse)) <= TREE_COHORT_LIMITS.bytes, 'E_TREE_COHORT_BUDGET');
   return frozen(inverse);

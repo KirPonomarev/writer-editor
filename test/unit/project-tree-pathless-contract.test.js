@@ -132,11 +132,15 @@ function sceneUiHarness() {
   const calls = [];
   const c = {
     currentProjectId: 'project', treeRoot: scene,
+    currentDocumentId: 'scene', currentTreeContentPublicationId: '', localEditGeneration: 9,
+    isTiptapMode: true, flowModeState: { active: false }, wordCommentDraft: null, wordCommentBusy: false,
+    manuscriptDrafts: new Map(), notesMutationPending: false,
+    composeDocumentContent: () => 'live rich buffer', getTiptapRootSplitBoundary: () => ({ boundaryRootIndex: 1, position: 8 }),
     treeMutationProjection: { projectId: 'project', treeRevision: 7,
       lastMutation: { id: 'mutation', kind: 'copy', canUndo: true } },
     treeMutationPending: false, allowed: true, calls, reloads: 0, statuses: [],
-    EXTRA_COMMAND_IDS: { TREE_COPY_NODE: 'copy', TREE_UNDO_LAST_MUTATION: 'undo' },
-    getEffectiveDocumentId: n => n.nodeId,
+    EXTRA_COMMAND_IDS: { TREE_COPY_NODE: 'copy', TREE_UNDO_LAST_MUTATION: 'undo', TREE_SPLIT_SCENE: 'split', TREE_MERGE_NEXT_SCENE: 'merge' },
+    getEffectiveDocumentId: n => n?.nodeId || '',
     findTreeNodeById: (root, id) => root?.nodeId === id ? root : null,
     normalizeNodeName: v => ({ ok: typeof v === 'string' && Boolean(v.trim()) }),
     openNodeNameDialog: async () => 'Copy',
@@ -148,7 +152,9 @@ function sceneUiHarness() {
   c.appendContextMenuCommandItem = (items, id, label, invoke, options) => items.push({ id, label, invoke, ...options });
   vm.createContext(c);
   vm.runInContext(executableFunctions(['captureNodeNameTarget', 'isNodeNameTargetCurrent',
-    'captureTreeMutationProjection', 'handleCopyNode', 'handleUndoTreeMutation', 'appendTreeUndoMenuItem']), c);
+    'captureTreeMutationProjection', 'handleCopyNode', 'handleUndoTreeMutation', 'appendTreeUndoMenuItem',
+    'findNextTreeScene', 'treeContentUnavailableReason', 'captureTreeContentTarget',
+    'isTreeContentTargetCurrent', 'handleTreeContentMutation']), c);
   return c;
 }
 
@@ -665,6 +671,7 @@ test('actual replacement listener preserves late drafts or stale generation and 
 
 test('existing editor snapshot response observes the current project and document alongside its exact buffer generation', () => {
   const responses = [], c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
+    currentTreeContentPublicationId: 'observed-publication',
     composeDocumentContent: () => 'exact live copy', getPlainText: () => 'live copy',
     getActiveBookProfile: () => ({ format: 'A4' }), getSelectionOffsets: () => ({ start: 1, end: 2 }),
     isTiptapMode: false, wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
@@ -683,9 +690,15 @@ test('existing editor snapshot response observes the current project and documen
   assert.equal(responses[0].snapshot.documentId, 'copy');
   assert.equal(responses[0].snapshot.content, 'exact live copy');
   assert.equal(responses[0].snapshot.generation, 9);
+  assert.equal(responses[0].snapshot.treeContentPublicationId, 'observed-publication');
+  assert.equal(responses[0].snapshot.rootSplitBoundary, null);
+  c.isTiptapMode = true;
+  c.getTiptapImageInsertionPosition = () => 7;
+  c.getTiptapRootSplitBoundary = () => ({ boundaryRootIndex: 1, position: 7 });
   c.currentDocumentId = 'source';
   c.respond({ requestId: 'capture-source' });
   assert.equal(responses[1].snapshot.documentId, 'source');
+  assert.deepEqual(JSON.parse(JSON.stringify(responses[1].snapshot.rootSplitBoundary)), { boundaryRootIndex: 1, position: 7 });
   c.currentProjectId = null; c.currentDocumentId = null;
   c.respond({ requestId: 'capture-unbound' });
   assert.equal(responses[2].snapshot.projectId, '');
@@ -709,6 +722,8 @@ function sceneMoveHarness() {
   class Element {
     constructor(tag) { this.tag = tag; this.style = {}; this.events = {}; this.children = []; this.isConnected = true; nodes.push(this); }
     setAttribute() {}
+    removeAttribute() {}
+    select() {}
     append(...children) { this.children.push(...children); }
     addEventListener(type, fn) { this.events[type] = fn; }
     focus() { c.document.activeElement = this; }
@@ -801,4 +816,162 @@ test('move selection cannot submit an injected choice and equivalent same-revisi
   await pending;
   assert.equal(c.calls.length, 1);
   assert.equal(c.reloads, 1);
+});
+
+function sceneContentHarness() {
+  const c = sceneMoveHarness();
+  c.scene.parentNodeId = 'old';
+  c.treeRoot.children[0].children.push({ nodeId: 'right', parentNodeId: 'old', kind: 'scene', label: 'Правая' });
+  c.boundary = { boundaryRootIndex: 1, position: 8 };
+  c.getTiptapRootSplitBoundary = () => c.boundary;
+  return c;
+}
+
+test('real split name dialog and merge menu use the registered generic bridge with only bounded identity intent', async () => {
+  const { pathToFileURL } = require('node:url');
+  const commands = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  for (const split of [true, false]) {
+    const c = sceneContentHarness(), handlers = new Map(), calls = [];
+    c.EXTRA_COMMAND_IDS = commands.EXTRA_COMMAND_IDS;
+    commands.registerProjectCommands({ registerCommand(meta, fn) { handlers.set(meta.id, fn); } }, {
+      electronAPI: { invokeUiCommandBridge: async value => { calls.push(JSON.parse(JSON.stringify(value))); return { ok: true, value: { ok: true } }; } },
+    });
+    c.dispatchUiCommand = (id, payload) => handlers.get(id)(payload);
+    const commandId = split ? commands.EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE : commands.EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE;
+    const item = c.buildContextMenuItems(c.scene).find(x => x.id === commandId);
+    assert.equal(item.enabled, true);
+    const pending = item.invoke();
+    if (split) {
+      const input = c.nodes.find(n => n.tag === 'input'); input.value = 'Правая сцена';
+      input.events.keydown({ key: 'Enter', preventDefault() {} });
+    }
+    await pending;
+    assert.deepEqual(calls, [{ route: 'command.bus', commandId, payload: {
+      projectId: 'project', nodeId: 'scene', expectedTreeRevision: 7, expectedDocumentId: 'scene', expectedGeneration: 9,
+      expectedTreeContentPublicationId: '', ...(split ? { name: 'Правая сцена', boundaryRootIndex: 1 } : {}),
+    } }]);
+    assert.equal(c.reloads, 1); assert.equal(c.treeMutationPending, false);
+    assert.equal(c.isLinkDialogOpen(), false);
+  }
+});
+
+test('split dialog cancellation and changed root selection, epoch, authoring or tree state never dispatch', async () => {
+  const changes = {
+    cancel: c => c.nodes.find(n => n.textContent === 'Отмена').events.click(),
+    project: c => { c.currentProjectId = 'other'; },
+    node: c => { c.currentDocumentId = 'right'; },
+    tree: c => { c.treeMutationProjection.treeRevision++; },
+    generation: c => { c.localEditGeneration++; },
+    epoch: c => { c.currentTreeContentPublicationId = 'other'; },
+    bytes: c => { c.composeDocumentContent = () => 'changed'; },
+    rootIndex: c => { c.boundary = { boundaryRootIndex: 2, position: 8 }; },
+    position: c => { c.boundary = { boundaryRootIndex: 1, position: 9 }; },
+    rangeOrNested: c => { c.boundary = null; },
+    comment: c => { c.wordCommentDraft = {}; },
+    note: c => { c.manuscriptDrafts.set('note', {}); },
+    pending: c => { c.treeMutationPending = true; },
+    capability: c => { c.allowed = false; },
+  };
+  for (const [name, mutate] of Object.entries(changes)) {
+    const c = sceneContentHarness(), pending = c.handleTreeContentMutation(c.scene, true);
+    mutate(c);
+    c.nodes.find(n => n.textContent === 'Разделить').events.click();
+    await pending;
+    assert.equal(c.calls.length, 0, name); assert.equal(c.reloads, 0, name);
+    assert.equal(c.isLinkDialogOpen(), false, name);
+  }
+  const c = sceneContentHarness(); c.boundary = null;
+  const item = c.buildContextMenuItems(c.scene).find(x => x.id === 'split');
+  assert.equal(item.enabled, false); assert.match(item.label, /курсор.*начале/u);
+  await c.handleTreeContentMutation(c.scene, true);
+  assert.equal(c.nodes.some(n => n.tag === 'dialog'), false);
+  assert.equal(c.calls.length, 0);
+  c.treeRoot.children[0].children.pop();
+  const merge = c.buildContextMenuItems(c.scene).find(x => x.id === 'merge');
+  assert.equal(merge.enabled, false); assert.match(merge.label, /нет следующей/u);
+});
+
+test('registered split and merge reject malformed observation and preserve typed Main refusal', async () => {
+  const commands = await import(require('node:url').pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  const handlers = new Map(), calls = [];
+  commands.registerProjectCommands({ registerCommand(meta, fn) { handlers.set(meta.id, fn); } }, {
+    electronAPI: { invokeUiCommandBridge: async value => { calls.push(value); return { ok: true, value: { ok: false, reason: 'E_TREE_PARTITION_RANGE_CROSSES' } }; } },
+  });
+  const payload = { projectId: 'project', nodeId: 'scene', expectedDocumentId: 'scene', expectedGeneration: 9,
+    expectedTreeRevision: 7, expectedTreeContentPublicationId: '', boundaryRootIndex: 1, name: 'Right' };
+  const handler = handlers.get(commands.EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE);
+  for (const override of [{ expectedDocumentId: 'other' }, { expectedGeneration: -1 }, { expectedGeneration: '9' },
+    { expectedTreeRevision: null }, { expectedTreeContentPublicationId: null }, { boundaryRootIndex: 0 }, { boundaryRootIndex: 1.5 }]) {
+    assert.equal((await handler({ ...payload, ...override })).ok, false);
+  }
+  assert.equal(calls.length, 0);
+  const result = await handler(payload);
+  assert.equal(result.ok, false); assert.equal(result.error.code, 'E_TREE_PARTITION_RANGE_CROSSES');
+  assert.match(result.error.details.userMessage, /разделить/u);
+  const policy = await import(require('node:url').pathToFileURL(path.join(ROOT, 'src/renderer/commands/capabilityPolicy.mjs')).href);
+  for (const id of [commands.EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE, commands.EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE]) {
+    assert.equal(policy.enforceCapabilityForCommand(id, {}, { defaultPlatformId: 'node' }).ok, true);
+    for (const platform of ['web', 'mobile']) assert.equal(policy.enforceCapabilityForCommand(id, {}, { defaultPlatformId: platform }).ok, false);
+  }
+});
+
+test('whole editor listener accepts same-ID partition only after checked replacement and retains declined buffer, history and drafts', () => {
+  const source = read('src/renderer/editor.js');
+  const start = source.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  const end = source.indexOf('  window.electronAPI.onEditorTextRequest(', start);
+  for (const mode of ['same-id', 'changed-id-recovery', 'project', 'document', 'generation', 'epoch', 'target-epoch',
+    'content', 'comment', 'comment-busy', 'note', 'note-busy', 'flow', 'mixed-flags', 'invalid-document', 'adapter-refused']) {
+    let listener, working = 'before rich buffer', history = ['prior text edit'];
+    const effects = [], statuses = [];
+    const c = { currentProjectId: 'project', currentDocumentId: 'scene', currentDocumentKind: 'scene',
+      currentDocumentTitle: 'Before', currentTreeContentPublicationId: 'prior', treeDetachedOrigin: null,
+      localEditGeneration: 9, lastAckedGeneration: 8, localDirty: true, metaEnabled: true,
+      wordCommentDraft: mode === 'comment' ? { body: 'draft' } : null, wordCommentBusy: mode === 'comment-busy',
+      manuscriptDrafts: new Map(mode === 'note' ? [['note', { body: 'draft' }]] : []), notesMutationPending: mode === 'note-busy',
+      isTiptapMode: true, flowModeState: { active: mode === 'flow' }, activeDocumentRevealRequested: false, currentRightTab: 'metadata',
+      window: { electronAPI: { onEditorSetText: fn => { listener = fn; } } }, console: { warn() {} },
+      composeDocumentContent: () => working, updateStatusText: value => statuses.push(value),
+      parseDocumentContent: content => ({ doc: { type: 'doc', content: [] }, text: content, meta: { marker: 'target' }, cards: [], issue: mode === 'invalid-document' ? {} : null }),
+      replaceTiptapTreeDocumentSnapshot: () => {
+        if (mode === 'adapter-refused') return false;
+        assert.equal(c.currentTreeContentPublicationId, 'prior');
+        effects.push('replace-and-reset'); working = 'target rich buffer'; history = []; return true;
+      },
+      setTiptapDocumentSnapshot: () => assert.fail('must not replace twice after checked tree replacement'),
+      isProjectTreeDocumentId: id => Boolean(id), normalizeProjectId: id => id,
+      shouldUseCentralSheetLargePayloadFastPath: () => false, reviewSurfaceResolveIncomingPayload: () => ({}),
+      revealActiveDocumentAncestors: () => ({ found: true }), editorPanel: null, mainContent: null, emptyState: null,
+      localStorage: { setItem() {} }, getActiveDocumentTitleStorageKey: () => 'title', requestAnimationFrame() {},
+    };
+    for (const name of ['cancelLinkDialog', 'clearFlowModeState', 'clearPendingMetadataUpdate', 'applyIncomingBookProfile',
+      'setReviewSurfaceState', 'clearCentralSheetLargePayloadFastPath', 'resetCentralSheetStripForIncomingPayload',
+      'updateMetaInputs', 'updateMetaVisibility', 'updateCardsList', 'updateWordCount', 'scheduleCentralSheetStripProofRefresh',
+      'hideManualMapPlanWorkspace', 'hideNotesWorkspace', 'hideProjectSearchWorkspace', 'hideWriterHomeSurface',
+      'showAuthoringSurfacesSurface', 'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
+      'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump']) c[name] = () => {};
+    vm.createContext(c);
+    vm.runInContext(executableFunctions(['treeContentReplacementRefusalReason', 'showEditorPanelFor']) + '\n' + source.slice(start, end), c);
+    const overrides = { project: { projectId: 'foreign' }, document: { expectedDocumentId: 'wrong' }, generation: { expectedGeneration: 8 },
+      epoch: { expectedTreeContentPublicationId: 'wrong' }, 'target-epoch': { treeContentPublicationId: 'prior' },
+      content: { expectedContent: 'stale' }, 'mixed-flags': { treePublication: true } };
+    const comment = c.wordCommentDraft, note = c.manuscriptDrafts.get('note');
+    listener({ treeContentReplacement: true, projectId: 'project', expectedDocumentId: 'scene',
+      documentId: mode === 'changed-id-recovery' ? 'recovered' : 'scene', kind: 'scene', metaEnabled: true,
+      title: 'After', expectedGeneration: 9, expectedTreeContentPublicationId: 'prior', treeContentPublicationId: 'next',
+      expectedContent: 'before rich buffer', content: 'target rich buffer', ...overrides[mode] });
+    if (mode === 'same-id' || mode === 'changed-id-recovery') {
+      assert.deepEqual(effects, ['replace-and-reset']); assert.equal(working, 'target rich buffer');
+      assert.deepEqual(history, []); assert.equal(c.currentDocumentTitle, 'After');
+      assert.equal(c.currentDocumentId, mode === 'same-id' ? 'scene' : 'recovered');
+      assert.equal(c.currentTreeContentPublicationId, 'next'); assert.equal(c.localDirty, false);
+      assert.equal(c.lastAckedGeneration, 9); assert.equal(c.currentMeta.marker, 'target');
+    } else {
+      assert.deepEqual(effects, [], mode); assert.equal(working, 'before rich buffer', mode);
+      assert.deepEqual(history, ['prior text edit'], mode); assert.equal(c.currentDocumentTitle, 'Before', mode);
+      assert.equal(c.currentDocumentId, 'scene', mode); assert.equal(c.currentTreeContentPublicationId, 'prior', mode);
+      assert.equal(c.localDirty, true, mode); assert.equal(c.lastAckedGeneration, 8, mode);
+      assert.equal(c.wordCommentDraft, comment); assert.equal(c.manuscriptDrafts.get('note'), note);
+      assert.equal(statuses.length, 1, mode);
+    }
+  }
 });

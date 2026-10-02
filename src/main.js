@@ -21782,15 +21782,27 @@ function normalizeEditorSnapshotPayload(payload) {
       ? source.text
       : '';
   const identity = {};
-  for (const key of ['projectId', 'documentId']) {
+  for (const key of ['projectId', 'documentId', 'treeContentPublicationId']) {
     if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
     if (typeof source[key] !== 'string' || source[key].length > 192 || /[\u0000-\u001f\u007f]/u.test(source[key])) {
       throw Object.assign(new Error('SNAPSHOT_DOCUMENT_IDENTITY_INVALID'), { code: 'E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID' });
     }
     identity[key] = source[key];
   }
+  let rootSplitBoundary = null;
+  if (source.rootSplitBoundary !== undefined && source.rootSplitBoundary !== null) {
+    const cut = source.rootSplitBoundary;
+    if (!isPlainObjectValue(cut) || Object.keys(cut).length !== 2
+      || !Object.prototype.hasOwnProperty.call(cut, 'boundaryRootIndex') || !Object.prototype.hasOwnProperty.call(cut, 'position')
+      || !Number.isSafeInteger(cut.boundaryRootIndex) || cut.boundaryRootIndex < 0
+      || !Number.isSafeInteger(cut.position) || cut.position < 1) {
+      throw Object.assign(new Error('SNAPSHOT_ROOT_BOUNDARY_INVALID'), { code: 'E_SNAPSHOT_ROOT_BOUNDARY_INVALID' });
+    }
+    rootSplitBoundary = { boundaryRootIndex: cut.boundaryRootIndex, position: cut.position };
+  }
   return {
     ...identity,
+    rootSplitBoundary,
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
@@ -21805,15 +21817,36 @@ function normalizeEditorSnapshotPayload(payload) {
   };
 }
 
-function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence = null) {
+async function treeSceneSnapshotsEqual(savedContent, liveContent) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const saved = envelope.parseObservablePayload(savedContent), live = envelope.parseObservablePayload(liveContent);
+  if (saved.issue || live.issue || saved.hasMetaBlock !== live.hasMetaBlock
+    || JSON.stringify(saved.meta) !== JSON.stringify(live.meta) || JSON.stringify(saved.cards) !== JSON.stringify(live.cards)) return false;
+  const materialize = doc => {
+    if (!doc) return null;
+    const checked = envelope.canonicalizeDocumentJson(doc);
+    const registry = userBookmarkModel.readRegistry(checked);
+    const ledger = pendingTextRevisions.readLedger(checked);
+    const result = userBookmarkModel.materializeInternalLinkSchemaDefaults(checked);
+    result.attrs = { ...(result.attrs || {}), wordUserBookmarks: registry, wordPendingRevisions: ledger };
+    return result;
+  };
+  const review = await loadRtkNonTextReturnModule();
+  return review.commentSceneSnapshotsEqual(materialize(saved.doc) || saved.text, materialize(live.doc) || live.text);
+}
+
+async function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence = null) {
   const fence = expectedFence || treeEditorReplacementFence;
   if (!fence) return;
-  if ((treeEditorReplacementFence && treeEditorReplacementFence !== fence)
-    || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
-    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
-    || currentLifecycleSubjectId() !== fence.subjectId
+  const current = () => !(treeEditorReplacementFence && treeEditorReplacementFence !== fence)
+    && currentFilePath === fence.filePath && getProjectRootPath() === fence.projectRoot
+    && activeStage10ApplicationBootstrap === fence.owner && commentAuthoringSessionId === fence.session
+    && currentLifecycleSubjectId() === fence.subjectId;
+  if (!current()
     || snapshot?.projectId !== fence.projectId || snapshot?.documentId !== fence.documentId
-    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < lastSignaledEditGeneration) {
+    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < lastSignaledEditGeneration
+    || fence.treeContentPublicationId && (snapshot.treeContentPublicationId !== fence.treeContentPublicationId
+      || !await treeSceneSnapshotsEqual(fence.targetContent, snapshot.content)) || !current()) {
     isDirty = true;
     throw Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' });
   }
@@ -21829,7 +21862,8 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
     || snapshot?.commentAuthoringPending === true || snapshot?.manuscriptNoteAuthoringPending === true
     || lastSignaledEditGeneration !== admission.generation
     || snapshot?.projectId !== fence.projectId
-    || (snapshot?.documentId !== fence.removedNodeId && !(fence.detached === true && snapshot?.documentId === ''))
+    || (snapshot?.documentId !== (fence.sourceNodeId || fence.removedNodeId) && !(fence.detached === true && snapshot?.documentId === ''))
+    || fence.sourceNodeId && snapshot?.treeContentPublicationId !== fence.priorTreeContentPublicationId
     || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < admission.generation) {
     throw treeCohortError('E_TREE_RECOVERY_CONTEXT_STALE');
   }
@@ -21848,16 +21882,26 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
     }, timeoutMs);
 
     const recordingSession = activePendingRecording;
+    const capturedAuthoringSession = commentAuthoringSessionId;
+    const checkSession = () => {
+      if (capturedAuthoringSession !== commentAuthoringSessionId) {
+        throw Object.assign(new Error('TREE_EDITOR_IDENTITY_UNCONFIRMED'), { code: 'E_TREE_EDITOR_IDENTITY_UNCONFIRMED' });
+      }
+    };
     const capturedTreeFence = typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null;
     pendingSnapshotRequests.set(requestId, { resolve: async snapshot => {
       try {
+        checkSession();
         const fence = capturedTreeFence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
-        else if (fence) assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        else if (fence) await assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        checkSession();
         const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
+        checkSession();
         const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
-        else if (publicationFence) assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        else if (publicationFence) await assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        checkSession();
         resolve(prepared);
       } catch (error) { reject(error); }
     }, reject, timeoutId });
@@ -31767,6 +31811,8 @@ const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
   'cmd.project.tree.copyNode',
+  'cmd.project.tree.splitScene',
+  'cmd.project.tree.mergeNextScene',
   'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
@@ -32030,7 +32076,7 @@ async function captureTreeMutationContext(commandId, payload) {
   if (admission.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || admission.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
   if (activePendingRecording) throw treeCohortError('RECORDING_STOP_BEFORE_TREE_MUTATION');
   if (activeAutoSavePromise) await activeAutoSavePromise;
-  let editorSnapshotContent = null, editorSnapshotGeneration = null;
+  let editorSnapshotContent = null, editorSnapshotGeneration = null, editorSnapshot = null;
   if (mainWindow && currentFilePath && isPathInside(projectRoot, currentFilePath)) {
     let snapshot = await requestEditorSnapshot();
     const disk = await fs.readFile(filePath, 'utf8');
@@ -32063,6 +32109,7 @@ async function captureTreeMutationContext(commandId, payload) {
     }
     editorSnapshotContent = snapshot.content;
     editorSnapshotGeneration = snapshot.generation;
+    editorSnapshot = snapshot;
   } else if (isDirty || autoSaveInProgress) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
   userBookmarkCapability(commandId);
   if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
@@ -32082,7 +32129,48 @@ async function captureTreeMutationContext(commandId, payload) {
   };
   guard();
   return { projectRoot, projectName, manifestPath, manifest: raw.manifest, beforeManifestText: raw.raw,
-    filePath, generation, guard, identityCurrent, editorSnapshotContent, editorSnapshotGeneration };
+    filePath, generation, guard, identityCurrent, editorSnapshotContent, editorSnapshotGeneration, editorSnapshot };
+}
+
+async function assertTreeTopologySelection(context, payload, node, split) {
+  const snapshot = context.editorSnapshot;
+  if (node.nodePath !== context.filePath || payload.expectedDocumentId !== node.nodeId
+    || snapshot?.projectId !== payload.projectId || snapshot?.documentId !== node.nodeId
+    || snapshot?.generation !== payload.expectedGeneration
+    || (snapshot?.treeContentPublicationId || '') !== payload.expectedTreeContentPublicationId
+    || snapshot?.commentAuthoringPending || snapshot?.manuscriptNoteAuthoringPending) throw treeCohortError('E_TREE_TOPOLOGY_SELECTION_STALE');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  context.guard();
+  const parsed = envelope.parseObservablePayload(snapshot.content);
+  if (parsed.issue || !parsed.doc) throw treeCohortError('E_TREE_TOPOLOGY_DOCUMENT_INVALID');
+  const doc = envelope.canonicalizeDocumentJson(parsed.doc);
+  if (split) {
+    const cut = snapshot.rootSplitBoundary, index = payload.boundaryRootIndex;
+    if (!cut || cut.boundaryRootIndex !== index || index < 1 || index >= doc.content.length
+      || !['paragraph', 'heading'].includes(doc.content[index].type)
+      || !snapshot.selectionRange || snapshot.selectionRange.start !== snapshot.selectionRange.end) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+    let visited = 0;
+    const size = (node, depth = 0) => {
+      if (++visited > 100000 || depth > 64) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+      if (node.type === 'text') return node.text.length;
+      if (Array.isArray(node.content)) return 2 + node.content.reduce((sum, child) => sum + size(child, depth + 1), 0);
+      return ['paragraph', 'heading', 'codeBlock', 'blockquote', 'bulletList', 'orderedList', 'listItem', 'table', 'tableRow', 'tableCell', 'tableHeader'].includes(node.type) ? 2 : 1;
+    };
+    const position = 1 + doc.content.slice(0, index).reduce((sum, root) => sum + size(root), 0);
+    if (cut.position !== position) throw treeCohortError('E_TREE_SPLIT_BOUNDARY_INVALID');
+  }
+}
+
+function normalizeTreeTopologyIntent(payload, split) {
+  const safe = normalizeTreeCohortIntent(payload, ['projectId', 'nodeId', 'expectedTreeRevision',
+    'expectedDocumentId', 'expectedGeneration', 'expectedTreeContentPublicationId', ...(split ? ['name', 'boundaryRootIndex'] : [])]);
+  if (!Number.isSafeInteger(safe.expectedTreeRevision) || typeof safe.expectedDocumentId !== 'string'
+    || !Number.isSafeInteger(safe.expectedGeneration) || safe.expectedGeneration < 0
+    || typeof safe.expectedTreeContentPublicationId !== 'string' || safe.expectedTreeContentPublicationId.length > 192
+    || /[\u0000-\u001f\u007f]/u.test(safe.expectedTreeContentPublicationId)
+    || split && (!Number.isSafeInteger(safe.boundaryRootIndex) || safe.boundaryRootIndex < 1
+      || typeof safe.name !== 'string' || !sanitizeFilename(safe.name))) throw treeCohortError('E_TREE_COHORT_PAYLOAD_INVALID');
+  return safe;
 }
 
 function treeCohortMappedPath(projectRoot, original, bindings) {
@@ -32094,6 +32182,7 @@ function treeCohortMappedPath(projectRoot, original, bindings) {
 }
 
 async function publishTreeCohortActiveContext(bound) {
+  if (bound.structural) return publishTreeTopologyContext(bound);
   if (bound.detached === true) {
     let generation = null;
     const subjectId = currentLifecycleSubjectId();
@@ -32180,6 +32269,50 @@ async function publishTreeCohortActiveContext(bound) {
   }
 }
 
+async function publishTreeTopologyContext(bound) {
+  const fence = bound.fence;
+  const guard = () => {
+    userBookmarkCapability(bound.commandId);
+    if (treeEditorReplacementFence !== fence || currentFilePath !== fence.filePath
+      || getProjectRootPath() !== fence.projectRoot || activeStage10ApplicationBootstrap !== fence.owner
+      || commentAuthoringSessionId !== fence.session || currentLifecycleSubjectId() !== fence.subjectId
+      || lastSignaledEditGeneration !== bound.generation || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  };
+  guard();
+  const raw = await fs.readFile(fence.filePath, 'utf8');
+  guard();
+  if (raw !== fence.targetContent) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const doc = await getProjectDocumentIdentityPayload(fence.filePath);
+  guard();
+  if (doc.documentId !== fence.documentId) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(fence.filePath),
+    kind: 'scene', metaEnabled: true, content: raw, documentId: doc.documentId }, fence.filePath);
+  Object.assign(payload, { treeContentReplacement: true, expectedDocumentId: fence.sourceNodeId,
+    expectedContent: bound.activeBeforeContent, expectedGeneration: bound.editorSnapshotGeneration,
+    expectedTreeContentPublicationId: fence.priorTreeContentPublicationId,
+    treeContentPublicationId: fence.treeContentPublicationId });
+  if (await fs.readFile(fence.filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  guard();
+  mainWindow.webContents.send('editor:set-text', payload);
+  // Never clear Main's dirty/generation state merely because a projection was
+  // sent. The real viewer must confirm target bytes and the private epoch.
+  await requestEditorSnapshot();
+  if (treeEditorReplacementFence || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+    || currentLifecycleSubjectId() !== fence.subjectId || lastSignaledEditGeneration !== bound.generation
+    || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const sessionGuard = () => {
+    userBookmarkCapability(bound.commandId);
+    if (currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+      || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+      || currentLifecycleSubjectId() !== fence.subjectId || lastSignaledEditGeneration !== bound.generation
+      || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  };
+  const saved = await saveLastFile({ preserveSelectionOnPathRebind: true, beforeWrite: sessionGuard });
+  sessionGuard();
+  if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+}
+
 async function runTreeCohortIntent(commandId, payload, build, options = {}) {
   treeBackupCaptureDepth++;
   let publication = null, committedOutcome = null;
@@ -32220,7 +32353,8 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
             notesText: inventory.notesText, commentsText: inventory.commentsText, operationId })
           : cohort.planProjectTreeCohort({ projectId: payload.projectId, manifestPath: context.manifestPath,
             operationId, operation: request.operation, beforeManifestText, ...inventory,
-            expectedTreeRevision: state.treeRevision, bindings: request.bindings, now: new Date().toISOString() });
+            expectedTreeRevision: state.treeRevision, bindings: request.bindings,
+            ...(request.topology ? { topology: request.topology } : {}), now: new Date().toISOString() });
         context.guard();
         if (plan.changed === false) return { ok: true, nodeId: payload.nodeId, moved: false, changed: false };
         const expired = await expireProjectWordRoundsBeforeTree(context.projectRoot, context.guard);
@@ -32272,11 +32406,28 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         if (!context.identityCurrent()) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
         const workingChanged = context.generation !== lastSignaledEditGeneration
           || isDirty || autoSaveInProgress || activePendingRecording;
-        const nextFile = treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
+        const structural = plan.scenePublications?.find(row => path.join(context.projectRoot, row.fromRelativePath) === context.filePath);
+        const nextFile = structural ? path.join(context.projectRoot, structural.toRelativePath)
+          : treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
         const removedCopy = (result.pathBindings || []).find(x => x.removedCopy
           && path.join(context.projectRoot, x.fromRelativePath) === context.filePath);
         // Rebind all affected active siblings, not only the dragged subtree.
-        if (nextFile !== context.filePath) {
+        if (structural) {
+          // This runs inside the existing disk queue, before any queued old
+          // Save can acquire a new partition as its expected beforeimage.
+          currentFilePath = nextFile;
+          commentAuthoringSessionId = crypto.randomUUID();
+          userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
+          const fence = treeEditorReplacementFence = { filePath: nextFile, projectRoot: context.projectRoot,
+            projectId: payload.projectId, documentId: structural.afterNodeId, sourceNodeId: structural.beforeNodeId,
+            treeRevision: result.treeRevision, owner: context.owner || activeStage10ApplicationBootstrap,
+            session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId(), targetContent: structural.afterContent,
+            priorTreeContentPublicationId: context.editorSnapshot?.treeContentPublicationId || '',
+            treeContentPublicationId: `tree-content-${crypto.randomUUID()}` };
+          publication = { structural: true, fence, projectRoot: context.projectRoot, filePath: nextFile,
+            commandId, generation: context.generation, editorSnapshotGeneration: context.editorSnapshotGeneration,
+            activeBeforeContent: context.editorSnapshotContent ?? activeBeforeContent };
+        } else if (nextFile !== context.filePath) {
           currentFilePath = workingChanged && removedCopy ? null : nextFile;
           userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
           backupHashes.delete(context.filePath);
@@ -32500,6 +32651,52 @@ async function handleUiCopyNodeCommand(payload) {
     const next = entries.length + 1;
     const toRelativePath = path.posix.join(path.posix.dirname(node.relativePath), `${String(next).padStart(2, '0')}_${sanitizeFilename(safe.name)}.txt`);
     return { operation: 'copy', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath, copy: true }] };
+  });
+}
+
+async function handleUiSceneTopologyCommand(payload, split) {
+  let safe;
+  try { safe = normalizeTreeTopologyIntent(payload, split); }
+  catch (error) { return makeTreeMoveError(error.code, error.message); }
+  const commandId = split ? 'cmd.project.tree.splitScene' : 'cmd.project.tree.mergeNextScene';
+  return runTreeCohortIntent(commandId, safe, async context => {
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
+    if (!['scene', 'chapter-file'].includes(node.kind) || !node.relativePath.startsWith('roman/')) throw treeCohortError('E_TREE_TOPOLOGY_KIND_BLOCKED');
+    await assertTreeTopologySelection(context, safe, node, split);
+    context.guard();
+    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent);
+    context.guard();
+    const index = entries.findIndex(entry => entry.path === node.nodePath);
+    if (index < 0) throw treeCohortError('E_TREE_NODE_NOT_FOUND');
+    let right = null;
+    if (split) entries.splice(index + 1, 0, { path: null, baseName: sanitizeFilename(safe.name), isFile: true });
+    else {
+      const next = entries[index + 1];
+      if (!next?.isFile) throw treeCohortError('E_TREE_MERGE_NEXT_SCENE_REQUIRED');
+      const relative = path.relative(context.projectRoot, next.path).split(path.sep).join('/');
+      const owner = Object.entries(context.manifest.treeIdentity.nodes).find(([, value]) => value.present !== false && value.bindingKey === `file:${relative}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      right = await resolveTreeCohortNode(owner[0], safe.projectId, context);
+      if (!['scene', 'chapter-file'].includes(right.kind)) throw treeCohortError('E_TREE_MERGE_NEXT_SCENE_REQUIRED');
+      entries.splice(index + 1, 1);
+    }
+    const bindings = [], nodes = context.manifest.treeIdentity.nodes;
+    entries.forEach((entry, ordinal) => {
+      const name = formatPrefixedName(entry.baseName, ordinal + 1) + (entry.isFile ? '.txt' : '');
+      entry.nextPath = joinPathSegmentsWithinRoot(parent, [name], { resolveSymlinks: false });
+      if (!entry.path) return;
+      const fromRelativePath = path.relative(context.projectRoot, entry.path).split(path.sep).join('/');
+      const owner = Object.entries(nodes).find(([, value]) => value.present !== false && value.bindingKey === `file:${fromRelativePath}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      if (entry.nextPath !== entry.path || entry.path === node.nodePath) bindings.push({ nodeId: owner[0], fromRelativePath,
+        toRelativePath: path.relative(context.projectRoot, entry.nextPath).split(path.sep).join('/') });
+    });
+    const topology = split ? { sourceNodeId: node.nodeId, sourceRelativePath: node.relativePath,
+      boundaryRootIndex: safe.boundaryRootIndex,
+      newRelativePath: path.relative(context.projectRoot, entries[index + 1].nextPath).split(path.sep).join('/') }
+      : { leftNodeId: node.nodeId, leftRelativePath: node.relativePath, rightNodeId: right.nodeId, rightRelativePath: right.relativePath };
+    context.guard();
+    return { operation: split ? 'split' : 'merge', bindings, topology };
   });
 }
 
@@ -33339,7 +33536,7 @@ async function showCommentSaveFailure(result) {
     || !mainWindow || mainWindow.isDestroyed()) return;
   if (commentSaveWarningPromise) return commentSaveWarningPromise;
   const identityFailure = /^(?:E_TREE_EDITOR_IDENTITY_UNCONFIRMED|E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID)$/u.test(result.code);
-  const recoverableCopy = identityFailure && treeEditorReplacementFence?.removedNodeId
+  const recoverableCopy = identityFailure && (treeEditorReplacementFence?.removedNodeId || treeEditorReplacementFence?.sourceNodeId)
     && treeEditorReplacementFence.filePath === currentFilePath
     && treeEditorReplacementFence.projectRoot === getProjectRootPath()
     && treeEditorReplacementFence.owner === activeStage10ApplicationBootstrap
@@ -33382,7 +33579,7 @@ function projectSaveFailure(reason, cause = null) {
 
 async function handleTreeRecoveredCopySaveAs() {
   const fence = treeEditorReplacementFence;
-  if (!fence?.removedNodeId || !Number.isSafeInteger(fence.treeRevision)) return false;
+  if (!(fence?.removedNodeId || fence?.sourceNodeId) || !Number.isSafeInteger(fence.treeRevision)) return false;
   userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
   const admission = { fence, generation: lastSignaledEditGeneration };
   treeRecoverySnapshotAdmissions.add(admission);
@@ -33421,7 +33618,7 @@ async function handleTreeRecoveredCopySaveAs() {
         if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || raw.manifest.projectId !== fence.projectId) throw treeCohortError('E_TREE_RECOVERY_PROJECT_READ_ONLY');
         const state = await readVerifiedProjectTreeMutation({ manifestPath, projectId: fence.projectId });
         guard();
-        if (state.treeRevision !== fence.treeRevision || !['undo', 'copy'].includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
+        if (state.treeRevision !== fence.treeRevision || !(fence.sourceNodeId ? ['split', 'merge', 'undo', 'copy'] : ['undo', 'copy']).includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
         const node = await resolveTreeCohortNode(fence.documentId, fence.projectId, { projectRoot: fence.projectRoot, manifestPath, manifest: raw.manifest });
         guard();
         const inventory = await captureTreeCohortInventory(fence.projectRoot);
@@ -33433,7 +33630,8 @@ async function handleTreeRecoveredCopySaveAs() {
           ...inventory, expectedTreeRevision: state.treeRevision,
           bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: relativePath, copy: true }],
           recoveredCopy: { receipt: state.receipt, retainedPacket: state.retainedPacket,
-            removedNodeId: fence.removedNodeId, workingContent: snapshot.content }, now: new Date().toISOString() });
+            ...(fence.sourceNodeId ? { sourceNodeId: fence.sourceNodeId } : { removedNodeId: fence.removedNodeId }),
+            workingContent: snapshot.content }, now: new Date().toISOString() });
         guard();
         await expireProjectWordRoundsBeforeTree(fence.projectRoot, guard);
         guard();
@@ -33471,6 +33669,8 @@ async function handleTreeRecoveredCopySaveAs() {
     const publishedSubject = currentLifecycleSubjectId();
     treeEditorReplacementFence = ownedRecoveryContext = { ...fence, filePath, documentId: outcome.documentId,
       removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject, detached: fence.detached === true };
+    if (fence.sourceNodeId) Object.assign(treeEditorReplacementFence, {
+      targetContent: outcome.content, treeContentPublicationId: `tree-content-${crypto.randomUUID()}` });
     const publishGuard = () => {
       userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
@@ -33488,12 +33688,15 @@ async function handleTreeRecoveredCopySaveAs() {
     const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(filePath),
       kind: 'scene', metaEnabled: true, content: raw, documentId: outcome.documentId }, filePath);
     publishGuard();
-    Object.assign(payload, { treeReplacement: true, ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.removedNodeId,
+    Object.assign(payload, { ...(fence.sourceNodeId ? { treeContentReplacement: true,
+      expectedTreeContentPublicationId: fence.priorTreeContentPublicationId,
+      treeContentPublicationId: treeEditorReplacementFence.treeContentPublicationId } : { treeReplacement: true }),
+      ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.sourceNodeId || fence.removedNodeId,
       expectedContent: snapshot.content, expectedGeneration: snapshot.generation });
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     publishGuard();
     mainWindow.webContents.send('editor:set-text', payload);
-    setDirtyState(false);
+    if (!fence.sourceNodeId) setDirtyState(false);
     treeEditorReplacementFence.session = commentAuthoringSessionId;
     treeEditorReplacementFence.subjectId = currentLifecycleSubjectId();
     const acknowledgedSession = commentAuthoringSessionId, acknowledgedSubject = currentLifecycleSubjectId(), acknowledgedGeneration = lastSignaledEditGeneration;
@@ -33502,16 +33705,18 @@ async function handleTreeRecoveredCopySaveAs() {
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
         || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== acknowledgedSession
         || currentLifecycleSubjectId() !== acknowledgedSubject || lastSignaledEditGeneration !== acknowledgedGeneration
-        || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+        || (!fence.sourceNodeId && isDirty) || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     };
     const observed = await requestEditorSnapshot();
     ackGuard();
-    if (observed.content !== raw || observed.documentId !== outcome.documentId) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    if (observed.documentId !== outcome.documentId || !(fence.sourceNodeId
+      ? await treeSceneSnapshotsEqual(raw, observed.content) : observed.content === raw)) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     ackGuard();
     const saved = await saveLastFile({ selectionRange: observed.selectionRange, beforeWrite: ackGuard });
     ackGuard();
     if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+    if (fence.sourceNodeId) isDirty = false;
     updateStatus('Сохранено');
     return true;
   } catch (error) {
@@ -33793,6 +33998,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
   'cmd.project.tree.copyNode',
+  'cmd.project.tree.splitScene',
+  'cmd.project.tree.mergeNextScene',
   'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
@@ -34377,6 +34584,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return handleUiRenameNodeCommand(payload);
   },
   'cmd.project.tree.copyNode': async (payload = {}) => handleUiCopyNodeCommand(payload),
+  'cmd.project.tree.splitScene': async (payload = {}) => handleUiSceneTopologyCommand(payload, true),
+  'cmd.project.tree.mergeNextScene': async (payload = {}) => handleUiSceneTopologyCommand(payload, false),
   'cmd.project.tree.undoLastMutation': async (payload = {}) => handleUiTreeUndoCommand(payload),
   'cmd.project.tree.deleteNode': async (payload = {}) => {
     return handleUiDeleteNodeCommand(payload);
@@ -36273,6 +36482,7 @@ module.exports = {
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
   handleUiCopyNodeCommand,
+  handleUiSceneTopologyCommand,
   handleUiTreeUndoCommand,
   handleMetadataUpdateCommand,
   handleNotesAttachToSceneCommand,
