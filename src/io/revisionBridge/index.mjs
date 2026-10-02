@@ -11911,7 +11911,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     formatting.message = hasLists
       ? 'Supported bullet and decimal lists, start numbers, nesting, heading levels 1 to 9 and inline marks are preserved. List marker appearance, paragraph appearance, fonts, colors and other formatting are not imported; unsupported numbering is listed separately.'
       : hasHeadings
-      ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
+      ? 'Heading levels 1 to 9, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.href))) {
       formatting.message = 'Supported external HTTP(S) link labels and targets are preserved as inert link marks. ' + formatting.message;

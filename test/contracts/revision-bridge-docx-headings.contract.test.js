@@ -55,6 +55,7 @@ test('C1 headings: all nine levels, empty heading, body and inline marks survive
     heading(2,''),{type:'paragraph',content:[]},{type:'paragraph',content:[{type:'text',text:'body',marks:[{type:'bold'}]}]}]};
   const {doc,plan}=await roundtrip(input);assert.deepEqual(doc,input);
   assert.equal(plan.lossReport.mode,'headings-and-inline-marks');assert.match(plan.lossReport.items.find(i=>i.code==='DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS').message,/fonts/);
+  assert.match(plan.lossReport.items.find(i=>i.code==='DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS').message,/levels 1 to 9/);
 });
 test('C1 headings: custom and localized style ids inherit outline independently of names',async()=>{
  const styles=styleXml('<w:style w:type="paragraph" w:styleId="Base"><w:pPr><w:outlineLvl w:val="2"/></w:pPr></w:style><w:style w:type="paragraph" w:styleId="Глава"><w:basedOn w:val="Base"/></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/></w:style>');
