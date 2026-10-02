@@ -9724,6 +9724,7 @@ function docxResolveBlockStyle(metadata, catalog) {
 function docxInlineCanonicalContent(paragraphs) {
   let runCount = 0;
   let needsRichContent = false;
+  const counterGroups = [], currentCounters = new Map();
   const blocks = paragraphs.map((paragraph) => {
     const codeBlock = paragraph.blockKind === 'codeBlock';
     const depth = paragraph.blockquoteDepth;
@@ -9858,10 +9859,20 @@ function docxInlineCanonicalContent(paragraphs) {
         parentItem.content.push(node);
       }
       active = { numId: list.numId, node };
+      if (list.kind === 'orderedList') {
+        const key = `${list.numId}:${list.level}`;
+        let group = currentCounters.get(key);
+        if (!group || group.next !== list.ordinal || group.type !== list.type) {
+          group = { start: list.ordinal, type: list.type, nodes: [] };
+          currentCounters.set(key, group); counterGroups.push(group);
+        }
+        group.nodes.push(node); active.counterGroup = group;
+      }
       listStack[list.level] = active;
     }
     active.node.content.push({ type: 'listItem', content: [block] });
     active.nextOrdinal = list.ordinal + 1;
+    if (active.counterGroup) active.counterGroup.next = active.nextOrdinal;
   };
   const appendGroups = (groups, target, listStack) => {
     for (const group of groups) {
@@ -9876,6 +9887,12 @@ function docxInlineCanonicalContent(paragraphs) {
     }
   };
   appendGroups(groupTableParagraphs(paragraphs), content, stack);
+  for (const [index, group] of counterGroups.entries()) if (group.nodes.length > 1) {
+    for (const node of group.nodes) {
+      node.attrs.wordListId = `word-list-${index + 1}`;
+      node.attrs.wordListStart = group.start;
+    }
+  }
 
   return needsRichContent ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }

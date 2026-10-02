@@ -56,7 +56,9 @@ test('C1 lists: separate adjacent lists with equal starts are not merged',async(
 });
 test('C1 lists: shared Word numbering continues across body paragraphs',async()=>{
  const actual=await read(packageBytes(paragraph('a')+paragraph('b')+paragraph('body',null)+paragraph('c'),definition(levelXml(0,'decimal',5))));
- assert.deepEqual(actual.doc,doc(ol(5,li(p('a')),li(p('b'))),p('body'),ol(7,li(p('c')))));
+ const expected=doc(ol(5,li(p('a')),li(p('b'))),p('body'),ol(7,li(p('c'))));
+ for(const node of [expected.content[0],expected.content[2]])Object.assign(node.attrs,{wordListId:'word-list-1',wordListStart:5});
+ assert.deepEqual(actual.doc,expected);
 });
 test('C1 lists: Word multilevel counters restart after parent items',async()=>{
  const body=paragraph('a')+paragraph('a1',1,1)+paragraph('a2',1,1)+paragraph('b')+paragraph('b1',1,1);
@@ -66,7 +68,9 @@ test('C1 lists: Word multilevel counters restart after parent items',async()=>{
 test('C1 lists: explicit never-restart counters are preserved as nested start values',async()=>{
  const body=paragraph('a')+paragraph('a1',1,1)+paragraph('b')+paragraph('b2',1,1);
  const actual=await read(packageBytes(body,definition(levelXml(0)+levelXml(1,'decimal',1,'<w:lvlRestart w:val="0"/>'))));
- assert.deepEqual(actual.doc,doc(ol(1,li(p('a'),ol(1,li(p('a1')))),li(p('b'),ol(2,li(p('b2')))))));
+ const expected=doc(ol(1,li(p('a'),ol(1,li(p('a1')))),li(p('b'),ol(2,li(p('b2'))))));
+ for(const item of expected.content[0].content)Object.assign(item.content[1].attrs,{wordListId:'word-list-2',wordListStart:1});
+ assert.deepEqual(actual.doc,expected);
 });
 test('C1 lists: startOverride wins over both abstract and replacement level starts',async()=>{
  const replacement=levelXml(0,'decimal',3);
@@ -168,4 +172,40 @@ for (const [type, format] of [['I','upperRoman'],['i','lowerRoman'],['A','upperL
 test('P3d lists: forged formats cannot grant supported list projection',async()=>{
  const [bridge]=await modules;const {report}=await roundtrip(doc(ol(1,li(p('a')))));
  for(const type of ['decimal','unknown',{},null,'',1,'__proto__']){const bad=structuredClone(report);bad.contentPreview.paragraphs[0].list.type=type;assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bad).ok,false);}
+});
+
+
+test('P3d continued instance responds to insertion; visually equal independent restart does not',async()=>{
+ for(const continued of [true,false]) {
+  const numbering=definition()+(!continued?'<w:num w:numId="2"><w:abstractNumId w:val="0"/><w:lvlOverride w:ilvl="0"><w:startOverride w:val="3"/></w:lvlOverride></w:num>':'');
+  const actual=await read(packageBytes(paragraph('one')+paragraph('two')+paragraph('body',null)+paragraph('three',continued?1:2)+paragraph('four',continued?1:2),numbering));
+  actual.doc.content[0].content.push(li(p('inserted')));
+  const exported=await roundtrip(actual.doc);
+  assert.equal(exported.doc.content[2].attrs.start,continued?4:3);
+  const [,envelope]=await modules;
+  const saved=envelope.composeObservablePayload({doc:actual.doc,metaEnabled:false});
+  const reopened=envelope.parseObservablePayload(saved).doc;
+  assert.equal(reopened.content[2].attrs.start,continued?4:3);
+  if(continued)assert.match(saved,/word-list-numbering.v1/);
+  const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const blocks=buildFormatIrParagraphs({sceneId:'roman/list.txt',doc:reopened,text:'one\ntwo\ninserted\nbody\nthree\nfour'}).map((b,i)=>({...b,blockId:'b'+i,paragraphId:'p'+i}));
+  assert.equal(blocks[4].formatIr.paragraph.list.start+blocks[4].formatIr.paragraph.list.itemOrdinal,continued?4:3);
+  assert.equal(blocks[0].formatIr.paragraph.list.numId===blocks[4].formatIr.paragraph.list.numId,continued);
+  const review=await read(buildDocxReviewPacketBuffer({blocks,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]}));
+  assert.equal(review.doc.content[2].attrs.start,continued?4:3);
+ }
+});
+
+test('P3d editor authoring transaction, undo and redo resolve continued starts',async()=>{
+ const actual=await read(packageBytes(paragraph('one')+paragraph('two')+paragraph('body',null)+paragraph('three')));
+ const [{getSchema},{default:StarterKit},{EditorState},{history,undo,redo},{DocumentListNumbering}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('@tiptap/pm/state'),import('@tiptap/pm/history'),import('../../src/renderer/tiptap/documentListNumbering.mjs')]);
+ const schema=getSchema([StarterKit.configure({trailingNode:false}),DocumentListNumbering]);
+ let state=EditorState.create({schema,doc:schema.nodeFromJSON(actual.doc),plugins:[history(),...DocumentListNumbering.config.addProseMirrorPlugins()]});
+ const dispatch=tr=>{state=state.applyTransaction(tr).state;};
+ const end=state.doc.child(0).nodeSize-1;
+ dispatch(state.tr.insert(end,schema.nodeFromJSON(li(p('inserted')))));
+ assert.equal(state.doc.child(2).attrs.start,4);
+ assert.ok(undo(state,dispatch));assert.equal(state.doc.child(2).attrs.start,3);
+ assert.ok(redo(state,dispatch));assert.equal(state.doc.child(2).attrs.start,4);
 });

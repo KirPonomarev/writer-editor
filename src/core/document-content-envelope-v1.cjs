@@ -273,7 +273,9 @@ function canonicalizeDocumentJson(doc) {
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
   if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
   require('./word-list-format-v1.cjs').inspectDocument(doc);
+  require('./word-list-numbering-v1.cjs').resolve(doc);
   const copied = cloneJsonValue(doc);
+  require('./word-list-numbering-v1.cjs').normalize(copied);
   const pending = [copied];
   while (pending.length) {
     const node = pending.pop();
@@ -282,6 +284,8 @@ function canonicalizeDocumentJson(doc) {
     if (node?.attrs?.wordParagraphMarkLanguage === null) delete node.attrs.wordParagraphMarkLanguage;
     for (const mark of node?.marks || []) if (mark?.attrs?.wordLanguage === null) delete mark.attrs.wordLanguage;
     if (node?.type === 'orderedList' && node.attrs?.type === null) delete node.attrs.type;
+    if (node?.attrs?.wordListId === null) delete node.attrs.wordListId;
+    if (node?.attrs?.wordListStart === null) delete node.attrs.wordListStart;
     if (node?.type === 'table') require('../io/documentTables.js').inspectTable(node);
     if (Array.isArray(node?.content)) for (const child of node.content) pending.push(child);
   }
@@ -299,7 +303,8 @@ function requiredSceneFeatures(doc) {
   return [...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
     ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
     ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : []),
-    ...(require('./word-list-format-v1.cjs').inspectDocument(doc) ? ['word-list-format.v1'] : [])];
+    ...(require('./word-list-format-v1.cjs').inspectDocument(doc) ? ['word-list-format.v1'] : []),
+    ...(require('./word-list-numbering-v1.cjs').resolve(doc).size ? ['word-list-numbering.v1'] : [])];
 }
 function encodeSceneDocument(doc) {
   const json = serializeDocumentJson(doc), requiredFeatures = requiredSceneFeatures(doc);
@@ -334,7 +339,7 @@ function decodeSceneDocument(serializedDoc) {
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
     || declaration.requiredFeatures.length > 4 || declaration.requiredFeatures.some(feature =>
-      !['word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-list-format.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+      !['word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-list-format.v1', 'word-list-numbering.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

@@ -155,7 +155,16 @@ function readDocumentInlineRuns(node) {
 function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
   require('../../core/word-language-v1.cjs').inspectDocumentLanguage(doc);
+  const counters = require('../../core/word-list-numbering-v1.cjs');
+  if (counters.resolve(doc).size) doc = counters.normalize(JSON.parse(JSON.stringify(doc)));
   const blocks = [];
+  const linkedIds = new Map();
+  const numberId = attrs => {
+    const id = attrs?.wordListId;
+    if (!id) return nextListId++;
+    if (!linkedIds.has(id)) linkedIds.set(id, nextListId++);
+    return linkedIds.get(id);
+  };
   let nextListId = 1;
   let nextTableId = 0;
   const visitList = (list, level) => {
@@ -165,7 +174,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
     if (list.type === 'orderedList' && list.attrs?.type != null && !['1', 'I', 'i', 'A', 'a'].includes(list.attrs.type)) throw new Error('DOCX_LIST_FORMAT_UNSUPPORTED');
     if (!Number.isInteger(start) || start < 0 || start > 2147483647
       || start + list.content.length - 1 > 2147483647) throw new Error('DOCX_LIST_START_INVALID');
-    const numbering = { numId: nextListId++, level, kind: list.type, start, ...(list.attrs?.type ? { type: list.attrs.type } : {}) };
+    const numbering = { numId: numberId(list.attrs), level, kind: list.type, start: list.attrs?.wordListStart ?? start, ...(list.attrs?.type ? { type: list.attrs.type } : {}) };
     for (const item of list.content) {
       // One paragraph per item is unambiguous in ordinary OOXML. Unnumbered
       // continuation paragraphs cannot be recovered as item ownership here.
@@ -195,9 +204,9 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
           if (blocks.at(-1).kind !== 'paragraph') throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
           if (!listIds.has(list.listId)) {
             if (nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
-            listIds.set(list.listId, nextListId++);
+            listIds.set(list.listId, numberId(list));
           }
-          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: entry.listStack.length - 1, kind: list.kind, start: list.start, ...(list.type ? { type: list.type } : {}) };
+          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: entry.listStack.length - 1, kind: list.kind, start: list.wordListStart ?? list.start, ...(list.type ? { type: list.type } : {}) };
         }
       }
       return;

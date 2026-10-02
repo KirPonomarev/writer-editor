@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1221,6 +1221,11 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,
     paragraph.attrs={textAlign:null};
     paragraph.content=[{type:'text',text:'Alpha',marks:[{type:'textStyle',attrs:{color:null,fontFamily:'Aptos',fontSize:'12pt'}}]},
       {type:'text',text:' SourceEdit02',marks:[{type:'textStyle',attrs:{color:'',fontFamily:'Aptos',fontSize:'12pt'}}]}];
+  }
+  if(continuedList) {
+    const first=parsed.doc.content[0];Object.assign(first.attrs,{wordListId:'chain',wordListStart:3});
+    const second=structuredClone(first);second.attrs.start=4;second.content[0].content[0].content[0].text='Continued';
+    parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'gap'}]},second);
   }
   const beforeDoc=structuredClone(parsed.doc);
   const target=bookmarked?'Unannotated target':'Alpha';
@@ -1524,4 +1529,17 @@ for(const nativeSuffix of [false,true])test(`actual whole Main native styled lis
   expected.content[0].content[0].content[0].content[1].text=nativeSuffix?' SourceEdit02 CLEAN_EDIT':' CLEAN_EDIT SourceEdit02';
   assert.deepEqual(doc,expected);
   const after=f.capture();assert.notEqual((await f.probe.fullApply({requestId:'native-styled-list-replay'})).applied,true);assert.deepEqual(f.capture(),after);
+});
+
+
+test('actual whole Main continued list survives authenticated text Apply and re-export',async t=>{
+ const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,listType:'I',continuedList:true});
+ assert.equal(activated.ok,true,JSON.stringify(activated));await f.probe.refreshReview();
+ assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');
+ const result=await f.probe.fullApply({requestId:'continued-list-apply'});assert.equal(result.applied,true,JSON.stringify(result));
+ const parsed=envelope.parseObservablePayload(read(f.alpha));assert.equal(parsed.issue,null);
+ assert.equal(parsed.doc.content[0].attrs.wordListId,parsed.doc.content[2].attrs.wordListId);
+ assert.equal(parsed.doc.content[2].attrs.start,4);
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
 });

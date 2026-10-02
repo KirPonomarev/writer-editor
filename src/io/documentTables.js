@@ -23,17 +23,18 @@ function cellParagraphs(content, budget, depth) {
   };
   const visitList = (list, ancestors) => {
     if (ancestors.length > TABLE_LIMITS.listDepth || ++budget.lists > TABLE_LIMITS.lists) fail('LIST_LIMIT');
-    attrsOnly(list, list.type === 'orderedList' ? ['start', 'type'] : []);
+    attrsOnly(list, list.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []);
     const start = list.type === 'orderedList' ? (list.attrs?.start ?? 1) : 1;
     if (!Array.isArray(list.content) || !list.content.length
       || !integer(start, 0, 2147483647) || start + list.content.length - 1 > 2147483647
       || (list.attrs?.type != null && !['1', 'I', 'i', 'A', 'a'].includes(list.attrs.type))) fail('LIST_INVALID');
+    const identity = require('../core/word-list-numbering-v1.cjs').attributes(list.attrs);
     const listId = budget.lists;
     list.content.forEach((item, itemOrdinal) => {
       if (item?.type !== 'listItem' || !Array.isArray(item.content) || item.content[0]?.type !== 'paragraph'
         || item.content.slice(1).some(n => !['bulletList', 'orderedList'].includes(n?.type))) fail('LIST_ITEM_UNSUPPORTED');
       attrsOnly(item, []);
-      const listStack = [...ancestors, { listId, kind: list.type, start, itemOrdinal, ...(list.attrs?.type ? { type: list.attrs.type } : {}) }];
+      const listStack = [...ancestors, { listId, kind: list.type, start, itemOrdinal, ...(identity ? { wordListId: identity.id, wordListStart: identity.start } : {}), ...(list.attrs?.type ? { type: list.attrs.type } : {}) }];
       append(item.content[0], listStack);
       for (const nested of item.content.slice(1)) visitList(nested, listStack);
     });

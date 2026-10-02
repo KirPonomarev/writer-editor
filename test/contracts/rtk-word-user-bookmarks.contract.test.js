@@ -419,6 +419,7 @@ test('envelope absent/null path does not load new module in historical isolated 
     if (name === './word-user-bookmarks-v1.cjs') { loads++; throw new Error('NEW_MODULE_NOT_COPIED'); }
     if (name === './word-pending-text-revisions-v1.cjs') return { readLedger() { return null; } };
     if (name === './word-list-format-v1.cjs') return require('../../src/core/word-list-format-v1.cjs');
+    if (name === './word-list-numbering-v1.cjs') return require('../../src/core/word-list-numbering-v1.cjs');
     throw new Error('Unexpected module ' + name);
   } };
   vm.runInNewContext(fs.readFileSync(require.resolve('../../src/core/document-content-envelope-v1.cjs'), 'utf8'), sandbox);

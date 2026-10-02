@@ -1,3 +1,4 @@
+import { DocumentListNumbering } from './documentListNumbering.mjs';
 import { applyLocalImagePublication } from './localImage.mjs'
 import { textOffsetForPosition, positionForTextOffset } from './textCoordinates.mjs'
 import { WordPendingRevisions, setCheckedDocument as setCheckedReviewDocument } from './wordPendingRevisions.mjs'
@@ -573,6 +574,7 @@ export function initTiptap(mountEl, options = {}) {
         link: false,
         underline: false,
       }),
+      DocumentListNumbering,
       DocumentTextStyle,
       DocumentParagraphAlignment,
       DocumentTables,
