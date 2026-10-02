@@ -72,6 +72,11 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/export/docx/docxReviewPacketComments.js`
 - `test/contracts/rtk-word-canonical-comment-reexport.contract.test.js`
 
+- `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
+- `test/contracts/rtk-interop-word-manuscript.contract.test.js`
+- `test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js`
+- `docs/ARCH_DIFF_LOG.md`
+
 ## DENYLIST
 
 No new writer, registry, IPC channel, dependency, network, project schema or
@@ -314,3 +319,35 @@ until a new observation exists. Extend the existing Main bounded status/log
 observation to the actual local DOCX activation result; preserve receipt, all
 checks and success/cancel/pending behavior, expose only validated codes and
 reasons. Same Main and existing actual-handler contract test scope.
+
+Native SOURCE07 now reports RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH.
+Exact metadata validator isolates only the redundant core creation time; signed
+custom project creation, other protected fields and digest remain exact. A
+diagnostic artifact removing fractional seconds still gets a fresh creation date
+on Word SaveAs, disproving both precision and same-export-minute workarounds.
+Clean checkpointd334ad34c314cd1e3da38e11449184a8530b01e4 and45path preflight
+admit the existing metadata validator, its two affected contracts and explicit
+ARCH_DIFF_LOG amendment. After authenticated round verification only, Main may
+classify a valid changed DOCX core creation timestamp as provider file metadata.
+Signed project creation remains exact. All missing/malformed/duplicate/date-type
+and identity/digest checks remain; default validator still refuses drift. Proof
+must record expected/returned timestamps and coreMetadataPreserved:false, surfaced
+in the existing read-only projection. No canonical metadata writes or full core
+timestamp fidelity claim. Native return and unchanged protected graph are required.
+
+SOURCE08 native return advances past metadata validation and refuses with
+RTK_USER_BOOKMARK_RETURN_CONFLICT. Runtime source digest is
+53d32fa6192b422b1d0fdccfd9182bc0466d37049b12d6c004e029195de529d2.
+The actual SOURCE06 Word artifact is unchanged; all five protected canonical
+files match the pre-Apply baseline byte-for-byte. No Apply or full-route success
+is claimed. Trace the remaining actual input through bookmark analysis and the
+general text return route before another native launch. Existing bookmark-only
+analysis admits link-label edits, while this fixture contains an ordinary text
+edit, unchanged bookmarks, comments and a footnote. Do not remove those features
+or replace the intended edit to obtain a passing scenario.
+
+Metadata/comment whole-file tests:59of60 pass, zero skips/todos. The remaining
+failure is the expected stale Main hash in mandatory historical companion
+bindings; refresh only after the product candidate is stable. The actual Main
+activation contract separately exposed outdated test filesystem/round fixtures
+and two pinned provider parser failures; these remain open, not green.

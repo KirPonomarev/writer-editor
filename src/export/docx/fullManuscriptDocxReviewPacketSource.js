@@ -541,10 +541,21 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   }
   const expectedCreatedAt = Date.parse(normalizeString(expect.createdAtUtc));
   const coreCreatedAt = Date.parse(normalizeString(coreProtected.createdAtUtc));
+  const allowProviderDate = input.allowProviderCoreCreatedAtChange === true;
+  const returnedCreatedAt = coreProtected.createdAtUtc;
+  const canonicalProviderDate = typeof returnedCreatedAt === 'string'
+    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u.test(returnedCreatedAt)
+    && Number.isFinite(coreCreatedAt)
+    && new Date(coreCreatedAt).toISOString().replace('.000Z', 'Z') === returnedCreatedAt.replace('.000Z', 'Z');
   if (!Number.isFinite(expectedCreatedAt) || !Number.isFinite(coreCreatedAt)
-    || Math.floor(expectedCreatedAt / 60_000) !== Math.floor(coreCreatedAt / 60_000)) {
+    || (allowProviderDate ? !canonicalProviderDate
+      : Math.floor(expectedCreatedAt / 60_000) !== Math.floor(coreCreatedAt / 60_000))) {
     mismatches.push('coreProtectedProperties.createdAtUtc');
   }
+  const coreCreatedAtChange = allowProviderDate && canonicalProviderDate
+    && expectedCreatedAt !== coreCreatedAt
+    ? { expected: normalizeString(expect.createdAtUtc), returned: returnedCreatedAt,
+      policy: 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY' } : null;
   if (returned.createdTimestampType !== 'dcterms:W3CDTF') mismatches.push('createdTimestampType');
   if (normalizeString(returned.protectedDigest) !== normalizeString(expected.protectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== normalizeString(expected.protectedDigest)) mismatches.push('signedDigest');
@@ -572,14 +583,17 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   return {
     ok: true,
     applicable: true,
-    status: coreOmissions.length > 0
+    status: coreCreatedAtChange
+      ? 'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_CHANGES'
+      : coreOmissions.length > 0
       ? 'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_OMISSIONS'
       : 'VERIFIED_PROTECTED_DOCUMENT_METADATA',
     proof: {
       schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
       authority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
       coreOmissions: coreOmissions.sort(),
-      coreMetadataPreserved: coreOmissions.length === 0,
+      coreMetadataPreserved: coreOmissions.length === 0 && !coreCreatedAtChange,
+      ...(coreCreatedAtChange ? { coreCreatedAtChange } : {}),
       protectedDigest: expected.protectedDigest,
       protectedProperties: cloneJson(actual),
       coreProtectedProperties: cloneJson(coreProtected),
@@ -587,7 +601,8 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
       volatileCoreProperties: isPlainObjectValue(returned.volatileCoreProperties)
         ? cloneJson(returned.volatileCoreProperties)
         : {},
-      lossLedger: isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {},
+      lossLedger: { ...(isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {}),
+        ...(coreCreatedAtChange ? { coreCreatedAtChange: cloneJson(coreCreatedAtChange) } : {}) },
     },
   };
 }

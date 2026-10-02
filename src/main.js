@@ -9271,6 +9271,13 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
     documentMetadata: {
       status: docxReviewPreviewSessionDetailString(documentMetadataBinding.status),
       authority: docxReviewPreviewSessionDetailString(documentMetadataBinding.authority),
+      coreMetadataPreserved: documentMetadataBinding.coreMetadataPreserved === true,
+      ...(documentMetadataBinding.coreCreatedAtChange?.policy === 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'
+        ? { coreCreatedAtChange: {
+          expected: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreCreatedAtChange.expected),
+          returned: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreCreatedAtChange.returned),
+          policy: 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY',
+        } } : {}),
       protectedDigest: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedDigest),
       protectedProperties: {
         schemaVersion: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.schemaVersion),
@@ -9298,6 +9305,12 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
         revision: docxReviewPreviewSessionDetailString(documentMetadataBinding.volatileCoreProperties?.revision),
       },
       lossLedger: {
+        ...(documentMetadataBinding.lossLedger?.coreCreatedAtChange?.policy === 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY'
+          ? { coreCreatedAtChange: {
+            expected: docxReviewPreviewSessionDetailString(documentMetadataBinding.lossLedger.coreCreatedAtChange.expected),
+            returned: docxReviewPreviewSessionDetailString(documentMetadataBinding.lossLedger.coreCreatedAtChange.returned),
+            policy: 'PROVIDER_DOCUMENT_CREATION_TIME_ADVISORY',
+          } } : {}),
         missingProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingProtectedProperties)
           ? documentMetadataBinding.lossLedger.missingProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
           : [],
@@ -10313,6 +10326,9 @@ async function inspectDocxReviewReturnIntakeV2({
     // provider may omit only redundant core title/identifier; signed custom
     // metadata must still match and the omitted fields are reported as loss.
     allowAdvisoryCoreOmissions: true,
+    // Word Save As assigns the document creation date; the authenticated
+    // signed custom project date stays exact and never updates project truth.
+    allowProviderCoreCreatedAtChange: true,
   });
   if (!documentMetadataBinding.ok) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH', {
