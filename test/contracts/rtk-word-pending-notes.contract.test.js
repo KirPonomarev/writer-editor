@@ -110,8 +110,8 @@ async function runtimeFixture(t, insertion = false) {
   const before = d(p('AxxB')), document = notesFor(before, [1,3]);
   document.notes.forEach(n => { n.manuscript.reference.sceneId = 'roman/a.txt'; });
   const raw = envelope.composeObservablePayload({doc:before}); fs.writeFileSync(h.file, raw);
-  const notePath = path.join(root,'notes.craftsman.json'), manifestPath = path.join(root,'project.json');
-  fs.writeFileSync(notePath, JSON.stringify(document)); fs.writeFileSync(manifestPath, JSON.stringify({ projectId, revision:0 }));
+  const notePath = path.join(root,'notes.craftsman.json'), manifestPath = path.join(root,'project.craftsman.json');
+  fs.writeFileSync(notePath, JSON.stringify(document)); fs.writeFileSync(manifestPath, JSON.stringify({ schemaVersion:1, projectId, revision:0 }));
   const oldContext = h.context;
   h.context = () => ({...oldContext(), projectId});
   Object.assign(h.c, {
@@ -135,6 +135,11 @@ async function runtimeFixture(t, insertion = false) {
       exportMapAuthority:'main-owned-active-export-authority-store-after-return-authentication',returnedArtifactExportMapAccepted:false},
     reviewTransportReturnIntake:{authenticated:true,returnedArtifactSha256:'sha256:'+hash(bytes),parserResult:decoded.analysis}}};
   h.c.createRtkReviewTransportCryptoPort=producer.context.createRtkReviewTransportCryptoPort;
+  // The nested harness allocated a different initial round. Publish this
+  // producer's actual private capsule through the same durable-record fixture
+  // and real Main validator, using the crypto port that will verify its return.
+  h.authority=require('../helpers/main-docx-round-authority').installMainDocxRoundAuthority(h.c,
+    {projectRoot:root,projectId,references:[h.input.context.reviewTransportAuthorityCapsule],publishAllocated:true,t});
   const tx=require('../../src/core/project-transaction-v1.cjs'), save=require('../../src/core/save-coordinator-v1.cjs');
   const publishManifest=async({manifestPath,expectedText,nextText,revision})=>{
     assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);
@@ -146,7 +151,7 @@ async function runtimeFixture(t, insertion = false) {
     const revision=JSON.parse(expectedManifestContent).revision+1;
     const noteState=notes.planManuscriptNoteAnchorSave({beforeText,projectId,sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content});
     const request={scenePath:target,manifestPath,sceneContent:content,expectedSceneContent:options.expectedSceneContent,
-      expectedManifestContent,manifestContent:JSON.stringify({projectId,revision}),revision,noteState,publishManifest};
+      expectedManifestContent,manifestContent:JSON.stringify({...JSON.parse(expectedManifestContent),revision}),revision,noteState,publishManifest};
     h.lastRequest=request;
     const adapter=h.failNotePublish?{...fs.promises,rename:async(a,b)=>{if(b===notePath)throw Error('INJECTED_NOTE_PUBLICATION_FAILURE');return fs.promises.rename(a,b);}}:fs.promises;
     await tx.commitProjectTransaction({...request,fsAdapter:adapter});h.writes++;
@@ -278,6 +283,7 @@ test('new semantic envelope refuses N-1 readers, missing declaration and unknown
 for(const mutation of ['body','kind','identity','missing','duplicate','insideRevision','namespace','referenceMove']){
   test(`authenticated pending-note return rejects ${mutation} with unchanged canonical bytes`,async t=>{
     const h=await runtimeFixture(t),before=[h.file,h.notePath,h.manifestPath].map(p=>fs.readFileSync(p,'utf8'));
+    assert.equal(h.c.assertFreshDocxReviewRoundAuthority(h.input.context.reviewTransportAuthorityCapsule).roundId,h.source.exportCapsule.roundId);
     const bridge=h.input.revisionBridge,parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:h.bytes}).parts;
     if(mutation==='body')parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('Body','Changed');
     if(mutation==='identity')parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace(/_YALKEN_NOTE_[a-f0-9]{24}/u,'_YALKEN_NOTE_'+'a'.repeat(24));
@@ -292,7 +298,17 @@ for(const mutation of ['body','kind','identity','missing','duplicate','insideRev
     h.input.docxBytes=bytes;h.input.context.reviewTransportReturnIntake.returnedArtifactSha256='sha256:'+hash(bytes);
     h.input.context.reviewTransportReturnIntake.parserResult=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:h.source.forbiddenSecret,
       expectedAuthority:h.source.localAuthorityCapsule.expectedAuthority},{cryptoPort:h.c.createRtkReviewTransportCryptoPort()});
-    const result=await h.prepare();assert.notEqual(result?.ok,true,JSON.stringify(result));assert.equal(h.prepared,undefined);assert.equal(h.writes,0);
+    const result=await h.prepare(), noteCode={body:'PENDING_NOTE_BODY_CHANGED',identity:'PENDING_NOTE_IDENTITY_MISMATCH',referenceMove:'PENDING_NOTE_REFERENCE_MOVED'}[mutation];
+    if(noteCode){
+      assert.equal(result?.status,'blocked',JSON.stringify(result));assert.equal(result.code,noteCode);
+    }else{
+      const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assert.equal(h.decoded.preview.ok,true,'unchanged producer output must reach a valid note preview');
+      assert.equal(preview.ok,false);assert.equal(preview.status,'blocked');assert.equal(preview.contentPreview,null);
+      assert.equal(preview.reason,mutation==='missing'?'DOCX_GENERIC_NOTES_INCOMPLETE':'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR');
+      assert.equal(result,null,'invalid note XML must not enter authenticated pending apply');
+    }
+    assert.equal(h.prepared,undefined);assert.equal(h.writes,0);
     assert.deepEqual([h.file,h.notePath,h.manifestPath].map(p=>fs.readFileSync(p,'utf8')),before);
   });
 }

@@ -444,7 +444,9 @@
     "docs/OPS/CAPABILITIES_MATRIX.json",
     "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
     "test/helpers/main-docx-round-authority.js",
-    "test/unit/sector-m-design-os-layout-commit-sync.test.js"
+    "test/unit/sector-m-design-os-layout-commit-sync.test.js",
+    "test/contracts/rtk-round01-round-record-v3.contract.test.js",
+    "test/contracts/rtk-word-c5v2-activation-guards.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1833,7 +1835,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "6e84491d8c621daf00d24526e1b0aea1e1f609deb5a6167ee2a33f2d2a1f6f95"
+        "sha256": "0348e6a56fdcae6153e285d60c0ae13e9280794abf6d51e65ecbb1a9315d24c3"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -1865,7 +1867,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
-        "sha256": "66f0619c8421d255af94da35f47b4f8e732edf6d4545698488e19481d780c857"
+        "sha256": "a938ab105fe01d6a9dd8dcade01fb2fa275cba87702a760da4f6c232c0c38180"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_IDENTITY_V1.json",

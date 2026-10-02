@@ -699,7 +699,13 @@ test('ROUND01-R8-CONTROL-c5v2-activation-source-pins-still-green', () => {
   // implementation. This guards the durable-store / activation wiring contract.
   const src = readMainSource();
   assert.match(src, /REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA/u, 'R8-control: store schema constant must remain');
-  assert.match(src, /persistDocxReviewReturnAuthorityStore\(activeReviewDocxExportAuthorityStore\)/u, 'R8-control: activation persistence call must remain');
+  const activationStart = src.indexOf('async function activateReviewDocxExportAuthority(');
+  const activation = src.slice(activationStart, src.indexOf('\nfunction buildDocxReviewRoundV3BridgeStoreDigest(', activationStart));
+  assert.ok(activationStart >= 0, 'R8-control: actual activation function must remain');
+  assert.match(activation, /pendingDocxReviewPublicationBindings\.get\(pendingAuthorityStore\)/u, 'R8-control: activation requires private producer binding');
+  assert.match(activation, /disk\.text !== bound\.durableText/u, 'R8-control: durable CAS must remain');
+  assert.match(activation, /check\(\);\s*const activatedStore = await transitionPendingDocxReviewRoundToPublishedActive\(pendingAuthorityStore\);\s*check\(\);/u, 'R8-control: transition must retain both identity and durable CAS checks');
+  assert.match(activation, /await persistDocxReviewReturnAuthorityStore\(activatedStore, \{ expectedText: bound\.durableText, revalidate: check \}\);\s*checkDocxReviewPublicationIdentity\(bound, pendingAuthorityStore\);\s*activeReviewDocxExportAuthorityStore = activatedStore;/u, 'R8-control: guarded durable persistence and final identity check must precede cache promotion');
   assert.match(src, /readDurableDocxReviewReturnAuthorityStore\(options\)/u, 'R8-control: durable reader must remain');
   assert.match(src, /activeReviewDocxExportAuthorityStore = durableStore/u, 'R8-control: durable promotion must remain');
   assert.match(src, /secretExposedToRenderer:\s*false/u, 'R8-control: secretExposedToRenderer false pin must remain');

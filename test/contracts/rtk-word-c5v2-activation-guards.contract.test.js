@@ -136,7 +136,13 @@ test('C5V2 product activation requires isolated parser and keeps inline fallback
 test('C5V2 return authority survives product restart through main-only durable store', () => {
   const mainSource = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'main.js'), 'utf8');
   assert.match(mainSource, /REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA/u);
-  assert.match(mainSource, /persistDocxReviewReturnAuthorityStore\(activeReviewDocxExportAuthorityStore\)/u);
+  const activationStart = mainSource.indexOf('async function activateReviewDocxExportAuthority(');
+  const activation = mainSource.slice(activationStart, mainSource.indexOf('\nfunction buildDocxReviewRoundV3BridgeStoreDigest(', activationStart));
+  assert.ok(activationStart >= 0);
+  assert.match(activation, /pendingDocxReviewPublicationBindings\.get\(pendingAuthorityStore\)/u);
+  assert.match(activation, /disk\.text !== bound\.durableText/u);
+  assert.match(activation, /check\(\);\s*const activatedStore = await transitionPendingDocxReviewRoundToPublishedActive\(pendingAuthorityStore\);\s*check\(\);/u);
+  assert.match(activation, /await persistDocxReviewReturnAuthorityStore\(activatedStore, \{ expectedText: bound\.durableText, revalidate: check \}\);\s*checkDocxReviewPublicationIdentity\(bound, pendingAuthorityStore\);\s*activeReviewDocxExportAuthorityStore = activatedStore;/u);
   assert.match(mainSource, /readDurableDocxReviewReturnAuthorityStore\(options\)/u);
   assert.match(mainSource, /activeReviewDocxExportAuthorityStore = durableStore/u);
   assert.match(mainSource, /secretExposedToRenderer:\s*false/u);
