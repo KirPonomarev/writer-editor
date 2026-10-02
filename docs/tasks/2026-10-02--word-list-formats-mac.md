@@ -32,6 +32,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
 - `src/renderer/tiptap/documentListFormat.mjs`
 - `src/renderer/tiptap/index.js`
+- `src/renderer/editor.bundle.js`
 - `src/renderer/tiptap/manuscriptNotes.mjs`
 - `test/contracts/revision-bridge-docx-lists.contract.test.js`
 - `test/contracts/rtk-word-list-format.contract.test.js`
@@ -118,3 +119,6 @@ coverage. The inherited historical numbering fixture expected silent discard of 
 change. Current pending-review semantics correctly block both absent revision ID
 and an unrepresented numbering-only delta. The regression now asserts both exact
 refusals and absence of an import plan; no positive tracked-numbering claim is made.
+
+Mechanical renderer bundle rebuild admitted by same-contour preflight on 1f1b8f38.
+No renderer source or visual design changed; runtime copy must match rebuilt Core.
