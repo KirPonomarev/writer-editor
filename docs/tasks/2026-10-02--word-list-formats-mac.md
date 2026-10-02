@@ -40,6 +40,8 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/rtk-word-list-format.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-table-cell-lists.contract.test.js`
+- `test/contracts/rtk-word-note-lists.contract.test.js`
+- `test/contracts/rtk-word-user-bookmarks.contract.test.js`
 - `docs/tasks/2026-10-02--word-list-formats-mac.md`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
