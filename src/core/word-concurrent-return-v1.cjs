@@ -76,12 +76,90 @@ function mergeText(baseline, local, returned) {
   return { ok: true, text: text + chars.slice(cursor).join('') };
 }
 
-function uniformText(node) {
+function attributedText(node) {
   const content = node.content || [];
-  if (content.some(run => run.type !== 'text' || Object.keys(run).some(key => !['type', 'text', 'marks'].includes(key)))) return null;
-  const marks = content[0]?.marks || [];
-  if (content.some(run => !equal(run.marks || [], marks))) return null;
-  return { text: content.map(run => run.text).join(''), marks };
+  if (content.some(run => run.type !== 'text' || typeof run.text !== 'string'
+    || Object.keys(run).some(key => !['type', 'text', 'marks'].includes(key)))) return null;
+  const text = content.map(run => run.text).join('');
+  if (text.length > 1000000) return null;
+  const tokens = [];
+  let runIndex = 0, runEnd = content[0]?.text.length || 0;
+  for (const { segment, index } of segmenter.segment(text)) {
+    while (runIndex < content.length && runEnd <= index) runEnd += content[++runIndex]?.text.length || 0;
+    const shape = { type: 'text', ...(Object.hasOwn(content[runIndex], 'marks') ? { marks: content[runIndex].marks } : {}) };
+    // A grapheme divided across differently formatted leaves is indivisible.
+    // Do not guess which run owns a combining mark or part of an emoji.
+    while (index + segment.length > runEnd) {
+      runEnd += content[++runIndex]?.text.length || 0;
+      const nextShape = { type: 'text', ...(Object.hasOwn(content[runIndex], 'marks') ? { marks: content[runIndex].marks } : {}) };
+      if (!equal(shape, nextShape)) return null;
+    }
+    tokens.push({ text: segment, shape });
+  }
+  return { text, tokens };
+}
+
+function alignAttributed(base, side) {
+  const diff = edits(base.text, side.text);
+  if (!diff.ok) return diff;
+  const kept = [], changes = [];
+  let baseCursor = 0, sideCursor = 0;
+  for (const change of diff.edits) {
+    while (baseCursor < change.from) kept[baseCursor++] = side.tokens[sideCursor++];
+    const length = characters(change.text).length;
+    changes.push({ ...change, tokens: side.tokens.slice(sideCursor, sideCursor + length) });
+    sideCursor += length;
+    baseCursor = change.to;
+  }
+  while (baseCursor < base.tokens.length) kept[baseCursor++] = side.tokens[sideCursor++];
+  return { ok: true, kept, changes };
+}
+
+function mergeAttributedText(baseNode, localNode, returnedNode) {
+  const runs = [baseNode, localNode, returnedNode].map(attributedText);
+  if (runs.some(run => !run)) return conflict('concurrent-inline-format-or-atom');
+  const [base, local, returned] = runs;
+  const left = alignAttributed(base, local), right = alignAttributed(base, returned);
+  if (!left.ok) return left;
+  if (!right.ok) return right;
+  const changes = [...left.changes];
+  for (const change of right.changes) {
+    const identical = left.changes.find(other => other.from === change.from && other.to === change.to && other.text === change.text);
+    if (identical) {
+      if (!equal(identical.tokens, change.tokens)) return conflict('overlapping-inline-format');
+      continue;
+    }
+    if (left.changes.some(other => intersects(other, change))) return conflict('overlapping-text-edits');
+    changes.push(change);
+  }
+  for (const [side, other] of [[left, right], [right, left]]) for (const change of side.changes) {
+    for (let i = change.from; i < change.to; i++) {
+      if (other.kept[i] && !equal(other.kept[i].shape, base.tokens[i].shape)) return conflict('text-overlaps-inline-format');
+    }
+  }
+  const content = [];
+  let lastShape;
+  const append = token => {
+    const previous = content.at(-1);
+    if (previous && equal(lastShape, token.shape)) previous.text += token.text;
+    else { content.push({ ...copy(token.shape), text: token.text }); lastShape = token.shape; }
+  };
+  const appendKept = index => {
+    const original = base.tokens[index], a = left.kept[index], b = right.kept[index];
+    if (!a || !b) return conflict('text-alignment-invalid');
+    if (equal(a.shape, b.shape) || equal(original.shape, b.shape)) append(a);
+    else if (equal(original.shape, a.shape)) append(b);
+    else return conflict('overlapping-inline-format');
+    return { ok: true };
+  };
+  let cursor = 0;
+  for (const change of changes.sort((a, b) => a.from - b.from)) {
+    while (cursor < change.from) { const result = appendKept(cursor++); if (!result.ok) return result; }
+    for (const token of change.tokens) append(token);
+    cursor = change.to;
+  }
+  while (cursor < base.tokens.length) { const result = appendKept(cursor++); if (!result.ok) return result; }
+  return { ok: true, content };
 }
 
 function mergeValue(base, local, returned, location) {
@@ -89,17 +167,13 @@ function mergeValue(base, local, returned, location) {
   if (equal(base, local)) return { ok: true, value: copy(returned) };
   if (base?.type && ['paragraph', 'heading'].includes(base.type)
     && [base, local, returned].some(node => Object.hasOwn(node, 'content'))) {
-    const runs = [base, local, returned].map(uniformText);
-    if (runs.some(run => !run) || !equal(runs[0].marks, runs[1].marks) || !equal(runs[0].marks, runs[2].marks)) {
-      return conflict('concurrent-inline-format-or-atom', location);
-    }
-    const text = mergeText(...runs.map(run => run.text));
+    const text = mergeAttributedText(base, local, returned);
     if (!text.ok) return { ...text, location };
     const withoutContent = node => Object.fromEntries(Object.entries(node).filter(([key]) => key !== 'content'));
     const props = mergeValue(withoutContent(base), withoutContent(local), withoutContent(returned), location + '.properties');
     if (!props.ok) return props;
     const value = props.value;
-    value.content = text.text ? [{ type: 'text', text: text.text, ...(runs[0].marks.length ? { marks: copy(runs[0].marks) } : {}) }] : [];
+    value.content = text.content;
     return { ok: true, value };
   }
   if (Array.isArray(base) && Array.isArray(local) && Array.isArray(returned)) {

@@ -704,7 +704,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ae0b7c49d89e83b7d52b868a76229346118022c196a6eb8c58aa6898a6c0306f"
+        "sha256": "02d1dfad45b6c86c8b973ce321d96edfd8a3ff12fc82fc5feb527060f357f6af"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1892,7 +1892,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "4f1325911c8b57fe4279911e9bcd350a94bfe0743a98385f321f3937f775b2cf"
+        "sha256": "8333cb49645c6da312ed703ffb3a1fb1fbf9c974939909b9ccf68f2df5032ea1"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2004,7 +2004,7 @@
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
-        "sha256": "da07a226faaeed473eecf11918ba9f78143c4ffa1d461e051c37906373f29302"
+        "sha256": "e5870b6611d897202003377fe717fbba16dc442c524099b04b4e3682bbd2d00e"
       },
       {
         "path": "src/main/rtkDocxActivationGuards.cjs",
@@ -2012,11 +2012,11 @@
       },
       {
         "path": "test/contracts/rtk-word-concurrent-return.contract.test.js",
-        "sha256": "3e04b0f7b55328a437aa20b62aba08aa5d860925daefdbf7575707c8d22e1315"
+        "sha256": "93cae5867fe02704523dcb30e544ea532d1ed489928ed55f5888946e50dcb620"
       },
       {
         "path": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
-        "sha256": "89ea2eb56fce2ee34dd7b0d75bd1ba268cdbb0f51877db73a7fcae8764a0ca8c"
+        "sha256": "91fda4eed99523bb1202283dc8cb7bb682fdb385799be47dd7c345ddbe3faa8e"
       }
     ],
     "followupRepair": {

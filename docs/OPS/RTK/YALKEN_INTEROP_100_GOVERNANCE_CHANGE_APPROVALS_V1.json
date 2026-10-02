@@ -1651,9 +1651,9 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "ae0b7c49d89e83b7d52b868a76229346118022c196a6eb8c58aa6898a6c0306f",
+      "sha256": "02d1dfad45b6c86c8b973ce321d96edfd8a3ff12fc82fc5feb527060f357f6af",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "2c544ab0d4ca2485176d7e7f607f8ca28fc964883501ad4ffe53cfee437b7359",
+      "sha256": "66282e8870e07b143203049f52267f5938971a96bf2d2d4cd9ca6b7b710d40b8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "aae1dc33228bf80e7ff3a88f1a9711491a09190ea89e74ca6084e05b2cbf516e",
+      "sha256": "2c77ccd274d783164c287cf29c1bf66b3f866212a53a0462a59711bd10d9b34b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "538e0f1e348969f2c6735409ad0c395c856165195077826a92d4e5d904c4c5a8",
+      "sha256": "fbae5418ed095d768b63bc77892b35fde144529e4ea03395f1d1d96073029066",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "dbf88f827ba67b4349fe770c4f49268100cca0f6ab1dc3fdf3fc26ff95846ae7",
+      "sha256": "a42b602b175a1218dc0cbbbfd3cd65ab4521d040a53e39d951183f4e4467b16b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "edd2e3b3382d77a1c6a32fc285a53dca2f2d7991c7b698c4c72819e463192051",
+      "sha256": "eb56cdca4d0fdf18775f72a962a7c6c7aaaac59cba00d3ed4a3928ba7453d42f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c4463a5d4dea9dddf376e233a823238e5b840828edf8f66a8d52661f7b22d96f",
+      "sha256": "be5786401a8da1cc02fc01e0a8de8464151c5816135abd8c7292f3c2e61f2a63",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance."
@@ -3721,8 +3721,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "4f1325911c8b57fe4279911e9bcd350a94bfe0743a98385f321f3937f775b2cf",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "sha256": "8333cb49645c6da312ed703ffb3a1fb1fbf9c974939909b9ccf68f2df5032ea1",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance.",
       "approved": true,
@@ -4018,8 +4018,8 @@
     },
     {
       "filePath": "src/core/word-concurrent-return-v1.cjs",
-      "sha256": "da07a226faaeed473eecf11918ba9f78143c4ffa1d461e051c37906373f29302",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "sha256": "e5870b6611d897202003377fe717fbba16dc442c524099b04b4e3682bbd2d00e",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approvedBy": "owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance.",
       "approved": true,
@@ -4028,7 +4028,7 @@
     {
       "filePath": "src/main/rtkDocxActivationGuards.cjs",
       "sha256": "3dc6fb6e32df671a582d61fc6b2fd4d2bc255339b42e0e86c3f186c603f384c5",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approvedBy": "owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance.",
       "approved": true,
@@ -4036,8 +4036,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-concurrent-return.contract.test.js",
-      "sha256": "3e04b0f7b55328a437aa20b62aba08aa5d860925daefdbf7575707c8d22e1315",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "sha256": "93cae5867fe02704523dcb30e544ea532d1ed489928ed55f5888946e50dcb620",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approvedBy": "owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance.",
       "approved": true,
@@ -4045,8 +4045,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
-      "sha256": "89ea2eb56fce2ee34dd7b0d75bd1ba268cdbb0f51877db73a7fcae8764a0ca8c",
-      "approvedAtUtc": "2026-10-02T12:08:12.864405Z",
+      "sha256": "91fda4eed99523bb1202283dc8cb7bb682fdb385799be47dd7c345ddbe3faa8e",
+      "approvedAtUtc": "2026-10-02T12:45:11.996449Z",
       "approvedBy": "owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002",
       "rationale": "Owner-authorized Mac Word P2d concurrent saved edits. Pure semantic merge with immutable authenticated export, separate captured current-version CAS and existing explicit Apply writer. No new writer, dependency or runtime network. Exact-byte binding is not acceptance.",
       "approved": true,

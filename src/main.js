@@ -25478,6 +25478,21 @@ function prepareCleanTextConcurrentWriterInput(command, capsule) {
     if (!expectedText || !replacementText) return blocked('RTK_WORD_CONCURRENT_EMPTY_BLOCK_UNSUPPORTED');
     item.match.quote = expectedText;
     item.replacementText = replacementText;
+    if (item.wordLanguageChange) {
+      // Returned language offsets belong to the exported baseline. Rebuild
+      // them only from the private, authenticated three-way result; a local
+      // insertion must retain its language and shift later ranges correctly.
+      let offset = 0;
+      const runs = [];
+      for (const node of mergedParagraphs[index].content || []) {
+        if (node.type !== 'text' || typeof node.text !== 'string') return blocked('RTK_WORD_CONCURRENT_LANGUAGE_INLINE_UNSUPPORTED');
+        const styles = (node.marks || []).filter(mark => mark.type === 'textStyle');
+        if (styles.length > 1) return blocked('RTK_WORD_CONCURRENT_LANGUAGE_INLINE_UNSUPPORTED');
+        if (node.text.length) runs.push({from:offset,to:offset+node.text.length,language:cloneJsonSafe(styles[0]?.attrs?.wordLanguage || null)});
+        offset += node.text.length;
+      }
+      item.wordLanguageChange = {schemaVersion:1,paragraphMark:cloneJsonSafe(mergedParagraphs[index].attrs?.wordParagraphMarkLanguage || null),runs};
+    }
     Object.assign(owner, {baselineRawSha256:captured.actualRawSha256,
       blockTextSha256:`sha256:${computeHash(expectedText)}`,blockLocalEnd:expectedText.length});
     const marked = cloneJsonSafe(current.doc);

@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1219,6 +1219,10 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase}
   if(bookmarked){
     parsed.doc.content.unshift({type:'paragraph',content:[{type:'text',text:target}]});
     parsed.doc=bookmarks.planSave({beforeDoc,workingDoc:parsed.doc}).doc;
+  }
+  if(mixedLanguage){
+    parsed.doc.content[0].content=[{type:'text',text:target.slice(0,1)},
+      {type:'text',text:target.slice(1),marks:[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]}];
   }
   const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
   const beforeAppend=structuredClone(parsed.doc);
@@ -1246,14 +1250,16 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase}
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
   const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
   assert.ok(zip['word/document.xml'].includes(target));
-  zip['word/document.xml']=zip['word/document.xml'].replace(target,target+' CLEAN_EDIT');
+  const editedText=mixedLanguage?target.slice(1):target;
+  zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
   if(mutateReturn)mutateReturn(zip);
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
   if(localCase){
     const local=envelope.parseObservablePayload(read(f.alpha));
-    const index=localCase==='overlap'||localCase==='same-paragraph'?0:local.doc.content.length-1;
+    const index=['overlap','same-paragraph','mixed-runs'].includes(localCase)?0:local.doc.content.length-1;
     const node=local.doc.content[index].content[0];
-    node.text=localCase==='same-paragraph'?'LOCAL '+node.text:node.text+' LOCAL_EDIT';
+    if(localCase==='mixed-runs')local.doc.content[index].content.splice(1,0,{type:'text',text:'LOCAL ',marks:[{type:'italic'}]});
+    else node.text=localCase==='same-paragraph'?'LOCAL '+node.text:node.text+' LOCAL_EDIT';
     observed=envelope.composeObservablePayload({...local,metaEnabled:true,doc:local.doc});
     f.probe.state({dirty:true});
     assert.equal(await f.probe.save(),true,'local edit must pass actual product Save');
@@ -1424,6 +1430,18 @@ test('actual concurrent Main overlapping edit is explicit conflict without canon
   assert.equal(activated.ok,false,JSON.stringify(activated));
   assert.match(JSON.stringify(activated),/RTK_WORD_CONCURRENT_CONFLICT/);
   assert.deepEqual(f.capture(),beforeActivation);
+});
+
+test('actual concurrent Main preserves mixed language runs and separately styled local insertion through Apply',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,localCase:'mixed-runs',mixedLanguage:true});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));
+  assert.deepEqual(f.capture(),beforeActivation);
+  const before=envelope.parseObservablePayload(read(f.alpha)).doc;
+  const result=await f.probe.fullApply({requestId:'concurrent-mixed-language'});
+  assert.equal(result.applied,true,JSON.stringify(result));
+  const expected=structuredClone(before);expected.content[0].content[2].text+=' CLEAN_EDIT';
+  assert.deepEqual(envelope.parseObservablePayload(read(f.alpha)).doc,expected);
 });
 
 for(const variant of ['scene','sibling','dirty','session','notes'])test(`actual concurrent Main preview rejects later ${variant} changes without overwriting them`,async t=>{

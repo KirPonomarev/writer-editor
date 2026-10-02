@@ -124,3 +124,18 @@ limits and next step. No whole-plan percentage derived from this package.
 After three identical failure signatures retain exact input, HEAD and expected/
 actual result, change the hypothesis. Use focused checks during repair; run
 expensive stable checks once their inputs are stable.
+
+### NATIVE_REPAIR_2026_10_02
+
+The first clean candidate completed SOURCE export, saved independent local edit,
+actual Word save, explicit Apply and re-export. PACKAGED then exposed a refusal
+when the same paragraph contained differently styled runs and language tuples.
+The original Word return and saved local beforeimage are retained outside Git.
+This was a bounded unsupported merge, not lost data or whole-plan acceptance.
+
+Repair aligns attributed graphemes independently to the authenticated baseline,
+preserves each non-overlapping inserted run, and rejects overlapping text or
+formatting. Language offsets are rebuilt from the private merged candidate;
+offsets from the exported paragraph cannot be reused after a local insertion.
+The real Main regression includes Save, activation and Apply with mixed runs.
+Native repair, stable gates and delivery are still required before closure.

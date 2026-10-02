@@ -78,3 +78,58 @@ test('toJSON callbacks never execute while inspecting merge inputs', () => {
   assert.equal(planConcurrentReturn({baselineDoc:bad,currentDoc:document('a'),returnedDoc:document('b')}).ok,false);
   assert.equal(invoked,false);
 });
+
+const richDoc = content => ({ type: 'doc', content: [{ type: 'paragraph', content }] });
+const richRun = (text, marks) => ({ type: 'text', text, ...(marks ? { marks } : {}) });
+const language = val => [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt', color: null, wordLanguage: { val } } }];
+
+test('mixed-language paragraph preserves separately styled local insertion and independent Word replacement', () => {
+  const original = [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt', color: null } }];
+  const pasted = [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt', color: '' } }];
+  const baselineDoc = richDoc([richRun('Target Alpha', original), richRun(' SOURCE_WORD', language('en-US'))]);
+  const currentDoc = richDoc([richRun('T', original), richRun('LOCAL ', pasted), richRun('arget Alpha', original), richRun(' SOURCE_WORD', language('en-US'))]);
+  const returnedDoc = richDoc([richRun('Target Alpha', original), richRun(' PACKAGED_WORD', language('en-US'))]);
+  const expected = structuredClone(currentDoc); expected.content[0].content[3].text = ' PACKAGED_WORD';
+  const before = JSON.stringify([baselineDoc, currentDoc, returnedDoc]);
+  const result = planConcurrentReturn({ baselineDoc, currentDoc, returnedDoc });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.deepEqual(result.doc, expected);
+  assert.equal(JSON.stringify([baselineDoc, currentDoc, returnedDoc]), before);
+});
+
+test('independent marks and text keep exact language tuples including unknown language', () => {
+  const baselineDoc = richDoc([richRun('Alpha', language('ru-RU')), richRun(' omega', language('en-US'))]);
+  const currentDoc = structuredClone(baselineDoc), returnedDoc = structuredClone(baselineDoc);
+  currentDoc.content[0].content[0].marks = language('fr-CA');
+  returnedDoc.content[0].content[1].text = ' OMEGA';
+  const expected = structuredClone(currentDoc); expected.content[0].content[1].text = ' OMEGA';
+  assert.deepEqual(planConcurrentReturn({ baselineDoc, currentDoc, returnedDoc }).doc, expected);
+});
+
+test('formatting of removed text and competing formatting or same insertion are conflicts', () => {
+  for (const [local, returned] of [
+    [[richRun('Alpha', language('fr-FR')), richRun(' omega')], [richRun(' omega')]],
+    [[richRun('Alpha', language('fr-FR')), richRun(' omega')], [richRun('Alpha', language('de-DE')), richRun(' omega')]],
+    [[richRun('Alpha'), richRun('X', language('fr-FR')), richRun(' omega')], [richRun('Alpha'), richRun('X', language('de-DE')), richRun(' omega')]],
+  ]) {
+    const result = planConcurrentReturn({ baselineDoc: richDoc([richRun('Alpha omega')]), currentDoc: richDoc(local), returnedDoc: richDoc(returned) });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.match(result.detail, /inline-format/);
+  }
+});
+
+test('a grapheme split across different marks is not silently assigned one style', () => {
+  const baselineDoc = richDoc([richRun('aX\u0301z')]);
+  const currentDoc = richDoc([richRun('AX', [{type:'bold'}]), richRun('\u0301z')]);
+  const returnedDoc = richDoc([richRun('aX\u0301Z')]);
+  const result = planConcurrentReturn({ baselineDoc, currentDoc, returnedDoc });
+  assert.equal(result.ok, false);
+  assert.equal(result.detail, 'concurrent-inline-format-or-atom');
+});
+
+test('same text split into equal adjacent runs does not change merge ownership', () => {
+  const baselineDoc = richDoc([richRun('Alpha omega', [{type:'bold'}])]);
+  const currentDoc = richDoc([richRun('ALPHA ', [{type:'bold'}]), richRun('omega', [{type:'bold'}])]);
+  const returnedDoc = richDoc([richRun('Alpha OMEGA', [{type:'bold'}])]);
+  assert.deepEqual(planConcurrentReturn({baselineDoc,currentDoc,returnedDoc}).doc, richDoc([richRun('ALPHA OMEGA', [{type:'bold'}])]));
+});
