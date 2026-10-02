@@ -306,13 +306,17 @@ test('future manifest refuses before requesting/saving even a dirty real editor 
   assert.equal(ui.sends.length, 0); assert.equal(f.probe.state().dirty, true);
 });
 
-test('late dirty copied-scene Undo detaches its live buffer and actual Save dialog writes a fresh scene without touching original', async t => {
+test('late dirty copied-scene Undo detaches its live buffer and actual SaveAs dialog writes a fresh scene without touching original', async t => {
   const f = await fixture(t);
   const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
   assert.equal(copy.ok, true, JSON.stringify(copy));
   const fork = path.join(f.imported, '03_Fork.txt');
   let working = read(fork), generation = 0;
-  const ui = mountRenderer(f, () => working, () => generation);
+  let identity = { projectId: f.query.projectId, documentId: copy.nodeId };
+  const ui = mountRenderer(f, () => working, () => generation, null, () => identity, payload => {
+    if (payload.treeDetached) identity = { projectId: f.query.projectId, documentId: '' };
+    if (payload.treeRecovery) { working = payload.content; identity = { projectId: f.query.projectId, documentId: payload.documentId }; }
+  });
   f.probe.state({ filePath: fork });
   const transaction = require('../../src/core/project-transaction-v1.cjs'), unlink = fsp.unlink;
   fsp.unlink = async function (target, ...args) {
@@ -334,7 +338,7 @@ test('late dirty copied-scene Undo detaches its live buffer and actual Save dial
     assert.equal(read(f.alpha), 'Alpha'); assert.equal(fs.existsSync(fork), false);
   } finally { fsp.unlink = unlink; }
   const recovered = path.join(f.imported, '03_Recovered.txt'); f.chooseSavePath(recovered);
-  assert.equal(await f.probe.save(), true);
+  assert.equal(await f.probe.saveAs(), true);
   assert.equal(f.saveDialogs(), 1); assert.equal(read(recovered), working);
   assert.equal(read(f.alpha), 'Alpha'); assert.equal(f.probe.state().dirty, false);
 });
@@ -385,7 +389,7 @@ test('untitled Save dialog cannot publish after the authoring session changes du
   assert.equal(f.probe.state().dirty, true); assert.equal(f.probe.state().filePath, null);
 });
 
-test('rich late-copy Undo preserves the working buffer and readable graph packet while fresh SaveAs safely refuses', async t => {
+test('rich late-copy Undo preserves working buffer and readable graph packet while normal Save remains fenced', async t => {
   const f = await fixture(t, true), commentModel = require('../../src/core/word-comment-authoring-v1.cjs');
   const commentPath = path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json');
   const sceneId = 'roman/Imported/01_Alpha.txt';
@@ -403,7 +407,7 @@ test('rich late-copy Undo preserves the working buffer and readable graph packet
   const copiedNotes = read(path.join(f.root, 'notes.craftsman.json')), copiedComments = read(commentPath);
   assert.equal(JSON.parse(copiedNotes).notes.length, 2); assert.equal(JSON.parse(copiedComments).threads.length, 2);
   let working = copied, generation = 0;
-  const ui = mountRenderer(f, () => working, () => generation); f.probe.state({ filePath: fork });
+  const ui = mountRenderer(f, () => working, () => generation, null, { projectId: f.query.projectId, documentId: copy.nodeId }); f.probe.state({ filePath: fork });
   const transaction = require('../../src/core/project-transaction-v1.cjs'), unlink = fsp.unlink;
   fsp.unlink = async function (target, ...args) {
     if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
@@ -787,4 +791,92 @@ test('durable recovered graph cannot rebind or dirty a foreign Main authoring co
   assert.equal(fs.existsSync(target), true); assert.equal(read(f.alpha), r.original); assert.equal(read(f.beta), 'Beta');
   assert.equal(f.probe.state().filePath, f.beta); assert.equal(f.probe.state().dirty, false);
   assert.equal(r.ui.sends.filter(x => x.payload?.treeReplacement).length, 1, 'only original rejected Undo publication, no foreign recovery publication');
+});
+
+async function lateDetachedRichCopy(t, receiptRace = false) {
+  const f = await fixture(t); await installMixedScene(f); const original = read(f.alpha);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  const fork = path.join(f.imported, '03_Fork.txt'); let content = read(fork), generation = 9;
+  let identity = { projectId: f.query.projectId, documentId: copy.nodeId }, accepted = false;
+  const ui = mountRenderer(f, () => content, () => generation, null, () => identity, payload => {
+    if (payload.treeDetached && payload.expectedContent === content && payload.expectedGeneration === generation) {
+      identity = { projectId: payload.projectId, documentId: '' }; accepted = true;
+    } else if (payload.treeReplacement && payload.expectedContent === content && payload.expectedGeneration === generation
+      && (payload.expectedDocumentId === identity.documentId || payload.treeRecovery === true && identity.documentId === '' && payload.expectedDocumentId === copy.nodeId)) { content = payload.content; identity = { projectId: payload.projectId, documentId: payload.documentId }; }
+  });
+  f.probe.state({ filePath: fork, generation: 0 });
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), originalUnlink = fsp.unlink, originalReadFile = fsp.readFile;
+  let raced = false;
+  if (receiptRace) fsp.readFile = async function (file, ...args) {
+    const result = await originalReadFile.call(this, file, ...args);
+    if (!raced && file === transaction.treeCommitPathFor(f.manifestPath) && f.probe.state().filePath === null) {
+      raced = true;
+      const parsed = envelope.parseObservablePayload(content); parsed.doc.content[7].content.push({ type: 'text', text: ' receipt-race typing' });
+      content = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }); generation++;
+      f.probe.state({ dirty: true, generation: 2 });
+    }
+    return result;
+  };
+  fsp.unlink = async function (file, ...args) {
+    if (file === transaction.journalPathFor(f.manifestPath)) {
+      const parsed = envelope.parseObservablePayload(content); parsed.doc.content[7].content.push({ type: 'text', text: ' late original Undo typing' });
+      content = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }); generation++;
+      f.probe.state({ dirty: true, generation: 1 });
+    }
+    return originalUnlink.call(this, file, ...args);
+  };
+  let undo;
+  try { undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id }); }
+  finally { fsp.unlink = originalUnlink; fsp.readFile = originalReadFile; }
+  return { f, copy, fork, ui, original, undo, accepted: () => accepted, raced: () => raced, identity: () => identity, content: () => content,
+    identify: value => { identity = value; }, corrupt: change => { content = change(content); } };
+}
+
+test('late original copy Undo detached rich buffer reaches actual private SaveAs with monotonic renderer epoch and full graph', async t => {
+  const r = await lateDetachedRichCopy(t), { f, copy, fork, ui, original, undo } = r;
+  assert.equal(undo.committed, true, JSON.stringify(undo)); assert.equal(f.probe.state().filePath, null);
+  assert.equal(r.accepted(), true, 'actual detached publication must use renderer epoch10 independently of Main signal1');
+  assert.equal(r.identity().documentId, '');
+  const before = f.capture(); assert.notEqual(await f.probe.save(), true); assert.deepEqual(f.capture(), before);
+  const target = path.join(f.imported, 'RecoveredDetached.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(), true, JSON.stringify(ui.sends.filter(x => x.channel.includes('status'))));
+  assert.equal(read(f.alpha), original); assert.equal(fs.existsSync(fork), false);
+  const doc = envelope.parseObservablePayload(read(target)); assert.equal(bookmarks.readRegistry(doc.doc).bookmarks.length, 7);
+  assert.match(doc.text, /late original Undo typing/u); assert.equal(doc.hasMetaBlock, true);
+  assert.equal(JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))).notes.length, 2);
+  assert.equal(JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json'))).threads.length, 2);
+  assert.equal((await f.probe.exportMin({ outPath: path.join(f.temp, 'detached.docx') })).ok, 1);
+  assert.equal((await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId })).ok, true);
+  assert.equal(read(f.alpha), original);
+});
+
+for (const variant of ['wrong-document', 'foreign-project', 'stale-session', 'stale-token', 'pending-comment', 'pending-note', 'forged-registry']) test(`detached rich private recovery ${variant} refuses without writes or buffer loss`, async t => {
+  const r = await lateDetachedRichCopy(t), { f } = r;
+  assert.equal(r.accepted(), true); assert.equal(f.probe.state().filePath, null);
+  if (variant === 'wrong-document') r.identify({ projectId: f.query.projectId, documentId: f.a.nodeId });
+  if (variant === 'foreign-project') r.identify({ projectId: 'foreign', documentId: '' });
+  if (variant === 'pending-comment') r.identify({ ...r.identity(), commentAuthoringPending: true });
+  if (variant === 'pending-note') r.identify({ ...r.identity(), manuscriptNoteAuthoringPending: true });
+  if (variant === 'stale-session') f.probe.changeSession();
+  if (variant === 'stale-token') {
+    const transaction = require('../../src/core/project-transaction-v1.cjs'), receiptPath = transaction.treeCommitPathFor(f.manifestPath);
+    const receipt = JSON.parse(read(receiptPath)); receipt.treeRevision++; fs.writeFileSync(receiptPath, JSON.stringify(receipt));
+  }
+  if (variant === 'forged-registry') r.corrupt(raw => {
+    const parsed = envelope.parseObservablePayload(raw); parsed.doc.attrs.wordUserBookmarks.bookmarks[0].id = 'ubm-' + 'c'.repeat(32);
+    return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock });
+  });
+  const raw = r.content(), before = f.capture(), target = path.join(f.imported, 'RecoveredDetached.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(), false); assert.equal(fs.existsSync(target), false);
+  assert.deepEqual(f.capture(), before); assert.equal(read(f.alpha), r.original); assert.equal(r.content(), raw); assert.equal(f.probe.state().filePath, null);
+});
+
+test('typing during detached Undo receipt read installs verified private recovery for the fresh buffer epoch', async t => {
+  const r = await lateDetachedRichCopy(t, true), { f } = r;
+  assert.equal(r.raced(), true); assert.equal(r.accepted(), true); assert.equal(f.probe.state().generation, 2);
+  assert.equal(r.undo.committed, true); assert.equal(r.undo.error, 'E_TREE_UNSAVED_COPY_SAVE_AS_REQUIRED');
+  const target = path.join(f.imported, 'ReceiptRaceRecovery.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(), true); assert.equal(read(f.alpha), r.original);
+  assert.match(envelope.parseObservablePayload(read(target)).text, /receipt-race typing/u);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(target)).doc).bookmarks.length, 7);
 });

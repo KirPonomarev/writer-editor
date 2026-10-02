@@ -579,12 +579,17 @@ test('actual replacement listener preserves late drafts or stale generation and 
   const source = read('src/renderer/editor.js');
   const start = source.indexOf('window.electronAPI.onEditorSetText((payload) => {');
   const end = source.indexOf('  window.electronAPI.onEditorTextRequest(', start);
-  for (const state of ['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy']) {
+  for (const [route, state] of [
+    ...['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy'].map(state => ['normal', state]),
+    ...['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy',
+      'wrong-project', 'wrong-origin', 'stale-content', 'missing-recovery-flag', 'missing-private-origin'].map(state => ['detached', state]),
+  ]) {
     const expectedGeneration = state === 'stale-generation' ? 0 : 9;
     let listener, working = 'copied live content';
+    const detached = route === 'detached';
     const events = [], warnings = [];
     const c = { currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
-      currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
+      treeDetachedOrigin: null, currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
       wordCommentDraft: state === 'comment-draft' ? { body: 'unsaved comment' } : null,
       wordCommentBusy: state === 'comment-busy',
       manuscriptDrafts: new Map(state === 'note-draft' ? [['note', { body: 'unsaved note' }]] : []),
@@ -608,21 +613,35 @@ test('actual replacement listener preserves late drafts or stale generation and 
       'setReviewSurfaceState', 'clearCentralSheetLargePayloadFastPath', 'resetCentralSheetStripForIncomingPayload',
       'updateMetaInputs', 'updateMetaVisibility', 'updateCardsList', 'updateWordCount', 'scheduleCentralSheetStripProofRefresh',
       'hideManualMapPlanWorkspace', 'hideNotesWorkspace', 'hideProjectSearchWorkspace', 'hideWriterHomeSurface',
-      'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
+      'syncVisibleAuthoringSurfacesSurface', 'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
       'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump']) c[name] = () => {};
     c.setReviewSurfaceState = () => events.push(['review-replaced']);
     const priorComment = c.wordCommentDraft, priorNote = c.manuscriptDrafts.get('note');
     vm.createContext(c);
-    vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'showEditorPanelFor'])
+    vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'applyTreeDetachedPublication', 'showEditorPanelFor'])
       + '\n' + source.slice(start, end), c);
-    listener({ treeReplacement: true, projectId: 'project', expectedDocumentId: 'copy', documentId: 'source',
+    if (detached) {
+      listener({ treeDetached: true, projectId: 'project', expectedDocumentId: 'copy', documentId: '',
+        title: 'Recovery', expectedGeneration: 9, expectedContent: working });
+      assert.equal(c.currentDocumentId, '');
+      assert.equal(working, 'copied live content');
+      assert.equal(c.treeDetachedOrigin.documentId, 'copy');
+      if (state === 'missing-private-origin') c.treeDetachedOrigin = null;
+    }
+    listener({ treeReplacement: true, treeRecovery: detached && state !== 'missing-recovery-flag',
+      projectId: state === 'wrong-project' ? 'other' : 'project',
+      expectedDocumentId: state === 'wrong-origin' ? 'other' : 'copy', documentId: 'source',
       kind: 'scene', metaEnabled: true, title: 'Alpha', expectedGeneration,
-      expectedContent: 'copied live content', content: 'original source content' });
+      expectedContent: state === 'stale-content' ? 'stale' : 'copied live content', content: 'original source content' });
     if (state !== 'idle') {
       assert.equal(working, 'copied live content');
-      assert.equal(c.currentDocumentId, 'copy');
-      assert.equal(c.currentDocumentTitle, 'Beta');
-      assert.match(warnings[0], state === 'stale-generation'
+      assert.equal(c.currentDocumentId, detached ? '' : 'copy');
+      assert.equal(c.currentDocumentTitle, detached ? 'Recovery' : 'Beta');
+      const reason = ({ 'wrong-project': 'PROJECT_MISMATCH', 'wrong-origin': 'SOURCE_DOCUMENT_MISMATCH',
+        'stale-content': 'CONTENT_MISMATCH', 'missing-recovery-flag': 'SOURCE_DOCUMENT_MISMATCH',
+        'missing-private-origin': 'SOURCE_DOCUMENT_MISMATCH' })[state];
+      if (reason) assert.ok(warnings[0].includes(`reason=${reason}`));
+      else assert.match(warnings[0], state === 'stale-generation'
         ? /reason=GENERATION_MISMATCH expectedGeneration=0 actualGeneration=9/u
         : /reason=AUTHORING_DRAFT_PENDING expectedGeneration=9 actualGeneration=9/u);
       assert.equal(warnings[0].includes('copied live content'), false);
@@ -636,6 +655,7 @@ test('actual replacement listener preserves late drafts or stale generation and 
       assert.equal(working, 'original source content');
       assert.equal(c.currentDocumentId, 'source');
       assert.equal(c.currentDocumentTitle, 'Alpha');
+      assert.equal(c.treeDetachedOrigin, null);
       assert.ok(events.some(x => x[0] === 'surface-title' && x[1] === 'Alpha'));
       assert.equal(warnings.length, 0);
       assert.equal(c.localEditGeneration, 9);
@@ -671,4 +691,114 @@ test('existing editor snapshot response observes the current project and documen
   assert.equal(responses[2].snapshot.projectId, '');
   assert.equal(responses[2].snapshot.documentId, '');
   assert.equal(c.localEditGeneration, 9);
+});
+
+function sceneMoveHarness() {
+  const c = sceneUiHarness(), scene = c.treeRoot;
+  c.scene = scene;
+  c.treeRoot = { nodeId: 'roman', kind: 'roman-root', children: [
+    { nodeId: 'old', kind: 'chapter-folder', label: 'Исходная', children: [scene] },
+    { nodeId: 'part', kind: 'part', label: 'Часть', children: [
+      { nodeId: 'destination', kind: 'chapter-folder', label: 'Перенос', children: [] },
+    ] },
+  ] };
+  c.EXTRA_COMMAND_IDS.TREE_MOVE_NODE = 'move';
+  vm.runInContext(executableFunctions(['findTreeNodeById', 'collectSceneMoveDestinations',
+    'handleChooseSceneMove', 'buildContextMenuItems']), c);
+  const nodes = [];
+  class Element {
+    constructor(tag) { this.tag = tag; this.style = {}; this.events = {}; this.children = []; this.isConnected = true; nodes.push(this); }
+    setAttribute() {}
+    append(...children) { this.children.push(...children); }
+    addEventListener(type, fn) { this.events[type] = fn; }
+    focus() { c.document.activeElement = this; }
+    showModal() { this.open = true; }
+    close() { this.open = false; this.events.close?.(); }
+    remove() { this.isConnected = false; }
+  }
+  c.document = { createElement: tag => new Element(tag), body: new Element('body'), activeElement: new Element('button') };
+  c.trigger = c.document.activeElement; c.nodes = nodes;
+  vm.runInContext(read('src/renderer/linkDialog.mjs').replace(/export /gu, ''), c);
+  return c;
+}
+
+test('actual move menu and native select reach the registered existing bridge with node-only revision-bound intent', async () => {
+  const { pathToFileURL } = require('node:url');
+  const commands = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  for (const confirmation of ['button', 'keyboard']) {
+    const c = sceneMoveHarness(), handlers = new Map(), calls = [];
+    c.EXTRA_COMMAND_IDS = commands.EXTRA_COMMAND_IDS;
+    commands.registerProjectCommands({ registerCommand(meta, fn) { handlers.set(meta.id, fn); } }, {
+      electronAPI: { invokeUiCommandBridge(...args) { calls.push(JSON.parse(JSON.stringify(args))); return { ok: true }; } },
+    });
+    c.dispatchUiCommand = (id, payload) => handlers.get(id)(payload);
+    const item = c.buildContextMenuItems(c.scene).find(item => item.label === 'Переместить…');
+    assert.equal(item.id, commands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE);
+    assert.equal(item.enabled, true);
+    const pending = item.invoke();
+    const select = c.nodes.find(node => node.tag === 'select');
+    assert.deepEqual(select.children.map(option => [option.value, option.textContent]), [['destination', 'Часть › Перенос']]);
+    assert.equal(c.document.activeElement, select);
+    if (confirmation === 'keyboard') select.events.keydown({ key: 'Enter', preventDefault() {} });
+    else c.nodes.find(node => node.textContent === 'Переместить в начало').events.click();
+    await pending;
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0], [{ route: 'command.bus', commandId: commands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE, payload: {
+      projectId: 'project', nodeId: 'scene', targetParentNodeId: 'destination', targetIndex: 0, expectedTreeRevision: 7,
+    } }]);
+    assert.equal(c.reloads, 1);
+    assert.equal(c.document.activeElement, c.trigger);
+    assert.equal(c.treeMutationPending, false);
+    assert.equal(c.isLinkDialogOpen(), false);
+  }
+});
+
+test('move dialog cancellation and stale source, project, revision, target or capability never dispatch', async () => {
+  const cases = {
+    cancel: c => c.nodes.find(n => n.textContent === 'Отмена').events.click(),
+    escape: c => c.nodes.find(n => n.tag === 'dialog').events.cancel({ preventDefault() {} }),
+    close: c => c.nodes.find(n => n.tag === 'dialog').close(),
+    externalCancel: c => c.cancelLinkDialog(),
+    project: c => { c.currentProjectId = 'other'; },
+    revision: c => { c.treeMutationProjection.treeRevision++; },
+    projectionProject: c => { c.treeMutationProjection.projectId = 'other'; },
+    missingSource: c => { c.treeRoot.children[0].children = []; },
+    missingTarget: c => { c.treeRoot.children[1].children = []; },
+    targetKind: c => { c.treeRoot.children[1].children[0].kind = 'scene'; },
+    denied: c => { c.allowed = false; },
+    pending: c => { c.treeMutationPending = true; },
+  };
+  for (const [name, mutate] of Object.entries(cases)) {
+    const c = sceneMoveHarness();
+    const pending = c.handleChooseSceneMove(c.scene);
+    mutate(c);
+    c.nodes.find(n => n.textContent === 'Переместить в начало').events.click();
+    await pending;
+    assert.equal(c.calls.length, 0, name);
+    assert.equal(c.reloads, 0, name);
+    assert.equal(c.isLinkDialogOpen(), false, name);
+  }
+  for (const mutate of [c => { c.treeRoot.children.pop(); }, c => { c.allowed = false; }, c => { c.treeMutationPending = true; }]) {
+    const c = sceneMoveHarness(); mutate(c);
+    await c.handleChooseSceneMove(c.scene);
+    assert.equal(c.nodes.some(n => n.tag === 'dialog'), false);
+    assert.equal(c.calls.length, 0);
+  }
+});
+
+test('move selection cannot submit an injected choice and equivalent same-revision refresh remains usable', async () => {
+  const c = sceneMoveHarness();
+  const pending = c.handleChooseSceneMove(c.scene);
+  const select = c.nodes.find(n => n.tag === 'select');
+  select.value = 'forged';
+  c.nodes.find(n => n.textContent === 'Переместить в начало').events.click();
+  assert.equal(c.isLinkDialogOpen(), true);
+  assert.equal(c.calls.length, 0);
+  assert.equal(await c.openNodeMoveDialog({ destinations: [{ nodeId: 'other', label: 'Other' }] }), null);
+  c.treeRoot = JSON.parse(JSON.stringify(c.treeRoot));
+  select.value = 'destination';
+  c.nodes.find(n => n.textContent === 'Переместить в начало').events.click();
+  await pending;
+  assert.equal(c.calls.length, 1);
+  assert.equal(c.reloads, 1);
 });

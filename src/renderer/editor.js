@@ -25,7 +25,7 @@ import { tableParagraphs } from '../io/documentTables.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
-import { openLinkDialog, openNodeNameDialog, normalizeNodeName, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
+import { openLinkDialog, openNodeNameDialog, openNodeMoveDialog, normalizeNodeName, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
 import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
@@ -1127,6 +1127,7 @@ let projectionInspectorState = {
 let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
+let treeDetachedOrigin = null;
 let currentDocumentKind = null;
 let currentDocumentTitle = '';
 let currentProjectId = '';
@@ -10279,6 +10280,60 @@ async function handleDeleteNode(node) {
   updateInspectorSnapshot();
 }
 
+function collectSceneMoveDestinations(sourceNodeId) {
+  const destinations = [];
+  const visit = (node, labels) => {
+    if (!node) return;
+    const nextLabels = ['part', 'chapter-folder'].includes(node.kind) && node.label
+      ? [...labels, node.label] : labels;
+    if (node.kind === 'chapter-folder' && getEffectiveDocumentId(node)
+      && !(node.children || []).some(child => getEffectiveDocumentId(child) === sourceNodeId)) {
+      destinations.push({ nodeId: getEffectiveDocumentId(node), label: nextLabels.join(' › ') });
+    }
+    for (const child of node.children || []) visit(child, nextLabels);
+  };
+  visit(treeRoot, []);
+  return destinations;
+}
+
+async function handleChooseSceneMove(node) {
+  if (treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_MOVE_NODE)) {
+    updateStatusText('Перемещение сейчас недоступно', { visible: true });
+    return;
+  }
+  const target = captureNodeNameTarget(node);
+  if (!target || !['scene', 'chapter-file'].includes(target.kind) || !captureTreeMutationProjection()) {
+    updateStatusText('Выберите сцену в актуальном дереве проекта', { visible: true });
+    return;
+  }
+  const destinations = collectSceneMoveDestinations(target.nodeId);
+  if (!destinations.length) {
+    updateStatusText('Нет другой главы для перемещения сцены', { visible: true });
+    return;
+  }
+  const targetParentNodeId = await openNodeMoveDialog({ destinations });
+  if (targetParentNodeId === null) return;
+  const destination = findTreeNodeById(treeRoot, targetParentNodeId);
+  if (!isNodeNameTargetCurrent(target) || !captureTreeMutationProjection()
+    || !destinations.some(choice => choice.nodeId === targetParentNodeId)
+    || destination?.kind !== 'chapter-folder'
+    || !collectSceneMoveDestinations(target.nodeId).some(choice => choice.nodeId === targetParentNodeId)
+    || treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_MOVE_NODE)) {
+    updateStatusText('Перемещение недоступно: состояние проекта изменилось', { visible: true });
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {
+      projectId: target.projectId, nodeId: target.nodeId, targetParentNodeId, targetIndex: 0,
+      expectedTreeRevision: target.treeRevision,
+    });
+    if (result?.ok && currentProjectId === target.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
 async function handleMoveNode(node, targetParentNodeId, targetIndex) {
   const projectId = currentProjectId;
   const expectedTreeRevision = captureTreeMutationProjection()?.treeRevision;
@@ -10348,6 +10403,8 @@ function buildContextMenuItems(node) {
   if (node.kind === 'chapter-file' || node.kind === 'scene') {
     appendOpen();
     append(EXTRA_COMMAND_IDS.TREE_COPY_NODE, 'Создать копию…', () => handleCopyNode(node),
+      { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
+    append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Переместить…', () => handleChooseSceneMove(node),
       { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
     append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
     append(
@@ -23581,7 +23638,10 @@ function treeReplacementRefusalReason(payload) {
   if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0) return 'GENERATION_INVALID';
   if (payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
   if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
-  if (!currentDocumentId || payload.expectedDocumentId !== currentDocumentId) return 'SOURCE_DOCUMENT_MISMATCH';
+  const detachedRecovery = payload.treeRecovery === true && currentDocumentId === ''
+    && treeDetachedOrigin?.projectId === currentProjectId
+    && treeDetachedOrigin.documentId === payload.expectedDocumentId;
+  if (!detachedRecovery && (!currentDocumentId || payload.expectedDocumentId !== currentDocumentId)) return 'SOURCE_DOCUMENT_MISMATCH';
   if (typeof payload.documentId !== 'string' || !payload.documentId || payload.documentId === currentDocumentId) return 'TARGET_DOCUMENT_INVALID';
   if (!['scene', 'chapter-file'].includes(payload.kind) || payload.metaEnabled !== true) return 'DOCUMENT_KIND_INVALID';
   if (typeof payload.content !== 'string' || typeof payload.expectedContent !== 'string') return 'CONTENT_INVALID';
@@ -23603,6 +23663,7 @@ function applyTreeDetachedPublication(payload) {
     || composeDocumentContent() !== payload.expectedContent) return false;
   // A committed Undo removed this copy before a late edit arrived. Main has
   // detached its save target; preserve the live buffer for the existing Save As.
+  treeDetachedOrigin = { projectId: currentProjectId, documentId: currentDocumentId };
   currentDocumentId = '';
   currentDocumentTitle = payload.title.trim();
   syncVisibleAuthoringSurfacesSurface();
@@ -23665,6 +23726,7 @@ if (window.electronAPI) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
       return;
     }
+    treeDetachedOrigin = null;
     cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';

@@ -30,7 +30,7 @@
   "authorityMap": {
     "product": "Owner-authorized entire Mac Word plan P2d. Product Core owns stable tree identity, canonical scenes, note/comment ownership, bookmark forks and recoverable exact multi-file cohort. Existing journal/writer extended; no independent store or broad project format migration.",
     "command": "Existing pathless tree rename/move/reorder plus cmd.project.tree.copyNode and cmd.project.tree.undoLastMutation through Command Kernel capability revalidation and Main project lease/CAS. Existing query.projectTree extends immutable revision-bound projection. Existing cmd.project.saveAs may recover a retained removed-copy buffer only through private exact Undo packet identity and the same governed cohort writer.",
-    "design": "Existing tree context menu and naming dialog contributions only. Preserve current styles/layout and text history keyboard meaning. Lazyweb and ui-craft consulted; no new visual language."
+    "design": "Existing tree context menu and naming dialog contributions only. Preserve current styles/layout and text history keyboard meaning. Lazyweb and ui-craft consulted; no new visual language. Existing tree move intent gains a labelled chapter chooser using existing dialog and native select controls; same styles, existing move command and revision guards, no new IPC or storage authority."
   },
   "identityKeys": [
     "projectId",
@@ -59,7 +59,7 @@
   "surfaceManifests": [
     "SURFACE_MANIFEST_WORD_SCENE_IDENTITY_V1.json"
   ],
-  "slotRequirements": "Existing project tree context menu and name dialog",
+  "slotRequirements": "Existing project tree context menu, naming dialog and labelled chapter chooser using existing dialog classes",
   "supportedWorkspaces": [
     "WRITE",
     "REVIEW"
@@ -95,7 +95,8 @@
     "Forged renderer paths, project switch, late autosave, dirty scene, stale candidate apply/export activation, malformed present durable authority; expiry failure leaves tree unchanged.",
     "SOURCE and PACKAGED native coherent tree edits and copy/Undo then restart/DOCX Word readback before frozen full CI.",
     "Native dirty edit -> tree rename -> text Undo -> save: only proven pure-deletion boundary of a surviving bookmark range may rebase; consumed/point/interior/ambiguous/replacement cases remain typed conflicts.",
-    "Rejected replacement rich buffer -> explicit Save As -> fresh scene with independent bookmark/note/comment identities -> reopen/export; original unchanged. Wrong or stale receipt/identity, tamper, occupied target, late edit, cancel and every v7 fault phase remain no-loss failures."
+    "Rejected replacement rich buffer -> explicit Save As -> fresh scene with independent bookmark/note/comment identities -> reopen/export; original unchanged. Wrong or stale receipt/identity, tamper, occupied target, late edit, cancel and every v7 fault phase remain no-loss failures.",
+    "Chapter chooser returns only an observed node ID and captured project/tree revision; cancel, empty targets, missing source/target, stale revision and foreign project refuse without dispatch. Actual native SOURCE/PACKAGED move and Undo prove this route; drag gesture remains separately unverified."
   ],
   "evidenceBindings": [
     "rtk-word-project-tree-cohort.contract.test.js",

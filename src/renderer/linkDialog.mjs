@@ -14,6 +14,63 @@ export function openNodeNameDialog({ title, initialValue = '', rename = false, s
   });
 }
 
+export function openNodeMoveDialog({ destinations }) {
+  if (activeDialog || !Array.isArray(destinations) || !destinations.length) return Promise.resolve(null);
+  const choices = destinations.map(({ nodeId, label }) => ({ nodeId, label }));
+  return new Promise((resolve) => {
+    const previousFocus = document.activeElement;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'modal__content';
+    dialog.style.width = 'min(360px, calc(100vw - 48px))';
+    dialog.style.maxHeight = 'calc(100vh - 48px)';
+    dialog.style.overflow = 'auto';
+    dialog.style.border = '1px solid var(--toolbar-control-border)';
+    dialog.setAttribute('aria-labelledby', 'node-move-dialog-title');
+    const heading = document.createElement('h2');
+    heading.id = 'node-move-dialog-title'; heading.className = 'modal__title';
+    heading.textContent = 'Переместить сцену';
+    const label = document.createElement('label');
+    label.className = 'modal__label'; label.htmlFor = 'node-move-dialog-target'; label.textContent = 'Глава';
+    const select = document.createElement('select');
+    select.id = 'node-move-dialog-target'; select.className = 'modal__input';
+    for (const choice of choices) {
+      const option = document.createElement('option');
+      option.value = choice.nodeId; option.textContent = choice.label; select.append(option);
+    }
+    select.value = choices[0].nodeId;
+    const actions = document.createElement('div'); actions.className = 'modal__actions';
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true; activeDialog = null;
+      if (dialog.open) dialog.close();
+      dialog.remove();
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+      resolve(value);
+    };
+    const button = (text, handler, primary = false) => {
+      const node = document.createElement('button'); node.type = 'button';
+      node.className = `modal__button${primary ? ' modal__button--primary' : ''}`;
+      node.textContent = text; node.addEventListener('click', handler); actions.append(node);
+    };
+    const submit = () => {
+      if (choices.some(choice => choice.nodeId === select.value)) finish(select.value);
+    };
+    button('Отмена', () => finish(null));
+    button('Переместить в начало', submit, true);
+    dialog.append(heading, label, select, actions);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+    dialog.addEventListener('close', () => finish(null));
+    select.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); submit(); }
+    });
+    activeDialog = { cancel: () => finish(null) };
+    document.body.append(dialog);
+    try { dialog.showModal(); select.focus({ preventScroll: true }); }
+    catch (error) { finish(null); throw error; }
+  });
+}
+
 export function normalizeNodeName(value) {
   return { ok: typeof value === 'string' && value.trim().length > 0
     && value.length <= 80 && !/[\\/<>:"|?*\u0000-\u001F\u007F]/u.test(value)

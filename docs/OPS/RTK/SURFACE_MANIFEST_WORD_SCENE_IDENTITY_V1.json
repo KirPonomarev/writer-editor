@@ -3,7 +3,7 @@
   "surfaceId": "surface.projectTree.sceneIdentity",
   "featureId": "WORD_SCENE_IDENTITY_MAC_20261002",
   "status": "TARGET_DECLARED_NOT_ACCEPTED",
-  "host": "Existing project tree context menu and node name dialog; existing native Save As dialog for retained authoring recovery",
+  "host": "Existing project tree context menu and node name dialog; existing native Save As dialog for retained authoring recovery; existing dialog with native select for destination chapter",
   "slotId": "Existing tree menu command contribution",
   "newVisualLanguage": false,
   "contributionKind": "Intent controls plus immutable revision-bound inventory",
@@ -53,6 +53,6 @@
     "textUndoUnchanged": true
   },
   "tokens": "Reuse existing Yalken CSS variables and palette/dialog classes; no global style or typography changes",
-  "fallback": "Disable unavailable Undo with text reason; preserve unsaved content on failed save barrier; no guessed target; stale-copy buffer stays write-fenced until explicit independent recovery succeeds",
+  "fallback": "Disable unavailable Undo with text reason; preserve unsaved content on failed save barrier; no guessed target; stale-copy buffer stays write-fenced until explicit independent recovery succeeds; empty chapter inventory disables move and stale chooser refuses without dispatch",
   "performance": "Load bounded immutable inventory only on explicit open; no XML parsing while typing"
 }

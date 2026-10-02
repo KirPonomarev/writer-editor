@@ -21753,7 +21753,8 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
     || currentLifecycleSubjectId() !== fence.subjectId || activePendingRecording
     || snapshot?.commentAuthoringPending === true || snapshot?.manuscriptNoteAuthoringPending === true
     || lastSignaledEditGeneration !== admission.generation
-    || snapshot?.projectId !== fence.projectId || snapshot?.documentId !== fence.removedNodeId
+    || snapshot?.projectId !== fence.projectId
+    || (snapshot?.documentId !== fence.removedNodeId && !(fence.detached === true && snapshot?.documentId === ''))
     || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < admission.generation) {
     throw treeCohortError('E_TREE_RECOVERY_CONTEXT_STALE');
   }
@@ -31978,20 +31979,36 @@ function treeCohortMappedPath(projectRoot, original, bindings) {
 
 async function publishTreeCohortActiveContext(bound) {
   if (bound.detached === true) {
+    let generation = null;
+    const subjectId = currentLifecycleSubjectId();
     const guard = () => {
+      userBookmarkCapability(bound.commandId);
       if (getProjectRootPath() !== bound.projectRoot || currentFilePath !== null
-        || activeStage10ApplicationBootstrap !== bound.owner || commentAuthoringSessionId !== bound.session)
-        throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+        || activeStage10ApplicationBootstrap !== bound.owner || commentAuthoringSessionId !== bound.session
+        || currentLifecycleSubjectId() !== subjectId || generation !== null && lastSignaledEditGeneration !== generation
+        || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
     };
-    guard();
-    const snapshot = await requestEditorSnapshot();
     guard();
     const state = await readVerifiedProjectTreeMutation({ manifestPath: path.join(bound.projectRoot, 'project.craftsman.json'), projectId: bound.projectId });
     guard();
-    if (state.treeRevision !== bound.treeRevision || snapshot.generation !== lastSignaledEditGeneration
-      || typeof snapshot.content !== 'string') throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+    const removed = state.retainedPacket?.plan.pathBindings.find(item => item.removedCopy
+      && item.nodeId === bound.removedCopy.nodeId
+      && path.join(bound.projectRoot, item.fromRelativePath) === bound.priorFilePath
+      && path.join(bound.projectRoot, item.toRelativePath) === bound.filePath);
+    if (state.treeRevision !== bound.treeRevision || state.receipt?.kind !== 'undo' || !removed) throw treeCohortError('E_TREE_RECOVERY_BINDING');
+    const fence = treeEditorReplacementFence = { filePath: null, sourceFilePath: bound.filePath,
+      projectRoot: bound.projectRoot, projectId: bound.projectId, documentId: removed.newNodeId,
+      removedNodeId: removed.nodeId, treeRevision: state.treeRevision, detached: true,
+      owner: bound.owner, session: bound.session, subjectId };
+    generation = lastSignaledEditGeneration;
+    const admission = { fence, generation };
+    treeRecoverySnapshotAdmissions.add(admission);
+    let snapshot;
+    try { snapshot = await requestEditorSnapshot(2500, admission); }
+    finally { treeRecoverySnapshotAdmissions.delete(admission); }
+    guard();
     if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('editor:set-text', {
-      treeDetached: true, projectId: bound.projectId, expectedDocumentId: bound.removedCopy.nodeId,
+      treeDetached: true, projectId: bound.projectId, expectedDocumentId: removed.nodeId,
       expectedGeneration: snapshot.generation, expectedContent: snapshot.content,
       documentId: '', title: 'Несохранённая восстановленная копия',
     });
@@ -33266,7 +33283,7 @@ async function handleTreeRecoveredCopySaveAs() {
     guard();
     const manifestPath = path.join(fence.projectRoot, 'project.craftsman.json');
     const selected = await dialog.showSaveDialog(mainWindow, { title: 'Сохранить восстановленную копию',
-      defaultPath: path.join(path.dirname(fence.filePath), 'Восстановленная копия.txt'),
+      defaultPath: path.join(path.dirname(fence.sourceFilePath || fence.filePath), 'Восстановленная копия.txt'),
       filters: [{ name: 'Текстовые файлы', extensions: ['txt'] }] });
     guard();
     if (selected.canceled || !selected.filePath) return false;
@@ -33337,7 +33354,7 @@ async function handleTreeRecoveredCopySaveAs() {
     currentFilePath = filePath;
     const publishedSubject = currentLifecycleSubjectId();
     treeEditorReplacementFence = ownedRecoveryContext = { ...fence, filePath, documentId: outcome.documentId,
-      removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject };
+      removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject, detached: fence.detached === true };
     const publishGuard = () => {
       userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
@@ -33355,7 +33372,7 @@ async function handleTreeRecoveredCopySaveAs() {
     const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(filePath),
       kind: 'scene', metaEnabled: true, content: raw, documentId: outcome.documentId }, filePath);
     publishGuard();
-    Object.assign(payload, { treeReplacement: true, expectedDocumentId: fence.removedNodeId,
+    Object.assign(payload, { treeReplacement: true, ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.removedNodeId,
       expectedContent: snapshot.content, expectedGeneration: snapshot.generation });
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     publishGuard();
