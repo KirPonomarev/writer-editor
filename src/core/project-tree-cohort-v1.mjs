@@ -264,7 +264,10 @@ function recoveredCopySource(input) {
   const recovery = input.recoveredCopy;
   if (recovery === undefined) return null;
   const topologyRecovery = recovery && Object.hasOwn(recovery, 'sourceNodeId');
-  need(recovery && Object.keys(recovery).sort().join(',') === (topologyRecovery ? 'receipt,retainedPacket,sourceNodeId,workingContent' : 'receipt,removedNodeId,retainedPacket,workingContent'), 'E_TREE_RECOVERY_INPUT');
+  const afterImage = topologyRecovery && recovery.sourceImage === 'after';
+  need(recovery && Object.keys(recovery).sort().join(',') === (topologyRecovery
+    ? afterImage ? 'receipt,retainedPacket,sourceImage,sourceNodeId,workingContent' : 'receipt,retainedPacket,sourceNodeId,workingContent'
+    : 'receipt,removedNodeId,retainedPacket,workingContent'), 'E_TREE_RECOVERY_INPUT');
   const originNodeId = topologyRecovery ? recovery.sourceNodeId : recovery.removedNodeId;
   const { receipt, retainedPacket: packet } = recovery;
   let retained = packet, depth = 0;
@@ -279,25 +282,28 @@ function recoveredCopySource(input) {
     && sha(stable(packet)) === receipt.packetDigest && packet.plan?.kind === receipt.kind
     && packet.manifestPath === input.manifestPath, 'E_TREE_RECOVERY_BINDING');
   validateProjectTreeCohort(packet.plan);
+  let sourcePath, livePath, graphOriginNodeId = originNodeId;
   if (receipt.kind === 'copy') {
     const previous = packet.plan.input.recoveredCopy, copied = packet.plan.pathBindings.filter(x => x.copy);
     need(previous && Object.hasOwn(previous, 'sourceNodeId') === topologyRecovery
       && (topologyRecovery ? previous.sourceNodeId : previous.removedNodeId) === originNodeId && copied.length === 1
       && copied[0].newNodeId === input.bindings[0].nodeId
       && copied[0].toRelativePath === input.bindings[0].fromRelativePath, 'E_TREE_RECOVERY_SOURCE');
-    const original = recoveredCopySource({ ...packet.plan.input,
-      recoveredCopy: { ...previous, workingContent: recovery.workingContent } });
-    return { ...original, livePath: copied[0].toRelativePath };
-  }
-  let sourcePath, livePath;
-  if (topologyRecovery) {
+    if (!afterImage) {
+      const original = recoveredCopySource({ ...packet.plan.input,
+        recoveredCopy: { ...previous, workingContent: recovery.workingContent } });
+      return { ...original, livePath: copied[0].toRelativePath };
+    }
+    sourcePath = livePath = copied[0].toRelativePath; graphOriginNodeId = copied[0].newNodeId;
+  } else if (topologyRecovery) {
     need(['split','merge'].includes(receipt.kind) || (receipt.kind === 'undo'
       && ['split','merge'].includes(packet.plan.input.retainedPacket?.plan?.kind)), 'E_TREE_RECOVERY_SOURCE');
     const rows = packet.plan.scenePublications?.filter(row => row.beforeNodeId === originNodeId) || [];
     need(rows.length === 1, 'E_TREE_RECOVERY_SOURCE');
     const row = rows[0];
     need(input.bindings[0].nodeId === row.afterNodeId && input.bindings[0].fromRelativePath === row.toRelativePath, 'E_TREE_RECOVERY_SOURCE');
-    sourcePath = row.fromRelativePath; livePath = row.toRelativePath;
+    sourcePath = afterImage ? row.toRelativePath : row.fromRelativePath; livePath = row.toRelativePath;
+    if (afterImage) graphOriginNodeId = row.afterNodeId;
   } else {
     const binding = packet.plan.pathBindings.find(x => x.removedCopy && x.nodeId === originNodeId);
     need(binding && input.bindings[0].nodeId === binding.newNodeId
@@ -306,9 +312,10 @@ function recoveredCopySource(input) {
     sourcePath = binding.fromRelativePath; livePath = binding.toRelativePath;
   }
   const entry = packet.entries.find(x => x.role === 'scene' && x.relativePath === sourcePath);
-  need(entry && entry.beforeBase64 !== null && (topologyRecovery || entry.afterBase64 === null), 'E_TREE_RECOVERY_SOURCE');
-  validateInventory([{ relativePath: entry.relativePath, role: 'scene', contentBase64: entry.beforeBase64 }]);
-  const raw = text(entry.beforeBase64), before = parsedScene(raw);
+  const side = afterImage ? 'afterBase64' : 'beforeBase64';
+  need(entry && typeof entry[side] === 'string' && (topologyRecovery || entry.afterBase64 === null), 'E_TREE_RECOVERY_SOURCE');
+  validateInventory([{ relativePath: entry.relativePath, role: 'scene', contentBase64: entry[side] }]);
+  const raw = text(entry[side]), before = parsedScene(raw);
   need(typeof recovery.workingContent === 'string' && Buffer.byteLength(recovery.workingContent) <= TREE_COHORT_LIMITS.bytes
     && Buffer.from(recovery.workingContent).toString('utf8') === recovery.workingContent, 'E_TREE_RECOVERY_INPUT');
   const working = envelope.parseObservablePayload(recovery.workingContent);
@@ -319,14 +326,14 @@ function recoveredCopySource(input) {
   need(same(pending.readLedger(beforeDoc), pending.readLedger(saved.doc)), 'E_TREE_RECOVERY_LEDGER_CHANGED');
   need(same(mediaModel.mediaPlacements(beforeDoc), mediaModel.mediaPlacements(saved.doc)), 'E_TREE_RECOVERY_MEDIA_CHANGED');
   const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: saved.doc });
-  const retainedText = role => text(packet.entries.find(x => x.role === role)?.beforeBase64 ?? null);
+  const retainedText = role => text(packet.entries.find(x => x.role === role)?.[side] ?? null);
   let notesText = retainedText('notes'), commentsText = retainedText('comments');
   const args = { projectId: input.projectId, sceneId: entry.relativePath, beforeContent: raw, afterContent: content };
   if (notesText !== null) notesText = notesModel.planManuscriptNoteAnchorSave({ ...args, beforeText: notesText })?.afterText || notesText;
   if (commentsText !== null) commentsText = commentAnchors.planCommentAnchorSave({ ...args, beforeText: commentsText })?.afterText || commentsText;
-  return { relativePath: entry.relativePath, content, originalBase64: entry.beforeBase64,
-    commitBase64: packet.entries.find(x => x.role === 'sceneCommit' && x.relativePath === entry.relativePath + '.wp201-commit.json')?.beforeBase64 ?? null,
-    notesText, commentsText, livePath, originNodeId };
+  return { relativePath: entry.relativePath, content, originalBase64: entry[side],
+    commitBase64: packet.entries.find(x => x.role === 'sceneCommit' && x.relativePath === entry.relativePath + '.wp201-commit.json')?.[side] ?? null,
+    notesText, commentsText, livePath, originNodeId: graphOriginNodeId };
 }
 
 export function planProjectTreeCohort(input) {

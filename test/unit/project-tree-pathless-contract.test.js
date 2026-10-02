@@ -820,8 +820,7 @@ test('move selection cannot submit an injected choice and equivalent same-revisi
 
 function sceneContentHarness() {
   const c = sceneMoveHarness();
-  c.scene.parentNodeId = 'old';
-  c.treeRoot.children[0].children.push({ nodeId: 'right', parentNodeId: 'old', kind: 'scene', label: 'Правая' });
+  c.treeRoot.children[0].children.push({ nodeId: 'right', kind: 'scene', label: 'Правая' });
   c.boundary = { boundaryRootIndex: 1, position: 8 };
   c.getTiptapRootSplitBoundary = () => c.boundary;
   return c;
@@ -830,6 +829,7 @@ function sceneContentHarness() {
 test('real split name dialog and merge menu use the registered generic bridge with only bounded identity intent', async () => {
   const { pathToFileURL } = require('node:url');
   const commands = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  const { buildLeftRailPresentationTree } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/leftRailPresentationModel.mjs')).href);
   for (const split of [true, false]) {
     const c = sceneContentHarness(), handlers = new Map(), calls = [];
     c.EXTRA_COMMAND_IDS = commands.EXTRA_COMMAND_IDS;
@@ -838,7 +838,12 @@ test('real split name dialog and merge menu use the registered generic bridge wi
     });
     c.dispatchUiCommand = (id, payload) => handlers.get(id)(payload);
     const commandId = split ? commands.EXTRA_COMMAND_IDS.TREE_SPLIT_SCENE : commands.EXTRA_COMMAND_IDS.TREE_MERGE_NEXT_SCENE;
-    const item = c.buildContextMenuItems(c.scene).find(x => x.id === commandId);
+    const rawBefore = JSON.stringify(c.treeRoot);
+    const shown = c.findTreeNodeById(buildLeftRailPresentationTree(c.treeRoot), 'scene');
+    assert.notEqual(shown, c.scene);
+    // renderTreeNode adds these only to presentation clones.
+    shown.parentNodeId = 'old'; shown.siblingIndex = 0;
+    const item = c.buildContextMenuItems(shown).find(x => x.id === commandId);
     assert.equal(item.enabled, true);
     const pending = item.invoke();
     if (split) {
@@ -852,7 +857,28 @@ test('real split name dialog and merge menu use the registered generic bridge wi
     } }]);
     assert.equal(c.reloads, 1); assert.equal(c.treeMutationPending, false);
     assert.equal(c.isLinkDialogOpen(), false);
+    assert.equal(JSON.stringify(c.treeRoot), rawBefore);
+    assert.equal(Object.hasOwn(c.scene, 'parentNodeId'), false);
   }
+});
+
+test('merge captured sibling survives equivalent raw refresh and refuses changed adjacency or revision', () => {
+  const c = sceneContentHarness();
+  const target = c.captureTreeContentTarget(c.scene, false);
+  assert.ok(target);
+  c.treeRoot = JSON.parse(JSON.stringify(c.treeRoot));
+  assert.equal(c.isTreeContentTargetCurrent(target, false), true);
+  c.treeMutationProjection.treeRevision++;
+  assert.equal(c.isTreeContentTargetCurrent(target, false), false);
+  c.treeMutationProjection.treeRevision--;
+  const children = c.treeRoot.children[0].children;
+  children[1].nodeId = 'replacement';
+  assert.equal(c.isTreeContentTargetCurrent(target, false), false);
+  children[1].nodeId = 'right';
+  children.splice(1, 0, { nodeId: 'folder', kind: 'chapter-folder', children: [] });
+  assert.equal(c.isTreeContentTargetCurrent(target, false), false);
+  children.splice(1, 1);
+  assert.equal(c.isTreeContentTargetCurrent(target, false), true);
 });
 
 test('split dialog cancellation and changed root selection, epoch, authoring or tree state never dispatch', async () => {

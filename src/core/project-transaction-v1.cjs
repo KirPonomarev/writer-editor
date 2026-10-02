@@ -8,7 +8,8 @@ const path = require('node:path');
 
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
 const { MODE: COMMENT_REBASE_MODE, planCommentAnchorSave } = require('./word-comment-anchor-save-v1.cjs');
-const { validateNoteCohort } = require('./word-manuscript-notes-v1.cjs');
+const { validateNoteCohort, validateManuscriptDocument } = require('./word-manuscript-notes-v1.cjs');
+const { readState: readCanonicalCommentState } = require('./word-comment-authoring-v1.cjs');
 const MEDIA_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v6';
 const MEDIA_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v6';
 const TREE_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v7';
@@ -974,8 +975,9 @@ async function commitProjectTransaction({
   const before = { scene: expectedSceneContent, manifest: expectedManifestContent };
   const after = { scene: sceneContent, manifest: manifestContent };
   const retainedCommit = await readCommitRecordState({ scenePath, manifestPath, observedScene, observedManifest, verifyManifestContinuation, fsAdapter });
-  const retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
+  let retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
     && retainedCommit.record.resources?.length ? normalizeRetainedResources(retainedCommit.record.resources, scenePath, manifestPath) : [];
+  retainedResources = await consumeRestoredTreeAnnotationResources(retainedResources, scenePath, manifestPath, before, fsAdapter);
   await verifyRetainedResources(retainedResources, scenePath, manifestPath, fsAdapter);
   for (const entry of resources) {
     if (await readResource(entry, manifestPath, fsAdapter) !== null) {
@@ -1514,11 +1516,54 @@ async function treeDirectoryState(target, manifestPath, fsAdapter) {
   try { const stat = await fsAdapter.lstat(target); treeNeed(stat.isDirectory() && !stat.isSymbolicLink(), 'E_TREE_COHORT_DIRECTORY'); return true; }
   catch (error) { if (error.code === 'ENOENT') return false; throw error; }
 }
+// Only the new structural operation owns annotation rebinding. Historical
+// move/copy packets must regenerate byte-for-byte with their original receipts.
+function hasStructuralAnnotationCohort(plan) {
+  return Array.isArray(plan.scenePartitions) || Boolean(plan.input?.recoveredCopy?.sourceNodeId)
+    || plan.kind === 'undo' && Boolean(plan.input?.retainedPacket?.plan?.input?.recoveredCopy?.sourceNodeId);
+}
+function treeManagedAnnotationEntries(plan, manifestPath) {
+  const managed = new Map();
+  if (!hasStructuralAnnotationCohort(plan)) return managed;
+  for (const [role, relativePath, target] of [
+    ['notes', 'notes.craftsman.json', noteStatePath(manifestPath)],
+    ['comments', '.yalken/word-review/non-text-return-state.v1.json', commentStatePath(manifestPath)],
+  ]) {
+    const matches = plan.entries.filter(entry => entry.role === role && entry.relativePath === relativePath);
+    treeNeed(matches.length === 1, 'E_TREE_COHORT_ANNOTATION_BINDING');
+    const entry = matches[0];
+    // An absent canonical owner cannot discharge a historical resource proof.
+    if (entry.beforeBase64 === null || entry.afterBase64 === null) continue;
+    for (const encoded of new Set([entry.beforeBase64, entry.afterBase64])) {
+      const raw = treeText(encoded);
+      if (role === 'notes') validateManuscriptDocument(JSON.parse(raw), plan.projectId);
+      else readCanonicalCommentState(raw, plan.projectId);
+    }
+    managed.set(target, entry);
+  }
+  return managed;
+}
+async function consumeRestoredTreeAnnotationResources(resources, scenePath, manifestPath, before, fsAdapter) {
+  if (!resources.some(entry => [noteStatePath(manifestPath), commentStatePath(manifestPath)].includes(entry.path))) return resources;
+  const state = await readVerifiedProjectTreeMutation({ manifestPath, fsAdapter });
+  if (state.receipt?.kind !== 'undo' || !hasStructuralAnnotationCohort(state.retainedPacket.plan)) return resources;
+  const packet = state.retainedPacket;
+  treeNeed(packet.plan.manifestText === before.manifest, 'E_TREE_COHORT_ANNOTATION_BINDING');
+  const relativePath = path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/');
+  const scene = packet.entries.find(entry => entry.role === 'scene' && entry.relativePath === relativePath);
+  treeNeed(scene?.afterBase64 === treeB64(before.scene), 'E_TREE_COHORT_ANNOTATION_BINDING');
+  const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
+  for (const [target, entry] of managed) treeNeed(await treeRead(target, manifestPath, fsAdapter) === entry.afterBase64, 'E_TREE_COHORT_ANNOTATION_CAS');
+  return resources.filter(entry => !managed.has(entry.path));
+}
 async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null) {
+  const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
   for (const entry of packet.entries.filter(e => e.role === 'sceneCommit' && e.relativePath.endsWith('.wp201-commit.json'))) {
     for (const raw of new Set([entry.beforeBase64, entry.afterBase64].filter(Boolean))) {
       let record; try { record = JSON.parse(treeText(raw)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
-      await verifyRetainedResources(record.resources || [], record.scenePath, manifestPath, fsAdapter);
+      const resources = record.resources || [];
+      if (resources.length) normalizeRetainedResources(resources, record.scenePath, manifestPath);
+      await verifyRetainedResources(resources.filter(resource => !managed.has(resource.path)), record.scenePath, manifestPath, fsAdapter);
     }
   }
   const observed = [];
@@ -1549,6 +1594,7 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
   const entries = plan.entries.map(entry => ({ ...entry }));
   if (plan.kind === 'undo') return entries;
   const byPath = new Map(entries.map(entry => [entry.relativePath, entry]));
+  const managed = treeManagedAnnotationEntries(plan, manifestPath);
   // Every retained scene receipt must describe its new current manifest. This
   // also avoids invalidating an unrelated scene's global annotation digest.
   for (const scene of entries.filter(entry => entry.role === 'scene' && entry.afterBase64 !== null)) {
@@ -1557,7 +1603,7 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
     const originalPath = plan.affectedScenes.find(item => item.to === scene.relativePath)?.from || scene.relativePath;
     const recovery = plan.recoverySource && plan.affectedScenes.some(item => item.copy && item.to === scene.relativePath) ? plan.recoverySource : null;
     const sourcePaths = plan.sceneReceiptSources?.find(row => row.targetRelativePath === scene.relativePath)?.sourceRelativePaths || [originalPath];
-    const resources = new Map();
+    const resources = new Map(); let hasResourceProof = false;
     for (const sourcePath of sourcePaths) {
       const previousEntry = recovery ? { beforeBase64: recovery.commitBase64 } : byPath.get(sourcePath + '.wp201-commit.json');
       previous = null;
@@ -1568,7 +1614,9 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
           && previous.scenePath === treeAbsolute(manifestPath, recovery ? recovery.relativePath : sourcePath)
           && previous.manifestPath === manifestPath && previous.sceneDigest === sha256hex(Buffer.from(recovery ? recovery.originalBase64 : byPath.get(sourcePath).beforeBase64, 'base64'))
           && isDigest(previous.transactionId), 'E_TREE_COHORT_COMMIT_INVALID');
+        if (previous.resources) hasResourceProof = true;
         for (const resource of previous.resources || []) {
+          if (managed.has(resource.path)) continue;
           treeNeed(!resources.has(resource.path) || canonicalize(resources.get(resource.path)) === canonicalize(resource), 'E_TREE_COHORT_RESOURCE_CONFLICT');
           resources.set(resource.path, resource);
         }
@@ -1578,7 +1626,7 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
     const record = { schemaVersion: TREE_COMMIT_SCHEMA_VERSION, transactionId, revision,
       scenePath: treeAbsolute(manifestPath, scene.relativePath), manifestPath,
       sceneDigest: sha256hex(Buffer.from(scene.afterBase64, 'base64')), manifestDigest: sha256hex(plan.manifestText),
-      ...(resources.size ? { resources: [...resources.values()].sort((a,b)=>a.path.localeCompare(b.path)) } : {}),
+      ...(resources.size || hasResourceProof && !managed.size ? { resources: [...resources.values()] } : {}),
       ...(note && note.afterBase64 !== null ? { noteState: { mode: 'PROJECT_TREE_COHORT_V1', beforeDigest: digestOptional(treeText(note.beforeBase64)), afterDigest: sha256hex(Buffer.from(note.afterBase64, 'base64')) } } : {}),
       ...(comment && comment.afterBase64 !== null ? { commentState: { mode: 'PROJECT_TREE_COHORT_V1', beforeDigest: sha256hex(treeText(comment.beforeBase64) || ''), afterDigest: sha256hex(Buffer.from(comment.afterBase64, 'base64')) } } : {}) };
     if (!commit) { commit = { relativePath: relative, role: 'sceneCommit', beforeBase64: null, afterBase64: null }; entries.push(commit); byPath.set(relative, commit); }

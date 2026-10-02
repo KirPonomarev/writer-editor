@@ -677,3 +677,114 @@ test('merge admits only known absent/null pending default; genuine document attr
   doc.attrs.semanticUnknown='meaningful';fs.writeFileSync(p,envelope.composeObservablePayload({doc}));
   assert.throws(()=>m.planProjectTreeCohort({...input,inventory:inventory(f.root)}),{code:'E_TREE_TOPOLOGY_DOCUMENT_ATTRS'});
 });
+
+for(const empty of [false,true])test(`legacy v7 resource ${empty?'empty presence':'original order'} remains byte-compatible under packet regeneration`,async t=>{
+  const f=fixture(t),m=await modelPromise,scenePath=path.join(f.root,'roman/01 Alpha.txt');fs.mkdirSync(path.join(f.root,'assets'));
+  const resources=empty?[]:['z','a'].map(name=>{const p=path.join(f.root,`assets/${name}.bin`);fs.writeFileSync(p,name);return {path:p,digest:sha(name),bytes:1};});
+  fs.writeFileSync(tx.commitPathFor(scenePath),JSON.stringify({schemaVersion:'yalken.project-transaction.commit.v2',transactionId:sha('legacy-order'),revision:0,scenePath,manifestPath:f.manifestPath,sceneDigest:sha(f.raw),manifestDigest:sha(text(f.manifestPath)),resources}));
+  const plan=m.planProjectTreeCohort(f.capture());
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const record=JSON.parse(text(tx.commitPathFor(path.join(f.root,'roman/03 Alpha.txt'))));
+  assert.deepEqual(record.resources,resources,'historical packet output must retain array order and explicit empty presence');
+  const reopened=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});assert.equal(reopened.lastMutation.canUndo,true);
+});
+
+for(const kind of ['split','merge','undo-split','undo-merge'])test(`verified ${kind} afterimage recovers late partition edits and both retry phases without changing live graph`,async t=>{
+  const f=topologyFixture(t),m=await modelPromise,commit=plan=>tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:plan.expectedTreeRevision+1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const split=m.planProjectTreeCohort(f.capture());await commit(split);let state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath}),revision=1;
+  if(kind==='merge'||kind==='undo-merge'){
+    await commit(m.planProjectTreeCohort(f.capture({operation:'merge',operationId:'merge-afterimage',expectedTreeRevision:1,topology:{leftNodeId:'tree-node-a',leftRelativePath:'roman/01 Alpha.txt',rightNodeId:split.createdNodeIds[0],rightRelativePath:'roman/01a Right.txt'}})));
+    state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});revision++;
+  }
+  if(kind.startsWith('undo-')){
+    await commit(m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-afterimage',expectedTreeRevision:revision,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)}));
+    state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});revision++;
+  }
+  const row=state.retainedPacket.plan.scenePublications.at(-1),sourceNodeId=row.beforeNodeId;
+  const canonical=text(path.join(f.root,row.toRelativePath)),parsed=envelope.parseObservablePayload(canonical);
+  parsed.doc.content[0].content.push({type:'text',text:' late partition edit'});
+  const workingContent=envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock});
+  const input=(s,rev,target,live,extra)=>f.capture({operation:'copy',operationId:'recover-'+rev,topology:undefined,expectedTreeRevision:rev,
+    bindings:[{nodeId:live.nodeId,fromRelativePath:live.path,toRelativePath:target}],recoveredCopy:{receipt:s.receipt,retainedPacket:s.retainedPacket,sourceNodeId,workingContent,...extra}});
+  const currentNotes=JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes,currentThreads=JSON.parse(text(f.commentPath)).threads;
+  const selectedNotes=currentNotes.filter(n=>n.manuscript.reference.sceneId===row.toRelativePath).length;
+  const originalScenes=inventory(f.root).filter(e=>e.role==='scene');
+  const firstInput=input(state,revision,'roman/04 After.txt',{nodeId:row.afterNodeId,path:row.toRelativePath},{sourceImage:'after'});
+  for(const sourceImage of ['before','other',null])assert.throws(()=>m.planProjectTreeCohort({...firstInput,recoveredCopy:{...firstInput.recoveredCopy,sourceImage}}),{code:'E_TREE_RECOVERY_INPUT'});
+  const first=m.planProjectTreeCohort(firstInput);await commit(first);revision++;
+  const after=text(path.join(f.root,'roman/04 After.txt'));assert.equal(notes.sceneText(after),notes.sceneText(workingContent));
+  assert.equal(JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes.length,currentNotes.length+selectedNotes);
+  assert.deepEqual(JSON.parse(text(f.commentPath)).threads.slice(0,currentThreads.length),currentThreads);
+  assert.deepEqual(JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes.slice(0,currentNotes.length),currentNotes);
+  for(const item of originalScenes)assert.equal(fs.readFileSync(path.join(f.root,item.relativePath)).toString('base64'),item.contentBase64);
+  state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});let live=first.pathBindings.find(b=>b.copy);
+  // Replacement was rejected: the retained old IDs and original selected phase still apply.
+  const second=m.planProjectTreeCohort(input(state,revision,'roman/05 Retry.txt',{nodeId:live.newNodeId,path:live.toRelativePath},{}));await commit(second);revision++;
+  assert.equal(notes.sceneText(text(path.join(f.root,'roman/05 Retry.txt'))),notes.sceneText(workingContent));
+  state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});live=second.pathBindings.find(b=>b.copy);
+  // Replacement was accepted, then edited: now the fresh copied IDs own the graph.
+  const fresh=envelope.parseObservablePayload(text(path.join(f.root,'roman/05 Retry.txt')));fresh.doc.content[0].content.push({type:'text',text:' more'});
+  const freshWorking=envelope.composeObservablePayload({...fresh,metaEnabled:fresh.hasMetaBlock});
+  const third=m.planProjectTreeCohort(input(state,revision,'roman/06 Fresh.txt',{nodeId:live.newNodeId,path:live.toRelativePath},{sourceImage:'after',workingContent:freshWorking}));await commit(third);
+  assert.equal(notes.sceneText(text(path.join(f.root,'roman/06 Fresh.txt'))),notes.sceneText(freshWorking));assert.equal(text(path.join(f.root,'roman/04 After.txt')),after);
+});
+
+function staleImportedAnnotationResource(f, role) {
+  const annotationPath=role==='comments'?f.commentPath:path.join(f.root,'notes.craftsman.json'),old=text(annotationPath);
+  if(role==='comments'){
+    const model=require('../../src/core/word-comment-authoring-v1.cjs'),state=JSON.parse(old);
+    const after=model.planCommentAuthoring({beforeText:old,projectId:'project-test',sceneId:'roman/01 Alpha.txt',sceneSha256:sha(f.raw),paragraphs:bookmarks.paragraphs(envelope.parseObservablePayload(f.raw).doc).map(bookmarks.textOf),now,
+      input:{requestId:'native-reply-after-import',action:'reply',projectId:'project-test',sceneId:'roman/01 Alpha.txt',expectedStateSha256:sha(old),expectedSceneSha256:sha(f.raw),threadId:state.threads[0].threadId,body:'Added in Yalken after Word import'}});
+    fs.writeFileSync(annotationPath,after.afterText);
+  }else{
+    const after=JSON.parse(old);after.notes[0].body='Edited note body';after.notes[0].manuscript.body.content[0].content[0].text='Edited note body';fs.writeFileSync(annotationPath,JSON.stringify(after));
+  }
+  const receiptPath=path.join(f.root,'.yalken/docx-import/receipts/native.json');fs.mkdirSync(path.dirname(receiptPath),{recursive:true});fs.writeFileSync(receiptPath,'immutable import receipt');
+  const source=path.join(f.root,'roman/01 Alpha.txt'),resources=[{path:annotationPath,digest:sha(old),bytes:Buffer.byteLength(old)},
+    {path:receiptPath,digest:sha(text(receiptPath)),bytes:Buffer.byteLength(text(receiptPath))}];
+  fs.writeFileSync(tx.commitPathFor(source),JSON.stringify({schemaVersion:'yalken.project-transaction.commit.v7',transactionId:sha('native-import'),revision:0,scenePath:source,manifestPath:f.manifestPath,sceneDigest:sha(f.raw),manifestDigest:sha(text(f.manifestPath)),resources}));
+  return {annotationPath,receiptPath,source,resources};
+}
+for(const role of ['comments','notes'])for(const undo of [false,true])test(`native imported stale ${role} resource becomes verified cohort owner; ${undo?'Undo then ':''}ordinary Save continues`,async t=>{
+  const f=topologyFixture(t),m=await modelPromise,r=staleImportedAnnotationResource(f,role),before=f.capture(),oldReceipt=text(tx.commitPathFor(r.source));
+  const plan=m.planProjectTreeCohort(before);await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  for(const relative of ['roman/01 Alpha.txt','roman/01a Right.txt']){
+    const proof=await tx.readVerifiedProjectTransaction({scenePath:path.join(f.root,relative),manifestPath:f.manifestPath});
+    assert.deepEqual(proof.resources.map(x=>x.path),[r.receiptPath]);assert.ok(proof.noteState);assert.ok(proof.commentState);
+  }
+  if(undo){
+    const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+    const inverse=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-mutable-resource',expectedTreeRevision:1,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+    await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:2,treeCohort:inverse,publishManifest:f.publishManifest,revalidate:async()=>{}});
+    assert.equal(text(tx.commitPathFor(r.source)),oldReceipt);assert.equal(text(r.source),f.raw);assert.equal(text(f.commentPath),before.commentsText);assert.equal(text(path.join(f.root,'notes.craftsman.json')),before.notesText);
+  }
+  const raw=text(r.source),annotationBefore=text(r.annotationPath);
+  await tx.commitProjectTransaction({scenePath:r.source,manifestPath:f.manifestPath,revision:3,sceneContent:raw+' ',expectedSceneContent:raw,manifestContent:text(f.manifestPath),expectedManifestContent:text(f.manifestPath),publishManifest:f.publishManifest});
+  const proof=await tx.readVerifiedProjectTransaction({scenePath:r.source,manifestPath:f.manifestPath});assert.deepEqual(proof.resources.map(x=>x.path),[r.receiptPath]);assert.equal(text(r.annotationPath),annotationBefore);
+  fs.writeFileSync(r.receiptPath,'tampered immutable import');await assert.rejects(tx.readVerifiedProjectTransaction({scenePath:r.source,manifestPath:f.manifestPath}),{code:'E_PROJECT_TRANSACTION_RESOURCE_READBACK'});
+});
+
+for(const drift of ['annotationCAS','immutableReceipt','sameBasename','forgedRole','absentOwner'])test(`managed annotation classification refuses ${drift} before journal`,async t=>{
+  const f=topologyFixture(t),m=await modelPromise,r=staleImportedAnnotationResource(f,'comments');
+  if(drift==='sameBasename'){
+    const p=path.join(f.root,'assets/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,'changed');
+    const rec=JSON.parse(text(tx.commitPathFor(r.source)));rec.resources[0].path=p;fs.writeFileSync(tx.commitPathFor(r.source),JSON.stringify(rec));
+  }
+  let plan=m.planProjectTreeCohort(f.capture({...(drift==='absentOwner'?{commentsText:null}:{})}));
+  if(drift==='annotationCAS')fs.appendFileSync(f.commentPath,' ');
+  if(drift==='immutableReceipt')fs.writeFileSync(r.receiptPath,'tampered');
+  if(drift==='forgedRole'){plan=JSON.parse(JSON.stringify(plan));plan.entries.find(e=>e.role==='comments').role='notes';plan.planDigest=m.projectTreeCohortDigest({...plan,planDigest:undefined});}
+  const scene=text(r.source);await assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}}));
+  assert.equal(text(r.source),scene);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});
+
+test('post-Undo mutable-resource consumption requires exact current annotation afterimage; drift writes no scene or journal',async t=>{
+  const f=topologyFixture(t),m=await modelPromise,r=staleImportedAnnotationResource(f,'comments'),plan=m.planProjectTreeCohort(f.capture());
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-then-tamper',expectedTreeRevision:1,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:2,treeCohort:undo,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  fs.appendFileSync(f.commentPath,' ');const raw=text(r.source),manifest=text(f.manifestPath),comments=text(f.commentPath);
+  await assert.rejects(tx.commitProjectTransaction({scenePath:r.source,manifestPath:f.manifestPath,revision:3,sceneContent:raw+' ',expectedSceneContent:raw,manifestContent:manifest,expectedManifestContent:manifest,publishManifest:f.publishManifest}),{code:'E_TREE_COHORT_ANNOTATION_CAS'});
+  assert.equal(text(r.source),raw);assert.equal(text(f.manifestPath),manifest);assert.equal(text(f.commentPath),comments);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});

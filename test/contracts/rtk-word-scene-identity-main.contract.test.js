@@ -56,9 +56,12 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     persist: persistDocxReviewReturnAuthorityStore, expire: expireProjectWordRoundsBeforeTree,
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
+    exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
+    captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
+    clearBackupCaches() { backupHashes.clear(); treeBackupSeeds.clear(); },
     captureQueued(label) {
       const previous = queueDiskOperation; let captured = null;
       queueDiskOperation = (operation, name) => {
@@ -894,7 +897,7 @@ test('typing during detached Undo receipt read installs verified private recover
   assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(target)).doc).bookmarks.length, 7);
 });
 
-async function topologyFixture(t, { refuse = false } = {}) {
+async function topologyFixture(t, { refuse = false, lateTarget = false } = {}) {
   const f = await fixture(t); await installMixedScene(f);
   let working = read(f.alpha), documentId = f.a.nodeId, publicationId = '', uiGeneration = 9;
   let cut = { boundaryRootIndex: 1, position: 22 }, serial = 0, decline = refuse;
@@ -910,6 +913,13 @@ async function topologyFixture(t, { refuse = false } = {}) {
         assert.equal(payload.expectedTreeContentPublicationId, publicationId);
         working = payload.content; documentId = payload.documentId; publicationId = payload.treeContentPublicationId;
         cut = null;
+        if (lateTarget) {
+          lateTarget = false;
+          const parsed = envelope.parseObservablePayload(working);
+          parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'typed new partition 🧭'}]});
+          working = envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:parsed.doc});
+          uiGeneration++; f.probe.state({dirty:true,generation:uiGeneration});
+        }
       }
     });
   // Main's open epoch is independent of the renderer's monotonic text epoch.
@@ -930,6 +940,7 @@ async function topologyFixture(t, { refuse = false } = {}) {
     observation(value) { if ('documentId' in value) documentId = value.documentId; if ('epoch' in value) publicationId = value.epoch; },
     boundary(value) { cut = value; },
     accept() { decline = false; },
+    refuse() { decline = true; },
     deferNextSnapshot() {
       const wc = ui.event.sender, send = wc.send;
       let request = null;
@@ -990,6 +1001,8 @@ test('topology refused same-ID replacement cannot authorize old full buffer even
   r.observation({ epoch: targetEpoch });
   await assert.rejects(f.probe.snapshot(), /TREE_EDITOR_IDENTITY_UNCONFIRMED/u);
   assert.equal((await f.probe.save()).ok, false);
+  const recoveryTarget = path.join(f.imported, 'ForgedTargetRecovery.txt'); f.chooseSavePath(recoveryTarget);
+  assert.equal(await f.probe.saveAs(), false); assert.equal(fs.existsSync(recoveryTarget), false);
   assert.deepEqual(f.capture(), before);
   assert.match(envelope.parseObservablePayload(r.working()).text, /Link destination/u);
 });
@@ -1046,4 +1059,114 @@ for (const kind of ['save', 'autosave']) test(`topology old ${kind} queue callba
   const before = f.capture(), outcome = await resume();
   assert.equal(outcome.success, false); assert.equal(outcome.code, 'E_SAVE_AUTHORING_TARGET_STALE');
   assert.deepEqual(f.capture(), before); assert.equal(envelope.parseObservablePayload(read(f.alpha)).text, 'Alpha target unique');
+});
+
+test('topology typing in an applied partition before initial ACK recovers only its verified afterimage through SaveAs', async t => {
+  const r = await topologyFixture(t,{lateTarget:true}), { f } = r;
+  const result = await r.dispatch('cmd.project.tree.splitScene', r.request(true));
+  assert.equal(result.ok,false); assert.equal(result.value.committed,true);
+  const left = read(f.alpha), rightPath = path.join(f.imported,'02_Right.txt'), right = read(rightPath);
+  const partitionText = envelope.parseObservablePayload(r.working()).text;
+  assert.match(partitionText,/typed new partition 🧭/u); assert.doesNotMatch(partitionText,/Twin repeated text/u);
+  assert.equal((await f.probe.save()).ok,false);
+  const target = path.join(f.imported,'RecoveredPartition.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(),true);
+  assert.equal(read(f.alpha),left); assert.equal(read(rightPath),right);
+  const recovered = envelope.parseObservablePayload(read(target));
+  assert.equal(recovered.text,partitionText);
+  assert.equal(bookmarks.readRegistry(recovered.doc)?.bookmarks.length || 0,0);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(right).doc).bookmarks.length,7);
+  const noteState=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))), commentState=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  const sceneId=path.relative(f.root,target).split(path.sep).join('/');
+  assert.equal(noteState.notes.filter(n=>n.manuscript?.reference.sceneId===sceneId).length,1);
+  assert.equal(commentState.threads.filter(thread=>thread.sceneId===sceneId).length,1);
+  assert.equal(f.probe.state().dirty,false);
+});
+
+test('topology rejected afterimage recovery retries its retained partition graph without rebinding original IDs', async t => {
+  const r = await topologyFixture(t,{lateTarget:true}), { f } = r;
+  const split = await r.dispatch('cmd.project.tree.splitScene',r.request(true));
+  assert.equal(split.ok,false); assert.equal(split.value.committed,true);
+  const left=read(f.alpha), rightPath=path.join(f.imported,'02_Right.txt'), right=read(rightPath), working=r.working();
+  const first=path.join(f.imported,'RecoveryDeclined.txt'); f.chooseSavePath(first); r.refuse();
+  assert.equal(await f.probe.saveAs(),false); assert.equal(fs.existsSync(first),true);
+  const firstContent=read(first), second=path.join(f.imported,'RecoveryAccepted.txt'); f.chooseSavePath(second); r.accept();
+  assert.equal(await f.probe.saveAs(),true);
+  assert.equal(read(f.alpha),left); assert.equal(read(rightPath),right); assert.equal(read(first),firstContent);
+  assert.equal(envelope.parseObservablePayload(read(second)).text,envelope.parseObservablePayload(working).text);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(second)).doc)?.bookmarks.length || 0,0);
+  const notes=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))), comments=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(notes.notes.length,3); assert.equal(comments.threads.length,3);
+  assert.equal(new Set(notes.notes.map(n=>n.id)).size,3); assert.equal(new Set(comments.threads.map(thread=>thread.threadId)).size,3);
+  assert.equal(f.probe.state().filePath,second); assert.equal(f.probe.state().dirty,false);
+});
+
+for (const variant of ['wrong-target-epoch','wrong-target-owner']) test(`topology afterimage ${variant} refuses SaveAs without partition or graph writes`,async t=>{
+  const r=await topologyFixture(t,{lateTarget:true}), {f}=r;
+  const split=await r.dispatch('cmd.project.tree.splitScene',r.request(true));
+  assert.equal(split.ok,false); assert.equal(split.value.committed,true);
+  if(variant==='wrong-target-epoch') r.observation({epoch:'unowned-epoch'});
+  else r.observation({documentId:f.b.nodeId});
+  const before=f.capture(), working=r.working(), target=path.join(f.imported,'InvalidAfterimage.txt'); f.chooseSavePath(target);
+  assert.equal(await f.probe.saveAs(),false); assert.equal(fs.existsSync(target),false);
+  assert.deepEqual(f.capture(),before); assert.equal(r.working(),working);
+});
+
+for (const scope of ['exportReview','exportFullReview']) for (const stage of ['source','build','gate','cancel']) test(`actual ${scope} resolved ${stage} outcome surfaces safe diagnostics without altering receipt or writing`, async t=>{
+  const f=await fixture(t), statuses=[], logger=f.probe.captureExportLogs(); t.after(()=>logger.restore());
+  const detail=stage==='source'?'REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED':stage==='gate'?'RTK_V4_PUBLICATION_COMMENT_FINAL_MISMATCH':'private manuscript text /private/source/path';
+  let sourceCalls=0, writes=0;
+  const result=await f.probe[scope]({}, {
+    resolveDocxReviewPacketExportPath:async()=>stage==='cancel'?'':path.join(f.temp,'export.docx'),
+    validateDocxExportTarget:async()=>({ok:true}),
+    readDocxReviewPacketExportSource:async()=>{sourceCalls++; if(stage==='source')throw Error(detail); return {};},
+    buildDocxReviewPacketBuffer:async()=>{if(stage==='gate')return {documentBuffer:Buffer.from('gate-observation-only'),exportCapsule:{fullManuscript:true},publicationGate:{ok:false,code:detail,publishAllowed:false}};throw Error(detail);},
+    writeBufferAtomic:async()=>{writes++;}, updateStatus:value=>statuses.push(value),
+  });
+  assert.equal(result.ok,false); assert.equal(writes,0);
+  assert.equal(result.error.op,scope==='exportFullReview'?'cmd.project.review.exportFullManuscriptDocxReviewPacket':'cmd.project.review.exportDocxReviewPacket');
+  if(stage==='cancel'){
+    assert.equal(result.error.code,'E_REVIEW_DOCX_EXPORT_CANCELED'); assert.equal(sourceCalls,0);
+    assert.deepEqual(statuses,['Экспорт отменён.']); assert.deepEqual(logger.records,[]);
+  }else{
+    const code=stage==='source'?'E_REVIEW_DOCX_EXPORT_SOURCE_UNAVAILABLE':stage==='gate'?'E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED':'E_REVIEW_DOCX_EXPORT_BUILD_FAILED';
+    assert.equal(result.error.code,code);
+    if(stage==='gate'){assert.equal(result.error.reason,detail);assert.equal(result.error.details.code,detail);assert.equal(result.error.details.message,undefined);}else assert.equal(result.error.details.message,detail);
+    assert.equal(statuses.length,1); assert.ok(statuses[0].includes(code));
+    if(stage==='source'||stage==='gate')assert.ok(statuses[0].includes(detail)); else assert.equal(statuses[0].includes(detail),false);
+    assert.deepEqual(logger.records,[{context:'review-docx-export',error:{code,...(stage==='source'||stage==='gate'?{refusalCode:detail}:{})}}]);
+    assert.equal(JSON.stringify(logger.records).includes('/private'),false);
+  }
+});
+
+test('structural merge periodic backup dedupes durable afterimage even with cold process caches, while changed buffer still backs up',async t=>{
+  const r=await topologyFixture(t), {f}=r;
+  assert.equal((await r.dispatch('cmd.project.tree.splitScene',r.request(true))).ok,true);
+  const merged=await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:1})); assert.equal(merged.ok,true);
+  const manager=require('../../src/utils/backupManager'), original=manager.createBackup; let calls=0;
+  manager.createBackup=async(...args)=>{calls++;return original(...args);}; t.after(()=>{manager.createBackup=original;});
+  const before=f.capture(); assert.equal((await f.probe.backup()).unchanged,true); assert.equal(calls,0);
+  f.probe.clearBackupCaches();
+  assert.equal((await f.probe.backup()).unchanged,true); assert.equal(calls,0); assert.deepEqual(f.capture(),before);
+  const state=await require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  assert.equal(state.lastMutation.canUndo,true);
+  const undo=await f.main.handleUiTreeUndoCommand({projectId:f.query.projectId,expectedTreeRevision:2,mutationId:merged.lastMutation.id});
+  assert.equal(undo.ok,true,JSON.stringify(undo));
+  assert.equal((await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:3}))).ok,true);
+  const durable=read(f.alpha), callsBeforeEdit=calls;
+  r.edit(raw=>{const parsed=envelope.parseObservablePayload(raw); parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'actual changed backup'}]});return envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock});});
+  assert.equal((await f.probe.backup()).success,true); assert.equal(calls,callsBeforeEdit+1);
+  assert.equal(read(f.alpha),durable);
+});
+
+test('structural backup dedupe preserves foreign history bytes and exact Undo refusal',async t=>{
+  const r=await topologyFixture(t), {f}=r;
+  assert.equal((await r.dispatch('cmd.project.tree.splitScene',r.request(true))).ok,true);
+  const merged=await r.dispatch('cmd.project.tree.mergeNextScene',r.request(false,{expectedTreeRevision:1})); assert.equal(merged.ok,true);
+  const foreign=path.join(f.root,'backups',sha(f.alpha),'1790924312766_01_Alpha.txt'); fs.mkdirSync(path.dirname(foreign),{recursive:true}); fs.writeFileSync(foreign,'foreign history');
+  f.probe.clearBackupCaches(); assert.equal((await f.probe.backup()).unchanged,true);
+  const tx=require('../../src/core/project-transaction-v1.cjs'),state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  assert.equal(state.lastMutation.canUndo,false); assert.equal(state.lastMutation.unavailableReason,'E_TREE_COHORT_FOREIGN_ENTRY');
+  const before=f.capture(),result=await f.main.handleUiTreeUndoCommand({projectId:f.query.projectId,expectedTreeRevision:2,mutationId:merged.lastMutation.id});
+  assert.equal(result.ok,false); assert.deepEqual(f.capture(),before); assert.equal(read(foreign),'foreign history');
 });

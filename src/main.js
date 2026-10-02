@@ -5333,7 +5333,7 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
 }
 
 async function handleReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  return runDocxReviewPacketExport(payload, {
+  const result = await runDocxReviewPacketExport(payload, {
     commandId: REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError,
@@ -5366,10 +5366,24 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
       ? options.activateReviewDocxExportAuthority
       : activateReviewDocxExportAuthority,
   });
+  if (result?.ok === false) {
+    const status = typeof options.updateStatus === 'function' ? options.updateStatus : updateStatus;
+    if (result.error?.code === 'E_REVIEW_DOCX_EXPORT_CANCELED') status('Экспорт отменён.');
+    else {
+      const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
+        ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
+      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+        .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+      status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
+      logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
+    }
+  }
+  return result;
 }
 
 async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  return runDocxReviewPacketExport(payload, {
+  const result = await runDocxReviewPacketExport(payload, {
     commandId: REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError: makeTypedFullManuscriptReviewDocxExportError,
@@ -5403,6 +5417,20 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
       ? options.activateReviewDocxExportAuthority
       : activateReviewDocxExportAuthority,
   });
+  if (result?.ok === false) {
+    const status = typeof options.updateStatus === 'function' ? options.updateStatus : updateStatus;
+    if (result.error?.code === 'E_REVIEW_DOCX_EXPORT_CANCELED') status('Экспорт отменён.');
+    else {
+      const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
+        ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
+      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+        .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+      status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
+      logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
+    }
+  }
+  return result;
 }
 // DOCX_REVIEW_PACKET_EXPORT_COMMAND_SURFACE_END
 
@@ -21855,6 +21883,13 @@ async function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expecte
 
 function assertTreeRecoverySnapshot(snapshot, admission) {
   const fence = admission?.fence;
+  let image = null;
+  if (fence?.sourceNodeId) {
+    const retainedId = fence.recoveryObservedDocumentId || fence.sourceNodeId;
+    const retainedEpoch = fence.recoveryObservedEpoch ?? fence.priorTreeContentPublicationId;
+    if (snapshot?.documentId === retainedId && snapshot?.treeContentPublicationId === retainedEpoch) image = 'before';
+    else if (snapshot?.documentId === fence.documentId && snapshot?.treeContentPublicationId === fence.treeContentPublicationId) image = 'after';
+  }
   if (!treeRecoverySnapshotAdmissions.has(admission) || !fence || treeEditorReplacementFence !== fence
     || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
     || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
@@ -21862,11 +21897,12 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
     || snapshot?.commentAuthoringPending === true || snapshot?.manuscriptNoteAuthoringPending === true
     || lastSignaledEditGeneration !== admission.generation
     || snapshot?.projectId !== fence.projectId
-    || (snapshot?.documentId !== (fence.sourceNodeId || fence.removedNodeId) && !(fence.detached === true && snapshot?.documentId === ''))
-    || fence.sourceNodeId && snapshot?.treeContentPublicationId !== fence.priorTreeContentPublicationId
+    || (fence.sourceNodeId ? !image || admission.sourceImage !== undefined && admission.sourceImage !== image
+      : snapshot?.documentId !== fence.removedNodeId && !(fence.detached === true && snapshot?.documentId === ''))
     || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < admission.generation) {
     throw treeCohortError('E_TREE_RECOVERY_CONTEXT_STALE');
   }
+  if (fence.sourceNodeId) admission.sourceImage = image;
 }
 
 function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
@@ -32400,7 +32436,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         // buffer or let its next save recreate the vanished original path.
         committedOutcome = { treeRevision: result.treeRevision };
         for (const entry of plan.entries.filter(x => x.role === 'scene' && x.afterBase64 !== null)) {
-          if (plan.entries.some(x => x.role === 'recoverySnapshot' && x.afterBase64 === entry.afterBase64
+          if (Array.isArray(plan.scenePartitions) || plan.entries.some(x => x.role === 'recoverySnapshot' && x.afterBase64 === entry.afterBase64
             && path.posix.dirname(x.relativePath) === path.posix.dirname(entry.relativePath)
             && path.posix.basename(x.relativePath).startsWith('.' + path.posix.basename(entry.relativePath) + '.bak.')
             && /^\d{13}$/u.test(path.posix.basename(x.relativePath).slice(('.' + path.posix.basename(entry.relativePath) + '.bak.').length)))) {
@@ -33320,17 +33356,22 @@ async function runCreateBackup() {
       const backup = await prepareUserBookmarkBackup(filePath, snapshot);
       const content = backup.content;
       const hash = computeHash(content);
-      const seeded = treeBackupSeeds.get(filePath);
+      let seeded = treeBackupSeeds.get(filePath);
+      if (seeded === undefined && treeFence !== null) {
+        // Restarted processes recover deduplication only from the verified
+        // durable structural packet, never a filename or renderer assertion.
+        const state = await readVerifiedProjectTreeMutation({ manifestPath: path.join(capturedRoot, 'project.craftsman.json') });
+        await guard();
+        const packet = state.retainedPacket;
+        const relative = path.relative(capturedRoot, filePath).split(path.sep).join('/');
+        const entry = Array.isArray(packet?.plan?.scenePartitions)
+          ? packet.entries.find(value => value.role === 'scene' && value.relativePath === relative && value.afterBase64 !== null) : null;
+        if (entry) seeded = Buffer.from(entry.afterBase64, 'base64').toString('utf8');
+      }
       if (seeded !== undefined) {
         const raw = await fs.readFile(filePath, 'utf8');
         if (raw === seeded) {
-          const envelope = await loadDocumentContentEnvelopeModule(), saved = envelope.parseObservablePayload(raw), working = envelope.parseObservablePayload(content);
-          const review = await loadRtkNonTextReturnModule();
-          const materialize = value => value && typeof value === 'object'
-            ? userBookmarkModel.materializeInternalLinkSchemaDefaults(value) : value;
-          if (!saved.issue && !working.issue && saved.hasMetaBlock === working.hasMetaBlock
-            && JSON.stringify(saved.meta) === JSON.stringify(working.meta) && JSON.stringify(saved.cards) === JSON.stringify(working.cards)
-            && review.commentSceneSnapshotsEqual(materialize(saved.doc || saved.text), materialize(working.doc || working.text))) {
+          if (await treeSceneSnapshotsEqual(raw, content)) {
             await backup.guard(); await guard();
             backupHashes.set(filePath, hash); treeBackupSeeds.delete(filePath);
             return { success: true, unchanged: true };
@@ -33635,6 +33676,7 @@ async function handleTreeRecoveredCopySaveAs() {
           bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: relativePath, copy: true }],
           recoveredCopy: { receipt: state.receipt, retainedPacket: state.retainedPacket,
             ...(fence.sourceNodeId ? { sourceNodeId: fence.sourceNodeId } : { removedNodeId: fence.removedNodeId }),
+            ...(admission.sourceImage === 'after' ? { sourceImage: 'after' } : {}),
             workingContent: snapshot.content }, now: new Date().toISOString() });
         guard();
         await expireProjectWordRoundsBeforeTree(fence.projectRoot, guard);
@@ -33674,7 +33716,8 @@ async function handleTreeRecoveredCopySaveAs() {
     treeEditorReplacementFence = ownedRecoveryContext = { ...fence, filePath, documentId: outcome.documentId,
       removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject, detached: fence.detached === true };
     if (fence.sourceNodeId) Object.assign(treeEditorReplacementFence, {
-      targetContent: outcome.content, treeContentPublicationId: `tree-content-${crypto.randomUUID()}` });
+      targetContent: outcome.content, treeContentPublicationId: `tree-content-${crypto.randomUUID()}`,
+      recoveryObservedDocumentId: snapshot.documentId, recoveryObservedEpoch: snapshot.treeContentPublicationId });
     const publishGuard = () => {
       userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
       if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
@@ -33693,9 +33736,9 @@ async function handleTreeRecoveredCopySaveAs() {
       kind: 'scene', metaEnabled: true, content: raw, documentId: outcome.documentId }, filePath);
     publishGuard();
     Object.assign(payload, { ...(fence.sourceNodeId ? { treeContentReplacement: true,
-      expectedTreeContentPublicationId: fence.priorTreeContentPublicationId,
+      expectedTreeContentPublicationId: snapshot.treeContentPublicationId,
       treeContentPublicationId: treeEditorReplacementFence.treeContentPublicationId } : { treeReplacement: true }),
-      ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.sourceNodeId || fence.removedNodeId,
+      ...(fence.detached === true ? { treeRecovery: true } : {}), expectedDocumentId: fence.sourceNodeId ? snapshot.documentId : fence.removedNodeId,
       expectedContent: snapshot.content, expectedGeneration: snapshot.generation });
     if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
     publishGuard();

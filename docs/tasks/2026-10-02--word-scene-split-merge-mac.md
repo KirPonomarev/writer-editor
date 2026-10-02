@@ -206,3 +206,60 @@ Command-binding amendment: clean owned WIP checkpoint4994c2e6049a993c131d5c34aec
 admits39paths including existing COMMAND_CAPABILITY_BINDING.json. Add only the
 two declared command-to-capability pairs. Preflight PASS; original delivery base
 remains a2a5ae6c. Checkpoint and focused tests are not native acceptance.
+
+Late-new-partition recovery amendment: clean checkpointb34667a091622f485e77d78479c2fa25623da697
+and39path preflight PASS. Existing recoveredCopy topology variant may carry
+optional exact sourceImage:after. Absent means original beforeimage; after means
+the selected publication after owner/path and receipt AFTER scene, notes,
+comments and resource graph. Main selects via the private fence epoch. No
+renderer application attestation enables ordinary Save. Both variants only
+create a separate fresh-identity scene through existing writer; current partitions
+remain unchanged. Recovery-copy continuation must bind previous sourceNodeId
+and exact current receipt. Wrong source, epoch, receipt, resource and copied-graph
+identity negatives required. This closes the original late-edit no-loss duty.
+
+Native SOURCE01 diagnosis: split at root8 on the imported nine-root fixture
+failed E_PROJECT_TRANSACTION_RESOURCE_READBACK before journal publication.
+The import receipt retained the old canonical comment-file digest, while native
+comment authoring had legitimately changed that file. Independent readback proved
+the original scene, notes and comments unchanged after refusal.
+Repair hypothesis: structural cohorts and their retained recovery may classify
+only exact canonical notes/comments resources with a matching regenerated typed
+entry and validated model as managed annotation state. Existing entry before/after
+CAS remains mandatory; immutable import receipts and assets remain digest-bound.
+New structural receipts retain noteState/commentState and exclude obsolete mutable
+resource bindings. Exact Undo restores old receipt bytes; its following ordinary
+Save may use that classification only from the verified current retained packet
+with exact live scene, manifest and annotation afterimages. Historical
+nonstructural packet regeneration stays byte-compatible. Predicted proof is native
+split, ordinary Save and restart Undo plus stale-comment/note positives and
+resource, annotation, basename, role and retained-packet tamper negatives.
+
+Native SOURCE02: split, independent annotation conservation and structural Undo
+in a new process succeeded; subsequent ordinary Save discharged the obsolete
+annotation resource binding. Merge then refused locally before Main dispatch.
+Diagnosis reproduced with the actual presentation adapter: menu nodes have a
+presentation-only parentNodeId, but revalidation resolves a raw tree node without
+that field. Find the next sibling from the current raw tree topology by nodeId,
+without changing that tree or accepting renderer paths as authority. Regression
+uses the actual adapter clone and command handler, including unchanged-revision
+refresh and changed-sibling/revision refusal. Same existing UI scope and rollback.
+
+SOURCE02 full-manuscript Review export closed its native Save dialog without an
+artifact or visible refusal. Read-only route tracing confirms typed failure is
+returned normally and discarded by the native menu caller, which only observes
+thrown exceptions. Existing Main export command handlers must surface the typed
+failure code through existing status/log channels while returning the unchanged
+receipt. No paths, document text or arbitrary exception detail in that message;
+cancel stays cancellation. This bounded observation repair enables an exact
+diagnosis of the required split-to-Word route without relaxing export admission.
+
+SOURCE03 merge preserved the complete graph, but its following Undo correctly
+refused an unplanned backup file. The idle backup was byte-identical to the
+committed merged scene and appeared17seconds after the retained packet. Main
+seeded backup hashes only for recoverySnapshot entries, which structural merge
+does not create. Seed the existing backup deduplication state from verified
+committed structural scene afterimages, including verified restart rehydration;
+retain backups for genuine changed buffers. No Core foreign-entry relaxation or
+removal of the observed file. Predicted proof: merge, idle backup tick, restart
+and Undo; changed-buffer backup and actual foreign-file refusal remain intact.

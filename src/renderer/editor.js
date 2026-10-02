@@ -10233,12 +10233,22 @@ async function handleCopyNode(node) {
 }
 
 function findNextTreeScene(node) {
-  const parent = findTreeNodeById(treeRoot, node?.parentNodeId);
-  const children = parent?.children;
-  if (!Array.isArray(children)) return null;
-  const index = children.findIndex(child => getEffectiveDocumentId(child) === getEffectiveDocumentId(node));
-  const next = index >= 0 ? children[index + 1] : null;
-  return next && ['scene', 'chapter-file'].includes(next.kind) ? next : null;
+  const nodeId = getEffectiveDocumentId(node);
+  if (!nodeId || !treeRoot) return null;
+  // Presentation clones carry parentNodeId; canonical query nodes do not.
+  // Resolve adjacency from the current immutable tree for both callers.
+  const stack = [treeRoot];
+  while (stack.length) {
+    const parent = stack.pop();
+    const children = Array.isArray(parent?.children) ? parent.children : [];
+    const index = children.findIndex(child => getEffectiveDocumentId(child) === nodeId);
+    if (index >= 0) {
+      const next = children[index + 1];
+      return next && ['scene', 'chapter-file'].includes(next.kind) ? next : null;
+    }
+    for (let index = children.length - 1; index >= 0; index -= 1) stack.push(children[index]);
+  }
+  return null;
 }
 
 function treeContentUnavailableReason(node, split) {
