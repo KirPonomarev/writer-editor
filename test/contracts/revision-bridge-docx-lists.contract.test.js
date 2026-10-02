@@ -83,9 +83,14 @@ test('C1 lists: paragraph style numbering uses definition pStyle, with direct nu
  const actual=await read(packageBytes(body,definition(levelXml(0,'decimal',4,'<w:pStyle w:val="Base"/>')),styles));
  assert.deepEqual(actual.doc,doc(ol(4,li(p('a'))),p('body')));
 });
-test('C1 lists: historical paragraph numbering does not grant present list semantics',async()=>{
- const body=paragraph('body',null,0,'<w:pPrChange><w:pPr><w:numPr><w:numId w:val="1"/></w:numPr></w:pPr></w:pPrChange>');
- const actual=await read(packageBytes(body));assert.equal(actual.doc,null);assert.equal(actual.plan.candidateCreatePlan.entries[0].content,'body');
+test('C1 lists: historical numbering cannot bypass pending-change validation or create a current list',async()=>{
+ const [bridge]=await modules;
+ for(const [attrs,reason] of [['','PENDING_REVISIONS_ID_INVALID'],[' w:id="1" w:author="Synthetic reviewer" w:date="2026-10-02T12:00:00Z"','PENDING_FORMAT_NO_CHANGE']]) {
+  const body=paragraph('body',null,0,`<w:pPrChange${attrs}><w:pPr><w:numPr><w:numId w:val="1"/></w:numPr></w:pPr></w:pPrChange>`);
+  const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes(body));
+  assert.equal(report.ok,false);assert.equal(report.reason,reason);
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);
+ }
 });
 test('C1 lists: unsupported, absent and style-linked numbering retains explicit loss',async()=>{
  for(const numbering of ['',definition(levelXml(0,'chicago')),definition(levelXml(0),'','<w:numStyleLink w:val="Other"/>')]) {

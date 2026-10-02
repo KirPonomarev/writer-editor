@@ -35,6 +35,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/renderer/tiptap/manuscriptNotes.mjs`
 - `test/contracts/revision-bridge-docx-lists.contract.test.js`
 - `test/contracts/rtk-word-list-format.contract.test.js`
+- `test/contracts/rtk-word-table-cell-lists.contract.test.js`
 - `docs/tasks/2026-10-02--word-list-formats-mac.md`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -110,3 +111,10 @@ One text block, KEY: VALUE, basenames, SHA, evidence, delivery, limits and next 
 
 After three identical failures preserve inputs and exact expected/actual evidence,
 change hypothesis. Heavy local suites run serially on stable candidates only.
+
+Same-contour preflight amendment passed on e4a3bc3b for the table negative fixture.
+Type A is now supported; unknown type remains rejected, with positive cell projection
+coverage. The inherited historical numbering fixture expected silent discard of a tracked
+change. Current pending-review semantics correctly block both absent revision ID
+and an unrepresented numbering-only delta. The regression now asserts both exact
+refusals and absence of an import plan; no positive tracked-numbering claim is made.

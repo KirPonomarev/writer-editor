@@ -76,11 +76,11 @@ test('An orphan list level in a new cell cannot inherit a parent from the previo
 });
 test('Core and both exporters reject malformed cell list shapes before publication', async () => {
   for (const bad of [list(1),list(-1,item('a')),list(1.5,item('a')),list(2147483647,item('a'),item('b')),
-    { ...list(1,item('a')), attrs: { start: 1, type: 'A' } },
+    { ...list(1,item('a')), attrs: { start: 1, type: 'unknown' } },
     list(1,{ type: 'listItem', content: [p('a'),p('ambiguous continuation')] }),
     list(1,{ type: 'listItem', content: [list(null,item('orphan'))] }), table(cell(p('nested table')))]) {
     const document = doc(table(cell(bad)));
-    assert.throws(() => envelope.composeObservablePayload({ doc: document }), /TABLE/);
+    assert.throws(() => envelope.composeObservablePayload({ doc: document }), /TABLE|WORD_LIST_FORMAT_INVALID/);
     await assert.rejects(exported(document), /TABLE/);
     assert.throws(() => buildFormatIrParagraphs({ doc: document, text: '', sceneId:'bad' }), /TABLE/);
   }
