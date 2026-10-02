@@ -8,6 +8,9 @@ const Module = require('node:module');
 const { pathToFileURL } = require('node:url');
 
 const ROOT = path.resolve(__dirname, '..', '..');
+// Each harness owns its persistence profile; repository bytes stay read-only.
+const USER_DATA_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-main-test-profile-'));
+test.after(() => fs.rmSync(USER_DATA_ROOT, { recursive: true, force: true }));
 
 async function loadNotesStorage() {
   return import(pathToFileURL(path.join(ROOT, 'src', 'product', 'notesStoragePersistence.mjs')).href);
@@ -25,7 +28,7 @@ async function loadMainWithElectronStub() {
   const originalLoad = Module._load;
   const electronStub = {
     app: {
-      getPath: () => ROOT,
+      getPath: (name) => name === 'userData' ? USER_DATA_ROOT : ROOT,
       setPath: () => {},
       whenReady: () => new Promise(() => {}),
       on: () => {},

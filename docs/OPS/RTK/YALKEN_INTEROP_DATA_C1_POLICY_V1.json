@@ -463,7 +463,15 @@
     "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
     "test/contracts/rtk-word-saturation-c05-block-range-writer.contract.test.js",
     "src/core/word-language-v1.cjs",
-    "test/unit/toolbar-configurator-foundation.integration.test.js"
+    "test/unit/toolbar-configurator-foundation.integration.test.js",
+    "test/unit/sector-m-s18-notes-commands-read-models.test.js",
+    "test/unit/sector-m-s17-notes-schema-storage.test.js",
+    "test/unit/sector-m-s23-history-snapshots-diff.test.js",
+    "test/unit/sector-m-s21-replace-single-safe.test.js",
+    "test/unit/sector-m-s22-replace-mass-reversible.test.js",
+    "test/unit/sector-m-s24-history-restore-recovery.test.js",
+    "test/unit/project-tree-derived-counters-main.test.js",
+    "test/unit/metadata-inspector-read-model-main.test.js"
   ],
   "protectedFiles": [
     {
@@ -1916,7 +1924,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-split-merge-mac.md",
-        "sha256": "b6de68cf1033892605a7303a23b7ed0e867982a6e967e36a1250f54cb022f3fd"
+        "sha256": "7accf5cca0852d90a6520958867c031e8a2012b6d3b63091c16a9362b09585fa"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SCENE_SPLIT_MERGE_V1.json",
@@ -1953,6 +1961,42 @@
       {
         "path": "test/unit/toolbar-configurator-foundation.integration.test.js",
         "sha256": "848247e4de8c2f6bf28a77859c9358a8cbbb12722643dd55ec1469a558cf5e20"
+      },
+      {
+        "path": "test/unit/sector-m-s18-notes-commands-read-models.test.js",
+        "sha256": "22af7703c74b644cd9a1b12e948b3a08c86f86e2c622e7919ac7517227364b10"
+      },
+      {
+        "path": "test/unit/sector-m-s17-notes-schema-storage.test.js",
+        "sha256": "2b3161d38c8e12576e087b6cc198b3af62928a9a26a744f4727107f92ad50b3b"
+      },
+      {
+        "path": "test/unit/sector-m-s23-history-snapshots-diff.test.js",
+        "sha256": "4b9a55f902633e1096dfb4e1cc760d0234bb195e8e4fbe8b99b5ba42328af94f"
+      },
+      {
+        "path": "test/unit/project-tree-move-main.test.js",
+        "sha256": "b468f276c75e3ae4fd95a4547582de22a095d3618506e7c74492b96d2810088a"
+      },
+      {
+        "path": "test/unit/sector-m-s21-replace-single-safe.test.js",
+        "sha256": "e7d6ced3f6e09af99b21e4bae02570a56085b809e93a950f2838d1412c50ffa4"
+      },
+      {
+        "path": "test/unit/sector-m-s22-replace-mass-reversible.test.js",
+        "sha256": "bad383949284be6e2eb769234240a7aea41efa5a3a3edb761f262b83906481f8"
+      },
+      {
+        "path": "test/unit/sector-m-s24-history-restore-recovery.test.js",
+        "sha256": "315421b1d9db67cf5990cd484a231628b7505105d8ed304a3d7ad33d92477bfd"
+      },
+      {
+        "path": "test/unit/project-tree-derived-counters-main.test.js",
+        "sha256": "c69621808eb9bd04f78dae7c6b0e79533f4f3f124391781b0fc5342b4586beda"
+      },
+      {
+        "path": "test/unit/metadata-inspector-read-model-main.test.js",
+        "sha256": "9b6269cedca78f9ea59806135bfdc7e49d210f640698a95e017b7ff9484e0659"
       }
     ],
     "followupRepair": {

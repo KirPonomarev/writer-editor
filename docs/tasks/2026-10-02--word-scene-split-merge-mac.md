@@ -95,6 +95,16 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/export/docx/docxMinBuilder.js`
 - `src/export/docx/docxReviewPacketBuilder.js`
 
+- `test/unit/sector-m-s18-notes-commands-read-models.test.js`
+- `test/unit/sector-m-s17-notes-schema-storage.test.js`
+- `test/unit/sector-m-s23-history-snapshots-diff.test.js`
+- `test/unit/project-tree-move-main.test.js`
+- `test/unit/sector-m-s21-replace-single-safe.test.js`
+- `test/unit/sector-m-s22-replace-mass-reversible.test.js`
+- `test/unit/sector-m-s24-history-restore-recovery.test.js`
+- `test/unit/project-tree-derived-counters-main.test.js`
+- `test/unit/metadata-inspector-read-model-main.test.js`
+
 ## DENYLIST
 
 No new writer, registry, IPC channel, dependency, network, project layout or
@@ -548,3 +558,17 @@ but omits the path delta; exact standalone diagnostic exits0 with identical
 before/after Git-status digest and treeChanged:false. This does not certify the
 CI race as repaired. Preserve that failure until the next complete candidate
 passes; no readonly guard, oracle or skip policy is weakened.
+
+3091b71b broad local run was explicitly stopped after the status monitor
+observed fixture-generated stage10-integrity-anchors writes. Its verified owned
+process tree is terminal and all51generated files were copied/hash-verified
+outside the checkout; this incomplete run is not baseline acceptance. The
+root cause is nine existing Main test harnesses returning repository ROOT for
+Electron userData. Clean72path preflight admits only their profile isolation:
+per-file mkdtemp profiles with suite cleanup, all existing assertions unchanged.
+Main persistence, Q0 guard, timing thresholds and release gates stay intact.
+
+All nine harness files execute their unchanged35tests successfully, zero skips
+and todos, under the existing assertReadOnlyRun wrapper. Before/after Git status
+digests match and treeChanged:false. This directly verifies profile isolation;
+full-candidate baseline and CI are still required.
