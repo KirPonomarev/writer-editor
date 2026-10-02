@@ -28,6 +28,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/renderer/tiptap/index.js`
 - `src/renderer/tiptap/documentHeadings.mjs`
+- `src/renderer/editor.bundle.js`
 - `test/contracts/revision-bridge-docx-headings.contract.test.js`
 - `test/contracts/rtk-word-heading-outline.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
@@ -74,6 +75,8 @@ Performance: bounded existing parser and heading render only.
 Accessibility: valid HTML headings with exact aria-level7-9, preserving inherited editing behavior.
 Current: higher levels are rejected by existing parser/export and return validators.
 Target: selected heading preservation only; not all P3-08 or whole Mac-plan acceptance.
+
+Generated tracked editor.bundle.js admitted after clean scope-extension preflight at 0ecf044d; original delivery base remains b2c7c5aa. Regeneration uses the existing build:renderer command. The historical heading fixture's missing revision ID also fails on the immutable base; its valid form and missing-ID negative are now separate tests.
 
 ## IMPLEMENTATION_STEPS
 
