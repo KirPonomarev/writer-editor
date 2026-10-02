@@ -88,7 +88,7 @@ test('C1 lists: historical paragraph numbering does not grant present list seman
  const actual=await read(packageBytes(body));assert.equal(actual.doc,null);assert.equal(actual.plan.candidateCreatePlan.entries[0].content,'body');
 });
 test('C1 lists: unsupported, absent and style-linked numbering retains explicit loss',async()=>{
- for(const numbering of ['',definition(levelXml(0,'upperRoman')),definition(levelXml(0),'','<w:numStyleLink w:val="Other"/>')]) {
+ for(const numbering of ['',definition(levelXml(0,'chicago')),definition(levelXml(0),'','<w:numStyleLink w:val="Other"/>')]) {
   const actual=await read(packageBytes(paragraph('a'),numbering));assert.equal(actual.doc,null);assert.equal(actual.plan.candidateCreatePlan.entries[0].content,'a');assert.ok(actual.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
  }
 });
@@ -142,6 +142,25 @@ test('C1 lists: nested old properties cannot overwrite the current numbering ref
  const body='<w:p><w:pPr><w:numPr><w:numId w:val="1"/><w:other><w:numPr><w:numId w:val="2"/></w:numPr></w:other><w:ilvl w:val="0"/></w:numPr></w:pPr><w:r><w:t>a</w:t></w:r></w:p>';
  assert.deepEqual((await read(packageBytes(body))).doc,doc(ol(1,li(p('a')))));
 });
-test('C1 lists: an alphabetic source numbering type is not exported as decimal',async()=>{
- const list=ol(1,li(p('a')));list.attrs.type='A';await assert.rejects(roundtrip(doc(list)),/DOCX_LIST_FORMAT_UNSUPPORTED/);
+test('C1 lists: unknown source numbering type is not exported as decimal',async()=>{
+ const list=ol(1,li(p('a')));list.attrs.type='unknown';await assert.rejects(roundtrip(doc(list)),/DOCX_LIST_FORMAT_UNSUPPORTED/);
+});
+for (const [type, format] of [['I','upperRoman'],['i','lowerRoman'],['A','upperLetter'],['a','lowerLetter']]) {
+ test(`P3d lists: ${format} import, durable create and five edited exchanges preserve type/start`,async t=>{
+  const input=doc({...ol(3,li(p('First')),li(p('Second'))),attrs:{start:3,type}});
+  const imported=await read(packageBytes(paragraph('First')+paragraph('Second'),definition(levelXml(0,format,3))));
+  assert.deepEqual(imported.doc,input);assert.equal(imported.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
+  const local=await createDocxImportLocalFilePreview({}, {pickLocalFile:async()=>({path:'/tmp/synthetic-list-format.docx'}),readLocalFileBytes:async()=>imported.bytes});
+  assert.equal(local.ok,true,JSON.stringify(local));const plan=local.docxImportPreviewPlan;
+  assert.match(rememberDocxImportPreviewPlanAdmission(plan),/^[a-f0-9]{64}$/);
+  const projectRoot=fs.mkdtempSync(path.join(os.tmpdir(),'docx-list-format-'));t.after(()=>fs.rmSync(projectRoot,{recursive:true,force:true}));
+  const result=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},{projectRoot,romanRoot:path.join(projectRoot,'roman'),projectId:'lists-format'});assert.equal(result.ok,true,JSON.stringify(result));
+  const dir=path.join(projectRoot,'roman','Imported'),file=fs.readdirSync(dir).find(n=>n.endsWith('.txt'));const [,envelope]=await modules;
+  const saved=fs.readFileSync(path.join(dir,file),'utf8');assert.match(saved,/word-list-format.v1/);let current=envelope.parseObservablePayload(saved).doc;assert.deepEqual(current,input);
+  for(let i=0;i<5;i++){current.content[0].content[0].content[0].content[0].text+=' '+i;const returned=await roundtrip(current);assert.deepEqual(returned.doc,current);current=returned.doc;}
+ });
+}
+test('P3d lists: forged formats cannot grant supported list projection',async()=>{
+ const [bridge]=await modules;const {report}=await roundtrip(doc(ol(1,li(p('a')))));
+ for(const type of ['decimal','unknown',{},null,'',1,'__proto__']){const bad=structuredClone(report);bad.contentPreview.paragraphs[0].list.type=type;assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bad).ok,false);}
 });

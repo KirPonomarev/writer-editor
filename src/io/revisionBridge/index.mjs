@@ -1,3 +1,4 @@
+import listFormat from '../../core/word-list-format-v1.cjs';
 import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
@@ -9139,11 +9140,12 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
   // Even an unrepresentable numbered heading consumes its Word ordinal. Do
   // not renumber a later supported paragraph when reporting that earlier loss.
   if (definition.unsupported || metadata.headingLevel !== undefined
-    || !(definition.numFmt === 'bullet' || ((definition.numFmt ?? 'decimal') === 'decimal' && definition.lvlText === `%${level + 1}.`))) {
+    || !(definition.numFmt === 'bullet' || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {
     declareLoss();
     return;
   }
-  metadata.list = { numId: reference.numId, level, kind, ordinal };
+  const type = listFormat.fromWordFormat(definition.numFmt ?? 'decimal');
+  metadata.list = { numId: reference.numId, level, kind, ordinal, ...(kind === 'orderedList' && type !== '1' ? { type } : {}) };
 }
 
 const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
@@ -9812,8 +9814,9 @@ function docxInlineCanonicalContent(paragraphs) {
       target.push(block);
       return;
     }
-    if (!isPlainObject(list) || Object.keys(list).length !== 4
-      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal'].includes(key))
+    if (!isPlainObject(list) || !['numId', 'level', 'kind', 'ordinal'].every(key => Object.hasOwn(list, key))
+      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal', 'type'].includes(key))
+      || (Object.hasOwn(list, 'type') && (list.kind !== 'orderedList' || typeof list.type !== 'string' || !['I', 'i', 'A', 'a'].includes(list.type)))
       || !/^[1-9]\d{0,9}$/u.test(list.numId) || typeof list.numId !== 'string' || Number(list.numId) > 2147483647
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
@@ -9822,9 +9825,9 @@ function docxInlineCanonicalContent(paragraphs) {
     needsRichContent = true;
     listStack.length = Math.min(listStack.length, list.level + 1);
     let active = listStack[list.level];
-    if (!active || active.numId !== list.numId || active.node.type !== list.kind
+    if (!active || active.numId !== list.numId || active.node.type !== list.kind || active.node.attrs?.type !== list.type
       || (list.kind === 'orderedList' && active.nextOrdinal !== list.ordinal)) {
-      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal } } : {}), content: [] };
+      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal, ...(list.type ? { type: list.type } : {}) } } : {}), content: [] };
       if (list.level === 0) target.push(node);
       else {
         const parentItem = listStack[list.level - 1]?.node.content.at(-1);

@@ -162,10 +162,10 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
     if (level > 8 || nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
     if (!Array.isArray(list.content) || !list.content.length) throw new Error('DOCX_LIST_EMPTY');
     const start = list.type === 'orderedList' ? (list.attrs?.start ?? 1) : 1;
-    if (list.type === 'orderedList' && list.attrs?.type != null && list.attrs.type !== '1') throw new Error('DOCX_LIST_FORMAT_UNSUPPORTED');
+    if (list.type === 'orderedList' && list.attrs?.type != null && !['1', 'I', 'i', 'A', 'a'].includes(list.attrs.type)) throw new Error('DOCX_LIST_FORMAT_UNSUPPORTED');
     if (!Number.isInteger(start) || start < 0 || start > 2147483647
       || start + list.content.length - 1 > 2147483647) throw new Error('DOCX_LIST_START_INVALID');
-    const numbering = { numId: nextListId++, level, kind: list.type, start };
+    const numbering = { numId: nextListId++, level, kind: list.type, start, ...(list.attrs?.type ? { type: list.attrs.type } : {}) };
     for (const item of list.content) {
       // One paragraph per item is unambiguous in ordinary OOXML. Unnumbered
       // continuation paragraphs cannot be recovered as item ownership here.
@@ -197,7 +197,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
             if (nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
             listIds.set(list.listId, nextListId++);
           }
-          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: entry.listStack.length - 1, kind: list.kind, start: list.start };
+          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: entry.listStack.length - 1, kind: list.kind, start: list.start, ...(list.type ? { type: list.type } : {}) };
         }
       }
       return;
@@ -471,8 +471,8 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}${buildDocxBlockStyleDefinitions(blockStyles)}</w:styles>` },
   ] : [];
   if (numberings.size) {
-    const definitions = [...numberings.values()].map(({ numId, level, kind, start }) => {
-      const format = kind === 'orderedList' ? 'decimal' : 'bullet';
+    const definitions = [...numberings.values()].map(({ numId, level, kind, start, type }) => {
+      const format = kind === 'orderedList' ? require('../../core/word-list-format-v1.cjs').wordFormat(type) : 'bullet';
       const marker = kind === 'orderedList' ? `%${level + 1}.` : '•';
       return `<w:abstractNum w:abstractNumId="${numId}"><w:multiLevelType w:val="multilevel"/><w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${marker}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${(level + 1) * 720}"/></w:tabs><w:ind w:left="${(level + 1) * 720}" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>`;
     }).join('');
