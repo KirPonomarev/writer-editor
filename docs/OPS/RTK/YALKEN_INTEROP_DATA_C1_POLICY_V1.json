@@ -479,7 +479,11 @@
     "src/core/word-list-format-v1.cjs",
     "src/renderer/tiptap/documentListFormat.mjs",
     "test/contracts/rtk-word-list-format.contract.test.js",
-    "docs/tasks/2026-10-02--word-list-formats-mac.md"
+    "docs/tasks/2026-10-02--word-list-formats-mac.md",
+    "src/core/word-list-numbering-v1.cjs",
+    "src/renderer/tiptap/documentListNumbering.mjs",
+    "test/contracts/rtk-word-list-continuation.contract.test.js",
+    "docs/tasks/2026-10-03--word-list-continuation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -720,7 +724,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "f4f7b7d584afcd1b617e26648e0ba9fdef49cbdbd004bff749896d5b5de3c967"
+        "sha256": "815bb9a3c0c425f0bdc669cd06bb642f2af2f779024b33e874678329e1863945"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -740,11 +744,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "077c99bf2993f0bc414840e23cbdc8caa3c69d43f61c4b9271815ec3c2718f78"
+        "sha256": "118a6f985cfad3d70dabb5fa6a02d62b219baaefab8d930e8ed6a48e1871ee9b"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "368bed2756830174b1894163ef9d5c7adbc03b54e98381bf6efc1ba20b6a39eb"
+        "sha256": "2275919d04da8a4746ec12070e8a28405e1c9745f32d283401960a2d8dbb8262"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -796,7 +800,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-lists.contract.test.js",
-        "sha256": "f729ffc908af70bf8240b491050ad0ed434b50de2f45db13303906725e8a7ebc"
+        "sha256": "bf2e8fec4da70ae335e5d55826e3f9f2e8618248a8411ac2f5b10a0dc671018c"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-list-roundtrip.md",
@@ -844,11 +848,11 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "de78a5d8ca066ffdaa62b087ba5170ed26732813d48cf1d3a2290b29b16a1c0e"
+        "sha256": "1146d2de8485ccb938507bb37e7aebba9b9ef9d6c024f0ebfa84f392f42a623e"
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "b9a530443cb5a6919729ecbc4974dd2572b769cc5bb952b35726b017474a2906"
+        "sha256": "5c6f4d225c8d69b6e5e3142130800ddde87824e88245d114212bb544de7fbdfc"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -1108,7 +1112,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "09e15e2834a6c088959e09ee0137baebedd909942686060241e2a4e226371588"
+        "sha256": "1ebb3a44af51c3587a6b82a4b4dd1ae31524029f9c7f0c568a4267d0db98ea15"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -1412,7 +1416,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "345ec6b22d6ac23829099d352528ca80623075eae2ac83075fb81da584c9d830"
+        "sha256": "c73bf24ff3e6dc53cab556c62faaa87533f0542275e7bf77969bce1ad236c18d"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1524,11 +1528,11 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "6be5a15e4fb585b9a91501a9ab89ece18f67249b94278ca696d33375f388e1d2"
+        "sha256": "afe3104ef0639a355124ef7d17a440a73c6a959daf11c8329ef55949a4f1086a"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "3f09831ac9fc463578dddad5d988e4cc2bc9a2ca697a87017abdf2c873896134"
+        "sha256": "535ec37f2eea2dae0ce0f943702de411d062e24bf7b3790aad96d02d56a40843"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
@@ -1556,7 +1560,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "e1b80c3201aa685a52db5d273e495b08c94186868d1e40c40d282c527cdfa860"
+        "sha256": "f07eefd2f8a166f761f0f2582a7979da11eacf406b469771d274e82eb4784b22"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1576,7 +1580,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "32fb78206da98812674295c654610307d0637826c14ec0470fc48b7441b5d563"
+        "sha256": "e41208e4c03c1ad056347fb69ab3575722832e5beea383dbbd48394c1b1a9888"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -1708,7 +1712,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-        "sha256": "c11f1c21e1e7b92db6a56226ac8ba294e44c1e3fb17a82249c7542c7746ad908"
+        "sha256": "212f1333f5caf1091d94d268fea73c00bdcb7d9e146ce17a6ce6b6f24209ea9f"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
@@ -1896,7 +1900,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "da63146218a1cad18feed9afaede56277d21fbbe94046d590297a375bb27f6a1"
+        "sha256": "0029b827edaddcf7afce988b8616fa2fbcd06eea1c07aec9de4c2e04f259a420"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2033,6 +2037,22 @@
       {
         "path": "docs/tasks/2026-10-02--word-list-formats-mac.md",
         "sha256": "611d97b3e9d7679ce0e7179efb78948bb788d7180779ab4481ba2c9bfd5c0fe5"
+      },
+      {
+        "path": "src/core/word-list-numbering-v1.cjs",
+        "sha256": "d63e925cb33c9578080427b9e5a645e1bc963dd9ae8846e939cbde4b1490e8eb"
+      },
+      {
+        "path": "src/renderer/tiptap/documentListNumbering.mjs",
+        "sha256": "647bf33416eda4a794481698e40542d46c51b99d5d59630c885382a4e6cd2f9e"
+      },
+      {
+        "path": "test/contracts/rtk-word-list-continuation.contract.test.js",
+        "sha256": "90922b28be2e868930ec9fee3a362e22dd8addbf896fdb987cf4825d2b54e9b8"
+      },
+      {
+        "path": "docs/tasks/2026-10-03--word-list-continuation-mac.md",
+        "sha256": "03acbea6d97c16db94b9474a1ca1e346fbe0c48554dc2ccf81684da09035a7b1"
       }
     ],
     "followupRepair": {
