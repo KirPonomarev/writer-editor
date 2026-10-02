@@ -38,6 +38,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
 - `scripts/ops/rtk-interop-data-c1.mjs`
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 
@@ -138,4 +139,8 @@ preserves each non-overlapping inserted run, and rejects overlapping text or
 formatting. Language offsets are rebuilt from the private merged candidate;
 offsets from the exported paragraph cannot be reused after a local insertion.
 The real Main regression includes Save, activation and Apply with mixed runs.
-Native repair, stable gates and delivery are still required before closure.
+The frozen actual Word return now passes native PACKAGED Apply and re-export on
+4001183e, with independent whole-document, annotation and sibling readback.
+Stable gates and delivery are still required before closure. The maintained
+RTK catalog adds the new Core contract; the same-contour scope amendment passed
+preflight on clean checkpoint 4001183e, retaining ba54c4cf as delivery base.

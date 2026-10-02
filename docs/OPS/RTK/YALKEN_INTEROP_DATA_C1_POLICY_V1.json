@@ -1552,7 +1552,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "f5e26921db430d596eec328177364efa2effce3d37ef31fe2a4e090626c780c5"
+        "sha256": "656a9332a7d89ff718bdafc17787fd2620464ced440f67d21950196b8b91f737"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2016,7 +2016,7 @@
       },
       {
         "path": "docs/tasks/2026-10-02--word-concurrent-return-mac.md",
-        "sha256": "91fda4eed99523bb1202283dc8cb7bb682fdb385799be47dd7c345ddbe3faa8e"
+        "sha256": "7b95185ed328a460330de49a8435ade41392a38c7705f0e5cd2c94c33d2f531e"
       }
     ],
     "followupRepair": {

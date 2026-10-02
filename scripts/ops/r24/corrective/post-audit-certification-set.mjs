@@ -2222,7 +2222,7 @@ export const R24_INTEROP_WORD_CONCURRENT_RETURN_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "66282e8870e07b143203049f52267f5938971a96bf2d2d4cd9ca6b7b710d40b8"
+      "sha256": "c8e406195f66abffa88dc694d027d937fab3d85de7e36763b5a86bd6d207980c"
     }
   ]
 });
