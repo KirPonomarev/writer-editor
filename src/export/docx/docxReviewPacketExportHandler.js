@@ -163,16 +163,39 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
     || publicationGate.code !== 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED')) {
     return makeTypedReviewDocxExportError('E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED', 'REVIEW_DOCX_EXPORT_NOTES_GATE_REQUIRED');
   }
+  if (source?.commentExport) {
+    const threads = source.commentExport.threads;
+    const expectedThreadIds = Array.isArray(threads) ? Array.from(threads, thread => thread?.threadId) : null;
+    const phases = expectedThreadIds?.length ? ['provisional', 'final'] : ['final'];
+    const proofs = publicationGate?.commentProofs;
+    // Both export scopes must prove the emitted subset (including absence).
+    // A boolean/count-only receipt cannot stand in for exact readback results.
+    const commentProofReady = publicationGate?.ok === true && publicationGate.publishAllowed === true
+      && publicationGate.finalArtifactSha256 === `sha256:${crypto.createHash('sha256').update(documentBuffer).digest('hex')}`
+      && expectedThreadIds !== null && expectedThreadIds.every(id => typeof id === 'string' && id.length > 0)
+      && new Set(expectedThreadIds).size === expectedThreadIds.length
+      && Array.isArray(source.commentExport.tombstones)
+      && Array.isArray(proofs) && proofs.length === phases.length
+      && phases.every((phase, index) => {
+        const proof = proofs[index];
+        return isPlainObjectValue(proof) && proof.ok === true && proof.phase === phase
+        && Array.isArray(proof.missing) && proof.missing.length === 0
+        && Array.isArray(proof.changed) && proof.changed.length === 0
+        && Array.isArray(proof.unchangedThreadIds) && proof.unchangedThreadIds.length === expectedThreadIds.length
+        && expectedThreadIds.every((id, threadIndex) => proof.unchangedThreadIds[threadIndex] === id);
+      });
+    if (!commentProofReady) {
+      return makeTypedReviewDocxExportError('E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED',
+        'REVIEW_DOCX_EXPORT_COMMENT_PROOF_REQUIRED');
+    }
+  }
   if (exportCapsule.fullManuscript === true) {
     const publicationGateReady = publicationGate
       && publicationGate.publishAllowed === true
       && publicationGate.ok === true
       && publicationGate.provisionalSelfParse?.verified === true
       && publicationGate.finalSelfParse?.semanticEquivalent === true
-      && publicationGate.yrtk2Verification?.code === 'RTK_RETURN_INTAKE_YRTK2_VERIFIED'
-      && (!source?.commentExport || (Array.isArray(publicationGate.commentProofs)
-        && publicationGate.commentProofs.length === (source.commentExport.threads.length > 0 ? 2 : 1)
-        && publicationGate.commentProofs.every(proof => proof.ok === true)));
+      && publicationGate.yrtk2Verification?.code === 'RTK_RETURN_INTAKE_YRTK2_VERIFIED';
     if (!publicationGateReady) {
       return makeTypedReviewDocxExportError(
         'E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED',

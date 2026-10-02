@@ -3,6 +3,7 @@ const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingR
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
+const { commentPackageParts, commentMarkersForBlock } = require('./docxReviewPacketComments.js');
 const { tableParagraphs, renderTableParagraphs } = require('../../io/documentTables.js');
 const ZIP_CRC32_TABLE = (() => {
   const table = new Uint32Array(256);
@@ -329,6 +330,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
+  if (pendingLedger && deps.commentExport?.threads?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
   const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isStructural) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
   const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
@@ -351,6 +353,14 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const styleMap = deps.styleMapModule.createStyleMap();
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
+  if (deps.commentExport?.threads?.length) {
+    if (!Array.isArray(deps.commentBlocks) || deps.commentBlocks.length !== entries.length
+      || new Set(deps.commentBlocks.map(block => block?.blockId)).size !== deps.commentBlocks.length
+      || deps.commentBlocks.some((block, index) => !block || block.text !== entries[index]?.text
+        || block.documentParagraphIndex !== index)
+      || deps.commentExport.threads.some(thread => !deps.commentBlocks.some(block => block.blockId === thread.anchor.blockId
+        && block.sceneId === thread.sceneId && block.documentParagraphIndex === thread.anchor.documentParagraphIndex))) throw Error('DOCX_COMMENT_ANCHOR_STALE');
+  }
   const headingLevels = new Set();
   const blockStyles = new Set();
   const numberings = new Map();
@@ -364,6 +374,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (blockStyle) blockStyles.add(blockStyle);
       if (/^Heading[1-6]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
       if (semanticKind === 'pageBreak' || (semanticKind !== 'codeBlock' && String(entry?.text || '').trim() === pageBreakToken)) {
+        if (deps.commentExport?.threads?.some(thread => thread.anchor.blockId === deps.commentBlocks?.[index]?.blockId)) {
+          throw Error('DOCX_COMMENT_ANCHOR_UNSUPPORTED');
+        }
         return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
       }
 
@@ -382,6 +395,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const runs = semanticBlocks?.[index]?.runs;
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
+      const commentMarkers = deps.commentBlocks?.[index]
+        ? commentMarkersForBlock(deps.commentExport, deps.commentBlocks[index]) : new Map();
+      for (const [offset, xml] of commentMarkers) markers.set(offset, (markers.get(offset) || '') + xml);
       const {markers:userMarkers,afterParagraph}=bookmarkHelpers?bookmarkHelpers.userBookmarkMarkersForBlock({text,formatIr:{userBookmarks:semanticBlocks?.[index]?.userBookmarks,table:semanticBlocks?.[index]?.table}},bookmarkIds):{markers:new Map(),afterParagraph:''};
       for(const [offset,xml] of userMarkers)markers.set(offset,(markers.get(offset)||'')+xml);
       const hasMedia = Array.isArray(runs) && runs.some(run => run.image);
@@ -427,11 +443,12 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
     : '<w:p/>';
 
   const notes = notePackageParts(deps.documentNotes, { firstNumId: Math.max(0, ...numberings.keys()) + 1 });
+  const comments = commentPackageParts(deps.commentExport);
   for (const numbering of notes.numberings) numberings.set(numbering.numId, numbering);
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>${mergeMediaTypes(media.contentTypes, notes.mediaTypes)}${notes.contentTypes}
+  <Default Extension="xml" ContentType="application/xml"/>${mergeMediaTypes(media.contentTypes, notes.mediaTypes)}${notes.contentTypes}${comments.contentTypes}
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
   <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
 ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
@@ -462,7 +479,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
   { // Both exports use modern Word layout; legacy compatibility rewrites table grids on row edits.
     const relationships = '<Relationship Id="settings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'
       + (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
-      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships + notes.relationships
+      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships + notes.relationships + comments.relationships
       + [...hyperlinks].map(([href, id]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(href)}" TargetMode="External"/>`).join('');
     styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
   }
@@ -474,6 +491,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     ...styleParts,
     ...mergeMediaParts(media.parts, notes.mediaParts),
     ...notes.entries,
+    ...comments.entries,
   ]);
 }
 

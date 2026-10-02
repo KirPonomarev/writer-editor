@@ -446,7 +446,13 @@
     "test/helpers/main-docx-round-authority.js",
     "test/unit/sector-m-design-os-layout-commit-sync.test.js",
     "test/contracts/rtk-round01-round-record-v3.contract.test.js",
-    "test/contracts/rtk-word-c5v2-activation-guards.contract.test.js"
+    "test/contracts/rtk-word-c5v2-activation-guards.contract.test.js",
+    "test/contracts/rtk-word-scene-comment-export.contract.test.js",
+    "test/unit/docx-min-builder.test.js",
+    "test/unit/docx-min-export-handler.test.js",
+    "test/unit/docx-scene-comments.test.js",
+    "docs/tasks/2026-10-02--word-single-scene-comments-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SINGLE_SCENE_COMMENTS_V1.json"
   ],
   "protectedFiles": [
     {
@@ -675,7 +681,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e0e50d9552830dd7fef7a92c368162783ef525b987c306df7fa895730dd43547"
+        "sha256": "dff4386b383738372ab7d55d19afccc39b9536cf7b938503030a942a7514811a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -707,7 +713,7 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "74ac17d796d830e6a545ea49533ffc5977a213e220f2f2ba26876e26279915ee"
+        "sha256": "7a5ca8065584bc7b1614ee0285a30927e8d59bd8a227d39722641c3014c537eb"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
@@ -895,7 +901,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "1f13a32cd3cce46b1c1c0b7d3cece5fa2c1c520924f9f04d0744753bc0c3677f"
+        "sha256": "ff173c15a9e1fe1f00ab620330967f368341c372573612aca123355e9a544e3a"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -983,11 +989,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "979a7dae8085922470b37cfdac8b3befa25c4e811a52d2f5c4f20b8aecf02ce9"
+        "sha256": "bff012975d5c2afcf79e9bbc7787b735a292e2b915937b1634b034926d46e86d"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "d749a11c1df84edae4f17242fcfc0f3165b753774733e7893176426890e204c7"
+        "sha256": "814dea94b022eba6f9bf7c4236aa0f245059a6deeee87c920981b4920b3878ed"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -995,7 +1001,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-        "sha256": "2355201e30c40ef6b8f863a3c5eecbf36fd06d7b21fc7bd6bed0e4504304bf49"
+        "sha256": "20ed5836e34876e3a56f655eba05e8d4dc2f0448b17222bba6a471535de6c9e5"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js",
@@ -1331,7 +1337,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "4a4c1df6423ecb403135b8bde350db0bd60569a8f5f31c8c51cdfdedbdb3da50"
+        "sha256": "e82890297e6f09e1da189309febd541e27684ac37f0adbb55aac6d83a89c4847"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
@@ -1523,7 +1529,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "93a038cd8be6eaf68d4048035e33f35fc0ab9772c6e8d24f8068219a0d3f02ed"
+        "sha256": "f5e26921db430d596eec328177364efa2effce3d37ef31fe2a4e090626c780c5"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1567,7 +1573,7 @@
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
-        "sha256": "2af4b59cb10a06b49fbcbbfce40ab5768e34079e0439a3aae5527d1ba73d6163"
+        "sha256": "0499d74d8c6076aca74065518ad4c657775bc1f523a5e3aa730f55f607854c10"
       },
       {
         "path": "test/contracts/rtk-word-pending-return.contract.test.js",
@@ -1647,7 +1653,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
-        "sha256": "3db56efa908fcf9362725a24181b891b32c3939bafc55656e594613845375c71"
+        "sha256": "0a403187632a54e96ea34b320407dfb40d3aa3eb912a8ff033e78ef1087132d3"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
@@ -1723,7 +1729,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-lists.contract.test.js",
-        "sha256": "d6c062ebb32e1b7838bb7d05c6a507d1846fa96a7bbbb75e2335408e8128a3ea"
+        "sha256": "ff91c94b8940bc950e7b187a8bc79c95c538b902c3d6078fe1dbedd6210668e6"
       },
       {
         "path": "docs/tasks/2026-10-01--word-scene-first-note-mac.md",
@@ -1880,6 +1886,22 @@
       {
         "path": "test/helpers/main-docx-round-authority.js",
         "sha256": "0b408e2f472db3b08f6d5feab827216b6610dad4814e4031ed30aa850c3b560b"
+      },
+      {
+        "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
+        "sha256": "00d3f24519d0164a7f13fe730acb6056a5a640826e6930a796af9009218c433d"
+      },
+      {
+        "path": "test/unit/docx-scene-comments.test.js",
+        "sha256": "7fd899bcb04b92d250a6b6475605c0563fca47d31caf707bb0deff7902415c45"
+      },
+      {
+        "path": "docs/tasks/2026-10-02--word-single-scene-comments-mac.md",
+        "sha256": "e53d0bda33172104c41c58d460eb883483393f8cbe132ce43a23388e1f27e5cd"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_SINGLE_SCENE_COMMENTS_V1.json",
+        "sha256": "450a0d6f572a44fa1103c4097f89718b586a8f9618f81b9cd81e2c9137cac3ad"
       }
     ],
     "followupRepair": {

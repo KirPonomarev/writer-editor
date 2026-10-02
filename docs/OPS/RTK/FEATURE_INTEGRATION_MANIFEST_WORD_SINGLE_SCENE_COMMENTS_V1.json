@@ -1,0 +1,97 @@
+{
+  "featureId": "WORD_SINGLE_SCENE_COMMENTS_MAC_20261002",
+  "featureVersion": 1,
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "9d8114304cf78ac13cf34bbda6b9762a8963d20d",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Existing canonical full non-text comment state and saved scene document; never selected projection.",
+  "derivedData": "Selected-scene comment threads/tombstones and signed digest/summary; sibling payload is never emitted.",
+  "commandIds": [
+    "cmd.project.export.docxMin",
+    "cmd.project.review.exportDocxReviewPacket"
+  ],
+  "eventTypes": [
+    "Existing export completion and explicit review apply events; no new event bus"
+  ],
+  "queryIds": [
+    "Existing read-only current document and review projections"
+  ],
+  "productProjectionIds": [
+    "Existing comment export projection with selected scene scope and complete canonical digest"
+  ],
+  "capabilityIds": [
+    "Existing Minimal export, Review export and explicit apply capabilities"
+  ],
+  "authorityMap": {
+    "product": "Existing canonical comment state and document content belong to Product Core. Owner authorized entire Mac Word completion; only selected-scene transport projection changes, never filtered canonical truth.",
+    "command": "Existing cmd.project.export.docxMin and cmd.project.review.exportDocxReviewPacket, existing generic import and authenticated review apply through Command Kernel/Main capability and current identity checks.",
+    "design": "No UI design or command/surface change. Existing export/import/review affordances."
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "sourceRevision",
+    "generation",
+    "lifecycle",
+    "fullCommentStateDigest"
+  ],
+  "revisionPolicy": "Recheck existing export/apply capability and exact project/scene/full comment state after awaits, before filesystem publication and authority activation.",
+  "writePath": [
+    "Main canonical selected-scene snapshot -> validated comment projection -> existing DOCX builder -> exact artifact readback -> source/capability revalidation -> existing atomic export writer -> private durable round activation after exact readback.",
+    "Authenticated return -> existing Core comment delta and leased atomic project writer; sibling canonical threads preserved."
+  ],
+  "readPath": [
+    "Full canonical comment state plus saved current scene and notes/bookmarks; immutable selected projection retains full canonical digest and revision."
+  ],
+  "requiredProductPorts": [
+    "Existing canonical non-text return file port, Main source reader, atomic export writer, durable Word authority and leased project transaction."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing command intent and read-only review projections; unchanged."
+  ],
+  "adapterRequirements": "Existing filesystem, DOCX builders/parser and atomic export adapter; no new writer.",
+  "surfaceManifests": [],
+  "slotRequirements": "NOT_APPLICABLE: existing commands and surfaces unchanged.",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS source and packaged native acceptance only",
+  "accessibilityRequirements": "Bounded existing document/comment limits; no typing-path work or UI interaction changes.",
+  "fallbacks": [
+    "Typed no-write refusal for stale source, invalid anchors, unknown provenance/identity and unsupported pending-comment composite; no silent omission.",
+    "Missing/failed comment proof blocks both scene and full-manuscript export before write; empty scope still has explicit absence proof."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "persistenceClass": "Existing canonical comment state and review round authority; unchanged schemas",
+  "migrations": "None",
+  "recovery": "Existing leased transaction and journal; no canonical source write during export; zero-write failures",
+  "rollback": "Revert this bounded exporter/gate integration; existing canonical schema and atomic writer unchanged. Existing saved documents remain readable; do not retroactively reactivate expired rounds.",
+  "performanceBudget": "Existing bounded comment/document limits; no new typing-path work",
+  "securityBoundary": "Validate full external/canonical payload before projection; no secret disclosure, renderer path authority, runtime network, dependency or writer addition.",
+  "lifecycle": [
+    "Project/root/path/scene/revision/owner/lifecycle/generation and capability before publication and round activation.",
+    "Full canonical comment state validated before scope filtering; global IDs/provenance validated and complete state digest retained.",
+    "Return applies only selected baseline candidates; unrelated full-state mutation refuses CAS, replay uses existing receipt."
+  ],
+  "negativeBypassChecks": [
+    "Actual Main two-scene positive and signed return; root/reply/resolved/deleted/provenance/Unicode anchors; no sibling ZIP-part leakage.",
+    "Marker co-location with bookmarks and notes, repeated/nested paragraphs and surrogate boundaries; no metadata flatten.",
+    "Wrong project/scene/revision, sibling change, forged/missing/empty proof, unsupported pending composite -> no writes/no activation.",
+    "SOURCE/PACKAGED native Word edit/save/return/restart plus Minimal generic import; exact OOXML and canonical independent comparison."
+  ],
+  "evidenceBindings": [
+    "rtk-word-scene-comment-export.contract.test.js",
+    "rtk-word-canonical-comment-reexport.contract.test.js",
+    "docx-scene-comments.test.js",
+    "Native SOURCE and PACKAGED Word routes and exact merged CI"
+  ],
+  "currentReality": [
+    "Read-only map on4b543c37: Minimal omits selected comments; single-scene Review explicitly refuses annotated scenes; full-manuscript projection and comment delta already implemented."
+  ]
+}

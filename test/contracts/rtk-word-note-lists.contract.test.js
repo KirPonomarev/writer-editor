@@ -182,15 +182,22 @@ test('scene note publication requires gate and fresh source inside disk queue', 
 });
 test('actual scene note revalidator rejects source, notes, owner, lifecycle, capability and project changes', async () => {
   const { notesStateDigest } = require('../../src/export/docx/docxReviewPacketNotes.js');
-  const notes = fixture().document, owner = {}, binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, raw: 'Text', notesDigest: notesStateDigest(notes) };
+  const notes = fixture().document, owner = {}, binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, generation: 0, raw: 'Text', notesDigest: notesStateDigest(notes) };
+  const comments = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'p', revision: 0, threads: [], events: [] };
+  const { commentStateDigest } = require('../../src/export/docx/docxReviewPacketComments.js');
+  binding.commentDigest = commentStateDigest(comments);
   for (const mode of ['normal', 'scene', 'notes', 'owner', 'lifecycle', 'capability', 'project', 'during-read']) {
-    const ctx = mainFunctions(['revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => mode === 'lifecycle' ? 'other' : 's',
+    const ctx = mainFunctions(['readSceneDocxExportCohort', 'assertSceneDocxExportCohort', 'revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => mode === 'lifecycle' ? 'other' : 's',
       activeStage10ApplicationBootstrap: mode === 'owner' ? {} : owner, getProjectRootPath: () => '/synthetic', isDirty: false, autoSaveInProgress: false,
+      path: require('node:path'), isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary, lastSignaledEditGeneration: 0,
+      fsSync: { readFileSync: target => target === binding.filePath ? 'Text' : target.endsWith('project.craftsman.json') ? JSON.stringify({ projectId: 'p' }) : target.endsWith('notes.craftsman.json') ? JSON.stringify(notes) : JSON.stringify(comments) },
+      loadRevisionBridgeModule: async () => ({ createRtkNonTextReturnFilePort: () => ({ readCanonical: async () => comments }) }), commentStateDigest,
       REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportDocxReviewPacket', userBookmarkCapability: () => { if (mode === 'capability') throw Error('DENIED'); },
       readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: mode === 'project' ? 'other' : 'p', projectRoot: '/synthetic' }),
       fs: { readFile: async () => mode === 'scene' ? 'changed' : 'Text' }, notesStateDigest,
       readCanonicalNotesForDocxExport: async () => { if (mode === 'during-read') ctx.isDirty = true; return mode === 'notes' ? { ...notes, revision: 1 } : notes; } });
-    const promise = ctx.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: {} });
+    binding.sourceCohort = ctx.readSceneDocxExportCohort(binding.projectRoot,binding.filePath,'/synthetic/project.craftsman.json');
+    const promise = ctx.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: {}, commentExport: { stateDigest: binding.commentDigest, threads: [], tombstones: [] } });
     if (mode === 'normal') await promise; else await assert.rejects(promise, /STALE|DENIED/);
   }
 });
@@ -234,6 +241,8 @@ test('empty scene note publication is verified and missing-versus-present state 
   const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
   const { validateDocumentNotesReturn, notesStateDigest } = require('../../src/export/docx/docxReviewPacketNotes.js');
   const document = { schemaVersion: 1, projectId: 'p', notes: [] }, owner = {};
+  const comments = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'p', revision: 0, threads: [], events: [] };
+  const { commentStateDigest } = require('../../src/export/docx/docxReviewPacketComments.js');
   const ctx = mainFunctions(['stableRtkReviewTransportJson', 'createRtkReviewTransportCryptoPort', 'buildSceneNoteReviewPublicationGate'],
     { crypto, computeHash: model.sha, validateDocumentNotesReturn, docxReviewReturnIntakeProductBudgets: () => undefined });
   const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/synthetic', notesDocument: document,
@@ -243,13 +252,17 @@ test('empty scene note publication is verified and missing-versus-present state 
   source.sceneNoteBinding = { raw: require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({ doc: doc(p('Text')) }) };
   assert.equal((await ctx.buildSceneNoteReviewPublicationGate(source, buildDocxReviewPacketBuffer(source), bridge)).publishAllowed, true);
   for (const [before, after, allowed] of [[undefined, undefined, true], [document, document, true], [undefined, document, false], [document, undefined, false]]) {
-    const binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, raw: 'Text', notesDigest: before ? notesStateDigest(before) : '' };
-    const c = mainFunctions(['revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => 's',
+    const binding = { projectId: 'p', projectRoot: '/synthetic', filePath: '/synthetic/roman/a.txt', subjectId: 's', owner, generation: 0, raw: 'Text', notesDigest: before ? notesStateDigest(before) : '', commentDigest: commentStateDigest(comments) };
+    const c = mainFunctions(['readSceneDocxExportCohort', 'assertSceneDocxExportCohort', 'revalidateSceneNoteReviewExportSource'], { currentFilePath: binding.filePath, currentLifecycleSubjectId: () => 's',
       activeStage10ApplicationBootstrap: owner, getProjectRootPath: () => '/synthetic', isDirty: false, autoSaveInProgress: false,
+      path: require('node:path'), isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary, lastSignaledEditGeneration: 0,
+      fsSync: { readFileSync: target => target === binding.filePath ? 'Text' : target.endsWith('project.craftsman.json') ? JSON.stringify({ projectId: 'p' }) : target.endsWith('notes.craftsman.json') ? JSON.stringify(before) ?? null : JSON.stringify(comments) },
+      loadRevisionBridgeModule: async () => ({ createRtkNonTextReturnFilePort: () => ({ readCanonical: async () => comments }) }), commentStateDigest,
       REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID: 'cmd.project.review.exportDocxReviewPacket', userBookmarkCapability: () => {},
       readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'p', projectRoot: '/synthetic' }),
       fs: { readFile: async () => 'Text' }, notesStateDigest, readCanonicalNotesForDocxExport: async () => after });
-    const promise = c.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: source.documentNotes });
+    binding.sourceCohort = c.readSceneDocxExportCohort(binding.projectRoot,binding.filePath,'/synthetic/project.craftsman.json');
+    const promise = c.revalidateSceneNoteReviewExportSource({ sceneNoteBinding: binding, documentNotes: source.documentNotes, commentExport: { stateDigest: binding.commentDigest, threads: [], tombstones: [] } });
     if (allowed) await promise; else await assert.rejects(promise, /REVIEW_DOCX_EXPORT_NOTES_STALE/);
   }
 });

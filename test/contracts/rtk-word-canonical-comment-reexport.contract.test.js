@@ -362,3 +362,59 @@ test('production publication revalidation rejects changed scenes, canonical comm
   ctx.activeStage10ApplicationBootstrap={generation:2};
   await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/SOURCE_STALE/);
 });
+
+test('comment publication proof boundary is exact for both scene and full export, including selected absence', async () => {
+  const { runDocxReviewPacketExport } = require('../../src/export/docx/docxReviewPacketExportHandler.js');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const ctx = mainHarness(['buildFullManuscriptPublicationGate']);
+  for (const active of [true, false]) {
+    const input = inputs();
+    if (!active) input.nonTextReturnState.threads = [];
+    const original = makeSource(input, { revisionBridge: bridge, cryptoPort: ctx.createRtkReviewTransportCryptoPort() });
+    const bytes = buildDocxReviewPacketBuffer(original);
+    const gate = await ctx.buildFullManuscriptPublicationGate(original, bytes, bridge);
+    assert.equal(gate.publishAllowed, true, JSON.stringify(gate));
+    for (const scope of ['scene', 'full']) {
+      const source = { ...original, pendingAuthorityStore: { round: 'pending' },
+        exportCapsule: { ...original.exportCapsule, fullManuscript: scope === 'full' },
+        ...(scope === 'scene' ? { sceneNoteBinding: {} } : {}) };
+      for (const mode of ['normal', 'missing-proof', 'empty-proof', 'boolean-only-proof', 'wrong-phase',
+        'duplicate-phase', 'wrong-identities', 'duplicate-identities', 'unreported-loss', 'unreported-change',
+        'sparse-proof', 'sparse-identities', 'stale-artifact', 'missing-artifact', 'bad-readback', 'stale-source', 'bad-notes-gate']) {
+        const pg = structuredClone(gate), events = [];
+        if (scope === 'scene') pg.code = 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED';
+        if (mode === 'missing-proof') delete pg.commentProofs;
+        if (mode === 'empty-proof') pg.commentProofs = [];
+        if (mode === 'boolean-only-proof') pg.commentProofs = gate.commentProofs.map(() => ({ ok: true }));
+        if (mode === 'wrong-phase') pg.commentProofs.at(-1).phase = 'invented';
+        if (mode === 'duplicate-phase') pg.commentProofs = [pg.commentProofs.at(-1), pg.commentProofs.at(-1)];
+        if (mode === 'wrong-identities') pg.commentProofs.at(-1).unchangedThreadIds = ['foreign'];
+        if (mode === 'duplicate-identities') pg.commentProofs.at(-1).unchangedThreadIds = ['thread-1', 'thread-1'];
+        if (mode === 'unreported-loss') pg.commentProofs.at(-1).missing = [{ threadId: 'missing' }];
+        if (mode === 'unreported-change') pg.commentProofs.at(-1).changed = [{ code: 'BODY_CHANGED' }];
+        if (mode === 'sparse-proof') pg.commentProofs = new Array(gate.commentProofs.length);
+        if (mode === 'sparse-identities') pg.commentProofs.at(-1).unchangedThreadIds = new Array(Math.max(1, original.commentExport.threads.length));
+        if (mode === 'stale-artifact') pg.finalArtifactSha256 = 'sha256:' + 'a'.repeat(64);
+        if (mode === 'missing-artifact') delete pg.finalArtifactSha256;
+        if (mode === 'bad-notes-gate') { pg.ok = false; pg.publishAllowed = false; }
+        const result = await runDocxReviewPacketExport({ requestId: 'test' }, {
+          normalizeExportPayload: value => value,
+          makeTypedReviewDocxExportError: (code, reason, details) => ({ ok: false, code, reason, details }),
+          resolveDocxReviewPacketExportPath: async () => '/owned/scene.docx', validateDocxExportTarget: async () => ({ ok: true }),
+          readDocxReviewPacketExportSource: async () => source,
+          buildDocxReviewPacketBuffer: async () => ({ documentBuffer: bytes, publicationGate: pg }),
+          queueDiskOperation: async fn => { events.push('queue'); return fn(); },
+          revalidateDocxReviewPacketExportSource: async () => { events.push('revalidate'); if (mode === 'stale-source') throw Error('STALE'); },
+          writeBufferAtomic: async () => { events.push('write'); }, updateStatus() {},
+          readWrittenBuffer: async () => { events.push('readback'); return mode === 'bad-readback' ? Buffer.from('wrong bytes') : bytes; },
+          activateReviewDocxExportAuthority: async () => { events.push('activate'); return { ok: true }; },
+        });
+        const label = `${scope} active=${active} ${mode}`;
+        assert.equal(result.ok, mode === 'normal', label);
+        if (mode === 'normal') assert.deepEqual(events, ['queue', 'revalidate', 'write', 'readback', 'activate'], label);
+        else if (mode === 'bad-readback') assert.deepEqual(events, ['queue', 'revalidate', 'write', 'readback'], label);
+        else assert.equal(events.includes('write') || events.includes('activate'), false, label);
+      }
+    }
+  }
+});

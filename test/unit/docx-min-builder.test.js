@@ -104,6 +104,17 @@ test('docx min builder: text is xml-escaped in memory without filesystem writes'
   assert.equal(output.includes(sourceText), false);
 });
 
+test('docx min builder: explicit empty selected comment scope leaves historical bytes unchanged', () => {
+  const snapshot = 'A scene with no selected comments';
+  const deps = createBuilderDependencies();
+  const ordinary = buildDocxMinBuffer(snapshot, deps);
+  const scoped = buildDocxMinBuffer(snapshot, { ...deps, commentExport: {
+    schemaVersion: 'yalken.rtk.canonical-comment-export.v1', projectId: 'project-a', stateRevision: 7,
+    stateDigest: 'a'.repeat(64), threads: [], tombstones: [],
+  } });
+  assert.deepEqual(scoped, ordinary);
+});
+
 test('docx min builder: bookProfile landscape option reaches DOCX page XML', async () => {
   const docxPageSetupBindModule = await loadDocxPageSetupBindModule();
   const dependencies = {

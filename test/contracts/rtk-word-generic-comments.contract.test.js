@@ -281,23 +281,66 @@ test('actual main preview canonicalization retains comments through import plann
 });
 
 
-test('legacy scene export cannot silently drop canonical comments before key or publication', async () => {
-  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
-  const body = source.slice(source.indexOf('async function readDocxReviewPacketExportSource()'),
-    source.indexOf('async function readCanonicalNotesForDocxExport('));
-  const vm = require('node:vm');
-  const context = vm.createContext({ isDirty: false, autoSaveInProgress: false,
-    currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
-    currentFilePath: '/synthetic/roman/a.txt', isAllowedFilePath: () => true,
-    getDocumentContextFromPath: () => ({ kind: 'scene' }),
-    DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS: new Set(['scene']),
-    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'p', projectRoot: '/synthetic', manifestPath: '/synthetic/project.json' }),
-    fs: { readFile: async () => 'unchanged' }, loadDocumentContentEnvelopeModule: async () => ({ parseObservablePayload: () => ({ text: 'unchanged' }) }),
-    docxReviewPreviewSessionDetailString: value => value, getProjectRelativeFilePath: () => 'roman/a.txt',
-    loadRevisionBridgeModule: async () => ({ createRtkNonTextReturnFilePort: () => ({ readCanonical: async () => ({ threads: [{ sceneId: 'roman/a.txt' }] }) }) }),
-  });
-  vm.runInContext(body, context);
-  await assert.rejects(context.readDocxReviewPacketExportSource(), /REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT/);
+test('generic-imported comments survive actual single-scene export; malformed state still blocks keys and publication', async t => {
+  // Reuse the entire-Main fixture without registering its separate tests.
+  // No source, capability, parser or durable-authority predicate is replaced.
+  const fixtureFile = path.join(__dirname, 'rtk-word-scene-comment-export.contract.test.js');
+  const prefix = fs.readFileSync(fixtureFile, 'utf8').split("\ntest('actual Main Review source emits")[0];
+  const mod = { exports: {} };
+  new Function('require', 'module', '__dirname', prefix + '\nmodule.exports={fixture,parsed};')(
+    require('node:module').createRequire(fixtureFile), mod, __dirname);
+  const { fixture, parsed } = mod.exports;
+  const f = await fixture(t, { empty: true }), bridge = f.bridge;
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes());
+  const imported = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+  assert.equal(imported.ok, true, JSON.stringify(imported));
+  const entry = imported.candidateCreatePlan.entries[0];
+  const paragraphs = require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(entry.content);
+  const canonical = (await generic).materializeGenericComments({ candidates: entry.comments, paragraphs,
+    projectId: f.query.projectId, sceneId: f.sceneId, importOperationId: 'generic-export-source',
+    beforeText: fs.readFileSync(f.statePath, 'utf8') });
+  fs.writeFileSync(f.alpha, entry.content); fs.writeFileSync(f.statePath, canonical.afterText);
+  const before = f.capture(), state = JSON.parse(canonical.afterText);
+  const source = await f.probe.reviewSource(), output = await f.probe.reviewBuild(source);
+  const decoded = parsed(f, output.documentBuffer, source);
+  const { commentStateDigest, compareCommentExportReadback } = require('../../src/export/docx/docxReviewPacketComments.js');
+  assert.equal(decoded.authorityCarrier.status, 'verified-baseline-bound');
+  assert.equal(source.commentExport.stateDigest, commentStateDigest(state));
+  assert.equal(decoded.authorityCarrier.selectedCarrier.payload.commentStateDigest, commentStateDigest(state));
+  assert.deepEqual(source.commentExport.threads.map(thread => thread.threadId), canonical.threadIds);
+  assert.deepEqual(output.publicationGate.commentProofs.map(proof => proof.phase), ['provisional', 'final']);
+  assert.equal(compareCommentExportReadback(source.commentExport, decoded.reviewIr.commentThreads).ok, true);
+  const returned = decoded.reviewIr.commentThreads[0];
+  assert.equal(returned.body, 'Check literal 😀'); assert.equal(returned.quotedAnchorText, '🧭 anchor');
+  assert.equal(returned.anchorRange.startUtf16, 7); assert.equal(returned.authorPersonIdentity.author, 'Alice');
+  assert.equal(returned.date, '2026-09-26T00:00:00Z');
+  assert.equal(output.documentBuffer.includes(Buffer.from('SIBLING_PRIVATE_BODY')), false);
+  assert.deepEqual(f.capture(), before);
+  const reimport = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(output.documentBuffer));
+  assert.equal(reimport.ok, true, JSON.stringify(reimport));
+  const reentry = reimport.candidateCreatePlan.entries[0];
+  const fresh = (await generic).materializeGenericComments({ candidates: reentry.comments,
+    paragraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(reentry.content),
+    projectId: f.query.projectId, sceneId: 'roman/fresh.txt', importOperationId: 'generic-export-reimport', beforeText: null });
+  const freshThread = JSON.parse(fresh.afterText).threads[0];
+  assert.notEqual(freshThread.threadId, canonical.threadIds[0]);
+  assert.equal(freshThread.messages[0].body, returned.body);
+  assert.equal(freshThread.anchor.selectedText, returned.quotedAnchorText);
+
+  const captureFiles = directory => !fs.existsSync(directory) ? [] : fs.readdirSync(directory, { withFileTypes: true })
+    .flatMap(item => item.isDirectory() ? captureFiles(path.join(directory, item.name))
+      : [[path.join(directory, item.name), fs.readFileSync(path.join(directory, item.name)).toString('base64')]]);
+  for (const mutation of ['selected-anchor', 'sibling-message']) {
+    const bad = await fixture(t), malformed = structuredClone(bad.state);
+    if (mutation === 'selected-anchor') malformed.threads[0].anchor.selectedTextSha256 = '0'.repeat(64);
+    else malformed.threads.at(-1).messages[0].body = '\uD800';
+    fs.writeFileSync(bad.statePath, JSON.stringify(malformed));
+    const canonicalBefore = bad.capture(), keysBefore = captureFiles(path.join(bad.temp, 'userData'));
+    await assert.rejects(bad.probe.reviewSource(), mutation === 'selected-anchor' ? /DOCX_COMMENT_ANCHOR_INVALID/ : /SURROGATE/);
+    assert.deepEqual(bad.capture(), canonicalBefore);
+    assert.deepEqual(captureFiles(path.join(bad.temp, 'userData')), keysBefore);
+    assert.equal(bad.probe.strict(bad.root).record, null);
+  }
 });
 
 async function nativeLiteralCommentBytes({ styleId = 'ad', mutate = () => {} } = {}) {

@@ -239,7 +239,7 @@ const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/do
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require('./export/docx/docxReviewPacketBuilder');
 const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExportHandler');
-const { commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
+const { buildCanonicalCommentExport, commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
 const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotesReturn, buildCanonicalNotesExport } = require('./export/docx/docxReviewPacketNotes.js');
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
@@ -4499,8 +4499,36 @@ function buildReviewDocxPacketHashTree({ projectId, sceneId, sceneRevision, rawS
   };
 }
 
+// Main-owned export paths only. Bind absence as well as exact saved bytes so
+// the final publication check has no await between source CAS and dispatch.
+function readSceneDocxExportCohort(projectRoot, filePath, manifestPath) {
+  if (!isPathInside(projectRoot, filePath) || !isPathInside(projectRoot, manifestPath)) throw Error('DOCX_SOURCE_CHANGED');
+  const optional = target => {
+    try { return fsSync.readFileSync(target, 'utf8'); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  };
+  return { projectRoot, filePath, manifestPath,
+    scene: fsSync.readFileSync(filePath, 'utf8'), manifest: fsSync.readFileSync(manifestPath, 'utf8'),
+    notes: optional(path.join(projectRoot, 'notes.craftsman.json')),
+    comments: optional(path.join(projectRoot, '.yalken', 'word-review', 'non-text-return-state.v1.json')) };
+}
+
+function assertSceneDocxExportCohort(cohort, sourceCode, notesCode, commentsCode) {
+  const current = readSceneDocxExportCohort(cohort.projectRoot, cohort.filePath, cohort.manifestPath);
+  if (current.scene !== cohort.scene || current.manifest !== cohort.manifest) throw Error(sourceCode);
+  if (current.notes !== cohort.notes) throw Error(notesCode);
+  if (current.comments !== cohort.comments) throw Error(commentsCode);
+}
+
 async function readDocxReviewPacketExportSource() {
   const sourceFilePath = currentFilePath, sourceSubjectId = currentLifecycleSubjectId(), sourceOwner = activeStage10ApplicationBootstrap;
+  const sourceGeneration = lastSignaledEditGeneration;
+  const checkSource = () => {
+    userBookmarkCapability(REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID);
+    if (sourceFilePath !== currentFilePath || sourceSubjectId !== currentLifecycleSubjectId()
+      || sourceOwner !== activeStage10ApplicationBootstrap || sourceGeneration !== lastSignaledEditGeneration
+      || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  };
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
@@ -4520,7 +4548,9 @@ async function readDocxReviewPacketExportSource() {
     throw new Error(binding.reason || 'REVIEW_DOCX_EXPORT_PROJECT_BINDING_UNAVAILABLE');
   }
 
+  const sourceCohort = readSceneDocxExportCohort(binding.projectRoot, sourceFilePath, binding.manifestPath);
   const sceneRawContent = await fs.readFile(currentFilePath, 'utf8');
+  if (sceneRawContent !== sourceCohort.scene) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const envelopeModule = await loadDocumentContentEnvelopeModule();
   const parsedDocument = envelopeModule.parseObservablePayload(sceneRawContent);
   if (!parsedDocument || parsedDocument.issue || typeof parsedDocument.text !== 'string') {
@@ -4532,9 +4562,6 @@ async function readDocxReviewPacketExportSource() {
   const sceneId = getProjectRelativeFilePath(currentFilePath, binding.manifestPath).replace(/\\/g, '/');
   const commentBridge = await loadRevisionBridgeModule();
   const commentState = await commentBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot });
-  if (commentState.threads.some(thread => thread.sceneId === sceneId)) {
-    throw new Error('REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT');
-  }
   const rawSha256 = `sha256:${computeHash(sceneRawContent)}`;
   const sceneRevision = rawSha256;
   const createdAtUtc = new Date().toISOString();
@@ -4549,6 +4576,13 @@ async function readDocxReviewPacketExportSource() {
   const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, {
     roundId, doc: parsedDocument.doc, formatPlainText: true,
   });
+  blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
+  const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId });
+  if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
+    throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+  const commentSummary = { stateRevision: commentExport.stateRevision, exportedThreadCount: commentExport.threads.length,
+    exportedMessageCount: commentExport.threads.reduce((sum, thread) => sum + thread.messages.length, 0),
+    intentionalDeletionCount: commentExport.tombstones.length };
   const notesSourceDocument = await readCanonicalNotesForDocxExport(projectId, projectRoot, true);
   const notesDocument = notesSourceDocument || { schemaVersion: 1, projectId, notes: [] };
   const documentNotes = buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
@@ -4556,9 +4590,11 @@ async function readDocxReviewPacketExportSource() {
   })), projectId, { editableReturn: true });
   if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
   const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
-    subjectId: sourceSubjectId, owner: sourceOwner, raw: sceneRawContent, notesDigest: notesSourceDocument ? notesStateDigest(notesSourceDocument) : '' } : null;
-  if (sourceFilePath !== currentFilePath || sourceSubjectId !== currentLifecycleSubjectId()
-    || sourceOwner !== activeStage10ApplicationBootstrap || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+    subjectId: sourceSubjectId, owner: sourceOwner, generation: sourceGeneration, raw: sceneRawContent, sourceCohort,
+    commentDigest: commentExport.stateDigest, sceneId, notesDigest: notesSourceDocument ? notesStateDigest(notesSourceDocument) : '' } : null;
+  if (await fs.readFile(sourceFilePath, 'utf8') !== sceneRawContent) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
+  assertSceneDocxExportCohort(sourceCohort, 'REVIEW_DOCX_EXPORT_SOURCE_STALE', 'REVIEW_DOCX_EXPORT_NOTES_STALE', 'REVIEW_DOCX_EXPORT_COMMENTS_STALE');
+  checkSource();
   const primaryBlock = blocks[0] || {
     blockId: 'block-0000-empty',
     paragraphId: 'yrtk-p-empty',
@@ -4604,7 +4640,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
-    documentNotes,
+    documentNotes, commentExport,
     sceneText,
     blocks,
     customProperties: [
@@ -4695,11 +4731,13 @@ async function readDocxReviewPacketExportSource() {
     transportManifestDigest: transportManifestResult.manifest.payloadDigest,
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     blockCount: blocks.length,
+    commentStateDigest: commentExport.stateDigest, commentSummary,
     ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
   };
   const authorityEncoded = buildReviewDocxPacketAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.v1',
+    commentSummary,
     projectId,
     sceneId,
     sceneRevision,
@@ -4728,6 +4766,7 @@ async function readDocxReviewPacketExportSource() {
   const roundKeyRef = docxReviewPreviewSessionDetailString(roundKeyImport?.keyRef);
   const localAuthorityCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.local-authority.v1',
+    commentExport,
     projectRoot,
     scenePath: currentFilePath,
     baselineFinalText: sceneText,
@@ -4758,6 +4797,8 @@ async function readDocxReviewPacketExportSource() {
   const priorRoundsById = Object.fromEntries(Object.entries(
     readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
   ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
+  assertSceneDocxExportCohort(sourceCohort, 'REVIEW_DOCX_EXPORT_SOURCE_STALE', 'REVIEW_DOCX_EXPORT_NOTES_STALE', 'REVIEW_DOCX_EXPORT_COMMENTS_STALE');
+  checkSource();
   activeReviewDocxExportAuthorityStore = {
     schemaVersion: REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA,
     lastRoundId: roundId,
@@ -4774,7 +4815,8 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
-    documentNotes, sceneNoteBinding, notesDocument, localAuthorityCapsule,
+    documentNotes, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
+    provisionalSelfParseArtifact: { bytes: provisionalBuffer },
     sceneText,
     blocks,
     forbiddenSecret: hmacSecret,
@@ -5005,6 +5047,7 @@ async function revalidateSceneNoteReviewExportSource(source) {
     userBookmarkCapability(REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID);
     if (binding.filePath !== currentFilePath || binding.subjectId !== currentLifecycleSubjectId()
       || binding.owner !== activeStage10ApplicationBootstrap || binding.projectRoot !== getProjectRootPath()
+      || binding.generation !== lastSignaledEditGeneration
       || isDirty || autoSaveInProgress) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   };
   check();
@@ -5014,6 +5057,13 @@ async function revalidateSceneNoteReviewExportSource(source) {
   if (await fs.readFile(binding.filePath, 'utf8') !== binding.raw) throw Error('REVIEW_DOCX_EXPORT_SOURCE_STALE');
   const notes = await readCanonicalNotesForDocxExport(binding.projectId, binding.projectRoot, true);
   if ((notes ? notesStateDigest(notes) : '') !== binding.notesDigest) throw Error('REVIEW_DOCX_EXPORT_NOTES_STALE');
+  const bridge = await loadRevisionBridgeModule();
+  const comments = await bridge.createRtkNonTextReturnFilePort().readCanonical({projectId:binding.projectId,projectRoot:binding.projectRoot});
+  if (!source.commentExport || commentStateDigest(comments) !== binding.commentDigest
+    || source.commentExport.stateDigest !== binding.commentDigest
+    || source.commentExport.threads.some(thread => thread.sceneId !== binding.sceneId)
+    || source.commentExport.tombstones.some(thread => thread.sceneId !== binding.sceneId)) throw Error('REVIEW_DOCX_EXPORT_COMMENTS_STALE');
+  assertSceneDocxExportCohort(binding.sourceCohort, 'REVIEW_DOCX_EXPORT_SOURCE_STALE', 'REVIEW_DOCX_EXPORT_NOTES_STALE', 'REVIEW_DOCX_EXPORT_COMMENTS_STALE');
   check();
 }
 
@@ -5075,6 +5125,31 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
     baselineFinalText: source.sceneText }, { cryptoPort });
   if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
     throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
+  const commentProofs = [];
+  if (source.commentExport) {
+    const projection = source.commentExport, payload = parsed.authorityCarrier.selectedCarrier.payload;
+    const summary = { stateRevision: projection.stateRevision, exportedThreadCount: projection.threads.length,
+      exportedMessageCount: projection.threads.reduce((sum, thread) => sum + thread.messages.length, 0),
+      intentionalDeletionCount: projection.tombstones.length };
+    if (payload.commentStateDigest !== projection.stateDigest
+      || stableRtkReviewTransportJson(payload.commentSummary) !== stableRtkReviewTransportJson(summary))
+      throw Error('REVIEW_DOCX_EXPORT_COMMENT_BINDING_MISMATCH');
+    if (projection.threads.length) {
+      if (!Buffer.isBuffer(source.provisionalSelfParseArtifact?.bytes)) throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_REQUIRED');
+      const provisional = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
+        bytes: source.provisionalSelfParseArtifact.bytes, budgets: docxReviewReturnIntakeProductBudgets(),
+      }, { cryptoPort });
+      const proof = compareCommentExportReadback(projection, provisional.reviewIr?.commentThreads);
+      if (!provisional.ok || !proof.ok || provisional.reviewIr?.commentThreads?.length !== projection.threads.length)
+        throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_MISMATCH');
+      commentProofs.push({ phase:'provisional', ...proof });
+    }
+    const proof = compareCommentExportReadback(projection, parsed.reviewIr?.commentThreads);
+    if (!proof.ok || parsed.reviewIr?.commentThreads?.length !== projection.threads.length)
+      throw Error('REVIEW_DOCX_EXPORT_COMMENT_FINAL_MISMATCH');
+    commentProofs.push({ phase:'final', ...proof });
+  }
+  const commentPublication = source.commentExport ? {commentProofs} : {};
   const notesBinding = validateDocumentNotesReturn({ expected: source.documentNotes,
     returned: parsed.reviewIr?.documentNotes, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest });
 
@@ -5105,7 +5180,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       || stableRtkReviewTransportJson(scenePendingExportSemantics(ledger, source.localAuthorityCapsule.exportMap.exportTypography))
         !== stableRtkReviewTransportJson(scenePendingExportSemantics(returnedLedger, source.localAuthorityCapsule.exportMap.exportTypography)))
       throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
-    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256 };
+    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
   }
   if (!notesBinding.ok) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
   if (ledger?.revisions.some(revision => revision.state === 'pending')
@@ -5120,7 +5195,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       || stableRtkReviewTransportJson(scenePendingExportSemantics(ledger, source.localAuthorityCapsule.exportMap.exportTypography))
         !== stableRtkReviewTransportJson(scenePendingExportSemantics(returnedLedger, source.localAuthorityCapsule.exportMap.exportTypography)))
       throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
-    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256 };
+    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
   }
   const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
   const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
@@ -5129,7 +5204,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
     returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
     returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '1970-01-01T00:00:00.000Z' });
   if (plan.changes.length) throw Error('REVIEW_DOCX_EXPORT_NOTE_SEMANTICS_MISMATCH');
-  return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256 };
+  return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256, ...commentPublication };
 }
 
 async function buildDocxReviewPacketBuffer(source) {
@@ -26954,13 +27029,24 @@ async function buildDocxMinBuffer(editorSnapshot, noteSource = {}) {
     loadSemanticMappingModule(),
     loadStyleMapModule(),
   ]);
-  return buildDocxMinBufferCore(editorSnapshot, {
+  const buffer = buildDocxMinBufferCore(editorSnapshot, {
     documentNotes: noteSource.documentNotes,
     noteBlocks: noteSource.noteBlocks,
+    commentExport: noteSource.commentExport,
+    commentBlocks: noteSource.noteBlocks,
     docxPageSetupBindModule,
     semanticMappingModule,
     styleMapModule,
   });
+  if (noteSource.commentExport) {
+    const bridge = await loadRevisionBridgeModule();
+    const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buffer,budgets:docxReviewReturnIntakeProductBudgets()},
+      {cryptoPort:createRtkReviewTransportCryptoPort()});
+    const proof = compareCommentExportReadback(noteSource.commentExport,parsed.reviewIr?.commentThreads);
+    if (!parsed.ok || !proof.ok || parsed.reviewIr?.commentThreads?.length !== noteSource.commentExport.threads.length)
+      throw Error('DOCX_COMMENT_EXPORT_READBACK_MISMATCH');
+  }
+  return buffer;
 }
 
 async function renderPdfBufferFromHtml(html) {
@@ -27597,15 +27683,23 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
 async function handleExportDocxMin(payloadRaw) {
   let source;
   const readSource = async payload => {
-    const filePath = currentFilePath, subjectId = currentLifecycleSubjectId();
+    const filePath = currentFilePath, subjectId = currentLifecycleSubjectId(), owner = activeStage10ApplicationBootstrap;
+    const generation = lastSignaledEditGeneration;
+    userBookmarkCapability('cmd.project.export.docxMin');
     const snapshot = await readCanonicalExportSnapshot(payload);
     const binding = await readReviewExactTextApplyProjectBinding(filePath);
+    if (!binding?.ok) throw Error('DOCX_SOURCE_CHANGED');
+    const sourceCohort = readSceneDocxExportCohort(binding.projectRoot,filePath,binding.manifestPath);
+    if (sourceCohort.scene !== snapshot.content) throw Error('DOCX_SOURCE_CHANGED');
     const projectRoot = getProjectRootPath(), projectId = binding?.manifest?.projectId;
     const notes = projectId ? await readCanonicalNotesForDocxExport(projectId, projectRoot, true) : null;
     const sceneId = path.relative(projectRoot, filePath).split(path.sep).join('/');
+    const bridge = await loadRevisionBridgeModule();
+    const comments = projectId ? await bridge.createRtkNonTextReturnFilePort().readCanonical({projectId,projectRoot}) : null;
     const active = notes?.notes?.some(note => !note.deleted && note.manuscript?.reference.sceneId === sceneId);
+    const activeComments = comments?.threads?.some(thread => thread.sceneId === sceneId && thread.status !== 'deleted');
     let noteBlocks, documentNotes;
-    if (active) {
+    if (active || activeComments) {
       manuscriptNoteModel.sceneText(snapshot.content);
       let paragraphDocument = snapshot.doc ? pendingTextRevisions.normalizeNode(snapshot.doc) : null;
       if (paragraphDocument?.attrs?.wordUserBookmarks !== undefined) {
@@ -27615,14 +27709,22 @@ async function handleExportDocxMin(payloadRaw) {
         delete paragraphDocument.attrs.wordUserBookmarks;
         if (!Object.keys(paragraphDocument.attrs).length) delete paragraphDocument.attrs;
       }
-      const paragraphs = paragraphDocument ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
+      const paragraphs = pendingTextRevisions.readLedger(snapshot.doc)
+        ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''))
+        : commentSceneParagraphs(snapshot.content).map(block => block.text);
       noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
         ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
           .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
-      documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
+      if (active) documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
     }
-    if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || isDirty) throw new Error('DOCX_SOURCE_CHANGED');
-    source = { filePath, subjectId, projectId, projectRoot, content: snapshot.content,
+    const commentExport = comments ? buildCanonicalCommentExport(comments,noteBlocks || [],projectId,{sceneId}) : null;
+    assertSceneDocxExportCohort(sourceCohort, 'DOCX_SOURCE_CHANGED', 'DOCX_NOTES_CHANGED', 'DOCX_COMMENTS_CHANGED');
+    if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || owner !== activeStage10ApplicationBootstrap
+      || generation !== lastSignaledEditGeneration || projectRoot !== getProjectRootPath() || isDirty || autoSaveInProgress)
+      throw new Error('DOCX_SOURCE_CHANGED');
+    userBookmarkCapability('cmd.project.export.docxMin');
+    source = { filePath, subjectId, owner, generation, projectId, projectRoot, sceneId, sourceCohort, content: snapshot.content,
+      commentDigest: comments ? commentStateDigest(comments) : '', commentExport,
       notesDigest: notes ? notesStateDigest(notes) : '', noteBlocks, documentNotes };
     return snapshot;
   };
@@ -27635,11 +27737,25 @@ async function handleExportDocxMin(payloadRaw) {
     readCanonicalExportSnapshot: readSource,
     buildDocxMinBuffer: snapshot => buildDocxMinBuffer(snapshot, source),
     revalidateCanonicalExportSource: async () => {
+      const check = () => {
+        userBookmarkCapability('cmd.project.export.docxMin');
+        if (!source || source.filePath !== currentFilePath || source.subjectId !== currentLifecycleSubjectId()
+          || source.owner !== activeStage10ApplicationBootstrap || source.generation !== lastSignaledEditGeneration
+          || source.projectRoot !== getProjectRootPath() || isDirty || autoSaveInProgress) throw new Error('DOCX_SOURCE_CHANGED');
+      };
+      check();
       if (!source || source.filePath !== currentFilePath || source.subjectId !== currentLifecycleSubjectId()
         || source.projectRoot !== getProjectRootPath() || isDirty || autoSaveInProgress) throw new Error('DOCX_SOURCE_CHANGED');
       if (await fs.readFile(source.filePath, 'utf8') !== source.content) throw new Error('DOCX_SOURCE_CHANGED');
       const notes = source.projectId ? await readCanonicalNotesForDocxExport(source.projectId, source.projectRoot, true) : null;
       if ((notes ? notesStateDigest(notes) : '') !== source.notesDigest) throw new Error('DOCX_NOTES_CHANGED');
+      const project = await readReviewExactTextApplyProjectBinding(source.filePath);
+      if (source.projectId && (!project.ok || project.projectId !== source.projectId || project.projectRoot !== source.projectRoot)) throw Error('DOCX_SOURCE_CHANGED');
+      const bridge = await loadRevisionBridgeModule();
+      const comments = source.projectId ? await bridge.createRtkNonTextReturnFilePort().readCanonical({projectId:source.projectId,projectRoot:source.projectRoot}) : null;
+      if ((comments ? commentStateDigest(comments) : '') !== source.commentDigest) throw Error('DOCX_COMMENTS_CHANGED');
+      assertSceneDocxExportCohort(source.sourceCohort, 'DOCX_SOURCE_CHANGED', 'DOCX_NOTES_CHANGED', 'DOCX_COMMENTS_CHANGED');
+      check();
     },
     queueDiskOperation,
     writeBufferAtomic,

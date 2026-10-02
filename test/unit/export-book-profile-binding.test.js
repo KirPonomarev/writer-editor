@@ -182,7 +182,7 @@ test('export book profile binding: backend delegates section setup to the fail-c
   assert.equal(bindSource.includes('roundTwips(297)'), false);
 });
 
-test('export book profile binding: actual main snapshot resolves absent default and preserves explicit profile validation', async () => {
+test('export book profile binding: actual main snapshot resolves absent default and preserves explicit profile validation', async t => {
   const { bookProfile, docxPageSetupBind } = await loadModules();
   const main = read('src/main.js');
   const start = main.indexOf('async function readCanonicalExportSnapshot(payload = {})');
@@ -192,25 +192,28 @@ test('export book profile binding: actual main snapshot resolves absent default 
   const { normalizeEditorSnapshotPayload } = require('../../src/export/docx/docxMinBuilder.js');
   const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Saved scene' }] }] };
   const content = envelope.composeObservablePayload({ text: 'Saved scene', doc });
+  const projectRoot = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'export-profile-binding-'));
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  const scenePath = path.join(projectRoot, 'scene.txt'), manifestPath = path.join(projectRoot, 'project.craftsman.json');
   let manifest = {};
   const context = vm.createContext({
     JSON,
-    currentFilePath: '/project/scene.txt', isDirty: false,
+    currentFilePath: scenePath, isDirty: false,
     isAllowedFilePath: () => true,
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
     fs: { readFile: async file => {
-      if (file === '/project/scene.txt') return content;
-      assert.equal(file, '/project/project.craftsman.json');
+      if (file === scenePath) return content;
+      assert.equal(file, manifestPath);
       return JSON.stringify(manifest);
     } },
     resolveProjectBindingForFile: async () => { throw Error('Export must not normalize or write the manifest'); },
-    isPathInside: (root, file) => root === '/project' && file === '/project/scene.txt',
-    getProjectManifestPath: () => '/project/project.craftsman.json',
+    isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary,
+    getProjectManifestPath: () => manifestPath,
     currentProjectName: 'Project', DEFAULT_PROJECT_NAME: 'Project',
     loadBookProfileModule: async () => bookProfile,
     loadDocumentContentEnvelopeModule: async () => envelope,
     verifyDocxMediaAssetFiles: async () => {},
-    getProjectRootPath: () => '/project', normalizeEditorSnapshotPayload,
+    getProjectRootPath: () => projectRoot, normalizeEditorSnapshotPayload,
   });
   vm.runInContext(main.slice(start, end), context);
   const snapshot = await context.readCanonicalExportSnapshot({});
@@ -241,10 +244,25 @@ test('export book profile binding: actual main snapshot resolves absent default 
   // Note resolution follows the snapshot: execute the whole handler to catch a
   // second manifest-normalizing writer after the initial read-only boundary.
   let writes = 0;
+  const profile = require('../../src/core/writer-local-profile-v1.cjs');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
   Object.assign(context, {
     path, Buffer, autoSaveInProgress: false,
+    activeStage10ApplicationBootstrap: {}, lastSignaledEditGeneration: 0,
+    getWriterLocalRuntimeProfile: () => profile.createWriterLocalProfileProjection({ isPackaged: false, platform: process.platform }),
+    evaluateWriterLocalCommandAccess: profile.evaluateWriterLocalCommandAccess,
+    getProductCommandRecord: require('../../src/shared/productCommandRegistry.cjs').getProductCommandRecord,
+    ...require('../../src/core/entitlement-law-v1.cjs'),
+    ...require('../../src/export/docx/docxReviewPacketComments.js'),
+    loadRevisionBridgeModule: async () => bridge,
+    fsSync: { readFileSync: file => {
+      if (file === scenePath) return content;
+      if (file === manifestPath) return JSON.stringify(manifest);
+      assert.ok([path.join(projectRoot, 'notes.craftsman.json'), path.join(projectRoot, '.yalken', 'word-review', 'non-text-return-state.v1.json')].includes(file));
+      throw Object.assign(new Error('Absent fixture annotation state'), { code: 'ENOENT' });
+    } },
     currentLifecycleSubjectId: () => 'life',
-    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, manifest: { projectId: 'project' } }),
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'project', projectRoot, manifestPath, manifest: { projectId: 'project' } }),
     readCanonicalNotesForDocxExport: async () => undefined,
     runDocxMinExport: require('../../src/export/docx/docxMinExportHandler.js').runDocxMinExport,
     normalizeExportPayload: value => value,
@@ -256,12 +274,19 @@ test('export book profile binding: actual main snapshot resolves absent default 
     queueDiskOperation: operation => operation(),
     writeBufferAtomic: async () => { writes++; }, updateStatus: () => {},
   });
+  // Actual guards and cohort comparison, with only fixed fixture I/O adapted.
+  for (const name of ['userBookmarkCapability', 'readSceneDocxExportCohort', 'assertSceneDocxExportCohort']) {
+    const begin = main.indexOf('function ' + name + '('), finish = main.indexOf('\n}\n', begin);
+    assert.ok(begin > 0 && finish > begin);
+    vm.runInContext(main.slice(begin, finish + 3), context);
+  }
   const handlerStart = main.indexOf('async function handleExportDocxMin(payloadRaw)');
   const handlerEnd = main.indexOf('async function handleExportPdf', handlerStart);
   assert.ok(handlerStart > 0 && handlerEnd > handlerStart);
   vm.runInContext(main.slice(handlerStart, handlerEnd), context);
   manifest = {};
-  assert.equal((await context.handleExportDocxMin({})).ok, 1);
+  const successfulExport = await context.handleExportDocxMin({});
+  assert.equal(successfulExport.ok, 1, JSON.stringify(successfulExport));
   assert.equal(writes, 1);
   for (const invalid of [null, { formatId: 'UNKNOWN' }]) {
     manifest = { bookProfile: invalid };

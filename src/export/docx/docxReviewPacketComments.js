@@ -88,7 +88,10 @@ function exactCommentAnchor(thread, blocks) {
     startUtf16: start, endUtf16: end, selectedText };
 }
 
-function buildCanonicalCommentExport(state, blocks, projectId) {
+function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
+  demand(plain(options) && Object.keys(options).every(key => key === 'sceneId')
+    && (!Object.hasOwn(options, 'sceneId') || (typeof options.sceneId === 'string' && options.sceneId.length > 0)),
+  'DOCX_COMMENT_SCOPE_INVALID');
   if (state === undefined) return null;
   demand(plain(state) && state.schemaVersion === COMMENT_STATE_SCHEMA && state.projectId === projectId
     && Number.isSafeInteger(state.revision) && state.revision >= 0
@@ -105,7 +108,9 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
   };
   const wordId = (kind, id) => ((Number.parseInt(digest(`${kind}:${id}`).slice(0, 8), 16) & 0x7fffffff) || 1)
     .toString(16).toUpperCase().padStart(8, '0');
-  for (const thread of state.threads) {
+  // Validate every identity and literal message before scope selection. A
+  // malformed sibling must not become acceptable just because it is omitted.
+  const validated = state.threads.map(thread => {
     demand(plain(thread) && typeof thread.threadId === 'string' && typeof thread.sceneId === 'string'
       && ['open', 'resolved', 'deleted'].includes(thread.status), 'DOCX_COMMENT_THREAD_INVALID');
     reserve(ids, thread.threadId);
@@ -126,7 +131,6 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
       return {
         canonicalCommentId: message.commentId, kind: message.kind, body: message.body,
         provenance, ...(transportDateUtc ? { transportDateUtc } : {}),
-        commentId: String(ordinal++),
         paraId: reserve(paraIds, wordId('comment-paragraph', message.commentId)),
         durableId: reserve(durableIds, wordId('comment-durable', message.commentId)),
       };
@@ -134,6 +138,19 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
     const messages = allMessages.slice(0, thread.messages.length);
     const deletedMessages = allMessages.slice(thread.messages.length);
     demand(messages[0].canonicalCommentId === thread.rootCommentId, 'DOCX_COMMENT_ROOT_IDENTITY_INVALID');
+    if (thread.status !== 'deleted') {
+      demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
+      const anchor = plain(thread.anchor) ? thread.anchor : {};
+      demand(anchor.sceneId === thread.sceneId && text(anchor.selectedText)
+        && anchor.selectedTextSha256 === digest(anchor.selectedText), 'DOCX_COMMENT_ANCHOR_INVALID');
+      segmentDocxTextForSerialization(anchor.selectedText);
+    }
+    return { thread, allMessages, messages, deletedMessages };
+  });
+  for (const { thread, allMessages, messages, deletedMessages } of validated) {
+    if (options.sceneId !== undefined && thread.sceneId !== options.sceneId) continue;
+    // Transport ordinals reveal no excluded sibling count or ordering.
+    for (const message of allMessages) message.commentId = String(ordinal++);
     if (thread.status === 'deleted') {
       tombstones.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: 'deleted',
         messageIds: allMessages.map(message => message.canonicalCommentId),
@@ -145,7 +162,6 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
       status: 'deleted-replies', messageIds: deletedMessages.map(m => m.canonicalCommentId),
       messageDurableIds: deletedMessages.map(m => m.durableId), outcome: 'CANONICAL_DELETION_NOT_EXPORTED',
       threadDigest: digest(stable(thread)) });
-    demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
     threads.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: thread.status,
       anchor: exactCommentAnchor(thread, blocks), messages });
   }
