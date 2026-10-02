@@ -1555,13 +1555,14 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
     const relative = scene.relativePath + '.wp201-commit.json';
     let commit = byPath.get(relative), previous = null;
     const originalPath = plan.affectedScenes.find(item => item.to === scene.relativePath)?.from || scene.relativePath;
-    const previousEntry = byPath.get(originalPath + '.wp201-commit.json');
+    const recovery = plan.recoverySource && plan.affectedScenes.some(item => item.copy && item.to === scene.relativePath) ? plan.recoverySource : null;
+    const previousEntry = recovery ? { beforeBase64: recovery.commitBase64 } : byPath.get(originalPath + '.wp201-commit.json');
     if (previousEntry?.beforeBase64) {
       try { previous = JSON.parse(treeText(previousEntry.beforeBase64)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
       treeNeed([COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION,
         ANCHOR_COMMIT_SCHEMA_VERSION, NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(previous.schemaVersion)
-        && previous.scenePath === treeAbsolute(manifestPath, originalPath)
-        && previous.manifestPath === manifestPath && previous.sceneDigest === sha256hex(Buffer.from(byPath.get(originalPath).beforeBase64, 'base64'))
+        && previous.scenePath === treeAbsolute(manifestPath, recovery ? recovery.relativePath : originalPath)
+        && previous.manifestPath === manifestPath && previous.sceneDigest === sha256hex(Buffer.from(recovery ? recovery.originalBase64 : byPath.get(originalPath).beforeBase64, 'base64'))
         && isDigest(previous.transactionId), 'E_TREE_COHORT_COMMIT_INVALID');
     }
     const note = entries.find(entry => entry.role === 'notes'), comment = entries.find(entry => entry.role === 'comments');
@@ -1585,6 +1586,7 @@ async function validateTreePacket(packet, manifestPath) {
   const id = sha256hex(`${packet.projectId}\n${packet.plan.planDigest}\n${packet.revision}`);
   treeNeed(packet.transactionId === id && canonicalize(packet.entries) === canonicalize(buildTreeEntries(packet.plan, manifestPath, packet.revision, id)), 'E_TREE_COHORT_JOURNAL_BINDING');
   if (packet.plan.kind === 'undo') await validateTreePacket(packet.plan.input.retainedPacket, manifestPath);
+  if (packet.plan.input.recoveredCopy) await validateTreePacket(packet.plan.input.recoveredCopy.retainedPacket, manifestPath);
   treeNeed(Buffer.byteLength(canonicalize(packet)) <= MAX_ARTIFACT_BYTES, 'E_TREE_COHORT_BUDGET');
   return packet;
 }
@@ -1703,6 +1705,9 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   treeNeed(current.treeRevision === plan.expectedTreeRevision, 'E_TREE_REVISION_CAS');
   if (plan.kind === 'undo') treeNeed(current.lastMutation?.canUndo && current.lastMutation.id === plan.input.lastMutation
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.retainedPacket), 'E_TREE_UNDO_UNAVAILABLE');
+  if (plan.input.recoveredCopy) treeNeed(['undo', 'copy'].includes(current.receipt?.kind)
+    && canonicalize(current.receipt) === canonicalize(plan.input.recoveredCopy.receipt)
+    && canonicalize(current.retainedPacket) === canonicalize(plan.input.recoveredCopy.retainedPacket), 'E_TREE_RECOVERY_BINDING');
   if (!plan.changed) return { success: true, changed: false, code: 'TREE_COHORT_UNCHANGED', treeRevision: current.treeRevision, lastMutation: current.lastMutation };
   const transactionId = sha256hex(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
   const packet = { schemaVersion: TREE_JOURNAL_SCHEMA_VERSION, projectId: plan.projectId, manifestPath, transactionId,

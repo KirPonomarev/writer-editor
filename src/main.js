@@ -544,6 +544,7 @@ let diskQueue = Promise.resolve();
 const pendingTextRequests = new Map();
 const pendingSnapshotRequests = new Map();
 let treeEditorReplacementFence = null;
+const treeRecoverySnapshotAdmissions = new WeakSet();
 let currentFontSize = 16;
 const MENU_PRESENTATION_MODE_CLASSIC = 'classic';
 const MENU_PRESENTATION_MODE_COMPACT = 'compact';
@@ -21744,7 +21745,21 @@ function assertTreeEditorSnapshotIdentity(snapshot, clear = false, expectedFence
   if (clear && treeEditorReplacementFence === fence) treeEditorReplacementFence = null;
 }
 
-function requestEditorSnapshot(timeoutMs = 2500) {
+function assertTreeRecoverySnapshot(snapshot, admission) {
+  const fence = admission?.fence;
+  if (!treeRecoverySnapshotAdmissions.has(admission) || !fence || treeEditorReplacementFence !== fence
+    || currentFilePath !== fence.filePath || getProjectRootPath() !== fence.projectRoot
+    || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+    || currentLifecycleSubjectId() !== fence.subjectId || activePendingRecording
+    || snapshot?.commentAuthoringPending === true || snapshot?.manuscriptNoteAuthoringPending === true
+    || lastSignaledEditGeneration !== admission.generation
+    || snapshot?.projectId !== fence.projectId || snapshot?.documentId !== fence.removedNodeId
+    || !Number.isSafeInteger(snapshot?.generation) || snapshot.generation < admission.generation) {
+    throw treeCohortError('E_TREE_RECOVERY_CONTEXT_STALE');
+  }
+}
+
+function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
@@ -21761,10 +21776,12 @@ function requestEditorSnapshot(timeoutMs = 2500) {
     pendingSnapshotRequests.set(requestId, { resolve: async snapshot => {
       try {
         const fence = capturedTreeFence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
-        if (fence) assertTreeEditorSnapshotIdentity(snapshot, false, fence);
+        if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
+        else if (fence) assertTreeEditorSnapshotIdentity(snapshot, false, fence);
         const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
         const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
-        if (publicationFence) assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
+        if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
+        else if (publicationFence) assertTreeEditorSnapshotIdentity(snapshot, true, publicationFence);
         resolve(prepared);
       } catch (error) { reject(error); }
     }, reject, timeoutId });
@@ -27589,7 +27606,15 @@ async function handleExportDocxMin(payloadRaw) {
     let noteBlocks, documentNotes;
     if (active) {
       manuscriptNoteModel.sceneText(snapshot.content);
-      const paragraphs = snapshot.doc ? pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(snapshot.doc)).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
+      let paragraphDocument = snapshot.doc ? pendingTextRevisions.normalizeNode(snapshot.doc) : null;
+      if (paragraphDocument?.attrs?.wordUserBookmarks !== undefined) {
+        // Validate the canonical registry before removing this recognized root
+        // metadata from a derived paragraph-only note projection.
+        userBookmarkModel.readRegistry(snapshot.doc);
+        delete paragraphDocument.attrs.wordUserBookmarks;
+        if (!Object.keys(paragraphDocument.attrs).length) delete paragraphDocument.attrs;
+      }
+      const paragraphs = paragraphDocument ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : snapshot.plainText.split('\n');
       noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
         ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
           .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
@@ -32010,7 +32035,8 @@ async function publishTreeCohortActiveContext(bound) {
   if (current !== raw) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
   if (removedCopy) treeEditorReplacementFence = { filePath: bound.filePath, projectRoot: bound.projectRoot,
     projectId: bound.projectId, documentId: doc.documentId, owner: bound.owner,
-    session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId() };
+    session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId(),
+    removedNodeId: removedCopy.nodeId, treeRevision: bound.treeRevision };
   mainWindow.webContents.send('editor:set-text', payload);
   if (removedCopy) {
     setDirtyState(false);
@@ -32124,7 +32150,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
           publication = { projectRoot: context.projectRoot, filePath: nextFile, generation: context.generation,
             editorSnapshotGeneration: context.editorSnapshotGeneration ?? context.generation,
             owner: activeStage10ApplicationBootstrap, session: commentAuthoringSessionId, commandId,
-            projectId: payload.projectId, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent: context.editorSnapshotContent ?? activeBeforeContent };
+            projectId: payload.projectId, treeRevision: result.treeRevision, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent: context.editorSnapshotContent ?? activeBeforeContent };
           if (workingChanged && removedCopy) Object.assign(publication, { detached: true, removedCopy, treeRevision: result.treeRevision });
         }
         if (workingChanged && !publication?.detached) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
@@ -33180,6 +33206,12 @@ async function showCommentSaveFailure(result) {
     || !mainWindow || mainWindow.isDestroyed()) return;
   if (commentSaveWarningPromise) return commentSaveWarningPromise;
   const identityFailure = /^(?:E_TREE_EDITOR_IDENTITY_UNCONFIRMED|E_SNAPSHOT_DOCUMENT_IDENTITY_INVALID)$/u.test(result.code);
+  const recoverableCopy = identityFailure && treeEditorReplacementFence?.removedNodeId
+    && treeEditorReplacementFence.filePath === currentFilePath
+    && treeEditorReplacementFence.projectRoot === getProjectRootPath()
+    && treeEditorReplacementFence.owner === activeStage10ApplicationBootstrap
+    && treeEditorReplacementFence.session === commentAuthoringSessionId
+    && treeEditorReplacementFence.subjectId === currentLifecycleSubjectId();
   const bookmarkFailure = /^USER_BOOKMARK_/u.test(result.code);
   const noteFailure = /^NOTE_(?:REFERENCE_|PENDING_)/u.test(result.code);
   const protectedKind = bookmarkFailure ? 'закладками' : noteFailure ? 'примечаниями' : 'комментариями';
@@ -33187,7 +33219,9 @@ async function showCommentSaveFailure(result) {
   commentSaveWarningPromise = dialog.showMessageBox(mainWindow, {
     type: 'warning', title: 'Текст не сохранён',
     message: identityFailure ? 'Открытая сцена изменилась. Сохранение остановлено.' : `Не удалось безопасно сохранить текст с ${protectedKind}`,
-    detail: identityFailure ? 'Текст остаётся в редакторе. Скопируйте его перед закрытием.' : bookmarkFailure || noteFailure
+    detail: identityFailure ? recoverableCopy
+      ? 'Текст остаётся в редакторе. Сохраните восстановленную копию через «Сохранить как» (Cmd+Shift+S).'
+      : 'Текст остаётся в редакторе. Скопируйте его перед закрытием.' : bookmarkFailure || noteFailure
       ? 'Привязки не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки или скопируйте текст перед закрытием.'
       : 'Привязки комментариев не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки текста или скопируйте черновик перед закрытием.',
     buttons: ['Вернуться к тексту'], defaultId: 0, cancelId: 0, noLink: true,
@@ -33213,7 +33247,155 @@ function projectSaveFailure(reason, cause = null) {
   };
 }
 
+async function handleTreeRecoveredCopySaveAs() {
+  const fence = treeEditorReplacementFence;
+  if (!fence?.removedNodeId || !Number.isSafeInteger(fence.treeRevision)) return false;
+  userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
+  const admission = { fence, generation: lastSignaledEditGeneration };
+  treeRecoverySnapshotAdmissions.add(admission);
+  treeBackupCaptureDepth++;
+  let committed = false, ownedRecoveryContext = fence;
+  try {
+    const snapshot = await requestEditorSnapshot(2500, admission);
+    const guard = () => {
+      userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
+      assertTreeRecoverySnapshot(snapshot, admission);
+    };
+    guard();
+    if (activeBackupPromise) await activeBackupPromise;
+    guard();
+    const manifestPath = path.join(fence.projectRoot, 'project.craftsman.json');
+    const selected = await dialog.showSaveDialog(mainWindow, { title: 'Сохранить восстановленную копию',
+      defaultPath: path.join(path.dirname(fence.filePath), 'Восстановленная копия.txt'),
+      filters: [{ name: 'Текстовые файлы', extensions: ['txt'] }] });
+    guard();
+    if (selected.canceled || !selected.filePath) return false;
+    const filePath = selected.filePath.endsWith('.txt') ? selected.filePath : selected.filePath + '.txt';
+    const relativePath = path.relative(fence.projectRoot, filePath).split(path.sep).join('/');
+    if (!relativePath.startsWith('roman/') || !relativePath.endsWith('.txt')
+      || path.isAbsolute(relativePath) || relativePath.split('/').some(x => !x || x === '.' || x === '..')) throw treeCohortError('E_TREE_RECOVERY_TARGET_INVALID');
+    const parent = await readTreeCohortPath(fence.projectRoot, path.posix.dirname(relativePath), true);
+    guard();
+    if (!parent.directory || await readTreeCohortPath(fence.projectRoot, relativePath, false, true)) throw treeCohortError('E_TREE_RECOVERY_TARGET_EXISTS');
+    guard();
+    const outcome = await queueDiskOperation(async () => {
+      guard();
+      const authority = await getMainProjectManifestAuthority();
+      guard();
+      return authority.withProjectLease(fence.projectId, lease => lease.publish(async () => {
+        const raw = await readProjectManifestRawAtPath(manifestPath);
+        guard();
+        if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || raw.manifest.projectId !== fence.projectId) throw treeCohortError('E_TREE_RECOVERY_PROJECT_READ_ONLY');
+        const state = await readVerifiedProjectTreeMutation({ manifestPath, projectId: fence.projectId });
+        guard();
+        if (state.treeRevision !== fence.treeRevision || !['undo', 'copy'].includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
+        const node = await resolveTreeCohortNode(fence.documentId, fence.projectId, { projectRoot: fence.projectRoot, manifestPath, manifest: raw.manifest });
+        guard();
+        const inventory = await captureTreeCohortInventory(fence.projectRoot);
+        guard();
+        const cohort = await loadProjectTreeCohortModule();
+        guard();
+        const plan = cohort.planProjectTreeCohort({ projectId: fence.projectId, manifestPath,
+          operationId: `tree-${crypto.randomUUID()}`, operation: 'copy', beforeManifestText: raw.raw,
+          ...inventory, expectedTreeRevision: state.treeRevision,
+          bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: relativePath, copy: true }],
+          recoveredCopy: { receipt: state.receipt, retainedPacket: state.retainedPacket,
+            removedNodeId: fence.removedNodeId, workingContent: snapshot.content }, now: new Date().toISOString() });
+        guard();
+        await expireProjectWordRoundsBeforeTree(fence.projectRoot, guard);
+        guard();
+        const request = { manifestPath, revision: admission.generation, treeCohort: plan, revalidate: guard,
+          verifyManifestContinuation: r => authority.verifyManifestContinuation({ ...r, projectId: fence.projectId }),
+          publishManifest: ({ manifestPath: target, expectedText, nextText, reason }) => {
+            if (target !== manifestPath) throw treeCohortError('E_TREE_COHORT_MANIFEST_PATH');
+            return authority.commitManifestText({ projectId: fence.projectId, lease, targetPath: target,
+              expectedText, nextText, label: `tree:${reason}` });
+          } };
+        let result;
+        try { result = await commitProjectTransaction(request); }
+        catch (error) {
+          const pending = await readPendingProjectTransactionBinding({ manifestPath });
+          if (pending.pending) await recoverProjectTransaction({ ...request, revalidate: () => lease.assertOwned() });
+          throw error;
+        }
+        if (result.success !== true) throw treeCohortError(result.code || 'E_TREE_RECOVERY_FAILED');
+        committed = true;
+        // A recovered checkpoint belongs to its newly rebased bytes, never the
+        // unchanged live original used solely as the identity binding.
+        const entry = plan.entries.find(x => x.role === 'scene' && x.relativePath === relativePath);
+        if (!entry?.afterBase64) throw treeCohortError('E_TREE_RECOVERY_FAILED');
+        treeBackupSeeds.set(filePath, Buffer.from(entry.afterBase64, 'base64').toString('utf8'));
+        return { content: Buffer.from(entry.afterBase64, 'base64').toString('utf8'),
+          documentId: result.pathBindings.find(x => x.copy)?.newNodeId, treeRevision: result.treeRevision };
+      }));
+    }, 'recover removed scene copy');
+    // Reconcile committed ownership first; late edits remain fenced and retain
+    // the complete durable recovered graph even if publication is refused.
+    if (treeEditorReplacementFence !== fence || currentFilePath !== fence.filePath
+      || getProjectRootPath() !== fence.projectRoot || activeStage10ApplicationBootstrap !== fence.owner
+      || commentAuthoringSessionId !== fence.session || currentLifecycleSubjectId() !== fence.subjectId) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    currentFilePath = filePath;
+    const publishedSubject = currentLifecycleSubjectId();
+    treeEditorReplacementFence = ownedRecoveryContext = { ...fence, filePath, documentId: outcome.documentId,
+      removedNodeId: fence.removedNodeId, treeRevision: outcome.treeRevision, subjectId: publishedSubject };
+    const publishGuard = () => {
+      userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
+      if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
+        || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== fence.session
+        || currentLifecycleSubjectId() !== publishedSubject || lastSignaledEditGeneration !== admission.generation
+        || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    };
+    publishGuard();
+    const raw = await fs.readFile(filePath, 'utf8');
+    publishGuard();
+    if (raw !== outcome.content) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    const identity = await getProjectDocumentIdentityPayload(filePath);
+    publishGuard();
+    if (identity.documentId !== outcome.documentId) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(filePath),
+      kind: 'scene', metaEnabled: true, content: raw, documentId: outcome.documentId }, filePath);
+    publishGuard();
+    Object.assign(payload, { treeReplacement: true, expectedDocumentId: fence.removedNodeId,
+      expectedContent: snapshot.content, expectedGeneration: snapshot.generation });
+    if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    publishGuard();
+    mainWindow.webContents.send('editor:set-text', payload);
+    setDirtyState(false);
+    treeEditorReplacementFence.session = commentAuthoringSessionId;
+    treeEditorReplacementFence.subjectId = currentLifecycleSubjectId();
+    const acknowledgedSession = commentAuthoringSessionId, acknowledgedSubject = currentLifecycleSubjectId(), acknowledgedGeneration = lastSignaledEditGeneration;
+    const ackGuard = () => {
+      userBookmarkCapability(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS);
+      if (currentFilePath !== filePath || getProjectRootPath() !== fence.projectRoot
+        || activeStage10ApplicationBootstrap !== fence.owner || commentAuthoringSessionId !== acknowledgedSession
+        || currentLifecycleSubjectId() !== acknowledgedSubject || lastSignaledEditGeneration !== acknowledgedGeneration
+        || isDirty || activePendingRecording || autoSaveInProgress) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    };
+    const observed = await requestEditorSnapshot();
+    ackGuard();
+    if (observed.content !== raw || observed.documentId !== outcome.documentId) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    if (await fs.readFile(filePath, 'utf8') !== raw) throw treeCohortError('E_TREE_RECOVERY_PUBLICATION_STALE');
+    ackGuard();
+    const saved = await saveLastFile({ selectionRange: observed.selectionRange, beforeWrite: ackGuard });
+    ackGuard();
+    if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+    updateStatus('Сохранено');
+    return true;
+  } catch (error) {
+    logDevError('recover removed scene copy', error);
+    if (getProjectRootPath() === ownedRecoveryContext.projectRoot && activeStage10ApplicationBootstrap === ownedRecoveryContext.owner
+      && currentFilePath === ownedRecoveryContext.filePath && commentAuthoringSessionId === ownedRecoveryContext.session
+      && currentLifecycleSubjectId() === ownedRecoveryContext.subjectId) {
+      isDirty = true;
+      updateStatus('Не удалось безопасно сохранить восстановленную копию. Текст остаётся в редакторе.');
+      if (committed) updateStatus('Копия сохранена. Если текст ещё не обновился, сохраните его через «Сохранить как».');
+    }
+    return false;
+  } finally { treeRecoverySnapshotAdmissions.delete(admission); treeBackupCaptureDepth--; }
+}
+
 async function handleSaveAs() {
+  if (treeEditorReplacementFence) return handleTreeRecoveredCopySaveAs();
   if (!mainWindow) {
     return false;
   }

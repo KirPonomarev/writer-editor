@@ -409,16 +409,32 @@ test('tree dragover accepts protected-mode type while drop alone reads and valid
   const start = source.indexOf("  row.addEventListener('dragstart', (event) => {");
   const end = source.indexOf('\n  li.appendChild(row);', start);
   assert.ok(start > 0 && end > start);
-  const handlers = new Map(), moves = [];
+  const handlers = new Map(), moves = [], logs = [];
   const dragged = { nodeId: 'source', kind: 'scene' };
   const c = { row: { addEventListener: (type, handler) => handlers.set(type, handler) },
     effectiveDocumentId: 'chapter', activeTab: 'roman', node: { kind: 'chapter-folder' },
     parentNodeId: 'part', siblingIndex: 1, treeRoot: {},
     isNavigatorMovableNode: () => true,
     findTreeNodeById: (root, id) => id === 'source' ? dragged : null,
-    handleMoveNode: (...args) => moves.push(args) };
+    handleMoveNode: (...args) => moves.push(args), console: { info: message => logs.push(message) } };
   vm.createContext(c);
   vm.runInContext(source.slice(start, end), c);
+  let startPrevented = 0;
+  handlers.get('dragstart')({ preventDefault() { startPrevented++; } });
+  assert.equal(startPrevented, 1);
+  assert.match(logs.at(-1), /phase=start outcome=blocked reason=NO_DATA_TRANSFER/u);
+  const stored = [];
+  const startTransfer = { setData: (...args) => stored.push(args) };
+  c.activeTab = 'notes';
+  handlers.get('dragstart')({ dataTransfer: startTransfer, preventDefault() { startPrevented++; } });
+  assert.equal(stored.length, 0);
+  assert.match(logs.at(-1), /roman=false/u);
+  c.activeTab = 'roman';
+  handlers.get('dragstart')({ dataTransfer: startTransfer, preventDefault() { assert.fail('eligible start'); } });
+  assert.equal(stored.length, 3);
+  assert.equal(startTransfer.effectAllowed, 'move');
+  assert.equal(logs.at(-1), 'TREE_DRAG phase=start outcome=accepted');
+  const beforeHover = logs.length;
   let prevented = 0, reads = 0;
   const transfer = { types: ['application/x-yalken-tree-node-id'],
     getData() { reads++; return ''; }, dropEffect: 'none' };
@@ -426,6 +442,7 @@ test('tree dragover accepts protected-mode type while drop alone reads and valid
   assert.equal(prevented, 1, 'HTML protected-mode hover must allow the subsequent drop');
   assert.equal(reads, 0, 'dragover has formats only, never payload authority');
   assert.equal(transfer.dropEffect, 'move');
+  assert.equal(logs.length, beforeHover, 'hover produces no diagnostic spam');
   for (const types of [[], ['text/plain'], ['Files']]) {
     handlers.get('dragover')({ dataTransfer: { ...transfer, types }, preventDefault() { assert.fail('foreign format'); } });
   }
@@ -436,7 +453,7 @@ test('tree dragover accepts protected-mode type while drop alone reads and valid
     handlers.get('drop')({ dataTransfer: { getData: () => id }, preventDefault() {} });
     assert.equal(moves.length, 0);
   }
-  handlers.get('drop')({ dataTransfer: { getData: type => ({
+  handlers.get('drop')({ dataTransfer: { types: ['application/x-yalken-tree-node-id'], getData: type => ({
     'application/x-yalken-tree-node-id': 'source',
     'application/x-yalken-tree-parent-node-id': 'other-chapter',
     'application/x-yalken-tree-sibling-index': '0',
@@ -444,6 +461,11 @@ test('tree dragover accepts protected-mode type while drop alone reads and valid
   assert.equal(moves.length, 1);
   assert.equal(moves[0][0], dragged);
   assert.deepEqual(moves[0].slice(1), ['chapter', 0]);
+  assert.equal(logs.at(-2), 'TREE_DRAG phase=drop formatPresent=true');
+  assert.equal(logs.at(-1), 'TREE_DRAG phase=drop outcome=intent-dispatched');
+  handlers.get('dragend')({ dataTransfer: { dropEffect: 'none' } });
+  assert.equal(logs.at(-1), 'TREE_DRAG phase=end effect=none');
+  assert.ok(logs.every(message => !message.includes('other-chapter') && !message.includes('nodeId')));
 });
 
 
@@ -533,6 +555,7 @@ test('equivalent tree query refresh during name dialog preserves exact revision-
 
 test('removed-copy replacement requires live old identity and bytes before ordinary editor replacement', () => {
   const c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
+    wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
     composeDocumentContent: () => 'saved copied scene' };
   vm.createContext(c);
   vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent']), c);
@@ -552,15 +575,20 @@ test('removed-copy replacement requires live old identity and bytes before ordin
   assert.ok(listener.indexOf('!isTreeReplacementCurrent(payload)') < listener.indexOf('setTiptapDocumentSnapshot({'));
 });
 
-test('actual replacement listener rejects a reset Main generation and accepts the exact live generation with new title', () => {
+test('actual replacement listener preserves late drafts or stale generation and accepts an exact idle replacement', () => {
   const source = read('src/renderer/editor.js');
   const start = source.indexOf('window.electronAPI.onEditorSetText((payload) => {');
   const end = source.indexOf('  window.electronAPI.onEditorTextRequest(', start);
-  for (const expectedGeneration of [0, 9]) {
+  for (const state of ['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy']) {
+    const expectedGeneration = state === 'stale-generation' ? 0 : 9;
     let listener, working = 'copied live content';
     const events = [], warnings = [];
     const c = { currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
       currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
+      wordCommentDraft: state === 'comment-draft' ? { body: 'unsaved comment' } : null,
+      wordCommentBusy: state === 'comment-busy',
+      manuscriptDrafts: new Map(state === 'note-draft' ? [['note', { body: 'unsaved note' }]] : []),
+      notesMutationPending: state === 'note-busy',
       metaEnabled: true, isTiptapMode: true, activeDocumentRevealRequested: false, currentRightTab: 'metadata',
       window: { electronAPI: { onEditorSetText: handler => { listener = handler; } } },
       console: { warn: value => warnings.push(value) }, composeDocumentContent: () => working,
@@ -582,19 +610,28 @@ test('actual replacement listener rejects a reset Main generation and accepts th
       'hideManualMapPlanWorkspace', 'hideNotesWorkspace', 'hideProjectSearchWorkspace', 'hideWriterHomeSurface',
       'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
       'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump']) c[name] = () => {};
+    c.setReviewSurfaceState = () => events.push(['review-replaced']);
+    const priorComment = c.wordCommentDraft, priorNote = c.manuscriptDrafts.get('note');
     vm.createContext(c);
     vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'showEditorPanelFor'])
       + '\n' + source.slice(start, end), c);
     listener({ treeReplacement: true, projectId: 'project', expectedDocumentId: 'copy', documentId: 'source',
       kind: 'scene', metaEnabled: true, title: 'Alpha', expectedGeneration,
       expectedContent: 'copied live content', content: 'original source content' });
-    if (expectedGeneration === 0) {
+    if (state !== 'idle') {
       assert.equal(working, 'copied live content');
       assert.equal(c.currentDocumentId, 'copy');
       assert.equal(c.currentDocumentTitle, 'Beta');
-      assert.match(warnings[0], /reason=GENERATION_MISMATCH expectedGeneration=0 actualGeneration=9/u);
+      assert.match(warnings[0], state === 'stale-generation'
+        ? /reason=GENERATION_MISMATCH expectedGeneration=0 actualGeneration=9/u
+        : /reason=AUTHORING_DRAFT_PENDING expectedGeneration=9 actualGeneration=9/u);
       assert.equal(warnings[0].includes('copied live content'), false);
       assert.equal(events.at(-1)[2], true);
+      assert.equal(c.wordCommentDraft, priorComment);
+      assert.equal(c.manuscriptDrafts.get('note'), priorNote);
+      assert.equal(c.wordCommentBusy, state === 'comment-busy');
+      assert.equal(c.notesMutationPending, state === 'note-busy');
+      assert.equal(events.some(event => event[0] === 'replace' || event[0] === 'review-replaced'), false);
     } else {
       assert.equal(working, 'original source content');
       assert.equal(c.currentDocumentId, 'source');

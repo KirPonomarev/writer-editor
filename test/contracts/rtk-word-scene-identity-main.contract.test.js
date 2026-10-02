@@ -55,7 +55,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     fresh: assertFreshDocxReviewRoundAuthority, strict: readStrictDocxReviewAuthorityStore,
     persist: persistDocxReviewReturnAuthorityStore, expire: expireProjectWordRoundsBeforeTree,
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
-    recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload,
+    recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     changeSession() { commentAuthoringSessionId += 1; },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
@@ -243,11 +243,12 @@ test('durable expiry survives exact tree Undo; cached fresh key and old export c
   assert.equal(JSON.parse(read(round.target)).roundsById['round-one'].lifecycleState, 'EXPIRED');
 });
 
-function mountRenderer(f, content, generation = 0, onSnapshot = null, identity = null) {
+function mountRenderer(f, content, generation = 0, onSnapshot = null, identity = null, onPublication = null) {
   const sends = [], session = {}, url = f.probe.shellUrl();
   const wc = { id: 91, session, getURL: () => url, isDestroyed: () => false,
     send(channel, payload) {
       sends.push({ channel, payload });
+      if (channel === 'editor:set-text' && onPublication) onPublication(payload);
       if (channel === 'editor:snapshot-request') {
         const current = typeof content === 'function' ? content() : content;
         if (onSnapshot && onSnapshot() === false) return;
@@ -548,7 +549,7 @@ for (const observed of ['old-copy', 'missing', 'foreign-project', 'malformed']) 
   assert.equal(autosave.ok, false, JSON.stringify(autosave)); assert.equal(f.probe.state().dirty, true);
   assert.equal(f.warnings.length, 0, 'autosave does not produce repeated warnings');
   assert.equal((await f.probe.save()).ok, false);
-  assert.equal(f.warnings.length, 1); assert.match(f.warnings[0].message, /Сохранение остановлено/u);
+  assert.equal(f.warnings.length, 1); assert.match(f.warnings[0].message, /Сохранение остановлено/u); assert.match(f.warnings[0].detail, /Сохранить как.*Cmd\+Shift\+S/u);
   const backup = await f.probe.backup(); assert.notEqual(backup?.success, true);
   const blockedOpen = await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.b.nodeId });
   assert.equal(blockedOpen.ok, false); assert.equal(blockedOpen.cancelled, true);
@@ -626,4 +627,164 @@ test('successful canonical open retires obsolete replacement context but an old 
   assert.deepEqual(f.capture(), before);
   content = read(f.beta); identity = { projectId: f.query.projectId, documentId: f.b.nodeId };
   assert.equal(await f.probe.save(), true); assert.equal(read(f.alpha), 'Alpha'); assert.equal(read(f.beta), 'Beta');
+});
+
+async function installMixedScene(f) {
+  const sceneId = 'roman/Imported/01_Alpha.txt';
+  let doc = { type: 'doc', content: ['Alpha target unique', 'Twin repeated text', 'Twin repeated text', 'CrossStart', 'CrossEnd', 'After canary 🌋', 'Link destination', 'Link second']
+    .map(text => ({ type: 'paragraph', content: [{ type: 'text', text }] })) };
+  const ep = (paragraphIndex, offsetUtf16) => ({ paragraphIndex, offsetUtf16, edge: 'text' });
+  const specs = [['UserTwinA', ep(1, 0), ep(1, 18)], ['UserTwinB', ep(1, 0), ep(1, 18)], ['UserTwinSecond', ep(2, 0), ep(2, 18)],
+    ['UserPoint', ep(5, 0), ep(5, 0)], ['UserCrossBlock', ep(3, 0), ep(4, 8)], ['UserSpanTwo', ep(3, 0), ep(5, 1)], ['UserSurrogate', ep(5, 13), ep(5, 15)]];
+  for (const [name, start, end] of specs) doc = bookmarks.planMutation({ doc, action: 'create', projectId: f.query.projectId, sceneId,
+    requestId: 'mixed-' + name, name, start, end }).doc;
+  const registry = bookmarks.readRegistry(doc);
+  for (const [index, name] of [[6, 'UserTwinB'], [7, 'UserTwinSecond']]) doc.content[index].content[0].marks = [{ type: 'link', attrs: bookmarks.linkAttrs(registry.bookmarks.find(x => x.name === name)) }];
+  f.source = envelope.composeObservablePayload({ doc, metaEnabled: true, meta: { status: 'черновик', synopsis: 'Mixed graph metadata', tags: {} }, cards: [] });
+  fs.writeFileSync(f.alpha, f.source);
+  const manuscript = notes.bindManuscriptPayload({ kind: 'footnote', body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Mixed footnote' }] }] }, sceneId, offsetUtf16: 2, sceneContent: f.source });
+  const storage = await import('../../src/core/notesStorage.mjs');
+  const normalized = storage.normalizeNotesDocument({ schemaVersion: 1, projectId: f.query.projectId, notes: [{ id: 'note-mixed', scope: 'manuscript', body: 'Mixed footnote', manuscript }] }, { projectId: f.query.projectId, now: () => '2026-10-02T00:00:00.000Z' });
+  fs.writeFileSync(path.join(f.root, 'notes.craftsman.json'), JSON.stringify(normalized.value));
+  const model = require('../../src/core/word-comment-authoring-v1.cjs');
+  const comment = model.planCommentAuthoring({ beforeText: null, projectId: f.query.projectId, sceneId, sceneSha256: sha(f.source),
+    paragraphs: doc.content.map(p => p.content.map(n => n.text).join('')), now: '2026-10-02T00:00:00.000Z',
+    input: { action: 'create', requestId: 'mixed-comment', projectId: f.query.projectId, sceneId, expectedStateSha256: '', expectedSceneSha256: sha(f.source),
+      body: 'Mixed comment', anchor: { paragraphIndex: 0, startUtf16: 0, selectedText: 'Alpha' } } });
+  const target = path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json'); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, comment.afterText);
+}
+
+test('actual mixed seven-bookmark two-link note/comment copy, reorder and current-scene DOCX export retain the complete graph', async t => {
+  const f = await fixture(t); await installMixedScene(f);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'RichCopy', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true, JSON.stringify(copy));
+  const copied = path.join(f.imported, '03_RichCopy.txt');
+  f.probe.state({ filePath: copied });
+  const moved = await f.main.handleUiMoveNodeCommand({ projectId: f.query.projectId, nodeId: copy.nodeId, targetParentNodeId: f.parent.nodeId, targetIndex: 1, expectedTreeRevision: 1 });
+  assert.equal(moved.ok, true, JSON.stringify(moved));
+  const activePath = f.probe.state().filePath, doc = envelope.parseObservablePayload(read(activePath)).doc;
+  assert.equal(bookmarks.readRegistry(doc).bookmarks.length, 7);
+  const sourcePath = path.join(f.root, JSON.parse(read(f.manifestPath)).treeIdentity.nodes[f.a.nodeId].bindingKey.slice(5));
+  const ids = new Set(bookmarks.readRegistry(envelope.parseObservablePayload(read(sourcePath)).doc).bookmarks.map(x => x.id));
+  assert.equal(bookmarks.readRegistry(doc).bookmarks.some(x => ids.has(x.id)), false);
+  const state = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), commentState = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(state.notes.length, 2); assert.equal(commentState.threads.length, 2);
+  assert.equal(state.notes.filter(x => x.manuscript.reference.sceneId === path.relative(f.root, activePath).split(path.sep).join('/')).length, 1);
+  const before = f.capture(), outPath = path.join(f.temp, 'mixed.docx');
+  const result = await f.probe.exportMin({ outPath }); assert.equal(result.ok, 1, JSON.stringify(result));
+  assert.equal(fs.existsSync(outPath), true); assert.deepEqual(f.capture(), before, 'export is read-only');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const imported = bridge.buildDocxContentPreviewFromZipBytes(fs.readFileSync(outPath));
+  assert.equal(imported.ok, true, JSON.stringify(imported));
+  assert.equal(imported.contentPreview.userBookmarkInventory.bookmarks.length, 7);
+  assert.equal(imported.contentPreview.userBookmarkInventory.links.length, 2);
+  assert.deepEqual(imported.contentPreview.manuscriptNotes, [{ kind: 'footnote', paragraphIndex: 0, offsetUtf16: 2, body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Mixed footnote' }] }] } }]);
+});
+
+async function rejectedRichCopy(t) {
+  const f = await fixture(t); await installMixedScene(f);
+  const original = read(f.alpha);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true, JSON.stringify(copy));
+  const fork = path.join(f.imported, '03_Fork.txt');
+  let content = read(fork), identity = { projectId: f.query.projectId, documentId: copy.nodeId }, accept = false, generation = 9;
+  const ui = mountRenderer(f, () => content, () => generation, null, () => identity, payload => {
+    if (accept && payload.treeReplacement && payload.expectedDocumentId === identity.documentId
+      && payload.expectedContent === content && payload.expectedGeneration === generation) {
+      content = payload.content; identity = { projectId: payload.projectId, documentId: payload.documentId };
+    }
+  });
+  f.probe.state({ filePath: fork, generation: 0 });
+  const undo = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+  assert.equal(undo.ok, true, JSON.stringify(undo));
+  const parsed = envelope.parseObservablePayload(content);
+  parsed.doc.content[7].content.push({ type: 'text', text: ' retained typing' });
+  content = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock });
+  generation++; f.probe.state({ dirty: true, generation: 1 });
+  return { f, ui, copy, original, content: () => content, identity: () => identity,
+    accept: () => { accept = true; }, corrupt: fn => { content = fn(content); generation++; }, identify: value => { identity = value; } };
+}
+
+test('actual existing SaveAs recovers rejected rich copy from private Undo packet with fresh graph and stable periodic backup, then opens original', async t => {
+  const r = await rejectedRichCopy(t), { f } = r;
+  const rawCopied = envelope.parseObservablePayload(r.content()).doc;
+  const priorCopyIds = new Set(bookmarks.readRegistry(rawCopied).bookmarks.map(x => x.id));
+  const target = path.join(f.imported, 'Recovered.txt'); f.chooseSavePath(target); r.accept();
+  assert.equal(await f.probe.saveAs(), true, JSON.stringify(r.ui.sends.filter(x => x.channel.includes("status"))));
+  assert.equal(f.probe.state().filePath, target); assert.equal(read(f.alpha), r.original);
+  const recovered = envelope.parseObservablePayload(read(target));
+  assert.equal(recovered.hasMetaBlock, true); assert.equal(recovered.meta.synopsis, 'Mixed graph metadata');
+  assert.match(recovered.text, /retained typing/u);
+  const registry = bookmarks.readRegistry(recovered.doc); assert.equal(registry.bookmarks.length, 7);
+  assert.equal(registry.bookmarks.some(x => priorCopyIds.has(x.id)), false);
+  const notesState = JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))), commentsState = JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(notesState.notes.length, 2); assert.equal(commentsState.threads.length, 2);
+  assert.equal(notesState.notes.filter(x => x.manuscript.reference.sceneId === 'roman/Imported/Recovered.txt').length, 1);
+  assert.equal(commentsState.threads.filter(x => x.anchor.sceneId === 'roman/Imported/Recovered.txt').length, 1);
+  const beforeBackup = f.capture(); const backup = await f.probe.backup();
+  assert.equal(backup.success, true, JSON.stringify(backup)); assert.deepEqual(f.capture(), beforeBackup, 'same recovered bytes dedupe against its own checkpoint');
+  const exported = await f.probe.exportMin({ outPath: path.join(f.temp, 'recovered.docx') }); assert.equal(exported.ok, 1, JSON.stringify(exported));
+  const opened = await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId });
+  assert.equal(opened.ok, true, JSON.stringify(opened)); assert.equal(f.probe.state().filePath, f.alpha); assert.equal(read(f.alpha), r.original);
+});
+
+for (const variant of ['cancel', 'outside', 'existing', 'symlink', 'wrong-id', 'foreign-project', 'stale-session', 'typing-during-dialog', 'changed-graph', 'comment-draft', 'note-draft']) test(`private rich recovery ${variant} refuses without original or graph writes and retains working buffer`, async t => {
+  const r = await rejectedRichCopy(t), { f } = r;
+  let target = path.join(f.imported, 'Recovered.txt'), during = null;
+  if (variant === 'cancel') target = null;
+  if (variant === 'outside') target = path.join(f.temp, 'Outside.txt');
+  if (variant === 'existing') target = f.alpha;
+  if (variant === 'symlink') { fs.symlinkSync(f.alpha, target); }
+  if (variant === 'wrong-id') r.identify({ projectId: f.query.projectId, documentId: f.a.nodeId });
+  if (variant === 'foreign-project') r.identify({ projectId: 'foreign', documentId: r.copy.nodeId });
+  if (variant === 'stale-session') f.probe.changeSession();
+  if (variant === 'comment-draft') r.identify({ projectId: f.query.projectId, documentId: r.copy.nodeId, commentAuthoringPending: true });
+  if (variant === 'note-draft') r.identify({ projectId: f.query.projectId, documentId: r.copy.nodeId, manuscriptNoteAuthoringPending: true });
+  if (variant === 'typing-during-dialog') during = () => f.probe.state({ generation: 2, dirty: true });
+  if (variant === 'changed-graph') r.corrupt(raw => { const parsed = envelope.parseObservablePayload(raw); parsed.doc.attrs.wordUserBookmarks.bookmarks[0].id = 'ubm-' + 'f'.repeat(32); return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }); });
+  const content = r.content(), before = f.capture(); f.chooseSavePath(target, during);
+  assert.equal(await f.probe.saveAs(), false); assert.deepEqual(f.capture(), before); assert.equal(read(f.alpha), r.original); assert.equal(r.content(), content);
+});
+
+for (const variant of ['second-publication-rejected', 'late-typing-at-durable-cleanup']) test(`recovered rich copy ${variant} stays recoverable through another native SaveAs and original Open`, async t => {
+  const r = await rejectedRichCopy(t), { f } = r;
+  const first = path.join(f.imported, 'RecoveryOne.txt'); f.chooseSavePath(first);
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), originalUnlink = fsp.unlink;
+  if (variant === 'late-typing-at-durable-cleanup') fsp.unlink = async function (target, ...args) {
+    if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(first)) {
+      r.corrupt(raw => { const parsed = envelope.parseObservablePayload(raw); parsed.doc.content[7].content.push({ type: 'text', text: ' even later typing' }); return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }); });
+      f.probe.state({ generation: 2, dirty: true });
+    }
+    return originalUnlink.call(this, target, ...args);
+  };
+  try { assert.equal(await f.probe.saveAs(), false); } finally { fsp.unlink = originalUnlink; }
+  assert.equal(fs.existsSync(first), true); assert.equal(read(f.alpha), r.original); assert.equal(f.probe.state().filePath, first);
+  const firstBytes = read(first), retained = r.content();
+  const second = path.join(f.imported, 'RecoveryTwo.txt'); f.chooseSavePath(second); r.accept();
+  assert.equal(await f.probe.saveAs(), true, JSON.stringify(r.ui.sends.filter(x => x.channel.includes('status'))));
+  assert.equal(read(first), firstBytes); assert.equal(read(f.alpha), r.original);
+  assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(second)).doc).bookmarks.length, 7);
+  assert.match(envelope.parseObservablePayload(read(second)).text, /retained typing/u);
+  if (variant === 'late-typing-at-durable-cleanup') assert.match(envelope.parseObservablePayload(read(second)).text, /even later typing/u);
+  assert.equal(r.content(), read(second)); assert.notEqual(r.content(), retained);
+  assert.equal(JSON.parse(read(path.join(f.root, 'notes.craftsman.json'))).notes.length, 3);
+  assert.equal(JSON.parse(read(path.join(f.root, '.yalken/word-review/non-text-return-state.v1.json'))).threads.length, 3);
+  const beforeBackup = f.capture(); assert.equal((await f.probe.backup()).success, true); assert.deepEqual(f.capture(), beforeBackup);
+  assert.equal((await f.main.handleUiOpenDocumentCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId })).ok, true);
+  assert.equal(read(f.alpha), r.original);
+});
+
+test('durable recovered graph cannot rebind or dirty a foreign Main authoring context during journal cleanup', async t => {
+  const r = await rejectedRichCopy(t), { f } = r, target = path.join(f.imported, 'Recovered.txt'); f.chooseSavePath(target); r.accept();
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), originalUnlink = fsp.unlink;
+  fsp.unlink = async function (file, ...args) {
+    if (file === transaction.journalPathFor(f.manifestPath) && fs.existsSync(target)) {
+      f.probe.state({ filePath: f.beta, dirty: false, generation: 0 }); f.probe.changeSession();
+    }
+    return originalUnlink.call(this, file, ...args);
+  };
+  try { assert.equal(await f.probe.saveAs(), false); } finally { fsp.unlink = originalUnlink; }
+  assert.equal(fs.existsSync(target), true); assert.equal(read(f.alpha), r.original); assert.equal(read(f.beta), 'Beta');
+  assert.equal(f.probe.state().filePath, f.beta); assert.equal(f.probe.state().dirty, false);
+  assert.equal(r.ui.sends.filter(x => x.payload?.treeReplacement).length, 1, 'only original rejected Undo publication, no foreign recovery publication');
 });

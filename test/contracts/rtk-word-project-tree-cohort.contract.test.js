@@ -294,3 +294,154 @@ test('moved backup metadata matches real producer bytes while a later new snapsh
   assert.equal(current.lastMutation.canUndo,false);assert.equal(current.lastMutation.unavailableReason,'E_TREE_COHORT_FOREIGN_ENTRY');
   assert.equal(text(moved),f.raw);
 });
+
+async function recoveryFixture(t, options = {}) {
+  const f=fixture(t,true),m=await modelPromise,commentModel=require('../../src/core/word-comment-authoring-v1.cjs');
+  if(options.pending){
+    const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha 😀'}]}]};
+    const frame={schemaVersion:3,source,revisions:[],undo:[],redo:[],noteSourcePoints:[{noteId:'note-source',paragraphIndex:0,offsetUtf16:2}]};
+    const doc=pending.bindLedger({...frame,roundUndo:[frame],roundRedo:[],returnReceipts:[{roundId:'prior-round',artifactSha256:'a'.repeat(64)}]});
+    f.raw=envelope.composeObservablePayload({doc});fs.writeFileSync(path.join(f.root,'roman/01 Alpha.txt'),f.raw);
+    const manuscript=notes.bindManuscriptPayload({kind:'footnote',body:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'note'}]}]},sceneId:'roman/01 Alpha.txt',offsetUtf16:2,sceneContent:f.raw});
+    fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify({schemaVersion:1,projectId:'project-test',notes:[{id:'note-source',scope:'manuscript',body:'note',manuscript}]}));
+  }
+  if(options.resource){
+    const scenePath=path.join(f.root,'roman/01 Alpha.txt'),asset=path.join(f.root,'assets/a.bin');fs.mkdirSync(path.dirname(asset));fs.writeFileSync(asset,'asset');
+    fs.writeFileSync(tx.commitPathFor(scenePath),JSON.stringify({schemaVersion:'yalken.project-transaction.commit.v2',transactionId:sha('resource'),revision:0,scenePath,manifestPath:f.manifestPath,sceneDigest:sha(f.raw),manifestDigest:sha(text(f.manifestPath)),resources:[{path:asset,digest:sha('asset'),bytes:5}]}));
+  }
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
+  const paragraphs=envelope.parseObservablePayload(f.raw).doc.content.map(p=>p.content.map(n=>n.text||'').join(''));
+  const authored=commentModel.planCommentAuthoring({beforeText:null,projectId:'project-test',sceneId:'roman/01 Alpha.txt',sceneSha256:sha(f.raw),paragraphs,now,
+    input:{requestId:'comment-source',action:'create',projectId:'project-test',sceneId:'roman/01 Alpha.txt',expectedStateSha256:'',expectedSceneSha256:sha(f.raw),body:'Rich comment',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}});
+  fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,authored.afterText);
+  const current=extra=>f.capture({commentsText:text(commentPath),...extra});
+  const commit=plan=>tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:plan.expectedTreeRevision+1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const copy=m.planProjectTreeCohort(current({operation:'copy',bindings:[{nodeId:'tree-node-a',fromRelativePath:'roman/01 Alpha.txt',toRelativePath:'roman/03 Copy.txt'}]}));
+  await commit(copy);const copyRaw=text(path.join(f.root,'roman/03 Copy.txt'));
+  const copied=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-copy',expectedTreeRevision:1,lastMutation:copied.lastMutation.id,receipt:copied.receipt,retainedPacket:copied.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  await commit(undo);
+  const retained=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const parsed=envelope.parseObservablePayload(copyRaw);if(!options.pending)parsed.doc.content[0].content[0].text+=' added';
+  const workingContent=envelope.composeObservablePayload({...parsed,doc:parsed.doc});
+  const input=current({operation:'copy',operationId:'recover-copy',expectedTreeRevision:2,
+    bindings:[{nodeId:'tree-node-a',fromRelativePath:'roman/01 Alpha.txt',toRelativePath:'roman/04 Recovered.txt'}],
+    recoveredCopy:{receipt:retained.receipt,retainedPacket:retained.retainedPacket,removedNodeId:copy.pathBindings[0].newNodeId,workingContent}});
+  return {...f,m,commit,input,copyRaw,commentPath};
+}
+
+test('retained rich copy recovers edited text and independent full graph through real writer, then exact Undo',async t=>{
+  const f=await recoveryFixture(t),beforeNotes=text(path.join(f.root,'notes.craftsman.json')),beforeComments=text(f.commentPath);
+  const plan=f.m.planProjectTreeCohort(f.input);await f.commit(plan);
+  const destination=path.join(f.root,'roman/04 Recovered.txt'),raw=text(destination),doc=envelope.parseObservablePayload(raw).doc;
+  assert.equal(notes.sceneText(raw),'Alpha 😀 added\nlink');assert.equal(text(path.join(f.root,'roman/01 Alpha.txt')),f.raw);
+  const oldMark=bookmarks.readRegistry(envelope.parseObservablePayload(f.copyRaw).doc).bookmarks[0],newMark=bookmarks.readRegistry(doc).bookmarks[0];
+  assert.notEqual(newMark.id,oldMark.id);assert.equal(doc.content[1].content[0].marks[0].attrs.wordBookmarkId,newMark.id);
+  const noteDoc=JSON.parse(text(path.join(f.root,'notes.craftsman.json')));assert.deepEqual(noteDoc.notes[0],JSON.parse(beforeNotes).notes[0]);
+  assert.equal(noteDoc.notes.length,2);assert.equal(noteDoc.notes[1].manuscript.reference.sceneId,'roman/04 Recovered.txt');
+  assert.equal(noteDoc.notes[1].manuscript.reference.sourceTextSha256,sha(notes.sceneText(raw)));
+  const comments=JSON.parse(text(f.commentPath));assert.deepEqual(comments.threads[0],JSON.parse(beforeComments).threads[0]);
+  assert.equal(comments.threads.length,2);assert.equal(comments.threads[1].messages[0].body,'Rich comment');
+  assert.notEqual(comments.threads[1].threadId,comments.threads[0].threadId);assert.equal(comments.threads[1].anchor.sceneId,'roman/04 Recovered.txt');
+  assert.equal((await tx.readVerifiedProjectTransaction({scenePath:destination,manifestPath:f.manifestPath})).schemaVersion,'yalken.project-transaction.commit.v7');
+  const state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=f.m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-recovered',expectedTreeRevision:3,lastMutation:state.lastMutation.id,receipt:state.receipt,retainedPacket:state.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  assert.equal(undo.pathBindings[0].toRelativePath,'roman/01 Alpha.txt');await f.commit(undo);
+  assert.equal(fs.existsSync(destination),false);assert.equal(text(path.join(f.root,'notes.craftsman.json')),beforeNotes);assert.equal(text(f.commentPath),beforeComments);
+});
+
+test('recovered-copy input refuses wrong identity, stale receipt, occupied destination, consumed anchors and ledger mutation',async t=>{
+  const f=await recoveryFixture(t),before=inventory(f.root),originalManifest=text(f.manifestPath);
+  const mutate=fn=>{const value=structuredClone(f.input);fn(value);return value;};
+  for(const input of [
+    mutate(x=>x.projectId='other'),mutate(x=>x.expectedTreeRevision=1),mutate(x=>x.recoveredCopy.removedNodeId='unknown'),
+    mutate(x=>x.bindings[0].copy=false),mutate(x=>x.bindings[0].toRelativePath='roman/02 Beta.txt'),
+    mutate(x=>x.recoveredCopy.retainedPacket.entries[0].afterBase64=''),
+    mutate(x=>{const p=envelope.parseObservablePayload(x.recoveredCopy.workingContent);p.doc.content[0].content[0].text='Gone';x.recoveredCopy.workingContent=envelope.composeObservablePayload({doc:p.doc});})
+  ]) assert.throws(()=>f.m.planProjectTreeCohort(input));
+  assert.deepEqual(inventory(f.root),before);assert.equal(text(f.manifestPath),originalManifest);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});
+
+test('recovery cannot use a recomputed forged packet or replay a consumed current Undo',async t=>{
+  const f=await recoveryFixture(t),forged=structuredClone(f.input),packet=forged.recoveredCopy.retainedPacket;
+  packet.revision++;
+  forged.recoveredCopy.receipt.packetDigest=f.m.projectTreeCohortDigest(packet);
+  const plan=f.m.planProjectTreeCohort(forged);
+  await assert.rejects(f.commit(plan),{code:'E_TREE_RECOVERY_BINDING'});
+  assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+  const valid=f.m.planProjectTreeCohort(f.input);await f.commit(valid);
+  await assert.rejects(f.commit(valid),{code:'E_TREE_REVISION_CAS'});
+});
+
+for(const stage of ['notes','cleanup'])test(`recovered full graph ${stage} fault uses existing rollback/rollforward`,async t=>{
+  const f=await recoveryFixture(t),before=inventory(f.root),notesBefore=text(path.join(f.root,'notes.craftsman.json')),commentsBefore=text(f.commentPath);
+  const plan=f.m.planProjectTreeCohort(f.input);let fired=false;
+  const adapter={...fsp,rename:async(a,b)=>{if(!fired&&stage==='notes'&&b.endsWith('notes.craftsman.json')){fired=true;throw Error('injected recovery');}return fsp.rename(a,b);},
+    unlink:async p=>{if(!fired&&stage==='cleanup'&&p===tx.journalPathFor(f.manifestPath)){fired=true;throw Error('injected recovery');}return fsp.unlink(p);}};
+  await assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:3,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{},fsAdapter:adapter}));
+  assert.equal(fired,true);
+  const recovered=await tx.recoverProjectTransaction({manifestPath:f.manifestPath,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  assert.equal(recovered.outcome,stage==='cleanup'?'COMMITTED_ROLLED_FORWARD':'UNCOMMITTED_ROLLED_BACK');
+  if(stage==='notes'){assert.deepEqual(inventory(f.root),before);assert.equal(text(path.join(f.root,'notes.craftsman.json')),notesBefore);assert.equal(text(f.commentPath),commentsBefore);}
+  else {assert.equal(notes.sceneText(text(path.join(f.root,'roman/04 Recovered.txt'))),'Alpha 😀 added\nlink');assert.equal(JSON.parse(text(f.commentPath)).threads.length,2);}
+});
+
+test('recovered schema3 note bindings fork current and history identities while altered ledger is refused',async t=>{
+  const f=await recoveryFixture(t,{pending:true}),plan=f.m.planProjectTreeCohort(f.input);
+  await f.commit(plan);const raw=text(path.join(f.root,'roman/04 Recovered.txt')),ledger=pending.readLedger(envelope.parseObservablePayload(raw).doc);
+  const allNotes=JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes,fresh=allNotes.find(n=>n.manuscript.reference.sceneId==='roman/04 Recovered.txt');
+  assert.equal(ledger.noteSourcePoints[0].noteId,fresh.id);assert.equal(ledger.roundUndo[0].noteSourcePoints[0].noteId,fresh.id);
+  assert.notEqual(fresh.id,pending.readLedger(envelope.parseObservablePayload(f.copyRaw).doc).noteSourcePoints[0].noteId);
+  const bad=structuredClone(f.input),p=envelope.parseObservablePayload(bad.recoveredCopy.workingContent);
+  p.doc.attrs.wordPendingRevisions.returnReceipts[0].roundId='forged-round';bad.recoveredCopy.workingContent=envelope.composeObservablePayload({doc:p.doc});
+  assert.throws(()=>f.m.planProjectTreeCohort(bad),{code:'E_TREE_RECOVERY_LEDGER_CHANGED'});
+});
+
+test('recovered scene retains immutable asset proof through ordinary save and refuses missing bytes before publication',async t=>{
+  const f=await recoveryFixture(t,{resource:true}),plan=f.m.planProjectTreeCohort(f.input),asset=path.join(f.root,'assets/a.bin');
+  fs.unlinkSync(asset);await assert.rejects(f.commit(plan));assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+  fs.writeFileSync(asset,'asset');await f.commit(plan);
+  const scenePath=path.join(f.root,'roman/04 Recovered.txt'),raw=text(scenePath),manifest=text(f.manifestPath);
+  await tx.commitProjectTransaction({scenePath,sceneContent:raw,expectedSceneContent:raw,manifestPath:f.manifestPath,manifestContent:manifest,expectedManifestContent:manifest,revision:4,publishManifest:f.publishManifest});
+  assert.equal((await tx.readVerifiedProjectTransaction({scenePath,manifestPath:f.manifestPath})).resources.length,1);
+  fs.writeFileSync(asset,'wrong');await assert.rejects(tx.readVerifiedProjectTransaction({scenePath,manifestPath:f.manifestPath}));
+});
+
+test('recovered graph refuses fresh-ID collisions and cross-scene source substitution',async t=>{
+  const f=await recoveryFixture(t),plan=f.m.planProjectTreeCohort(f.input);
+  const noteCollision=structuredClone(f.input),noteDoc=JSON.parse(noteCollision.notesText),duplicate=structuredClone(noteDoc.notes[0]);
+  duplicate.id=Object.values(plan.identityMap.notes)[0];noteDoc.notes.push(duplicate);noteCollision.notesText=JSON.stringify(noteDoc);
+  assert.throws(()=>f.m.planProjectTreeCohort(noteCollision),{code:'E_TREE_COHORT_NOTE_ID'});
+  const commentCollision=structuredClone(f.input),commentDoc=JSON.parse(commentCollision.commentsText),thread=structuredClone(commentDoc.threads[0]);
+  thread.threadId=Object.values(plan.identityMap.threads)[0];commentDoc.threads.push(thread);commentCollision.commentsText=JSON.stringify(commentDoc);
+  assert.throws(()=>f.m.planProjectTreeCohort(commentCollision),{code:'COMMENT_STATE_INVALID'});
+  const crossed=structuredClone(f.input);crossed.bindings[0].nodeId='tree-node-b';crossed.bindings[0].fromRelativePath='roman/02 Beta.txt';
+  assert.throws(()=>f.m.planProjectTreeCohort(crossed),{code:'E_TREE_RECOVERY_SOURCE'});
+  const falseCopy=structuredClone(f.input);falseCopy.bindings[0].copy=0;
+  assert.throws(()=>f.m.planProjectTreeCohort(falseCopy),{code:'E_TREE_RECOVERY_BINDING'});
+});
+
+test('current verified recovery-copy continues into another independent scene and Undo returns to that live prior copy',async t=>{
+  const f=await recoveryFixture(t),first=f.m.planProjectTreeCohort(f.input);await f.commit(first);
+  const firstPath=path.join(f.root,'roman/04 Recovered.txt'),firstRaw=text(firstPath),state=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const parsed=envelope.parseObservablePayload(f.input.recoveredCopy.workingContent);parsed.doc.content[0].content[0].text+=' later';
+  const next=f.capture({operation:'copy',operationId:'recover-again',expectedTreeRevision:3,commentsText:text(f.commentPath),
+    bindings:[{nodeId:first.pathBindings[0].newNodeId,fromRelativePath:'roman/04 Recovered.txt',toRelativePath:'roman/05 Recovered.txt'}],
+    recoveredCopy:{receipt:state.receipt,retainedPacket:state.retainedPacket,removedNodeId:f.input.recoveredCopy.removedNodeId,workingContent:envelope.composeObservablePayload({...parsed,doc:parsed.doc})}});
+  const plan=f.m.planProjectTreeCohort(next);await f.commit(plan);
+  assert.equal(text(firstPath),firstRaw);assert.equal(text(path.join(f.root,'roman/01 Alpha.txt')),f.raw);
+  const nextRaw=text(path.join(f.root,'roman/05 Recovered.txt'));assert.equal(notes.sceneText(nextRaw),'Alpha 😀 added later\nlink');
+  const firstId=bookmarks.readRegistry(envelope.parseObservablePayload(firstRaw).doc).bookmarks[0].id;
+  assert.notEqual(bookmarks.readRegistry(envelope.parseObservablePayload(nextRaw).doc).bookmarks[0].id,firstId);
+  assert.equal(JSON.parse(text(path.join(f.root,'notes.craftsman.json'))).notes.length,3);assert.equal(JSON.parse(text(f.commentPath)).threads.length,3);
+  const final=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=f.m.planProjectTreeUndo({projectId:'project-test',operationId:'undo-again',expectedTreeRevision:4,lastMutation:final.lastMutation.id,receipt:final.receipt,retainedPacket:final.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  assert.equal(undo.pathBindings[0].toRelativePath,'roman/04 Recovered.txt');await f.commit(undo);assert.equal(text(firstPath),firstRaw);
+  const wrong=structuredClone(next);wrong.recoveredCopy.removedNodeId=first.pathBindings[0].newNodeId;
+  assert.throws(()=>f.m.planProjectTreeCohort(wrong),{code:'E_TREE_RECOVERY_SOURCE'});
+  const ordinary=structuredClone(next),originalPacket=f.input.recoveredCopy.retainedPacket.plan.input.retainedPacket;
+  ordinary.recoveredCopy.retainedPacket=originalPacket;ordinary.recoveredCopy.receipt={...state.receipt,transactionId:originalPacket.transactionId,packetDigest:f.m.projectTreeCohortDigest(originalPacket)};
+  assert.throws(()=>f.m.planProjectTreeCohort(ordinary),{code:'E_TREE_RECOVERY_SOURCE'});
+  const deep=structuredClone(next);let chain={};for(let i=0;i<9;i++)chain={plan:{input:{recoveredCopy:{retainedPacket:chain}}}};deep.recoveredCopy.retainedPacket=chain;
+  assert.throws(()=>f.m.planProjectTreeCohort(deep),{code:'E_TREE_RECOVERY_CHAIN_BUDGET'});
+});

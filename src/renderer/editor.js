@@ -10562,10 +10562,12 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
 
   row.addEventListener('dragstart', (event) => {
     if (!event.dataTransfer) {
+      console.info('TREE_DRAG phase=start outcome=blocked reason=NO_DATA_TRANSFER');
       event.preventDefault();
       return;
     }
     if (!effectiveDocumentId || activeTab !== 'roman' || !isNavigatorMovableNode(node)) {
+      console.info(`TREE_DRAG phase=start outcome=blocked hasIdentity=${Boolean(effectiveDocumentId)} roman=${activeTab === 'roman'} movable=${isNavigatorMovableNode(node)}`);
       event.preventDefault();
       return;
     }
@@ -10573,6 +10575,13 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     event.dataTransfer.setData('application/x-yalken-tree-node-id', effectiveDocumentId);
     event.dataTransfer.setData('application/x-yalken-tree-parent-node-id', parentNodeId || '');
     event.dataTransfer.setData('application/x-yalken-tree-sibling-index', String(siblingIndex));
+    console.info('TREE_DRAG phase=start outcome=accepted');
+  });
+
+  row.addEventListener('dragend', (event) => {
+    const effect = ['none', 'move', 'copy', 'link'].includes(event.dataTransfer?.dropEffect)
+      ? event.dataTransfer.dropEffect : 'unknown';
+    console.info(`TREE_DRAG phase=end effect=${effect}`);
   });
 
   row.addEventListener('dragover', (event) => {
@@ -10586,12 +10595,15 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
   });
 
   row.addEventListener('drop', (event) => {
-    if (!event.dataTransfer) return;
-    if (!effectiveDocumentId || activeTab !== 'roman') return;
+    const reject = reason => console.info(`TREE_DRAG phase=drop outcome=blocked reason=${reason}`);
+    if (!event.dataTransfer) { reject('NO_DATA_TRANSFER'); return; }
+    const formatPresent = Array.from(event.dataTransfer.types || []).includes('application/x-yalken-tree-node-id');
+    console.info(`TREE_DRAG phase=drop formatPresent=${formatPresent}`);
+    if (!effectiveDocumentId || activeTab !== 'roman') { reject('TARGET_CONTEXT'); return; }
     const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
-    if (!draggedId || draggedId === effectiveDocumentId) return;
+    if (!draggedId || draggedId === effectiveDocumentId) { reject(!draggedId ? 'MISSING_SOURCE' : 'SELF_DROP'); return; }
     const draggedNode = findTreeNodeById(treeRoot, draggedId);
-    if (!draggedNode) return;
+    if (!draggedNode) { reject('SOURCE_NOT_IN_TREE'); return; }
     event.preventDefault();
     const targetParentNodeId = node.kind === 'chapter-folder' || node.kind === 'part' || node.kind === 'roman-root'
       ? effectiveDocumentId
@@ -10610,7 +10622,8 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     ) {
       targetIndex -= 1;
     }
-    if (!targetParentNodeId || targetIndex < 0) return;
+    if (!targetParentNodeId || targetIndex < 0) { reject('TARGET_POSITION'); return; }
+    console.info('TREE_DRAG phase=drop outcome=intent-dispatched');
     handleMoveNode(draggedNode, targetParentNodeId, targetIndex);
   });
 
@@ -23564,6 +23577,7 @@ window.addEventListener('resize', () => {
 
 function treeReplacementRefusalReason(payload) {
   if (payload?.treeReplacement !== true || payload.treePublication === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_DRAFT_PENDING';
   if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0) return 'GENERATION_INVALID';
   if (payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
   if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
