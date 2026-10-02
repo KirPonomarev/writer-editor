@@ -27,6 +27,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/core/word-manuscript-notes-v1.cjs`
 - `src/io/documentTables.js`
 - `src/io/revisionBridge/index.mjs`
+- `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
 - `src/main.js`
 - `src/export/docx/docxMinBuilder.js`
 - `src/export/docx/docxReviewPacketBuilder.js`
@@ -97,9 +98,15 @@ currentVsTarget: TARGET until actual routes and delivery proven.
 
 ## CHECKS
 
-Focused list and scene compatibility tests, actual import/Save/review tests,
-SOURCE/PACKAGED native exchange, required baseline/RTK, OSS/audit, guardrails,
-source bindings, CI and exact merged verification. No stale/skipped proof as PASS.
+CHECK_01_PRE_ADMISSION: Registry/worktree identity, T7 UUID/encryption/unlocked/writable,
+bootstrap, ordered canon reads and exact-base architecture preflight.
+CHECK_02_POST_CORE: Focused list and scene compatibility, invalid format refusal,
+old-reader refusal, table/note formats and pending revision traversal.
+CHECK_03_POST_CHAIN: Actual import/Save/review Apply and re-export; unchanged list
+semantics, changed format/start/level/ownership no-write refusals and worker packet integrity.
+CHECK_04_POST_NATIVE: SOURCE/PACKAGED native edit, save/reopen and Word exchange.
+CHECK_05_POST_DELIVERY: Required baseline/RTK, OSS/audit, guardrails, source bindings,
+CI and exact merged verification. No stale/skipped proof as PASS.
 
 ## STOP_CONDITION
 
@@ -128,3 +135,8 @@ No renderer source or visual design changed; runtime copy must match rebuilt Cor
 Affected-chain amendment on e7ceef9a adds the pending-list validator and real Main
 round-trip regression. It reproduced a pre-existing refusal of clean text edits
 inside lists; the packet must prove unchanged numbering semantics before admission.
+
+On 30b9b9c3 preflight admitted the reproduced clean-list return repair. A worker
+projection resolves literal returned numbering before evidence packet construction and integrity validation; Main does
+not re-extract the ZIP. Admission requires the complete unchanged format, start,
+level and bijective list ownership vector, bound to every returned paragraph hash.

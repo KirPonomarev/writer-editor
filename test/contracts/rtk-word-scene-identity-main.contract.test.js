@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType}={}) {
+async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1267,7 +1267,7 @@ async function cleanTextReturnFixture(t,{bookmarked=true,mutateReturn,localCase,
     observed=read(f.alpha);
   }
   const beforeActivation=f.capture();
-  const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:inlineParser});
   return {f,ui,source,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
 }
 for(const bookmarked of [true,false])test(`actual whole Main clean return activation, owner preview, full Apply and replay with bookmarks ${bookmarked}`,async t=>{
@@ -1467,4 +1467,40 @@ for(const type of ['I','i','A','a'])test(`actual whole Main numbered-list ${type
  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  const bridge=await import('../../src/io/revisionBridge/index.mjs');const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
  assert.ok(zip['word/numbering.xml'].includes(`w:numFmt w:val="${{I:'upperRoman',i:'lowerRoman',A:'upperLetter',a:'lowerLetter'}[type]}"`));
+});
+for(const variant of ['format','start','level','removed'])test(`actual whole Main numbered-list rejects changed ${variant} without writes`,async t=>{
+ const mutateReturn=zip=>{
+  if(variant==='format')zip['word/numbering.xml']=zip['word/numbering.xml'].replaceAll('w:val="upperRoman"','w:val="decimal"');
+  if(variant==='start')zip['word/numbering.xml']=zip['word/numbering.xml'].replaceAll('<w:start w:val="3"/>','<w:start w:val="4"/>');
+  if(variant==='level')zip['word/document.xml']=zip['word/document.xml'].replace('<w:ilvl w:val="0"/>','<w:ilvl w:val="1"/>');
+  if(variant==='removed')zip['word/document.xml']=zip['word/document.xml'].replace(/<w:numPr>[\s\S]*?<\/w:numPr>/u,'');
+ };
+ const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,listType:'I',mutateReturn});
+ assert.equal(activated.ok,false,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);
+});
+test('actual whole Main numbered-list allows bijective Word numId renumbering',async t=>{
+ const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,listType:'I',mutateReturn:zip=>{
+  zip['word/document.xml']=zip['word/document.xml'].replace(/<w:numId w:val="(\d+)"\/>/gu,(_,n)=>`<w:numId w:val="${Number(n)+100}"/>`);
+  zip['word/numbering.xml']=zip['word/numbering.xml'].replace(/<w:num w:numId="(\d+)"/gu,(_,n)=>`<w:num w:numId="${Number(n)+100}"`);
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));await f.probe.refreshReview();assert.equal((await f.probe.fullApply({requestId:'renumbered-list'})).applied,true);
+ const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[0].attrs.type,'I');assert.equal(doc.content[0].attrs.start,3);
+});
+
+test('numbered-list worker module binds numbering projection into packet integrity',async t=>{
+ const {bytes}=await cleanTextReturnFixture(t,{bookmarked:false,listType:'I'});
+ const worker=require('../../src/main/rtkDocxReturnIntakeWorker.cjs');
+ const artifactSha256=`sha256:${sha(bytes)}`;
+ const result=await worker.run({bytes,requestId:'list-worker-evidence',returnedArtifactSha256:artifactSha256});
+ assert.equal(result.ok,true,JSON.stringify(result));
+ const proof=result.packet.returnedProjection.listNumbering;
+ assert.equal(proof.schemaVersion,'yalken.word-list-numbering-proof.v1');
+ assert.deepEqual(proof,result.parserResult.reviewIr.listNumbering);
+ assert.equal(result.packet.projectionDigest,result.parserResult.supportedSemanticDigest);
+ const {verifyReturnEvidencePacketV1}=await import('../../src/io/revisionBridge/reviewTransportReturnEvidenceV1.mjs');
+ assert.equal(verifyReturnEvidencePacketV1(result.packet,{expectedArtifactSha256:artifactSha256}).ok,true);
+ const altered=structuredClone(result.packet);
+ const paragraph=altered.returnedProjection.listNumbering.paragraphs.find(p=>p.list);
+ assert.equal(paragraph.list.type,'I');paragraph.list.type='a';
+ assert.equal(verifyReturnEvidencePacketV1(altered,{expectedArtifactSha256:artifactSha256}).ok,false);
 });

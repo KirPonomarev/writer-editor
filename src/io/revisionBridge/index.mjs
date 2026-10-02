@@ -4215,7 +4215,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     const { sha256, width, height, mimeType } = createImageAttrs(bytes);
     const result = Object.freeze({ sha256, width, height, mimeType }); mediaCache.set(name, result); return result;
   };
-  return {
+  const result = {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     // Private adapter attachment, never part of semantic ReviewIR. The worker
@@ -4235,6 +4235,25 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // reads YRTK2 properties from the verified packet (V3 single parse).
     docPropsCustomXml: normalizeString(extracted.parts?.['docProps/custom.xml']),
   };
+  // Resolve the literal numbering in the worker, before its evidence packet is
+  // constructed and bound by the existing integrity checks. Main consumes the same-byte projection; it never reparses this ZIP.
+  // Missing/unsupported numbering remains absent evidence, never permission.
+  if (result.ok && result.reviewIr?.formattingParagraphs?.some(p => p.unsupportedParagraphNames?.includes('numPr'))) {
+    const preview = buildDocxContentPreviewFromZipBytes(Buffer.isBuffer(input) ? input : input.bytes);
+    const paragraphs = preview.ok ? preview.contentPreview?.paragraphs : null;
+    const observed = result.reviewIr.formattingParagraphs;
+    if (Array.isArray(paragraphs) && paragraphs.length === observed.length
+      && paragraphs.every((p, i) => p.text === observed[i].paragraphText)
+      && !preview.diagnostics?.some(d => d.code.includes('LIST_NUMBERING'))) {
+      result.reviewIr.listNumbering = {
+        schemaVersion: 'yalken.word-list-numbering-proof.v1',
+        paragraphs: paragraphs.map(p => ({ textSha256: sha256Hex(p.text), list: p.list || null })),
+      };
+      result.supportedSemanticDigest = `sha256:${hashCanonicalValue({ previous: result.supportedSemanticDigest, listNumbering: result.reviewIr.listNumbering })}`;
+      result.analysisDigest = `sha256:${hashCanonicalValue({ previous: result.analysisDigest, supportedSemanticDigest: result.supportedSemanticDigest })}`;
+    }
+  }
+  return result;
 }
 
 // Bind only the actual produced package. Main stores this result in its
