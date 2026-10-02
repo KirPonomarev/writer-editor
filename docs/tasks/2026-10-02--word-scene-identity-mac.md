@@ -69,6 +69,8 @@ Existing transaction journal and governed tree commands. PRODUCT_UI declaration 
 - `test/contracts/rtk-word-pending-rich-blocks.contract.test.js`
 - `test/helpers/main-docx-round-authority.js`
 
+- `test/contracts/rtk-word-node-name-input.contract.test.js`
+
 ## DENYLIST
 
 No owner checkout writes, new dependency/network, new writer/store, global scene-ID migration, HTML/CSS redesign, numbering or story grammar changes. No weakening tests or dropping unsupported metadata to make a copy succeed.
@@ -132,3 +134,5 @@ Retained limitations: serialized cohort packet is bounded to32MiB including befo
 Original-plan boundary: ENGINEERING_PLAN P2d explicitly includes scene split/merge and three-way local/returned concurrency. This rename/reorder/move/copy package alone does not close P2d. Scene split/merge and any unproven independent-concurrent apply remain in the whole-plan remainder after this delivery. Expiring old review rounds during structural mutations is a safe bounded fence, not proof of automatic concurrent merge.
 
 SOURCE02 diagnostic logging identified the native refusal: Main omitted existing backups root from captured inventory, so the planner treated that directory as absent and exact before-image CAS correctly refused. The original error was then masked by invoking single-scene recovery without a pending journal. Fix inventory capture and preserve the original prejournal failure; do not weaken directory CAS. The existing status text is hidden by literal-stage baseline, making failures invisible. Bounded UI correction exposes only the existing status text on explicit command failure or tree refusal; no dev status siblings, new surface or layout is introduced.
+
+Second harness amendment: clean checkpointd9fcf4855961fbc2835ba04c225015fad189bd03 admits existing node-name-input contract closure, total50paths. SOURCE03 real rename, copy and active-copy Undo observed; independent canonical checks7→14→7 bookmarks,2 links per scene and1→2→1 notes/comments. Heading refresh and legacy resource retention through Undo/ordinary save are fixed for SOURCE04. No final native or delivery claim yet.

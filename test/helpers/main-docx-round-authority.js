@@ -43,7 +43,7 @@ function installMainDocxRoundAuthority(context, { projectRoot, projectId = 'fixt
   });
   context.isPlainObjectValue ||= value => value !== null && typeof value === 'object' && !Array.isArray(value);
   context.cloneJsonSafe ||= value => JSON.parse(JSON.stringify(value));
-  context.isPathInsideBoundary ||= (parent, target) => { const relative = path.relative(parent, target); return relative !== '' && !relative.startsWith('..' + path.sep) && relative !== '..' && !path.isAbsolute(relative); };
+  context.isPathInsideBoundary = require('../../src/core/io/path-boundary').isPathInsideBoundary;
   const existingCryptoPort = context.createRtkReviewTransportCryptoPort;
   context.createRtkReviewTransportCryptoPort = () => ({ sha256Json: value => hash(JSON.stringify(value)), ...(existingCryptoPort?.() || {}) });
   context.currentLifecycleSubjectId ||= () => 'round-fixture-life';

@@ -79,7 +79,7 @@ async function harness(t, { clean = false, savedDefaults = false } = {}) {
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes) } },
     requestId: 'return-test', isCurrent: () => h.current !== false, docxBytes: bytes, revisionBridge: b,
     onPrepared: value => { h.prepared = value; } };
-  installMainDocxRoundAuthority(c, { projectRoot: root, projectId: 'p', references: [capsule], publishAllocated: true, t });
+  h.authority = installMainDocxRoundAuthority(c, { projectRoot: root, projectId: 'p', references: [capsule], publishAllocated: true, t });
   h.prepare = () => c.prepareAuthenticatedPendingReturn(h.input);
   return h;
 }
@@ -93,6 +93,17 @@ test('actual authenticated preparation and Kernel write round history; restart, 
   assert.equal((await h.command('undo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'new');
   result = await h.prepare(); assert.equal(result.status, 'replayed', JSON.stringify(result)); assert.equal(h.writes, 2);
   assert.equal((await h.command('redo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'new added');
+});
+
+test('durably expired round blocks an already prepared pending Apply without any scene or ledger write', async t => {
+  const h = await harness(t), before = fs.readFileSync(h.file, 'utf8');
+  assert.equal((await h.prepare()).status, 'preview-ready');
+  const round = h.authority.roundsById['round-1'];
+  round.lifecycleState = 'EXPIRED'; round.recordVersion++;
+  h.authority.write();
+  await assert.rejects(h.prepared.apply(), /RTK_ROUND_LIFECYCLE_NOT_ELIGIBLE/);
+  assert.equal(h.writes, 0); assert.equal(h.opens, 0);
+  assert.equal(fs.readFileSync(h.file, 'utf8'), before);
 });
 for (const kind of ['project', 'hash', 'untrustedMap', 'wrongScene', 'multipleScenes', 'baseline', 'superseded',
   'dirty', 'generation', 'draft', 'noteDraft', 'annotations', 'notes', 'liveText', 'diskRace', 'capability', 'serializedAdmission', 'returnedComment', 'returnedNote', 'consumed']) {

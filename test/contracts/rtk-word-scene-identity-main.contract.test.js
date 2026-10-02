@@ -28,11 +28,12 @@ async function fixture(t, rich = false) {
   const alpha = path.join(imported, '01_Alpha.txt'), beta = path.join(imported, '02_Beta.txt');
   fs.writeFileSync(alpha, 'Alpha'); fs.writeFileSync(beta, 'Beta');
   const handles = new Map(), listeners = new Map();
+  let nextSavePath = null, saveDialogs = 0;
   const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
-    dialog: { showMessageBox: async () => ({}), showSaveDialog: async () => ({ canceled: true }), showOpenDialog: async () => ({ canceled: true }) },
+    dialog: { showMessageBox: async () => ({}), showSaveDialog: async () => { saveDialogs++; return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), originalLoad = Module._load;
@@ -53,7 +54,7 @@ async function fixture(t, rich = false) {
     fresh: assertFreshDocxReviewRoundAuthority, strict: readStrictDocxReviewAuthorityStore,
     persist: persistDocxReviewReturnAuthorityStore, expire: expireProjectWordRoundsBeforeTree,
     setReviewStore(value) { activeReviewDocxExportAuthorityStore = value; },
-    recover: recoverPendingWriterProjectTransaction,
+    recover: recoverPendingWriterProjectTransaction, save: handleSave,
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
   try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
@@ -101,7 +102,8 @@ async function fixture(t, rich = false) {
     fs.writeFileSync(target, JSON.stringify(probe.buildAuthority(store), null, 2) + '\n');
     probe.setReviewStore(store); return { capsule, store, target };
   }
-  return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners };
+  return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners,
+    chooseSavePath: target => { nextSavePath = target; }, saveDialogs: () => saveDialogs };
 }
 
 test('actual Main simultaneous sibling permutation rebinds active sibling and note owner, exact persisted Undo survives reopen', async t => {
@@ -248,11 +250,11 @@ function mountRenderer(f, content, generation = 0, onSnapshot = null) {
         const current = typeof content === 'function' ? content() : content;
         if (onSnapshot) onSnapshot();
         queueMicrotask(() => f.listeners.get('editor:snapshot-response')({ sender: wc, senderFrame: { url } }, {
-          requestId: payload.requestId, snapshot: { content: current, generation, selectionRange: { start: 0, end: 0 } },
+          requestId: payload.requestId, snapshot: { content: current, generation: typeof generation === 'function' ? generation() : generation, selectionRange: { start: 0, end: 0 } },
         }));
       }
     } };
-  f.probe.state({ filePath: f.beta, window: { webContents: wc, isDestroyed: () => false }, generation });
+  f.probe.state({ filePath: f.beta, window: { webContents: wc, isDestroyed: () => false }, generation: typeof generation === 'function' ? generation() : generation });
   return { sends, event: { sender: wc, senderFrame: { url } } };
 }
 
@@ -299,4 +301,61 @@ test('future manifest refuses before requesting/saving even a dirty real editor 
   const before = f.capture(), result = await f.move();
   assert.equal(result.ok, false); assert.deepEqual(f.capture(), before);
   assert.equal(ui.sends.length, 0); assert.equal(f.probe.state().dirty, true);
+});
+
+test('late dirty copied-scene Undo detaches its live buffer and actual Save dialog writes a fresh scene without touching original', async t => {
+  const f = await fixture(t);
+  const copy = await f.main.handleUiCopyNodeCommand({ projectId: f.query.projectId, nodeId: f.a.nodeId, name: 'Fork', expectedTreeRevision: 0 });
+  assert.equal(copy.ok, true, JSON.stringify(copy));
+  const fork = path.join(f.imported, '03_Fork.txt');
+  let working = read(fork), generation = 0;
+  const ui = mountRenderer(f, () => working, () => generation);
+  f.probe.state({ filePath: fork });
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), unlink = fsp.unlink;
+  fsp.unlink = async function (target, ...args) {
+    if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
+      working += ' typed after commit'; generation = 1;
+      f.probe.state({ generation, dirty: true });
+    }
+    return unlink.call(this, target, ...args);
+  };
+  try {
+    const result = await f.main.handleUiTreeUndoCommand({ projectId: f.query.projectId, expectedTreeRevision: 1, mutationId: copy.lastMutation.id });
+    assert.equal(result.ok, false); assert.equal(result.committed, true, JSON.stringify(result));
+    assert.equal(result.error, 'E_TREE_UNSAVED_COPY_SAVE_AS_REQUIRED', JSON.stringify(result));
+    assert.deepEqual(f.probe.state(), { filePath: null, dirty: true, generation: 1 });
+    const detached = ui.sends.filter(x => x.channel === 'editor:set-text');
+    assert.equal(detached.length, 1); assert.equal(detached[0].payload.treeDetached, true);
+    assert.equal(detached[0].payload.expectedDocumentId, copy.nodeId);
+    assert.equal(detached[0].payload.expectedContent, working); assert.equal(detached[0].payload.expectedGeneration, 1);
+    assert.equal(read(f.alpha), 'Alpha'); assert.equal(fs.existsSync(fork), false);
+  } finally { fsp.unlink = unlink; }
+  const recovered = path.join(f.imported, '03_Recovered.txt'); f.chooseSavePath(recovered);
+  assert.equal(await f.probe.save(), true);
+  assert.equal(f.saveDialogs(), 1); assert.equal(read(recovered), working);
+  assert.equal(read(f.alpha), 'Alpha'); assert.equal(f.probe.state().dirty, false);
+});
+
+test('a save captured during the final tree commit cannot recreate the removed prior active path', async t => {
+  const f = await fixture(t);
+  let working = read(f.beta), generation = 0;
+  mountRenderer(f, () => working, () => generation);
+  const transaction = require('../../src/core/project-transaction-v1.cjs'), unlink = fsp.unlink;
+  let save;
+  fsp.unlink = async function (target, ...args) {
+    if (target === transaction.journalPathFor(f.manifestPath) && fs.existsSync(transaction.treeCommitPathFor(f.manifestPath))) {
+      working = 'Beta typed concurrently'; generation = 1;
+      f.probe.state({ generation, dirty: true });
+      save = f.probe.save();
+    }
+    return unlink.call(this, target, ...args);
+  };
+  try {
+    const result = await f.move({ expectedTreeRevision: 0 });
+    assert.equal(result.committed, true, JSON.stringify(result));
+    assert.notEqual(await save, true, 'the captured old-path save must refuse');
+    assert.equal(fs.existsSync(f.beta), false, 'no stale save may resurrect the removed path');
+    assert.equal(read(path.join(f.imported, '01_Beta.txt')), 'Beta');
+    assert.equal(f.probe.state().dirty, true);
+  } finally { fsp.unlink = unlink; }
 });
