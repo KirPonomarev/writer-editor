@@ -511,6 +511,151 @@ async function linkedPmHarness(t) {
   return h;
 }
 
+test('actual PM root Enter, join and multiline paste preserve bookmarks through Main save and text Undo/Redo', async t => {
+  const h = await linkedPmHarness(t);
+  const { closeHistory } = await import('@tiptap/pm/history');
+  const { Fragment, Slice } = await import('@tiptap/pm/model');
+  const id = h.record.id;
+  const capture = () => { h.generation++; h.capture(); };
+  const save = async () => {
+    const result = await h.save(); assert.equal(result.receipt.success, true, result.receipt.error);
+    assert.equal(result.ack.kind, 'SAVED');
+    const reopened = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8'));
+    assert.equal(reopened.issue, null);
+    const record = core.readRegistry(reopened.doc).bookmarks[0]; assert.equal(record.id, id);
+    assert.deepEqual(core.readRegistry(h.pm.state.doc.toJSON()), core.readRegistry(reopened.doc));
+    return record;
+  };
+  h.pm.view.dispatch(closeHistory(h.pm.state.tr).split(4)); capture();
+  let record = await save(); assert.deepEqual(record.start, endpoint(0));
+  assert.deepEqual(record.end, { paragraphIndex: 1, offsetUtf16: 3, edge: 'text' });
+  h.undo(); record = await save(); assert.deepEqual(record.end, endpoint(6));
+  h.redo(); record = await save(); assert.equal(record.end.paragraphIndex, 1);
+  h.pm.view.dispatch(closeHistory(h.pm.state.tr).join(5)); capture();
+  record = await save(); assert.deepEqual(record.end, endpoint(6));
+  const schema = h.pm.schema, marks = h.pm.state.doc.firstChild.firstChild.marks;
+  const pasted = new Slice(Fragment.fromArray(['XX', 'YY'].map(text => schema.nodes.paragraph.create(null, schema.text(text, marks)))), 1, 1);
+  h.pm.view.dispatch(closeHistory(h.pm.state.tr).replaceRange(3, 3, pasted)); capture();
+  record = await save(); assert.deepEqual(record.end, { paragraphIndex: 1, offsetUtf16: 6, edge: 'text' });
+  const pastedRaw = fs.readFileSync(h.file, 'utf8');
+  h.undo(); assert.deepEqual((await save()).end, endpoint(6));
+  h.redo(); await save();
+  assert.deepEqual(core.readRegistry(envelope.parseObservablePayload(pastedRaw).doc).bookmarks[0],
+    core.readRegistry(envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc).bookmarks[0]);
+  assert.ok(h.pm.state.doc.lastChild.firstChild.marks.some(mark => mark.attrs.wordBookmarkId === id));
+});
+
+test('Word-derived rich paragraphs split through actual editor schema defaults and Main without weakening explicit properties', async t => {
+  const { getSchema } = await import('@tiptap/core'), { EditorState } = await import('@tiptap/pm/state');
+  const { default: StarterKit } = await import('@tiptap/starter-kit');
+  const api = await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const extensions = [StarterKit.configure({ trailingNode: false, link: false, underline: false })];
+  for (const [file, name] of [
+    ['documentTextStyle.mjs', 'DocumentTextStyle'], ['documentParagraphAlignment.mjs', 'DocumentParagraphAlignment'],
+    ['documentTables.mjs', 'DocumentTables'], ['documentMedia.mjs', 'DocumentMedia'], ['wordPendingRevisions.mjs', 'WordPendingRevisions'],
+  ]) extensions.push((await import('../../src/renderer/tiptap/' + file))[name]);
+  extensions.push(api.UserBookmarks, (await import('@tiptap/extension-color')).default,
+    (await import('@tiptap/extension-highlight')).default.configure({ multicolor: true }),
+    (await import('@tiptap/extension-underline')).default, api.UserBookmarkLink);
+  const schema = getSchema(extensions), paragraph = text => ({ type: 'paragraph', content: [
+    { type: 'text', text, marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] },
+  ] });
+  let initial = { type: 'doc', content: ['Bookmark canary', 'STARTBOUND_Target Twin Alpha_ENDBOUND', 'Link One', 'Cross Block Start'].map(paragraph) };
+  initial = core.planMutation({ doc: initial, action: 'create', requestId: 'word-range', projectId: 'p', sceneId: 'a.txt', name: 'UserTwinSecond',
+    start: { ...endpoint(0), paragraphIndex: 1 }, end: { ...endpoint(28), paragraphIndex: 1 } }).doc;
+  initial = core.planMutation({ doc: initial, action: 'create', requestId: 'word-after', projectId: 'p', sceneId: 'a.txt', name: 'UserCrossBlock',
+    start: { ...endpoint(0), paragraphIndex: 3 }, end: { paragraphIndex: 3, offsetUtf16: 17, edge: 'afterParagraph' } }).doc;
+  initial.content[2].content[0].marks.unshift({ type: 'underline' }, { type: 'link', attrs: core.linkAttrs(core.readRegistry(initial).bookmarks[0]) });
+  const editor = { schema, state: EditorState.create({ schema, doc: schema.nodeFromJSON(initial) }) };
+  editor.view = { dispatch: tr => { editor.state = editor.state.apply(tr); } };
+  const h = await harness(t, initial); installActualRendererPublication(h, editor, api);
+  editor.view.dispatch(editor.state.tr.split(editor.state.doc.child(0).nodeSize + 1 + 12)); h.generation++; h.capture();
+  const snapshot = envelope.parseObservablePayload(h.working).doc;
+  assert.equal(snapshot.content[0].attrs.textAlign, null);
+  const result = await h.save(); assert.equal(result.receipt.success, true, result.receipt.error); assert.equal(result.ack.kind, 'SAVED');
+  const saved = h.source().parsed.doc, records = core.readRegistry(saved).bookmarks;
+  assert.deepEqual(records[0].end, { paragraphIndex: 2, offsetUtf16: 16, edge: 'text' });
+  assert.deepEqual(records[1].end, { paragraphIndex: 4, offsetUtf16: 17, edge: 'afterParagraph' });
+  assert.deepEqual(saved.content[3].content[0].marks, snapshot.content[3].content[0].marks);
+  for (const mutate of [
+    value => value.content[0].attrs.textAlign = 'right',
+    value => value.content[0].attrs.unknownDefault = null,
+    value => value.content[0].content[0].marks.find(mark => mark.type === 'textStyle').attrs.fontSize = '13pt',
+    value => value.content[3].content[0].marks.find(mark => mark.type === 'link').attrs.target = '_self',
+  ]) {
+    const bad = clone(snapshot); mutate(bad);
+    assert.throws(() => core.planSave({ beforeDoc: initial, workingDoc: bad }), /USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT/);
+  }
+});
+
+test('root paragraph Main save atomically preserves bookmarks, table/list owners, notes and comments with rollback', async t => {
+  const paragraph = text => doc(text).content[0];
+  const table = { type: 'table', content: [{ type: 'tableRow', content: [{ type: 'tableCell', content: [paragraph('Cell anchor')] }] }] };
+  const list = { type: 'bulletList', content: [{ type: 'listItem', content: [paragraph('List anchor')] }] };
+  const initial = core.planMutation({ doc: { type: 'doc', content: [paragraph('Left before'), table, list, paragraph('After anchor')] },
+    action: 'create', requestId: 'atomic-root', projectId: 'p', sceneId: 'a.txt', name: 'Cell',
+    start: { ...endpoint(5), paragraphIndex: 1 }, end: { ...endpoint(11), paragraphIndex: 1 } }).doc;
+  const h = await harness(t, initial), root = path.dirname(h.file), notePath = path.join(root, 'notes.craftsman.json');
+  const commentPath = path.join(root, '.yalken', 'word-review', 'non-text-return-state.v1.json');
+  const noteModel = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const commentModel = require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const author = require('../../src/core/word-comment-authoring-v1.cjs');
+  const tx = require('../../src/core/project-transaction-v1.cjs');
+  const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
+  const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, 'leases'), useLeaseHeartbeatWorker: false });
+  const beforeRaw = h.working, noteOffset = noteModel.sceneText(beforeRaw).indexOf('After') + 6;
+  const notes = { schemaVersion: 1, projectId: 'p', notes: [{ id: 'root-note', scope: 'manuscript', body: 'Note body',
+    manuscript: noteModel.bindManuscriptPayload({ kind: 'footnote', body: doc('Note body'), sceneId: 'a.txt', offsetUtf16: noteOffset, sceneContent: beforeRaw }) }] };
+  fs.writeFileSync(notePath, JSON.stringify(notes)); fs.mkdirSync(path.dirname(commentPath), { recursive: true });
+  let comments = null;
+  for (const index of [1, 3]) comments = author.planCommentAuthoring({ beforeText: comments, projectId: 'p', sceneId: 'a.txt',
+    sceneSha256: hash(beforeRaw), paragraphs: commentModel.paragraphs(beforeRaw).map(p => p.text), now: '2026-10-02T10:00:00Z',
+    input: { requestId: 'root-comment-' + index, action: 'create', projectId: 'p', sceneId: 'a.txt', subjectId: 'test',
+      expectedStateSha256: comments === null ? '' : hash(comments), expectedSceneSha256: hash(beforeRaw), body: 'Comment ' + index,
+      anchor: { paragraphIndex: index, startUtf16: index === 1 ? 5 : 6, selectedText: 'anchor' } } }).afterText;
+  fs.writeFileSync(commentPath, comments);
+  const sibling = path.join(root, 'sibling.txt'); fs.writeFileSync(sibling, beforeRaw);
+  Object.assign(h.c, {
+    currentProjectName: 'test', DEFAULT_PROJECT_NAME: 'test', normalizeStableProjectId: value => value,
+    getMainProjectManifestAuthority: async () => authority,
+    prepareBookProfileManifestForFile: async () => ({ manifestPath: h.manifestPath, projectId: 'p',
+      expectedText: fs.readFileSync(h.manifestPath, 'utf8'), nextText: fs.readFileSync(h.manifestPath, 'utf8') }),
+    manuscriptNoteModel: noteModel, planCommentAnchorSave: commentModel.planCommentAnchorSave,
+    loadNotesStorageModule: () => import('../../src/product/notesStoragePersistence.mjs'),
+    loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ text: fs.readFileSync(commentPath, 'utf8') }) }),
+    commitProjectTransaction: tx.commitProjectTransaction, recoverProjectTransaction: tx.recoverProjectTransaction,
+  });
+  loadNamedFunctions(main, ['recoverWriterProjectTransactionForFile'], h.c);
+  const split = clone(initial); split.content.splice(0, 1, paragraph('Left'), paragraph(' before'));
+  h.working = envelope.composeObservablePayload({ doc: split }); h.generation++;
+  let result = await h.save(); assert.equal(result.receipt.success, true, result.receipt.error);
+  const saved = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+  assert.deepEqual(saved.content.slice(2), initial.content.slice(1));
+  assert.equal(core.readRegistry(saved).bookmarks[0].start.paragraphIndex, 2);
+  const shifted = JSON.parse(fs.readFileSync(commentPath));
+  assert.deepEqual(shifted.threads.map(x => x.anchor.sceneParagraphIndex), [2, 4]);
+  assert.deepEqual(shifted.threads.map(x => [x.threadId, x.messages]), JSON.parse(comments).threads.map(x => [x.threadId, x.messages]));
+  const savedNote = JSON.parse(fs.readFileSync(notePath)).notes[0];
+  assert.equal(savedNote.manuscript.reference.offsetUtf16, noteOffset + 1);
+  assert.deepEqual(savedNote.manuscript.body, notes.notes[0].manuscript.body);
+  await h.c.recoverWriterProjectTransactionForFile(h.file);
+  const joined = clone(saved); joined.content = clone(initial.content);
+  h.working = envelope.composeObservablePayload({ doc: joined }); h.generation++;
+  result = await h.save(); assert.equal(result.receipt.success, true, result.receipt.error);
+  assert.deepEqual(core.readRegistry(envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc).bookmarks[0], core.readRegistry(initial).bookmarks[0]);
+  assert.equal(JSON.parse(fs.readFileSync(notePath)).notes[0].manuscript.reference.offsetUtf16, noteOffset);
+  assert.deepEqual(JSON.parse(fs.readFileSync(commentPath)).threads.map(x => x.anchor.sceneParagraphIndex), [1, 3]);
+  const paths = [h.file, h.manifestPath, notePath, commentPath, sibling], snapshot = () => paths.map(p => fs.readFileSync(p, 'utf8'));
+  const beforeFault = snapshot(); let failOnce = true;
+  h.c.commitProjectTransaction = request => tx.commitProjectTransaction({ ...request, fsAdapter: { ...fs.promises,
+    rename: async (from, to) => { if (failOnce && to === notePath) { failOnce = false; throw Error('NOTE_PUBLICATION_FAULT'); } return fs.promises.rename(from, to); } } });
+  const retry = envelope.parseObservablePayload(beforeFault[0]).doc; retry.content.splice(0, 1, paragraph('Left'), paragraph(' before'));
+  h.working = envelope.composeObservablePayload({ doc: retry }); h.generation++;
+  result = await h.save(); assert.equal(result.receipt.success, false);
+  await h.c.recoverWriterProjectTransactionForFile(h.file); assert.deepEqual(snapshot(), beforeFault);
+  assert.equal(fs.readFileSync(sibling, 'utf8'), beforeRaw);
+});
+
 test('actual PM delete/save/rename/text Undo/Redo saves exact current targets and survives restart', async t => {
   const h = await linkedPmHarness(t);
   h.deleteCharacter(); assert.equal(h.pm.state.doc.textContent, 'ACDEF');

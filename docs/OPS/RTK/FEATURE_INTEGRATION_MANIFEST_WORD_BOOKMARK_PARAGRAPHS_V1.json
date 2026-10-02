@@ -1,0 +1,93 @@
+{
+  "featureId": "WORD_BOOKMARK_PARAGRAPHS_MAC_20261002",
+  "featureVersion": 1,
+  "status": "CANDIDATE_NATIVE_OBSERVED_DELIVERY_PENDING",
+  "integrationMode": "EXISTING_SEAM",
+  "bindingBaseSha": "7194efc84339bf8346b92dd11ddc33a9734699d6",
+  "domainOwner": "Product Core",
+  "authoritativeData": "Canonical scene bookmark registry and exact paragraph endpoint identity",
+  "derivedData": "Revision-bound editor and DOCX bookmark projections",
+  "commandIds": [
+    "Existing scene save, undo/redo and local DOCX export commands; command identities unchanged"
+  ],
+  "eventTypes": [
+    "Existing scene saved and review applied events; no new bus"
+  ],
+  "queryIds": [
+    "Existing scene, bookmark, note and comment projections"
+  ],
+  "productProjectionIds": [
+    "Existing revision-bound scene/bookmark/note/comment projection; renderer submits intent only."
+  ],
+  "capabilityIds": [
+    "Existing scene edit/save and local DOCX export capabilities"
+  ],
+  "authorityMap": {
+    "product": "Owner-authorized macOS Word plan P2d; Product Core owns saved bookmark registry and exact occurrence endpoints. Extend existing planSave only for unambiguous root paragraph structure edits.",
+    "command": "Existing save/Undo/Redo commands, Main commitWriterProjectSnapshot, lease/CAS and atomic scene/note/comment transaction; no new mutation route.",
+    "design": "Existing review and note projections only; no UI design, composition, visual baseline or command meaning change."
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "bookmarkId",
+    "paragraphIndex",
+    "offsetUtf16",
+    "sourceRevision",
+    "generation"
+  ],
+  "revisionPolicy": "Existing Command Kernel capability enforcement plus Main admission identity and scene/note CAS revalidation inside atomic publication.",
+  "writePath": [
+    "Editor intent -> existing Command Kernel revalidation -> Main saved-scene and exact inherited registry comparison -> Core bounded endpoint rebase -> existing atomic scene/notes/comments writer."
+  ],
+  "readPath": [
+    "Saved canonical doc and bookmark registry -> immutable editor projection and existing checked DOCX builders."
+  ],
+  "requiredProductPorts": [
+    "Existing scene persistence, atomic project transaction, recovery and DOCX export ports."
+  ],
+  "requiredDesignOsPorts": [
+    "Existing read-only review/document/note projections and intent-only command bridge."
+  ],
+  "adapterRequirements": "Existing canonical scene save, notes/comments atomic cohort and local DOCX export adapters",
+  "surfaceManifests": "NOT_APPLICABLE: existing review and note surfaces unchanged",
+  "slotRequirements": "NOT_APPLICABLE: no visual contribution",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": "macOS SOURCE and PACKAGED acceptance; no Windows product claim",
+  "accessibilityRequirements": "Existing review decision and note representation keyboard routes",
+  "fallbacks": [
+    "Typed pre-write refusal for ambiguous endpoint placement, deleted afterParagraph owner, changed protected table/list subtree, multi-zone edit, forged registry and unsupported pending structural edits."
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "persistenceClass": "Existing atomic scene/notes/comments transaction",
+  "migrations": "NONE: existing registry schema unchanged",
+  "recovery": "Existing readable recovery and atomic rollback unchanged",
+  "rollback": "Revert bounded planSave extension; no schema migration or new data format; preserve documents, registry ids and recovery.",
+  "performanceBudget": "Bounded contiguous candidate enumeration using existing max-candidate budget; unchanged keyboard commands and UI.",
+  "securityBoundary": "Existing envelope and registry validation unchanged; renderer-supplied registry never creates identity authority; bounded mapping rejects ambiguity.",
+  "lifecycle": [
+    "Project, scene, source revision, generation, lease and canonical annotation digest guards remain unchanged.",
+    "Inherited registry must exactly match saved authority; root protected subtrees retain ordered ownership and content; all valid edit placements must agree on bookmark endpoint outcome."
+  ],
+  "negativeBypassChecks": [
+    "Literal root split/join/multiline insertion endpoint oracle, repeated and empty paragraphs, Unicode, afterParagraph identity, links and protected table/list leaves.",
+    "Actual Main atomic save and PM history with notes/comments, stale/bypass/forged registry refusal and unchanged bytes on failure.",
+    "Native SOURCE and PACKAGED edit -> Undo/Redo -> restart -> DOCX export and Word readback before full frozen validation."
+  ],
+  "evidenceBindings": [
+    "rtk-word-user-bookmarks.contract.test.js",
+    "rtk-word-user-bookmarks-runtime.contract.test.js",
+    "External exact-build SOURCE/PACKAGED evidence and frozen CI"
+  ],
+  "currentReality": [
+    "7194efc8 planSave rejects paragraph structure changes despite valid bookmarks; root edits around unchanged tables already work with live comments when bookmarks are absent.",
+    "Candidate implementation supports bounded root paragraph split/join/multiline insertion and pure-deletion inverse. SOURCE/PACKAGED native outcomes observed; final committed byte binding, CI and merge remain mandatory."
+  ]
+}

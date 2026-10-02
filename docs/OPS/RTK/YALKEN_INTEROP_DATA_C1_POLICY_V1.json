@@ -424,7 +424,9 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NESTED_TABLES_V1.json",
     "test/contracts/rtk-word-pending-notes.contract.test.js",
     "docs/tasks/2026-10-01--word-pending-notes-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json",
+    "docs/tasks/2026-10-02--word-bookmark-paragraphs-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BOOKMARK_PARAGRAPHS_V1.json"
   ],
   "protectedFiles": [
     {
@@ -665,7 +667,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "2eb5aa34c1f773bdd520a6e9a9453c790d39d9295028e660f5f8a7801bae58b1"
+        "sha256": "292cef54e5e989d175a63e065a5be19f9c2d31b4c4e4db6eebad8cbf8702ac6a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1641,7 +1643,7 @@
       },
       {
         "path": "src/core/word-user-bookmarks-v1.cjs",
-        "sha256": "9d21b72bf6d6d723a6aa52e5791dc588598ca07c4e55378ed5e32e8868bf3508"
+        "sha256": "27262669887bf9fb5c9b42ac9fa939c9edb6510c43066bc4637111a4c0227d7b"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
@@ -1653,11 +1655,11 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
-        "sha256": "e2660cd56e5cd6c41f944eee54ee2a6c3c5e975d4b92f53309665b3ce45c59a3"
+        "sha256": "392a5a7f6a559eb5ed4d31f038bd88ae08043b662e90269a21bb903e1fd9ec28"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "356701ad2c1b59da2f628e41f8a9824c9ad7d943ffbf0e31bee4728891b5021a"
+        "sha256": "ca53d841e52dd02d14ae8b5621acb5979ae30dafd204f1470ecbf8d37cf9463a"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -1822,6 +1824,14 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_NOTES_V1.json",
         "sha256": "f06a1654ac4afd04537d6e7fc4583f3ba844b957ba74672f69be0d7353a456ce"
+      },
+      {
+        "path": "docs/tasks/2026-10-02--word-bookmark-paragraphs-mac.md",
+        "sha256": "76fd06078f9c05767c5460a00a590cb62733b1c5a46a020fab199b6f683399df"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BOOKMARK_PARAGRAPHS_V1.json",
+        "sha256": "76c01901cbb069d1abae1933a099ba9d2c3f1cdfa7c89905009cd18343f8f56e"
       }
     ],
     "followupRepair": {
