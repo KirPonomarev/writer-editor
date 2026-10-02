@@ -267,7 +267,9 @@
         "cap.atlas.seriesPortability.apply": true,
         "cap.atlas.seriesPortability.rollback": true,
         "cap.idea.edit": true,
-        "cap.meaning.edit": true
+        "cap.meaning.edit": true,
+        "cap.project.tree.copyNode": true,
+        "cap.project.tree.undoLastMutation": true
       },
       "disabledCommands": [],
       "degradedFeatures": []
@@ -398,7 +400,9 @@
         "cap.atlas.seriesPortability.apply": false,
         "cap.atlas.seriesPortability.rollback": false,
         "cap.idea.edit": false,
-        "cap.meaning.edit": false
+        "cap.meaning.edit": false,
+        "cap.project.tree.copyNode": false,
+        "cap.project.tree.undoLastMutation": false
       },
       "disabledCommands": [
         "cmd.project.blackBox.exportManualCoreCapsuleKitV1",
@@ -465,7 +469,9 @@
         "cmd.project.window.switchModeWrite",
         "cmd.ui.font.set",
         "cmd.ui.fontSize.set",
-        "cmd.ui.theme.set"
+        "cmd.ui.theme.set",
+        "cmd.project.tree.copyNode",
+        "cmd.project.tree.undoLastMutation"
       ],
       "degradedFeatures": []
     },
@@ -595,7 +601,9 @@
         "cap.atlas.seriesPortability.apply": false,
         "cap.atlas.seriesPortability.rollback": false,
         "cap.idea.edit": false,
-        "cap.meaning.edit": false
+        "cap.meaning.edit": false,
+        "cap.project.tree.copyNode": false,
+        "cap.project.tree.undoLastMutation": false
       },
       "disabledCommands": [
         "cmd.project.blackBox.exportManualCoreCapsuleKitV1",
@@ -662,7 +670,9 @@
         "cmd.project.window.switchModeWrite",
         "cmd.ui.font.set",
         "cmd.ui.fontSize.set",
-        "cmd.ui.theme.set"
+        "cmd.ui.theme.set",
+        "cmd.project.tree.copyNode",
+        "cmd.project.tree.undoLastMutation"
       ],
       "degradedFeatures": []
     }

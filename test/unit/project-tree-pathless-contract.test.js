@@ -70,8 +70,13 @@ test('main owns node resolution and tree command results stay pathless', () => {
   assert.match(openSection, /resolveProjectTreeSceneIdentity/u);
   assert.match(openSection, /return \{ ok: true, documentId: resolvedNode\.nodeId \}/u);
   assert.equal(/sanitizePayloadWithinProjectRoot\(payload, \['path'\]\)/u.test(openSection), false);
-  assert.match(renameSection, /resolveProjectTreeNodeIdentity/u);
-  assert.match(renameSection, /return \{ ok: true, nodeId: resolvedNode\.nodeId \}/u);
+  assert.match(renameSection, /resolveTreeCohortNode/u);
+  assert.match(renameSection, /runTreeCohortIntent/u);
+  const cohortResolver = functionSection(main, 'resolveTreeCohortNode', 'readTreeCohortPath');
+  assert.match(cohortResolver, /binding\.manifest\.projectId !== projectId/u);
+  assert.match(cohortResolver, /normalized\.value\.nodes\[nodeId\]/u);
+  assert.match(cohortResolver, /joinPathSegmentsWithinRoot/u);
+  assert.equal(/\bsafe(?:Payload)?\.path\b/u.test(renameSection), false);
 });
 
 test('main document open scene-id fallback is project-relative roman txt only', () => {
@@ -109,4 +114,250 @@ test('active document channel exposes document identity without renderer path au
   assert.match(listenerSection, /hasDocumentId/u);
   assert.equal(/hasPath|currentDocumentPath/u.test(listenerSection), false);
   assert.equal(/currentDocumentPath/u.test(editor), false);
+});
+
+const vm = require('node:vm');
+function executableFunctions(names) {
+  const source = read('src/renderer/editor.js');
+  return names.map(name => {
+    const match = new RegExp(`^(?:async )?function ${name}\\(`, 'mu').exec(source);
+    assert.ok(match, name);
+    const end = source.indexOf('\n}\n', match.index);
+    assert.ok(end > match.index, name);
+    return source.slice(match.index, end + 2);
+  }).join('\n');
+}
+function sceneUiHarness() {
+  const scene = { nodeId: 'scene', kind: 'scene', label: 'Original' };
+  const calls = [];
+  const c = {
+    currentProjectId: 'project', treeRoot: scene,
+    treeMutationProjection: { projectId: 'project', treeRevision: 7,
+      lastMutation: { id: 'mutation', kind: 'copy', canUndo: true } },
+    treeMutationPending: false, allowed: true, calls, reloads: 0, statuses: [],
+    EXTRA_COMMAND_IDS: { TREE_COPY_NODE: 'copy', TREE_UNDO_LAST_MUTATION: 'undo' },
+    getEffectiveDocumentId: n => n.nodeId,
+    findTreeNodeById: (root, id) => root?.nodeId === id ? root : null,
+    normalizeNodeName: v => ({ ok: typeof v === 'string' && Boolean(v.trim()) }),
+    openNodeNameDialog: async () => 'Copy',
+  };
+  c.isNavigatorContextCommandAvailable = () => c.allowed;
+  c.updateStatusText = text => c.statuses.push(text);
+  c.dispatchUiCommand = async (id, payload) => { calls.push({ id, payload: JSON.parse(JSON.stringify(payload)) }); return { ok: true }; };
+  c.loadTree = async () => { c.reloads++; };
+  c.appendContextMenuCommandItem = (items, id, label, invoke, options) => items.push({ id, label, invoke, ...options });
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['captureNodeNameTarget', 'isNodeNameTargetCurrent',
+    'captureTreeMutationProjection', 'handleCopyNode', 'handleUndoTreeMutation', 'appendTreeUndoMenuItem']), c);
+  return c;
+}
+
+test('executed scene copy captures current project, identity and revision; cancellation and delayed changes write nothing', async () => {
+  for (const change of ['cancel', 'project', 'tree', 'revision', 'capability', 'pending']) {
+    const c = sceneUiHarness();
+    c.openNodeNameDialog = async () => {
+      if (change === 'project') c.currentProjectId = 'other';
+      if (change === 'tree') c.treeRoot = { ...c.treeRoot, label: 'Changed' };
+      if (change === 'revision') c.treeMutationProjection = { ...c.treeMutationProjection, treeRevision: 8 };
+      if (change === 'capability') c.allowed = false;
+      if (change === 'pending') c.treeMutationPending = true;
+      return change === 'cancel' ? null : 'Copy';
+    };
+    await c.handleCopyNode(c.treeRoot);
+    assert.equal(c.calls.length, 0, change);
+    assert.equal(c.reloads, 0, change);
+    assert.equal(c.statuses.length, change === 'cancel' ? 0 : 1, change);
+  }
+  const c = sceneUiHarness();
+  await c.handleCopyNode(c.treeRoot);
+  assert.deepEqual(c.calls, [{ id: 'copy', payload: { projectId: 'project', nodeId: 'scene', name: 'Copy', expectedTreeRevision: 7 } }]);
+  assert.equal(c.reloads, 1);
+  assert.equal(c.treeMutationPending, false);
+});
+
+test('executed tree Undo is explicit, projection-bound and disabled without current authority evidence', async () => {
+  for (const mode of ['missing', 'stale-project', 'unavailable', 'capability', 'pending']) {
+    const c = sceneUiHarness();
+    if (mode === 'missing') c.treeMutationProjection = null;
+    if (mode === 'stale-project') c.currentProjectId = 'other';
+    if (mode === 'unavailable') c.treeMutationProjection.lastMutation.canUndo = false;
+    if (mode === 'capability') c.allowed = false;
+    if (mode === 'pending') c.treeMutationPending = true;
+    await c.handleUndoTreeMutation();
+    assert.equal(c.calls.length, 0, mode);
+    const items = [];
+    c.appendTreeUndoMenuItem(items);
+    if (mode !== 'capability') assert.equal(items[0].enabled, false, mode);
+  }
+  const c = sceneUiHarness();
+  await c.handleUndoTreeMutation();
+  assert.deepEqual(c.calls, [{ id: 'undo', payload: { projectId: 'project', expectedTreeRevision: 7, mutationId: 'mutation' } }]);
+  assert.equal(c.reloads, 1);
+});
+
+test('late copy or Undo completion never reloads a different project; failure keeps projection and releases pending state', async () => {
+  for (const action of ['copy', 'undo']) {
+    const c = sceneUiHarness();
+    c.dispatchUiCommand = async () => { c.currentProjectId = 'other'; return { ok: true }; };
+    await (action === 'copy' ? c.handleCopyNode(c.treeRoot) : c.handleUndoTreeMutation());
+    assert.equal(c.reloads, 0);
+    assert.equal(c.treeMutationPending, false);
+    const f = sceneUiHarness();
+    f.dispatchUiCommand = async () => ({ ok: false });
+    await (action === 'copy' ? f.handleCopyNode(f.treeRoot) : f.handleUndoTreeMutation());
+    assert.equal(f.reloads, 0);
+    assert.equal(f.treeMutationPending, false);
+    assert.equal(f.treeMutationProjection.treeRevision, 7);
+  }
+});
+
+test('executed menu focuses enabled action and Escape restores trigger; text Undo remains separate', () => {
+  const buttons = [];
+  let focus = '';
+  const trigger = { isConnected: true, focus: () => { focus = 'trigger'; } };
+  const menu = { innerHTML: '', hidden: true, style: {}, appendChild: b => buttons.push(b),
+    querySelector: () => buttons.find(b => !b.disabled) };
+  const c = { contextMenu: menu, contextMenuReturnFocus: null,
+    document: { activeElement: trigger, createElement: () => ({ dataset: {},
+      focus: () => { focus = 'action'; }, addEventListener() {} }) } };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['clearContextMenu', 'showContextMenu']), c);
+  c.showContextMenu([{ label: 'Disabled', enabled: false }, { label: 'Copy', onInvoke() {} }], 10, 20, trigger);
+  assert.equal(focus, 'action');
+  let stopped = 0;
+  menu.onkeydown({ key: 'Escape', preventDefault() { stopped++; }, stopPropagation() { stopped++; } });
+  assert.equal(menu.hidden, true);
+  assert.equal(focus, 'trigger');
+  assert.equal(stopped, 2);
+  const editor = read('src/renderer/editor.js');
+  assert.match(editor, /event\.key === 'ContextMenu' \|\| \(event\.key === 'F10' && event\.shiftKey\)/u);
+  assert.match(editor, /\(key === 'Z' \|\| key === 'z'\) && !event\.shiftKey\) \{\s*event\.preventDefault\(\);\s*void dispatchUiCommand\(EXTRA_COMMAND_IDS\.EDIT_UNDO\)/u);
+  assert.equal(executableFunctions(['handleUndoTreeMutation']).includes('handleUndo('), false);
+});
+
+test('stale query completion cannot replace tree or mutation projection after project switch', async () => {
+  let finish;
+  const c = { currentProjectId: 'project', activeTab: 'roman', treeQueryGeneration: 0,
+    treeRoot: { nodeId: 'existing' }, treeMutationProjection: { treeRevision: 7 },
+    window: { electronAPI: { invokeWorkspaceQueryBridge() {} } },
+    PROJECT_TREE_QUERY_ID: 'query.projectTree',
+    invokeWorkspaceQueryBridge: () => new Promise(resolve => { finish = resolve; }),
+    updateStatusText: () => assert.fail('stale query must not publish even an error') };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['loadTree']), c);
+  const pending = c.loadTree();
+  c.currentProjectId = 'other';
+  finish({ ok: true, projectId: 'project', root: { nodeId: 'stale' }, treeRevision: 9 });
+  await pending;
+  assert.equal(c.treeRoot.nodeId, 'existing');
+  assert.equal(c.treeMutationProjection.treeRevision, 7);
+});
+
+
+test('Undo menu closure cannot target a newer mutation after projection refresh', async () => {
+  const c = sceneUiHarness();
+  const items = [];
+  c.appendTreeUndoMenuItem(items);
+  c.treeMutationProjection = { ...c.treeMutationProjection, treeRevision: 8,
+    lastMutation: { id: 'new-mutation', kind: 'move', canUndo: true } };
+  await items[0].invoke();
+  assert.equal(c.calls.length, 0);
+});
+
+
+test('executed focused tree keyboard opens existing actions without intercepting text Undo', () => {
+  const editor = read('src/renderer/editor.js');
+  const start = editor.indexOf("if (treeContainer) {\n  treeContainer.addEventListener('keydown'");
+  const end = editor.indexOf('\nlet spatialResizeDragState', start);
+  assert.ok(start > 0 && end > start);
+  let keydown;
+  let opened = 0;
+  class Element { closest() { return this; } }
+  class HTMLElement extends Element { constructor() { super(); this.dataset = { navigatorRowId: 'scene' }; } getBoundingClientRect() { return { left: 10, bottom: 20 }; } }
+  const row = new HTMLElement();
+  const c = { Element, HTMLElement, treeRoot: {}, treeContainer: { addEventListener(type, listener) { if (type === 'keydown') keydown = listener; } },
+    findTreeNodeById: () => ({ nodeId: 'scene' }), buildContextMenuItems: () => [{ label: 'Copy' }],
+    showContextMenu(items, x, y, trigger) { assert.equal(trigger, row); assert.equal(x, 10); assert.equal(y, 20); opened++; },
+    getVisibleNavigatorRowIds: () => [] };
+  vm.createContext(c);
+  vm.runInContext(editor.slice(start, end), c);
+  for (const [key, shiftKey] of [['ContextMenu', false], ['F10', true]]) {
+    let stopped = 0;
+    keydown({ target: row, key, shiftKey, preventDefault() { stopped++; }, stopPropagation() { stopped++; } });
+    assert.equal(stopped, 2);
+  }
+  assert.equal(opened, 2);
+  keydown({ target: row, key: 'z', metaKey: true, preventDefault() { assert.fail('tree must not own text Undo'); } });
+  assert.equal(opened, 2);
+});
+
+
+test('tree context publication preserves authoring and history and rejects stale or forged Main payloads', () => {
+  const calls = [];
+  const c = { currentProjectId: 'project', currentDocumentId: 'scene', currentDocumentKind: 'scene',
+    currentDocumentTitle: 'Before', metaEnabled: true, localEditGeneration: 9,
+    localDirty: true, lastAckedGeneration: 8, currentRightTab: 'history',
+    composeDocumentContent: () => 'exact current authoring bytes',
+    getActiveDocumentTitleStorageKey: id => id,
+    localStorage: { setItem: (key, value) => calls.push(['title', key, value]) },
+    updateInspectorSnapshot: () => calls.push('inspector'), refreshMetadataInspector: () => calls.push('metadata'),
+    refreshManuscriptNoteReferences: () => calls.push('notes'), refreshVisibleCommentProjection: () => calls.push('comments'),
+    refreshSceneHistory: () => calls.push('history'),
+    setTiptapDocumentSnapshot: () => assert.fail('tree publication must not replace PM state'),
+    setPlainText: () => assert.fail('tree publication must not replace text') };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['applyTreeContextPublication']), c);
+  const publication = { treePublication: true, projectId: 'project', documentId: 'scene', kind: 'scene',
+    metaEnabled: true, expectedGeneration: 9, title: 'Renamed',
+    expectedContent: 'exact current authoring bytes', content: 'exact current authoring bytes' };
+  for (const override of [
+    { projectId: 'other' }, { documentId: 'other' }, { kind: 'material' }, { metaEnabled: false },
+    { expectedGeneration: 8 }, { expectedGeneration: '9' }, { content: 'modified' },
+    { expectedContent: 'forged', content: 'forged' }, { title: '' },
+  ]) {
+    assert.equal(c.applyTreeContextPublication({ ...publication, ...override }), false);
+    assert.equal(c.currentDocumentTitle, 'Before');
+    assert.equal(calls.length, 0);
+  }
+  assert.equal(c.applyTreeContextPublication(publication), true);
+  assert.equal(c.currentDocumentTitle, 'Renamed');
+  assert.deepEqual(calls, [['title', 'project', 'Renamed'], 'inspector', 'metadata', 'notes', 'comments', 'history']);
+  assert.equal(c.localDirty, true);
+  assert.equal(c.localEditGeneration, 9);
+  assert.equal(c.lastAckedGeneration, 8);
+});
+
+
+test('equivalent tree query refresh during name dialog preserves exact revision-bound target', async () => {
+  const c = sceneUiHarness();
+  c.openNodeNameDialog = async () => {
+    c.treeRoot = { ...c.treeRoot };
+    c.treeMutationProjection = { ...c.treeMutationProjection };
+    return 'Copy';
+  };
+  await c.handleCopyNode(c.treeRoot);
+  assert.equal(c.calls.length, 1);
+  assert.equal(c.calls[0].payload.expectedTreeRevision, 7);
+});
+
+
+test('removed-copy replacement requires live old identity and bytes before ordinary editor replacement', () => {
+  const c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
+    composeDocumentContent: () => 'saved copied scene' };
+  vm.createContext(c);
+  vm.runInContext(executableFunctions(['isTreeReplacementCurrent']), c);
+  const payload = { treeReplacement: true, projectId: 'project', expectedDocumentId: 'copy',
+    documentId: 'source', kind: 'scene', metaEnabled: true, expectedGeneration: 9,
+    expectedContent: 'saved copied scene', content: 'original source scene' };
+  assert.equal(c.isTreeReplacementCurrent(payload), true);
+  for (const override of [{ treePublication: true }, { projectId: 'other' }, { expectedDocumentId: 'other' },
+    { documentId: 'copy' }, { documentId: '' }, { kind: 'external' }, { metaEnabled: false },
+    { expectedGeneration: 8 }, { expectedGeneration: '9' }, { expectedContent: 'stale' }, { content: null }]) {
+    assert.equal(c.isTreeReplacementCurrent({ ...payload, ...override }), false);
+  }
+  c.composeDocumentContent = () => 'new unsaved edit';
+  assert.equal(c.isTreeReplacementCurrent(payload), false);
+  const source = read('src/renderer/editor.js');
+  const listener = source.slice(source.indexOf('window.electronAPI.onEditorSetText((payload) => {'));
+  assert.ok(listener.indexOf('!isTreeReplacementCurrent(payload)') < listener.indexOf('setTiptapDocumentSnapshot({'));
 });

@@ -589,6 +589,38 @@
     {
       "commandId": "cmd.collab.eventLog.apply",
       "capabilityId": "cap.stage10.collabApply.local"
+    },
+    {
+      "commandId": "cmd.project.tree.copyNode",
+      "capabilityId": "cap.project.tree.copyNode"
+    },
+    {
+      "commandId": "cmd.project.tree.undoLastMutation",
+      "capabilityId": "cap.project.tree.undoLastMutation"
+    },
+    {
+      "commandId": "cmd.project.media.insertLocal",
+      "capabilityId": "cap.project.media.authoring"
+    },
+    {
+      "commandId": "cmd.project.bookmarks.managePrompt",
+      "capabilityId": "cap.project.bookmarks.authoring"
+    },
+    {
+      "commandId": "cmd.project.bookmarks.create",
+      "capabilityId": "cap.project.bookmarks.authoring"
+    },
+    {
+      "commandId": "cmd.project.bookmarks.copy",
+      "capabilityId": "cap.project.bookmarks.authoring"
+    },
+    {
+      "commandId": "cmd.project.bookmarks.rename",
+      "capabilityId": "cap.project.bookmarks.authoring"
+    },
+    {
+      "commandId": "cmd.project.bookmarks.delete",
+      "capabilityId": "cap.project.bookmarks.authoring"
     }
   ]
 }

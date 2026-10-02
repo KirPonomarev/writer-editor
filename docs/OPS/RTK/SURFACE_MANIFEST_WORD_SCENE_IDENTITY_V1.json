@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "SURFACE_MANIFEST_V1",
+  "surfaceId": "surface.projectTree.sceneIdentity",
+  "featureId": "WORD_SCENE_IDENTITY_MAC_20261002",
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "host": "Existing project tree context menu and node name dialog",
+  "slotId": "Existing tree menu command contribution",
+  "newVisualLanguage": false,
+  "contributionKind": "Intent controls plus immutable revision-bound inventory",
+  "commands": [
+    "cmd.project.tree.renameNode",
+    "cmd.project.tree.moveNode",
+    "cmd.project.tree.reorderNode",
+    "cmd.project.tree.copyNode",
+    "cmd.project.tree.undoLastMutation"
+  ],
+  "projection": "query.projectTree",
+  "activation": {
+    "explicitOpenRequired": true,
+    "backgroundRefresh": false,
+    "typingHotPath": false
+  },
+  "states": [
+    "ready",
+    "pending",
+    "unavailable",
+    "invalidName",
+    "stale",
+    "recoveryConflict"
+  ],
+  "authority": {
+    "rendererIntentOnly": true,
+    "productMutation": false,
+    "storageMutation": false,
+    "pathAuthority": false,
+    "networkMutation": false
+  },
+  "accessibility": {
+    "nativeControls": true,
+    "labelledInputs": true,
+    "keyboard": [
+      "Shift+F10",
+      "ContextMenu",
+      "Tab",
+      "Enter",
+      "Escape"
+    ],
+    "initialFocus": true,
+    "restoreTriggerFocus": true,
+    "errorsInline": true,
+    "statusUsesText": true,
+    "textUndoUnchanged": true
+  },
+  "tokens": "Reuse existing Yalken CSS variables and palette/dialog classes; no global style or typography changes",
+  "fallback": "Disable unavailable Undo with text reason; preserve unsaved content on failed save barrier; no guessed target",
+  "performance": "Load bounded immutable inventory only on explicit open; no XML parsing while typing"
+}

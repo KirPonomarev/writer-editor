@@ -83,6 +83,7 @@ const {
 const {
   commitProjectTransaction,
   readPendingProjectTransactionBinding,
+  readVerifiedProjectTreeMutation,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
 const { planCommentAnchorSave, paragraphs: commentSceneParagraphs } = require('./core/word-comment-anchor-save-v1.cjs');
@@ -4806,7 +4807,7 @@ async function readDocxReviewPacketExportSource() {
     exportCapsule,
     // EXPORT-01 (P0-09): pending in-memory authority store; persisted only on
     // post-write activation. Nothing durable until the published write readback.
-    pendingAuthorityStore: activeReviewDocxExportAuthorityStore,
+    pendingAuthorityStore: (bindPendingDocxReviewPublication(activeReviewDocxExportAuthorityStore, projectRoot), activeReviewDocxExportAuthorityStore),
   };
 }
 
@@ -4925,6 +4926,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   // in-memory and is surfaced as pendingAuthorityStore so the export handler can
   // persist it only AFTER a successful gate + atomic write + exact readback. A
   // failed export therefore leaves zero durable authority for this round.
+  bindPendingDocxReviewPublication(activeReviewDocxExportAuthorityStore, projectRoot);
   source.pendingAuthorityStore = activeReviewDocxExportAuthorityStore;
   return source;
 }
@@ -5165,9 +5167,28 @@ async function activateReviewDocxExportAuthority(pendingAuthorityStore) {
   // This happens ONLY after the export handler's gate + atomic write + exact
   // readback all succeed; a failure before activation leaves the pending store
   // in-memory and zero durable authority on disk.
-  const activatedStore = await transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorityStore);
-  activeReviewDocxExportAuthorityStore = activatedStore;
-  return persistDocxReviewReturnAuthorityStore(activeReviewDocxExportAuthorityStore);
+  const bound = pendingDocxReviewPublicationBindings.get(pendingAuthorityStore);
+  if (!bound) throw Error('RTK_ROUND_PUBLICATION_BINDING_REQUIRED');
+  return queueDiskOperation(async () => {
+    const authority = await getMainProjectManifestAuthority();
+    return authority.withProjectLease(bound.projectId, lease => lease.publish(async () => {
+      const check = () => {
+        if (getProjectRootPath() !== bound.projectRoot || currentLifecycleSubjectId() !== bound.subjectId
+          || activeStage10ApplicationBootstrap !== bound.owner || lastSignaledEditGeneration !== bound.generation
+          || activeReviewDocxExportAuthorityStore !== pendingAuthorityStore) throw Error('RTK_ROUND_PUBLICATION_STALE');
+        const disk = readStrictDocxReviewAuthorityStore(bound.projectRoot);
+        if (disk.text !== bound.durableText) throw Error('RTK_ROUND_CAS_CONFLICT');
+      };
+      check();
+      const activatedStore = await transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorityStore);
+      check();
+      const result = await persistDocxReviewReturnAuthorityStore(activatedStore, { expectedText: bound.durableText, revalidate: check });
+      checkDocxReviewPublicationIdentity(bound, pendingAuthorityStore);
+      activeReviewDocxExportAuthorityStore = activatedStore;
+      pendingDocxReviewPublicationBindings.delete(pendingAuthorityStore);
+      return result;
+    }));
+  }, 'activate review authority');
 }
 
 function buildDocxReviewRoundV3BridgeStoreDigest(store = {}) {
@@ -5948,6 +5969,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const owner = activeStage10ApplicationBootstrap, lifecycle = currentLifecycleSubjectId();
     const generation = lastSignaledEditGeneration, file = currentFilePath;
     const check = () => {
+      assertFreshDocxReviewRoundAuthority(capsule);
       if (typeof isCurrent !== 'function' || !isCurrent() || owner !== activeStage10ApplicationBootstrap
         || lifecycle !== currentLifecycleSubjectId() || file !== currentFilePath || generation !== lastSignaledEditGeneration
         || isDirty || autoSaveInProgress || context.projectRoot !== getProjectRootPath()) throw Error('PENDING_RETURN_CONTEXT_STALE');
@@ -6054,6 +6076,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
       exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
       returnedParagraphs: intake.parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() };
     const checkIdentity = () => {
+      assertFreshDocxReviewRoundAuthority(capsule);
       if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
         || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
         || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw rejected('NOTE_RETURN_CONTEXT_STALE');
@@ -6181,6 +6204,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       commentReturnInventory: inventory,
       returnedParagraphs: intake.parserResult?.reviewIr?.formattingParagraphs };
     const checkIdentity = () => {
+      assertFreshDocxReviewRoundAuthority(capsule);
       if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
         || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
         || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw rejected('COMMENT_RETURN_CONTEXT_STALE');
@@ -8805,7 +8829,60 @@ function projectRootFromDocxReviewAuthorityStore(store = {}) {
   return docxReviewPreviewSessionDetailString(first.projectRoot);
 }
 
-async function persistDocxReviewReturnAuthorityStore(store = {}) {
+// Private publication admission is captured at source creation, never carried
+// in DOCX or accepted from renderer. A stale export cannot undo tree expiry.
+const pendingDocxReviewPublicationBindings = new WeakMap();
+function bindPendingDocxReviewPublication(store, projectRoot) {
+  const disk = readStrictDocxReviewAuthorityStore(projectRoot);
+  const manifest = JSON.parse(fsSync.readFileSync(path.join(projectRoot, 'project.craftsman.json'), 'utf8'));
+  pendingDocxReviewPublicationBindings.set(store, { projectRoot, projectId: manifest.projectId,
+    subjectId: currentLifecycleSubjectId(), owner: activeStage10ApplicationBootstrap,
+    generation: lastSignaledEditGeneration, durableText: disk.text });
+}
+
+function checkDocxReviewPublicationIdentity(bound, pending) {
+  if (getProjectRootPath() !== bound.projectRoot || currentLifecycleSubjectId() !== bound.subjectId
+    || activeStage10ApplicationBootstrap !== bound.owner || lastSignaledEditGeneration !== bound.generation
+    || activeReviewDocxExportAuthorityStore !== pending) throw Error('RTK_ROUND_PUBLICATION_STALE');
+}
+
+function readStrictDocxReviewAuthorityStore(projectRoot) {
+  const storePath = docxReviewReturnAuthorityStorePath(projectRoot);
+  if (!storePath) throw Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_PATH_INVALID');
+  const parts = path.relative(projectRoot, storePath).split(path.sep);
+  let entry = projectRoot;
+  for (let i = 0; i < parts.length; i++) {
+    entry = path.join(entry, parts[i]);
+    let stat;
+    try { stat = fsSync.lstatSync(entry); }
+    catch (error) { if (error.code === 'ENOENT') return { text: null, record: null }; throw error; }
+    if (stat.isSymbolicLink() || (i === parts.length - 1
+      ? !stat.isFile() || stat.nlink !== 1 || stat.size > 16 * 1024 * 1024 : !stat.isDirectory())) throw Error('RTK_ROUND_STORE_PATH_UNSAFE');
+  }
+  const text = fsSync.readFileSync(storePath, 'utf8');
+  let record;
+  try { record = validateDocxReviewReturnAuthorityStoreRecord(JSON.parse(text)); } catch { /* typed below */ }
+  if (!record || !isPlainObjectValue(record.roundsById) || !Object.keys(record.roundsById).length) throw Error('RTK_ROUND_STORE_INVALID');
+  const states = ['ALLOCATED', 'ARTIFACT_STAGED', 'PUBLISHED_ACTIVE', 'RETURN_VERIFIED', 'APPLY_RESERVED', 'CONSUMED', 'REVOKED', 'EXPIRED', 'ABORTED'];
+  for (const [id, round] of Object.entries(record.roundsById)) {
+    if (!isPlainObjectValue(round) || round.roundId !== id || round.projectRoot !== projectRoot
+      || typeof round.keyRef !== 'string' || !round.keyRef || !states.includes(round.lifecycleState)
+      || !Number.isSafeInteger(round.recordVersion) || round.recordVersion < 1) throw Error('RTK_ROUND_STORE_INVALID');
+  }
+  return { text, record };
+}
+
+function assertFreshDocxReviewRoundAuthority(reference) {
+  const projectRoot = reference?.projectRoot || getProjectRootPath();
+  if (projectRoot !== getProjectRootPath() || typeof reference?.roundId !== 'string') throw Error('RTK_ROUND_STALE_AUTHORITY');
+  const { record } = readStrictDocxReviewAuthorityStore(projectRoot);
+  const round = findDocxReviewReturnIntakeRoundAuthority(record, reference.roundId);
+  if (!round || round.ok === false || round.keyRef !== reference.keyRef
+    || (reference.recordVersion !== undefined && round.recordVersion !== reference.recordVersion)) throw Error('RTK_ROUND_LIFECYCLE_NOT_ELIGIBLE');
+  return round;
+}
+
+async function persistDocxReviewReturnAuthorityStore(store = {}, options = {}) {
   const projectRoot = projectRootFromDocxReviewAuthorityStore(store);
   const storePath = docxReviewReturnAuthorityStorePath(projectRoot);
   if (!storePath) {
@@ -8813,11 +8890,22 @@ async function persistDocxReviewReturnAuthorityStore(store = {}) {
   }
   await fs.mkdir(path.dirname(storePath), { recursive: true });
   const record = buildDocxReviewReturnAuthorityStoreRecord(store);
-  await fileManager.writeFileAtomic(storePath, `${JSON.stringify(record, null, 2)}\n`);
+  const disk = readStrictDocxReviewAuthorityStore(projectRoot);
+  if (Object.hasOwn(options, 'expectedText') && disk.text !== options.expectedText) throw Error('RTK_ROUND_CAS_CONFLICT');
+  // Retention and terminal monotonicity hold for every durable publisher.
+  for (const [id, before] of Object.entries(disk.record?.roundsById || {})) {
+    const after = record.roundsById[id];
+    if (!after || after.recordVersion < before.recordVersion
+      || (['CONSUMED', 'REVOKED', 'EXPIRED', 'ABORTED'].includes(before.lifecycleState)
+        && JSON.stringify(after) !== JSON.stringify(before))) throw Error('RTK_ROUND_CAS_CONFLICT');
+  }
+  if (typeof options.revalidate === 'function') options.revalidate();
+  const written = await fileManager.writeFileAtomic(storePath, `${JSON.stringify(record, null, 2)}\n`);
+  if (written?.success !== true) throw Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_WRITE_FAILED');
   const reopened = validateDocxReviewReturnAuthorityStoreRecord(
     JSON.parse(await fs.readFile(storePath, 'utf8')),
   );
-  if (!reopened) throw new Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_VERIFY_FAILED');
+  if (!reopened || reopened.authorityStoreDigest !== record.authorityStoreDigest) throw new Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_VERIFY_FAILED');
   return { storePath, authorityStoreDigest: record.authorityStoreDigest };
 }
 
@@ -9993,6 +10081,8 @@ async function inspectDocxReviewReturnIntakeV2({
   // return-intake verification still proceeds because it is a verify-only path.
   const roundKeyRef = docxReviewPreviewSessionDetailString(localAuthority.keyRef);
   const roundKeyHandle = await resolveDocxReviewRoundKeyHandle(roundKeyRef, localAuthority);
+  try { assertFreshDocxReviewRoundAuthority(localAuthority); }
+  catch (error) { return docxReviewReturnIntakeBlocked(error.message, { roundId }); }
   const hmacSecret = roundKeyHandle && typeof roundKeyHandle.hmacSecret === 'function'
     ? docxReviewPreviewSessionDetailString(roundKeyHandle.hmacSecret())
     : '';
@@ -10187,6 +10277,8 @@ async function inspectDocxReviewReturnIntakeV2({
     { hmacSecret, context, mediaReturnFields },
   );
   if (localAuthorityCapsule?.ok === false) return localAuthorityCapsule;
+  try { assertFreshDocxReviewRoundAuthority(localAuthority); }
+  catch (error) { return docxReviewReturnIntakeBlocked(error.message, { roundId }); }
   return {
     ok: true,
     status: 'authenticated-return-ir-ready',
@@ -14654,6 +14746,15 @@ function loadProjectTreeIdentityModule() {
     });
   }
   return projectTreeIdentityModulePromise;
+}
+
+let projectTreeCohortModulePromise = null;
+function loadProjectTreeCohortModule() {
+  if (!projectTreeCohortModulePromise) {
+    projectTreeCohortModulePromise = import(pathToFileURL(path.join(__dirname, 'core', 'project-tree-cohort-v1.mjs')).href)
+      .catch(error => { projectTreeCohortModulePromise = null; throw error; });
+  }
+  return projectTreeCohortModulePromise;
 }
 
 let notesStorageModulePromise = null;
@@ -22295,6 +22396,26 @@ async function recoverPendingWriterProjectTransaction() {
   const manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
   const binding = await readPendingProjectTransactionBinding({ manifestPath });
   if (!binding.pending) return { recovered: false, outcome: 'NO_JOURNAL' };
+  if (binding.mode === 'tree') {
+    if (binding.manifestPath !== manifestPath) throw treeCohortError('E_TREE_COHORT_MANIFEST_PATH');
+    const projectRoot = path.dirname(manifestPath), projectName = currentProjectName || DEFAULT_PROJECT_NAME;
+    const authority = await getMainProjectManifestAuthority();
+    const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+    const guard = () => {
+      if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)) throw treeCohortError('E_TREE_RECOVERY_PROJECT_STALE');
+    };
+    guard();
+    return authority.withProjectLease(manifest.projectId, lease => lease.publish(() => recoverProjectTransaction({
+      manifestPath, revalidate: guard,
+      verifyManifestContinuation: r => authority.verifyManifestContinuation({ ...r, projectId: manifest.projectId }),
+      publishManifest: ({ manifestPath: target, expectedText, nextText, reason }) => {
+        guard();
+        if (target !== manifestPath) throw treeCohortError('E_TREE_COHORT_MANIFEST_PATH');
+        return authority.commitManifestText({ projectId: manifest.projectId, lease, targetPath: target,
+          expectedText, nextText, label: `tree recovery:${reason}` });
+      },
+    })));
+  }
   const scenePathGuard = sanitizePayloadWithinProjectRoot({ path: binding.scenePath }, ['path']);
   if (!scenePathGuard.ok || !scenePathGuard.payload) {
     const error = new Error('PROJECT_TRANSACTION_SCENE_PATH_FORBIDDEN');
@@ -22782,7 +22903,7 @@ async function moveMenuSectionLater(sectionId) {
 }
 
 // Сохранение настроек
-async function saveSettings(settings) {
+async function saveSettings(settings, options = {}) {
   try {
     const result = await writeNotesOrSettingsThroughAtomicGateway({
       filePath: getSettingsPath(),
@@ -22790,6 +22911,7 @@ async function saveSettings(settings) {
       targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.SETTINGS_PRIMARY,
       projectId: null,
       operationLabel: 'save settings',
+      ...(typeof options.beforeWrite === 'function' ? { beforeWrite: options.beforeWrite } : {}),
     });
     return !result || result.success !== false;
   } catch (error) {
@@ -22802,6 +22924,7 @@ async function saveSettings(settings) {
 async function saveLastFile(options = {}) {
   try {
     const settings = await loadSettings();
+    if (typeof options.beforeWrite === 'function') options.beforeWrite();
     const selectionRange = normalizeSelectionRangeForSettings(options.selectionRange);
     const projectBinding = isPlainObjectValue(options.projectBinding)
       ? options.projectBinding
@@ -22851,7 +22974,8 @@ async function saveLastFile(options = {}) {
       }
     }
     delete settings.lastFilePath;
-    const persisted = await saveSettings(settings);
+    if (typeof options.beforeWrite === 'function') options.beforeWrite();
+    const persisted = await saveSettings(settings, options);
     return persisted
       ? { ok: true, continuity: settings[SESSION_CONTINUITY_SETTINGS_KEY] || null }
       : { ok: false, code: 'E_SESSION_CONTINUITY_PERSIST_FAILED' };
@@ -23257,6 +23381,8 @@ async function revalidateRtkReturnApplyKey(kind, payload) {
   if (handle?.state !== 'ACTIVE') return blocked(
     handle?.state === 'REVOKED' ? 'RTK_ROUND_KEY_REVOKED'
       : handle?.state === 'VERIFY_ONLY' ? 'RTK_ROUND_KEY_VERIFY_ONLY' : 'RTK_ROUND_KEY_LOST');
+  try { assertFreshDocxReviewRoundAuthority(store.keyAuthority); }
+  catch (error) { return blocked(error.message); }
   return {ok:true};
 }
 
@@ -24764,6 +24890,8 @@ async function revalidateCleanLinkLabelApplyInput(input) {
   const handle = await resolveDocxReviewRoundKeyHandle(store.keyAuthority.keyRef,store.keyAuthority);
   if (!cleanLinkLabelStoreMatches(store)) return blocked('RTK_CLEAN_LINK_LABEL_STALE_SESSION');
   if (handle?.state !== 'ACTIVE') return blocked('RTK_CLEAN_LINK_LABEL_INACTIVE_KEY');
+  try { assertFreshDocxReviewRoundAuthority(store.keyAuthority); }
+  catch (error) { return blocked(error.message); }
   if (store.keyAuthority.scope === 'full-manuscript') {
     const current = verifyFullManuscriptCurrentSceneBindings({
       projectRoot: input.projectRoot, exportMapScenes: store.keyAuthority.exportMap?.scenes,
@@ -29978,6 +30106,7 @@ const TREE_MOVE_ALLOWED_PAYLOAD_KEYS = Object.freeze([
   'nodeId',
   'targetParentNodeId',
   'targetIndex',
+  'expectedTreeRevision',
 ]);
 const TREE_MOVE_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
   'fromPath',
@@ -30023,7 +30152,8 @@ function normalizeTreeMovePayload(payload = {}) {
     ? payload.targetParentNodeId.trim()
     : '';
   const targetIndex = Number.isInteger(payload.targetIndex) ? payload.targetIndex : -1;
-  if (!projectId || !nodeId || !targetParentNodeId || targetIndex < 0) {
+  if (!projectId || !nodeId || !targetParentNodeId || targetIndex < 0
+    || (payload.expectedTreeRevision !== undefined && (!Number.isSafeInteger(payload.expectedTreeRevision) || payload.expectedTreeRevision < 0))) {
     return makeTreeMoveError('E_TREE_MOVE_PAYLOAD_INVALID', 'TREE_MOVE_PAYLOAD_INVALID');
   }
   return {
@@ -30033,6 +30163,7 @@ function normalizeTreeMovePayload(payload = {}) {
       nodeId,
       targetParentNodeId,
       targetIndex,
+      ...(payload.expectedTreeRevision === undefined ? {} : { expectedTreeRevision: payload.expectedTreeRevision }),
     },
   };
 }
@@ -30064,10 +30195,14 @@ function dedupeRenames(renames) {
   return result;
 }
 
+async function readTreeOrderedEntries(parentPath) {
+  return (await readDirectoryEntries(parentPath)).filter(entry => entry.isDirectory || (entry.isFile && entry.name.endsWith('.txt')));
+}
+
 async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
   const sourceParentPath = path.dirname(nodePath);
   const sameParent = sourceParentPath === targetParentPath;
-  const sourceEntries = await readDirectoryEntries(sourceParentPath);
+  const sourceEntries = await readTreeOrderedEntries(sourceParentPath);
   const movingEntry = sourceEntries.find((entry) => entry.path === nodePath);
   if (!movingEntry) {
     return makeTreeMoveError('E_TREE_MOVE_NODE_NOT_FOUND', 'TREE_MOVE_NODE_NOT_FOUND');
@@ -30092,7 +30227,7 @@ async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
     };
   }
 
-  const targetEntries = await readDirectoryEntries(targetParentPath);
+  const targetEntries = await readTreeOrderedEntries(targetParentPath);
   if (targetIndex > targetEntries.length) {
     return makeTreeMoveError('E_TREE_MOVE_TARGET_INDEX_INVALID', 'TREE_MOVE_TARGET_INDEX_INVALID');
   }
@@ -30758,12 +30893,18 @@ async function handleWorkspaceProjectTreeQuery(payload) {
     return { ok: false, error: 'Unknown tab' };
   }
   try {
+    const projectRoot = getProjectRootPath(), projectName = currentProjectName || DEFAULT_PROJECT_NAME;
     const projectTree = await buildProjectTreeRootsWithIdentitiesReadOnly();
     const { projectId, roots } = projectTree;
+    const mutation = await readVerifiedProjectTreeMutation({ manifestPath: projectTree.manifestPath, projectId });
+    if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
+      || fsSync.readFileSync(projectTree.manifestPath, 'utf8') !== projectTree.manifestRaw) throw treeCohortError('E_TREE_QUERY_STALE');
     return {
       ok: true,
       projectId,
       root: serializeProjectTreeNode(roots[tab]),
+      treeRevision: mutation.treeRevision,
+      lastMutation: mutation.lastMutation ? cloneJsonSafe(mutation.lastMutation) : null,
     };
   } catch (error) {
     logDevError('query.projectTree:identity', error);
@@ -31425,6 +31566,8 @@ const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([
   'cmd.project.document.open',
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
+  'cmd.project.tree.copyNode',
+  'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
   TREE_MOVE_COMMAND_ID,
@@ -31558,7 +31701,309 @@ guardedHandle('ui:create-node', async (_, payload) => {
   return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.createNode', payload);
 });
 
-async function handleUiRenameNodeCommand(payload) {
+// Tree intent resolves only private stable IDs. Capture every original owner
+// once; the Core planner owns annotation/ID transforms and the existing journal.
+function treeCohortError(code) {
+  return Object.assign(Error(code), { code });
+}
+function normalizeTreeCohortIntent(payload, keys) {
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !keys.includes(key))
+    || typeof payload.projectId !== 'string' || !payload.projectId
+    || (payload.expectedTreeRevision !== undefined
+      && (!Number.isSafeInteger(payload.expectedTreeRevision) || payload.expectedTreeRevision < 0))) throw treeCohortError('E_TREE_COHORT_PAYLOAD_INVALID');
+  return payload;
+}
+
+async function resolveTreeCohortNode(nodeId, projectId, binding) {
+  if (!/^tree-node-[a-f0-9]{32}$/u.test(nodeId || '')) throw treeCohortError('E_TREE_NODE_ID_INVALID');
+  const identity = await loadProjectTreeIdentityModule();
+  const normalized = identity.normalizeProjectTreeIdentity(binding.manifest.treeIdentity);
+  if (!normalized.ok || binding.manifest.projectId !== projectId) throw treeCohortError('E_TREE_NODE_PROJECT_MISMATCH');
+  const record = normalized.value.nodes[nodeId];
+  if (!record || record.present === false || !record.bindingKey.startsWith('file:')) throw treeCohortError('E_TREE_NODE_NOT_FOUND');
+  const relativePath = record.bindingKey.slice(5);
+  const nodePath = joinPathSegmentsWithinRoot(binding.projectRoot, relativePath.split('/'), { resolveSymlinks: false });
+  await readTreeCohortPath(binding.projectRoot, relativePath, true);
+  return { ...binding, projectId, nodeId, kind: record.kind, nodePath, relativePath };
+}
+
+async function readTreeCohortPath(root, relativePath, allowDirectory = false, optional = false) {
+  if (typeof relativePath !== 'string' || relativePath.split('/').some(x => !x || x === '.' || x === '..')
+    || relativePath.includes('\\') || path.isAbsolute(relativePath)) throw treeCohortError('E_TREE_COHORT_PATH_INVALID');
+  let target = root;
+  const parts = relativePath.split('/');
+  for (let i = 0; i < parts.length; i++) {
+    target = path.join(target, parts[i]);
+    let stat;
+    try { stat = await fs.lstat(target); }
+    catch (error) { if (optional && error.code === 'ENOENT') return null; throw error; }
+    if (stat.isSymbolicLink() || (i < parts.length - 1 ? !stat.isDirectory()
+      : allowDirectory && stat.isDirectory() ? false : !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024)) throw treeCohortError('E_TREE_COHORT_PATH_UNSAFE');
+    if (i === parts.length - 1 && stat.isDirectory()) return { directory: true };
+  }
+  const bytes = await fs.readFile(target);
+  // The writer later repeats the complete byte/path CAS before publication.
+  return { bytes };
+}
+
+async function captureTreeCohortInventory(projectRoot) {
+  const inventory = [], scenePaths = [];
+  let byteCount = 0;
+  const add = (relativePath, role, data) => {
+    byteCount += data?.bytes?.length || 0;
+    if (inventory.length >= 2048 || byteCount > 32 * 1024 * 1024) throw treeCohortError('E_TREE_COHORT_BUDGET');
+    inventory.push({ relativePath, role, contentBase64: data?.directory ? null : data.bytes.toString('base64') });
+  };
+  const visit = async relativePath => {
+    const data = await readTreeCohortPath(projectRoot, relativePath, true);
+    if (data.directory) {
+      add(relativePath, 'directory', data);
+      const names = (await fs.readdir(path.join(projectRoot, relativePath))).sort();
+      for (const name of names) await visit(`${relativePath}/${name}`);
+      return;
+    }
+    const name = path.posix.basename(relativePath);
+    let role;
+    if (/^\..+\.bak\.\d{13}$/u.test(name)) role = 'recoverySnapshot';
+    else if (/\.txt\.(?:wp201-commit|commit)\.json$/u.test(name)) role = 'sceneCommit';
+    else if (name.endsWith('.txt')) { role = 'scene'; scenePaths.push(path.join(projectRoot, relativePath)); }
+    else throw treeCohortError('E_TREE_COHORT_UNKNOWN_FILE');
+    add(relativePath, role, data);
+  };
+  await visit('roman');
+  // Generic backup identity is the hash of the original absolute scene path.
+  // Other project backups remain untouched and never become cohort authority.
+  for (const scenePath of scenePaths) {
+    const dir = `backups/${computeHash(scenePath)}`;
+    const meta = await readTreeCohortPath(projectRoot, `${dir}/meta.json`, false, true);
+    if (!meta) continue;
+    const record = JSON.parse(meta.bytes.toString('utf8'));
+    if (record.originalPath !== scenePath || record.baseName !== path.basename(scenePath)) throw treeCohortError('E_TREE_BACKUP_OWNER_INVALID');
+    add(dir, 'directory', { directory: true });
+    add(`${dir}/meta.json`, 'backupMetadata', meta);
+    for (const name of (await fs.readdir(path.join(projectRoot, dir))).sort()) {
+      if (name === 'meta.json') continue;
+      if (!/^\d{13}_/u.test(name) || name.slice(14) !== path.basename(scenePath)) throw treeCohortError('E_TREE_BACKUP_OWNER_INVALID');
+      add(`${dir}/${name}`, 'backupSnapshot', await readTreeCohortPath(projectRoot, `${dir}/${name}`));
+    }
+  }
+  const notes = await readTreeCohortPath(projectRoot, 'notes.craftsman.json', false, true);
+  const comments = await readTreeCohortPath(projectRoot, '.yalken/word-review/non-text-return-state.v1.json', false, true);
+  return { inventory, notesText: notes?.bytes.toString('utf8') ?? null, commentsText: comments?.bytes.toString('utf8') ?? null };
+}
+
+async function expireProjectWordRoundsBeforeTree(projectRoot, revalidate) {
+  const disk = readStrictDocxReviewAuthorityStore(projectRoot);
+  if (!disk.record) { revalidate(); resetActiveReviewSessionStore('cleared'); return { expiredCount: 0 }; }
+  const bridge = await loadRevisionBridgeModule();
+  revalidate();
+  if (typeof bridge.transitionRoundRecordV3 !== 'function') throw treeCohortError('RTK_ROUND_TRANSITION_UNAVAILABLE');
+  let store = { schemaVersion: 'yalken.rtk.round-record-v3.store.v1', lastRoundId: disk.record.lastRoundId,
+    rounds: cloneJsonSafe(disk.record.roundsById) };
+  let expiredCount = 0;
+  for (const [roundId, round] of Object.entries(store.rounds)) {
+    if (['CONSUMED', 'REVOKED', 'EXPIRED', 'ABORTED'].includes(round.lifecycleState)) continue;
+    const result = bridge.transitionRoundRecordV3(store, roundId, 'EXPIRED', {
+      expectedRecordDigest: buildDocxReviewRoundV3BridgeStoreDigest(store) });
+    if (!result.ok) throw treeCohortError(result.code || 'RTK_ROUND_EXPIRY_FAILED');
+    store = result.store; expiredCount++;
+  }
+  if (expiredCount) {
+    await persistDocxReviewReturnAuthorityStore({ ...disk.record, roundsById: store.rounds }, {
+      expectedText: disk.text, revalidate });
+    revalidate();
+  }
+  // The terminal store is deliberately excluded from tree rollback/Undo.
+  resetActiveReviewSessionStore('cleared');
+  return { expiredCount };
+}
+
+async function captureTreeMutationContext(commandId, payload) {
+  userBookmarkCapability(commandId);
+  const projectRoot = getProjectRootPath(), projectName = currentProjectName || DEFAULT_PROJECT_NAME;
+  const owner = activeStage10ApplicationBootstrap, subject = currentLifecycleSubjectId();
+  const session = commentAuthoringSessionId, filePath = currentFilePath;
+  const manifestPath = getProjectManifestPath(projectName);
+  const admission = await readProjectManifestRawAtPath(manifestPath);
+  if (admission.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || admission.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
+  if (activePendingRecording) throw treeCohortError('RECORDING_STOP_BEFORE_TREE_MUTATION');
+  if (activeAutoSavePromise) await activeAutoSavePromise;
+  if (mainWindow && currentFilePath && isPathInside(projectRoot, currentFilePath)) {
+    const snapshot = await requestEditorSnapshot();
+    const disk = await fs.readFile(filePath, 'utf8');
+    if (subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+      || owner !== activeStage10ApplicationBootstrap || filePath !== currentFilePath
+      || !Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
+    // Avoid rewriting an unchanged scene commit: exact tree Undo binds it too.
+    if (isDirty || snapshot.content !== disk) {
+      const saved = await handleSave();
+      if (saved !== true) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
+    }
+  } else if (isDirty || autoSaveInProgress) throw treeCohortError('E_TREE_SAVE_SCENE_FIRST');
+  userBookmarkCapability(commandId);
+  if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
+    || owner !== activeStage10ApplicationBootstrap || subject !== currentLifecycleSubjectId()
+    || session !== commentAuthoringSessionId || filePath !== currentFilePath) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
+  const raw = await readProjectManifestRawAtPath(manifestPath);
+  if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION || raw.manifest.projectId !== payload.projectId) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
+  const generation = lastSignaledEditGeneration;
+  const guard = () => {
+    userBookmarkCapability(commandId);
+    if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
+      || owner !== activeStage10ApplicationBootstrap || subject !== currentLifecycleSubjectId()
+      || session !== commentAuthoringSessionId || filePath !== currentFilePath || generation !== lastSignaledEditGeneration
+      || isDirty || autoSaveInProgress || activePendingRecording) throw treeCohortError('E_TREE_COHORT_CONTEXT_STALE');
+  };
+  guard();
+  return { projectRoot, projectName, manifestPath, manifest: raw.manifest, beforeManifestText: raw.raw,
+    filePath, generation, guard };
+}
+
+function treeCohortMappedPath(projectRoot, original, bindings) {
+  if (!original) return original;
+  const relative = path.relative(projectRoot, original).split(path.sep).join('/');
+  const match = bindings.filter(item => !item.copy && (relative === item.fromRelativePath
+    || relative.startsWith(item.fromRelativePath + '/'))).sort((a, b) => b.fromRelativePath.length - a.fromRelativePath.length)[0];
+  return match ? path.join(projectRoot, match.toRelativePath + relative.slice(match.fromRelativePath.length)) : original;
+}
+
+async function publishTreeCohortActiveContext(bound) {
+  const guard = () => {
+    userBookmarkCapability(bound.commandId);
+    if (getProjectRootPath() !== bound.projectRoot || currentFilePath !== bound.filePath
+      || activeStage10ApplicationBootstrap !== bound.owner || commentAuthoringSessionId !== bound.session
+      || lastSignaledEditGeneration !== bound.generation || isDirty || autoSaveInProgress || activePendingRecording) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  };
+  guard();
+  const raw = await fs.readFile(bound.filePath, 'utf8');
+  guard();
+  const manifestPath = path.join(bound.projectRoot, 'project.craftsman.json');
+  const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+  guard();
+  if (manifest.projectId !== bound.projectId) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  const saved = await saveLastFile({ preserveSelectionOnPathRebind: true, beforeWrite: guard,
+    projectBinding: { projectId: bound.projectId, projectRoot: bound.projectRoot, manifestPath, manifest } });
+  guard();
+  if (saved?.ok !== true) throw treeCohortError('E_SESSION_CONTINUITY_PERSIST_FAILED');
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  const doc = await getProjectDocumentIdentityPayload(bound.filePath);
+  const removedCopy = bound.pathBindings.find(x => x.removedCopy
+    && path.join(bound.projectRoot, x.fromRelativePath) === bound.priorFilePath);
+  const originalBinding = bound.pathBindings.find(x => x.fromRelativePath === path.relative(bound.projectRoot, bound.priorFilePath).split(path.sep).join('/'));
+  const kind = originalBinding?.newNodeId && manifest.treeIdentity?.nodes?.[originalBinding.newNodeId]?.kind
+    || getDocumentContextFromPath(bound.filePath).kind;
+  const payload = await attachProjectIdToEditorPayload({ ...getDocumentContextFromPath(bound.filePath), kind,
+    documentId: doc.documentId, content: raw, expectedContent: removedCopy ? bound.activeBeforeContent : raw,
+    expectedGeneration: bound.generation, ...(removedCopy ? { treeReplacement: true,
+      expectedDocumentId: removedCopy.nodeId } : { treePublication: true }),
+    metaEnabled: ROMAN_META_KINDS.has(kind) }, bound.filePath);
+  // The general editor replacement adapter deliberately has a closed shape.
+  // Add only this privately checked publication envelope after normalization.
+  Object.assign(payload, { expectedContent: removedCopy ? bound.activeBeforeContent : raw,
+    expectedGeneration: bound.generation, ...(removedCopy ? { treeReplacement: true,
+      expectedDocumentId: removedCopy.nodeId } : { treePublication: true }) });
+  const current = await fs.readFile(bound.filePath, 'utf8');
+  guard();
+  if (current !== raw) throw treeCohortError('E_TREE_COHORT_PUBLICATION_STALE');
+  mainWindow.webContents.send('editor:set-text', payload);
+  if (removedCopy) setDirtyState(false);
+}
+
+async function runTreeCohortIntent(commandId, payload, build, options = {}) {
+  let publication = null, committedOutcome = null;
+  try {
+    const context = await captureTreeMutationContext(commandId, payload);
+    const outcome = await queueDiskOperation(async () => {
+      context.guard();
+      const authority = await getMainProjectManifestAuthority();
+      context.guard();
+      return authority.withProjectLease(payload.projectId, lease => lease.publish(async () => {
+        context.guard();
+        const beforeManifestText = await fs.readFile(context.manifestPath, 'utf8');
+        context.guard();
+        if (beforeManifestText !== context.beforeManifestText) throw treeCohortError('E_TREE_COHORT_MANIFEST_STALE');
+        const state = await readVerifiedProjectTreeMutation({ manifestPath: context.manifestPath, projectId: payload.projectId });
+        context.guard();
+        if (payload.expectedTreeRevision !== undefined && payload.expectedTreeRevision !== state.treeRevision) throw treeCohortError('E_TREE_REVISION_CAS');
+        const inventory = await captureTreeCohortInventory(context.projectRoot);
+        const activeBeforeContent = context.filePath && isPathInside(context.projectRoot, context.filePath)
+          ? await fs.readFile(context.filePath, 'utf8') : null;
+        const cohort = await loadProjectTreeCohortModule();
+        context.guard();
+        const request = await build(context, state);
+        context.guard();
+        const operationId = `tree-${crypto.randomUUID()}`;
+        const plan = commandId === 'cmd.project.tree.undoLastMutation'
+          ? cohort.planProjectTreeUndo({ projectId: payload.projectId, expectedTreeRevision: state.treeRevision,
+            lastMutation: state.lastMutation?.id, receipt: state.receipt, retainedPacket: state.retainedPacket,
+            currentManifestText: beforeManifestText, currentInventory: inventory.inventory,
+            notesText: inventory.notesText, commentsText: inventory.commentsText, operationId })
+          : cohort.planProjectTreeCohort({ projectId: payload.projectId, manifestPath: context.manifestPath,
+            operationId, operation: request.operation, beforeManifestText, ...inventory,
+            expectedTreeRevision: state.treeRevision, bindings: request.bindings, now: new Date().toISOString() });
+        context.guard();
+        if (plan.changed === false) return { ok: true, nodeId: payload.nodeId, moved: false, changed: false };
+        const expired = await expireProjectWordRoundsBeforeTree(context.projectRoot, context.guard);
+        context.guard();
+        const backup = await backupManager.createBackup(context.manifestPath, beforeManifestText, { basePath: context.projectRoot });
+        context.guard();
+        if (!backup?.success) throw treeCohortError('E_TREE_MOVE_BACKUP_FAILED');
+        const recovery = await createProjectTreeMoveRecovery(context.manifestPath, context.projectRoot, beforeManifestText, options);
+        context.guard();
+        if (!recovery.snapshotHashMatchesInput) throw treeCohortError('E_TREE_MOVE_BACKUP_FAILED');
+        if (typeof options.beforeFsMove === 'function') await options.beforeFsMove({ renames: request.renames || [] });
+        context.guard();
+        const transactionRequest = { manifestPath: context.manifestPath, revision: context.generation,
+          treeCohort: plan, revalidate: context.guard,
+          ...(typeof options.afterFsMoveBeforeIdentity === 'function' ? { afterTreeFilesPublish: options.afterFsMoveBeforeIdentity } : {}),
+          verifyManifestContinuation: r => authority.verifyManifestContinuation({ ...r, projectId: payload.projectId }),
+          publishManifest: ({ manifestPath, expectedText, nextText, reason }) => {
+            if (manifestPath !== context.manifestPath) throw treeCohortError('E_TREE_COHORT_MANIFEST_PATH');
+            return authority.commitManifestText({ projectId: payload.projectId, lease, targetPath: manifestPath,
+              expectedText, nextText, label: `tree:${reason}` });
+          } };
+        let result;
+        try { result = await commitProjectTransaction(transactionRequest); }
+        catch (error) {
+          // Recovery is an independent existing lease-bound duty, even if the
+          // UI generation/project has changed. Never replay stale UI intent.
+          try { await recoverProjectTransaction({ ...transactionRequest, revalidate: () => lease.assertOwned() }); }
+          catch (recoveryError) { throw treeCohortError(recoveryError.code || 'E_TREE_RECOVERY_REQUIRED'); }
+          throw treeCohortError(typeof options.afterFsMoveBeforeIdentity === 'function' ? 'E_TREE_MOVE_FILESYSTEM_FAILED'
+            : error.code || 'E_TREE_COHORT_FAILED');
+        }
+        if (result.success !== true) throw treeCohortError(result.code || 'E_TREE_MOVE_FILESYSTEM_FAILED');
+        context.guard();
+        const nextFile = treeCohortMappedPath(context.projectRoot, context.filePath, result.pathBindings || plan.pathBindings || request.bindings || []);
+        // Rebind all affected active siblings, not only the dragged subtree.
+        if (nextFile !== context.filePath) {
+          currentFilePath = nextFile;
+          userBookmarkSaveContinuation = null; userBookmarkRenameLineage = null; lastHistoryRestoreReceipt = null;
+          backupHashes.delete(context.filePath);
+          publication = { projectRoot: context.projectRoot, filePath: nextFile, generation: context.generation,
+            owner: activeStage10ApplicationBootstrap, session: commentAuthoringSessionId, commandId,
+            projectId: payload.projectId, pathBindings: result.pathBindings || [], priorFilePath: context.filePath, activeBeforeContent };
+
+        }
+        return { ok: true, changed: true, moved: true, nodeId: result.pathBindings?.find(x => x.copy && x.nodeId === payload.nodeId)?.newNodeId || payload.nodeId,
+          targetParentNodeId: request.targetParentNodeId, targetIndex: request.targetIndex,
+          treeRevision: result.treeRevision, lastMutation: result.lastMutation,
+          receipt: { schemaVersion: 'project-tree-move-receipt.v1', type: 'project.tree.move.receipt', commandId,
+            projectId: payload.projectId, nodeId: payload.nodeId, moved: true, recovery,
+            expiredWordRoundCount: expired.expiredCount } };
+      }));
+    }, 'project tree cohort');
+    committedOutcome = outcome;
+    if (publication) await publishTreeCohortActiveContext(publication);
+    return outcome;
+  } catch (error) {
+    logDevError('project tree cohort', error);
+    return { ...makeTreeMoveError(error.code || 'E_TREE_COHORT_FAILED', error.message || 'TREE_COHORT_FAILED'),
+      ...(committedOutcome ? { committed: true, treeRevision: committedOutcome.treeRevision } : {}) };
+  }
+}
+
+async function handleUiRenameNonSceneNodeCommand(payload) {
   const safePayload = normalizeLegacyUiBridgePayload(payload);
   if (typeof safePayload.name !== 'string') {
     return { ok: false, error: 'Invalid payload' };
@@ -31622,6 +32067,29 @@ async function handleUiRenameNodeCommand(payload) {
   }
 
   return { ok: true, nodeId: resolvedNode.nodeId };
+}
+
+async function handleUiRenameNodeCommand(payload) {
+  let safe;
+  try { safe = normalizeTreeCohortIntent(payload, ['projectId', 'nodeId', 'name', 'expectedTreeRevision']); }
+  catch (error) { return makeTreeMoveError(error.code, error.message); }
+  if (typeof safe.name !== 'string' || !sanitizeFilename(safe.name)) return makeTreeMoveError('E_TREE_COHORT_NAME_INVALID', 'TREE_NAME_REQUIRED');
+  try {
+    userBookmarkCapability('cmd.project.tree.renameNode');
+    const projectRoot = getProjectRootPath(), manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
+    const raw = await readProjectManifestRawAtPath(manifestPath);
+    if (raw.sourceSchemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION) throw treeCohortError('E_TREE_COHORT_PROJECT_READ_ONLY');
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, { projectRoot, manifestPath, manifest: raw.manifest });
+    if (!node.relativePath.startsWith('roman/')) return handleUiRenameNonSceneNodeCommand(safe);
+  } catch (error) { return makeTreeMoveError(error.code || 'E_TREE_NODE_RESOLUTION_FAILED', error.message); }
+  return runTreeCohortIntent('cmd.project.tree.renameNode', safe, async context => {
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
+    const base = path.basename(node.nodePath), isFile = base.endsWith('.txt'), prefix = extractNumericPrefix(base);
+    const name = sanitizeFilename(safe.name);
+    const finalBase = prefix !== null ? `${String(prefix).padStart(2, '0')}_${name}` : name;
+    const to = path.posix.join(path.posix.dirname(node.relativePath), finalBase + (isFile ? '.txt' : ''));
+    return { operation: 'rename', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: to }] };
+  });
 }
 
 guardedHandle('ui:rename-node', async (_, payload) => {
@@ -31696,168 +32164,52 @@ guardedHandle('ui:delete-node', async (_, payload) => {
 async function handleUiMoveNodeCommand(payload, options = {}) {
   const normalized = normalizeTreeMovePayload(payload);
   if (!normalized.ok) return normalized;
-  const safePayload = normalized.value;
-
-  let resolvedNode;
-  let resolvedParent;
-  try {
-    resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
-    resolvedParent = await resolveProjectTreeNodeIdentity(
-      safePayload.targetParentNodeId,
-      safePayload.projectId,
-    );
-  } catch (error) {
-    return makeTreeMoveError(
-      error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
-      'TREE_MOVE_NODE_RESOLUTION_FAILED',
-    );
-  }
-
-  if (!TREE_MOVE_ALLOWED_NODE_KINDS.has(resolvedNode.kind)) {
-    return makeTreeMoveError('E_TREE_MOVE_KIND_BLOCKED', 'TREE_MOVE_KIND_BLOCKED', {
-      kind: resolvedNode.kind,
+  const safe = normalized.value;
+  return runTreeCohortIntent(TREE_MOVE_COMMAND_ID, safe, async context => {
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
+    const parent = await resolveTreeCohortNode(safe.targetParentNodeId, safe.projectId, context);
+    if (!TREE_MOVE_ALLOWED_NODE_KINDS.has(node.kind)) throw treeCohortError('E_TREE_MOVE_KIND_BLOCKED');
+    if (!TREE_MOVE_ALLOWED_PARENT_KINDS.has(parent.kind)) throw treeCohortError('E_TREE_MOVE_TARGET_KIND_BLOCKED');
+    if (!node.relativePath.startsWith('roman/') || !/^roman(?:\/|$)/u.test(parent.relativePath)) throw treeCohortError('E_TREE_MOVE_SCOPE_BLOCKED');
+    if (node.nodePath === parent.nodePath || isPathInside(node.nodePath, parent.nodePath)) throw treeCohortError('E_TREE_MOVE_CYCLE_BLOCKED');
+    const move = await buildTreeMovePlan(node.nodePath, parent.nodePath, safe.targetIndex);
+    if (!move.ok) throw treeCohortError(move.code || 'E_TREE_MOVE_PLAN_FAILED');
+    const nodes = context.manifest.treeIdentity.nodes;
+    const bindings = move.value.renames.map(rename => {
+      const fromRelativePath = path.relative(context.projectRoot, rename.from).split(path.sep).join('/');
+      const owner = Object.entries(nodes).find(([, value]) => value.present !== false && value.bindingKey === `file:${fromRelativePath}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      return { nodeId: owner[0], fromRelativePath, toRelativePath: path.relative(context.projectRoot, rename.to).split(path.sep).join('/') };
     });
-  }
-  if (!TREE_MOVE_ALLOWED_PARENT_KINDS.has(resolvedParent.kind)) {
-    return makeTreeMoveError('E_TREE_MOVE_TARGET_KIND_BLOCKED', 'TREE_MOVE_TARGET_KIND_BLOCKED', {
-      kind: resolvedParent.kind,
-    });
-  }
+    return { operation: 'move', bindings, renames: move.value.renames,
+      targetParentNodeId: parent.nodeId, targetIndex: move.value.targetIndex };
+  }, options);
+}
 
-  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
-  if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
-  const parentPathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedParent.nodePath }, ['path']);
-  if (!parentPathGuard.ok || !parentPathGuard.payload) return parentPathGuard.error;
-  const nodePath = nodePathGuard.payload.path;
-  const targetParentPath = parentPathGuard.payload.path;
-  const romanRoot = getProjectSectionPath('roman');
+async function handleUiCopyNodeCommand(payload) {
+  let safe;
+  try { safe = normalizeTreeCohortIntent(payload, ['projectId', 'nodeId', 'name', 'expectedTreeRevision']); }
+  catch (error) { return makeTreeMoveError(error.code, error.message); }
+  if (typeof safe.name !== 'string' || !sanitizeFilename(safe.name)) return makeTreeMoveError('E_TREE_COHORT_NAME_INVALID', 'TREE_NAME_REQUIRED');
+  return runTreeCohortIntent('cmd.project.tree.copyNode', safe, async context => {
+    const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
+    if (!['scene', 'chapter-file'].includes(node.kind) || !node.relativePath.startsWith('roman/')) throw treeCohortError('E_TREE_COPY_KIND_BLOCKED');
+    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent);
+    const next = entries.length + 1;
+    const toRelativePath = path.posix.join(path.posix.dirname(node.relativePath), `${String(next).padStart(2, '0')}_${sanitizeFilename(safe.name)}.txt`);
+    return { operation: 'copy', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath, copy: true }] };
+  });
+}
 
-  if (!isPathInside(romanRoot, nodePath) || !isPathInside(romanRoot, targetParentPath)) {
-    return makeTreeMoveError('E_TREE_MOVE_SCOPE_BLOCKED', 'TREE_MOVE_ONLY_SUPPORTED_IN_ROMAN');
-  }
-  if (nodePath === targetParentPath || isPathInside(nodePath, targetParentPath)) {
-    return makeTreeMoveError('E_TREE_MOVE_CYCLE_BLOCKED', 'TREE_MOVE_CYCLE_BLOCKED');
-  }
-
-  let targetParentStat;
-  try {
-    targetParentStat = await fs.lstat(targetParentPath);
-  } catch {
-    return makeTreeMoveError('E_TREE_MOVE_TARGET_NOT_FOUND', 'TREE_MOVE_TARGET_NOT_FOUND');
-  }
-  if (!targetParentStat.isDirectory()) {
-    return makeTreeMoveError('E_TREE_MOVE_TARGET_NOT_PARENT', 'TREE_MOVE_TARGET_NOT_PARENT');
-  }
-
-  const plan = await buildTreeMovePlan(nodePath, targetParentPath, safePayload.targetIndex);
-  if (!plan.ok) return plan;
-  const { renames, nextNodePath, targetIndex } = plan.value;
-  if (!Array.isArray(renames) || renames.length === 0) {
-    return {
-      ok: true,
-      nodeId: resolvedNode.nodeId,
-      targetParentNodeId: resolvedParent.nodeId,
-      targetIndex,
-      moved: false,
-      receipt: {
-        schemaVersion: 'project-tree-move-receipt.v1',
-        type: 'project.tree.move.receipt',
-        commandId: TREE_MOVE_COMMAND_ID,
-        projectId: resolvedNode.projectId,
-        nodeId: resolvedNode.nodeId,
-        targetParentNodeId: resolvedParent.nodeId,
-        moved: false,
-      },
-    };
-  }
-
-  const manifestSourceText = await fs.readFile(resolvedNode.manifestPath, 'utf8');
-  const backupResult = await backupManager.createBackup(
-    resolvedNode.manifestPath,
-    manifestSourceText,
-    { basePath: resolvedNode.projectRoot },
-  );
-  if (!backupResult || backupResult.success !== true) {
-    return makeTreeMoveError('E_TREE_MOVE_BACKUP_FAILED', 'TREE_MOVE_BACKUP_FAILED');
-  }
-  const recovery = await createProjectTreeMoveRecovery(
-    resolvedNode.manifestPath,
-    resolvedNode.projectRoot,
-    manifestSourceText,
-    options,
-  );
-
-  try {
-    if (typeof options.beforeFsMove === 'function') {
-      await options.beforeFsMove({ renames: cloneJsonSafe(renames) || [] });
-    }
-    await safeRenameSequence(renames);
-    if (typeof options.afterFsMoveBeforeIdentity === 'function') {
-      await options.afterFsMoveBeforeIdentity({ renames: cloneJsonSafe(renames) || [] });
-    }
-  } catch (error) {
-    try {
-      await safeRenameSequence(
-        renames.slice().reverse().map((move) => ({ from: move.to, to: move.from })),
-      );
-    } catch (rollbackError) {
-      logDevError('move node filesystem rollback', rollbackError);
-    }
-    return makeTreeMoveError('E_TREE_MOVE_FILESYSTEM_FAILED', 'TREE_MOVE_FILESYSTEM_FAILED', {
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-    });
-  }
-
-  try {
-    await rebindProjectTreeIdentityForMoves(
-      renames.map((move) => ({ fromPath: move.from, toPath: move.to })),
-    );
-  } catch (error) {
-    logDevError('move node identity', error);
-    try {
-      await safeRenameSequence(
-        renames.slice().reverse().map((move) => ({ from: move.to, to: move.from })),
-      );
-    } catch (rollbackError) {
-      logDevError('move node identity rollback', rollbackError);
-    }
-    return makeTreeMoveError(
-      error && typeof error.code === 'string' ? error.code : 'E_TREE_MOVE_IDENTITY_REBIND_FAILED',
-      'TREE_MOVE_IDENTITY_REBIND_FAILED',
-    );
-  }
-
-  if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
-    const relative = path.relative(nodePath, currentFilePath);
-    currentFilePath = joinPathSegmentsWithinRoot(nextNodePath, [relative], { resolveSymlinks: false });
-    await saveLastFile({ preserveSelectionOnPathRebind: true });
-  }
-
-  const receipt = {
-    schemaVersion: 'project-tree-move-receipt.v1',
-    type: 'project.tree.move.receipt',
-    commandId: TREE_MOVE_COMMAND_ID,
-    projectId: resolvedNode.projectId,
-    nodeId: resolvedNode.nodeId,
-    targetParentNodeId: resolvedParent.nodeId,
-    targetIndex,
-    moved: true,
-    renamedEntryCount: renames.length,
-    recovery: {
-      snapshotCreated: recovery.snapshotCreated === true,
-      snapshotReadable: recovery.snapshotReadable === true,
-      snapshotHashMatchesInput: recovery.snapshotHashMatchesInput === true,
-      manifestHash: typeof recovery.manifestHash === 'string' ? recovery.manifestHash : '',
-    },
-  };
-  return {
-    ok: true,
-    nodeId: resolvedNode.nodeId,
-    targetParentNodeId: resolvedParent.nodeId,
-    targetIndex,
-    moved: true,
-    receipt,
-  };
+async function handleUiTreeUndoCommand(payload) {
+  let safe;
+  try { safe = normalizeTreeCohortIntent(payload, ['projectId', 'expectedTreeRevision', 'mutationId']); }
+  catch (error) { return makeTreeMoveError(error.code, error.message); }
+  if (!Number.isSafeInteger(safe.expectedTreeRevision) || typeof safe.mutationId !== 'string') return makeTreeMoveError('E_TREE_UNDO_UNAVAILABLE', 'TREE_UNDO_TOKEN_REQUIRED');
+  return runTreeCohortIntent('cmd.project.tree.undoLastMutation', safe, async (_context, state) => {
+    if (!state.lastMutation?.canUndo || state.lastMutation.id !== safe.mutationId) throw treeCohortError('E_TREE_UNDO_UNAVAILABLE');
+    return { operation: 'undo', bindings: [] };
+  });
 }
 
 async function handleUiReorderNodeCommand(payload) {
@@ -31885,7 +32237,7 @@ async function handleUiReorderNodeCommand(payload) {
   }
 
   const parentPath = path.dirname(nodePath);
-  const entries = await readDirectoryEntries(parentPath);
+  const entries = await readTreeOrderedEntries(parentPath);
   const sceneIdsBefore = getTreeNodeIdsForOrderedEntries(parentPath, entries, resolvedNode.manifest);
   const index = entries.findIndex((entry) => entry.path === nodePath);
   if (index === -1) {
@@ -31900,12 +32252,13 @@ async function handleUiReorderNodeCommand(payload) {
   const moveResult = await handleUiMoveNodeCommand({
     projectId: resolvedNode.projectId,
     nodeId: resolvedNode.nodeId,
+    ...(safePayload.expectedTreeRevision === undefined ? {} : { expectedTreeRevision: safePayload.expectedTreeRevision }),
     targetParentNodeId: getTreeParentNodeIdFromResolvedPath(parentPath, resolvedNode.manifest),
     targetIndex,
   });
   if (!moveResult || moveResult.ok !== true) return moveResult;
-  const { manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
-  const entriesAfter = await readDirectoryEntries(parentPath);
+  const { manifest } = await readProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
+  const entriesAfter = await readTreeOrderedEntries(parentPath);
   const sceneIdsAfter = getTreeNodeIdsForOrderedEntries(parentPath, entriesAfter, manifest);
   if (sceneIdsAfter.length > 0) {
     try {
@@ -32895,6 +33248,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.document.open',
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
+  'cmd.project.tree.copyNode',
+  'cmd.project.tree.undoLastMutation',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
   METADATA_UPDATE_COMMAND_ID,
@@ -33476,6 +33831,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.tree.renameNode': async (payload = {}) => {
     return handleUiRenameNodeCommand(payload);
   },
+  'cmd.project.tree.copyNode': async (payload = {}) => handleUiCopyNodeCommand(payload),
+  'cmd.project.tree.undoLastMutation': async (payload = {}) => handleUiTreeUndoCommand(payload),
   'cmd.project.tree.deleteNode': async (payload = {}) => {
     return handleUiDeleteNodeCommand(payload);
   },
@@ -35370,6 +35727,8 @@ module.exports = {
   handleUiRenameNodeCommand,
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
+  handleUiCopyNodeCommand,
+  handleUiTreeUndoCommand,
   handleMetadataUpdateCommand,
   handleNotesAttachToSceneCommand,
   handleNotesConvertToSceneCommand,

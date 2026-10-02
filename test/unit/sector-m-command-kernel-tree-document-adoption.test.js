@@ -81,13 +81,13 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
   assert.ok(projectCommandsSource.includes('{ projectId, parentNodeId, kind, name },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, name },'))
+  assert.ok(projectCommandsSource.includes("{ projectId, nodeId, name, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },"))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, direction },'))
+  assert.ok(projectCommandsSource.includes("{ projectId, nodeId, direction, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },"))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_MOVE_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, targetParentNodeId, targetIndex },'))
+  assert.ok(projectCommandsSource.includes("{ projectId, nodeId, targetParentNodeId, targetIndex, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) },"))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.METADATA_UPDATE,'))
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId, baselineHash, metadata },'))
   assert.equal(projectCommandsSource.includes('DOCUMENT_PATH_REQUIRED'), false)
@@ -301,10 +301,78 @@ test('command kernel tree-document adoption: loadTree data fetch uses query brid
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('async function loadTree() {'))
-  assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: activeTab });'))
+  assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: requestedTab });'))
   assert.ok(source.includes("void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true, generation: localEditGeneration });"))
   assert.ok(source.includes("invokeSaveLifecycleSignalBridge('signal.autoSave.request')"))
   assert.ok(source.includes('const result = await invokeWorkspaceQueryBridge(COLLAB_SCOPE_LOCAL_QUERY_ID);'))
   assert.ok(source.includes('result.ok === true'))
   assert.ok(source.includes('result.value === true'))
 })
+
+test('scene copy and tree Undo send revision-bound pathless commands and preserve backend refusal', async () => {
+  const commands = await loadProjectCommands();
+  const calls = [];
+  let accepted = true;
+  const { registry, handlers } = createCaptureRegistry();
+  commands.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge(request) {
+    calls.push(request);
+    return accepted ? { ok: true, nodeId: 'new-id' } : { ok: false, reason: 'TREE_REVISION_STALE' };
+  } } });
+  const cases = [
+    [commands.EXTRA_COMMAND_IDS.TREE_COPY_NODE, { projectId: 'p', nodeId: 'n', name: 'Copy', expectedTreeRevision: 3 }],
+    [commands.EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION, { projectId: 'p', expectedTreeRevision: 3, mutationId: 'm' }],
+  ];
+  for (const [id, payload] of cases) {
+    const handler = handlers.get(id).handler;
+    assert.equal((await handler({ ...payload, path: '/untrusted', metadata: { forged: true } })).ok, true);
+    assertBridgeCall(calls.at(-1), id, payload);
+    const before = calls.length;
+    for (const revision of [undefined, -1, 0.5, '3', Number.MAX_SAFE_INTEGER + 1]) {
+      assert.equal((await handler({ ...payload, expectedTreeRevision: revision })).ok, false);
+    }
+    assert.equal(calls.length, before);
+    accepted = false;
+    const refusal = await handler(payload);
+    assert.equal(refusal.ok, false);
+    assert.equal(refusal.error.reason, 'TREE_REVISION_STALE');
+    accepted = true;
+  }
+  const rename = handlers.get(commands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE).handler;
+  await rename({ projectId: 'p', nodeId: 'n', name: 'Rename', expectedTreeRevision: 'forged' });
+  assert.equal(calls.at(-1).payload.expectedTreeRevision, 'forged', 'Main must see and reject a supplied invalid revision');
+});
+
+test('scene copy and tree Undo have node-only capabilities and no text-history shortcut', async () => {
+  const commands = await loadProjectCommands();
+  const policy = await loadCapabilityPolicy();
+  const { registry, handlers } = createCaptureRegistry();
+  commands.registerProjectCommands(registry, {});
+  for (const [key, suffix] of [['TREE_COPY_NODE', 'copyNode'], ['TREE_UNDO_LAST_MUTATION', 'undoLastMutation']]) {
+    const id = commands.EXTRA_COMMAND_IDS[key];
+    assert.equal(policy.CAPABILITY_BINDING[id], `cap.project.tree.${suffix}`);
+    assert.equal(handlers.get(id).meta.hotkey, '');
+    for (const platform of ['web', 'mobile-wrapper']) {
+      assert.equal(policy.enforceCapabilityForCommand(id, { platformId: platform }).ok, false);
+    }
+    assert.equal(policy.enforceCapabilityForCommand(id, { platformId: 'node' }).ok, true);
+  }
+});
+
+
+test('actual command runner denies copy and tree Undo before any bridge effect', async () => {
+  const commands = await loadProjectCommands();
+  const { createCommandRegistry } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/registry.mjs')).href);
+  const { createCommandRunner } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/runCommand.mjs')).href);
+  const registry = createCommandRegistry();
+  let effects = 0;
+  commands.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge() { effects++; return { ok: true }; } } });
+  const run = createCommandRunner(registry, { capability: { defaultPlatformId: 'node' } });
+  for (const platformId of ['web', 'mobile-wrapper']) {
+    for (const command of [commands.EXTRA_COMMAND_IDS.TREE_COPY_NODE, commands.EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION]) {
+      const result = await run(command, { platformId, projectId: 'project', nodeId: 'scene', name: 'Copy', expectedTreeRevision: 7, mutationId: 'mutation' });
+      assert.equal(result.ok, false);
+      assert.equal(result.error.code, 'E_CAPABILITY_DISABLED_FOR_COMMAND');
+    }
+  }
+  assert.equal(effects, 0);
+});

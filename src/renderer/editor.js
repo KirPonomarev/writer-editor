@@ -1161,6 +1161,10 @@ let reviewSurfaceApplyActionListenerBound = false;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
+let treeMutationProjection = null;
+let treeQueryGeneration = 0;
+let treeMutationPending = false;
+let contextMenuReturnFocus = null;
 let currentMeta = {
   synopsis: '',
   status: 'черновик',
@@ -10013,15 +10017,19 @@ function isTreeNodeRowExpandable(node) {
   );
 }
 
-function clearContextMenu() {
+function clearContextMenu({ restoreFocus = false } = {}) {
   if (!contextMenu) return;
   contextMenu.innerHTML = '';
   contextMenu.hidden = true;
+  const previousFocus = contextMenuReturnFocus;
+  contextMenuReturnFocus = null;
+  if (restoreFocus && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
 }
 
-function showContextMenu(items, x, y) {
+function showContextMenu(items, x, y, trigger = null) {
   if (!contextMenu) return;
   contextMenu.innerHTML = '';
+  contextMenuReturnFocus = trigger || document.activeElement;
   items.forEach((item) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -10031,7 +10039,7 @@ function showContextMenu(items, x, y) {
     button.disabled = item.enabled === false;
     button.addEventListener('click', () => {
       if (button.disabled) return;
-      clearContextMenu();
+      clearContextMenu({ restoreFocus: true });
       item.onInvoke();
     });
     contextMenu.appendChild(button);
@@ -10039,6 +10047,14 @@ function showContextMenu(items, x, y) {
   contextMenu.style.left = `${x}px`;
   contextMenu.style.top = `${y}px`;
   contextMenu.hidden = false;
+  contextMenu.querySelector('button:not(:disabled)')?.focus({ preventScroll: true });
+  contextMenu.onkeydown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      clearContextMenu({ restoreFocus: true });
+    }
+  };
 }
 
 function isNavigatorContextCommandAvailable(commandId) {
@@ -10120,11 +10136,17 @@ function captureNodeNameTarget(node) {
   const current = findTreeNodeById(treeRoot, nodeId);
   if (!currentProjectId || !current) return null;
   return { projectId: currentProjectId, tree: treeRoot, nodeId,
-    kind: current.kind, label: current.label };
+    kind: current.kind, label: current.label,
+    treeRevision: treeMutationProjection?.treeRevision };
 }
 
 function isNodeNameTargetCurrent(target) {
-  if (!target || currentProjectId !== target.projectId || treeRoot !== target.tree) return false;
+  if (!target || currentProjectId !== target.projectId
+    || treeMutationProjection?.treeRevision !== target.treeRevision) return false;
+  // A refreshed immutable tree may have the same canonical revision. Object
+  // allocation is not a source change; Main still revalidates the revision.
+  const revisionBound = Number.isSafeInteger(target.treeRevision) && target.treeRevision >= 0;
+  if (!revisionBound && treeRoot !== target.tree) return false;
   const current = findTreeNodeById(treeRoot, target.nodeId);
   return Boolean(current && current.kind === target.kind && current.label === target.label);
 }
@@ -10146,16 +10168,90 @@ async function handleCreateNode(node, kind, promptLabel) {
 
 async function handleRenameNode(node) {
   const target = captureNodeNameTarget(node);
-  if (!target) return;
+  if (!target) { updateStatusText('Выберите элемент в актуальном дереве проекта'); return; }
   const name = await openNodeNameDialog({ title: 'Новое имя', initialValue: target.label || '', rename: true });
-  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) return;
+  if (name === null) return;
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) {
+    updateStatusText('Переименование недоступно: состояние проекта изменилось');
+    return;
+  }
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {
     projectId: target.projectId,
     nodeId: target.nodeId,
     name: name.trim(),
+    expectedTreeRevision: target.treeRevision,
   });
   if (!result || result.ok === false || !isNodeNameTargetCurrent(target)) return;
   await loadTree();
+}
+
+function captureTreeMutationProjection() {
+  const projection = treeMutationProjection;
+  return projection && projection.projectId === currentProjectId
+    && Number.isSafeInteger(projection.treeRevision) && projection.treeRevision >= 0
+    ? projection : null;
+}
+
+async function handleCopyNode(node) {
+  if (treeMutationPending || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
+    updateStatusText('Создание копии сейчас недоступно');
+    return;
+  }
+  const target = captureNodeNameTarget(node);
+  if (!target || !['scene', 'chapter-file'].includes(target.kind) || !captureTreeMutationProjection()) {
+    updateStatusText('Выберите сцену в актуальном дереве проекта');
+    return;
+  }
+  const name = await openNodeNameDialog({ title: 'Название копии',
+    initialValue: `${(target.label || '').slice(0, 72)} — копия`, submitLabel: 'Создать копию' });
+  if (name === null) return;
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target) || treeMutationPending
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_COPY_NODE)) {
+    updateStatusText('Создание копии недоступно: состояние проекта изменилось');
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_COPY_NODE, {
+      projectId: target.projectId, nodeId: target.nodeId, name: name.trim(),
+      expectedTreeRevision: target.treeRevision,
+    });
+    if (result?.ok && currentProjectId === target.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
+async function handleUndoTreeMutation(expectedProjection = treeMutationProjection) {
+  const projection = captureTreeMutationProjection();
+  if (!projection || !expectedProjection
+    || projection.projectId !== expectedProjection.projectId
+    || projection.treeRevision !== expectedProjection.treeRevision
+    || projection.lastMutation?.id !== expectedProjection.lastMutation?.id
+    || treeMutationPending || !projection.lastMutation?.canUndo
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION)) {
+    updateStatusText('Отмена изменения структуры сейчас недоступна');
+    return;
+  }
+  treeMutationPending = true;
+  try {
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION, {
+      projectId: projection.projectId, expectedTreeRevision: projection.treeRevision,
+      mutationId: projection.lastMutation.id,
+    });
+    if (result?.ok && currentProjectId === projection.projectId) await loadTree();
+  } finally {
+    treeMutationPending = false;
+  }
+}
+
+function appendTreeUndoMenuItem(items) {
+  const projection = captureTreeMutationProjection();
+  const available = !treeMutationPending && projection?.lastMutation?.canUndo === true;
+  appendContextMenuCommandItem(items, EXTRA_COMMAND_IDS.TREE_UNDO_LAST_MUTATION,
+    available ? 'Отменить последнее изменение структуры'
+      : 'Отмена изменения структуры недоступна',
+    () => handleUndoTreeMutation(projection), { enabled: available });
 }
 
 async function handleDeleteNode(node) {
@@ -10180,13 +10276,16 @@ async function handleDeleteNode(node) {
 }
 
 async function handleMoveNode(node, targetParentNodeId, targetIndex) {
+  const projectId = currentProjectId;
+  const expectedTreeRevision = captureTreeMutationProjection()?.treeRevision;
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {
     projectId: currentProjectId,
     nodeId: getEffectiveDocumentId(node),
     targetParentNodeId,
     targetIndex,
+    expectedTreeRevision,
   });
-  if (!result || result.ok === false) {
+  if (!result || result.ok === false || currentProjectId !== projectId) {
     return;
   }
   await loadTree();
@@ -10222,6 +10321,7 @@ function buildContextMenuItems(node) {
     append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Вниз', () => handleReorderNode(node, 'down'));
   };
   const appendRenameDelete = () => {
+    appendTreeUndoMenuItem(items);
     append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать', () => handleRenameNode(node));
     append(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'Удалить', () => handleDeleteNode(node));
   };
@@ -10243,6 +10343,8 @@ function buildContextMenuItems(node) {
 
   if (node.kind === 'chapter-file' || node.kind === 'scene') {
     appendOpen();
+    append(EXTRA_COMMAND_IDS.TREE_COPY_NODE, 'Создать копию…', () => handleCopyNode(node),
+      { enabled: !treeMutationPending && Boolean(captureTreeMutationProjection()) });
     append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
     append(
       EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
@@ -10448,7 +10550,9 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     }
     const items = buildContextMenuItems(node);
     if (items.length) {
-      showContextMenu(items, event.clientX, event.clientY);
+      const trigger = row.isConnected ? row
+        : treeContainer?.querySelector(`.tree__row[data-navigator-row-id="${effectiveDocumentId}"]`);
+      showContextMenu(items, event.clientX, event.clientY, trigger);
     }
   });
 
@@ -10560,6 +10664,7 @@ function buildNavigatorRootCreateMenuItems() {
     'Новая глава (со сценами)',
     () => handleCreateNode(romanRoot, 'chapter-folder', 'Название главы'),
   );
+  appendTreeUndoMenuItem(items);
   return items;
 }
 
@@ -10616,9 +10721,14 @@ function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
 
 async function loadTree() {
   if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') return;
+  const generation = ++treeQueryGeneration;
+  const requestedProjectId = currentProjectId;
+  const requestedTab = activeTab;
   try {
-    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: activeTab });
+    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: requestedTab });
+    if (generation !== treeQueryGeneration || currentProjectId !== requestedProjectId || activeTab !== requestedTab) return;
     if (!result || result.ok === false) {
+      treeMutationProjection = null;
       updateStatusText('Ошибка');
       return;
     }
@@ -10631,6 +10741,15 @@ async function loadTree() {
       }
     }
     treeRoot = result.root;
+    const lastMutation = result.lastMutation;
+    treeMutationProjection = Number.isSafeInteger(result.treeRevision) && result.treeRevision >= 0
+      ? Object.freeze({ projectId: currentProjectId, treeRevision: result.treeRevision,
+        lastMutation: lastMutation && typeof lastMutation.id === 'string' && lastMutation.id
+          && typeof lastMutation.kind === 'string'
+          ? Object.freeze({ id: lastMutation.id, kind: lastMutation.kind,
+            canUndo: lastMutation.canUndo === true,
+            unavailableReason: typeof lastMutation.unavailableReason === 'string' ? lastMutation.unavailableReason : '' })
+          : null }) : null;
     if (treeContainer) {
       treeContainer.dataset.tab = activeTab;
     }
@@ -10662,6 +10781,8 @@ async function loadTree() {
       restoreEditorFocus: revealResult.found,
     });
   } catch {
+    if (generation !== treeQueryGeneration || currentProjectId !== requestedProjectId || activeTab !== requestedTab) return;
+    treeMutationProjection = null;
     updateStatusText('Ошибка');
   }
 }
@@ -11000,6 +11121,15 @@ if (treeContainer) {
       : null;
     if (!(row instanceof HTMLElement)) return;
     const currentId = row.dataset.navigatorRowId || '';
+    if (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)) {
+      event.preventDefault();
+      event.stopPropagation();
+      const node = findTreeNodeById(treeRoot, currentId);
+      const items = buildContextMenuItems(node);
+      const rect = row.getBoundingClientRect();
+      if (items.length) showContextMenu(items, rect.left, rect.bottom, row);
+      return;
+    }
     const visibleIds = getVisibleNavigatorRowIds();
     const directionByKey = {
       ArrowUp: 'previous',
@@ -23417,8 +23547,53 @@ window.addEventListener('resize', () => {
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });
 
+function isTreeReplacementCurrent(payload) {
+  return Boolean(payload?.treeReplacement === true && payload.treePublication !== true
+    && Number.isSafeInteger(payload.expectedGeneration) && payload.expectedGeneration >= 0
+    && payload.expectedGeneration === localEditGeneration
+    && currentProjectId && payload.projectId === currentProjectId
+    && currentDocumentId && payload.expectedDocumentId === currentDocumentId
+    && typeof payload.documentId === 'string' && payload.documentId
+    && payload.documentId !== currentDocumentId
+    && ['scene', 'chapter-file'].includes(payload.kind) && payload.metaEnabled === true
+    && typeof payload.content === 'string' && typeof payload.expectedContent === 'string'
+    && composeDocumentContent() === payload.expectedContent);
+}
+
+// Main has already committed a path-only tree cohort. This publication changes
+// only the current shell context; the editor document and its history stay live.
+function applyTreeContextPublication(payload) {
+  if (!payload || payload.treePublication !== true || payload.treeReplacement === true
+    || !Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0
+    || payload.expectedGeneration !== localEditGeneration
+    || !currentProjectId || payload.projectId !== currentProjectId
+    || !currentDocumentId || payload.documentId !== currentDocumentId
+    || payload.kind !== currentDocumentKind || payload.metaEnabled !== metaEnabled
+    || typeof payload.title !== 'string' || !payload.title.trim()
+    || typeof payload.expectedContent !== 'string' || payload.content !== payload.expectedContent
+    || composeDocumentContent() !== payload.expectedContent) return false;
+  currentDocumentTitle = payload.title.trim();
+  try {
+    localStorage.setItem(getActiveDocumentTitleStorageKey(currentProjectId), currentDocumentTitle);
+  } catch {}
+  updateInspectorSnapshot();
+  refreshMetadataInspector();
+  void refreshManuscriptNoteReferences();
+  void refreshVisibleCommentProjection();
+  if (currentRightTab === 'history') refreshSceneHistory('');
+  return true;
+}
+
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.treeReplacement === true && !isTreeReplacementCurrent(payload)) {
+      updateStatusText('Сцена не переключена: состояние изменилось');
+      return;
+    }
+    if (payload?.treePublication === true) {
+      if (!applyTreeContextPublication(payload)) updateStatusText('Название сцены не обновлено: состояние изменилось');
+      return;
+    }
     if (payload?.localImageAuthoringPublication === true) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapLocalImagePublication(payload, composeDocumentContent());
       return;

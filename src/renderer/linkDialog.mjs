@@ -5,10 +5,10 @@ let activeDialog = null;
 export function isLinkDialogOpen() { return activeDialog !== null; }
 export function cancelLinkDialog() { activeDialog?.cancel(); }
 
-export function openNodeNameDialog({ title, initialValue = '', rename = false }) {
+export function openNodeNameDialog({ title, initialValue = '', rename = false, submitLabel }) {
   return openLinkDialog({
     title, initialValue, canRemove: false,
-    fieldLabel: 'Название', inputMode: 'text', submitLabel: rename ? 'Переименовать' : 'Создать',
+    fieldLabel: 'Название', inputMode: 'text', submitLabel: submitLabel || (rename ? 'Переименовать' : 'Создать'),
     cancelLabel: 'Отмена', errorMessage: 'Введите название от 1 до 80 символов без символов пути.',
     normalize: normalizeNodeName,
   });
