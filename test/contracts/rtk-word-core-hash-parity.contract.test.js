@@ -109,6 +109,12 @@ test('Four Core domain modules preserve complete comment, anchor, return and not
   assert.deepEqual(models[returnName].planCommentReturnDelta(returnInput), oracle[returnName].planCommentReturnDelta(returnInput));
   const changedReturn = { ...returnInput, returnedThreads: structuredClone(returnInput.returnedThreads) };
   changedReturn.returnedThreads[0].body = 'Changed Unicode 世界 😀';
+  for (const module of [models[returnName], oracle[returnName]]) {
+    assert.throws(() => module.planCommentReturnDelta(changedReturn), { code: 'COMMENT_BODY_PROJECTION_MISMATCH' });
+  }
+  const paragraph = changedReturn.returnedThreads[0].richBody.document.content[0];
+  changedReturn.returnedThreads[0].richBody.document.content = [{ ...paragraph,
+    content: [{ ...paragraph.content[0], text: 'Changed Unicode 世界 😀' }] }];
   const changed = models[returnName].planCommentReturnDelta(changedReturn);
   assert.deepEqual(changed, oracle[returnName].planCommentReturnDelta(changedReturn));
   assert.equal(changed.unchanged, undefined);

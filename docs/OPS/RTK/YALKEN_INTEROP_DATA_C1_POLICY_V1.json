@@ -544,7 +544,9 @@
     "test/contracts/rtk-word-rich-comment-parser.contract.test.js",
     "test/contracts/rtk-word-rich-comments-renderer.contract.test.js",
     "docs/tasks/2026-10-03--word-rich-comments-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json",
+    "scripts/run-tests.js",
+    "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1509,7 +1511,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "4674e95ab9a9a7c6bed508c04c85eb249047cda0b4f8510af6e2876d660100d5"
+        "sha256": "40f23828068266ee7195105c5077cb733b4e9bf22a30a0644b55cca15fdb10f4"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1733,7 +1735,7 @@
       },
       {
         "path": "test/contracts/rtk-word-core-hash-parity.contract.test.js",
-        "sha256": "9d0a8445f20ddd1449baf0e3a363f44e802bf218e774daccb34ee38ff2c65001"
+        "sha256": "2c627a22b606b60c6a5ece942fd0325de057dad2a524157c5d4f1f0e3c1e38aa"
       },
       {
         "path": "test/unit/r24-r5-lifecycle-physics.test.js",
@@ -1821,7 +1823,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-lists.contract.test.js",
-        "sha256": "bbf091473bda74f90f9ef6b1d0516aa7b3a066f8077086174d84b4ee80cf77a3"
+        "sha256": "f5b84e9236469914483615231736271a6dc77af423645f940d3507f869d7b9f8"
       },
       {
         "path": "docs/tasks/2026-10-01--word-scene-first-note-mac.md",
@@ -2337,7 +2339,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-rich-comments-mac.md",
-        "sha256": "f47a9842b3c1951aac9f429b239a50569b2461543384a27bca0f9664b7768229"
+        "sha256": "93b799ef8a40581e70184e943792f27e336feb3a7c33266b9adfb665c0f7fc63"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json",
@@ -2350,6 +2352,10 @@
       {
         "path": "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",
         "sha256": "b8461647ca3e53670cbd61b01dee1d40382eb4d77d5ac27ed24cdf2f2a932323"
+      },
+      {
+        "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
+        "sha256": "fa8d3ea4ac1c5fe2523c5f03792453bfd9b0f38ded93cd7fa58a8d3464a88d43"
       }
     ],
     "followupRepair": {

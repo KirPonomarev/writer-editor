@@ -60,6 +60,12 @@ One complete rich comment authoring and exchange capability, with independent na
 
 - `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
 
+- `scripts/run-tests.js`
+- `test/contracts/promotion-heavy-lane-entrypoint.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `test/contracts/rtk-word-core-hash-parity.contract.test.js`
+- `test/contracts/rtk-word-note-lists.contract.test.js`
+
 ## DENYLIST
 No out-of-scope writes, user-data modifications, new dependencies, runtime network, weakened gates, self-PASS, silent flattening, global Word quit, reset/stash/clean/force-push or historical evidence rewrite.
 
@@ -127,3 +133,9 @@ Baseline repair amendment:38-path clean preflight PASS at candidate80fdb2ff befo
 SOURCE01 candidate evidence: actual Word root italic formatting Apply revision3->4; independent XML/state oracle19assertionsPASS, reply/anchor/identity/literal/main scene preserved. Repeating the same DOCX Apply leaves state bytes and revision4 unchanged. Later root Cmd-U and local underline button both advanced revision without retaining intended underline. These authoring observations are FAIL, not acceptance; UI serialization investigation active. SOURCE/PACKAGED full qualification and delivery remain incomplete.
 
 Native authoring root cause and repair: shared document language validation rejects formatted hardBreak language admitted by comment grammar. The comment editor now validates a marked break through an exact temporary newline text node and restores its structural position; manuscript language grammar is unchanged. Save reads the live editor and refuses serialization errors before dispatch, preserving the draft instead of publishing its prior value. Actual-schema underline, invalid-language, and failed-save checks cover this path. Runtime01 is superseded for final authoring acceptance; its independent Word Apply/replay observations retain only their original80fdb2ff scope.
+
+
+Runner and CI repair amendment:43-path clean preflight PASS at5e54e3e3 before the three added contract edits; own runner WIP preserved and restored byte-for-byte. Baseline5e54 completed2144pass2fail59skip; remaining failures were unchanged elapsed-time contracts under competing test files. Primary Node test-file dispatch now uses test-concurrency=1, with exact sorted inventory and all16 existing stages/failure propagation verified by12runner contracts; isolated WP402/WP5016checksPASS. Thresholds, skip inventory and downstream gates unchanged. Full baseline repeat remains required.
+CI37155131347 exposed inconsistent synthetic body/richBody mutation in prepared Apply and hash parity fixtures, plus an obsolete expectation that declared null editor defaults differ. Three contract suites now33PASS0FAIL0SKIP0TODO. Explicit body-only mismatch rejection verified for both hash implementations; substantive source/ledger/registry negatives retained and strengthened. Product code unchanged by this amendment.
+Candidate5e54 SOURCE cycle1 and PACKAGED cycle1 each passed25 independent XML/state assertions. PACKAGED cycle2 passed77 assertions including actual Word-modified reply language and effective defaults; do not claim replies unchanged. PACKAGED replay preserved exact state bytes. New native two-paragraph italic root saved revision5->6 with existing thread and manuscript unchanged; subsequent native Word formatting returns advanced revisions7,8,9. Cycles3-5 independent oracle pending at this checkpoint. These records supersede earlier unresolved authoring statements only within their exact tested candidate scope; full Mac acceptance, source remaining cycles, mandatory suites and merge remain outstanding.
+Delivery checkpoint: commits80fdb2ff and5e54e3e3 pushed; PR2074 is draft, NOT_MERGED. No whole-plan percentage or release readiness claimed.
