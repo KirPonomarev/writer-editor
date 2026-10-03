@@ -9265,7 +9265,13 @@ function docxSectionInventory(bytes, parsed) {
   if (!records.length) return null;
   if (!finalSeen) throw Error('WORD_SECTIONS_INVALID');
   for (const record of records) wordSections.properties(record.properties);
-  if (records.length === 1 && records[0].properties.type === 'nextPage' && (records[0].properties.columns?.count || 1) === 1) return null;
+  const single = records.length === 1 ? records[0].properties : null;
+  const defaultSize = !single?.pageSize || (single.pageSize.widthTwips === 11906 && single.pageSize.heightTwips === 16838 && single.pageSize.orientation === 'portrait');
+  const defaultMargins = !single?.margins || Object.entries({topTwips:1440,rightTwips:1440,bottomTwips:1440,leftTwips:1440,headerTwips:720,footerTwips:720,gutterTwips:0}).every(([key,value])=>single.margins[key]===value);
+  const defaultColumns = !single?.columns || (single.columns.count === 1 && single.columns.spaceTwips === 720);
+  // Only the exact historical default can remain on the plain-document path.
+  // A final-only custom page geometry is still durable document meaning.
+  if (single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns) return null;
   for (const record of records.slice(0,-1)) {
     record.endParagraphIndex = parsed.paragraphSourceIndexes.indexOf(record.endParagraphIndex);
     if (record.endParagraphIndex < 0) throw Error('WORD_SECTIONS_INVALID');

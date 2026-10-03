@@ -1556,10 +1556,10 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9','page-break','column-break','page-break-language','section-continuous','section-nextColumn']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9','page-break','column-break','page-break-language','section-continuous','section-nextColumn','section-numbered']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
   const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
     ...(variant.includes('-break')?{typedBreak:variant.split('-')[0]}:{}),
-    ...(variant.startsWith('section-')?{sectionType:variant.slice(8)}:{}),
+    ...(variant.startsWith('section-')?{sectionType:variant==='section-numbered'?'continuous':variant.slice(8),...(variant==='section-numbered'?{listType:'I'}:{})}:{}),
     ...(variant.startsWith('heading')?{headingLevel:Number(variant.slice(7))}:{}),
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
     ...(variant==='numbered-heading9'?{headingLevel:9,listType:'I',continuedList:true}:{}),
@@ -1659,4 +1659,11 @@ test('actual Main section Save proves separated splits, undo and redo; forged bo
  const typed=structuredClone(split);typed.content[3].content[0].text+=' typed';assert.equal(await save(initial),true);assert.equal(await save(typed),true,'two splits plus typing before Save');
  assert.equal(await save(initial),true,'undo mixed split and text');assert.equal(await save(split),true);
  const forged=structuredClone(split);forged.attrs.wordSections.boundaries[0].endParagraphIndex=3;const before=read(f.alpha);assert.notEqual(await save(forged),true);assert.equal(read(f.alpha),before);
+});
+for(const kind of ['orderedList','blockquote'])test(`actual Main section Save retains ${kind} carrier through text edit`,async t=>{
+ const f=await fixture(t),model=require('../../src/core/word-sections-v1.cjs'),p=text=>({type:'paragraph',content:[{type:'text',text}]});
+ const paragraphs=[p('First'),p('Second')],doc=model.bind({type:'doc',content:kind==='blockquote'?paragraphs.map(node=>({type:kind,content:[node]})):[{type:kind,attrs:{start:1},content:paragraphs.map(node=>({type:'listItem',content:[node]}))}]},{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:'continuous'}}],final:{type:'oddPage'}});
+ fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc}));const edited=structuredClone(doc),leaf=kind==='blockquote'?edited.content[0].content[0]:edited.content[0].content[0].content[0];leaf.content[0].text+=' typed';const working=envelope.composeObservablePayload({doc:edited});
+ mountRenderer(f,()=>working,1,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation:1});
+ assert.equal(await f.probe.save(),true);const persisted=envelope.parseObservablePayload(read(f.alpha)).doc;assert.deepEqual(model.read(persisted),model.read(doc));assert.match(envelope.deriveVisibleTextFromDocument(persisted),/First typed/);
 });

@@ -103,3 +103,9 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY.
 ## FAIL_PROTOCOL
 
 Record expected/actual, exact head, seed and hashes; fix one grounded hypothesis without disabling oracle or shrinking the original Mac plan.
+
+## OBSERVED_CANDIDATE_01
+
+Candidate 4a93cd75685343eb3c4ac262beb273b8ea51c2d6: SOURCE import, text edit, Undo/Redo, Save, Review export, actual Word text edit, explicit Apply, Save, process restart and re-export observed. Apply reported 1 applied, 0 blocked, 0 failed. Independent ZIP/XML oracle confirmed six types including final continuous, two columns, page geometry and returned text. SOURCE input actually selected was an independently exported and Word-saved fixture; original fixture selection was not claimed. PACKAGED original-fixture import observed only, then owned processes stopped. These observations do not accept a successor candidate.
+
+Pre-delivery independent review found canonical numbered-paragraph carrier rejection and default-type single-final geometry loss. Both require repair before delivery. Multiple text-edit regions combined with topology changes remain conservative refusal and are an open authoring limitation. Unsupported section properties refuse explicitly; no full layout compatibility claim. Unchanged dependency audit reports 5 moderate and 11 high advisories, 0 critical; OSS policy passed.

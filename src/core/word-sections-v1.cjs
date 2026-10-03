@@ -51,12 +51,19 @@ function read(doc, { checkBounds = true } = {}) {
   }
   if (Reflect.ownKeys(value.boundaries).length !== value.boundaries.length + 1 || Object.getPrototypeOf(value.boundaries) !== Array.prototype) fail();
   const leaves = checkBounds ? bookmarks().paragraphs(doc) : null;
-  const rootLeaves = new Set((doc.content || []).filter(node => ['paragraph', 'heading', 'codeBlock'].includes(node.type)));
+  const carrierLeaves = new Set();
+  const collectCarriers = node => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) carrierLeaves.add(node);
+    else if (['doc', 'orderedList', 'bulletList', 'listItem', 'blockquote'].includes(node.type)) {
+      for (const child of node.content || []) collectCarriers(child);
+    }
+  };
+  if (checkBounds) collectCarriers(doc);
   let previous = -1;
   const boundaries = value.boundaries.map(record => {
     object(record, ['endParagraphIndex', 'properties']);
     const index = integer(record.endParagraphIndex, 0, 9999);
-    if (index <= previous || leaves && (index >= leaves.length - 1 || !rootLeaves.has(leaves[index]))) fail();
+    if (index <= previous || leaves && (index >= leaves.length - 1 || !carrierLeaves.has(leaves[index]))) fail();
     previous = index;
     return { endParagraphIndex: index, properties: properties(record.properties) };
   });

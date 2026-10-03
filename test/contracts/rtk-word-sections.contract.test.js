@@ -83,3 +83,21 @@ test('separated splits and within-section join project exactly, same-count cross
  // in filtering and append, including the equal final paragraph count case.
  const safe=state.tr.split(2);safe.join(safe.doc.child(0).nodeSize);assert.doesNotThrow(()=>dispatch(safe));assert.ok(state.doc.eq(before));
 });
+for(const container of ['heading','orderedList','bulletList','blockquote'])test(`section carriers in ${container} retain paragraph meaning through both exporters and import`,async()=>{
+ const mods=await modules,doc=fixture();
+ doc.content=container==='heading'?doc.content.map(node=>({...node,type:'heading',attrs:{level:3}})):container==='blockquote'?doc.content.map(node=>({type:'blockquote',content:[node]})):[{type:container,...(container==='orderedList'?{attrs:{start:3,type:'I'}}:{}),content:doc.content.map(node=>({type:'listItem',content:[node]}))}];
+ assert.doesNotThrow(()=>sections.read(doc));const edited=structuredClone(doc);const first=container==='heading'?edited.content[0]:container==='blockquote'?edited.content[0].content[0]:edited.content[0].content[0].content[0];first.content[0].text+=' EDIT';sections.validateSave(doc,edited);
+ for(const bytes of [ordinary(edited,mods),packet(edited)]){
+  const report=mods[0].buildDocxContentPreviewFromZipBytes(bytes);assert.equal(report.ok,true,JSON.stringify(report));const plan=mods[0].buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));const imported=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.deepEqual(sections.read(imported),sections.read(edited));assert.equal(envelope.deriveVisibleTextFromDocument(imported),envelope.deriveVisibleTextFromDocument(edited));assert.equal(imported.content[0].type,container);
+ }
+});
+test('final-only nextPage custom geometry survives import and both exports while exact default remains legacy',async()=>{
+ const mods=await modules;const geometry=props('nextPage');geometry.pageSize={widthTwips:16838,heightTwips:11906,orientation:'landscape'};geometry.columns={count:1,spaceTwips:1440};geometry.margins.leftTwips=2160;
+ const doc=sections.bind({type:'doc',content:[p('Landscape text')]},{schemaVersion:1,boundaries:[],final:geometry});
+ for(const bytes of [ordinary(doc,mods),packet(doc)]){
+  const report=mods[0].buildDocxContentPreviewFromZipBytes(bytes);assert.equal(report.ok,true,JSON.stringify(report));const plan=mods[0].buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));const imported=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.deepEqual(sections.read(imported),sections.read(doc));assert.equal(plan.lossReport.items.some(item=>item.category==='sectionBreak'),false);
+ }
+ const ordinaryPlain=ordinary({type:'doc',content:[p('Legacy')]},mods);const report=mods[0].buildDocxContentPreviewFromZipBytes(ordinaryPlain);assert.equal(report.ok,true);assert.equal(report.contentPreview.wordSections,undefined);
+});
