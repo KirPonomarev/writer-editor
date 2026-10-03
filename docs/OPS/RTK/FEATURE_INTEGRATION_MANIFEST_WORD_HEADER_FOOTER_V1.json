@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "177dec6511ca9ba0aca7f9cd3086f3a13e890bde",
+  "bindingBaseSha": "76dba0a9c86865f50700f07d62e50467408242b1",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -54,7 +54,8 @@
     "test/unit/project-tree-pathless-contract.test.js",
     "test/contracts/rtk-word-local-image.contract.test.js",
     "test/contracts/rtk-word-comment-authoring.contract.test.js",
-    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js"
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+    "src/renderer/editor.bundle.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -79,7 +80,8 @@
     "Authenticated Word return -> original round capsule and protected topology -> Core body delta -> existing Apply atomic writer",
     "Same header/footer outcome: extend existing recoverable project transaction with typed multi-scene story body cohort; existing scene/image safe-create collects story assets; no new writer",
     "Explicit native story authoring intent -> Kernel capability -> Main revision/project/lifecycle validation -> typed Core story mutation -> existing atomic scene writer and protected editor publication",
-    "Authenticated Word topology changes -> protected round source binding and validated independent section/relationship graph -> typed Core add/remove/reference delta -> existing recoverable writer; ambiguity stays explicit, not guessed identity"
+    "Authenticated Word topology changes -> protected round source binding and validated independent section/relationship graph -> typed Core add/remove/reference delta -> existing recoverable writer; ambiguity stays explicit, not guessed identity",
+    "Repository build-renderer regenerates tracked editor.bundle.js from admitted renderer sources; exact deterministic artifact binding, no handwritten bundle logic"
   ],
   "readPaths": [
     "Part-local header/footer relationships, default/first/even section refs and flags; canonical scene story projection",
