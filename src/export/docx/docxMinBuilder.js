@@ -179,13 +179,15 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       // One paragraph per item is unambiguous in ordinary OOXML. Unnumbered
       // continuation paragraphs cannot be recovered as item ownership here.
       if (item?.type !== 'listItem' || !Array.isArray(item.content)
-        || item.content[0]?.type !== 'paragraph'
+        || !['paragraph', 'heading'].includes(item.content[0]?.type)
         || item.content.slice(1).some((node) => !['bulletList', 'orderedList'].includes(node?.type))) {
         throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
       }
       const paragraph = item.content[0];
       if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
-      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
+      const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
+      if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
+      blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
       for (const nested of item.content.slice(1)) visitList(nested, level + 1);
     }
   };
@@ -201,7 +203,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
         blocks.at(-1).table = entry.table;
         const list = entry.listStack.at(-1);
         if (list) {
-          if (blocks.at(-1).kind !== 'paragraph') throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
+          if (!['paragraph', 'heading', 'sceneHeading'].includes(blocks.at(-1).kind)) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
           if (!listIds.has(list.listId)) {
             if (nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
             listIds.set(list.listId, numberId(list));
