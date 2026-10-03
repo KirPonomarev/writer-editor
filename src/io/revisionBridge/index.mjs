@@ -5067,7 +5067,9 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     const returnedStructure = isPlainObject(paragraph.paragraphStructure)
       ? paragraph.paragraphStructure
       : {};
-    const returnedParagraphState = isPlainObject(paragraph.paragraphState) ? paragraph.paragraphState : {};
+    const returnedParagraphState = isPlainObject(paragraph.paragraphState) ? {...paragraph.paragraphState} : {};
+    if(Object.hasOwn(baselineParagraph,'textAlign')&&!Object.hasOwn(returnedParagraphState,'textAlign')
+      && paragraph.resolvedTextAlign==='left')returnedParagraphState.textAlign='left';
     const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? paragraph.paragraphActions : {};
     const paragraphAmbiguousRemovals = docxReviewFormattingAmbiguousRemovalKeys(
       baselineParagraph,
@@ -5166,6 +5168,8 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
         && typeof returnedRun.inheritedFontSize === 'string') {
         returnedState.fontSize = returnedRun.inheritedFontSize;
       }
+      if(Object.hasOwn(baselineState,'fontFamily')&&!Object.hasOwn(returnedState,'fontFamily')
+        && typeof returnedRun.resolvedFontFamily==='string')returnedState.fontFamily=returnedRun.resolvedFontFamily;
       const ambiguousRemovalKeys = docxReviewFormattingAmbiguousRemovalKeys(
         baselineState,
         returnedState,

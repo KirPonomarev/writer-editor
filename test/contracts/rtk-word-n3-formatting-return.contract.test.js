@@ -1306,3 +1306,23 @@ test('N3 authenticated empty paragraph spacing and mark language apply without i
  const forged=structuredClone(op);forged.inline={bold:{action:'set',value:true}};
  assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[forged]).ok,false);
 });
+
+test('N3 candidate consumes proven default fonts and implicit left without copying unknown baseline values',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href);
+ const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+ const formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{nodeType:'paragraph',textAlign:'left'},runs:[{from:0,to:5,text:'Alpha',inline:{fontFamily:'Times New Roman',fontSize:'12pt'}}]};
+ const build=(extraP='',font='<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>')=>zipFixture([
+  {name:'word/document.xml',body:`<w:document xmlns:w="${ns}" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:body><w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr>${extraP}<w:spacing w:after="160"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Alpha</w:t></w:r></w:p></w:body></w:document>`},
+  {name:'word/styles.xml',body:`<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr>${font}<w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>`},
+ ]);
+ const good=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build(),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+ assert.deepEqual(good.diagnostics,[]);assert.equal(good.candidates.length,2);
+ assert.ok(good.candidates.some(op=>op.inline.bold?.action==='set'));
+ assert.ok(good.candidates.every(op=>!op.inline.fontFamily&&!op.paragraph.textAlign));
+ for(const [p,font]of [['<w:bidi/>',undefined],['<w:pStyle w:val="Unknown"/>',undefined],['','<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"><w:b/></w:rFonts>']]){
+  const bad=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build(p,font),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+  assert.equal(bad.candidates.length,0);assert.ok(bad.diagnostics.some(d=>d.code.includes('UNSUPPORTED')));
+ }
+ const missing=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build('',''),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+ assert.ok(missing.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'&&d.keys.includes('fontFamily')));
+});

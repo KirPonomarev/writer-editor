@@ -1214,7 +1214,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1248,6 +1248,7 @@ async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,sch
   // Repeated quote belongs to a different signed block, not this operation.
   parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
   fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
   if(bookmarked){
@@ -1672,8 +1673,8 @@ for(const kind of ['orderedList','blockquote'])test(`actual Main section Save re
  assert.equal(await f.probe.save(),true);const persisted=envelope.parseObservablePayload(read(f.alpha)).doc;assert.deepEqual(model.read(persisted),model.read(doc));assert.match(envelope.deriveVisibleTextFromDocument(persisted),/First typed/);
 });
 
-for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle','word-defaults'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
- const {f,activated,beforeActivation,getObserved}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,mutateReturn:parts=>{
+for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle','word-defaults','native-normalized-defaults'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
+ const {f,activated,beforeActivation,getObserved}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,nativeDefaults:styleCase==='native-normalized-defaults',mutateReturn:parts=>{
   parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha');
   const xml=parts['word/document.xml'];
   const target=xml.match(/<w:p(?:\s[^>]*)?>[\s\S]*?<w:t[^>]*>Alpha<\/w:t>[\s\S]*?<\/w:p>/u);
@@ -1688,6 +1689,12 @@ for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-c
   if(styleCase.includes('character'))styles+='<w:style w:type="character" w:styleId="OwnerCharBase"><w:name w:val="Character Base"/><w:rPr><w:i/></w:rPr></w:style><w:style w:type="character" w:styleId="OwnerCharDerived"><w:name w:val="Character Derived"/><w:basedOn w:val="OwnerCharBase"/><w:rPr><w:i/></w:rPr></w:style>';
   assert.match(parts['word/styles.xml'],/<\/w:styles>/u);
   parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>',styles+'</w:styles>');
+  if(styleCase==='native-normalized-defaults'){
+   parts['word/document.xml']=parts['word/document.xml'].replace(/<w:jc\b[^>]*\/>/gu,'').replace(/<w:rFonts\b[^>]*\/>/gu,'');
+   parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:jc\b[^>]*\/>/gu,'').replace(/<w:rFonts\b[^>]*\/>/gu,'');
+   parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>');
+   assert.doesNotMatch(parts['word/document.xml'],/<w:(?:jc|rFonts)\b/u);
+  }
   if(styleCase==='word-defaults'){
    const language='<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>';
    assert.match(parts['word/styles.xml'],/<w:rPrDefault><w:rPr>/u);
@@ -1699,6 +1706,7 @@ for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-c
  }});
  assert.equal(activated.ok,true,JSON.stringify(activated));
  assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+ assert.equal(activated.formattingProductPath.diagnosticCount,0,'all supported effective formatting must be actionable, not manual');
  assert.deepEqual(f.capture(),beforeActivation,'intake and preview must not write');
  const sibling=read(f.beta),before=envelope.parseObservablePayload(read(f.alpha));
  const settleSync=f.probe.observeDeferredEditorSync();
@@ -1707,11 +1715,12 @@ for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-c
  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.status,'applied-and-replayed',JSON.stringify(result));assert.equal(result.replayVerified,true);
  const after=envelope.parseObservablePayload(read(f.alpha));
  assert.equal(after.text,before.text);assert.equal(read(f.beta),sibling);
- assert.equal(after.doc.content[0].attrs.textAlign,'right');
+ assert.equal(after.doc.content[0].attrs.textAlign,styleCase==='native-normalized-defaults'?'left':'right');
  const alpha=after.doc.content[0].content.find(node=>node.type==='text'&&node.text==='Alpha');
  assert.ok(alpha);assert.ok(alpha.marks.some(mark=>mark.type==='bold'));
  assert.equal(alpha.marks.some(mark=>mark.type==='italic'),styleCase==='character-chain','native Word chain assignment followed by one character toggle');
  assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.color?.toLowerCase(),'#224466');
+ if(styleCase==='native-normalized-defaults')assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.fontFamily,'Times New Roman');
  if(styleCase==='word-defaults'){
   const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
   for(const paragraph of after.doc.content){assert.deepEqual(paragraph.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,language);for(const node of paragraph.content)if(node.type==='text')assert.deepEqual(node.marks.find(mark=>mark.type==='textStyle')?.attrs.wordLanguage,language);}

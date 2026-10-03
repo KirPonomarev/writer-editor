@@ -3041,6 +3041,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       textId: attr(paragraph, 'textId'),
       bookmarkNames: bookmarks,
       paragraphState,
+      ...(paragraphStyle && !paragraphRecord.table && unsupportedParagraphNames.length===0
+        && !paragraphFormattingInvalid && !paragraphStructureInvalid && !markLanguage.invalid
+        && !Object.hasOwn(paragraphState,'textAlign') ? {resolvedTextAlign:'left'} : {}),
       ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),
       ...(markLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
       ...(markLanguage.invalid ? { wordLanguageInvalid: true } : {}),
@@ -3067,6 +3070,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     textId: paragraph.textId,
     bookmarkNames: paragraph.bookmarkNames,
     paragraphState: paragraph.paragraphState,
+    ...(paragraph.resolvedTextAlign ? {resolvedTextAlign:paragraph.resolvedTextAlign} : {}),
     ...(paragraph.wordParagraphMarkLanguage ? { wordParagraphMarkLanguage: paragraph.wordParagraphMarkLanguage } : {}),
     ...(paragraph.wordParagraphMarkLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
     ...(paragraph.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),

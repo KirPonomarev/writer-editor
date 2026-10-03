@@ -784,7 +784,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "4050d2a227347e107429b6775ebfabea0f151d2a308d5cf977c82a58d4ce1f5c"
+        "sha256": "f648f3637b2541cc57af2e1943ce62481c47adb319e93aa32100a80392a7ac0f"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -864,7 +864,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "d7f6b0137ff3b2ae1841da1341c1bb2f797f0580e3c7671e1073839d4f2b6ff1"
+        "sha256": "ad2a0b3c346472c17f248986481dc262b49b37571c3a7013f2323a6f15f8a078"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1936,7 +1936,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "67b04fa150444cf2477b98167ced5d235320f2d759606590a4d0c6566d9d8844"
+        "sha256": "557769a1380e0ecd9625ee19e70677a6fa1ee7485dfe26b77ab43f27a22df0fa"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2224,7 +2224,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "76c9033df6982f965e38e1d5fea0da4597d470e04467b3a229e12b0ba719bf9e"
+        "sha256": "1a9d04d3444cac87e7d7e89b46cb4b32d5686454a46e22ff820d1a269ce7eb25"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
@@ -2240,7 +2240,7 @@
       },
       {
         "path": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
-        "sha256": "1c08a4598485f6f615db66772b558deef999be4e1f59d1f4b751e5fa56c79a5e"
+        "sha256": "168354e0173d49d6614e5e32d8dba783d6641a5a83aba10bb9c1307bf145223d"
       },
       {
         "path": "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
