@@ -101,7 +101,7 @@ test('actual contextual controller cannot save after scene switch and discards a
 test('browser bundle parses and edits story projections without Node globals',async()=>{
   const esbuild=require('esbuild'),vm=require('node:vm'),path=require('node:path');
   const source=esbuild.buildSync({stdin:{contents:`import envelope from './src/core/document-content-envelope-v1.cjs';
-    import stories from './src/core/word-stories-v1.cjs';
+    import stories from './src/core/word-stories-projection-v1.cjs';
     import { storyInventory } from './src/renderer/tiptap/documentStories.mjs';
     globalThis.check = raw => {
       const parsed = envelope.parseObservablePayload(raw);
@@ -111,6 +111,7 @@ test('browser bundle parses and edits story projections without Node globals',as
       const reopened = envelope.parseObservablePayload(envelope.composeObservablePayload({...parsed,doc:next}));
       return JSON.stringify({issue:reopened.issue, text:envelope.deriveVisibleTextFromDocument(reopened.doc), rows:storyInventory(reopened.doc)});
     };`,resolveDir:path.resolve(__dirname,'../..')},bundle:true,format:'iife',platform:'browser',write:false}).outputFiles[0].text;
+  assert.equal(source.includes('node:crypto'),false);assert.equal(source.includes('src/io/documentMedia.js'),false);
   const context={TextEncoder,TextDecoder,URL};vm.createContext(context);vm.runInContext(source,context);
   assert.equal(context.Buffer,undefined);assert.equal(context.process,undefined);
   const doc=fixture();

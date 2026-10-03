@@ -271,7 +271,7 @@ function canonicalizeDocumentJson(doc) {
     require('./word-user-bookmarks-v1.cjs').readRegistry(doc, { checkBounds: false });
   }
   const storyDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordStories');
-  if (storyDescriptor && (!Object.hasOwn(storyDescriptor, 'value') || storyDescriptor.value != null)) require('./word-stories-v1.cjs').readProjection(doc);
+  if (storyDescriptor && (!Object.hasOwn(storyDescriptor, 'value') || storyDescriptor.value != null)) require('./word-stories-projection-v1.cjs').readProjection(doc);
   const sectionDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordSections');
   if (sectionDescriptor && (!Object.hasOwn(sectionDescriptor, 'value') || sectionDescriptor.value != null)) require('./word-sections-v1.cjs').read(doc);
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);

@@ -1,4 +1,4 @@
-import wordStories from '../../core/word-stories-v1.cjs';
+import wordStories from '../../core/word-stories-projection-v1.cjs';
 import { DocumentStories, applyStoryBody } from './documentStories.mjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import { DocumentSections } from './documentSections.mjs';

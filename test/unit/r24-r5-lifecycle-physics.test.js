@@ -184,6 +184,8 @@ test('main quit joins saves and renderer false-clean signals have no authority',
     'receipt,snapshot.content,snapshot.generation',
     // Bookmark and local-image publications both require a durable receipt.
     ...Array(2).fill('durable,bound.savedContent,generation'),
+    // Story topology authoring acknowledges the verified published document.
+    'durable,content,snapshot.generation',
   ].sort());
   assert.match(main, /wasUntitled && saveAck\.kind === SAVE_ACK_KINDS\.SAVED/);
   assert.match(main, /result\.subjectId !== subjectId/);

@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { canonicalizeDocumentJson } from '../documentContentEnvelope.mjs';
-import stories from '../../core/word-stories-v1.cjs';
+import stories from '../../core/word-stories-projection-v1.cjs';
 
 // Bodies remain in the scene envelope, outside the manuscript text stream.
 export const DocumentStories = Extension.create({

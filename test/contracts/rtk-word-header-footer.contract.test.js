@@ -200,7 +200,7 @@ test('empty Review story projection binds actual shared folder sections without 
 test('envelope optional story admission rejects raw accessors and keeps absent/null consumers dependency-compatible',()=>{
  const fs=require('node:fs'),vm=require('node:vm');let loads=0,executed=0;
  const sandbox={module:{exports:{}},require(name){
-  if(name==='./word-stories-v1.cjs'){loads++;throw Error('STORY_MODULE_NOT_COPIED');}
+  if(name==='./word-stories-projection-v1.cjs'){loads++;throw Error('STORY_MODULE_NOT_COPIED');}
   if(name==='./word-pending-text-revisions-v1.cjs')return {readLedger(){return null;}};
   if(name==='./word-list-format-v1.cjs')return require('../../src/core/word-list-format-v1.cjs');
   if(name==='./word-list-numbering-v1.cjs')return require('../../src/core/word-list-numbering-v1.cjs');

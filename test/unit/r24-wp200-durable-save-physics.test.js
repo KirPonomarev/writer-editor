@@ -28,6 +28,8 @@ test('main save paths consume durable receipts and never use generic atomic succ
     'receipt,snapshot.content,snapshot.generation',
     // Bookmark and local-image publications both require a durable receipt.
     ...Array(2).fill('durable,bound.savedContent,generation'),
+    // Story topology authoring acknowledges the verified published document.
+    'durable,content,snapshot.generation',
   ].sort());
   assert.match(main, /const \{ bookmarkPublication, \.\.\.durable \} = receipt;/);
   assert.match(main, /commitWriterProjectSnapshot\(/);
