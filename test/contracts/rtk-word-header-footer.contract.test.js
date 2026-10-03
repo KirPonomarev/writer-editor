@@ -100,21 +100,21 @@ test('Core story intents create native slots, copy inheritance, clear or relink 
  const native={type:'doc',content:[paragraph('NATIVE')]};
  const trustedSections={schemaVersion:1,boundaries:[],final:{type:'nextPage',columns:{count:2,spaceTwips:400}}};
  assert.throws(()=>model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'}),/TRUSTED_GEOMETRY/);
- const created=model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections});
+ const created=model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections,idSeed:'native-create'});
  assert.deepEqual(native,{type:'doc',content:[paragraph('NATIVE')]});
  assert.deepEqual(created.doc.attrs.wordSections,trustedSections);
  assert.match(created.storyId,/^story-[a-f0-9]{64}$/u);
- let next=model.planStoryMutation(created.doc,{op:'create',sectionIndex:0,role:'footer',variant:'even'}).doc;
+ let next=model.planStoryMutation(created.doc,{op:'create',sectionIndex:0,role:'footer',variant:'even'},{idSeed:'native-footer'}).doc;
  next=model.planStoryMutation(next,{op:'setSectionOptions',sectionIndex:0,titlePage:true,evenAndOddHeaders:true}).doc;
  assert.equal(model.read(next).stories.length,2);assert.equal(model.read(next).sections[0].titlePage,true);
  assert.equal(model.read(next).evenAndOddHeaders,true);
  const {doc}=await importDoc(buildStoredZip(literalParts())),before=model.read(doc), original=JSON.stringify(doc);
- const copied=model.planStoryMutation(doc,{op:'create',sectionIndex:1,role:'header',variant:'default'});
+ const copied=model.planStoryMutation(doc,{op:'create',sectionIndex:1,role:'header',variant:'default'},{idSeed:'copy-inherited'});
  const copiedValue=model.read(copied.doc);
  assert.notEqual(copied.storyId,before.sections[0].header.default);
  assert.deepEqual(copiedValue.stories.find(s=>s.id===copied.storyId).body,before.stories.find(s=>s.id===before.sections[0].header.default).body);
  assert.deepEqual(copied.doc.attrs.wordSections,doc.attrs.wordSections);
- const removed=model.planStoryMutation(copied.doc,{op:'remove',sectionIndex:1,role:'header',variant:'default'});
+ const removed=model.planStoryMutation(copied.doc,{op:'remove',sectionIndex:1,role:'header',variant:'default'},{idSeed:'clear-inherited'});
  assert.deepEqual(model.read(removed.doc).stories.find(s=>s.id===removed.storyId).body,{type:'doc',content:[{type:'paragraph'}]});
  assert.equal(model.read(removed.doc).stories.some(s=>s.id===copied.storyId),false);
  const relinked=model.planStoryMutation(removed.doc,{op:'linkPrevious',sectionIndex:1,role:'header',variant:'default'});
@@ -148,9 +148,11 @@ test('flags-only zero-story authoring retains first/even semantics through ordin
 test('Core fresh IDs never recycle a removed identity, while trusted seed regeneration is deterministic',async()=>{
  const {doc}=await importDoc(buildStoredZip(literalParts()));
  const intent={op:'create',sectionIndex:1,role:'header',variant:'default'};
- const first=model.planStoryMutation(doc,intent);
+ for(const op of ['create','remove']) for(const idSeed of [undefined,'',42,'x'.repeat(1025)])
+  assert.throws(()=>model.planStoryMutation(doc,{...intent,op},idSeed===undefined?{}:{idSeed}),/WORD_STORY_ID_SEED/);
+ const first=model.planStoryMutation(doc,intent,{idSeed:'allocation-1'});
  const linked=model.planStoryMutation(first.doc,{...intent,op:'linkPrevious'});
- const second=model.planStoryMutation(linked.doc,intent);
+ const second=model.planStoryMutation(linked.doc,intent,{idSeed:'allocation-2'});
  assert.notEqual(second.storyId,first.storyId);
  assert.deepEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}),model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}));
  assert.notEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-2'}).storyId,model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}).storyId);
@@ -184,7 +186,7 @@ test('empty Review story projection binds actual shared folder sections without 
  assert.equal(binding.registry,null);assert.deepEqual(binding.trustedSections.boundaries,[]);
  assert.deepEqual(binding.trustedSections.final,source.documentSections.protectedSections[0].properties);
  const scene=scenes.find(s=>s.sceneId===binding.sceneId);
- const created=model.planStoryMutation(scene.doc,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections:binding.trustedSections});
+ const created=model.planStoryMutation(scene.doc,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections:binding.trustedSections,idSeed:'first-header'});
  assert.deepEqual(created.doc.content,scene.doc.content);
  }
  assert.equal(buildDocumentStoriesExport(scenes,source.documentSections),null,'ordinary helper behavior remains unchanged');

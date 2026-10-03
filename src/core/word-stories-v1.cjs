@@ -62,7 +62,8 @@ function planStoryMutation(doc, intent, options = {}) {
       const old = effective && value.stories.find(s=>s.id===effective);
       const body = intent.op === 'create' && intent.source !== 'empty' && old
         ? copy(old.body) : {type:'doc',content:[{type:'paragraph'}]};
-      const seed = options.idSeed || globalThis.crypto.randomUUID();
+      if (options.idSeed === undefined) fail('WORD_STORY_ID_SEED');
+      const seed = options.idSeed;
       storyId = `story-${require('./browser-safe-hash.cjs').hashCanonicalValue({seed,value})}`;
       if (value.stories.some(s=>s.id===storyId)) fail('WORD_STORY_ID_COLLISION');
       value.stories.push({id:storyId,role:intent.role,body}); slot[intent.variant] = storyId;

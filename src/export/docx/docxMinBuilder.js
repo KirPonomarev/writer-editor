@@ -1,5 +1,5 @@
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
-const { buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
@@ -190,7 +190,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
       const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
       if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
-      blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
+      blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent, wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
       for (const nested of item.content.slice(1)) visitList(nested, level + 1);
     }
   };
@@ -239,7 +239,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
-      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
       return;
     }
     if (node.type === 'codeBlock') {
@@ -252,7 +252,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       return;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
+      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
     }
   };
   for (const node of doc.content) visit(node);
@@ -322,6 +322,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   if (snapshot.doc) require('../../core/word-paragraph-spacing-v1.cjs').inspectDocumentParagraphSpacing(snapshot.doc);
+  const defaultTabs=snapshot.doc?.attrs?.wordDefaultTabStop;
+  const defaultTabsXml=defaultTabs==null?'':`<w:defaultTabStop w:val="${require('../../core/word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(defaultTabs)}"/>`;
   const media = buildMediaPackage(snapshot.doc);
   const sections = require('../../core/word-sections-v1.cjs');
   const sectionRegistry = sections.read(snapshot.doc);
@@ -416,6 +418,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '')
         + buildDocxWordParagraphSpacingXml(semanticBlocks?.[index]?.wordParagraphSpacing)
+        + buildDocxWordParagraphLayoutXml(semanticBlocks?.[index])
         + (markLanguage ? `<w:rPr>${markLanguage}</w:rPr>` : '')
         + (sectionEnds.has(index) ? sectionXml(sectionEnds.get(index), sectionRegistry.boundaries.findIndex(item => item.endParagraphIndex === index)) : '');
       const paragraphRevision = pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
@@ -518,7 +521,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: '[Content_Types].xml', data: contentTypes },
     { name: '_rels/.rels', data: rootRels },
     { name: 'word/document.xml', data: documentXml },
-    { name: 'word/settings.xml', data: (storyParts.evenAndOddHeaders ? '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:evenAndOddHeaders/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>' : '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>') },
+    { name: 'word/settings.xml', data: (storyParts.evenAndOddHeaders ? '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:evenAndOddHeaders/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>' : '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>').replace('<w:compat>',defaultTabsXml+'<w:compat>') },
     ...styleParts,
     ...mergeMediaParts(media.parts, notes.mediaParts, storyParts.mediaParts),
     ...notes.entries,

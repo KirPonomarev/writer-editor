@@ -43,7 +43,9 @@
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "scripts/ops/rtk-interop-data-c1.mjs",
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "src/core/word-stories-v1.cjs",
+    "test/contracts/rtk-word-header-footer.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -205,5 +207,10 @@
     "Editor real edit, split, undo/redo, save/restart and both exports preserve metadata; existing notes/stories/pending and auxiliary return comparators retain fields",
     "Independent literal XML/scene oracle detects lost indent, stop, leader, interval and text tab; SOURCE/PACKAGED actual changed Word cycles before full delivery"
   ],
-  "evidenceBindings": "TARGET: independent fixtures and actual native evidence required, not self-PASS"
+  "evidenceBindings": "TARGET: independent fixtures and actual native evidence required, not self-PASS",
+  "prerequisiteAmendment": {
+    "baseSha": "f88c1fda00e2c68e4b12fbcb8679f84635d35c63",
+    "preflight": "PASS before added path writes",
+    "reason": "Existing Core randomUUID fallback fails mandatory ops-gate; production Main already provides private seed. Require injected allocation seed, retain deterministic Core and do not weaken gate."
+  }
 }

@@ -6,7 +6,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BASE_SHA: 582145158c9a63095892a36a3125723c582a071b
 AUTHORITY: Owner-authorized original Mac Word plan P3-08 and section8; no full-feature acceptance claim.
-DESIGN_TOOL_ROUTER: NOT_APPLICABLE
+DESIGN_ROUTER_BINDING: architecture declaration and feature manifest; mechanical document representation only.
 
 ## MICRO_GOAL
 O: Paragraph indentation, custom tab stops/leaders and document default interval survive generic import, real edit, save/reopen, Word change, explicit authenticated Apply and ordinary/Review export.
@@ -61,6 +61,9 @@ One integrated paragraph-layout capability and independent native evidence.
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
 
+- `src/core/word-stories-v1.cjs`
+- `test/contracts/rtk-word-header-footer.contract.test.js`
+
 ## DENYLIST
 No changes outside allowlist. No new dependencies, runtime network, raw XML parallel truth, silent fallback, weakened checks, fabricated evidence, user-data edits, reset/stash/clean/force-push, shell redesign or historical receipt rewrite.
 
@@ -85,6 +88,16 @@ CHECK_01_PRE_ADMISSION BEFORE writes: registry/mount, clean exact base, fresh fe
 CHECK_02_POST_TARGETED AFTER implementation: typed getter/namespace/duplicate/bounds negatives, cascade/custom-clear, exact text offsets, envelope/N-1, editor transaction and pending/auxiliary preservation, actual Main root+paragraph Apply/stale/replay/crash.
 CHECK_03_POST_NATIVE: Early native ambiguity probe and first complete route; stable candidate native SOURCE/PACKAGED five cycles, independent raw XML/scene equality, no preview writes, ordinary and Review exports, reopen.
 CHECK_04_POST_DELIVERY: mandatory baseline and RTK without false skipped coverage, OSS/audit, guardrails, independent diff review, clean scope, commit/push/PR/CI/merge and exact merged verification.
+
+Native semantic calibration before candidate qualification: independent literal OOXML fixtures observed in Microsoft Word on this Mac. Direct firstLine240 overrides inherited hanging360 (special indent0.42cm); direct hanging240 overrides inherited firstLine360 (special hanging0.42cm). When both attributes occur in one layer, Word selects hanging360 (0.63cm) in both XML attribute orders. Exact twips come from original fixture XML; dialog centimetres are rounded. Dialogs were cancelled without modifying inputs. These observations define the independent effective-layout oracle, not product acceptance. Raw tuple preservation and effective render precedence remain separate assertions.
+
+External evidence basenames: native-indent-calibration-v3.json; native-indent-calibration-v2.json; remaining-indent-diagnostics-expected-hypotheses.json; native-reverse-selection.txt; native-reverse-paragraph-dialog.txt; native-same-layer-selection.txt; native-same-layer-paragraph-dialog.txt; native-same-layer-reversed-selection.txt; native-same-layer-reversed-paragraph-dialog.txt. V3 independent oracle accepts eight scoped inputs (six-paragraph original and Word rewrite, three diagnostic originals and their three native-opened copies) and rejects eleven corrupted variants. It preserves raw indent layers separately from effective precedence; no Yalken native return claim yet.
+
+
+Early product observation (uncommitted candidate, not qualification): independent original imported through the actual generic preview and canonical envelope, then ordinary DOCX export passed external checker-v4 against unchanged six-paragraph expectations. Native Word opened it and exact STYLE_TABS selection showed4/6/8cm stops and1cm default interval. Changing only default interval to1.5cm in Word saved851twips and generic reimport retained851. Word removed explicit zero indents from ZERO_RESET, with no inherited nonzero indent; authenticated return must preserve baseline explicit zeros when effective indentation is unchanged. Strict original-to-export zero-presence check remains; native effective-zero oracle is a separate explicitly selected comparison. Evidence: early-parent-native-observations.json, early-parent-word-changed-default-import.json, native-effective-zero-calibration-v5.json. UI editing, authenticated Apply, packaged runs and stable-candidate qualification remain pending.
+
+
+Intermediate implementation checks: actual Main scene and full-book return2of2 passed with root567to851, indent720to1080, preserved explicit zero tuple, exact literal tab text and replay without writes. Independent adversarial rerun rejects all ten original malformed inputs, including the repaired foreign-namespace indent and orphan settings part; positive ordinary567 and Word-edited851 imports still produce the expected root values. Renderer targeted checks24of24 passed with no skips; mocked geometry does not qualify physical native layout. Baseline, RTK and final native checks remain required on the stable candidate. Evidence: early-focused-log-index.json, results-postrepair.json, postrepair-snapshot-binding.json.
 
 
 ## STOP_CONDITION

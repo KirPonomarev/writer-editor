@@ -4598,6 +4598,7 @@ async function readDocxReviewPacketExportSource() {
   if (!parsedDocument || parsedDocument.issue || typeof parsedDocument.text !== 'string') {
     throw new Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
   }
+  const wordDefaultTabStop=parsedDocument.doc?.attrs?.wordDefaultTabStop;
   const sceneText = parsedDocument.doc ? parsedDocument.text : sceneRawContent;
   const projectId = docxReviewPreviewSessionDetailString(binding.projectId);
   const projectRoot = docxReviewPreviewSessionDetailString(binding.projectRoot) || path.dirname(binding.manifestPath);
@@ -4672,6 +4673,7 @@ async function readDocxReviewPacketExportSource() {
         sceneOrdinal: 0,
         sceneRevision,
         rawSha256,
+        documentFormatIr:{wordDefaultTabStop:wordDefaultTabStop??720,explicit:wordDefaultTabStop!=null},
         blocks: blocks.map((block, blockIndex) => ({
           blockId: block.blockId,
           paragraphId: block.paragraphId,
@@ -4685,7 +4687,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
-    documentNotes, documentSections, documentStories, commentExport,
+    documentNotes, documentSections, documentStories, wordDefaultTabStop, commentExport,
     sceneText,
     blocks,
     customProperties: [
@@ -4865,7 +4867,7 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
-    documentNotes, documentSections, documentStories, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
+    documentNotes, documentSections, documentStories, wordDefaultTabStop, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
     provisionalSelfParseArtifact: { bytes: provisionalBuffer },
     sceneText,
     blocks,
@@ -8355,6 +8357,7 @@ function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostic
       }
     : null;
   const publicOperations = candidates.map((candidate) => ({
+    ...(candidate.kind==='document-properties'?{kind:'document-properties',document:cloneJsonSafe(candidate.document)}:{}),
     operationId: docxReviewPreviewSessionDetailString(candidate.operationId),
     sceneId: docxReviewPreviewSessionDetailString(candidate.sceneId),
     blockId: docxReviewPreviewSessionDetailString(candidate.blockId),
@@ -8523,6 +8526,7 @@ function attachRtkStructuralReturnProductPreview({ input, candidates, diagnostic
       }
     : null;
   const publicOperations = candidates.map((candidate) => ({
+    ...(candidate.kind==='document-properties'?{kind:'document-properties',document:cloneJsonSafe(candidate.document)}:{}),
     operationId: docxReviewPreviewSessionDetailString(candidate.operationId),
     sceneId: docxReviewPreviewSessionDetailString(candidate.sceneId),
     blockId: docxReviewPreviewSessionDetailString(candidate.blockId),
@@ -12370,6 +12374,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(sourceReport.contentPreview.wordDefaultTabStop!==undefined?{wordDefaultTabStop:sourceReport.contentPreview.wordDefaultTabStop}:{}),
         ...(sourceReport.contentPreview.wordSections ? { wordSections: cloneJsonSafe(sourceReport.contentPreview.wordSections) } : {}),
         ...(sourceReport.contentPreview.wordStories ? { wordStories: cloneJsonSafe(sourceReport.contentPreview.wordStories) } : {}),
         ...(userBookmarkInventory !== null ? { userBookmarkInventory } : {}),
@@ -12396,7 +12401,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'typedBreaks',
                 'headingLevel',
                 'textAlign',
-                'wordParagraphSpacing',
+                'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
                 'wordParagraphMarkLanguage',
                 'list',
                 'blockKind',

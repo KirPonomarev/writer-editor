@@ -1357,3 +1357,117 @@ test('N3 fresh round identities admit repeated transitions while legacy and same
     assert.equal(fs.readFileSync(ledgerPath,'utf8'),before);
   }
 });
+
+async function rootLayoutRuntimeFixture(requestId) {
+  const envelope = await import(pathToFileURL(ENVELOPE_PATH).href);
+  const project = runtimeProject();
+  for (const scenePath of [project.sceneA, project.sceneB]) {
+    const text = fs.readFileSync(scenePath, 'utf8');
+    fs.writeFileSync(scenePath, envelope.composeObservablePayload({
+      doc: { type: 'doc', attrs: { wordDefaultTabStop: 567 }, content: [
+        { type: 'paragraph', attrs: { wordParagraphIndent: { left: 0, right: 0, firstLine: 0 },
+          wordParagraphTabs: [{ pos: 1701, val: 'right', leader: 'dot' }] },
+        content: [{ type: 'text', text }] },
+      ] },
+    }));
+  }
+  const input = runtimeInput(project.projectRoot, project.scenePathBySceneId, requestId);
+  input.operations = input.operations.map(({ operationId, sceneId, sourceSceneRevision, sourceRawSha256 }) => ({
+    kind: 'document-properties', operationId, sceneId, sourceSceneRevision, sourceRawSha256,
+    sourceAuthority: 'authenticated-full-manuscript-export-map-document-properties-v1',
+    document: { wordDefaultTabStop: { action: 'set', value: 851 } },
+  }));
+  const before = Object.fromEntries(Object.entries(project.scenePathBySceneId).map(([id, file]) => [id, fs.readFileSync(file, 'utf8')]));
+  const assertRaw = (expected = before) => {
+    for (const [id, file] of Object.entries(project.scenePathBySceneId)) assert.equal(fs.readFileSync(file, 'utf8'), expected[id], id);
+  };
+  return { project, input, before, assertRaw, envelope };
+}
+
+test('N3 root layout operations reject stale and conflicting source revisions before any scene write', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  for (const mode of ['stale', 'conflicting-revision']) {
+    const { project, input, before, assertRaw } = await rootLayoutRuntimeFixture(`root-layout-${mode}`);
+    const expected = { ...before };
+    if (mode === 'stale') {
+      // A is prepared first; a stale B must still prevent publication of A.
+      expected['scene-b'] = `${before['scene-b']}\nConcurrent author suffix`;
+      fs.writeFileSync(project.sceneB, expected['scene-b']);
+    } else {
+      input.operations.push({ ...input.operations[0], operationId: 'conflicting-root-revision',
+        sourceSceneRevision: `sha256:${'f'.repeat(64)}`, sourceRawSha256: `sha256:${'f'.repeat(64)}` });
+    }
+    const result = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.code, mode === 'stale' ? 'RTK_FORMATTING_SOURCE_SCENE_STALE' : 'RTK_FORMATTING_SOURCE_REVISION_CONFLICT');
+    assertRaw(expected);
+  }
+});
+
+test('N3 root layout duplicate and conflicting intervals are rejected without partial publication', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  for (const value of [851, 1134]) {
+    const { input, assertRaw } = await rootLayoutRuntimeFixture(`root-layout-duplicate-${value}`);
+    input.operations.push({ ...input.operations[1], operationId: `second-root-${value}`,
+      document: { wordDefaultTabStop: { action: 'set', value } } });
+    const result = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.code, 'RTK_FORMATTING_DOCUMENT_DUPLICATE_OPERATION');
+    assertRaw();
+  }
+});
+
+test('N3 root layout atomic CAS preserves an author edit and rolls back an already published peer', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  const { project, input, before, assertRaw } = await rootLayoutRuntimeFixture('root-layout-atomic-cas');
+  const concurrent = `${before['scene-b']}\nAuthor edit at rename`;
+  let injected = false;
+  const result = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort,
+    beforeAtomicSceneRename: async ({ phase, sceneId }) => {
+      if (!injected && phase === 'commit' && sceneId === 'scene-b') {
+        injected = true;
+        fs.writeFileSync(project.sceneB, concurrent);
+      }
+    },
+  });
+  assert.equal(injected, true);
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(result.code, 'RTK_FORMATTING_CONCURRENT_SCENE_CHANGE_BLOCKED');
+  assertRaw({ ...before, 'scene-b': concurrent });
+});
+
+test('N3 root layout rollback and abrupt recovery retain paragraph topology and replay without writes', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  for (const abrupt of [false, true]) {
+    const { project, input, before, assertRaw, envelope } = await rootLayoutRuntimeFixture(`root-layout-crash-${abrupt}`);
+    if (abrupt) {
+      await assert.rejects(runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort, simulateAbruptFailureAtSceneIndex: 0 }),
+        /RTK_FORMATTING_SIMULATED_ABRUPT_PROCESS_EXIT/u);
+      assert.notEqual(fs.readFileSync(project.sceneA, 'utf8'), before['scene-a']);
+      assert.equal(fs.readFileSync(project.sceneB, 'utf8'), before['scene-b']);
+    } else {
+      const failed = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort, simulateFailureAtSceneIndex: 0 });
+      assert.equal(failed.ok, false, JSON.stringify(failed));
+      assert.equal(failed.code, 'RTK_FORMATTING_WRITE_FAILED_ROLLED_BACK');
+      assertRaw();
+    }
+    const applied = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort });
+    assert.equal(applied.status, 'applied', JSON.stringify(applied));
+    if (abrupt) assert.equal(applied.recoveryOutcome, 'rolled-back');
+    const after = {};
+    for (const [id, file] of Object.entries(project.scenePathBySceneId)) {
+      after[id] = fs.readFileSync(file, 'utf8');
+      if (id === 'scene-c') { assert.equal(after[id], before[id]); continue; }
+      const original = envelope.parseObservablePayload(before[id]);
+      const actual = envelope.parseObservablePayload(after[id]);
+      assert.equal(actual.doc.attrs.wordDefaultTabStop, 851);
+      assert.deepEqual(actual.doc.content, original.doc.content);
+      assert.deepEqual(actual.meta, original.meta);
+      assert.deepEqual(actual.cards, original.cards);
+    }
+    const replayed = await runtime.applyMultiSceneFormattingReturnRuntime(input, { cryptoPort });
+    assert.equal(replayed.status, 'replay', JSON.stringify(replayed));
+    assert.equal(replayed.writerCalled, false);
+    assertRaw(after);
+  }
+});

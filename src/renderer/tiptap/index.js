@@ -103,7 +103,7 @@ function setCheckedDocument(editor, doc) {
   wordSections.read(doc);
   wordStories.readProjection(doc);
   const result = setCheckedReviewDocument(editor, doc)
-  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null).setDocAttribute('wordSections', doc.attrs?.wordSections || null).setDocAttribute('wordStories', doc.attrs?.wordStories || null)
+  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null).setDocAttribute('wordSections', doc.attrs?.wordSections || null).setDocAttribute('wordStories', doc.attrs?.wordStories || null).setDocAttribute('wordDefaultTabStop', doc.attrs?.wordDefaultTabStop ?? null)
     .setMeta('wordPendingRevisionsExternal', true).setMeta('preventUpdate', true).setMeta('addToHistory', false))
   return result
 }

@@ -222,6 +222,7 @@ function sanitizeContentPreviewReport(report) {
       ? {
           sourcePart: report.contentPreview.sourcePart,
           ...(userBookmarkInventory ? {userBookmarkInventory} : {}),
+          ...(report.contentPreview.wordDefaultTabStop!==undefined?{wordDefaultTabStop:report.contentPreview.wordDefaultTabStop}:{}),
           ...(report.contentPreview.wordSections ? { wordSections: cloneJsonSafe(report.contentPreview.wordSections) } : {}),
           ...(report.contentPreview.wordStories ? { wordStories: cloneJsonSafe(report.contentPreview.wordStories) } : {}),
           ...(isPlainObject(report.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(report.contentPreview.pendingRevisionDocument) } : {}),
@@ -244,7 +245,7 @@ function sanitizeContentPreviewReport(report) {
                 'typedBreaks',
                 'headingLevel',
                 'textAlign',
-                'wordParagraphSpacing',
+                'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
                 'wordParagraphMarkLanguage',
                 'list',
                 'blockKind',

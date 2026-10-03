@@ -1836,3 +1836,23 @@ test('actual Main fresh authenticated formatting rounds revisit the same transit
  assert.equal(baselines[0],baselines[2],'the same exact before bytes are revisited');
  assert.deepEqual(operationIds[0],operationIds[2],'semantic operation identity repeats; round authority separates applications');
 });
+for(const scope of ['scene','full'])test(`actual Main authenticated paragraph layout ${scope} root and paragraph delta preserve raw zeros and replay`,async t=>{
+ const f=await fixture(t);
+ const doc={type:'doc',attrs:{wordDefaultTabStop:567},content:[{type:'paragraph',attrs:{wordParagraphIndent:{left:720,firstLine:240},wordParagraphTabs:[{pos:1701,val:'right',leader:'dot'}]},content:[{type:'text',text:'Alpha\t12.34'}]},{type:'paragraph',attrs:{wordParagraphIndent:{left:0,right:0,firstLine:0}},content:[{type:'text',text:'Zero reset'}]}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);if(scope==='full')fs.writeFileSync(f.beta,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe[scope==='scene'?'sceneSource':'fullSource'](),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.match(parts['word/settings.xml'],/defaultTabStop w:val="567"/);
+ parts['word/settings.xml']=parts['word/settings.xml'].replace('defaultTabStop w:val="567"','defaultTabStop w:val="851"');
+ parts['word/document.xml']=parts['word/document.xml'].replaceAll('<w:ind w:left="0" w:right="0" w:firstLine="0"/>','').replaceAll('w:left="720" w:firstLine="240"','w:left="1080" w:firstLine="240"');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const before=f.capture(),beta=read(f.beta),activated=await f.probe.reviewActivate({requestId:`layout-${scope}`,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath.diagnosticCount,0,JSON.stringify(activated));assert.deepEqual(f.capture(),before);
+ const input=f.probe.formattingInput(),roots=input.operations.filter(op=>op.kind==='document-properties');assert.equal(roots.length,scope==='scene'?1:2);for(const op of roots){assert.equal(Object.hasOwn(op,'blockId'),false);assert.equal(op.document.wordDefaultTabStop.value,851);}
+ const settle=f.probe.observeDeferredEditorSync(),applied=await f.probe.formatApply({requestId:'layout-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+ for(const target of scope==='scene'?[f.alpha]:[f.alpha,f.beta]){const saved=envelope.parseObservablePayload(read(target)).doc;assert.equal(saved.attrs.wordDefaultTabStop,851);assert.equal(saved.content[0].attrs.wordParagraphIndent.left,1080);assert.deepEqual(saved.content[1].attrs.wordParagraphIndent,{left:0,right:0,firstLine:0});assert.deepEqual(saved.content.map(p=>p.content),doc.content.map(p=>p.content));}
+ if(scope==='scene')assert.equal(read(f.beta),beta);assert.equal(observed,read(f.alpha));
+ const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'layout-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+ const reexport=await f.probe[scope==='scene'?'sceneSource':'fullSource'](),rebuilt=await f.probe.reviewBuild(reexport);assert.equal(rebuilt.publicationGate.publishAllowed,true);assert.match(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:rebuilt.documentBuffer}).parts['word/settings.xml'],/defaultTabStop w:val="851"/);
+});

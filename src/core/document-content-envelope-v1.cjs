@@ -254,7 +254,7 @@ function documentHasWordLanguage(doc) {
   return false;
 }
 
-function documentHasParagraphSpacing(doc) {
+function documentHasParagraphSpacing(doc, layoutKeys = ['wordParagraphSpacing']) {
   const pending = [{ node: doc }], ancestors = new Set(); let count = 0;
   const own = (value, key) => {
     const d = Object.getOwnPropertyDescriptor(value, key);
@@ -268,7 +268,7 @@ function documentHasParagraphSpacing(doc) {
     if (++count > 200000 || ancestors.has(node)) throw Error('WORD_PARAGRAPH_SPACING_INVALID');
     ancestors.add(node); pending.push({ node, exit: true });
     const attrs = own(node, 'attrs');
-    if (attrs && typeof attrs === 'object' && own(attrs, 'wordParagraphSpacing') != null) return true;
+    if (attrs && typeof attrs === 'object' && layoutKeys.some(key => own(attrs, key) != null)) return true;
     for (const key of ['content', 'marks']) {
       const children = own(node, key);
       if (Array.isArray(children)) for (let i = 0; i < children.length; i++) pending.push({ node: own(children, String(i)) });
@@ -291,6 +291,7 @@ function canonicalizeDocumentJson(doc) {
     throw Object.assign(new Error('USER_BOOKMARK_SHAPE_INVALID'), { code: 'USER_BOOKMARK_SHAPE_INVALID' });
   }
   if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
+  if (documentHasParagraphSpacing(doc, ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop'])) require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(doc);
   if (documentHasParagraphSpacing(doc)) require('./word-paragraph-spacing-v1.cjs').inspectDocumentParagraphSpacing(doc);
   if (bookmarkDescriptor?.value != null) {
     require('./word-user-bookmarks-v1.cjs').readRegistry(doc, { checkBounds: false });
@@ -318,6 +319,7 @@ function canonicalizeDocumentJson(doc) {
     // New optional schema defaults are representation-only; preserve every
     // explicit tuple, including its separate paragraph-mark scope.
     if (node?.attrs?.wordParagraphMarkLanguage === null) delete node.attrs.wordParagraphMarkLanguage;
+    for (const key of ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop']) if (node?.attrs?.[key] === null) delete node.attrs[key];
     if (node?.attrs?.wordParagraphSpacing === null) delete node.attrs.wordParagraphSpacing;
     for (const mark of node?.marks || []) if (mark?.attrs?.wordLanguage === null) delete mark.attrs.wordLanguage;
     if (node?.type === 'orderedList' && node.attrs?.type === null) delete node.attrs.type;
@@ -353,6 +355,7 @@ function requiredSceneFeatures(doc) {
   return [...(doc.attrs?.wordStories != null ? ['word-stories.v1'] : []), ...(doc.attrs?.wordSections != null ? ['word-sections.v1'] : []), ...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
     ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
     ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : []),
+    ...(documentHasParagraphSpacing(doc, ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop']) ? ['word-paragraph-layout.v1'] : []),
     ...(documentHasParagraphSpacing(doc) ? ['word-paragraph-spacing.v1'] : []),
     ...(require('./word-list-format-v1.cjs').inspectDocument(doc) ? ['word-list-format.v1'] : []),
     ...(require('./word-list-numbering-v1.cjs').resolve(doc).size ? ['word-list-numbering.v1'] : []),
@@ -391,7 +394,7 @@ function decodeSceneDocument(serializedDoc) {
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
     || declaration.requiredFeatures.length > 9 || declaration.requiredFeatures.some(feature =>
-      !['word-stories.v1', 'word-sections.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+      !['word-stories.v1', 'word-sections.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

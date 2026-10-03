@@ -1,4 +1,4 @@
-const { buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
@@ -403,6 +403,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
+  paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(block.formatIr?.paragraph));
   paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(block.formatIr?.paragraph?.wordParagraphSpacing));
   const markLanguage = buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
   if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
@@ -771,6 +772,7 @@ function assertNoEmbeddedSecret(buffer, forbiddenSecret) {
 }
 
 function buildDocxReviewPacketBuffer(input = {}) {
+  const defaultTabsXml=input.wordDefaultTabStop==null?'':`<w:defaultTabStop w:val="${require('../../core/word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(input.wordDefaultTabStop)}"/>`;
   const blocks = normalizeReviewPacketBlocks(input);
   const mediaPackage = buildMediaPackage({ type: 'doc', content: blocks.map(block => {
     const media = block.formatIr?.media;
@@ -819,7 +821,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
     { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships + mediaPackage.relationships + stories.relationships) },
     { name: 'word/document.xml', data: documentXml },
-    { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', (stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
+    { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', defaultTabsXml+(stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
