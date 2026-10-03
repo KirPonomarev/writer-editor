@@ -18,7 +18,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 
 ## ALLOWLIST
 
-Exact twelve paths in the validated external architecture declaration: revisionBridge index, composite-fidelity and manuscript-notes-import contract tests, this task, and existing required governance companions. No runtime schema, renderer, Main, preload, dependency or workflow changes.
+Exact thirteen paths in the validated external architecture declaration: revisionBridge index, composite-fidelity, manuscript-notes-import and inline-atoms contract tests, this task, and existing required governance companions. No runtime schema, renderer, Main, preload, dependency or workflow changes.
 
 ## DENYLIST
 
@@ -61,3 +61,7 @@ Preserve failures. Freeze tracked bytes AND Git HEAD throughout identity-reading
 ## REPORT_FORMAT
 
 AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY. Whole-plan percentage remains UNKNOWN until original requirements are matched to current evidence.
+
+## CONTRACT REGRESSION FOUND DURING FULL RTK
+
+The initial candidate be4a896b passed 2809 of 2810 RTK checks with zero skips or todo. The remaining historical inline-atoms test required warning-only import for a Wingdings symbol. Its expectation is updated to explicit refusal and absent candidate, while retaining the positioned-tab warning test. Runtime bytes remain unchanged from both completed native profile observations. This is an affected contract correction, not a removed check or a full-plan qualification.

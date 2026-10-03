@@ -83,12 +83,20 @@ test('Word audit: namespace spoofing and atoms outside a run cannot supply impor
   }
 });
 
-test('Word audit: foreign Symbol glyph and positioned-tab losses must be explicit', async () => {
-  for (const [atom, attrs] of [['sym', 'w:font="Wingdings" w:char="F04A"'], ['ptab', 'w:alignment="right" w:relativeTo="margin" w:leader="none"']]) {
-    const { plan, report } = await preview(pack(`<w:p><w:r><w:t>left</w:t><w:${atom} ${attrs}/><w:t>right</w:t></w:r></w:p>`));
-    assert.equal(report.diagnostics.some(d => d.tagName === `w:${atom}`), true, `No silent ${atom} loss`);
-    assert.equal(plan.lossReport.items.some(d => d.tagName === `w:${atom}` && d.severity === 'warning'), true);
-  }
+test('Word audit: unmapped Symbol glyph refuses import before candidate creation', async () => {
+  const [bridge] = await modules;
+  const report = bridge.buildDocxContentPreviewFromZipBytes(pack('<w:p><w:r><w:t>left</w:t><w:sym w:font="Wingdings" w:char="F04A"/><w:t>right</w:t></w:r></w:p>'));
+  assert.equal(report.ok, false, JSON.stringify(report));
+  assert.equal(report.diagnostics.some(d => d.tagName === 'w:sym' && d.sourceCode === 'DOCX_SYMBOL_UNMAPPED'), true);
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(report);
+  assert.equal(plan.ok, false);
+  assert.equal(plan.candidateCreatePlan, null);
+});
+
+test('Word audit: positioned-tab loss must be explicit', async () => {
+  const { plan, report } = await preview(pack('<w:p><w:r><w:t>left</w:t><w:ptab w:alignment="right" w:relativeTo="margin" w:leader="none"/><w:t>right</w:t></w:r></w:p>'));
+  assert.equal(report.diagnostics.some(d => d.tagName === 'w:ptab'), true, 'No silent ptab loss');
+  assert.equal(plan.lossReport.items.some(d => d.tagName === 'w:ptab' && d.severity === 'warning'), true);
 });
 
 test('Word audit: native atoms survive real fenced persistence and idempotent replay', async t => {

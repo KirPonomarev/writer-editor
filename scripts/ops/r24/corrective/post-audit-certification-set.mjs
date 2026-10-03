@@ -2438,7 +2438,7 @@ export const R24_INTEROP_WORD_IMPORT_FIDELITY_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "65849b5ca57f0a45270e1c4f0532dd38734ada2b4c1ad3763ceeea3a231fa4eb"
+      "sha256": "549b44589eb919be771a14145ffd7af77d75f3fa8fb1681301767e452ce54e02"
     }
   ]
 });

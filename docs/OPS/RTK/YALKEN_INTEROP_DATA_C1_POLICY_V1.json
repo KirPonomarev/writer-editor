@@ -1300,7 +1300,7 @@
       },
       {
         "path": "test/contracts/rtk-word-inline-atoms.contract.test.js",
-        "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
+        "sha256": "4c54397aaaa3e98eb467d3f9e71d912a1722555902c3399bb8e8c57031f9c9a6"
       },
       {
         "path": "test/contracts/rtk-word-visibility-ruby.contract.test.js",
@@ -2132,7 +2132,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
-        "sha256": "f980f7948e16a2f590b7c20bb4e06421eeab28069fdc4955d5349b2aabc1ee78"
+        "sha256": "ca3fe5c3ced90d224dbb15d9b8d53474642489a0a506c9fa379a2ef619971ce6"
       }
     ],
     "followupRepair": {
