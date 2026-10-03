@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_PARAGRAPH_LAYOUT_MAC_20261003",
+  "objective": "Preserve ordinary Word paragraph indentation, custom tab stops and document default interval through import, editing, save/reopen, authenticated return and both DOCX exports on Mac",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "582145158c9a63095892a36a3125723c582a071b",
+  "scopeIn": [
+    "src/core/word-paragraph-layout-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+    "src/main.js",
+    "src/utils/docxImportLocalFilePreview.js",
+    "src/renderer/tiptap/documentParagraphAlignment.mjs",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/editor.bundle.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/export/docx/docxReviewPacketStories.js",
+    "src/export/docx/docxPendingRevisions.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "test/contracts/rtk-word-paragraph-layout.contract.test.js",
+    "test/contracts/rtk-word-effective-style-return.contract.test.js",
+    "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "test/contracts/rtk-word-pending-formatting.contract.test.js",
+    "test/contracts/revision-bridge-docx-alignment.contract.test.js",
+    "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+    "docs/tasks/2026-10-03--word-paragraph-layout-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_LAYOUT_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
+  ],
+  "scopeOut": [
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/preload.js",
+    ".github/workflows",
+    "package.json",
+    "package-lock.json"
+  ],
+  "productAuthority": "Owner-authorized entire Mac Word plan; current bounded P3-08 paragraph layout slice. Core owns typed document and paragraph properties; existing scene persistence and authenticated formatting transactions remain sole writers.",
+  "commandAuthority": "Existing import safe-create, authoring Save and authenticated formatting Apply; document-property operations are Main-owned, original export-scene bound, revision/CAS checked. No fake paragraph authority for root changes.",
+  "designAuthority": "Existing Tiptap document and paragraph representation only; preserve shell, controls, tokens and composition. Mechanical typed document attributes and indent rendering; exact Word page layout remains outside original baseline.",
+  "operationKinds": [
+    "QUERY",
+    "COMMAND",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated generic DOCX -> existing safe-create -> canonical document envelope",
+    "Authenticated returned paragraph/root delta -> Main exact stored payload/key/round/source revalidation -> existing multi-scene formatting journal and atomic writer",
+    "Existing authoring buffer -> Save -> canonical document; both DOCX writers publish only validated committed snapshots"
+  ],
+  "readPaths": [
+    "Current saved scene, revision and export map",
+    "Bounded Word main/styles/settings/stories XML -> immutable typed projection"
+  ],
+  "productPorts": [
+    "Existing DOCX intake/export and scene transaction ports; no new platform adapter"
+  ],
+  "designOsPorts": [
+    "Existing immutable document/review projections"
+  ],
+  "readProjections": [
+    "Typed paragraph indent/tab stops plus owning-document default interval; imported metadata never grants authority"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Project/scene/round/source revision/raw SHA/generation revalidated at asynchronous publication and Apply",
+    "Root change applies only to scenes named by authenticated original export; conflicting duplicate root operations reject before mutation"
+  ],
+  "capabilityRevalidation": "Existing Command Kernel and Main exact stored payload and durable key/round revalidation before any mutation. Preview remains read-only; root fields cannot select paths or mint scene IDs.",
+  "fallbacks": [
+    "Malformed, unsupported or ambiguous properties reject or disclose before canonical commit; no silent property loss",
+    "Mixed effective scene default-tab grids refuse before DOCX publication and remain an explicit unresolved original-plan requirement; do not select arbitrary720",
+    "Preserve original DOCX, prior saved scenes and recoverable transaction snapshots"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Strict own data descriptors, unknown keys, bounds, units, duplicate positions, namespaces and ambiguous XML owner checks before interpretation",
+    "firstLine/hanging cascade outcome must be calibrated with native Word before semantic implementation claim",
+    "Tab characters preserve exact text offsets; inherited custom-stop override/clear and leaders independently checked",
+    "Default interval absence versus explicit720 remains unchanged without effective delta; nondefault567 survives",
+    "Root changes, paragraph changes and mixed operations pass exact Main/transaction tests including stale revision, wrong project, forged source map, preview no-write, replay and crash recovery",
+    "Editor real edit, split, undo/redo, save/restart and both exports preserve metadata; existing notes/stories/pending and auxiliary return comparators retain fields",
+    "Independent literal XML/scene oracle detects lost indent, stop, leader, interval and text tab; SOURCE/PACKAGED actual changed Word cycles before full delivery"
+  ],
+  "securityAndInputBoundary": "No dependencies, secrets or runtime network. Existing bounded XML/ZIP and identity guardrails; document settings and paragraph tab metadata remain untrusted data, never source or mutation authority.",
+  "performanceAndAccessibility": "Bounded per-import style resolution; no full document reparse or I/O in typing hot path. Existing keyboard/editor controls preserved. No new UI surface or motion. ui-craft existing-stack discipline; document properties do not change system spacing tokens.",
+  "currentReality": [
+    "Exact clean58214515 equals freshly fetched origin/main; prior2071/2072 delivery complete",
+    "Current generic parser misclassifies pPr/tabs/tab as run atom, producing DOCX_INLINE_ATOM_OWNER_INVALID; root default interval not preserved in current writers"
+  ],
+  "targetOnly": [
+    "Typed paragraph indent and custom stops plus canonical root defaultTabStop, source-bound document formatting deltas and uniform full-book setting",
+    "Mixed per-scene default grids remain unresolved rather than silently flattened; full Mac plan not accepted",
+    "No named-style identity or pixel-identical pagination claim"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert this single delivery PR; preserve immutable source DOCX, external native fixtures and existing scene journals/snapshots; N-1 reader must refuse undeclared new semantic fields.",
+  "integrationMode": "EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS",
+  "featureId": "WORD_PARAGRAPH_LAYOUT_V1",
+  "featureVersion": 1,
+  "domainOwner": "Product Core document model",
+  "authoritativeData": "Saved scene doc-v2 root and paragraph properties",
+  "derivedData": "Import/review preview and export XML",
+  "commandIds": [
+    "cmd.project.importDocxV1",
+    "cmd.rtk.review.applyMultiSceneFormattingReturn",
+    "existing canonical Save"
+  ],
+  "eventTypes": [
+    "existing transaction completion and scene projection invalidation"
+  ],
+  "queryIds": [
+    "existing DOCX preview and saved-scene projection"
+  ],
+  "productProjectionIds": [
+    "existing doc-v2 and formatting return preview"
+  ],
+  "capabilityIds": [
+    "existing local Word import, export and explicit formatting Apply"
+  ],
+  "authorityMap": {
+    "Core": "typed values and canonical state",
+    "Kernel": "dispatch revalidation",
+    "Main": "authenticated source and filesystem adapters",
+    "renderer": "authoring buffer and immutable projection"
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "roundId",
+    "sourceSceneRevision",
+    "sourceRawSha256",
+    "generation"
+  ],
+  "revisionPolicy": "CAS against exact exported source and current scene; no stale publication",
+  "writePath": [
+    "Validated generic DOCX -> existing safe-create -> canonical document envelope",
+    "Authenticated returned paragraph/root delta -> Main exact stored payload/key/round/source revalidation -> existing multi-scene formatting journal and atomic writer",
+    "Existing authoring buffer -> Save -> canonical document; both DOCX writers publish only validated committed snapshots"
+  ],
+  "readPath": [
+    "Current saved scene, revision and export map",
+    "Bounded Word main/styles/settings/stories XML -> immutable typed projection"
+  ],
+  "requiredProductPorts": [
+    "Existing DOCX intake/export and scene transaction ports; no new platform adapter"
+  ],
+  "requiredDesignOsPorts": [
+    "Existing immutable document/review projections"
+  ],
+  "adapterRequirements": "Existing local DOCX and scene persistence adapters",
+  "surfaceManifests": "NOT_APPLICABLE: no new surface",
+  "slotRequirements": "Existing editor and Review slots only",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": [
+    "macOS SOURCE",
+    "macOS PACKAGED"
+  ],
+  "accessibilityRequirements": "Preserve existing editing, selection and keyboard routes",
+  "persistenceClass": "PROJECT_STATE and AUTHORING_WORKING_STATE with no-loss Save",
+  "migrations": "Add feature declaration; N-1 refuses unsupported fields rather than losing them; old absent fields unchanged",
+  "recovery": "Existing multi-scene formatting journal covers root and paragraph mutations together",
+  "rollback": "Revert this single delivery PR; preserve immutable source DOCX, external native fixtures and existing scene journals/snapshots; N-1 reader must refuse undeclared new semantic fields.",
+  "performanceBudget": "Existing XML budgets; bounded properties per paragraph; no I/O or full parsing in typing",
+  "securityBoundary": "No dependencies, secrets or runtime network. Existing bounded XML/ZIP and identity guardrails; document settings and paragraph tab metadata remain untrusted data, never source or mutation authority.",
+  "lifecycle": "Preview -> explicit Apply -> transaction -> projection; restart-safe replay",
+  "negativeBypassChecks": [
+    "Strict own data descriptors, unknown keys, bounds, units, duplicate positions, namespaces and ambiguous XML owner checks before interpretation",
+    "firstLine/hanging cascade outcome must be calibrated with native Word before semantic implementation claim",
+    "Tab characters preserve exact text offsets; inherited custom-stop override/clear and leaders independently checked",
+    "Default interval absence versus explicit720 remains unchanged without effective delta; nondefault567 survives",
+    "Root changes, paragraph changes and mixed operations pass exact Main/transaction tests including stale revision, wrong project, forged source map, preview no-write, replay and crash recovery",
+    "Editor real edit, split, undo/redo, save/restart and both exports preserve metadata; existing notes/stories/pending and auxiliary return comparators retain fields",
+    "Independent literal XML/scene oracle detects lost indent, stop, leader, interval and text tab; SOURCE/PACKAGED actual changed Word cycles before full delivery"
+  ],
+  "evidenceBindings": "TARGET: independent fixtures and actual native evidence required, not self-PASS"
+}
