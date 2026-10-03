@@ -343,6 +343,8 @@ test('paragraph tab rendering resolves later origins after previous widths, reta
   // Second origin is 10 + new first-tab50 + B10 + indent20 = 90;
   // right stop160 minus origin90 minus following C10 = 60, not stale102.
   assert.match(tabs[1].type.attrs.style,/width:60px/);
+  assert.match(tabs[1].type.attrs.style,/height:2px;vertical-align:baseline;/,'dot leader has a paint area even when font-size is zero');
+  assert.match(tabs[1].type.attrs.style,/background-image:radial-gradient/);
   assert.ok(all.some(d=>d.type.attrs?.style==='position:relative;'));
   const bar=all.find(d=>d.type.toDOM);assert.match(bar.type.toDOM().style.cssText,/left:40px;top:0/);
   assert.equal(JSON.stringify(view.state.doc.toJSON()),original);assert.deepEqual(view.state.selection.toJSON(),selection);

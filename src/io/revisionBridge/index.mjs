@@ -9456,17 +9456,18 @@ function docxInlineReadTypography(properties, tag, token, namespaces) {
 function docxInlineEffectiveTypography(properties, metadata, catalog, text) {
   const result = {};
   const resolved = Object.fromEntries(DOCX_FONT_SLOTS.map(slot => [slot, docxFontResolveTheme(properties[`font_${slot}`], catalog.themeFonts)]));
-  const hasTheme = DOCX_FONT_SLOTS.some(slot => typeof properties[`font_${slot}`] === 'object');
-  const familySlots = hasTheme ? docxFontUsedSlots(text, properties, resolved) : DOCX_FONT_SLOTS;
+  // Literal and theme declarations both select fonts by the actual run script.
+  // Unused East Asian/complex-script slots need not be declared for Latin text.
+  const familySlots = docxFontUsedSlots(text, properties, resolved);
   const families = familySlots?.map(slot => resolved[slot]);
   if (Object.values(resolved).some(value => value !== undefined)) {
     if (!families?.length || families.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(families).size !== 1) metadata.unsupportedTypography = true;
     else result.fontFamily = families[0];
   }
-  const sizes = [properties.font_size, properties.font_sizeCs];
-  if (sizes.some(value => value !== undefined)) {
-    if (sizes.some(value => value === undefined) || new Set(sizes).size !== 1) metadata.unsupportedTypography = true;
-    else result.fontSize = sizes[0];
+  const size = properties.font_forceCs || properties.font_rtl ? properties.font_sizeCs : properties.font_size;
+  if (properties.font_size !== undefined || properties.font_sizeCs !== undefined) {
+    if (size === undefined) metadata.unsupportedTypography = true;
+    else result.fontSize = size;
   }
   return result;
 }

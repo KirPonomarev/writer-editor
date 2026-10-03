@@ -144,7 +144,11 @@ function wordTabDecorations(view, cache) {
           const origin=measure.paragraph.getBoundingClientRect().left-(indent.left||0)*TWIP_PX;
           const advance=wordTabAdvance({position:tabRect.left-origin,stops,defaultInterval:rootDefault,segmentWidth,decimalWidth,
             ...(indent.hanging!==undefined?{hangingPosition:indent.left||0}:{})});
-          const style=`display:inline-block;white-space:pre;font-size:0;width:${Math.round(advance.width*100)/100}px;line-height:inherit;${tabLeaderCss(advance.leader)}`;
+          // font-size:0 suppresses native tab expansion inside the fixed box.
+          // A normal line-height then has zero height: leaders need their own
+          // small paint box. CSS middle aligns against the parent x-height.
+          const leaderBox=advance.leader==='none'?'':`height:2px;vertical-align:${['hyphen','middleDot'].includes(advance.leader)?'middle':'baseline'};`;
+          const style=`display:inline-block;white-space:pre;font-size:0;width:${Math.round(advance.width*100)/100}px;line-height:inherit;${leaderBox}${tabLeaderCss(advance.leader)}`;
           // The measuring tree has one dedicated span per literal tab. Updating
           // its style preserves every mapped text node and all model offsets.
           const tabText=range.startContainer;
