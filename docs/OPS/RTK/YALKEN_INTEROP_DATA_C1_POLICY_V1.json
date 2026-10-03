@@ -1453,7 +1453,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "9c49ccc336be5b512520aa7c20aa76503c58a37b64b5c0310ced170170dd5547"
+        "sha256": "69e8a87744585f2581ed900eae18a7aebf99abf7524b87eec957f858c414b7a7"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -2149,11 +2149,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "f6c69f888e09c4bc41a8225ff249008bcc718f0f0ee73229acfc3e9bc7027fe2"
+        "sha256": "6520f670930fa2efdaa727859d412e72ccce771d88e260d5eff55b502fed1e35"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "ecd225ab215950f491f712f5a10aecfa0b168394de3bf9c7eeba8f720ae172c0"
+        "sha256": "2e8dc9d77e131ce811711e18eb41a8fba11b95ed02a98ab0c43b4448426c8acf"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",

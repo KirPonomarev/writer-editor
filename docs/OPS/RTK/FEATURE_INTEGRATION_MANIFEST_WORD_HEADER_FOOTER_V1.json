@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "92c87c351043f35c54d4e99f51f5e91a1b10692e",
+  "bindingBaseSha": "35f872024b73978d4e40cf26452ebf1a77670ba1",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -59,7 +59,8 @@
     "src/core/word-rich-body-projection-v1.cjs",
     "src/core/word-stories-projection-v1.cjs",
     "test/unit/r24-r5-lifecycle-physics.test.js",
-    "test/unit/r24-wp200-durable-save-physics.test.js"
+    "test/unit/r24-wp200-durable-save-physics.test.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -126,8 +127,8 @@
   "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
   "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
   "currentReality": [
-    "Draft repair checkpoint preserves plain and empty scene CAS in batch; 44 focused tests passed.",
-    "Known strict browser dependency and two exact durable-receipt inventories require this four-path amendment; no accepted final candidate yet."
+    "Candidate35 full RTK2878 passed and native SOURCE/PACKAGED five cycles independently passed; full-plan acceptance remains incomplete.",
+    "CI baseline caught missing pure projection dependency in isolated WP204 mutant sandbox; repair copies actual dependency and verifies unmodified positive control, preserving all mutant assertions. Runtime source and packaged bytes stay frozen."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"
