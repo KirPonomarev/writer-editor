@@ -164,3 +164,14 @@ Regression repair outcome: pending Core now preserves typed spacing/run language
 Executed focused evidence: independent pending/cell-shift35 passed; auxiliary authoring/alignment/spacing42 passed; affected return and actual Main chain462 passed; zero skips in these sets. Counts overlap and are not added into a feature percentage. Earlier failing logs remain preserved. Parser ownership adversarial case was found and repaired before final35. Renderer rebuilt from updated Core. Mandatory stable-candidate baseline/RTK, packaged native and delivery remain pending.
 
 Prelaunch verification at e7dd1bcb caught a stale renderer: its build preceded the final Core prototype-identity checks. No app launched. Same-scope clean preflight passed; rebuilding renderer now matches the independently rebuilt runtime04 byte-for-byte. This corrects build ordering; it is not native acceptance.
+
+
+## Packaged replay admission repair at c523dcb6
+
+Bootstrap and 51-path preflight passed on clean c523dcb6 before this amendment. Same outcome, delivery base e4be0d8d, branch and single-PR rollback. Additional paths: `src/core/writer-local-profile-v1.cjs`, `test/unit/r24-wp307-writer-local-profile.test.js`, `test/unit/r24-wp307-writer-local-profile-integration.test.js`.
+
+Five altered native PACKAGED04 Word cycles and both final exports passed independent artifact/scene verification. Stable baseline, RTK2936 with zero skips, and OSS passed on c523dcb6. Full npm audit failed with16 affected packages; the package and lock bytes are identical to the delivery base. This is inherited failure, not a waived gate; dependency remediation remains unresolved.
+
+Immediate restart after SIGTERM was safely refused with E_PROJECT_LEASE_HELD. Both scene bytes remained unchanged. After the lease interval the isolated process reopened the saved cell scene and style project. A second instance accidentally launched by the observation tool used the ordinary profile; its misleading library observation is explicitly excluded and the second instance was terminated. No registry loss was found. These observations do not establish graceful-quit acceptance.
+
+Native saved-format replay produced no visible result. Independent entire-Main inspection and SOURCE bridge on a COPY of the native project succeeded with replayVerified true and writerCalled false. The identical IPC command with app.isPackaged true failed with WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED. The existing Writer Local allowlist admits Apply but omits saved-format and saved-structure inspection. H: admitting only those existing read-only commands restores packaged replay without widening arbitrary review or optional-system authority. P: packaged bridge regression, unchanged persisted bytes, unrelated-command negative controls, and fresh native packaged restart/replay before delivery. No UI composition or new mutation path is admitted.

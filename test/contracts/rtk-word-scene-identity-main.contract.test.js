@@ -17,7 +17,7 @@ const find = (root, label) => root?.label === label ? root : (root?.children || 
 
 // Compile the actual entire Main source with owned local adapters. Private
 // state access is added ONLY to this test module, never shipped in production.
-async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
+async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packagedMac = false) {
   const spelled = await fsp.mkdtemp(path.join(os.tmpdir(), 'scene-identity-main-'));
   const temp = await fsp.realpath(spelled);
   t.after(() => fsp.rm(temp, { recursive: true, force: true }));
@@ -30,7 +30,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const handles = new Map(), listeners = new Map();
   let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
   const warnings = [];
-  const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
+  const app = { isPackaged: packagedMac, getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
     encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
@@ -94,7 +94,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
-  try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
+  try { compiled._compile((packagedMac ? "const process=Object.create(global.process);Object.defineProperty(process,'platform',{value:'darwin'});\n" : '') + fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
   finally { Module._load = originalLoad; }
   const main = compiled.exports, probe = main.__probe;
   const manager = require('../../src/utils/fileManager');
@@ -1756,4 +1756,24 @@ test('actual Main empty paragraph style return applies zero-length paragraph act
  assert.deepEqual(after.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
  assert.equal(observed,read(f.alpha));assert.equal(read(f.beta),sibling);
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'empty-style-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+});
+
+
+test('packaged Mac actual bridge admits only read-only formatting and structural replay inspectors',async t=>{
+ const f=await fixture(t,false,'01_Alpha.txt',true),ui=mountRenderer(f,read(f.beta));
+ f.probe.state({projectName:'Роман'});
+ const protocol=require('../../src/core/ipc-envelope-v1.cjs');
+ const before=f.capture();
+ for(const kind of ['Formatting','Structural']){
+  const id=`cmd.project.review.inspect${kind}ReturnReplay`;
+  const request=protocol.createEnvelope('ui:command-bridge',id,{requestId:`packaged-${kind}-replay`});
+  const result=await f.handles.get('ui:command-bridge')(ui.event,request);
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.value.code,`RTK_${kind.toUpperCase()}_REPLAY_STATE_INSPECTED`);
+  assert.equal(result.value.writerCalled,false);
+  assert.deepEqual(f.capture(),before,'replay inspection must not alter scenes or project metadata');
+ }
+ const denied=await f.handles.get('ui:command-bridge')(ui.event,protocol.createEnvelope('ui:command-bridge','cmd.project.review.clearSession',{requestId:'unrelated-review'}));
+ assert.equal(denied.ok,false);assert.equal(denied.reason,'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+ assert.equal(denied.value.storageWritten,false);assert.deepEqual(f.capture(),before);
 });
