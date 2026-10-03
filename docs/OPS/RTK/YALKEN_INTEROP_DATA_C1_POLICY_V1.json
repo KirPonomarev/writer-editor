@@ -498,7 +498,8 @@
     "src/core/word-sections-v1.cjs",
     "src/renderer/tiptap/documentSections.mjs",
     "test/contracts/rtk-word-sections.contract.test.js",
-    "docs/tasks/2026-10-03--word-sections-mac.md"
+    "docs/tasks/2026-10-03--word-sections-mac.md",
+    "docs/tasks/2026-10-03--word-import-fidelity-mac.md"
   ],
   "protectedFiles": [
     {
@@ -763,7 +764,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "519c60948f2f02bf2dcc693eb780ccf5bc00519b75b48edf8cb0fac3a820bebe"
+        "sha256": "618a8384b3c81a061c56074da2a1b6e68813ee1d4403f7d97d4b5135307124f8"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1275,7 +1276,7 @@
       },
       {
         "path": "test/contracts/rtk-word-composite-fidelity.contract.test.js",
-        "sha256": "5fe1378c09489e08abad946492f9e31dac1f2597ea0d73aa3272d5e4394da11d"
+        "sha256": "0c389821543f230134dc00dcfd7d85d1b5d096fb2126726328108aa9dadb718c"
       },
       {
         "path": "src/io/revisionBridge/exactTextApplyJournal.mjs",
@@ -1299,7 +1300,7 @@
       },
       {
         "path": "test/contracts/rtk-word-inline-atoms.contract.test.js",
-        "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
+        "sha256": "4c54397aaaa3e98eb467d3f9e71d912a1722555902c3399bb8e8c57031f9c9a6"
       },
       {
         "path": "test/contracts/rtk-word-visibility-ruby.contract.test.js",
@@ -1555,7 +1556,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-        "sha256": "d1d427ab7f79374d3b3e62de8a400932e6f230738cdc5f17fa17b7ab0d2e7aea"
+        "sha256": "bc2cd582670aaa34de45c879021b1800c7e776e0218b42843cf70760edfc2fe6"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -2128,6 +2129,10 @@
       {
         "path": "test/contracts/rtk-word-sections.contract.test.js",
         "sha256": "f285cd275f945c8a7e779ec65d8b3fb0b5beec6d553c70993bae5bed4ec24775"
+      },
+      {
+        "path": "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
+        "sha256": "ca3fe5c3ced90d224dbb15d9b8d53474642489a0a506c9fa379a2ef619971ce6"
       }
     ],
     "followupRepair": {
