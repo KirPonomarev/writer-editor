@@ -839,7 +839,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "66263801819d94c03e5f07d1bfdeaf0742da08df37e1654ca3d87c046c012a98"
+        "sha256": "ba633ddf81ebd39a5f4024fcc5f8e91997e8c4a29731623c68153804ae897f40"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1775,7 +1775,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-lists.contract.test.js",
-        "sha256": "8ad83bcf8887f2f36e7a6dcbdd9cf03047a5cd1990501575e0814a83d57c29dc"
+        "sha256": "bbf091473bda74f90f9ef6b1d0516aa7b3a066f8077086174d84b4ee80cf77a3"
       },
       {
         "path": "docs/tasks/2026-10-01--word-scene-first-note-mac.md",
@@ -2115,7 +2115,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-sections-mac.md",
-        "sha256": "7035a633dcdc23a1134e65e655529f079635c003144f365a7288def4dace4ba8"
+        "sha256": "fab0e8166d52509dc066b12e78f31e6682acb28c4d7e1bb5b127e787c1425ded"
       },
       {
         "path": "src/renderer/tiptap/documentSections.mjs",

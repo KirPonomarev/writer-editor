@@ -328,7 +328,7 @@ function buildSectionPropertiesXml(section, options = {}) {
   const columns = properties.columns;
   return [
     '<w:sectPr>',
-    `<w:type w:val="${escapeXml(properties.type)}"/>`,
+    ...(options.final === true && properties.type === 'nextPage' ? [] : [`<w:type w:val="${escapeXml(properties.type)}"/>`]),
     `<w:pgSz w:w="${pageSize.widthTwips}" w:h="${pageSize.heightTwips}" w:orient="${escapeXml(pageSize.orientation)}"/>`,
     `<w:pgMar w:top="${margins.topTwips}" w:right="${margins.rightTwips}" w:bottom="${margins.bottomTwips}" w:left="${margins.leftTwips}" w:header="${margins.headerTwips}" w:footer="${margins.footerTwips}" w:gutter="${margins.gutterTwips}"/>`,
     `<w:cols w:num="${columns.count}" w:space="${columns.spaceTwips}"/>`,

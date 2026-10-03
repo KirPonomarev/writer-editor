@@ -41,6 +41,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/renderer/tiptap/index.js`
 - `src/renderer/editor.bundle.js`
 - `test/contracts/rtk-word-sections.contract.test.js`
+- `test/contracts/rtk-word-note-lists.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-table-editor.contract.test.js`
 - `test/contracts/rtk-word-composite-fidelity.contract.test.js`
@@ -117,3 +118,7 @@ Candidate b2eb0473d2e0ead9f1e6a9347f624d2fc0e6d649 corrected list/blockquote car
 SOURCE and PACKAGED each completed native import from independent-six-sections.docx, editor text change, Undo/Redo, Save, Review export, actual Word text change and Save, explicit Apply (1 applied, 0 blocked, 0 failed), Save, owned process restart and Review re-export. PACKAGED also completed ordinary current-scene DOCX export after restart. Independent Python ZIP/XML observations verified each ordered section type, final continuous, two-column properties, supported page geometry and exact changed paragraph texts across output artifacts. Runtime copy evidence binds both profiles to the exact candidate. All owned native processes stopped after observation.
 
 No whole-plan completion claim. Renderer pagination fidelity, unsupported section properties, section-boundary edits from Word and arbitrary mixed multi-region text/structural authoring remain outside this qualified slice. Required full RTK, baseline, CI and merged-head verification still pending at this evidence commit.
+
+## FULL_RTK_CORRECTIVE
+
+First full candidate run: 2799 tests, 2748 passed, 51 failed, zero skips/todos. Failure cluster: emitting the default final nextPage marker made existing pending-revision import reject ordinary exported documents. Separately, two extracted Main note-publication tests needed the real section-validator dependency added to their VM context. Assertions remain unchanged. Corrective declaration admitted the harness path at a8eef963 without changing the original PR base. Full checks must rerun after correction; first failure is retained as evidence.
