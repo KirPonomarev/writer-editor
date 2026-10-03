@@ -979,7 +979,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "a5c4d186111b45d3c0800c45218017cc63a9c1358735580536cb108fb47db103"
+        "sha256": "7d825113dd71d7b485bdaa0602e45ef6f58de9ba80c1cfeb514ff5782bb88c30"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -2239,7 +2239,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "ec758d4e6b4f626b468bc91d9a8ffe8bd8ba36cfc424b69cf7ffeeb0569c4dc4"
+        "sha256": "9e5ca7c906be89686e1c13e5dbb573b61485d4d0377dee48ddd5794688b993bc"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
