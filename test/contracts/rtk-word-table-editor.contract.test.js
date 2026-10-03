@@ -49,7 +49,8 @@ test('table editor: production trailing-node policy preserves a table-only docum
   const options=JSON.parse(JSON.stringify(vm.runInNewContext('('+source.match(/StarterKit\.configure\((\{[\s\S]*?\})\)/u)[1]+')')));
   const [{getSchema},{default:StarterKit},{DocumentTables},{EditorState}]=await Promise.all([
     import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),import('@tiptap/pm/state')]);
-  const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentTables]);
+  const {DocumentHeadings}=await import('../../src/renderer/tiptap/documentHeadings.mjs');
+  const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings,DocumentTables]);
   const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
   const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
   const table=schema.nodeFromJSON({type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'paragraph',content:[{type:'text',text:'Only table'}]}]}]}]});
@@ -109,7 +110,8 @@ for (const kind of ['heading','codeBlock','blockquote','bulletList','orderedList
       import('@tiptap/core'),import('@tiptap/starter-kit'),import('@tiptap/pm/state'),
       import('@tiptap/pm/commands'),import('@tiptap/pm/schema-list'),import('@tiptap/pm/history'),
     ]);
-    const kit=StarterKit.configure(options),schema=getSchema([kit]);
+    const {DocumentHeadings}=await import('../../src/renderer/tiptap/documentHeadings.mjs');
+    const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings]);
     const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
     const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
     const text='  Authored é 😀 text  ';

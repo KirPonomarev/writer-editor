@@ -50,11 +50,12 @@ async function levels(body,styles='') {
   const {plan}=await planFrom(packageBytes(body,styles));const [,envelope]=await modules;
   return envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc?.content.map(p=>p.type==='heading'?p.attrs.level:0) || null;
 }
-test('C1 headings: all six levels, empty heading, body and inline marks survive export/import',async()=>{
-  const input={type:'doc',content:[...Array.from({length:6},(_,i)=>heading(i+1,'Уровень '+(i+1)+' Ω')),
+test('C1 headings: all nine levels, empty heading, body and inline marks survive export/import',async()=>{
+  const input={type:'doc',content:[...Array.from({length:9},(_,i)=>heading(i+1,'Уровень '+(i+1)+' Ω')),
     heading(2,''),{type:'paragraph',content:[]},{type:'paragraph',content:[{type:'text',text:'body',marks:[{type:'bold'}]}]}]};
   const {doc,plan}=await roundtrip(input);assert.deepEqual(doc,input);
   assert.equal(plan.lossReport.mode,'headings-and-inline-marks');assert.match(plan.lossReport.items.find(i=>i.code==='DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS').message,/fonts/);
+  assert.match(plan.lossReport.items.find(i=>i.code==='DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS').message,/levels 1 to 9/);
 });
 test('C1 headings: custom and localized style ids inherit outline independently of names',async()=>{
  const styles=styleXml('<w:style w:type="paragraph" w:styleId="Base"><w:pPr><w:outlineLvl w:val="2"/></w:pPr></w:style><w:style w:type="paragraph" w:styleId="Глава"><w:basedOn w:val="Base"/></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/></w:style>');
@@ -70,7 +71,16 @@ test('C1 headings: document paragraph defaults and derived body reset follow the
 });
 test('C1 headings: character styles and previous paragraph properties cannot create headings',async()=>{
  const styles=styleXml('<w:style w:type="character" w:styleId="NotParagraph"><w:pPr><w:outlineLvl w:val="0"/></w:pPr></w:style>');
- assert.equal(await levels('<w:p><w:pPr><w:pStyle w:val="NotParagraph"/><w:pPrChange><w:pPr><w:outlineLvl w:val="1"/></w:pPr></w:pPrChange></w:pPr>'+r('body')+'</w:p>',styles),null);
+ assert.deepEqual(await levels('<w:p><w:pPr><w:pStyle w:val="NotParagraph"/><w:pPrChange w:id="1" w:author="Reviewer" w:date="2026-10-03T00:00:00Z"><w:pPr><w:outlineLvl w:val="1"/></w:pPr></w:pPrChange></w:pPr>'+r('body')+'</w:p>',styles),[0]);
+});
+test('C1 headings: missing revision identity still blocks rather than losing previous paragraph properties',async()=>{
+ const [bridge]=await modules;
+ const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes('<w:p><w:pPr><w:pPrChange><w:pPr><w:outlineLvl w:val="1"/></w:pPr></w:pPrChange></w:pPr>'+r('body')+'</w:p>'));
+ assert.equal(report.ok,false);assert.equal(report.reason,'PENDING_REVISIONS_ID_INVALID');
+});
+test('C1 headings: high outline levels inherit, direct values override and body reset stays body',async()=>{
+ const styles=styleXml('<w:docDefaults><w:pPrDefault><w:pPr><w:outlineLvl w:val="6"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:styleId="Base"><w:pPr><w:outlineLvl w:val="7"/></w:pPr></w:style><w:style w:type="paragraph" w:styleId="Nested"><w:basedOn w:val="Base"/></w:style>');
+ assert.deepEqual(await levels('<w:p>'+r('default seven')+'</w:p><w:p><w:pPr><w:pStyle w:val="Nested"/></w:pPr>'+r('inherited eight')+'</w:p><w:p><w:pPr><w:pStyle w:val="Nested"/><w:outlineLvl w:val="8"/></w:pPr>'+r('direct nine')+'</w:p><w:p><w:pPr><w:outlineLvl w:val="9"/></w:pPr>'+r('body')+'</w:p>',styles),[7,8,9,0]);
 });
 test('C1 headings: namespace aliases preserve semantics and spoofed outline namespace blocks',async()=>{
  const [bridge,envelope]=await modules;const {plan}=await planFrom(packageBytes('<x:p><x:pPr><x:outlineLvl x:val="+01"/></x:pPr><x:r><x:t>h</x:t></x:r></x:p>','','x'));
@@ -79,9 +89,21 @@ test('C1 headings: namespace aliases preserve semantics and spoofed outline name
 });
 test('C1 headings: malformed and unrepresentable outline values fail without a successful plan',async()=>{
  const [bridge]=await modules;
- for(const value of ['', '1.5','-1','10','NaN','6','7','8']) {
+ for(const value of ['', '1.5','-1','10','NaN']) {
    const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes('<w:p><w:pPr><w:outlineLvl w:val="'+value+'"/></w:pPr>'+r('h')+'</w:p>'));
    assert.equal(report.ok,false,value);assert.match(JSON.stringify(report),/DOCX_(?:OUTLINE_LEVEL_INVALID|HEADING_LEVEL_UNSUPPORTED)/);
+ }
+});
+test('C1 headings: duplicate direct, style and default outline properties reject without choosing a winner',async()=>{
+ const [bridge]=await modules;
+ const duplicate='<w:outlineLvl w:val="6"/><w:outlineLvl w:val="7"/>';
+ for(const [body,styles] of [
+   ['<w:p><w:pPr>'+duplicate+'</w:pPr>'+r('heading')+'</w:p>',''],
+   ['<w:p><w:pPr><w:pStyle w:val="H"/></w:pPr>'+r('heading')+'</w:p>',styleXml('<w:style w:type="paragraph" w:styleId="H"><w:pPr>'+duplicate+'</w:pPr></w:style>')],
+   ['<w:p>'+r('heading')+'</w:p>',styleXml('<w:docDefaults><w:pPrDefault><w:pPr>'+duplicate+'</w:pPr></w:pPrDefault></w:docDefaults>')],
+ ]){
+   const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes(body,styles));
+   assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_OUTLINE_LEVEL_INVALID');
  }
 });
 test('C1 headings: used style cycles are rejected even for empty headings',async()=>{
@@ -90,13 +112,13 @@ test('C1 headings: used style cycles are rejected even for empty headings',async
 });
 test('C1 headings: forged heading levels are rejected before canonical serialization',async()=>{
  const [bridge]=await modules;const {report}=await roundtrip({type:'doc',content:[heading(1)]});
- for(const level of [0,7,'1',null,{},1.5]) {
+ for(const level of [0,10,'1',null,{},1.5]) {
   const bad=structuredClone(report);bad.contentPreview.paragraphs[0].headingLevel=level;
   assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bad).ok,false,JSON.stringify(level));
  }
 });
 test('C1 headings: invalid source levels cannot silently export body text',async()=>{
- for(const level of [0,7,NaN]) await assert.rejects(roundtrip({type:'doc',content:[heading(level)]}),/DOCX_HEADING_LEVEL_INVALID/);
+ for(const level of [0,10,NaN]) await assert.rejects(roundtrip({type:'doc',content:[heading(level)]}),/DOCX_HEADING_LEVEL_INVALID/);
 });
 test('C1 headings: local picker preserves heading content through admitted atomic creation',async t=>{
  const [,envelope]=await modules;const {bytes}=await roundtrip({type:'doc',content:[heading(4)]});

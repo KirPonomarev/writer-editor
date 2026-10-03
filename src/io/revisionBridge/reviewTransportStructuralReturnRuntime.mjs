@@ -108,7 +108,7 @@ function normalizeOperation(operation, index) {
   }
   if (
     nodeType === 'heading'
-    && (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 6)
+    && (!Number.isSafeInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)
   ) {
     return result(false, 'RTK_STRUCTURAL_OPERATION_HEADING_LEVEL_INVALID', { operationId, headingLevel });
   }

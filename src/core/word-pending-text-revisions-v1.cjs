@@ -162,7 +162,7 @@ function validateSource(doc) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
     assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level'])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
-      && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 6)));
+      && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)));
     assert(Array.isArray(p.content));
     for (const n of p.content) {
       assert(exact(n, ['type', 'text', 'marks']) && ['text', 'hardBreak'].includes(n.type));

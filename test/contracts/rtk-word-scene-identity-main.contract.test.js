@@ -1210,10 +1210,11 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
+  if(headingLevel)Object.assign(parsed.doc.content[0],{type:'heading',attrs:{level:headingLevel}});
   if(listType)parsed.doc.content=[{type:'orderedList',attrs:{start:3,type:listType},content:[{type:'listItem',content:parsed.doc.content}]}];
   if(nativeStyle) {
     parsed.doc.attrs={wordPendingRevisions:null,wordUserBookmarks:null};
@@ -1553,8 +1554,9 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
   const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
+    ...(variant.startsWith('heading')?{headingLevel:Number(variant.slice(7))}:{}),
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
     ...(variant==='outside-bookmark'?{mutateReturn:parts=>{
       const xml=parts['word/document.xml'];
@@ -1572,6 +1574,7 @@ for(const variant of ['plain','outside-bookmark','continued-list','opened-import
   assert.equal(result.applied,true,JSON.stringify(result));
   assert.equal(read(f.beta),sibling);
   assert.match(envelope.parseObservablePayload(read(f.alpha)).text,/Alpha CLEAN_EDIT/u);
+  if(variant.startsWith('heading'))assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].attrs.level,Number(variant.slice(7)));
   if(variant==='continued-list'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[2].attrs.start,4);assert.equal(doc.content[2].attrs.wordListId,'chain');}
   const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
   const after=f.capture();

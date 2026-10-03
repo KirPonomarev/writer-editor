@@ -99,7 +99,7 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       const nextType=Object.hasOwn(structure,'nodeType')?structure.nodeType:'paragraph';
       if (nextType!==p.nodeType) return reject('paragraph-kind-change');
       if (p.nodeType==='heading') {
-        if (!Number.isSafeInteger(p.headingLevel) || p.headingLevel<1 || p.headingLevel>6
+        if (!Number.isSafeInteger(p.headingLevel) || p.headingLevel<1 || p.headingLevel>9
           || structure.headingLevel!==p.headingLevel) return reject('heading-level-change');
       } else if (Object.hasOwn(p,'headingLevel') || Object.hasOwn(structure,'headingLevel')) {
         return reject('unexpected-heading-level');
