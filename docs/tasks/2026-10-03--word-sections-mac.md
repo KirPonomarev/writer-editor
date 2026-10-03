@@ -41,6 +41,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/renderer/tiptap/index.js`
 - `src/renderer/editor.bundle.js`
 - `test/contracts/rtk-word-sections.contract.test.js`
+- `test/unit/sector-m-tiptap-runtime-bridge.test.js`
 - `test/contracts/rtk-word-note-lists.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-table-editor.contract.test.js`
@@ -122,3 +123,9 @@ No whole-plan completion claim. Renderer pagination fidelity, unsupported sectio
 ## FULL_RTK_CORRECTIVE
 
 First full candidate run: 2799 tests, 2748 passed, 51 failed, zero skips/todos. Failure cluster: emitting the default final nextPage marker made existing pending-revision import reject ordinary exported documents. Separately, two extracted Main note-publication tests needed the real section-validator dependency added to their VM context. Assertions remain unchanged. Corrective declaration admitted the harness path at a8eef963 without changing the original PR base. Full checks must rerun after correction; first failure is retained as evidence.
+
+## OBSERVED_CORRECTED_CANDIDATE_03
+
+Candidate 43ca5fd1e787b27f0f3cc28fa88b3095a1339b93: both SOURCE and PACKAGED repeated the complete original-fixture changed-text route, including Undo/Redo, Save, Word edit/save, explicit Apply (1 applied, 0 blocked, 0 failed), new-process reopen and Review re-export. PACKAGED ordinary export also retained exact paragraph text, all six section types, geometry and columns under independent ZIP/XML comparison. All 559 tracked runtime/package inputs matched the launched copy. Owned processes stopped after observations.
+
+Corrected full RTK: 2799 passed, zero failed/skipped/todo. Broad baseline found one remaining extracted-editor harness dependency defect: 2128 passed, 1 failed, 59 existing skips. The isolated 21-test editor suite reproduced the single failure. Its VM lacked the real Core section module and section schema extension; production runtime is unchanged by this correction. All original assertions must remain. Expanded harness declaration passed on clean 43ca5fd1 before this edit. Native bytes must remain equal at delivery; corrected baseline and CI still required.

@@ -602,15 +602,17 @@ async function treeDocumentAdapter(doc) {
   const { WordPendingRevisions, setCheckedDocument } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/wordPendingRevisions.mjs')));
   const { UserBookmarks } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/userBookmarks.mjs')));
   const { ManuscriptNoteReferences } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/manuscriptNotes.mjs')));
+  const { DocumentSections } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/documentSections.mjs')));
   const editor = new Editor({ element: null, extensions: [StarterKit.configure({ trailingNode: false }),
-    WordPendingRevisions, UserBookmarks, ManuscriptNoteReferences], content: doc });
+    WordPendingRevisions, UserBookmarks, ManuscriptNoteReferences, DocumentSections], content: doc });
   let markerInitializations = 0;
   const marker = new pm.Plugin({ key: new pm.PluginKey('treeResetSentinel'), state: {
     init() { markerInitializations++; return { retained: true }; }, apply(_tr, previous) { return previous; },
   } });
   editor.view.updateState(editor.state.reconfigure({ plugins: [...editor.extensionManager.plugins, marker] }));
   const c = { currentEditorInstance: editor, document: {}, getFocusedManuscriptBodyEditor: () => null,
-    history: historyApi.history, setCheckedReviewDocument: setCheckedDocument, notifyFormattingStateChange() {} };
+    history: historyApi.history, setCheckedReviewDocument: setCheckedDocument,
+    wordSections: require('../../src/core/word-sections-v1.cjs'), notifyFormattingStateChange() {} };
   const source = fs.readFileSync(path.join(ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
   const functions = ['getTiptapRootSplitBoundary', 'replaceTiptapTreeDocumentSnapshot', 'setCheckedDocument'].map(name => {
     const match = new RegExp(`^(?:export )?function ${name}\\(`, 'm').exec(source);

@@ -883,7 +883,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "a57165a9528141d7a6ad0fac47b19a6cb638ebb42a576cba56ce4fa0282ca708"
+        "sha256": "16971dde28cbf9c0730192bf16b7b1b7ce985d645ff4b75a8dde03bbf1aa4169"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -2115,7 +2115,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-sections-mac.md",
-        "sha256": "fab0e8166d52509dc066b12e78f31e6682acb28c4d7e1bb5b127e787c1425ded"
+        "sha256": "42b0e8d497a0b0f6938471494e38d68160b43f066b6e7e5a292a610050eaf21e"
       },
       {
         "path": "src/renderer/tiptap/documentSections.mjs",
