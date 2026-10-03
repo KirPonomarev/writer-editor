@@ -32,7 +32,7 @@ function paragraphs(content) {
     if (!['bulletList', 'orderedList'].includes(block?.type) || depth > 8 || ++lists > 2048
       || !Array.isArray(block.content) || !block.content.length) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
     for (const item of block.content) {
-      if (item?.type !== 'listItem' || !Array.isArray(item.content) || item.content[0]?.type !== 'paragraph'
+      if (item?.type !== 'listItem' || !Array.isArray(item.content) || !['paragraph', 'heading'].includes(item.content[0]?.type)
         || item.content.slice(1).some(child => !['bulletList', 'orderedList'].includes(child?.type))) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
       append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1);
     }

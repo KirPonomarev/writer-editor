@@ -70,7 +70,7 @@ function paragraphs(doc) {
     for (const item of node.content) {
       assert(exact(item, ['type', 'attrs', 'content']) && item.type === 'listItem'
         && (!item.attrs || exact(item.attrs, [])) && Array.isArray(item.content)
-        && item.content[0]?.type === 'paragraph'
+        && ['paragraph', 'heading'].includes(item.content[0]?.type)
         && item.content.slice(1).every(n => ['bulletList', 'orderedList'].includes(n?.type)));
       visit(item.content[0], depth, inCell);
       for (const child of item.content.slice(1)) visit(child, depth + 1, inCell);

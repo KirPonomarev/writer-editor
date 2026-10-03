@@ -1554,10 +1554,11 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
   const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
     ...(variant.startsWith('heading')?{headingLevel:Number(variant.slice(7))}:{}),
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
+    ...(variant==='numbered-heading9'?{headingLevel:9,listType:'I',continuedList:true}:{}),
     ...(variant==='outside-bookmark'?{mutateReturn:parts=>{
       const xml=parts['word/document.xml'];
       parts['word/document.xml']=xml.replace(/Alpha CLEAN_EDIT(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,
@@ -1575,6 +1576,7 @@ for(const variant of ['plain','outside-bookmark','continued-list','opened-import
   assert.equal(read(f.beta),sibling);
   assert.match(envelope.parseObservablePayload(read(f.alpha)).text,/Alpha CLEAN_EDIT/u);
   if(variant.startsWith('heading'))assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].attrs.level,Number(variant.slice(7)));
+  if(variant==='numbered-heading9'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[0].content[0].content[0].attrs.level,9);assert.equal(doc.content[0].attrs.type,'I');assert.equal(doc.content[2].attrs.start,4);}
   if(variant==='continued-list'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[2].attrs.start,4);assert.equal(doc.content[2].attrs.wordListId,'chain');}
   const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
   const after=f.capture();

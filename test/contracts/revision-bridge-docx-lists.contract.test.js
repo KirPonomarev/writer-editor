@@ -101,9 +101,9 @@ test('C1 lists: unsupported, absent and style-linked numbering retains explicit 
   const actual=await read(packageBytes(paragraph('a'),numbering));assert.equal(actual.doc,null);assert.equal(actual.plan.candidateCreatePlan.entries[0].content,'a');assert.ok(actual.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
  }
 });
-test('C1 lists: numbered headings preserve heading and declare unsupported list structure',async()=>{
+test('C1 lists: numbered headings preserve both outline and list structure',async()=>{
  const actual=await read(packageBytes(paragraph('h',1,0,'<w:outlineLvl w:val="0"/>')));
- assert.equal(actual.doc.content[0].type,'heading');assert.ok(actual.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
+ assert.deepEqual(actual.doc,doc(ol(1,li({type:'heading',attrs:{level:1},content:p('h').content}))));assert.equal(actual.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
 });
 test('C1 lists: nine nested levels survive; the tenth fails before serialization',async()=>{
  const nested=n=>n===1?ul(li(p('leaf'))):ul(li(p('parent '+n),nested(n-1)));
@@ -145,7 +145,7 @@ test('C1 lists: main and local projections generate identical admitted candidate
 });
 test('C1 lists: a numbered heading still consumes its ordinal before a supported item',async()=>{
  const actual=await read(packageBytes(paragraph('h',1,0,'<w:outlineLvl w:val="0"/>')+paragraph('next')));
- assert.equal(actual.doc.content[0].type,'heading');assert.deepEqual(actual.doc.content[1],ol(2,li(p('next'))));
+ assert.deepEqual(actual.doc,doc(ol(1,li({type:'heading',attrs:{level:1},content:p('h').content}),li(p('next')))));
 });
 test('C1 lists: nested old properties cannot overwrite the current numbering reference',async()=>{
  const body='<w:p><w:pPr><w:numPr><w:numId w:val="1"/><w:other><w:numPr><w:numId w:val="2"/></w:numPr></w:other><w:ilvl w:val="0"/></w:numPr></w:pPr><w:r><w:t>a</w:t></w:r></w:p>';
@@ -208,4 +208,25 @@ test('P3d editor authoring transaction, undo and redo resolve continued starts',
  assert.equal(state.doc.child(2).attrs.start,4);
  assert.ok(undo(state,dispatch));assert.equal(state.doc.child(2).attrs.start,3);
  assert.ok(redo(state,dispatch));assert.equal(state.doc.child(2).attrs.start,4);
+});
+
+for(const type of ['1','I','i','A','a'])test(`P3d numbered headings: ${type} levels1-9 survive five exchanges`,async()=>{
+ const h=level=>({type:'heading',attrs:{level},content:p('Heading '+level).content});
+ let input=doc({...ol(3,...Array.from({length:9},(_,i)=>li(h(i+1)))),attrs:{start:3,...(type==='1'?{}:{type})}});
+ for(let cycle=0;cycle<5;cycle++){
+  const result=await roundtrip(input);assert.deepEqual(result.doc,input);
+  assert.equal(result.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
+  input.content[0].content[cycle].content[0].content[0].text+=' edit';
+ }
+});
+test('P3d numbered headings: nested headings and continued counters preserve exact topology',async()=>{
+ const h=level=>({type:'heading',attrs:{level},content:p('Heading '+level).content});
+ const first=ol(7,li(h(9),ol(2,li(h(3)))),li(h(2)));
+ const next=ol(9,li(h(1)));
+ for(const list of [first,next])Object.assign(list.attrs,{wordListId:'word-list-1',wordListStart:7});
+ const input=doc(first,p('gap'),next);assert.deepEqual((await roundtrip(input)).doc,input);
+});
+test('P3d numbered headings: malformed heading and ambiguous continuation still refuse export',async()=>{
+ for(const level of [0,10,1.5])await assert.rejects(roundtrip(doc(ol(1,li({type:'heading',attrs:{level},content:p('h').content})))),/DOCX_HEADING_LEVEL_INVALID/);
+ await assert.rejects(roundtrip(doc(ol(1,li({type:'heading',attrs:{level:9},content:p('h').content},p('continuation'))))),/DOCX_LIST_ITEM_SHAPE_UNSUPPORTED/);
 });

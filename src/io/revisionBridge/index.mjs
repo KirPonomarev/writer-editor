@@ -9160,9 +9160,9 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
     const restart = definitionAt(deeper)?.lvlRestart ?? deeper;
     if ((restart > deeper ? deeper : restart) === level + 1) counters[deeper] = undefined;
   }
-  // Even an unrepresentable numbered heading consumes its Word ordinal. Do
+  // Unsupported numbering still consumes its Word ordinal. Do
   // not renumber a later supported paragraph when reporting that earlier loss.
-  if (definition.unsupported || metadata.headingLevel !== undefined
+  if (definition.unsupported
     || !(definition.numFmt === 'bullet' || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {
     declareLoss();
     return;
@@ -9846,7 +9846,7 @@ function docxInlineCanonicalContent(paragraphs) {
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
       || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
-      || block.type !== 'paragraph' || list.level > listStack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
+      || !['paragraph', 'heading'].includes(block.type) || list.level > listStack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
     needsRichContent = true;
     listStack.length = Math.min(listStack.length, list.level + 1);
     let active = listStack[list.level];

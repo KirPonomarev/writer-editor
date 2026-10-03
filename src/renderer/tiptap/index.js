@@ -1,4 +1,5 @@
 import { DocumentListNumbering } from './documentListNumbering.mjs';
+import { DocumentListItems } from './documentListItems.mjs';
 import { DocumentHeadings } from './documentHeadings.mjs';
 import { applyLocalImagePublication } from './localImage.mjs'
 import { textOffsetForPosition, positionForTextOffset } from './textCoordinates.mjs'
@@ -573,11 +574,13 @@ export function initTiptap(mountEl, options = {}) {
         // Enter, list splitting and exitCode remain explicit authoring commands.
         trailingNode: false,
         heading: false,
+        listItem: false,
         link: false,
         underline: false,
       }),
       DocumentListNumbering,
       DocumentHeadings,
+      DocumentListItems,
       DocumentTextStyle,
       DocumentParagraphAlignment,
       DocumentTables,

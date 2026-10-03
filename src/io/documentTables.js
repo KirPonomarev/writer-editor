@@ -31,7 +31,7 @@ function cellParagraphs(content, budget, depth) {
     const identity = require('../core/word-list-numbering-v1.cjs').attributes(list.attrs);
     const listId = budget.lists;
     list.content.forEach((item, itemOrdinal) => {
-      if (item?.type !== 'listItem' || !Array.isArray(item.content) || item.content[0]?.type !== 'paragraph'
+      if (item?.type !== 'listItem' || !Array.isArray(item.content) || !['paragraph', 'heading'].includes(item.content[0]?.type)
         || item.content.slice(1).some(n => !['bulletList', 'orderedList'].includes(n?.type))) fail('LIST_ITEM_UNSUPPORTED');
       attrsOnly(item, []);
       const listStack = [...ancestors, { listId, kind: list.type, start, itemOrdinal, ...(identity ? { wordListId: identity.id, wordListStart: identity.start } : {}), ...(list.attrs?.type ? { type: list.attrs.type } : {}) }];
