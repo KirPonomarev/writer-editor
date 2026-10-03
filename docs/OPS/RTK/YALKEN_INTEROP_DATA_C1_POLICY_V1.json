@@ -760,7 +760,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "0e628356dd47f0f1eecfc33e07eddab351884e99151effabc2fc4f23c306be0b"
+        "sha256": "43fa206d4aeabf6cd74870dcfab405dde5baf86b38baf3b81fd7757faac7fbd2"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -2224,7 +2224,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "1d7da59f7fdb348d208f597488f5649b346cc3bbb3fb83cf0bc7a32cf9a2e458"
+        "sha256": "b6ed537a7ce6141c3879f04b167483d3b1e5308f7c16fc4f0d6a3d1c2d11440e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
