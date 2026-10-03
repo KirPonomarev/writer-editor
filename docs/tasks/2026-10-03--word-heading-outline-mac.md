@@ -32,6 +32,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `test/contracts/revision-bridge-docx-headings.contract.test.js`
 - `test/contracts/rtk-word-heading-outline.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `test/contracts/rtk-word-table-editor.contract.test.js`
 - `docs/tasks/2026-10-03--word-heading-outline-mac.md`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -79,6 +80,8 @@ Target: selected heading preservation only; not all P3-08 or whole Mac-plan acce
 Generated tracked editor.bundle.js admitted after clean scope-extension preflight at 0ecf044d; original delivery base remains b2c7c5aa. Regeneration uses the existing build:renderer command. The historical heading fixture's missing revision ID also fails on the immutable base; its valid form and missing-ID negative are now separate tests.
 
 Native SOURCE and PACKAGED observed at 830530c55f15804a52700dc80185693eb6a84335: independent DOCX levels7/8/9 plus body imported; native Cmd-Alt-9 changed body to heading9; Undo/Redo, Save, review export, real Word text change, explicit Apply, process restart and re-export completed. Independent OOXML readback of three artifacts per build preserved outlines6/7/8/8 and exactly one expected text suffix. No native level flattening observed. Word Open dialog retained a disabled button, including a short-path identical copy; Finder successfully opened the same document. Native text insertion uses the documented text format to avoid keyboard-layout loss. Formatting lane still reports manual diagnostics (unsupported Word formatting in SOURCE, baseline not exact in PACKAGED); these remain open and are not accepted by this heading-level repair. Whole P3-08 and whole Mac plan remain unaccepted.
+
+First CI RTK run executed 2742 tests, with two test-schema failures: production StarterKit options disabled the bundled heading, while older table/topology tests omitted the replacement DocumentHeadings extension. Scope extension preflight passed on clean 9580cb3e; the two schemas now include the production extension and retain every existing behavioral assertion. No runtime source changed. Full required RTK rerun remains mandatory; earlier focused/baseline and native evidence do not substitute for it.
 
 ## IMPLEMENTATION_STEPS
 

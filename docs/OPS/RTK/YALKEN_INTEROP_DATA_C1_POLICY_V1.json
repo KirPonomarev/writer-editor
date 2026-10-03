@@ -1252,7 +1252,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "a08d7a3ee297b3624805f7ba660f8fee9a3b11c35bf45e46b0dcec25ff6c2c16"
+        "sha256": "ae104da90e37e422d998975efff569748f15f1ed3b1149dd5a0d23eda89fcc5e"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
@@ -2064,7 +2064,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-heading-outline-mac.md",
-        "sha256": "283b8e3644e125c43344fc221f4ddaec9261deb41eff1a02536d0d36d93a4019"
+        "sha256": "b9d123297f5601e56d2407eea8bee6d70203b1498a1a8760d9819f6eaf9d5469"
       },
       {
         "path": "src/renderer/tiptap/documentHeadings.mjs",
