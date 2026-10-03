@@ -1,0 +1,67 @@
+'use strict';
+const KEY = 'wordStories';
+const ROLES = ['header', 'footer'], VARIANTS = ['default', 'first', 'even'];
+const copy = value => JSON.parse(JSON.stringify(value));
+const fail = code => { throw Error(code || 'WORD_STORIES_INVALID'); };
+function data(value, depth = 0) {
+  if (depth > 32) fail();
+  if (value === null || ['string', 'boolean', 'number'].includes(typeof value)) return;
+  if (!value || typeof value !== 'object' || ![Object.prototype, Array.prototype, null].includes(Object.getPrototypeOf(value))) fail();
+  const keys = Reflect.ownKeys(value);
+  if (Array.isArray(value) && (value.length > 10000 || keys.length !== value.length + 1)) fail();
+  for (const key of keys) {
+    const field = Object.getOwnPropertyDescriptor(value, key);
+    if (typeof key !== 'string' || !Object.hasOwn(field, 'value')) fail();
+    data(field.value, depth + 1);
+  }
+}
+function keys(value, allowed) { if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !allowed.includes(k))) fail(); }
+function validateProjection(value, sectionCount) {
+  data(value); keys(value, ['schemaVersion', 'evenAndOddHeaders', 'stories', 'sections']);
+  if (value.schemaVersion !== 1 || typeof value.evenAndOddHeaders !== 'boolean' || !Array.isArray(value.stories) || value.stories.length > 128
+    || !Array.isArray(value.sections) || value.sections.length !== sectionCount) fail();
+  const ids = new Map(); let bytes = 0;
+  for (const story of value.stories) {
+    keys(story, ['id', 'role', 'body']);
+    if (typeof story.id !== 'string' || !/^[A-Za-z0-9_-]{1,96}$/.test(story.id) || ids.has(story.id) || !ROLES.includes(story.role)) fail();
+    require('./word-rich-body-projection-v1.cjs').validateNoteBodyProjection(story.body);
+    bytes += new TextEncoder().encode(JSON.stringify(story.body)).length;
+    if (bytes > 1024 * 1024) fail('WORD_STORIES_BUDGET');
+    ids.set(story.id, story.role);
+  }
+  const used = new Set();
+  for (const section of value.sections) {
+    keys(section, ['titlePage', 'header', 'footer']);
+    if (typeof section.titlePage !== 'boolean') fail();
+    for (const role of ROLES) {
+      keys(section[role], VARIANTS);
+      for (const id of Object.values(section[role])) { if (ids.get(id) !== role) fail(); used.add(id); }
+    }
+  }
+  if (used.size !== ids.size) fail('WORD_STORIES_ORPHAN');
+  return copy(value);
+}
+function readProjection(doc) {
+  const ad = Object.getOwnPropertyDescriptor(doc || {}, 'attrs');
+  if (ad && !Object.hasOwn(ad, 'value')) fail();
+  const field = ad?.value && Object.getOwnPropertyDescriptor(ad.value, KEY);
+  if (field && !Object.hasOwn(field, 'value')) fail();
+  if (field?.value == null) return null;
+  const sections = require('./word-sections-v1.cjs').read(doc);
+  if (!sections) fail('WORD_STORIES_SECTIONS_REQUIRED');
+  return validateProjection(field.value, sections.boundaries.length + 1);
+}
+function bindProjection(doc, value) { const result=copy(doc);result.attrs={...result.attrs,[KEY]:copy(value)};readProjection(result);return result; }
+function replaceBodyProjection(doc,id,body) { data(body); const value=readProjection(doc),story=value?.stories.find(s=>s.id===id);if(!story)fail('WORD_STORY_MISSING');story.body=require('./word-rich-body-projection-v1.cjs').validateNoteBodyProjection(body).body;return bindProjection(doc,value); }
+function validateSaveProjection(before,after) { if(JSON.stringify(topology(readProjection(before)))!==JSON.stringify(topology(readProjection(after))))fail('WORD_STORIES_SAVE_AUTHORITY'); }
+function topology(value) { return value && { schemaVersion: value.schemaVersion, evenAndOddHeaders: value.evenAndOddHeaders, sections: value.sections, stories: value.stories.map(({id, role}) => ({id, role})) }; }
+function resolved(value) {
+  let previous = { header: {}, footer: {} };
+  return value.sections.map(section => {
+    previous = { titlePage: section.titlePage, header: { ...previous.header, ...section.header }, footer: { ...previous.footer, ...section.footer } };
+    return copy(previous);
+  });
+}
+
+
+module.exports = { KEY, ROLES, VARIANTS, assertData:data, assertKeys:keys, validateProjection, readProjection, bindProjection, replaceBodyProjection, validateSaveProjection, topology, resolved };

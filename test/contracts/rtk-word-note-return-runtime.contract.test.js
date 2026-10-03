@@ -137,7 +137,7 @@ test('actual editor snapshot normalization retains the no-loss note draft flag',
   assert.equal(context.normalize({content:'x',generation:1,treeContentPublicationId:'bound-epoch'}).treeContentPublicationId,'bound-epoch');
   assert.throws(()=>context.normalize({content:'x',treeContentPublicationId:'bad\u0000epoch'}),/SNAPSHOT_DOCUMENT_IDENTITY_INVALID/);
   const renderer = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
-  assert(renderer.includes('manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending)'));
+  assert(renderer.includes('manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending || storyDrafts.size || (storyMutationPending && !pendingStoryRequestId))'));
 });
 
 for (const mode of ['entitled', 'profileAllowed']) test(`actual notes bus revalidates ${mode} at dispatch`, async t => {

@@ -1,3 +1,5 @@
+import wordStories from '../../core/word-stories-projection-v1.cjs';
+import { DocumentStories, applyStoryBody } from './documentStories.mjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import { DocumentSections } from './documentSections.mjs';
 import { DocumentBreaks } from './documentBreaks.mjs';
@@ -99,8 +101,9 @@ export function applyTiptapLocalImagePublication(payload, currentContent) {
 
 function setCheckedDocument(editor, doc) {
   wordSections.read(doc);
+  wordStories.readProjection(doc);
   const result = setCheckedReviewDocument(editor, doc)
-  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null).setDocAttribute('wordSections', doc.attrs?.wordSections || null)
+  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null).setDocAttribute('wordSections', doc.attrs?.wordSections || null).setDocAttribute('wordStories', doc.attrs?.wordStories || null)
     .setMeta('wordPendingRevisionsExternal', true).setMeta('preventUpdate', true).setMeta('addToHistory', false))
   return result
 }
@@ -144,7 +147,7 @@ function readEditorDocument(editor) {
   try {
     return canonicalizeDocumentJson(editor.getJSON())
   } catch (error) {
-    if (editor.getJSON()?.attrs?.wordPendingRevisions || editor.getJSON()?.attrs?.wordUserBookmarks || editor.getJSON()?.attrs?.wordSections) throw error
+    if (editor.getJSON()?.attrs?.wordPendingRevisions || editor.getJSON()?.attrs?.wordUserBookmarks || editor.getJSON()?.attrs?.wordSections || editor.getJSON()?.attrs?.wordStories) throw error
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
 }
@@ -440,6 +443,7 @@ function createIpcSession(editor, options = {}) {
       })
     },
     applyIncomingPayload(payload) {
+      if (payload?.storyPublication === true) return // The scene controller validates request, draft and generation before publication.
       if (payload?.localImageAuthoringPublication === true) {
         applyTiptapLocalImagePublication(payload, this.readObservablePayload())
         return
@@ -585,6 +589,7 @@ export function initTiptap(mountEl, options = {}) {
       }),
       DocumentListNumbering,
       DocumentSections,
+      DocumentStories,
       DocumentHeadings,
       DocumentListItems,
       DocumentBreaks,
@@ -732,6 +737,10 @@ export function setTiptapPlainText(text = '') {
   if (!currentEditorInstance) return
   setCheckedDocument(currentEditorInstance, buildParagraphDocumentFromText(text))
   notifyFormattingStateChange()
+}
+
+export function applyTiptapStoryBody(expectedDoc, storyId, body) {
+  return applyStoryBody(currentEditorInstance, expectedDoc, storyId, body);
 }
 
 export function getTiptapDocumentSnapshot() {

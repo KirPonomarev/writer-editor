@@ -1,3 +1,4 @@
+import wordStories from '../../core/word-stories-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import wordTypedBreaks from '../../core/word-typed-breaks-v1.cjs';
 import listFormat from '../../core/word-list-format-v1.cjs';
@@ -2432,7 +2433,7 @@ function docxHostileFileGateRelationshipAttributeValue(attributeText, name) {
 
 function docxHostileFileGateSafeExternalHyperlinkRelationship(entryId, attributeText) {
   const normalizedEntryId = docxHostileFileGateNormalizedEntryId(entryId);
-  if (!['word/_rels/document.xml.rels', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels'].includes(normalizedEntryId)) return false;
+  if (!['word/_rels/document.xml.rels', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels'].includes(normalizedEntryId) && !/^word\/_rels\/(?:header|footer)[A-Za-z0-9_.-]*\.xml\.rels$/.test(normalizedEntryId)) return false;
   const type = docxHostileFileGateRelationshipAttributeValue(attributeText, 'Type');
   if (type !== 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink') {
     return false;
@@ -9234,7 +9235,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
 }
 
 // Literal semantic inventory; provider revision identifiers are inert, never authority.
-function docxSectionInventory(bytes, parsed) {
+function docxSectionInventory(bytes, parsed, preserveDefault = false) {
   const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, records = [], owners = new WeakMap();
   let paragraph = -1, finalSeen = false;
   docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
@@ -9252,13 +9253,14 @@ function docxSectionInventory(bytes, parsed) {
     const owner = stack.find(item => owners.has(item));
     if (!owner) return;
     const record = owners.get(owner);
-    if (stack.at(-1) !== owner || node.namespaceUri !== W || record.seen.has(node.localName)) throw Error('WORD_SECTIONS_UNSUPPORTED');
+    if (stack.at(-1) !== owner || node.namespaceUri !== W || record.seen.has(node.localName) && !['headerReference','footerReference'].includes(node.localName)) throw Error('WORD_SECTIONS_UNSUPPORTED');
     record.seen.add(node.localName);
     const only = keys => { for (const key of attributes.keys()) if (!keys.some(name => key === `${W}\u0000${name}`)) throw Error('WORD_SECTIONS_UNSUPPORTED'); };
     const number = (name, fallback) => { const value = attr(name, W); if (value === undefined) return fallback; if (!/^\d+$/u.test(value)) throw Error('WORD_SECTIONS_INVALID'); return Number(value); };
     if (node.localName === 'type') { only(['val']); record.properties.type = attr('val', W); }
     else if (node.localName === 'pgSz') { only(['w', 'h', 'orient']); const widthTwips=number('w'), heightTwips=number('h'); record.properties.pageSize={widthTwips,heightTwips,orientation:attr('orient',W) || (widthTwips>heightTwips?'landscape':'portrait')}; }
     else if (node.localName === 'pgMar') { const keys=['top','right','bottom','left','header','footer','gutter']; only(keys); record.properties.margins=Object.fromEntries(keys.map(key=>[`${key}Twips`,number(key, key==='gutter'?0:undefined)])); }
+    else if (['headerReference', 'footerReference', 'titlePg'].includes(node.localName)) { /* Validated with part-local story inventory below. */ }
     else if (node.localName === 'cols') { only(['num','space','equalWidth']); if (attr('equalWidth', W) && !['1','true','on'].includes(attr('equalWidth',W))) throw Error('WORD_SECTIONS_UNSUPPORTED'); record.properties.columns={count:number('num',1),spaceTwips:number('space',720)}; }
     else throw Error('WORD_SECTIONS_UNSUPPORTED');
   }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
@@ -9271,7 +9273,7 @@ function docxSectionInventory(bytes, parsed) {
   const defaultColumns = !single?.columns || (single.columns.count === 1 && single.columns.spaceTwips === 720);
   // Only the exact historical default can remain on the plain-document path.
   // A final-only custom page geometry is still durable document meaning.
-  if (single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns) return null;
+  if (!preserveDefault && single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns && !records.some(record => ['headerReference','footerReference','titlePg'].some(key => record.seen.has(key)))) return null;
   for (const record of records.slice(0,-1)) {
     record.endParagraphIndex = parsed.paragraphSourceIndexes.indexOf(record.endParagraphIndex);
     if (record.endParagraphIndex < 0) throw Error('WORD_SECTIONS_INVALID');
@@ -10646,6 +10648,83 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
   return manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
 }
 
+// Header/footer parts become typed rich bodies; XML is parser input only.
+export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } = {}) {
+  const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
+  const relationships = new Map(), sections = [], byPart = new Map(), stories = [];
+  if (auxiliary('word/_rels/document.xml.rels')) docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', P, 'Relationships', (node, stack, attr) => {
+    if (node.localName !== 'Relationship') return;
+    const type = attr('Type'), role = type === `${R}/header` ? 'header' : type === `${R}/footer` ? 'footer' : null;
+    if (!role) return;
+    const id = attr('Id'), target = attr('Target');
+    if (stack.length !== 1 || node.namespaceUri !== P || !id || relationships.has(id) || ![undefined,'Internal'].includes(attr('TargetMode'))
+      || typeof target !== 'string' || !/^(?:\/word\/)?[A-Za-z0-9_.-]+\.xml$/.test(target) || target.includes('..')) throw Error('WORD_STORY_RELATIONSHIP_INVALID');
+    relationships.set(id, { role, part: target.startsWith('/word/') ? target.slice(1) : `word/${target}` });
+  });
+  let current = null;
+  docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
+    if (node.namespaceUri !== W) return;
+    if (node.localName === 'sectPr') { current = { titlePage: false, header: {}, footer: {} }; sections.push(current); return; }
+    if (stack.at(-1)?.localName !== 'sectPr') return;
+    if (node.localName === 'titlePg') {
+      for (const key of attributes.keys()) if (key !== `${W}\u0000val`) throw Error('WORD_STORY_FLAG_INVALID');
+      const value = attr('val', W); if (value !== undefined && !['0','1','false','true','off','on'].includes(value)) throw Error('WORD_STORY_FLAG_INVALID');
+      current.titlePage = !['0','false','off'].includes(value); return;
+    }
+    const role = node.localName === 'headerReference' ? 'header' : node.localName === 'footerReference' ? 'footer' : null;
+    if (!role) return;
+    for (const key of attributes.keys()) if (![`${W}\u0000type`, `${R}\u0000id`].includes(key)) throw Error('WORD_STORY_REFERENCE_INVALID');
+    const variant = attr('type', W), rel = relationships.get(attr('id', R));
+    if (!current || !['default','first','even'].includes(variant) || Object.hasOwn(current[role], variant) || rel?.role !== role) throw Error('WORD_STORY_REFERENCE_INVALID');
+    if (!byPart.has(rel.part)) {
+      if (stories.length >= 128) throw Error('WORD_STORIES_BUDGET');
+      const story = { id: `story-${stories.length + 1}`, role, part: rel.part }; stories.push(story); byPart.set(rel.part, story);
+    }
+    if (byPart.get(rel.part).role !== role) throw Error('WORD_STORY_ROLE_CONFLICT');
+    current[role][variant] = byPart.get(rel.part).id;
+  }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
+  if (!stories.length && relationships.size) throw Error('WORD_STORY_ORPHAN');
+  if (new Set([...relationships.values()].map(rel => rel.part)).size !== byPart.size) throw Error('WORD_STORY_ORPHAN');
+  let evenAndOddHeaders = false, evenFlagCount = 0;
+  if (auxiliary('word/settings.xml')) docxFontVisitPart(bytes, 'word/settings.xml', W, 'settings', (node, stack, attr, attributes) => {
+    if (node.namespaceUri !== W || node.localName !== 'evenAndOddHeaders') return;
+    if (++evenFlagCount !== 1) throw Error('WORD_STORY_FLAG_INVALID');
+    for (const key of attributes.keys()) if (key !== `${W}\u0000val`) throw Error('WORD_STORY_FLAG_INVALID');
+    const value = attr('val', W); if (stack.length !== 1 || value !== undefined && !['0','1','false','true','off','on'].includes(value)) throw Error('WORD_STORY_FLAG_INVALID');
+    evenAndOddHeaders = !['0','false','off'].includes(value);
+  });
+  if (!stories.length && !evenAndOddHeaders && !sections.some(section=>section.titlePage)) return null;
+  const types = new Map();
+  docxFontVisitPart(bytes, '[Content_Types].xml', 'http://schemas.openxmlformats.org/package/2006/content-types', 'Types', (node, stack, attr) => {
+    if (node.localName === 'Override') types.set(attr('PartName'), attr('ContentType'));
+  });
+  const validatedParts = [], storyMediaParts = [];
+  const bodies = stories.map(({id,role,part}) => {
+    if (types.get(`/${part}`) !== `application/vnd.openxmlformats-officedocument.wordprocessingml.${role}+xml`) throw Error('WORD_STORY_CONTENT_TYPE');
+    let root, emptyRoot = false;
+    docxFontVisitPart(bytes, part, W, role === 'header' ? 'hdr' : 'ftr', (node, stack) => { if (!stack.length) { root = node.rawTagName; emptyRoot = node.selfClosing; } });
+    const xml = docxZipDecodeUtf8Xml(auxiliary(part)), prefix = root.includes(':') ? root.split(':')[0] + ':' : '';
+    const expandedXml = emptyRoot ? xml.replace(new RegExp(`(<${root}\\b[^>]*?)\\/\\s*>`), `$1><${prefix}p/></${root}>`) : xml;
+    const documentXml = expandedXml.replace(new RegExp(`<${root}(?=[\\s>])`), `<${prefix}document`)
+      .replace(new RegExp(`(<${prefix}document\\b[^>]*>)`), `$1<${prefix}body>`)
+      .replace(new RegExp(`</${root}\\s*>`), `</${prefix}body></${prefix}document>`);
+    const relationshipPart = `word/_rels/${part.slice(5)}.rels`, hyperlinks = docxHyperlinkCatalog(bytes, relationshipPart);
+    const parsed = docxContentPreviewParseMainDocumentXml(documentXml, { ...docxInlineStyleCatalog(bytes), hyperlinks }, docxNumberingCatalog(bytes));
+    if (parsed.failure) throw Error('WORD_STORY_BODY_INVALID');
+    validatedParts.push(part); if (auxiliary(relationshipPart)) validatedParts.push(relationshipPart);
+    const mediaRefs = extractDocumentMediaReferencesV1(documentXml, { relationshipsXml: Buffer.from(auxiliary(relationshipPart) || []).toString('utf8'), contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'), cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length } });
+    storyMediaParts.push(...mediaRefs.map(ref => ref.partName));
+    const body = parseDocumentNoteRichBody(bytes, { documentXml, relationshipPart }, { paragraphs: parsed.contentPreview.paragraphs.map(p => p.text) }, hyperlinks);
+    if (hyperlinks.usedIds.size !== hyperlinks.size) throw Error('WORD_STORY_UNUSED_RELATIONSHIP');
+    return { id, role, body };
+  });
+  const registry = wordStories.validate({schemaVersion:1,evenAndOddHeaders,stories:bodies,sections}, sections.length);
+  return includeParts ? {registry, validatedParts, storyMediaParts} : registry;
+}
+
 export function parseDocumentNotesRichReturn(bytes, notes) {
   if (notes == null) return [];
   if (notes.inventoryStatus !== 'COMPLETE' || !Array.isArray(notes.notes) || notes.notes.length > 256
@@ -10816,7 +10895,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure) {
-      const sections = docxSectionInventory(bytes, parsed);
+      const stories = parseDocumentStoriesRichReturn(bytes, {includeParts:true});
+      const sections = docxSectionInventory(bytes, parsed, Boolean(stories));
+      if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
       if (sections) {
         if (pendingSource.revisions.length) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
         parsed.contentPreview.wordSections = sections;
@@ -10974,7 +11055,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
         cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },
       });
-      const noteMediaParts = parsed.contentPreview.noteMediaParts || [];
+      const noteMediaParts = [...(parsed.contentPreview.noteMediaParts || []), ...(parsed.storyMediaParts || [])];
       if (refs.length || noteMediaParts.length) parsed.contentPreview.mediaParts = [...new Set([...refs.map(ref => ref.partName), ...noteMediaParts])];
       let mediaBytes = 0;
       for (const ref of refs) {
@@ -11031,7 +11112,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         message: 'Named style identities, names and inheritance are not retained; supported effective formatting and semantic paragraph roles are imported as document properties.',
       })] : []),
       ...docxContentPreviewBuildCustomMetadataDiagnostics(bytes),
-      ...preflight.diagnostics.filter(diagnostic => !(allDocumentRelationshipsPreserved
+      ...preflight.diagnostics.filter(diagnostic => !((parsed.storyParts || []).includes(diagnostic.entryId || diagnostic.sourcePart)
+        && [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY, DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT, DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY].includes(diagnostic.code))).filter(diagnostic => !(allDocumentRelationshipsPreserved
         && diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY
         && diagnostic.entryId === 'word/_rels/document.xml.rels')).map((diagnostic) => ({
         ...diagnostic,
@@ -11778,9 +11860,9 @@ function docxImportPreviewBuildLossReport(
     if (richCandidate && diagnostic.code === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC
       && Object.values(DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES).includes(diagnostic.sourceCode)) continue;
     if ((contentPreview.paragraphs.some(p => p.media?.length) || contentPreview.noteMediaParts?.length)
-      && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
-        || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
-          && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)))) continue;
+      && diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC') continue;
+    if (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
+      && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)) continue;
     const knownIgnoredPart = [
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
@@ -11949,6 +12031,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
       const doc = richContent ? parseObservablePayload(richContent).doc : buildParagraphDocumentFromText(importedText);
       richContent = composeObservablePayload({doc:userBookmarks.importInventory(doc,contentPreview.userBookmarkInventory,hashCanonicalValue(input))});
+    }
+    if (contentPreview.wordStories) {
+      const doc = parseObservablePayload(richContent || importedText).doc || buildParagraphDocumentFromText(importedText);
+      richContent = composeObservablePayload({ doc: wordStories.bind(doc, contentPreview.wordStories) });
     }
     if (contentPreview.pendingRevisionDocument !== undefined) {
       const doc = contentPreview.pendingRevisionDocument;

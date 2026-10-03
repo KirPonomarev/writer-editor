@@ -134,7 +134,7 @@ function sceneUiHarness() {
     currentProjectId: 'project', treeRoot: scene,
     currentDocumentId: 'scene', currentTreeContentPublicationId: '', localEditGeneration: 9,
     isTiptapMode: true, flowModeState: { active: false }, wordCommentDraft: null, wordCommentBusy: false,
-    manuscriptDrafts: new Map(), notesMutationPending: false,
+    storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(), notesMutationPending: false,
     composeDocumentContent: () => 'live rich buffer', getTiptapRootSplitBoundary: () => ({ boundaryRootIndex: 1, position: 8 }),
     treeMutationProjection: { projectId: 'project', treeRevision: 7,
       lastMutation: { id: 'mutation', kind: 'copy', canUndo: true } },
@@ -561,7 +561,7 @@ test('equivalent tree query refresh during name dialog preserves exact revision-
 
 test('removed-copy replacement requires live old identity and bytes before ordinary editor replacement', () => {
   const c = { currentProjectId: 'project', currentDocumentId: 'copy', localEditGeneration: 9,
-    wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
+    wordCommentDraft: null, wordCommentBusy: false, storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(), notesMutationPending: false,
     composeDocumentContent: () => 'saved copied scene' };
   vm.createContext(c);
   vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent']), c);
@@ -598,7 +598,7 @@ test('actual replacement listener preserves late drafts or stale generation and 
       treeDetachedOrigin: null, currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
       wordCommentDraft: state === 'comment-draft' ? { body: 'unsaved comment' } : null,
       wordCommentBusy: state === 'comment-busy',
-      manuscriptDrafts: new Map(state === 'note-draft' ? [['note', { body: 'unsaved note' }]] : []),
+      storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(state === 'note-draft' ? [['note', { body: 'unsaved note' }]] : []),
       notesMutationPending: state === 'note-busy',
       metaEnabled: true, isTiptapMode: true, activeDocumentRevealRequested: false, currentRightTab: 'metadata',
       window: { electronAPI: { onEditorSetText: handler => { listener = handler; } } },
@@ -674,7 +674,7 @@ test('existing editor snapshot response observes the current project and documen
     currentTreeContentPublicationId: 'observed-publication',
     composeDocumentContent: () => 'exact live copy', getPlainText: () => 'live copy',
     getActiveBookProfile: () => ({ format: 'A4' }), getSelectionOffsets: () => ({ start: 1, end: 2 }),
-    isTiptapMode: false, wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
+    isTiptapMode: false, wordCommentDraft: null, wordCommentBusy: false, storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(), notesMutationPending: false,
     window: { electronAPI: { onEditorSnapshotRequest(handler) { c.respond = handler; },
       sendEditorSnapshotResponse(requestId, snapshot) { responses.push({ requestId, snapshot }); } } } };
   vm.createContext(c);
@@ -953,7 +953,7 @@ test('whole editor listener accepts same-ID partition only after checked replace
       currentDocumentTitle: 'Before', currentTreeContentPublicationId: 'prior', treeDetachedOrigin: null,
       localEditGeneration: 9, lastAckedGeneration: 8, localDirty: true, metaEnabled: true,
       wordCommentDraft: mode === 'comment' ? { body: 'draft' } : null, wordCommentBusy: mode === 'comment-busy',
-      manuscriptDrafts: new Map(mode === 'note' ? [['note', { body: 'draft' }]] : []), notesMutationPending: mode === 'note-busy',
+      storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(mode === 'note' ? [['note', { body: 'draft' }]] : []), notesMutationPending: mode === 'note-busy',
       isTiptapMode: true, flowModeState: { active: mode === 'flow' }, activeDocumentRevealRequested: false, currentRightTab: 'metadata',
       window: { electronAPI: { onEditorSetText: fn => { listener = fn; } } }, console: { warn() {} },
       composeDocumentContent: () => working, updateStatusText: value => statuses.push(value),

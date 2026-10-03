@@ -76,7 +76,7 @@ test('manuscript drafts and pending publication veto unload before editor destru
   const start = source.indexOf('function guardManuscriptNoteDraftUnload(event) {');
   const end = source.indexOf("window.addEventListener('beforeunload', guardManuscriptNoteDraftUnload, { capture: true });", start);
   let listener, notice;
-  const sandbox = { manuscriptDrafts: new Map(), notesMutationPending: 0, setNotesWorkspaceStatus: text => { notice = text; },
+  const sandbox = { storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map(), notesMutationPending: 0, setNotesWorkspaceStatus: text => { notice = text; },
     window: { addEventListener: (name, fn, options) => { assert.equal(name, 'beforeunload'); assert.equal(options.capture, true); listener = fn; } } };
   vm.runInNewContext(source.slice(start, end + "window.addEventListener('beforeunload', guardManuscriptNoteDraftUnload, { capture: true });".length), sandbox);
   let stopped = 0;
@@ -175,7 +175,7 @@ test('body save refreshes scene identity but never overwrites a concurrent note 
     manuscriptAuthoring: { available: true, sceneId: 'roman/scene.txt', subjectId: 'fresh-subject', expectedSceneSha256: 'new-raw-scene' } });
   const sandbox = { currentProjectId: 'p', currentDocumentId: 'scene', manuscriptBodyIdentity: 'p:note-a', notesMutationPending: 0,
     manuscriptBodyEditor: { getJSON: body }, manuscriptKindSelect: { value: 'footnote' }, manuscriptInsertionPoint: 3,
-    manuscriptDrafts: new Map([['p:note-a', draft]]),
+    storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts: new Map([['p:note-a', draft]]),
     notesWorkspaceState: { documentHash: 'notes-before', selectedId: 'note-a', manuscriptAuthoring: { expectedSceneSha256: 'old-raw-scene' } },
     NOTES_WORKSPACE_QUERY_ID: 'notes', EXTRA_COMMAND_IDS: { NOTES_UPDATE: 'update' },
     invokeWorkspaceQueryBridge: () => new Promise(resolve => { pending = resolve; }),

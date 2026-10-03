@@ -798,8 +798,9 @@ function buildDocxReviewPacketBuffer(input = {}) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
   }
   const comments = commentPackageParts(input.commentExport);
+  const stories = require('./docxReviewPacketStories.js').storyPackageParts(input.documentStories, {firstNumId:1000000});
   const notes = notePackageParts(input.documentNotes, { firstNumId: Math.max(0, ...numberingDefinitions.map(n => n.numId)) + 1 });
-  numberingDefinitions.push(...notes.numberings.map(n => ({ ...n, kind: n.kind === 'orderedList' ? 'ordered' : 'bullet' })));
+  numberingDefinitions.push(...[...notes.numberings, ...stories.numberings].map(n => ({ ...n, kind: n.kind === 'orderedList' ? 'ordered' : 'bullet' })));
   if (customProperties.length === 0) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_REQUIRED');
   }
@@ -810,12 +811,14 @@ function buildDocxReviewPacketBuffer(input = {}) {
     throw new Error('DOCX_REVIEW_PACKET_YRTK2_PROPERTY_REQUIRED');
   }
 
+  let storySectionIndex = 0;
+  const documentXml = buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage).replace(/<w:sectPr(?:\s*\/)>|<w:sectPr>/g, tag => tag === '<w:sectPr>' ? tag + stories.sectionXml(storySectionIndex++) : '<w:sectPr>' + stories.sectionXml(storySectionIndex++) + '</w:sectPr>');
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + mergeMediaTypes(mediaPackage.contentTypes, notes.mediaTypes), Boolean(documentMetadata)) },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + stories.contentTypes + mergeMediaTypes(mediaPackage.contentTypes, notes.mediaTypes, stories.mediaTypes), Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
-    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships + mediaPackage.relationships) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage) },
-    { name: 'word/settings.xml', data: buildSettingsXml() },
+    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships + mediaPackage.relationships + stories.relationships) },
+    { name: 'word/document.xml', data: documentXml },
+    { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', (stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
@@ -825,7 +828,8 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'customXml/itemProps1.xml', data: buildCustomXmlItemPropsXml() },
     ...comments.entries,
     ...notes.entries,
-    ...mergeMediaParts(mediaPackage.parts, notes.mediaParts),
+    ...stories.entries,
+    ...mergeMediaParts(mediaPackage.parts, notes.mediaParts, stories.mediaParts),
   ]);
   const modernMode = validateDocxReviewPacketModernMode15(buffer);
   if (!modernMode.ok) throw new Error(modernMode.code);

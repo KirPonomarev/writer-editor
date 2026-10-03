@@ -271,7 +271,8 @@
         "cap.project.tree.copyNode": true,
         "cap.project.tree.undoLastMutation": true,
         "cap.project.tree.splitScene": true,
-        "cap.project.tree.mergeNextScene": true
+        "cap.project.tree.mergeNextScene": true,
+        "cap.project.stories.authoring": true
       },
       "disabledCommands": [],
       "degradedFeatures": []
@@ -406,7 +407,8 @@
         "cap.project.tree.copyNode": false,
         "cap.project.tree.undoLastMutation": false,
         "cap.project.tree.splitScene": false,
-        "cap.project.tree.mergeNextScene": false
+        "cap.project.tree.mergeNextScene": false,
+        "cap.project.stories.authoring": false
       },
       "disabledCommands": [
         "cmd.project.blackBox.exportManualCoreCapsuleKitV1",
@@ -611,7 +613,8 @@
         "cap.project.tree.copyNode": false,
         "cap.project.tree.undoLastMutation": false,
         "cap.project.tree.splitScene": false,
-        "cap.project.tree.mergeNextScene": false
+        "cap.project.tree.mergeNextScene": false,
+        "cap.project.stories.authoring": false
       },
       "disabledCommands": [
         "cmd.project.blackBox.exportManualCoreCapsuleKitV1",

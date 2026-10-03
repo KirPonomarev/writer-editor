@@ -112,7 +112,7 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   const context=vm.createContext({composeDocumentContent:()=> 'text',getPlainText:()=> 'text',getActiveBookProfile:()=>null,
     getSelectionOffsets:()=>({start:1,end:1}),isTiptapMode:true,getTiptapImageInsertionPosition:()=>7,
     currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,
-    localEditGeneration:2,wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false});
+    localEditGeneration:2,wordCommentDraft:null,wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(section,context);
   const main=f.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
   vm.runInContext(main.slice(main.indexOf('function normalizeEditorSnapshotPayload('),main.indexOf('function requestEditorSnapshot(')),context);

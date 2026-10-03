@@ -684,14 +684,20 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
   });
   const sectionsCore = require('../../core/word-sections-v1.cjs');
   const semanticEnds = new Map();
+  const hasStories = scenes.some(scene => require('../../core/word-stories-v1.cjs').read(scene.doc));
   for (const scene of scenes) {
     const registry = sectionsCore.read(scene.doc);
-    if (!registry) continue;
+    if (!registry && !hasStories) continue;
     const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
-    const leaves = require('../../core/word-user-bookmarks-v1.cjs').paragraphs(scene.doc);
-    if (sceneBlocks.length !== leaves.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
-    for (const item of registry.boundaries) semanticEnds.set(sceneBlocks[item.endParagraphIndex].documentParagraphIndex, item.properties);
-    semanticEnds.set(sceneBlocks.at(-1).documentParagraphIndex, registry.final);
+    // Plain and empty scenes already have authoritative transport paragraphs.
+    // Only rich scenes have a document tree whose leaf mapping needs validation.
+    if (scene.doc != null) {
+      const leaves = require('../../core/word-user-bookmarks-v1.cjs').paragraphs(scene.doc);
+      if (sceneBlocks.length !== leaves.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
+    }
+    if (!sceneBlocks.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
+    for (const item of registry?.boundaries || []) semanticEnds.set(sceneBlocks[item.endParagraphIndex].documentParagraphIndex, item.properties);
+    semanticEnds.set(sceneBlocks.at(-1).documentParagraphIndex, registry?.final || canonicalSectionProperties());
   }
   if (semanticEnds.size) {
     const ends = new Map(protectedSections.map(section => [section.endParagraphIndex, section.properties]));
@@ -1258,6 +1264,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       : undefined,
   });
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
+  const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
@@ -1336,6 +1343,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     blocks,
     commentExport,
     documentNotes,
+    documentStories,
     documentMetadata,
     documentSections,
     customProperties: [
@@ -1540,6 +1548,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     documentMetadata: cloneJson(documentMetadata),
     documentSections: cloneJson(documentSections),
+    ...(documentStories ? { documentStories: cloneJson(documentStories) } : {}),
     ...(documentNotes ? { documentNotes: cloneJson(documentNotes) } : {}),
     parserProfileDigest,
     yrtk2: {
@@ -1559,6 +1568,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     blocks,
     commentExport,
     documentNotes,
+    documentStories,
     documentMetadata,
     documentSections,
     forbiddenSecret: hmacSecret,

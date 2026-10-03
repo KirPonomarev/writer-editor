@@ -8,6 +8,9 @@ import notesModel from './word-manuscript-notes-v1.cjs';
 import commentsModel from './word-comment-authoring-v1.cjs';
 import commentAnchors from './word-comment-anchor-save-v1.cjs';
 import mediaModel from './word-media-return-v1.cjs';
+import storyModel from './word-stories-v1.cjs';
+import mediaData from '../io/documentMedia.js';
+import { replayDocumentStoryMutationSteps } from '../io/revisionBridge/reviewTransportStoriesV1.mjs';
 
 export const TREE_COHORT_MODE = 'PROJECT_TREE_COHORT_V1';
 export const TREE_COHORT_LIMITS = Object.freeze({ files: 2048, bytes: 32 * 1024 * 1024, scenes: 512 });
@@ -523,8 +526,69 @@ export function planProjectTreeCohort(input) {
   return frozen(plan);
 }
 
+// Reuses the existing journal/recovery writer. Story edits do not mutate tree
+// identity, manuscript text, annotations, or the manifest.
+export function planProjectStoryBodyCohort(input) {
+  need(input && input.operation === 'story-bodies', 'E_STORY_COHORT_OPERATION');
+  need(typeof input.projectId === 'string' && input.projectId.length > 0 && input.projectId.length <= 128
+    && typeof input.operationId === 'string' && /^[A-Za-z0-9._:-]{1,128}$/u.test(input.operationId), 'E_TREE_COHORT_IDENTITY');
+  need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath)
+    && typeof input.beforeManifestText === 'string' && JSON.parse(input.beforeManifestText).projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
+  need(Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_TREE_REVISION_CAS');
+  need(Array.isArray(input.changes) && input.changes.length > 0 && input.changes.length <= TREE_COHORT_LIMITS.scenes, 'E_STORY_COHORT_BUDGET');
+  const entries = [], affectedScenes = [], seen = new Set(), storyAssets = new Map();
+  for (const change of input.changes) {
+    const relativePath = treeRelativePath(change.sceneId);
+    need(relativePath.startsWith('roman/') && /\.(?:txt|md)$/iu.test(relativePath) && !seen.has(relativePath), 'E_STORY_COHORT_PATH'); seen.add(relativePath);
+    need(typeof change.beforeContent === 'string' && typeof change.afterContent === 'string'
+      && (change.commitText === null || typeof change.commitText === 'string'), 'E_STORY_COHORT_CONTENT');
+    const before = parsedScene(change.beforeContent), after = parsedScene(change.afterContent);
+    need((after.doc || change.beforeContent === change.afterContent) && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
+    // Replay against authored plain paragraphs, not normalized display text.
+    // Metadata and cards remain outside the manuscript projection.
+    const beforeDoc=before.doc || envelope.buildParagraphDocumentFromText(!before.hasMetaBlock && !before.hasCardsBlock ? change.beforeContent : before.text);
+    const afterDoc=after.doc || envelope.buildParagraphDocumentFromText(!after.hasMetaBlock && !after.hasCardsBlock ? change.afterContent : after.text);
+    if(change.storyMutationReplay)need(same(replayDocumentStoryMutationSteps(beforeDoc,change.storyMutationReplay),afterDoc),'E_STORY_COHORT_INTENT');
+    else storyModel.validateSave(beforeDoc, afterDoc);
+    for (const asset of mediaData.documentMedia({type:'doc',content:storyModel.read(afterDoc)?.stories.flatMap(story=>story.body.content) || []}).assets) {
+      const existing=storyAssets.get(asset.attrs.assetPath);
+      need(!existing || existing===asset.attrs.dataBase64,'E_STORY_COHORT_ASSET_CONFLICT');
+      storyAssets.set(asset.attrs.assetPath,asset.attrs.dataBase64);
+    }
+    const restored = clone(afterDoc);
+    if(beforeDoc.attrs?.wordStories !== undefined) {restored.attrs={...restored.attrs,wordStories:clone(beforeDoc.attrs.wordStories)};}
+    else if(restored.attrs)delete restored.attrs.wordStories;
+    if(!change.storyMutationReplay)need(same(restored,beforeDoc), 'E_STORY_COHORT_BODY_ONLY');
+    entries.push({relativePath,role:'scene',beforeBase64:b64(change.beforeContent),afterBase64:b64(change.afterContent)},
+      {relativePath:relativePath+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(change.commitText),afterBase64:b64(change.commitText)});
+    if(!same(beforeDoc,afterDoc))affectedScenes.push({from:relativePath,to:relativePath,copy:false});
+  }
+  for (const [role,relativePath,value] of [['notes',NOTE_PATH,input.notesText],['comments',COMMENT_PATH,input.commentsText]]) {
+    need(value === null || typeof value === 'string', 'E_STORY_COHORT_ANNOTATIONS');
+    if(value!==null) { if(role==='notes')notesModel.validateManuscriptDocument(JSON.parse(value),input.projectId);else commentsModel.readState(value,input.projectId); }
+    entries.push({relativePath,role,beforeBase64:b64(value),afterBase64:b64(value)});
+  }
+  need(input.mediaResources === undefined || Array.isArray(input.mediaResources),'E_STORY_COHORT_ASSETS');
+  const mediaPaths = new Set();
+  for (const resource of input.mediaResources || []) {
+    need(resource && Object.keys(resource).every(key=>['relativePath','contentBase64'].includes(key))
+      && typeof resource.relativePath === 'string' && typeof resource.contentBase64 === 'string'
+      && storyAssets.get(resource.relativePath)===resource.contentBase64 && !mediaPaths.has(resource.relativePath),'E_STORY_COHORT_ASSET_BINDING');
+    mediaPaths.add(resource.relativePath);
+    entries.push({relativePath:treeRelativePath(resource.relativePath),role:'storyMedia',beforeBase64:null,afterBase64:resource.contentBase64});
+  }
+  need(affectedScenes.length>0,'E_STORY_COHORT_NO_CHANGE');
+  const plan = {mode:TREE_COHORT_MODE,projectId:input.projectId,operationId:input.operationId,
+    expectedTreeRevision:input.expectedTreeRevision,kind:'story-bodies',changed:true,code:'TREE_COHORT_READY',
+    beforeManifestText:input.beforeManifestText,manifestText:input.beforeManifestText,entries,directories:[],
+    affectedScenes,pathBindings:[],identityMap:{nodes:{},scenes:{},notes:{},bookmarks:{},threads:{},messages:{}},input:clone(input)};
+  plan.planDigest=sha(stable(plan));need(Buffer.byteLength(stable(plan))<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');
+  return frozen(plan);
+}
+
 export function validateProjectTreeCohort(plan) {
   need(plan?.mode === TREE_COHORT_MODE, 'E_TREE_COHORT_MODE');
+  if (plan.kind === 'story-bodies') { need(same(planProjectStoryBodyCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'undo') {
     const regenerated = planProjectTreeUndo(plan.input); need(same(regenerated, plan), 'E_TREE_COHORT_PLAN_MISMATCH');
   } else need(same(planProjectTreeCohort(plan.input), plan), 'E_TREE_COHORT_PLAN_MISMATCH');

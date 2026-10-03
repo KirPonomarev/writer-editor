@@ -6,6 +6,43 @@ const { pathToFileURL } = require('node:url')
 
 const ROOT = process.cwd()
 
+test('actual status subscription exposes bounded DOCX export failure without exposing background status', () => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const helperStart = source.indexOf('function updateStatusText(');
+  const helperEnd = source.indexOf('\nfunction updateSaveStateText(', helperStart);
+  const listenerStart = source.indexOf('window.electronAPI.onStatusUpdate((status) => {');
+  const listenerEnd = source.indexOf('\n  window.electronAPI.onSetDirty(', listenerStart);
+  assert.ok(helperStart >= 0 && helperEnd > helperStart && listenerStart >= 0 && listenerEnd > listenerStart);
+  let onStatus;
+  const c = {statusElement:{textContent:'',style:{visibility:''}},heldCommandStatusMessage:false,
+    window:{electronAPI:{onStatusUpdate(fn){onStatus=fn;}}},
+    updateWarningStateText(){},updatePerfHintText(){},updateInspectorSnapshot(){}};
+  vm.createContext(c);
+  vm.runInContext(source.slice(helperStart,helperEnd)+'\n'+source.slice(listenerStart,listenerEnd),c);
+  onStatus('Фоновая операция');
+  assert.equal(c.statusElement.style.visibility,'');
+  assert.equal(c.heldCommandStatusMessage,false);
+  c.heldCommandStatusMessage=true;c.statusElement.textContent='Предыдущее сообщение';
+  const failure='Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: FULL_MANUSCRIPT_INVALID).';
+  onStatus(failure);
+  assert.equal(c.statusElement.style.visibility,'visible');
+  assert.equal(c.statusElement.textContent,failure);
+  onStatus('Фоновая операция');
+  assert.equal(c.statusElement.textContent,failure);
+  onStatus('Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED).');
+  assert.equal(c.statusElement.textContent,'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED).');
+  assert.equal(c.statusElement.style.visibility,'visible');
+  for(const unexpected of ['Не удалось экспортировать DOCX (/private/manuscript).',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: private text).',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED). extra',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: RTK_WORD_'+ 'A'.repeat(321)+').']) {
+    c.heldCommandStatusMessage=false;c.statusElement.style.visibility='';onStatus(unexpected);
+    assert.equal(c.statusElement.style.visibility,'');
+    assert.equal(c.heldCommandStatusMessage,false);
+  }
+});
+
 async function loadEsmSourceFromFile(filePath) {
   let code = fs.readFileSync(filePath, 'utf8')
   if (filePath.endsWith(path.join('tiptap', 'ipc.js'))) {
@@ -603,8 +640,9 @@ async function treeDocumentAdapter(doc) {
   const { UserBookmarks } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/userBookmarks.mjs')));
   const { ManuscriptNoteReferences } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/manuscriptNotes.mjs')));
   const { DocumentSections } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/documentSections.mjs')));
+  const { DocumentStories } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap/documentStories.mjs')));
   const editor = new Editor({ element: null, extensions: [StarterKit.configure({ trailingNode: false }),
-    WordPendingRevisions, UserBookmarks, ManuscriptNoteReferences, DocumentSections], content: doc });
+    WordPendingRevisions, UserBookmarks, ManuscriptNoteReferences, DocumentSections, DocumentStories], content: doc });
   let markerInitializations = 0;
   const marker = new pm.Plugin({ key: new pm.PluginKey('treeResetSentinel'), state: {
     init() { markerInitializations++; return { retained: true }; }, apply(_tr, previous) { return previous; },
@@ -612,7 +650,8 @@ async function treeDocumentAdapter(doc) {
   editor.view.updateState(editor.state.reconfigure({ plugins: [...editor.extensionManager.plugins, marker] }));
   const c = { currentEditorInstance: editor, document: {}, getFocusedManuscriptBodyEditor: () => null,
     history: historyApi.history, setCheckedReviewDocument: setCheckedDocument,
-    wordSections: require('../../src/core/word-sections-v1.cjs'), notifyFormattingStateChange() {} };
+    wordSections: require('../../src/core/word-sections-v1.cjs'),
+    wordStories: require('../../src/core/word-stories-v1.cjs'), notifyFormattingStateChange() {} };
   const source = fs.readFileSync(path.join(ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
   const functions = ['getTiptapRootSplitBoundary', 'replaceTiptapTreeDocumentSnapshot', 'setCheckedDocument'].map(name => {
     const match = new RegExp(`^(?:export )?function ${name}\\(`, 'm').exec(source);

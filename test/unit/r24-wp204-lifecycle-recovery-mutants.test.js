@@ -30,6 +30,7 @@ const MODULE_BASENAME = 'lifecycle-recovery-v1.cjs';
 const DEPENDENCIES = [
   'browser-safe-hash.cjs',
   'word-manuscript-notes-v1.cjs',
+  'word-rich-body-projection-v1.cjs',
   'word-comment-anchor-save-v1.cjs',
   'word-comment-authoring-v1.cjs',
   'document-content-envelope-v1.cjs',
@@ -189,12 +190,15 @@ async function killOracle(moduleUnderTest, selection) {
 
 test('WP204 lifecycle recovery executes and kills every named implementation mutant', async () => {
   const selection = await realSelection();
+  // The same isolated module graph must pass before any mutation can count.
+  await killOracle(loadMutant({ id: 'UNMODIFIED_CONTROL', find: "'use strict';", replace: "'use strict';" }), selection);
   const killed = [];
   for (const mutant of mutants) {
     const moduleUnderTest = loadMutant(mutant);
     try {
       await killOracle(moduleUnderTest, selection);
-    } catch {
+    } catch (error) {
+      if (['MODULE_NOT_FOUND', 'ERR_MODULE_NOT_FOUND'].includes(error?.code)) throw error;
       killed.push(mutant.id);
     }
   }

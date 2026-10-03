@@ -2475,7 +2475,7 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
 
   if (String(selected.value.textChange.changeId).startsWith('docx-clean-block-text-')
     || String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')
-    || (String(selected.value.textChange.changeId).startsWith('docx-user-bookmarks-') || String(selected.value.textChange.changeId).startsWith('docx-media-return-'))) {
+    || (String(selected.value.textChange.changeId).startsWith('docx-user-bookmarks-') || String(selected.value.textChange.changeId).startsWith('docx-media-return-') || String(selected.value.textChange.changeId).startsWith('docx-story-return-'))) {
     return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
       requestId:normalizedPayload.value.requestId, changeIds:[selected.value.textChange.changeId],
     }, options);
@@ -2874,7 +2874,7 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
   try {
     const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-block-text-')
       || String(change.changeId).startsWith('docx-clean-link-label-')
-      || (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')));
+      || (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-') || String(change.changeId).startsWith('docx-story-return-')));
     applyContext = cleanRequested
       ? buildCleanLinkLabelApplyInput(selectedBatch.value.textChanges)
       : await buildBatchInput({
@@ -3570,7 +3570,7 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
     }catch(error){preview=buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(error.code||error.message)]);}
     return {ok:true,refreshed:true,status:preview.status,reviewSurface:attachReviewExactTextUiPlanPreview(preview,sessionToken)};
   }
-  if (textChanges.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')))) {
+  if (textChanges.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-') || String(change.changeId).startsWith('docx-story-return-')))) {
     const store = activeRtkCleanLinkLabelApplyStore, subject = currentLifecycleSubjectId();
     const generation = lastSignaledEditGeneration, authoringSession = commentAuthoringSessionId;
     let preview = await buildPrivateUserBookmarksUiPlan(textChanges);
@@ -3580,7 +3580,7 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
         if (activePendingRecording || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
           || subject !== currentLifecycleSubjectId() || authoringSession !== commentAuthoringSessionId
           || generation !== lastSignaledEditGeneration
-          || fsSync.readFileSync(store.input.scenePath, 'utf8') !== (store.mediaReturnCandidate || store.userBookmarksCandidate).raw) {
+          || fsSync.readFileSync(store.input.scenePath, 'utf8') !== (store.storyReturnCandidate?.batchScenes ? store.storyReturnCandidate.sourceScenes.find(scene => scene.path === currentFilePath)?.raw : (store.storyReturnCandidate || store.mediaReturnCandidate || store.userBookmarksCandidate).raw)) {
           throw Error('RTK_USER_BOOKMARK_SOURCE_STALE');
         }
       } catch (error) {
@@ -4619,8 +4619,9 @@ async function readDocxReviewPacketExportSource() {
     roundId, doc: parsedDocument.doc, formatPlainText: true,
   });
   blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
-  const documentSections = parsedDocument.doc?.attrs?.wordSections != null
-    ? buildFullManuscriptDocumentSections([{ sceneId, doc: parsedDocument.doc }], blocks, cryptoPort) : null;
+  const storySourceScenes = [{ sceneId, doc: parsedDocument.doc || envelopeModule.buildParagraphDocumentFromText(parsedDocument.text) }];
+  const documentSections = buildFullManuscriptDocumentSections(storySourceScenes, blocks, cryptoPort);
+  const documentStories = require('./export/docx/docxReviewPacketStories').buildDocumentStoriesExport(storySourceScenes, documentSections, {includeEmpty:true,blocks});
   const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId });
   if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
     throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
@@ -4684,7 +4685,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
-    documentNotes, documentSections, commentExport,
+    documentNotes, documentSections, documentStories, commentExport,
     sceneText,
     blocks,
     customProperties: [
@@ -4814,6 +4815,7 @@ async function readDocxReviewPacketExportSource() {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.local-authority.v1',
     commentExport,
     ...(documentSections ? { documentSections } : {}),
+    ...(documentStories ? { documentStories } : {}),
     projectRoot,
     scenePath: currentFilePath,
     baselineFinalText: sceneText,
@@ -4835,7 +4837,7 @@ async function readDocxReviewPacketExportSource() {
     manifestDigest: transportManifestResult.manifest.payloadDigest,
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     exportMap,
-    ...(documentNotes ? { projectId, documentNotes, scenePathBySceneId: { [sceneId]: sourceFilePath },
+    ...((documentNotes || documentStories) ? { projectId, documentNotes, scenePathBySceneId: { [sceneId]: sourceFilePath },
       baselineObservableContentBySceneId: { [sceneId]: sceneRawContent }, baselineFinalTextBySceneId: { [sceneId]: sceneText } } : {}),
   };
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
@@ -4862,7 +4864,7 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
-    documentNotes, documentSections, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
+    documentNotes, documentSections, documentStories, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
     provisionalSelfParseArtifact: { bytes: provisionalBuffer },
     sceneText,
     blocks,
@@ -9751,6 +9753,18 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       };
     }
   }
+  if (localAuthority.documentStories || options.docxBytes) {
+    const stories = await prepareCleanDocumentStoriesCapsule(localAuthority, parserResult,
+      { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes });
+    if (!stories.ok) return docxReviewReturnIntakeBlocked(stories.code, { detail: stories.detail });
+    if (stories.changed) {
+      if (sceneAuthorityFields.cleanTextChanges?.length || sceneAuthorityFields.userBookmarksCandidate
+        || sceneAuthorityFields.mediaReturnCandidate || sceneAuthorityFields.cleanLinkLabel?.ok) {
+        return docxReviewReturnIntakeBlocked('WORD_STORIES_RETURN_COMPOSITE_REQUIRES_BATCH');
+      }
+      Object.assign(sceneAuthorityFields, stories.fields);
+    }
+  }
   if (options.comparisonBindings && !sceneAuthorityFields.cleanTextChanges?.length) {
     return docxReviewReturnIntakeBlocked('RTK_WORD_CONCURRENT_COMPOSITE_UNSUPPORTED');
   }
@@ -9775,6 +9789,112 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       : 'not-applicable',
     returnedArtifactExportMapAccepted: false,
   };
+}
+
+async function prepareCleanDocumentStoriesCapsule(authority, parserResult, context) {
+  try {
+    if (!Buffer.isBuffer(context.docxBytes) || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256)
+      throw Error('WORD_STORIES_RETURN_ARTIFACT');
+    const bridge = await loadRevisionBridgeModule();
+    const returned = bridge.parseDocumentStoriesRichReturn(context.docxBytes);
+    if (!authority.documentStories && !returned) return { ok: true, changed: false };
+    const envelope = await loadDocumentContentEnvelopeModule();
+    const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportStoriesV1.mjs')).href);
+    const beforeDocs = {}, sources = {};
+    for (const scene of authority.exportMap.scenes) {
+      const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId]
+        ?? authority.baselineFinalTextBySceneId?.[scene.sceneId]
+        ?? (authority.scope === 'scene' ? authority.baselineFinalText : undefined);
+      if (typeof raw !== 'string' || scene.rawSha256 !== `sha256:${computeHash(raw)}`) throw Error('WORD_STORIES_RETURN_BASELINE');
+      const parsed = envelope.parseObservablePayload(raw);
+      if (parsed.issue) throw Error('WORD_STORIES_RETURN_BASELINE');
+      // Preserve authored plain boundary blanks; metadata/cards still use parsed text.
+      const plainText = !parsed.hasMetaBlock && !parsed.hasCardsBlock ? raw : parsed.text;
+      beforeDocs[scene.sceneId] = parsed.doc || envelope.buildParagraphDocumentFromText(plainText);
+      sources[scene.sceneId] = { raw, parsed };
+    }
+    const analysis = module.analyzeDocumentStoriesReturn({ expected: authority.documentStories, returned, beforeDocs, exportTypography: authority.exportMap.exportTypography, allowTopology: true, idSeed: crypto.randomUUID() });
+    if (!analysis.ok || !analysis.changed) return analysis;
+    if (['textRevisions', 'moveRevisions', 'propertyRevisions'].some(key => parserResult.reviewIr?.[key]?.length))
+      throw Error('WORD_STORIES_RETURN_COMPOSITE_REQUIRES_BATCH');
+    const bookmarks = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
+    // Geometry and media are checked independently before deriving a text-only
+    // comparison projection. The canonical candidate retains their exact nodes.
+    const tableProof = bridge.bindDocxReviewTableTopology(parserResult.reviewIr, authority.exportMap);
+    if (!tableProof.ok) throw Error('WORD_STORIES_RETURN_MAIN_TABLE_CHANGED');
+    const mediaProof = bridge.bindDocxReviewMedia(tableProof.reviewIr || parserResult.reviewIr, authority.exportMap);
+    if (!mediaProof.ok) throw Error('WORD_STORIES_RETURN_MAIN_MEDIA_CHANGED');
+    const analysisIr = cloneJsonSafe(mediaProof.reviewIr || tableProof.reviewIr || parserResult.reviewIr);
+    for (const paragraph of analysisIr.formattingParagraphs) delete paragraph.table;
+    const analysisMap = cloneJsonSafe(authority.exportMap), analysisDocs = {};
+    const formatSource = require('./export/docx/fullManuscriptDocxReviewPacketSource.js');
+    const project = node => {
+      if (node.type === 'image') return [];
+      const children = (node.content || []).flatMap(project);
+      if (['table','tableRow','tableCell','tableHeader'].includes(node.type)) return children;
+      return [{ ...node, ...(node.content ? {content:children} : {}) }];
+    };
+    for (const scene of analysisMap.scenes) {
+      const original = beforeDocs[scene.sceneId];
+      const originalFormats = formatSource.buildFormatIrParagraphs({sceneId:scene.sceneId,doc:original,text:sources[scene.sceneId].parsed.text});
+      if (originalFormats.length !== scene.blocks.length || originalFormats.some((item,index)=>stableRtkReviewTransportJson(item.formatIr)!==stableRtkReviewTransportJson(scene.blocks[index].formatIr)))
+        throw Error('WORD_STORIES_RETURN_MAIN_BASELINE');
+      const projected = cloneJsonSafe(project(original)[0]); analysisDocs[scene.sceneId] = projected;
+      const formats = formatSource.buildFormatIrParagraphs({sceneId:scene.sceneId,doc:projected,text:sources[scene.sceneId].parsed.text});
+      if(formats.length!==scene.blocks.length)throw Error('WORD_STORIES_RETURN_MAIN_PROJECTION');
+      scene.blocks.forEach((block,index)=>{block.formatIr=formats[index].formatIr;});
+    }
+    for (const scene of analysisMap.scenes) {
+      const checked = bookmarks.analyzeUserBookmarksReturn({ baselineDoc: analysisDocs[scene.sceneId], exportMap: analysisMap,
+        sceneId: scene.sceneId, reviewIr: analysisIr, exportTypography: authority.exportMap.exportTypography,
+        protectedSections: authority.documentSections, sectionProof: parserResult.documentSectionsBinding, ordinaryTextMode: true });
+      if (!checked.ok || checked.ordinaryTextChanges?.length
+        || userBookmarkModel.planReturn({ beforeDoc: analysisDocs[scene.sceneId], candidateDoc: checked.doc }).changed)
+        throw Object.assign(Error('WORD_STORIES_RETURN_COMPOSITE_REQUIRES_BATCH'), { detail: checked.detail || checked.code || 'body-or-bookmarks-changed' });
+    }
+    const comments = parserResult.reviewIr?.commentThreads || [];
+    if (authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
+      throw Error('WORD_STORIES_RETURN_COMMENTS_CHANGED');
+    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+    let noteSourceGuard = null;
+    if (authority.documentNotes?.sourceBindings?.length || returnedNotes.length) {
+      if (authority.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
+      const notesContext = await getProjectNotesContext({ projectId: context.projectId }, { readOnlyActive: true });
+      if (!notesContext.ok || notesContext.projectRoot !== authority.projectRoot) throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
+      const saved = await readProjectNotesDocument(notesContext);
+      if (!saved.ok) throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
+      const delta = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({ document: saved.current.document,
+        projectId: context.projectId, roundId: authority.roundId, artifactSha256: context.returnedArtifactSha256,
+        baseline: authority.documentNotes, exportMap: authority.exportMap, returnedNotes,
+        returnedParagraphs: parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() });
+      if (!delta.unchanged) throw Error('WORD_STORIES_RETURN_NOTES_CHANGED');
+      noteSourceGuard = { projectId: context.projectId, projectRoot: authority.projectRoot, sourceText: saved.current.sourceText };
+    }
+    const candidates = analysis.candidates.map(item => ({ ...item, ...sources[item.sceneId], noteSourceGuard }));
+    const candidate = candidates.find(item => authority.scenePathBySceneId?.[item.sceneId] === currentFilePath) || candidates[0];
+    const scenePath = authority.scenePathBySceneId?.[candidate.sceneId] ?? (authority.scope === 'scene' ? authority.scenePath : undefined);
+    const batch = candidates.length > 1 || scenePath !== currentFilePath;
+    if (batch) {
+      candidate.batchScenes = candidates.map(item => ({ ...item }));
+      candidate.sourceScenes = authority.exportMap.scenes.map(scene => ({ sceneId: scene.sceneId, raw: sources[scene.sceneId].raw, path: authority.scenePathBySceneId?.[scene.sceneId] }));
+      candidate.changes = candidates.flatMap(item => item.changes);
+    }
+    const changeId = 'docx-story-return-' + computeHash(JSON.stringify({ roundId: authority.roundId,
+      sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc })).slice(0, 24);
+    const change = { changeId, targetScope: { type: 'scene', id: candidate.sceneId },
+      match: { kind: 'exact', quote: candidate.parsed.text, prefix: '', suffix: '' },
+      replacementText: candidate.parsed.text, sourceAuthority: 'authenticated-document-stories-v1',
+      rtkProductPath: 'documentStories', paragraphIndex: 0,
+      documentParagraphIndex: authority.exportMap.scenes.find(scene => scene.sceneId === candidate.sceneId).blocks[0].documentParagraphIndex };
+    const { projectId, baselineHash } = context;
+    return { ok: true, changed: true, fields: { storyReturnCandidate: { ...candidate, changeId },
+      cleanLinkLabel: { ok: true, change }, writerContext: {
+        projectRoot: authority.projectRoot, scenePath: batch ? currentFilePath : scenePath, scenePathBySceneId: { [candidate.sceneId]: scenePath },
+        projectSnapshot: { projectId, baselineHash, scenes: [{ sceneId: candidate.sceneId, text: candidate.raw }] },
+        revisionSession: { projectId, baselineHash, sessionId: `docx-review-preview-${authority.roundId}`, status: 'open',
+          reviewGraph: { commentThreads: [], commentPlacements: [], textChanges: [], structuralChanges: [], diagnosticItems: [], decisionStates: [] } },
+      } } };
+  } catch (error) { return { ok: false, code: error.code || error.message, ...(error.detail ? {detail:error.detail} : {}) }; }
 }
 
 async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
@@ -10925,12 +11045,13 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     activeRtkCleanLinkLabelApplyStore = {
       input, keyAuthority:cloneJsonSafe(capsule),
       ...(capsule.userBookmarksCandidate ? { userBookmarksCandidate: cloneJsonSafe(capsule.userBookmarksCandidate) } : {}),
+      ...(capsule.storyReturnCandidate ? { storyReturnCandidate: cloneJsonSafe(capsule.storyReturnCandidate) } : {}),
       ...(capsule.mediaReturnCandidate ? { mediaReturnCandidate: cloneJsonSafe(capsule.mediaReturnCandidate) } : {}),
       openScenePath: currentFilePath,
       sessionToken:readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore),
       intakeGeneration:activeDocxReviewIntakeGeneration,
     };
-    if (capsule.userBookmarksCandidate || capsule.mediaReturnCandidate) {
+    if (capsule.userBookmarksCandidate || capsule.mediaReturnCandidate || capsule.storyReturnCandidate) {
       cleanUserBookmarksUiPreview = await refreshActiveReviewExactTextUiPlan({ requestId });
       if (!isCurrent()) return superseded();
     }
@@ -12247,6 +12368,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
         ...(sourceReport.contentPreview.wordSections ? { wordSections: cloneJsonSafe(sourceReport.contentPreview.wordSections) } : {}),
+        ...(sourceReport.contentPreview.wordStories ? { wordStories: cloneJsonSafe(sourceReport.contentPreview.wordStories) } : {}),
         ...(userBookmarkInventory !== null ? { userBookmarkInventory } : {}),
         ...(isPlainObjectValue(sourceReport.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(sourceReport.contentPreview.pendingRevisionDocument) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
@@ -22584,7 +22706,8 @@ function continueUserBookmarkWorkingDocument(continuation, workingDoc) {
 
 async function prepareWordMediaReturnResources(doc, manifestPath) {
   const root = path.dirname(manifestPath), resources = [];
-  for (const { attrs, bytes } of wordMediaData.documentMedia(doc).assets) {
+  const storyBlocks = doc.attrs?.wordStories != null ? require('./core/word-stories-v1.cjs').read(doc).stories.flatMap(story => story.body.content) : [];
+  for (const { attrs, bytes } of wordMediaData.documentMedia({ type: 'doc', content: [...(doc.content || []), ...storyBlocks] }).assets) {
     const target = path.join(root, attrs.assetPath);
     if (!isPathInsideBoundary(root, target)) throw Error('MEDIA_RETURN_RESOURCE_BOUNDARY');
     let current = root, targetStat = null;
@@ -22685,13 +22808,38 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           let nextBookmarkAliases;
           let userBookmarkHistorySnapshot = null;
           if (beforeDocument.doc || afterDocument.doc) {
-            const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(beforeDocument.text);
+            const replayPlainText = options.storyReturnPlan?.storyMutationReplay
+              && !beforeDocument.hasMetaBlock && !beforeDocument.hasCardsBlock
+              ? expectedSceneContent || '' : beforeDocument.text;
+            const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(replayPlainText);
             const workingDoc = afterDocument.doc || envelope.buildParagraphDocumentFromText(afterDocument.text);
-            if (expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (options.storyReturnPlan?.storyMutationReplay) {
+              const stories = await import(pathToFileURL(path.join(__dirname,'io','revisionBridge','reviewTransportStoriesV1.mjs')).href);
+              const checked = stories.replayDocumentStoryMutationSteps(beforeDoc,options.storyReturnPlan.storyMutationReplay);
+              if (JSON.stringify(envelope.canonicalizeDocumentJson(checked)) !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('WORD_STORIES_INTENT_MISMATCH');
+            }
+            if (options.storyAuthoringIntent) {
+              const checked = require('./core/word-stories-v1.cjs').planStoryMutation(beforeDoc,
+                options.storyAuthoringIntent.intent, options.storyAuthoringIntent.options);
+              if (!checked.changed || JSON.stringify(envelope.canonicalizeDocumentJson(checked.doc))
+                !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('WORD_STORIES_INTENT_MISMATCH');
+            }
+            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordStories != null || workingDoc.attrs?.wordStories != null)) require('./core/word-stories-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (workingDoc.attrs?.wordStories != null) mediaUpdateResources = await prepareWordMediaReturnResources(workingDoc, prepared.manifestPath);
             if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
               bookmarkSubjectId = currentLifecycleSubjectId(); bookmarkSessionId = commentAuthoringSessionId;
               bookmarkAliases = boundUserBookmarkRenameLineage(filePath, prepared.projectId, expectedSceneContent);
               nextBookmarkAliases = bookmarkAliases;
+            }
+            if (options.storyReturnPlan) {
+              const onlyStoryChanges = JSON.parse(JSON.stringify(workingDoc));
+              onlyStoryChanges.attrs = { ...onlyStoryChanges.attrs, wordStories: beforeDoc.attrs?.wordStories };
+              if ((!options.storyReturnPlan.storyMutationReplay && JSON.stringify(envelope.canonicalizeDocumentJson(onlyStoryChanges)) !== JSON.stringify(envelope.canonicalizeDocumentJson(beforeDoc)))
+                || JSON.stringify(envelope.canonicalizeDocumentJson(options.storyReturnPlan.doc)) !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc)))
+                throw Error('WORD_STORIES_RETURN_PLAN_MISMATCH');
+              bookmarkPublication = { capturedContent: options.storyReturnCapturedContent, savedContent: content,
+                generation: revision, filePath, subjectId: currentLifecycleSubjectId(), sessionId: commentAuthoringSessionId };
             }
             if (options.mediaReturnPlan) {
               const checked = wordMediaReturnModel.planMediaReturn({ beforeDoc,
@@ -22793,7 +22941,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
+          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || options.storyReturnPlan || options.storyAuthoringIntent || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
             && expectedSceneContent !== content) {
             const markdownIo = await loadMarkdownIoModule();
             const paths = await markdownIo.listRecoverySnapshots(filePath);
@@ -22805,11 +22953,11 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             }
             if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
           }
-          if (options.mediaReturnPlan) {
+          if (options.mediaReturnPlan || afterDocument.doc?.attrs?.wordStories != null) {
             const freshResources = await prepareWordMediaReturnResources(afterDocument.doc, prepared.manifestPath);
             if (JSON.stringify(freshResources) !== JSON.stringify(mediaUpdateResources)) throw Error('MEDIA_RETURN_RESOURCE_RACE');
             if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-            mediaReturnPublication.savedContent = content;
+            if (mediaReturnPublication) mediaReturnPublication.savedContent = content;
           }
           const receipt = await commitProjectTransaction({
             ...(mediaUpdateResources.length ? { mediaUpdateResources } : {}),
@@ -24403,6 +24551,129 @@ async function handleUserBookmarkMutation(action, payload = {}) {
   }
 }
 
+async function readDocumentStoriesContext() {
+  const source = await readUserBookmarkContext();
+  const registry = require('./core/word-stories-v1.cjs').read(source.doc);
+  const sections = require('./core/word-sections-v1.cjs').read(source.doc);
+  const manifestPath = getProjectManifestPath();
+  const manifestRaw = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+  if (manifest.projectId !== source.projectId) throw Error('WORD_STORIES_PROJECT_STALE');
+  const bookProfile = Object.hasOwn(manifest, 'bookProfile') ? manifest.bookProfile
+    : (await loadBookProfileModule()).createDefaultBookProfile();
+  let trustedSections;
+  if (!sections) {
+    const setup = (await loadDocxPageSetupBindModule()).buildDocxPageSetup(bookProfile);
+    trustedSections = { schemaVersion: 1, boundaries: [], final: { type: 'nextPage',
+      pageSize: { widthTwips: setup.pageWidthTwips, heightTwips: setup.pageHeightTwips, orientation: setup.orientation },
+      margins: Object.fromEntries(['top','right','bottom','left','header','footer','gutter'].map(key =>
+        [key + 'Twips', setup[(key === 'header' || key === 'footer' || key === 'gutter' ? key : 'margin' + key[0].toUpperCase() + key.slice(1)) + 'Twips']])) } };
+  }
+  return { ...source, registry, sectionCount: (sections?.boundaries.length || 0) + 1,
+    manifestPath, manifestRaw, bookProfile, trustedSections };
+}
+
+async function handleDocumentStoriesQuery(payload = {}) {
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId','admissionOnly'].includes(key))
+      || payload.admissionOnly !== undefined && typeof payload.admissionOnly !== 'boolean') throw Error('WORD_STORIES_QUERY_INVALID');
+    userBookmarkCapability('cmd.project.documentStories.create');
+    const source = await readDocumentStoriesContext();
+    if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+      || isDirty || autoSaveInProgress || await fs.readFile(source.filePath, 'utf8') !== source.raw
+      || await fs.readFile(source.manifestPath, 'utf8') !== source.manifestRaw) throw Error('WORD_STORIES_QUERY_STALE');
+    userBookmarkCapability('cmd.project.documentStories.create');
+    if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+      || isDirty || autoSaveInProgress) throw Error('WORD_STORIES_QUERY_STALE');
+    return Object.freeze({ ok: true, available: true, projectId: source.projectId, sceneId: source.sceneId,
+      subjectId: source.subjectId, expectedSceneSha256: source.sceneSha256,
+      sectionCount: source.sectionCount, registry: cloneJsonSafe(source.registry) });
+  } catch (error) { return { ok: false, available: false, reason: error.message }; }
+}
+
+async function handleDocumentStoriesMutation(action, payload = {}) {
+  const commandId = 'cmd.project.documentStories.' + action;
+  try {
+    const allowed = ['editorMode','requestId','projectId','sceneId','subjectId','expectedSceneSha256','sectionIndex',
+      ...(action === 'options' ? ['titlePage','evenAndOddHeaders'] : ['role','variant', ...(action === 'create' ? ['source'] : [])])];
+    if (!['create','remove','linkPrevious','options'].includes(action) || !isPlainObjectValue(payload)
+      || Object.keys(payload).some(key => !allowed.includes(key))
+      || payload.editorMode !== undefined && payload.editorMode !== 'tiptap'
+      || typeof payload.requestId !== 'string' || !/^[\w:.-]{1,160}$/u.test(payload.requestId)) throw Error('WORD_STORIES_INPUT_INVALID');
+    userBookmarkCapability(commandId);
+    return await queueDiskOperation(async () => {
+      const source = await readDocumentStoriesContext();
+      if (payload.projectId !== source.projectId || payload.sceneId !== source.sceneId
+        || payload.subjectId !== source.subjectId || payload.expectedSceneSha256 !== source.sceneSha256) throw Error('WORD_STORIES_SOURCE_STALE');
+      const snapshot = await requestEditorSnapshot(), envelope = await loadDocumentContentEnvelopeModule();
+      const checkSnapshot = observed => {
+        if (observed.content !== snapshot.content || observed.generation !== snapshot.generation
+          || observed.commentAuthoringPending || observed.manuscriptNoteAuthoringPending) throw Error('WORD_STORIES_EDITOR_STALE');
+      };
+      checkSnapshot(snapshot);
+      const live = envelope.parseObservablePayload(snapshot.content);
+      const review = await loadRtkNonTextReturnModule();
+      if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)
+        || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+        || !review.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc || envelope.buildParagraphDocumentFromText(live.text)),
+          userBookmarkModel.materializeInternalLinkSchemaDefaults(source.doc))) throw Error('WORD_STORIES_EDITOR_STALE');
+      const intent = { op: action === 'options' ? 'setSectionOptions' : action, sectionIndex: payload.sectionIndex };
+      for (const key of ['role','variant','source','titlePage','evenAndOddHeaders']) if (Object.hasOwn(payload,key)) intent[key] = payload[key];
+      const planOptions = { idSeed: crypto.randomUUID(), ...(source.trustedSections ? { trustedSections: source.trustedSections } : {}) };
+      const plan = require('./core/word-stories-v1.cjs').planStoryMutation(source.doc, intent, planOptions);
+      if (!plan.changed) return { ok: true, changed: false, storyId: plan.storyId };
+      const content = envelope.composeObservablePayload({ ...source.parsed, metaEnabled: source.parsed.hasMetaBlock, doc: plan.doc });
+      const beforeScenePublish = async () => {
+        const binding = await readUserBookmarkProjectBinding(source.filePath);
+        userBookmarkCapability(commandId);
+        if (binding.projectId !== source.projectId || currentFilePath !== source.filePath
+          || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+          || isDirty || autoSaveInProgress || activePendingRecording || lastSignaledEditGeneration > snapshot.generation
+          || await fs.readFile(source.filePath,'utf8') !== source.raw
+          || await fs.readFile(source.manifestPath,'utf8') !== source.manifestRaw) throw Error('WORD_STORIES_SOURCE_STALE');
+        checkSnapshot(await requestEditorSnapshot());
+        userBookmarkCapability(commandId);
+        if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+          || isDirty || autoSaveInProgress || activePendingRecording || lastSignaledEditGeneration > snapshot.generation) throw Error('WORD_STORIES_SOURCE_STALE');
+      };
+      await beforeScenePublish();
+      const receipt = await commitWriterProjectSnapshot(source.filePath, content, snapshot.generation, source.bookProfile,
+        'canonical document stories authoring', { expectedSceneContent: source.raw, beforeScenePublish,
+          storyAuthoringIntent: { intent, options: planOptions } });
+      if (!receipt.success) throw Error(receipt.code || receipt.error || 'WORD_STORIES_WRITE_FAILED');
+      const publicationCurrent = () => currentFilePath === source.filePath
+        && source.subjectId === currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+        && !isDirty && !autoSaveInProgress && lastSignaledEditGeneration <= snapshot.generation;
+      let ok = publicationCurrent();
+      try {
+        userBookmarkCapability(commandId);
+        if (ok && await fs.readFile(source.filePath,'utf8') === content) {
+          mainWindow.webContents.send('editor:set-text', { content, expectedContent: snapshot.content,
+            expectedGeneration: snapshot.generation, projectId: source.projectId, documentId: snapshot.documentId,
+            storyPublication: true, storyPublicationRequestId: payload.requestId });
+          const observed = await requestEditorSnapshot();
+          ok = publicationCurrent() && observed.content === content && observed.generation === snapshot.generation
+            && !observed.commentAuthoringPending && !observed.manuscriptNoteAuthoringPending
+            && await fs.readFile(source.filePath,'utf8') === content;
+        } else ok = false;
+      } catch { ok = false; }
+      if (ok) {
+        userBookmarkSaveContinuation = null;
+        lastAutosaveHash = computeHash(content);
+        const { bookmarkPublication, ...durable } = receipt;
+        ok = (await acknowledgeMainOwnedSave(durable, content, snapshot.generation)).kind === SAVE_ACK_KINDS.SAVED;
+      } else setDirtyState(true);
+      return { ok, changed: true, storageWritten: true, storyId: plan.storyId,
+        reason: ok ? null : 'WORD_STORIES_PUBLICATION_STALE',
+        ...(ok ? {} : { details: { changed: true, storageWritten: true, storyId: plan.storyId } }) };
+    }, 'canonical document stories authoring');
+  } catch (error) {
+    logDevError('handleDocumentStoriesMutation', { code: error.code || error.message, message: error.message });
+    return { ...makeReviewMutateTypedError(commandId, error.code || error.message, error.message),
+      code: error.code || error.message, reason: error.message };
+  }
+}
+
 let localImageInsertionPending = false;
 async function handleLocalImageInsertion(payload = {}) {
   const commandId = 'cmd.project.media.insertLocal';
@@ -25341,12 +25612,103 @@ function mediaReturnEnvelopeMetadataEqual(live, baseline, envelope) {
     && JSON.stringify(live.cards) === JSON.stringify(baseline.cards);
 }
 
+async function capturePrivateDocumentStoriesBatch(input, store) {
+  const candidate = store.storyReturnCandidate;
+  const gate = await revalidateCleanLinkLabelApplyInput(input);
+  userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+  if (!gate.ok || !candidate?.batchScenes || input.reviewItems?.length !== 1
+    || input.reviewItems[0].changeId !== candidate.changeId || activePendingRecording) throw Error(gate.reason || 'WORD_STORIES_BATCH_AUTHORITY');
+  const open = candidate.sourceScenes.find(scene => scene.path === currentFilePath);
+  if (!open) throw Error('WORD_STORIES_BATCH_OPEN_SOURCE');
+  const snapshot = await requestEditorSnapshot(), envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = envelope.parseObservablePayload(snapshot.content), baseline = envelope.parseObservablePayload(open.raw);
+  const nonText = await loadRtkNonTextReturnModule();
+  if (snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending || parsed.issue || baseline.issue
+    || !(baseline.doc ? userBookmarkEnvelopeMetadataEqual(parsed, baseline) : mediaReturnEnvelopeMetadataEqual(parsed, baseline, envelope))
+    || !(baseline.doc ? nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text)), userBookmarkModel.materializeInternalLinkSchemaDefaults(baseline.doc))
+      : wordMediaReturnModel.mediaSourceEqual(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), envelope.buildParagraphDocumentFromText(baseline.text)))
+    || !Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation
+    || await fs.readFile(open.path, 'utf8') !== open.raw) throw Error('WORD_STORIES_BATCH_EDITOR_STALE');
+  const owner = activeStage10ApplicationBootstrap, subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId;
+  const guard = () => {
+    userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
+    if (activeRtkCleanLinkLabelApplyStore !== store || !cleanLinkLabelStoreMatches(store) || activePendingRecording
+      || owner !== activeStage10ApplicationBootstrap || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+      || open.path !== currentFilePath || lastSignaledEditGeneration > snapshot.generation) throw Error('WORD_STORIES_BATCH_CONTEXT_STALE');
+  };
+  guard();
+  return { candidate, open, snapshot, envelope, guard };
+}
+async function buildPrivateDocumentStoriesBatchPreview(changes, selected, store) {
+  try {
+    if (!selected.ok || changes.length !== 1) throw Error('WORD_STORIES_BATCH_AUTHORITY');
+    const {candidate,envelope,guard} = await capturePrivateDocumentStoriesBatch(selected.input,store);
+    const describe = key => candidate.changes.map(item => `${item.sceneId} · ${item.role === 'header' ? 'Верхний' : 'Нижний'} колонтитул: ${envelope.deriveVisibleTextFromDocument(item[key])}`).join('\n');
+    guard();
+    return {ok:true,type:'revisionBridge.exactTextApplyPlanNoDiskPreview',status:'ready',code:'WORD_STORIES_RETURN_PREVIEW_READY',reasons:[],
+      plan:{schemaVersion:REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA,projectId:store.input.projectSnapshot.projectId,sessionId:store.sessionToken.sessionId,
+        sceneId:candidate.sceneId,canApply:false,noDisk:true,safeWriteCandidate:false,documentStoriesReturn:true,blockedReasons:[],preconditions:[],
+        applyOps:[{kind:'documentStories',changeId:candidate.changeId,sceneId:candidate.sceneId,expectedText:describe('beforeBody'),replacementText:describe('afterBody')}]}};
+  } catch(error) { return buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(error.code || error.message)]); }
+}
+async function applyPrivateDocumentStoriesBatch(input,store) {
+  const blocked = error => ({ok:false,applied:false,code:error.code || error.message,reason:error.code || error.message});
+  try {
+    const bound = await capturePrivateDocumentStoriesBatch(input,store), {candidate,open,snapshot,envelope,guard} = bound;
+    const authority = await getMainProjectManifestAuthority(); guard();
+    return await authority.withProjectLease(input.projectSnapshot.projectId, lease => lease.publish(async () => {
+      guard();
+      const manifestPath = path.join(input.projectRoot,'project.craftsman.json');
+      const beforeManifestText = await fs.readFile(manifestPath,'utf8');
+      const state = await readVerifiedProjectTreeMutation({manifestPath,projectId:input.projectSnapshot.projectId});
+      const optional = async relative => { try { return await fs.readFile(path.join(input.projectRoot,relative),'utf8'); } catch(error){if(error.code==='ENOENT')return null;throw error;} };
+      const stories = await import(pathToFileURL(path.join(__dirname,'io','revisionBridge','reviewTransportStoriesV1.mjs')).href);
+      const changes=[], mediaResources=new Map();
+      for(const scene of candidate.sourceScenes) {
+        if(typeof scene.path!=='string' || path.resolve(input.projectRoot,scene.sceneId)!==scene.path
+          || await fs.readFile(scene.path,'utf8')!==scene.raw)throw Error('WORD_STORIES_BATCH_SCENE_CAS');
+        const changed=candidate.batchScenes.find(item=>item.sceneId===scene.sceneId);
+        const plan=changed ? stories.revalidateDocumentStoryCandidate(changed) : null;
+        const afterContent=plan ? envelope.composeObservablePayload({...changed.parsed,metaEnabled:changed.parsed.hasMetaBlock,doc:plan.doc}) : scene.raw;
+        if(plan)for(const resource of await prepareWordMediaReturnResources(plan.doc,manifestPath)) {
+          const relativePath=path.relative(input.projectRoot,resource.path).split(path.sep).join('/');
+          const contentBase64=resource.content.toString('base64');
+          if(mediaResources.has(relativePath) && mediaResources.get(relativePath).contentBase64!==contentBase64)throw Error('WORD_STORIES_BATCH_MEDIA_CONFLICT');
+          mediaResources.set(relativePath,{relativePath,contentBase64});
+        }
+        changes.push({sceneId:scene.sceneId,beforeContent:scene.raw,afterContent,...(plan?.storyMutationReplay ? {storyMutationReplay:plan.storyMutationReplay}:{}),commitText:await optional(scene.sceneId+'.wp201-commit.json')});
+      }
+      const model=await loadProjectTreeCohortModule();
+      const plan=model.planProjectStoryBodyCohort({operation:'story-bodies',operationId:candidate.changeId,projectId:input.projectSnapshot.projectId,
+        manifestPath,beforeManifestText,expectedTreeRevision:state.treeRevision,changes,mediaResources:[...mediaResources.values()],
+        notesText:await optional('notes.craftsman.json'),commentsText:await optional('.yalken/word-review/non-text-return-state.v1.json')});
+      guard();
+      const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate:guard,
+        publishManifest: ({manifestPath:target,expectedText,nextText,reason})=>{
+          if(target!==manifestPath)throw Error('WORD_STORIES_BATCH_MANIFEST_PATH');
+          return authority.commitManifestText({projectId:input.projectSnapshot.projectId,lease,targetPath:target,expectedText,nextText,label:reason});
+        }};
+      let receipt;
+      try { receipt=await commitProjectTransaction(request); }
+      catch(error) { await recoverProjectTransaction(request); throw error; }
+      if(!receipt.success)throw Error(receipt.code || 'WORD_STORIES_BATCH_WRITE_FAILED');
+      const savedContent=changes.find(item=>path.resolve(input.projectRoot,item.sceneId)===open.path).afterContent;
+      return {ok:true,applied:true,status:'applied',appliedChangeIds:[candidate.changeId],
+        changes:[{changeId:candidate.changeId,status:'applied',reason:'WORD_STORIES_RETURN_APPLIED'}],
+        receipt:{...receipt,operationId:candidate.changeId,sceneId:candidate.sceneId,bookmarkPublication:{filePath:open.path,
+          subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,generation:snapshot.generation,savedContent}}};
+    }));
+  } catch(error) { return blocked(error); }
+}
+
 async function buildPrivateUserBookmarksUiPlan(changes) {
   const blocked = reason => buildReviewExactTextUiBlockedPreview([makeReviewExactTextUiPlanReason(reason)]);
   if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
-  const store = activeRtkCleanLinkLabelApplyStore, candidate = store?.mediaReturnCandidate || store?.userBookmarksCandidate;
-  const isMedia = Boolean(store?.mediaReturnCandidate);
+  const store = activeRtkCleanLinkLabelApplyStore, candidate = store?.storyReturnCandidate || store?.mediaReturnCandidate || store?.userBookmarksCandidate;
+  const isMedia = Boolean(store?.mediaReturnCandidate), isStory = Boolean(store?.storyReturnCandidate);
+  const plainStorySource = isStory && !candidate?.parsed?.doc;
   const selected = buildCleanLinkLabelApplyInput(changes);
+  if (isStory && candidate?.batchScenes) return buildPrivateDocumentStoriesBatchPreview(changes, selected, store);
   if (!selected.ok || !candidate || changes.length !== 1 || changes[0].changeId !== candidate.changeId) {
     return blocked('RTK_USER_BOOKMARK_PRIVATE_CANDIDATE_REQUIRED');
   }
@@ -25357,18 +25719,19 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
     const keyGate = await revalidateCleanLinkLabelApplyInput(selected.input);
     userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
     if (activePendingRecording || !keyGate.ok || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
-      || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+      || live.issue || !((isMedia || plainStorySource) ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
         : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
       || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
       || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
       || lastSignaledEditGeneration > snapshot.generation
       || fsSync.readFileSync(selected.input.scenePath, 'utf8') !== candidate.raw
-      || !(isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc)
+      || !((isMedia || plainStorySource) ? wordMediaReturnModel.mediaSourceEqual(plainStorySource ? (live.doc || envelope.buildParagraphDocumentFromText(live.text)) : live.doc, plainStorySource ? envelope.buildParagraphDocumentFromText(candidate.parsed.text) : candidate.beforeDoc)
         : nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
           userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc)))) {
       return blocked(keyGate.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
     }
-    const plan = isMedia ? wordMediaReturnModel.planMediaReturn({ beforeDoc: candidate.beforeDoc, placements: candidate.plan.after })
+    const plan = isStory ? (await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportStoriesV1.mjs')).href)).revalidateDocumentStoryCandidate(candidate)
+      : isMedia ? wordMediaReturnModel.planMediaReturn({ beforeDoc: candidate.beforeDoc, placements: candidate.plan.after })
       : userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
     if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
     if (isMedia) {
@@ -25383,6 +25746,17 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
           safeWriteCandidate: false, mediaReturn: true, blockedReasons: [], preconditions: [],
           applyOps: [{ kind: 'mediaReturn', changeId: candidate.changeId, sceneId: candidate.sceneId,
             expectedText: describe(plan.before), replacementText: describe(plan.after, plan.before) }] } };
+    }
+    if (isStory) {
+      const describe = body => envelope.deriveVisibleTextFromDocument(body);
+      return { ok: true, type: 'revisionBridge.exactTextApplyPlanNoDiskPreview', status: 'ready',
+        code: 'WORD_STORIES_RETURN_PREVIEW_READY', reason: 'WORD_STORIES_RETURN_PREVIEW_READY', reasons: [],
+        plan: { schemaVersion: REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA, projectId: store.input.projectSnapshot.projectId,
+          sessionId: store.sessionToken.sessionId, sceneId: candidate.sceneId, canApply: false, noDisk: true,
+          safeWriteCandidate: false, documentStoriesReturn: true, blockedReasons: [], preconditions: [],
+          applyOps: [{ kind: 'documentStories', changeId: candidate.changeId, sceneId: candidate.sceneId,
+            expectedText: candidate.changes.map(item => `${item.role === 'header' ? 'Верхний' : 'Нижний'} колонтитул: ${describe(item.beforeBody)}`).join('\n'),
+            replacementText: candidate.changes.map(item => `${item.role === 'header' ? 'Верхний' : 'Нижний'} колонтитул: ${describe(item.afterBody)}`).join('\n') }] } };
     }
     const prior = userBookmarkModel.readRegistry(candidate.beforeDoc), next = plan.registry;
     const before = [], after = [];
@@ -25464,7 +25838,7 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
       }
       let trustedLinkReplacementDigest = null;
       let publishScene = publishReviewSceneWithProjectTransaction;
-      if (input.reviewItems?.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-')))) {
+      if (input.reviewItems?.some(change => (String(change.changeId).startsWith('docx-user-bookmarks-') || String(change.changeId).startsWith('docx-media-return-') || String(change.changeId).startsWith('docx-story-return-')))) {
         return applyPrivateUserBookmarksReturn(input);
       }
       if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-block-text-'))) {
@@ -25611,8 +25985,10 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
 
 async function applyPrivateUserBookmarksReturn(input) {
   const store = activeRtkCleanLinkLabelApplyStore;
-  const candidate = store?.mediaReturnCandidate || store?.userBookmarksCandidate;
-  const isMedia = Boolean(store?.mediaReturnCandidate);
+  const candidate = store?.storyReturnCandidate || store?.mediaReturnCandidate || store?.userBookmarksCandidate;
+  const isMedia = Boolean(store?.mediaReturnCandidate), isStory = Boolean(store?.storyReturnCandidate);
+  const plainStorySource = isStory && !candidate?.parsed?.doc;
+  if (isStory && candidate?.batchScenes) return applyPrivateDocumentStoriesBatch(input, store);
   const gate = await revalidateCleanLinkLabelApplyInput(input);
   if (!gate.ok) return gate;
   const blocked = reason => ({ ok: false, applied: false, code: reason, reason });
@@ -25628,20 +26004,21 @@ async function applyPrivateUserBookmarksReturn(input) {
   let richSourceEqual = false;
   if (!live.issue) {
     try {
-      richSourceEqual = isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc) : nonText.commentSceneSnapshotsEqual(
+      richSourceEqual = (isMedia || plainStorySource) ? wordMediaReturnModel.mediaSourceEqual(plainStorySource ? (live.doc || envelope.buildParagraphDocumentFromText(live.text)) : live.doc, plainStorySource ? envelope.buildParagraphDocumentFromText(candidate.parsed.text) : candidate.beforeDoc) : nonText.commentSceneSnapshotsEqual(
         userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
         userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc),
       );
     } catch { return blocked('RTK_USER_BOOKMARK_SOURCE_STALE'); }
   }
-  if (activePendingRecording || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+  if (activePendingRecording || live.issue || !((isMedia || plainStorySource) ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
     : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
     || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
     || lastSignaledEditGeneration > snapshot.generation
     || !richSourceEqual
     || await fs.readFile(scenePath, 'utf8') !== candidate.raw) return blocked('RTK_USER_BOOKMARK_SOURCE_STALE');
-  const plan = isMedia ? wordMediaReturnModel.planMediaReturn({ beforeDoc: candidate.beforeDoc, placements: candidate.plan.after })
+  const plan = isStory ? (await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportStoriesV1.mjs')).href)).revalidateDocumentStoryCandidate(candidate)
+      : isMedia ? wordMediaReturnModel.planMediaReturn({ beforeDoc: candidate.beforeDoc, placements: candidate.plan.after })
       : userBookmarkModel.planReturn({ beforeDoc: candidate.beforeDoc, candidateDoc: candidate.plan.doc });
   if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
   // Schema materialization follows semantic admission; it cannot create an
@@ -25649,7 +26026,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
   const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
-    if (isMedia && candidate.noteSourceGuard) {
+    if ((isMedia || isStory) && candidate.noteSourceGuard) {
       const guard = candidate.noteSourceGuard;
       if (guard.projectId !== input.projectSnapshot?.projectId || guard.projectRoot !== input.projectRoot
         || typeof guard.sourceText !== 'string') throw Error('RTK_MEDIA_NOTES_SOURCE_STALE');
@@ -25670,12 +26047,13 @@ async function applyPrivateUserBookmarksReturn(input) {
   try { await beforeScenePublish(); }
   catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_SOURCE_STALE'); }
   const receipt = await commitWriterProjectSnapshot(scenePath, content, snapshot.generation, snapshot.bookProfile,
-    isMedia ? 'authenticated media return' : 'authenticated user bookmark return', { expectedSceneContent: candidate.raw, beforeScenePublish,
-      ...(isMedia ? { mediaReturnPlan: plan, mediaReturnCapturedContent: snapshot.content }
+    isStory ? 'authenticated document story return' : isMedia ? 'authenticated media return' : 'authenticated user bookmark return', { expectedSceneContent: candidate.raw, beforeScenePublish,
+      ...(isStory ? { storyReturnPlan: plan, storyReturnCapturedContent: snapshot.content }
+        : isMedia ? { mediaReturnPlan: plan, mediaReturnCapturedContent: snapshot.content }
         : { userBookmarkPlan: plan, userBookmarkCapturedContent: snapshot.content }) });
   if (!receipt.success) return blocked(receipt.code || receipt.error || 'RTK_USER_BOOKMARK_WRITE_FAILED');
   return { ok: true, applied: true, status: 'applied', appliedChangeIds: [candidate.changeId],
-    changes: [{ changeId: candidate.changeId, status: 'applied', reason: isMedia ? 'RTK_MEDIA_RETURN_APPLIED' : 'RTK_USER_BOOKMARK_RETURN_APPLIED' }],
+    changes: [{ changeId: candidate.changeId, status: 'applied', reason: isStory ? 'WORD_STORIES_RETURN_APPLIED' : isMedia ? 'RTK_MEDIA_RETURN_APPLIED' : 'RTK_USER_BOOKMARK_RETURN_APPLIED' }],
     receipt: { ...receipt, operationId: candidate.changeId, sceneId: candidate.sceneId,
       changed: true, beforeSha256: computeHash(candidate.raw), afterSha256: computeHash(content) } };
 }
@@ -31454,6 +31832,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
 
 const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
   ['query.project.userBookmarks', handleUserBookmarkQuery],
+  ['query.project.documentStories', handleDocumentStoriesQuery],
   [PROJECT_TREE_QUERY_ID, handleWorkspaceProjectTreeQuery],
   [PROJECT_LIBRARY_QUERY_ID, handleWorkspaceProjectLibraryQuery],
   [SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, handleWorkspaceSelectedScenesTxtExportScopeQuery],
@@ -34407,6 +34786,10 @@ const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.media.insertLocal',
   ...PRODUCT_COMMAND_ID_LIST,
+  'cmd.project.documentStories.create',
+  'cmd.project.documentStories.remove',
+  'cmd.project.documentStories.linkPrevious',
+  'cmd.project.documentStories.options',
   'cmd.project.bookmarks.managePrompt',
   'cmd.project.bookmarks.create',
   'cmd.project.bookmarks.copy',
@@ -34527,6 +34910,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     userBookmarkCapability('cmd.project.bookmarks.managePrompt');
     return { ok: sendCanonicalRuntimeCommand('cmd.project.bookmarks.managePrompt') };
   },
+  ...Object.fromEntries(['create','remove','linkPrevious','options'].map(action => [
+    'cmd.project.documentStories.' + action, payload => handleDocumentStoriesMutation(action, payload),
+  ])),
   ...Object.fromEntries(['create', 'copy', 'rename', 'delete'].map(action => [
     `cmd.project.bookmarks.${action}`, payload => handleUserBookmarkMutation(action, payload),
   ])),

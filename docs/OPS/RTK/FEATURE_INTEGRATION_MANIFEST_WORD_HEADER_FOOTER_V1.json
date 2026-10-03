@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
+  "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "700ad05c959c77857134305f061cce0f6dd83ca3",
+  "scopeIn": [
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/tasks/2026-10-03--word-header-footer-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+    "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+    "src/core/word-stories-v1.cjs",
+    "src/core/word-sections-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "src/utils/docxImportLocalFilePreview.js",
+    "src/main.js",
+    "src/renderer/editor.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "src/renderer/tiptap/documentStories.mjs",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/export/docx/docxReviewPacketStories.js",
+    "test/contracts/rtk-word-header-footer.contract.test.js",
+    "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/utils/docxImportSafeCreate.js",
+    "src/core/project-transaction-v1.cjs",
+    "src/core/project-tree-cohort-v1.mjs",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/core/entitlement-law-v1.cjs",
+    "src/shared/workspaceQueryRegistry.cjs",
+    "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
+    "docs/OPS/CAPABILITIES_MATRIX.json",
+    "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
+    "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+    "test/contracts/rtk-word-nested-tables.contract.test.js",
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+    "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+    "test/unit/project-tree-pathless-contract.test.js",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+    "src/renderer/editor.bundle.js",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/core/word-stories-projection-v1.cjs",
+    "test/unit/r24-r5-lifecycle-physics.test.js",
+    "test/unit/r24-wp200-durable-save-physics.test.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs"
+  ],
+  "scopeOut": [
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/preload.js",
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/core/notesStorage.mjs"
+  ],
+  "productAuthority": "Owner entire Mac Word plan P4-01; Product Core owns typed header/footer identity, rich bodies and per-section references in existing document envelope; no raw XML parallel truth",
+  "commandAuthority": "Existing Save and authenticated Review Apply commands revalidate project, lifecycle, scene identity, baseline revision and topology; immutable UI projection cannot authorize writes; explicit story create/remove/linkPrevious/setSectionOptions commands with fresh Core IDs, revision-bound query, Kernel capability and Main precommit CAS; renderer never supplies full canonical replacement graph.",
+  "designAuthority": "Existing contextual editor host and rich-body controls, existing tokens and layout, role/section labels; dedicated surface manifest, no global shell redesign",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Untrusted DOCX part relationships and bounded XML -> typed Core story validation -> Main import admission -> existing atomic safe-create",
+    "Rich-body authoring intent -> current scene working document -> existing Kernel Save -> Main validates protected story reference graph and bodies -> existing atomic scene persistence",
+    "Authenticated Word return -> original round capsule and protected topology -> Core body delta -> existing Apply atomic writer",
+    "Same header/footer outcome: extend existing recoverable project transaction with typed multi-scene story body cohort; existing scene/image safe-create collects story assets; no new writer",
+    "Explicit native story authoring intent -> Kernel capability -> Main revision/project/lifecycle validation -> typed Core story mutation -> existing atomic scene writer and protected editor publication",
+    "Authenticated Word topology changes -> protected round source binding and validated independent section/relationship graph -> typed Core add/remove/reference delta -> existing recoverable writer; ambiguity stays explicit, not guessed identity",
+    "Repository build-renderer regenerates tracked editor.bundle.js from admitted renderer sources; exact deterministic artifact binding, no handwritten bundle logic"
+  ],
+  "readPaths": [
+    "Part-local header/footer relationships, default/first/even section refs and flags; canonical scene story projection",
+    "Explicit browser-safe structural story projection carries validated image descriptors; Main/import/export perform independent full binary validation. Projection is never mutation authority.",
+    "Dependency-closed browser projection modules share the structural rich-body grammar; native wrappers separately validate actual image bytes. No native media or Node builtin dependency enters renderer bundle."
+  ],
+  "productPorts": [
+    "Existing local DOCX read, import safe-create, Save, Review export and Apply ports"
+  ],
+  "designOsPorts": [
+    "Existing contextual editor host and immutable scene projection"
+  ],
+  "readProjections": [
+    "Read-only story identities, resolved section references and rich body; derived UI selection never product truth"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Current project lifecycle scene revision generation; story ID/role and section reference graph protected during body edits; external rId never local identity"
+  ],
+  "capabilityRevalidation": "Existing Kernel dispatch plus Main precommit capability, source CAS and lifecycle guards remain mandatory.",
+  "fallbacks": [
+    "Unsupported story semantics reject before mutation with explicit reason; no flattening, fake note conversion or swallowed fields",
+    "Scene without header explicitly resets inherited full-book story references when needed"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Part-local relationship collisions, missing/duplicate/hostile parts, shared/default/first/even inheritance and explicit-empty distinctions",
+    "Forged renderer role/reference/identity, stale Save or Apply, preview/cancel no writes; atomic failure preserves prior state",
+    "Body split/Undo/Redo preserves ownership; unsaved story drafts survive failed Save; native SOURCE/PACKAGED alternating edit and new-process recovery",
+    "Browser-bundled envelope and real checked editor load without Node Buffer/process; malformed image projection rejected; Main binary digest/signature guards remain mandatory",
+    "Multi-scene story transaction per-scene CAS and recoverable journal with interruption injection: all-before or all-after, no partial ACK",
+    "Create absent header/footer; copy inherited versus link previous; explicit empty deletion versus inherited removal; first/even options; shared identity and unreferenced-body collection; both-side topology mutations and stale/forged command refusal",
+    "New story images in multi-scene return use same recoverable asset/scene cohort, injected failures cannot publish partial graph"
+  ],
+  "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
+  "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
+  "currentReality": [
+    "Full baseline59 passed2129 with59historicalskips; source and packaged fivecycles/restart/reexports independently passed.",
+    "Native wholebook mixed rich/plain/empty export reproduced USER_BOOKMARK_DOCUMENT_INVALID: section builder calls paragraphs(null) on plain sibling. Existing export source and header contracts admitted; fix preserves validated export-block boundaries and strict rich validation. No wholeplan PASS.",
+    "Native SOURCE06 fullbook artifact independently valid; intake loses trailing plain paragraph through parsed display text. Preserving raw baseline exposes formatter visible-text mismatch. Same outcome repair preserves raw hashes, paragraph topology, metadata and authority guards; focused negative tests before native repeat.",
+    "SOURCE07 and PACKAGED07 actual mixed fullbook return PASS. Read-only review reproduces first-story creation on changed plain scene with trailing empty paragraph rejected by typed cohort replay deriving normalized before.text. Repair same raw fallback invariant in existing admitted cohort; gates on778 interrupted and not PASS.",
+    "Actual PACKAGED08 first plain default-header Apply writes correct two paragraphs but independent oracle FAIL: returned Word global even true and empty even slot become local even false, causing exporter to repeat default on even pages. Repair effective page-variant semantics within existing story return planner; no flags relaxation."
+  ],
+  "targetOnly": [
+    "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert one coherent header/footer PR; existing atomic scene recovery; retain original DOCX and explicit feature-version refusal on older readers",
+  "status": "TARGET_NOT_ACCEPTED"
+}

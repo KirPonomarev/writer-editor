@@ -499,7 +499,20 @@
     "src/renderer/tiptap/documentSections.mjs",
     "test/contracts/rtk-word-sections.contract.test.js",
     "docs/tasks/2026-10-03--word-sections-mac.md",
-    "docs/tasks/2026-10-03--word-import-fidelity-mac.md"
+    "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
+    "docs/tasks/2026-10-03--word-header-footer-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+    "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+    "src/core/word-stories-v1.cjs",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "src/renderer/tiptap/documentStories.mjs",
+    "src/export/docx/docxReviewPacketStories.js",
+    "test/contracts/rtk-word-header-footer.contract.test.js",
+    "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/core/word-stories-projection-v1.cjs"
   ],
   "protectedFiles": [
     {
@@ -728,7 +741,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f9970d58ccc84b14edc5535b863826bf3f3bd26f443006a2c466bee777f22ff5"
+        "sha256": "589c14b37031c16f5b3163f9ecce703ea4fcd110548a317f492d87d2cf16b415"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -736,11 +749,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "a2f6334366763c85076b43eb081666985d771409cb97215d868fa04941bff077"
+        "sha256": "7cb43483ced0bc93c3c164a012bfa0798f06e73254a587e38ebadf2c6722a55e"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cd430bc52abfc1287d2e9b26555fc29484630bf604db10dfc896b34ad4051e0e"
+        "sha256": "59fd1084b0ac882ae4d3f213086484380e826db1e54a1935fb3d7acff061ca2a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -760,19 +773,19 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "a52d0a14a8283e81e8bf0fb77f8331b05fd6198079fcd9f500775551c7a7b0b7"
+        "sha256": "0290cc9f17cf142f88910f7bdf549c0ebb2a5864403905a3ae8bb40867d8aa9d"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "618a8384b3c81a061c56074da2a1b6e68813ee1d4403f7d97d4b5135307124f8"
+        "sha256": "b5eebbeca5be7a35ef31a02acc9510f9b11459368a78e02fea8406af26a8769d"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "1fb7c87baa92303a00d390da4b931519f502624cca4df989aae8744e3cdb8636"
+        "sha256": "08406d889e1bf514927a38679232673694f60065cd195cc1e73a91b57d6d8855"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "3776254af95d7f8f733edfe65007345f54c6cfe314087a64a1fa2b3afebf7d37"
+        "sha256": "cfac91593137b3932a924466675d76e3027e13d8403f816f7bb4926d16f74cb5"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -840,7 +853,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "ba633ddf81ebd39a5f4024fcc5f8e91997e8c4a29731623c68153804ae897f40"
+        "sha256": "59257f6f772cc4d821e8da5ec1f276bd649461785a01d4507f2634f120c07bef"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -864,11 +877,11 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "caf471160b51226d06604e2381b4e5c9b68f30af95f03b92e21af592e795c865"
+        "sha256": "c6b6c68ef85fccc2b2eb22fafcd1bd952ba0a4cb96558b68b0fcf754d080be8c"
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "b181255134c5f3b2581b2989ac769a41ae49bbf44d2f545d060ccbe0ac498e6c"
+        "sha256": "9464bb6b69a3154d2fa7bd63f014285a62a9ae5c2d164f57d45832c11fae6d9b"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -884,7 +897,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "16971dde28cbf9c0730192bf16b7b1b7ce985d645ff4b75a8dde03bbf1aa4169"
+        "sha256": "215d0093f7955011724c1185a3d43871ece6b9bd61c635edd52c58cd8d9892ca"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -904,7 +917,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "5a464ee91064bd8775e18133a8337db4507e47455e08e99339ed8acec3ff6a67"
+        "sha256": "7d58155987be743175fb7f2307c1eb145d51432d02ad71d03357b1c8d35aa3e8"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -948,7 +961,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "ff173c15a9e1fe1f00ab620330967f368341c372573612aca123355e9a544e3a"
+        "sha256": "9a03ae1d40c55308a49c53b0e7e589c3e2e79c63ead0de82ec194ccd963939ae"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -1000,7 +1013,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "f7b4991cd14327d5a3ce6286829666b1fec1e1bbea1515e716777de43e602f8a"
+        "sha256": "30059014625c8c89d4dd69ebcf6d91d26a3a668cd3fbd5ccd91d28cf74fcc0f6"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1368,7 +1381,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "0bcc85f99f34ec5589c4caff2a0773878949e61ce19d167331ab011e7fe9a503"
+        "sha256": "2f3d912a6d2ed86191e749ca1a56b4f8b81b439103315dd3ba129b9b3a23e131"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -1392,7 +1405,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "095d5626bdccfbd03e2985e7a2c401f28b48f6ed95ad9dbfaff7b6c8cccbccc1"
+        "sha256": "15256849a5ce26941b8400af20a76a7b21fcc14a764a3529e958b877f5f43373"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -1400,7 +1413,7 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "e6c4cf4092ac3e6e886fffbc9d52aa19260b0f4a2409690ce35613516775844d"
+        "sha256": "30cfbd3522b2342bdbe5e1a5f5ae0b5fce3eeed9a2bf3ff94fa3224c3dc3b0bd"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
@@ -1432,7 +1445,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "f47e487d8de6cb0dc25055e773281ab5324bcfc2fdb15462627c08a560048d34"
+        "sha256": "9b39f9a817a69e2193f8a65a19e69aa265640ab4a7ffc04d7d724fd12872b086"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1440,7 +1453,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "9c49ccc336be5b512520aa7c20aa76503c58a37b64b5c0310ced170170dd5547"
+        "sha256": "69e8a87744585f2581ed900eae18a7aebf99abf7524b87eec957f858c414b7a7"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1544,15 +1557,15 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "83b04701015a3391e3b216a8e65f77270e869097564b1570d7a30ca2eb3b6638"
+        "sha256": "21ea431b55bc72773d2208a3b22d939b5b1c651f799aa57f5cb5c073c21aec20"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "535ec37f2eea2dae0ce0f943702de411d062e24bf7b3790aad96d02d56a40843"
+        "sha256": "b6236ac06f3927acb688876680815cb5fd49144dae93bd9006c35260132fa58a"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "9afec790e92726d23fe016b016efb013804d986b6e3417a4bc3d0f626f84f957"
+        "sha256": "a50375dfbd37d1a25b0687f596abd78ce314528af4ddbfc4f79bfaaa65209e38"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
@@ -1576,7 +1589,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "d6ca7f1832b9effd482ad26266b54945d2c46761b00f81be465aca4e0b83f0f2"
+        "sha256": "5c697809cf8ef53037f8e3fdb05e24aba63b3b0d92e5c8ae6495d0698010c8d5"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1588,7 +1601,7 @@
       },
       {
         "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
-        "sha256": "46375083c5cc2b831723b32d8d24f989a04e6b21f71315160a6c91ca98bfc2b1"
+        "sha256": "fc5a22a8976ce3fd2c084939b1afc9b0ae8c07425158c31a80fb5c8723025532"
       },
       {
         "path": "test/contracts/rtk-word-note-return-package.contract.test.js",
@@ -1692,11 +1705,11 @@
       },
       {
         "path": "test/unit/r24-r5-lifecycle-physics.test.js",
-        "sha256": "4b7246b7885b67c74df93d90f4dec1e7d164456e6893c4b35cf062b4955631b8"
+        "sha256": "bfddd5d7257d052dd6e9a7df52574779f4045b6b376d96ae58841a6f1735ce3f"
       },
       {
         "path": "test/unit/r24-wp200-durable-save-physics.test.js",
-        "sha256": "d24fd591828bfa4147c1797bdac562fb3928a79f003b1bbefe8dbefd12232e1a"
+        "sha256": "48a760c5698e8f010778f398b122b92bc3da31b1af36fe29b82b39abeae9842d"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
@@ -1720,7 +1733,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "f8a4ffab30d6913448e5cf562b4641019d9069d92836fc30757dcccffbf00ead"
+        "sha256": "ba4c426f0e295a70b8ccebf45fec82d976840094a1523680ee2e7ad1b6374d57"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1852,7 +1865,7 @@
       },
       {
         "path": "test/contracts/rtk-word-local-image.contract.test.js",
-        "sha256": "567f65e981f5ea1c4804cf45f11c7831de645ade31ab940f862bd90d7a04bd5d"
+        "sha256": "9d13ccaceffe1d6574dc32c7daf7c66b722cd73b3e17dd8544a58053fe93ee04"
       },
       {
         "path": "docs/tasks/2026-10-01--word-local-image-mac.md",
@@ -1876,7 +1889,7 @@
       },
       {
         "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
-        "sha256": "73c00eca893ddc48e4d8d3873d16b50eb440f1e363579d8c57009f0b82957b0f"
+        "sha256": "de666b5b03b4802adf31654ac01c4d8114f60ef5cf14c23bd0a212d6ac89334a"
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
@@ -1908,7 +1921,7 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "d5f68c56b34bd189612c47aebc5e40c3d3c2c7b0bced9a1eb02a552d80e52109"
+        "sha256": "3cf054cbf50d9a256586fbba8838bb514413426c0cbad20709038b52e64a25e3"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -2133,6 +2146,70 @@
       {
         "path": "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
         "sha256": "ca3fe5c3ced90d224dbb15d9b8d53474642489a0a506c9fa379a2ef619971ce6"
+      },
+      {
+        "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
+        "sha256": "fc74fe9db8f20daace95456548eb6364c226a43ae5ffe35bfe17651abff7a104"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+        "sha256": "2353b0a326a7ebcb643b9d0f3abf23e50979cb1120fb606c33f68fb649ed3405"
+      },
+      {
+        "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
+        "sha256": "d20b946bdcd593bad321c9bbb8af091fe2485b260a3f56cddf1408fc3df862c1"
+      },
+      {
+        "path": "src/core/word-stories-v1.cjs",
+        "sha256": "a598aa7ec2073d6e85d3bb26a8657809e24d3bd429280b5ca85dcd7efcb297a5"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+        "sha256": "eb477480e24a4aa7981cd7cad24c17527de2d8343d9b9a24b46b1acab2a61e51"
+      },
+      {
+        "path": "src/renderer/tiptap/documentStories.mjs",
+        "sha256": "8e749cbb1e9fc57fa6562351708d9f03564814054487f7bed2c66b0e2fbb9ca7"
+      },
+      {
+        "path": "src/export/docx/docxReviewPacketStories.js",
+        "sha256": "34af47896a8166442f01d401d8240736c73a8f44e4e4105b5749cff6ddc99307"
+      },
+      {
+        "path": "test/contracts/rtk-word-header-footer.contract.test.js",
+        "sha256": "b577519249eb2fec9b70f9780d0da492bdc6ceda3d7c3222ff5326b7f1aa48e3"
+      },
+      {
+        "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+        "sha256": "7489ce7d1ea3a0e0c0bb4f31e91c46190ddead884105f770cfa8e6185e303a7c"
+      },
+      {
+        "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+        "sha256": "e57cc017217b8de64169e3f1b3ae060967bb4c32a71a6e7462eab0e3a31201ab"
+      },
+      {
+        "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+        "sha256": "773c36fd630bf6922c90d9ab152afb2dbfea65402f4bdbf14662fbc478400b0d"
+      },
+      {
+        "path": "src/core/word-rich-body-projection-v1.cjs",
+        "sha256": "0e1c16304ad30ac3e9c87ffb0e6996aa5b1cf02cf325ba6a0efc4291c7c85d20"
+      },
+      {
+        "path": "src/core/word-stories-projection-v1.cjs",
+        "sha256": "92c1e4032c72ae414f2645fdb198eae41e2b0bfa47d003b09a569518d9ed6435"
+      },
+      {
+        "path": "src/renderer/commands/capabilityPolicy.mjs",
+        "sha256": "a6e3261e5628b874d827bc4485b01c8985dfcf23b6a906f4bc5e802c3107af35"
+      },
+      {
+        "path": "src/shared/workspaceQueryRegistry.cjs",
+        "sha256": "8b50247c006d02d35a2d9d5ce98f50c0cd64e2a4ad9ae51dec58acbe117d6aa0"
+      },
+      {
+        "path": "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
+        "sha256": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1"
       }
     ],
     "followupRepair": {

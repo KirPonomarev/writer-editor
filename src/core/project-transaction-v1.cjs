@@ -322,7 +322,8 @@ function validateMediaUpdateResources(resources, { scenePath, manifestPath, befo
   // noteState has already passed the cohort validator; paths still derive only
   // from validated canonical bytes. Journal recovery repeats the same binding.
   const noteBlocks = noteState ? JSON.parse(noteState.afterText).notes.flatMap(note => note.manuscript?.body.content || []) : [];
-  const assets = media.documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...noteBlocks] }).assets;
+  const storyBlocks = require('./word-stories-v1.cjs').read(parsed.doc)?.stories.flatMap(story => story.body.content) || [];
+  const assets = media.documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...noteBlocks, ...storyBlocks] }).assets;
   for (const resource of resources) {
     const matches = assets.filter(asset => path.join(path.dirname(manifestPath), asset.attrs.assetPath) === resource.path);
     if (matches.length !== 1 || !matches[0].bytes.equals(resource.content)) {
@@ -1558,12 +1559,13 @@ async function consumeRestoredTreeAnnotationResources(resources, scenePath, mani
 }
 async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null) {
   const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
+  const stagedMedia = new Set(packet.plan.entries.filter(entry=>entry.role==='storyMedia').map(entry=>treeAbsolute(manifestPath,entry.relativePath)));
   for (const entry of packet.entries.filter(e => e.role === 'sceneCommit' && e.relativePath.endsWith('.wp201-commit.json'))) {
     for (const raw of new Set([entry.beforeBase64, entry.afterBase64].filter(Boolean))) {
       let record; try { record = JSON.parse(treeText(raw)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
       const resources = record.resources || [];
       if (resources.length) normalizeRetainedResources(resources, record.scenePath, manifestPath);
-      await verifyRetainedResources(resources.filter(resource => !managed.has(resource.path)), record.scenePath, manifestPath, fsAdapter);
+      await verifyRetainedResources(resources.filter(resource => !managed.has(resource.path) && !stagedMedia.has(resource.path)), record.scenePath, manifestPath, fsAdapter);
     }
   }
   const observed = [];
@@ -1620,6 +1622,16 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
           treeNeed(!resources.has(resource.path) || canonicalize(resources.get(resource.path)) === canonicalize(resource), 'E_TREE_COHORT_RESOURCE_CONFLICT');
           resources.set(resource.path, resource);
         }
+      }
+    }
+    if (plan.kind === 'story-bodies') {
+      const parsed = require('./document-content-envelope-v1.cjs').parseObservablePayload(treeText(scene.afterBase64));
+      const registry = require('./word-stories-v1.cjs').read(parsed.doc);
+      const assets = require('../io/documentMedia.js').documentMedia({type:'doc',content:registry?.stories.flatMap(story=>story.body.content) || []}).assets;
+      for(const asset of assets) {
+        const target=treeAbsolute(manifestPath,asset.attrs.assetPath), staged=byPath.get(asset.attrs.assetPath);
+        if(staged) treeNeed(staged.role==='storyMedia' && staged.afterBase64===asset.attrs.dataBase64,'E_TREE_COHORT_RESOURCE_CONFLICT');
+        resources.set(target,{path:target,digest:sha256hex(asset.bytes),bytes:asset.bytes.length});
       }
     }
     const note = entries.find(entry => entry.role === 'notes'), comment = entries.find(entry => entry.role === 'comments');

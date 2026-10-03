@@ -1,4 +1,5 @@
 import {
+  applyTiptapStoryBody,
   applyTiptapUserBookmarkPublication,
   applyTiptapLocalImagePublication,
   getTiptapImageInsertionPosition,
@@ -22,6 +23,7 @@ import {
   setTiptapRuntimeHandlers,
   undoTiptap,
 } from './tiptap/index.js';
+import { storyInventory } from './tiptap/documentStories.mjs';
 import { createManuscriptBodyEditor } from './tiptap/manuscriptNotes.mjs';
 import { tableParagraphs } from '../io/documentTables.js';
 import { createCommandRegistry } from './commands/registry.mjs';
@@ -755,11 +757,17 @@ let manuscriptBodyIdentity = '';
 let manuscriptInsertionPoint = 0;
 let manuscriptProjectionRequest = 0;
 const manuscriptDrafts = new Map();
+const storyDrafts = new Map();
+let storyMutationPending = false;
+let pendingStoryRequestId = null;
+let storyRequestSequence = 0;
+let storyEditorPanel = null;
+let destroyStoryEditor = null;
 let notesMutationPending = 0;
 function guardManuscriptNoteDraftUnload(event) {
-  if (!manuscriptDrafts.size && !notesMutationPending) return;
+  if (!manuscriptDrafts.size && !notesMutationPending && !storyDrafts.size && !storyMutationPending) return;
   event.preventDefault(); event.returnValue = false; event.stopImmediatePropagation();
-  setNotesWorkspaceStatus(notesMutationPending ? 'Дождитесь сохранения сноски.' : 'Закрытие отменено: сохраните текст сноски или отмените изменения.');
+  setNotesWorkspaceStatus(notesMutationPending ? 'Дождитесь сохранения сноски.' : 'Закрытие отменено: сохраните текст сноски или колонтитула либо отмените изменения.');
 }
 window.addEventListener('beforeunload', guardManuscriptNoteDraftUnload, { capture: true });
 let currentRightTab = 'inspector';
@@ -1931,8 +1939,8 @@ function renderPendingRevisions(projection) {
 async function handlePendingRecordingAction(button) {
   const p = reviewSurfaceState?.pendingRevisions;
   if (!p?.available || pendingRevisionBusy || button.disabled) return;
-  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) {
-    pendingRevisionNotice = 'Сначала сохраните или отмените черновик комментария или сноски.'; renderReviewSurface(); return;
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending) {
+    pendingRevisionNotice = 'Сначала сохраните или отмените черновик комментария, сноски или колонтитула.'; renderReviewSurface(); return;
   }
   const author = reviewSurfaceHost.querySelector('[data-pending-recording-author]');
   if (author) pendingRecordingAuthor = author.value.trim();
@@ -1953,8 +1961,8 @@ async function handlePendingRecordingAction(button) {
 async function handlePendingRevisionAction(button) {
   const p = reviewSurfaceState?.pendingRevisions;
   if (!p?.available || pendingRevisionBusy || button.disabled) return;
-  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) {
-    pendingRevisionNotice = 'Сначала сохраните или отмените черновик комментария или сноски.'; renderReviewSurface(); return;
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending) {
+    pendingRevisionNotice = 'Сначала сохраните или отмените черновик комментария, сноски или колонтитула.'; renderReviewSurface(); return;
   }
   pendingRevisionBusy = true; pendingRevisionNotice = 'Сохранение решения…'; renderReviewSurface();
   try {
@@ -2222,11 +2230,13 @@ function reviewSurfaceBuildReviewItems(state) {
       && reviewSurfaceArray(exactPreview.plan?.applyOps).some((op) => reviewSurfaceText(op?.changeId) === changeId);
     const mediaOp = exactPreview.plan?.mediaReturn === true
       ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'mediaReturn' && op.changeId === changeId) : null;
-    const bookmarkOp = mediaOp || (exactPreview.plan?.userBookmarkReturn === true
+    const storyOp = exactPreview.plan?.documentStoriesReturn === true
+      ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'documentStories' && op.changeId === changeId) : null;
+    const bookmarkOp = storyOp || mediaOp || (exactPreview.plan?.userBookmarkReturn === true
       ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'userBookmarks' && op.changeId === changeId) : null);
     items.push({
       itemId: `text:${changeId}`,
-      title: mediaOp ? 'Изображения' : bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
+      title: storyOp ? 'Колонтитулы' : mediaOp ? 'Изображения' : bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
       body: bookmarkOp ? `${reviewSurfaceText(bookmarkOp.expectedText)} → ${reviewSurfaceText(bookmarkOp.replacementText)}` : expectedText || replacementText
         ? `"${expectedText}" -> "${replacementText}"`
         : 'Кандидат на точную текстовую замену',
@@ -2541,12 +2551,14 @@ function reviewSurfaceBuildExactTextPreview(state) {
       changeId,
       userBookmarkReturn: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks',
       mediaReturn: exactPreview.plan?.mediaReturn === true && op?.kind === 'mediaReturn',
+      documentStoriesReturn: exactPreview.plan?.documentStoriesReturn === true && op?.kind === 'documentStories',
       from: Number.isFinite(op?.from) ? op.from : null,
       to: Number.isFinite(op?.to) ? op.to : null,
       expectedText: reviewSurfaceText(op?.expectedText),
       replacementText: reviewSurfaceText(op?.replacementText),
       displayDiff: (exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks')
         || (exactPreview.plan?.mediaReturn === true && op?.kind === 'mediaReturn')
+        || (exactPreview.plan?.documentStoriesReturn === true && op?.kind === 'documentStories')
         ? [] : reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
       applyState,
       applyLabel: applyState === 'ready' ? 'Применить' : reviewSurfacePresentExactApplyState(applyState),
@@ -3054,14 +3066,14 @@ function renderReviewSurfaceMarkup(viewModel) {
       ${reviewSurfaceRenderList(exactPreview.ops, (op) => `
         <article class="right-rail-review-item right-rail-review-item--preview">
           <div class="right-rail-review-item-head">
-            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.mediaReturn ? 'Изображения' : op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
+            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.documentStoriesReturn ? 'Колонтитулы' : op.mediaReturn ? 'Изображения' : op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
             <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
           </div>
           <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
-          ${(op.userBookmarkReturn || op.mediaReturn) ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
+          ${(op.userBookmarkReturn || op.mediaReturn || op.documentStoriesReturn) ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
           <div class="right-rail-review-item-meta">
             <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
-            ${(op.userBookmarkReturn || op.mediaReturn) ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
+            ${(op.userBookmarkReturn || op.mediaReturn || op.documentStoriesReturn) ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
           </div>
           <div class="right-rail-review-actions">
             <button
@@ -8528,7 +8540,7 @@ function composeEditorSnapshot() {
     rootSplitBoundary: isTiptapMode ? getTiptapRootSplitBoundary() : null,
     generation: localEditGeneration,
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
-    manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending),
+    manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending || storyDrafts.size || (storyMutationPending && !pendingStoryRequestId)),
   };
 }
 
@@ -10256,7 +10268,7 @@ function treeContentUnavailableReason(node, split) {
   if (!node || !['scene', 'chapter-file'].includes(node.kind)
     || getEffectiveDocumentId(node) !== currentDocumentId) return 'сначала откройте эту сцену';
   if (!isTiptapMode || flowModeState.active) return 'откройте отдельную сцену';
-  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'завершите правку комментария или сноски';
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending) return 'завершите правку комментария, сноски или колонтитула';
   if (split && !getTiptapRootSplitBoundary()) return 'курсор нужен в начале обычного абзаца или заголовка после первого блока';
   if (!split && !findNextTreeScene(node)) return 'нет следующей сцены в этой главе';
   return '';
@@ -12187,6 +12199,154 @@ function renderManuscriptNoteBody(note) {
   }
   manuscriptBodyEditor.setEditable(!note.deleted); manuscriptKindSelect.disabled = note.deleted;
   if (notesDetailMeta) notesDetailMeta.textContent = `${note.manuscript.kind === 'endnote' ? 'Концевая сноска' : 'Сноска'}${note.deleted ? ' · удалена' : ''}`;
+}
+
+function openDocumentStories(preferredId = null) {
+  if (!isTiptapMode || !['scene', 'chapter-file'].includes(currentDocumentKind) || !currentProjectId || !currentDocumentId || flowModeState.active) {
+    setNotesWorkspaceStatus('Откройте отдельную сцену или главу-документ для редактирования колонтитулов'); return;
+  }
+  if (storyMutationPending) return;
+  destroyStoryEditor?.();
+  storyEditorPanel?.remove();
+  const identity = { projectId: currentProjectId, documentId: currentDocumentId, publicationId: currentTreeContentPublicationId };
+  const current = () => identity.projectId === currentProjectId && identity.documentId === currentDocumentId
+    && identity.publicationId === currentTreeContentPublicationId && !flowModeState.active;
+  const inventory = storyInventory(getTiptapDocumentSnapshot().doc);
+  const panel = document.createElement('section'); panel.className = 'notes-capture';
+  panel.setAttribute('aria-label', 'Колонтитулы сцены'); storyEditorPanel = panel;
+  const title = document.createElement('h3'); title.textContent = 'Колонтитулы сцены';
+  const status = document.createElement('p'); status.setAttribute('role', 'status');
+  const select = document.createElement('select'); select.className = 'notes-button'; select.setAttribute('aria-label', 'Колонтитул и раздел');
+  for (const story of inventory) { const option = document.createElement('option'); option.value = story.id; option.textContent = story.label; select.append(option); }
+  if (typeof preferredId === 'string' && inventory.some(story => story.id === preferredId)) select.value = preferredId;
+  const host = document.createElement('section'); host.className = 'manuscript-note-editor';
+  host.setAttribute('aria-label', 'Редактор колонтитула');
+  const buttons = document.createElement('div'); buttons.className = 'notes-capture__footer';
+  const save = document.createElement('button'); save.type = 'button'; save.className = 'notes-button'; save.textContent = 'Сохранить колонтитул';
+  const discard = document.createElement('button'); discard.type = 'button'; discard.className = 'notes-button'; discard.textContent = 'Отменить изменения колонтитула';
+  const close = document.createElement('button'); close.type = 'button'; close.className = 'notes-button'; close.textContent = 'Закрыть колонтитулы';
+  buttons.append(save, discard, close); panel.append(title, select, status, host, buttons);
+  notesCaptureForm?.after(panel);
+  const key = () => JSON.stringify([identity.projectId, identity.documentId, select.value]);
+  let baseline = null;
+  const editor = createManuscriptBodyEditor(host, { bodyLabel: 'Текст колонтитула', toolbarLabel: 'Форматирование колонтитула', linkTitle: 'Ссылка в колонтитуле', onEscape: () => dismiss(),
+    onChange: body => {
+      if (!baseline || storyMutationPending) return;
+      const previous = storyDrafts.get(key());
+      storyDrafts.set(key(), { body, baseline: previous?.baseline || baseline, original: previous?.original || baseline, staged: previous?.staged === true });
+      discard.disabled = false;
+      status.textContent = 'Колонтитул изменён. Сохраните его или отмените изменения.';
+    }, onSave: () => { void commit(); } });
+  destroyStoryEditor = () => editor.destroy();
+  const load = () => {
+    if (!current()) { editor.setEditable(false); save.disabled = true; status.textContent = 'Сцена изменилась. Откройте колонтитулы заново; черновик сохранён.'; return; }
+    const doc = getTiptapDocumentSnapshot().doc;
+    const selected = storyInventory(doc).find(story => story.id === select.value);
+    const draft = storyDrafts.get(key()); baseline = draft?.baseline || doc;
+    editor.setDocument(draft?.body || selected?.body || { type: 'doc', content: [{ type: 'paragraph' }] });
+    editor.setEditable(Boolean(selected)); save.disabled = !selected; discard.disabled = !draft;
+    select.hidden = !inventory.length; host.hidden = !selected;
+    status.textContent = draft ? 'Есть несохранённый черновик колонтитула.' : selected
+      ? `${selected.label}. Изменения действуют во всех указанных разделах.`
+      : 'Колонтитулов пока нет. Выберите раздел и создайте колонтитул.';
+  };
+  const commit = async () => {
+    if (storyMutationPending || !baseline || !current()) { status.textContent = 'Сцена изменилась. Черновик сохранён.'; return; }
+    const capturedKey = key(), body = editor.getJSON(), doc = getTiptapDocumentSnapshot().doc;
+    if (JSON.stringify(doc) !== JSON.stringify(baseline)) { status.textContent = 'Сцена изменилась после начала правки. Черновик сохранён; отмените правку и откройте актуальный колонтитул.'; return; }
+    storyMutationPending = true; save.disabled = true; select.disabled = true; discard.disabled = true; editor.setEditable(false);
+    try {
+      if (!applyTiptapStoryBody(baseline, select.value, body)) throw Error('STORY_STALE');
+      // The normal scene Save command carries this authoring transaction. Main
+      // checks the original topology, scene identity and atomic persistence.
+      const staged = getTiptapDocumentSnapshot().doc;
+      storyDrafts.set(capturedKey, { body, baseline: staged, original: storyDrafts.get(capturedKey)?.original || baseline, staged: true }); baseline = staged;
+      const result = await dispatchUiCommand('cmd.project.save', {});
+      if (!result?.ok || !current()) throw Error('STORY_SAVE_FAILED');
+      storyDrafts.delete(capturedKey);
+      baseline = getTiptapDocumentSnapshot().doc;
+      status.textContent = 'Колонтитул сохранён';
+    } catch (error) {
+      console.error('WORD_STORY_SAVE_FAILED', typeof error?.code === 'string' ? error.code : typeof error?.message === 'string' && /^[A-Z0-9_]+$/.test(error.message) ? error.message : 'UNEXPECTED_ERROR');
+      status.textContent = 'Колонтитул не сохранён. Черновик оставлен; повторите сохранение.';
+    }
+    finally { storyMutationPending = false; select.disabled = false; editor.setEditable(current()); save.disabled = !current(); discard.disabled = !storyDrafts.has(capturedKey); }
+  };
+  select.addEventListener('change', load);
+  save.addEventListener('click', () => { void commit(); });
+  discard.addEventListener('click', () => {
+    if (storyMutationPending || !current()) return;
+    const draft = storyDrafts.get(key());
+    if (draft?.staged) {
+      const original = storyInventory(draft.original).find(story => story.id === select.value);
+      if (!original || !applyTiptapStoryBody(draft.baseline, select.value, original.body)) { status.textContent = 'Сцена изменилась; черновик сохранён.'; return; }
+    }
+    storyDrafts.delete(key()); baseline = null; load();
+  });
+  const dismiss = () => { if (storyMutationPending) return; editor.destroy(); destroyStoryEditor = null; panel.remove(); if (storyEditorPanel === panel) storyEditorPanel = null;
+    document.querySelector('[data-document-stories-open]')?.focus(); };
+  close.addEventListener('click', dismiss);
+  panel.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); dismiss(); } });
+  const topology = document.createElement('fieldset'); topology.className = 'notes-capture';
+  const legend = document.createElement('legend'); legend.textContent = 'Колонтитулы раздела'; topology.append(legend);
+  const chooser = (label, options) => {
+    const wrapper = document.createElement('label'); wrapper.textContent = label;
+    const control = document.createElement('select'); control.className = 'notes-button'; control.setAttribute('aria-label', label);
+    for (const [value, text] of options) { const option = document.createElement('option'); option.value = String(value); option.textContent = text; control.append(option); }
+    wrapper.append(control); topology.append(wrapper); return control;
+  };
+  const currentDoc = getTiptapDocumentSnapshot().doc;
+  const sectionChoice = chooser('Раздел', Array.from({length:(currentDoc.attrs?.wordSections?.boundaries?.length || 0)+1}, (_,i)=>[i,`Раздел ${i+1}`]));
+  const roleChoice = chooser('Положение', [['header','Верхний колонтитул'],['footer','Нижний колонтитул']]);
+  const variantChoice = chooser('Страницы', [['default','Обычные'],['first','Первая'],['even','Чётные']]);
+  const sourceChoice = chooser('Новый колонтитул', [['copy','Копия текущего'],['empty','Пустой']]);
+  const checkbox = label => { const wrapper=document.createElement('label'); wrapper.textContent=label; const input=document.createElement('input');input.type='checkbox';input.setAttribute('aria-label',label);wrapper.append(input);topology.append(wrapper);return input; };
+  const titlePage = checkbox('Особый колонтитул первой страницы');
+  const evenPages = checkbox('Разные колонтитулы чётных и нечётных страниц');
+  const setFlags = () => { const registry=getTiptapDocumentSnapshot().doc.attrs?.wordStories; titlePage.checked=registry?.sections?.[Number(sectionChoice.value)]?.titlePage===true;evenPages.checked=registry?.evenAndOddHeaders===true; };
+  sectionChoice.addEventListener('change',setFlags);setFlags();
+  const actions = [];
+  const mutate = async action => {
+    if (storyMutationPending || !current()) return;
+    if (storyDrafts.size || manuscriptDrafts.size || wordCommentDraft || wordCommentBusy || notesMutationPending) {
+      status.textContent='Сначала сохраните или отмените правки колонтитулов, сносок и комментариев.'; return;
+    }
+    const requestId=`story-${++storyRequestSequence}`;
+    let completed = false, newStoryId = null;
+    storyMutationPending=true; pendingStoryRequestId=requestId; editor.setEditable(false);select.disabled=true;topology.disabled=true;
+    save.disabled=true;discard.disabled=true;
+    try {
+      const saved=await dispatchUiCommand('cmd.project.save',{});
+      if (!saved?.ok || !current()) throw Error('STORY_SAVE_REQUIRED');
+      const projection=await invokeWorkspaceQueryBridge('query.project.documentStories',{requestId});
+      if (!projection?.ok || projection.projectId!==identity.projectId || !current()) throw Error(projection?.reason || 'STORY_QUERY_STALE');
+      const binding={requestId,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256};
+      const payload=action==='options' ? {...binding,sectionIndex:Number(sectionChoice.value),titlePage:titlePage.checked,evenAndOddHeaders:evenPages.checked}
+        : {...binding,sectionIndex:Number(sectionChoice.value),role:roleChoice.value,variant:variantChoice.value,...(action==='create'?{source:sourceChoice.value}:{})};
+      const result=await dispatchUiCommand(`cmd.project.documentStories.${action}`,payload);
+      const value=result?.value?.result || result?.value || result?.error?.details || result;
+      if (!result?.ok || !value?.ok || !current()) {
+        status.textContent=value?.storageWritten ? 'Файл сохранён, но редактор изменился. Переоткройте сцену; повторно действие не применяйте.' : 'Колонтитул не изменён. Проверьте состояние сцены и повторите действие.';
+        return;
+      }
+      completed=true;newStoryId=value.storyId;
+    } catch { status.textContent='Изменение колонтитула не выполнено. Сохраните сцену и повторите действие.'; }
+    finally {
+      storyMutationPending=false;pendingStoryRequestId=null;select.disabled=false;topology.disabled=false;editor.setEditable(current() && Boolean(select.value));save.disabled=!current()||!select.value;
+      if(completed)openDocumentStories(newStoryId);
+    }
+  };
+  for(const [action,label] of [['create','Создать отдельный колонтитул'],['remove','Очистить колонтитул раздела'],['linkPrevious','Связать с предыдущим разделом'],['options','Применить настройки страниц']]) {
+    const button=document.createElement('button');button.type='button';button.className='notes-button';button.textContent=label;
+    button.addEventListener('click',()=>{void mutate(action);});
+    if(action==='linkPrevious') {
+      const refreshLinkAvailability=()=>{button.disabled=Number(sectionChoice.value)===0;button.title=button.disabled?'У первого раздела нет предыдущего':'';};
+      sectionChoice.addEventListener('change',refreshLinkAvailability);refreshLinkAvailability();
+    }
+    topology.append(button);actions.push(button);
+  }
+  panel.append(topology);
+  load(); select.focus();
 }
 
 function manuscriptMutationBinding() {
@@ -19443,7 +19603,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-') || changeId.startsWith('docx-story-return-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;
@@ -22919,6 +23079,10 @@ if (leftTabsHost) {
 }
 
 if (notesCaptureForm) {
+  const storiesButton = document.createElement('button'); storiesButton.type = 'button';
+  storiesButton.className = 'notes-button'; storiesButton.textContent = 'Колонтитулы сцены'; storiesButton.dataset.documentStoriesOpen = '';
+  storiesButton.addEventListener('click', openDocumentStories);
+  notesCaptureForm.querySelector('.notes-capture__footer')?.append(storiesButton);
   const createNoteButton = document.createElement('button'); createNoteButton.type = 'button';
   createNoteButton.className = 'notes-button'; createNoteButton.textContent = 'Добавить сноску';
   createNoteButton.addEventListener('click', () => { void createManuscriptNote(); });
@@ -23725,7 +23889,7 @@ window.addEventListener('resize', () => {
 function treeContentReplacementRefusalReason(payload) {
   if (payload?.treeContentReplacement !== true || payload.treePublication === true
     || payload.treeReplacement === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
-  if (!isTiptapMode || flowModeState.active || wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_PENDING';
+  if (!isTiptapMode || flowModeState.active || wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending) return 'AUTHORING_PENDING';
   if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
   const detachedRecovery = payload.treeRecovery === true && currentDocumentId === ''
     && treeDetachedOrigin?.projectId === currentProjectId && treeDetachedOrigin.documentId === payload.expectedDocumentId;
@@ -23747,7 +23911,7 @@ function treeContentReplacementRefusalReason(payload) {
 
 function treeReplacementRefusalReason(payload) {
   if (payload?.treeReplacement !== true || payload.treePublication === true || payload.treeDetached === true) return 'PUBLICATION_FLAGS';
-  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending) return 'AUTHORING_DRAFT_PENDING';
+  if (wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending) return 'AUTHORING_DRAFT_PENDING';
   if (!Number.isSafeInteger(payload.expectedGeneration) || payload.expectedGeneration < 0) return 'GENERATION_INVALID';
   if (payload.expectedGeneration !== localEditGeneration) return 'GENERATION_MISMATCH';
   if (!currentProjectId || payload.projectId !== currentProjectId) return 'PROJECT_MISMATCH';
@@ -23816,6 +23980,19 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.storyPublication === true) {
+      const checked = parseDocumentContent(payload.content);
+      if (pendingStoryRequestId && payload.storyPublicationRequestId === pendingStoryRequestId
+        && payload.projectId === currentProjectId && payload.documentId === currentDocumentId
+        && payload.expectedGeneration === localEditGeneration && payload.expectedContent === composeDocumentContent()
+        && !storyDrafts.size && !manuscriptDrafts.size && !wordCommentDraft && !wordCommentBusy && !notesMutationPending
+        && !checked.issue && checked.doc) replaceTiptapTreeDocumentSnapshot({doc:checked.doc});
+      return;
+    }
+    if (payload?.reviewSurface && storyDrafts.size) {
+      updateStatusText('Черновик колонтитула оставлен в редакторе. Завершите правку перед обновлением сцены.', {visible:true});
+      return;
+    }
     let treeContentParsed = null;
     if (payload?.treeContentReplacement === true) {
       const reason = treeContentReplacementRefusalReason(payload);
@@ -24438,7 +24615,9 @@ if (window.electronAPI) {
       updateStatusText('Сноски обновлены');
       return;
     }
-    updateStatusText(status);
+    const exportFailure = typeof status === 'string' && status.length <= 320
+      && /^Не удалось экспортировать DOCX \(E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}(?:: (?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+)?\)\.$/u.test(status);
+    updateStatusText(status, { visible: exportFailure });
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
       updateWarningStateText('recovery');
