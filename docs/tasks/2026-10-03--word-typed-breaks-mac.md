@@ -103,3 +103,37 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY.
 ## FAIL_PROTOCOL
 
 Retain expected/actual, source hashes and exact head; no disabled mandatory oracle or whole-plan claim.
+
+## OBSERVED_EVIDENCE_2026_10_03
+
+Product candidate: 3f0259c7c3b51d23e7d09918bf81a37727388b44.
+SOURCE and PACKAGED: independent DOCX import; adjacent author edit; Undo/Redo;
+Save; scene review export; actual Microsoft Word edit and Save; guarded Apply
+(1 applied, 0 blocked, 0 failed); Save; process restart; review re-export.
+Six independently parsed ZIP/XML documents retain exact expected paragraph text
+and ordered break types page, column. Runtime input copy verification passed.
+Focused affected chain: 265 passed, zero failed/skipped/todo.
+Evidence directory basename: word-typed-breaks-mac-faeaef59.
+
+Native observation found and fixed local-file preview sanitization dropping the
+new field before the editor received the document. The real local-file adapter
+now has an executable regression test. Main and its authoritative text writer
+preserve unchanged hardBreak nodes while changing an adjacent text span;
+changed break type, missing break, moved break and invalid type refuse writes.
+Word-added proofing language can coexist with unchanged breaks. No break acquires
+text mutation authority from its UI representation.
+
+The old revision-bridge-docx-content-preview contract independently has 18
+failures on exact original faeaef59 and the candidate (117 tests, 99 passing).
+These historical expectations concern existing admission changes and are not
+represented as green or repaired by weakening acceptance. The required current
+RTK and baseline checks remain separate mandatory gates.
+
+Residual scope: section geometry, typed break edits through the return text lane,
+note-body typed breaks and tracked insertion/deletion of typed breaks remain
+outside this bounded change. The original whole Mac plan remains unfinished.
+
+Final review added required scene feature word-typed-breaks.v1: an older reader
+must refuse the scene instead of flattening an unknown break kind. New candidate
+native qualification is repeated after this document-format protection; the
+3f0259c7 observations above remain historical, not exact-final acceptance.
