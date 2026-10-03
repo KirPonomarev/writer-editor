@@ -9808,7 +9808,9 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
       if (typeof raw !== 'string' || scene.rawSha256 !== `sha256:${computeHash(raw)}`) throw Error('WORD_STORIES_RETURN_BASELINE');
       const parsed = envelope.parseObservablePayload(raw);
       if (parsed.issue) throw Error('WORD_STORIES_RETURN_BASELINE');
-      beforeDocs[scene.sceneId] = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
+      // Preserve authored plain boundary blanks; metadata/cards still use parsed text.
+      const plainText = !parsed.hasMetaBlock && !parsed.hasCardsBlock ? raw : parsed.text;
+      beforeDocs[scene.sceneId] = parsed.doc || envelope.buildParagraphDocumentFromText(plainText);
       sources[scene.sceneId] = { raw, parsed };
     }
     const analysis = module.analyzeDocumentStoriesReturn({ expected: authority.documentStories, returned, beforeDocs, exportTypography: authority.exportMap.exportTypography, allowTopology: true, idSeed: crypto.randomUUID() });

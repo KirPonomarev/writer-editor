@@ -120,7 +120,7 @@ test('Main private Apply routes story changes through checked scene transaction;
   assert.deepEqual(saved.doc.content, before.content);
 });
 
-for (const bodyKind of ['plain','table','image','first-story']) test(`Main prepares a zero-write story candidate alongside unchanged ${bodyKind} body and rejects artifact mismatch`, async () => {
+for (const bodyKind of ['plain','table','image','first-story','leading-blank','trailing-blank','consecutive-blank','crlf','empty-sibling']) test(`Main prepares a zero-write story candidate alongside unchanged ${bodyKind} body and rejects artifact mismatch`, async () => {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { buildFullManuscriptDocxReviewPacketSource, validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
   const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder');
@@ -135,8 +135,10 @@ for (const bodyKind of ['plain','table','image','first-story']) test(`Main prepa
   if(bodyKind==='table')before.content=[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:before.content}]}]}];
   if(bodyKind==='image')before.content[0].content.push({type:'image',attrs:require('../../src/io/documentMedia.js').createImageAttrs(require('../fixtures/document-jpeg-fixtures.cjs').rgb)});
   const raw = envelope.composeObservablePayload({ doc: before });
-  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/test', manifestPath: '/test/project.craftsman.json',
-    scenes: [{ sceneId: 'a.txt', scenePath: '/test/a.txt', text: 'Main text', doc: before, observableContent: raw, order: 0 }] }, { revisionBridge: bridge, cryptoPort });
+  const siblingRaw = {'leading-blank':'\n\nSibling','trailing-blank':'Sibling\n','consecutive-blank':'One\n\n\nTwo','crlf':'\r\nOne\r\n\r\nTwo\r\n','empty-sibling':''}[bodyKind];
+  const scenes = [{ sceneId: 'a.txt', scenePath: '/test/a.txt', text: 'Main text', doc: before, observableContent: raw, order: 0 }];
+  if (siblingRaw !== undefined) scenes.push({sceneId:'b.txt',scenePath:'/test/b.txt',doc:null,text:siblingRaw,observableContent:siblingRaw,order:1});
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/test', manifestPath: '/test/project.craftsman.json',scenes }, { revisionBridge: bridge, cryptoPort });
   const changed = { ...source, documentStories: copy(source.documentStories) };
   if(bodyKind==='first-story'){
     changed.documentStories.registry.stories.push({id:'native-added',role:'header',body:body('Actual DOCX header edit')});
@@ -150,13 +152,13 @@ for (const bodyKind of ['plain','table','image','first-story']) test(`Main prepa
   assert.equal(sectionBinding.ok, true); parsed.documentSectionsBinding = { ...sectionBinding.proof, status: sectionBinding.status };
   source.localAuthorityCapsule.exportMap = bridge.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap, buildDocxReviewPacketBuffer(source));
   const authority = { ...source.localAuthorityCapsule, scope: 'full-manuscript', documentStories: source.documentStories,
-    baselineObservableContentBySceneId: { 'a.txt': raw }, scenePathBySceneId: { 'a.txt': '/test/a.txt' } };
+    baselineObservableContentBySceneId: source.localAuthorityCapsule.baselineObservableContentBySceneId, scenePathBySceneId: source.localAuthorityCapsule.scenePathBySceneId };
   assert.equal(authority.exportMap.scenes[0].rawSha256, `sha256:${hash(raw)}`);
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const code = main.slice(main.indexOf('async function prepareCleanDocumentStoriesCapsule('), main.indexOf('async function prepareCleanUserBookmarksCapsule('));
   const c = vm.createContext({ JSON, Buffer, crypto:require('node:crypto'), path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
     require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), cloneJsonSafe: copy, stableRtkReviewTransportJson: stable,
-    currentFilePath: '/test/a.txt', computeHash: hash, loadRevisionBridgeModule: async () => bridge,
+    currentFilePath: siblingRaw === undefined ? '/test/a.txt' : '/test/b.txt', computeHash: hash, loadRevisionBridgeModule: async () => bridge,
     loadDocumentContentEnvelopeModule: async () => envelope,
     userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'), compareCommentExportReadback,
   });
@@ -165,6 +167,15 @@ for (const bodyKind of ['plain','table','image','first-story']) test(`Main prepa
   const result = await c.prepareCleanDocumentStoriesCapsule(authority, parsed, context);
   assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.changed, true);
   assert.equal(result.fields.storyReturnCandidate.changes[0].afterBody.content[0].content[0].text, 'Actual DOCX header edit');
+  if (siblingRaw !== undefined) {
+    const candidate = result.fields.storyReturnCandidate;
+    assert.equal(candidate.batchScenes.length,1);
+    assert.equal(candidate.sourceScenes.find(item=>item.sceneId==='b.txt').raw,siblingRaw);
+    assert.deepEqual(candidate.batchScenes[0].plan.doc.content,before.content);
+    const forged=copy(authority);forged.baselineFinalTextBySceneId['b.txt']=siblingRaw+'tampered';
+    delete forged.baselineObservableContentBySceneId['b.txt'];
+    assert.equal((await c.prepareCleanDocumentStoriesCapsule(forged,parsed,context)).code,'WORD_STORIES_RETURN_BASELINE');
+  }
   const mismatch = await c.prepareCleanDocumentStoriesCapsule(authority, parsed, { ...context, returnedArtifactSha256: 'sha256:wrong' });
   assert.equal(mismatch.code, 'WORD_STORIES_RETURN_ARTIFACT');
   const extracted = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes},{cryptoPort});

@@ -1,6 +1,7 @@
 import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import core from '../../core/word-user-bookmarks-v1.cjs';
+import envelope from '../../core/document-content-envelope-v1.cjs';
 import source from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 
@@ -213,7 +214,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     const basePs=core.paragraphs(baselineDoc);
     if(basePs.length!==scene.blocks.length)return reject('scene-topology');
-    const baseFormats=source.buildFormatIrParagraphs({sceneId,doc:baselineDoc,text:basePs.map(core.textOf).join('\n')});
+    const baseFormats=source.buildFormatIrParagraphs({sceneId,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc)});
     const offset=scene.blocks[0].documentParagraphIndex;
     if(scene.blocks.some((b,i)=>b.documentParagraphIndex!==offset+i))return reject('scene-order');
     if(returnedDoc===undefined){
