@@ -505,6 +505,72 @@ function paragraphRunTape(blocks) {
   return { text, starts, properties, rich, blockAt };
 }
 
+// Section projection ignores only paragraph terminators. Protected blocks and
+// unchanged rich characters agree exactly. When text also changed, every shortest
+// contiguous edit must preserve each boundary and yield the same unique result.
+function mapSectionParagraphEndpoints(beforeDoc, workingDoc) {
+  const before = rootParagraphLayout(paragraphComparisonNode(beforeDoc));
+  const after = rootParagraphLayout(paragraphComparisonNode(workingDoc));
+  if (!same(before.protectedBlocks, after.protectedBlocks) || before.zones.length !== after.zones.length) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+  const tape = blocks => {
+    let offset = 0; const starts = [], ends = new Map(), rich = [], props = [];
+    blocks.forEach((block, index) => {
+      const property = { ...block }; delete property.content; props.push(property); starts.push(offset);
+      for (const original of block.content || []) {
+        if (!['text', 'hardBreak'].includes(original.type)) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+        const node = clone(original), previous = rich.at(-1);
+        offset += node.type === 'text' ? node.text.length : 1;
+        if (node.type === 'text' && previous?.node.type === 'text' && same(previous.props, property)
+          && same({ ...previous.node, text: '' }, { ...node, text: '' })) previous.node.text += node.text;
+        else rich.push({ node, props: property });
+      }
+      const candidates = ends.get(offset) || []; candidates.push(index); ends.set(offset, candidates);
+    });
+    const text = rich.map(item => item.node.type === 'text' ? item.node.text : '\n').join('');
+    const range = (from, to) => {
+      const result = []; let position = 0;
+      for (const item of rich) {
+        const length = item.node.type === 'text' ? item.node.text.length : 1, end = position + length;
+        if (end > from && position < to) {
+          const node = { ...item.node };
+          if (node.type === 'text') node.text = node.text.slice(Math.max(0, from-position), Math.min(length, to-position));
+          result.push({ node, props: item.props });
+        }
+        position = end;
+      }
+      return result;
+    };
+    return { starts, ends, rich, props, text, range };
+  };
+  const zones = before.zones.map((blocks, index) => {
+    const old = tape(blocks), next = tape(after.zones[index]);
+    const edits = old.text === next.text ? [{start:old.text.length,end:old.text.length,inserted:0,delta:0}] : editCandidates(old.text, next.text);
+    if (edits.length * (old.text.length + next.text.length) > MAX_TEXT * 4) fail('USER_BOOKMARK_EDIT_AMBIGUOUS');
+    for (const edit of edits) if (!same(old.range(0,edit.start),next.range(0,edit.start))
+      || !same(old.range(edit.end,old.text.length),next.range(edit.start+edit.inserted,next.text.length))) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+    return { old, next, edits };
+  });
+  const indexes = new Map(after.leaves.map(leaf => [leaf.owner === undefined ? `z${leaf.zone}:${leaf.local}` : `o${leaf.owner}:${leaf.local}`, leaf.index]));
+  return endpoint => {
+    if (endpoint.edge !== 'afterParagraph') fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
+    const leaf = before.leaves[endpoint.paragraphIndex];
+    if (leaf.owner !== undefined) return { ...endpoint, paragraphIndex: indexes.get(`o${leaf.owner}:${leaf.local}`) };
+    const { old, next, edits } = zones[leaf.zone];
+    const offset = old.starts[leaf.local] + endpoint.offsetUtf16;
+    const outcomes = new Map();
+    for (const edit of edits) {
+      if (offset > edit.start && offset < edit.end) fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+      const mapped = offset >= edit.end ? offset + edit.delta : offset;
+      const candidates = next.ends.get(mapped) || [];
+      if (candidates.length !== 1 || !same(old.props[leaf.local], next.props[candidates[0]])) fail('USER_BOOKMARK_EDIT_BOUNDARY_CONFLICT');
+      const value = { ...endpoint, paragraphIndex: indexes.get(`z${leaf.zone}:${candidates[0]}`), offsetUtf16: mapped - next.starts[candidates[0]] };
+      outcomes.set(canonicalSerialize(value), value);
+    }
+    if (outcomes.size !== 1) fail('USER_BOOKMARK_EDIT_AMBIGUOUS');
+    return outcomes.values().next().value;
+  };
+}
+
 function rootParagraphEndpointMapper(beforeDoc, workingDoc) {
   const before = rootParagraphLayout(paragraphComparisonNode(beforeDoc)), after = rootParagraphLayout(paragraphComparisonNode(workingDoc));
   if (!same(before.protectedBlocks, after.protectedBlocks)) fail('USER_BOOKMARK_SAVE_STRUCTURE_CONFLICT');
@@ -770,7 +836,7 @@ function planHistoryRestore({ beforeDoc, snapshotDoc }) {
   return { doc: clone(snapshotDoc), registry, changed: !same(beforeDoc, snapshotDoc) };
 }
 
-module.exports = { KEY, SCHEMA, MAX_BOOKMARKS, readRegistry, validateRegistry,
+module.exports = { mapSectionParagraphEndpoints, KEY, SCHEMA, MAX_BOOKMARKS, readRegistry, validateRegistry,
   validateName: validName,
   nameKey,
   paragraphs, textOf, endpointOffset, endpointForOffset, linkAttrs,

@@ -222,6 +222,7 @@ function sanitizeContentPreviewReport(report) {
       ? {
           sourcePart: report.contentPreview.sourcePart,
           ...(userBookmarkInventory ? {userBookmarkInventory} : {}),
+          ...(report.contentPreview.wordSections ? { wordSections: cloneJsonSafe(report.contentPreview.wordSections) } : {}),
           ...(isPlainObject(report.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(report.contentPreview.pendingRevisionDocument) } : {}),
           ...(Array.isArray(report.contentPreview.manuscriptNotes) ? { manuscriptNotes: cloneJsonSafe(report.contentPreview.manuscriptNotes) } : {}),
           ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),

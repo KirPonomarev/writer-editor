@@ -147,6 +147,7 @@ function mainFunctions(names, globals = {}) {
   const { createRequire } = require('node:module');
   const file = path.join(__dirname, '../../src/main.js'), source = fs.readFileSync(file, 'utf8');
   const context = vm.createContext({ Buffer, require: createRequire(file),
+    validateFullManuscriptDocumentSectionsReturn: require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').validateFullManuscriptDocumentSectionsReturn,
     loadDocumentContentEnvelopeModule: async () => require('../../src/core/document-content-envelope-v1.cjs'),
     pendingTextRevisions: require('../../src/core/word-pending-text-revisions-v1.cjs'), isPlainObjectValue: v => !!v && typeof v === 'object' && !Array.isArray(v), ...globals });
   for (const name of names) {

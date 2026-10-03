@@ -1,3 +1,4 @@
+import wordSections from '../../core/word-sections-v1.cjs';
 import wordTypedBreaks from '../../core/word-typed-breaks-v1.cjs';
 import listFormat from '../../core/word-list-format-v1.cjs';
 import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
@@ -7967,6 +7968,7 @@ for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 
 function docxContentPreviewSemanticFailure(error) {
   const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
   for(const code of bookmarkCodes) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
+  for (const code of ['WORD_SECTIONS_INVALID','WORD_SECTIONS_UNSUPPORTED','WORD_SECTIONS_PENDING_UNSUPPORTED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
   const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
     ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
   const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
@@ -9201,8 +9203,8 @@ function docxFontAttributes(token, namespaceMap) {
   }));
 }
 
-function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false } = {}) {
-  const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, 1024 * 1024);
+function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false, maxBytes = 1024 * 1024 } = {}) {
+  const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, maxBytes);
   const xml = part && docxZipDecodeUtf8Xml(part);
   if (typeof xml !== 'string' || docxContentPreviewUnsupportedEncoding(xml)
     || /<!\s*(DOCTYPE|ENTITY)\b/iu.test(xml)
@@ -9229,6 +9231,52 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
     if (!parsed.selfClosing) stack.push(parsed);
   }
   if (stack.length || roots !== 1) throw new Error('DOCX_FONT_PART_INVALID');
+}
+
+// Literal semantic inventory; provider revision identifiers are inert, never authority.
+function docxSectionInventory(bytes, parsed) {
+  const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, records = [], owners = new WeakMap();
+  let paragraph = -1, finalSeen = false;
+  docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
+    const path = [...stack, node];
+    if (node.namespaceUri === W && node.localName === 'p') paragraph++;
+    if (node.localName === 'sectPr') {
+      if (node.namespaceUri !== W || records.length > 1024) throw Error('WORD_SECTIONS_INVALID');
+      const names = path.map(x => x.namespaceUri === W ? x.localName : '?').join('/');
+      const final = names === 'document/body/sectPr';
+      if ((!final && names !== 'document/body/p/pPr/sectPr') || finalSeen) throw Error('WORD_SECTIONS_INVALID');
+      for (const key of attributes.keys()) if (!['rsidR', 'rsidRPr', 'rsidSect', 'rsidDel'].some(name => key === `${W}\u0000${name}`)) throw Error('WORD_SECTIONS_UNSUPPORTED');
+      const record = { endParagraphIndex: final ? parsed.contentPreview.paragraphs.length - 1 : paragraph, properties: { type: 'nextPage' }, final, seen: new Set() };
+      records.push(record); owners.set(node, record); finalSeen ||= final; return;
+    }
+    const owner = stack.find(item => owners.has(item));
+    if (!owner) return;
+    const record = owners.get(owner);
+    if (stack.at(-1) !== owner || node.namespaceUri !== W || record.seen.has(node.localName)) throw Error('WORD_SECTIONS_UNSUPPORTED');
+    record.seen.add(node.localName);
+    const only = keys => { for (const key of attributes.keys()) if (!keys.some(name => key === `${W}\u0000${name}`)) throw Error('WORD_SECTIONS_UNSUPPORTED'); };
+    const number = (name, fallback) => { const value = attr(name, W); if (value === undefined) return fallback; if (!/^\d+$/u.test(value)) throw Error('WORD_SECTIONS_INVALID'); return Number(value); };
+    if (node.localName === 'type') { only(['val']); record.properties.type = attr('val', W); }
+    else if (node.localName === 'pgSz') { only(['w', 'h', 'orient']); const widthTwips=number('w'), heightTwips=number('h'); record.properties.pageSize={widthTwips,heightTwips,orientation:attr('orient',W) || (widthTwips>heightTwips?'landscape':'portrait')}; }
+    else if (node.localName === 'pgMar') { const keys=['top','right','bottom','left','header','footer','gutter']; only(keys); record.properties.margins=Object.fromEntries(keys.map(key=>[`${key}Twips`,number(key, key==='gutter'?0:undefined)])); }
+    else if (node.localName === 'cols') { only(['num','space','equalWidth']); if (attr('equalWidth', W) && !['1','true','on'].includes(attr('equalWidth',W))) throw Error('WORD_SECTIONS_UNSUPPORTED'); record.properties.columns={count:number('num',1),spaceTwips:number('space',720)}; }
+    else throw Error('WORD_SECTIONS_UNSUPPORTED');
+  }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
+  if (!records.length) return null;
+  if (!finalSeen) throw Error('WORD_SECTIONS_INVALID');
+  for (const record of records) wordSections.properties(record.properties);
+  const single = records.length === 1 ? records[0].properties : null;
+  const defaultSize = !single?.pageSize || (single.pageSize.widthTwips === 11906 && single.pageSize.heightTwips === 16838 && single.pageSize.orientation === 'portrait');
+  const defaultMargins = !single?.margins || Object.entries({topTwips:1440,rightTwips:1440,bottomTwips:1440,leftTwips:1440,headerTwips:720,footerTwips:720,gutterTwips:0}).every(([key,value])=>single.margins[key]===value);
+  const defaultColumns = !single?.columns || (single.columns.count === 1 && single.columns.spaceTwips === 720);
+  // Only the exact historical default can remain on the plain-document path.
+  // A final-only custom page geometry is still durable document meaning.
+  if (single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns) return null;
+  for (const record of records.slice(0,-1)) {
+    record.endParagraphIndex = parsed.paragraphSourceIndexes.indexOf(record.endParagraphIndex);
+    if (record.endParagraphIndex < 0) throw Error('WORD_SECTIONS_INVALID');
+  }
+  return { schemaVersion: 1, boundaries: records.slice(0,-1).map(({endParagraphIndex,properties})=>({endParagraphIndex,properties})), final: records.at(-1).properties };
 }
 
 function docxFontThemeCatalog(bytes) {
@@ -10756,6 +10804,14 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       byteLength: value => new TextEncoder().encode(value).length,
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
+    if (!parsed.failure) {
+      const sections = docxSectionInventory(bytes, parsed);
+      if (sections) {
+        if (pendingSource.revisions.length) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
+        parsed.contentPreview.wordSections = sections;
+        parsed.diagnostics = parsed.diagnostics.filter(item => item.code !== DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC);
+      }
+    }
     if (!parsed.failure && !pendingSource.revisions.length
       && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
         || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
@@ -11849,11 +11905,11 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     });
   }
 
-  const googleDocsTabs = docxImportPreviewDetectGoogleDocsTabs(contentPreview.paragraphs);
+  const googleDocsTabs = contentPreview.wordSections ? null : docxImportPreviewDetectGoogleDocsTabs(contentPreview.paragraphs);
   const importParagraphIndexes = googleDocsTabs
     ? googleDocsTabs.importParagraphIndexes
     : paragraphValidation.texts.map((_text, index) => index);
-  const sectionBoundaryRecovery = googleDocsTabs
+  const sectionBoundaryRecovery = (googleDocsTabs || contentPreview.wordSections)
     ? { projectedParagraphs: contentPreview.paragraphs, recoveredAfterParagraphIndexes: [] }
     : docxImportPreviewProjectNextPageBoundaries(contentPreview.paragraphs);
   const importParagraphs = googleDocsTabs
@@ -11863,6 +11919,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   let richContent;
   try {
     richContent = docxInlineCanonicalContent(importParagraphs);
+    if (contentPreview.wordSections) {
+      const doc = richContent ? parseObservablePayload(richContent).doc : buildParagraphDocumentFromText(importedText);
+      richContent = composeObservablePayload({ doc: wordSections.bind(doc, contentPreview.wordSections) });
+    }
     if (contentPreview.userBookmarkInventory) {
       if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
       const doc = richContent ? parseObservablePayload(richContent).doc : buildParagraphDocumentFromText(importedText);

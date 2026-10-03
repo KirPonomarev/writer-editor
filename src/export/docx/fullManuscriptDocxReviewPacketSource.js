@@ -662,7 +662,7 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
     if (last && last.groupKey === groupKey) last.sceneIds.push(scene.sceneId);
     else groups.push({ groupKey, sceneIds: [scene.sceneId] });
   }
-  const protectedSections = groups.map((group, ordinal) => {
+  let protectedSections = groups.map((group, ordinal) => {
     const sceneIdSet = new Set(group.sceneIds);
     const groupBlocks = blocks.filter((block) => sceneIdSet.has(block.sceneId));
     if (groupBlocks.length < 1) {
@@ -682,6 +682,28 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
       properties: canonicalSectionProperties(),
     };
   });
+  const sectionsCore = require('../../core/word-sections-v1.cjs');
+  const semanticEnds = new Map();
+  for (const scene of scenes) {
+    const registry = sectionsCore.read(scene.doc);
+    if (!registry) continue;
+    const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
+    const leaves = require('../../core/word-user-bookmarks-v1.cjs').paragraphs(scene.doc);
+    if (sceneBlocks.length !== leaves.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
+    for (const item of registry.boundaries) semanticEnds.set(sceneBlocks[item.endParagraphIndex].documentParagraphIndex, item.properties);
+    semanticEnds.set(sceneBlocks.at(-1).documentParagraphIndex, registry.final);
+  }
+  if (semanticEnds.size) {
+    const ends = new Map(protectedSections.map(section => [section.endParagraphIndex, section.properties]));
+    for (const [index, properties] of semanticEnds) ends.set(index, sectionsCore.withDefaults(properties, canonicalSectionProperties()));
+    let start = 0;
+    protectedSections = [...ends].sort((a,b)=>a[0]-b[0]).map(([end, properties], ordinal, all) => {
+      const section = { ordinal, startParagraphIndex: start, endParagraphIndex: end,
+        breakPlacement: ordinal === all.length - 1 ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES',
+        carriers: {sectionProperties:true,pageSize:true,margins:true,columns:true}, properties };
+      start = end + 1; return section;
+    });
+  }
   for (let index = 0; index < protectedSections.length; index += 1) {
     const section = protectedSections[index];
     const expectedStart = index === 0 ? 0 : protectedSections[index - 1].endParagraphIndex + 1;

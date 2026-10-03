@@ -1,3 +1,5 @@
+import wordSections from '../../core/word-sections-v1.cjs';
+import { DocumentSections } from './documentSections.mjs';
 import { DocumentBreaks } from './documentBreaks.mjs';
 import { DocumentListNumbering } from './documentListNumbering.mjs';
 import { DocumentListItems } from './documentListItems.mjs';
@@ -96,9 +98,10 @@ export function applyTiptapLocalImagePublication(payload, currentContent) {
 }
 
 function setCheckedDocument(editor, doc) {
+  wordSections.read(doc);
   const result = setCheckedReviewDocument(editor, doc)
-  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null)
-    .setMeta('preventUpdate', true).setMeta('addToHistory', false))
+  if (result) editor.view.dispatch(editor.state.tr.setDocAttribute('wordUserBookmarks', doc.attrs?.wordUserBookmarks || null).setDocAttribute('wordSections', doc.attrs?.wordSections || null)
+    .setMeta('wordPendingRevisionsExternal', true).setMeta('preventUpdate', true).setMeta('addToHistory', false))
   return result
 }
 
@@ -141,7 +144,7 @@ function readEditorDocument(editor) {
   try {
     return canonicalizeDocumentJson(editor.getJSON())
   } catch (error) {
-    if (editor.getJSON()?.attrs?.wordPendingRevisions || editor.getJSON()?.attrs?.wordUserBookmarks) throw error
+    if (editor.getJSON()?.attrs?.wordPendingRevisions || editor.getJSON()?.attrs?.wordUserBookmarks || editor.getJSON()?.attrs?.wordSections) throw error
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
 }
@@ -581,6 +584,7 @@ export function initTiptap(mountEl, options = {}) {
         underline: false,
       }),
       DocumentListNumbering,
+      DocumentSections,
       DocumentHeadings,
       DocumentListItems,
       DocumentBreaks,
