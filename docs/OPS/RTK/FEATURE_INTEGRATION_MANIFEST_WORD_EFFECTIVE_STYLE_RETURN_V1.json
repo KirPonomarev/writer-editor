@@ -194,5 +194,13 @@
     "profile": "ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1",
     "authority": "Existing derived PDF port only; unchanged project mutation, network, print options and historical receipts",
     "requiredProof": "Exact-version negatives, actual two-render byte equality, independent PDF readback and mandatory gates"
+  },
+  "formattingRoundIdentityAmendment": {
+    "baseSha": "b846381d418fe715cdca9eafee6b72852db035e4",
+    "preflight": "69 paths PASS before writes",
+    "observed": "Two distinct signed export rounds can produce identical semantic operation IDs; fresh return is blocked by project-global operation replay index",
+    "requiredProof": "Fresh authenticated round revisiting same state applies once; same-round duplicate, stale source and repacked prior return never bypass replay; legacy receipts preserved",
+    "nativeFailure": "SOURCE08 cycle02 center240 to left480; scene unchanged after rejection",
+    "authority": "Existing authenticated capsule and Main-owned formatting Apply only"
   }
 }

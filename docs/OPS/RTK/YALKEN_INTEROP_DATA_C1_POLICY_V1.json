@@ -763,7 +763,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f3d9b6dc2a2a9054d7bea3f52779171edda4d77e87c1a4f373ff39b7ce939d7b"
+        "sha256": "9d10c298ac3afd011677d85852a9d6539bd8af90b218fded6c1b2aeeb8e3fe51"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1363,7 +1363,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "dd773b16f466da3660ca5708c88af5e650cccb466cb7be59333254127208325d"
+        "sha256": "5397f28fd4654917a165c898bad6ecbbfbd6634b0f621a19bc1cc26dfbd902f3"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1951,7 +1951,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "db74100c8147e70c11aad3874696d54e019d4de2770e9842dde320520b159307"
+        "sha256": "8af610ecd666f76065400debd52b65a027ab255c0deeb9ff5eeb469f5efa97f9"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2239,11 +2239,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "99ab0fedcace5c6f5dc88d934166f0130e7288613e4130539890eb90355f269e"
+        "sha256": "45b02b857dcd5b1d6150b0779ebcfcd0226a5b1291bfe289a89bbf9e6fa80075"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "308f93cc24dbe246b521d8cc11dbdf729518078d0559d7da3c06deeb562c320e"
+        "sha256": "25621a97d2016a878c3166c9078c93853b2dd802fac442187cc0d9e1de4f6636"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",
@@ -2267,7 +2267,7 @@
       },
       {
         "path": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
-        "sha256": "168354e0173d49d6614e5e32d8dba783d6641a5a83aba10bb9c1307bf145223d"
+        "sha256": "606416151589ed37bb38d39bd6d85375bf0b2cf8308ebc05eb6eaf1e7651c5f9"
       },
       {
         "path": "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",

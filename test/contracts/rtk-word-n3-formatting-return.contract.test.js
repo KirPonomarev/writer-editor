@@ -1326,3 +1326,34 @@ test('N3 candidate consumes proven default fonts and implicit left without copyi
  const missing=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build('',''),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
  assert.ok(missing.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'&&d.keys.includes('fontFamily')));
 });
+
+test('N3 fresh round identities admit repeated transitions while legacy and same-round repacks remain no-write', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  const project = runtimeProject();
+  const baseline = [fs.readFileSync(project.sceneA,'utf8'),fs.readFileSync(project.sceneB,'utf8')];
+  const restore = () => { fs.writeFileSync(project.sceneA,baseline[0]);fs.writeFileSync(project.sceneB,baseline[1]); };
+  const input = runtimeInput(project.projectRoot,project.scenePathBySceneId,'legacy-cycle');
+  assert.equal((await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort})).status,'applied');
+  const ledgerPath=path.join(project.projectRoot,'.yalken','recovery','rtk-formatting-return-v1.json');
+  const legacyReceipt=JSON.parse(fs.readFileSync(ledgerPath)).receiptsByRequestId[input.requestId];
+  for(const round of ['1','2']) {
+    restore();
+    const fresh={...input,requestId:`fresh-${round}`,formattingRoundId:`round-${round.repeat(32)}`};
+    assert.equal((await runtime.applyMultiSceneFormattingReturnRuntime(fresh,{cryptoPort})).status,'applied');
+    const replay=await runtime.applyMultiSceneFormattingReturnRuntime({...fresh,requestId:`replay-${round}`},{cryptoPort});
+    assert.equal(replay.status,'replay');assert.equal(replay.writerCalled,false);
+    assert.deepEqual(JSON.parse(fs.readFileSync(ledgerPath)).receiptsByRequestId[input.requestId],legacyReceipt);
+  }
+  restore();
+  for(const rejected of [
+    {...input,requestId:'legacy-exact-replay'},
+    {...input,requestId:'legacy-repack',returnArtifactSha256:`sha256:${'b'.repeat(64)}`},
+    {...input,requestId:'round-repack',formattingRoundId:`round-${'1'.repeat(32)}`,returnArtifactSha256:`sha256:${'c'.repeat(64)}`},
+  ]) {
+    const before=fs.readFileSync(ledgerPath,'utf8');
+    const result=await runtime.applyMultiSceneFormattingReturnRuntime(rejected,{cryptoPort});
+    assert.equal(result.ok,false);assert.match(result.code,/REPLAY_STATE_DIVERGED|OPERATION_REPLAY_CONFLICT/);
+    assert.equal(fs.readFileSync(project.sceneA,'utf8'),baseline[0]);assert.equal(fs.readFileSync(project.sceneB,'utf8'),baseline[1]);
+    assert.equal(fs.readFileSync(ledgerPath,'utf8'),before);
+  }
+});

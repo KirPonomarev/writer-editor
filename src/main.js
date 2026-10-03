@@ -4824,6 +4824,7 @@ async function readDocxReviewPacketExportSource() {
     roundIdHex: docxReviewPreviewSessionDetailString(roundKeyImport?.roundIdHex),
     lifecycleState: 'ALLOCATED',
     recordVersion: 1,
+    formattingOperationIdentityVersion: 2,
     expectedAuthority: {
       sceneId,
       sceneRevision,
@@ -5001,6 +5002,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   source.localAuthorityCapsule.roundIdHex = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.roundIdHex);
   source.localAuthorityCapsule.lifecycleState = 'ALLOCATED';
   source.localAuthorityCapsule.recordVersion = 1;
+  source.localAuthorityCapsule.formattingOperationIdentityVersion = 2;
   // ROUND-01 (V3): MERGE — full-manuscript round must not evict prior rounds.
   const priorFullManuscriptRoundsById = Object.fromEntries(Object.entries(
     readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
@@ -8446,6 +8448,7 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
     projectId: docxReviewPreviewSessionDetailString(context.projectId),
     projectRoot: docxReviewPreviewSessionDetailString(capsule.projectRoot || context.projectRoot),
     requestId: `${requestId}:formatting-return`,
+    ...(capsule.formattingOperationIdentityVersion === 2 ? { formattingRoundId: capsule.roundId } : {}),
     returnArtifactSha256: docxReviewPreviewSessionDetailString(intake.returnedArtifactSha256),
     scenePathBySceneId: isPlainObjectValue(capsule.scenePathBySceneId)
       ? cloneJsonSafe(capsule.scenePathBySceneId)
@@ -24058,8 +24061,13 @@ async function revalidateRtkReturnApplyKey(kind, payload) {
   if (handle?.state !== 'ACTIVE') return blocked(
     handle?.state === 'REVOKED' ? 'RTK_ROUND_KEY_REVOKED'
       : handle?.state === 'VERIFY_ONLY' ? 'RTK_ROUND_KEY_VERIFY_ONLY' : 'RTK_ROUND_KEY_LOST');
-  try { assertFreshDocxReviewRoundAuthority(store.keyAuthority); }
-  catch (error) { return blocked(error.message); }
+  try {
+    const freshRound = assertFreshDocxReviewRoundAuthority(store.keyAuthority);
+    if (kind === 'formatting') {
+      const expectedRoundId = freshRound.formattingOperationIdentityVersion === 2 ? freshRound.roundId : undefined;
+      if (payload.formattingRoundId !== expectedRoundId) return blocked('RTK_FORMATTING_ROUND_AUTHORITY_MISMATCH');
+    }
+  } catch (error) { return blocked(error.message); }
   return {ok:true};
 }
 

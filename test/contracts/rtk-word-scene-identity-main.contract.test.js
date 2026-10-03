@@ -66,6 +66,8 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
+    formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
+    setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
     observeDeferredEditorSync() { const original=syncReviewExactTextApplyEditorFromMainState,pending=[];
       syncReviewExactTextApplyEditorFromMainState=(...args)=>{const result=original(...args);pending.push(result);return result;};
       return async()=>{await new Promise(resolve=>setImmediate(resolve));return Promise.all(pending.splice(0));}; },
@@ -1799,4 +1801,38 @@ test('packaged Mac actual bridge reloads reconciled Word writes and retains no-l
  assert.deepEqual(f.capture(),before,'canonical reload never rewrites manuscript or metadata');
  const acknowledged=JSON.parse(read(journal));assert.equal(acknowledged.status,'reconciled');assert.equal(acknowledged.reconciliation.acknowledgedAction,'RELOAD_CANONICAL');
  const publications=ui.sends.filter(x=>x.channel==='editor:set-text');assert.equal(publications.length,1);assert.equal(publications[0].payload.content,read(f.alpha));
+});
+
+test('actual Main fresh authenticated formatting rounds revisit the same transition and deny forged round authority',async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph',attrs:{textAlign:'left'},content:[{type:'text',text:'Alpha'}]}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+ f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),settle=f.probe.observeDeferredEditorSync(),rounds=[],operationIds=[],baselines=[];
+ const sibling=read(f.beta);
+ for(const [index,alignment] of ['right','left','right'].entries()) {
+  baselines.push(read(f.alpha));
+  const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true);await f.probe.activate(source.pendingAuthorityStore);
+  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:jc\b[^>]*\/>/gu,`<w:jc w:val="${alignment}"/>`);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const before=f.capture(),activated=await f.probe.reviewActivate({requestId:`fresh-round-intake-${index}`,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),before);
+  const input=f.probe.formattingInput();rounds.push(input.formattingRoundId);operationIds.push(input.operations.map(o=>o.operationId));
+  assert.match(input.formattingRoundId,/^round-[a-f0-9]{32}$/u);
+  for(const wrong of [undefined,`round-${'0'.repeat(32)}`]){
+   f.probe.setFormattingRound(wrong);
+   const rejected=await f.probe.formatApply({requestId:`forged-round-${index}`});await settle();
+   assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.deepEqual(f.capture(),before);
+  }
+  f.probe.setFormattingRound(input.formattingRoundId);
+  const applied=await f.probe.formatApply({requestId:`fresh-round-apply-${index}`});await settle();
+  assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].attrs.textAlign,alignment);
+  assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ }
+ assert.equal(new Set(rounds).size,3,'exports mint distinct authenticated rounds');
+ assert.equal(baselines[0],baselines[2],'the same exact before bytes are revisited');
+ assert.deepEqual(operationIds[0],operationIds[2],'semantic operation identity repeats; round authority separates applications');
 });

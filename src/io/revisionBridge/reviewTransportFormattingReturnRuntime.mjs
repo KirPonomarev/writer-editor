@@ -28,7 +28,7 @@ const OPERATION_KEYS = new Set([
 ]);
 const INPUT_KEYS = new Set([
   'commandId', 'callerRole', 'commandAuthority', 'previewConfirmed', 'projectId', 'projectRoot',
-  'requestId', 'returnArtifactSha256', 'scenePathBySceneId', 'operations',
+  'requestId', 'returnArtifactSha256', 'scenePathBySceneId', 'operations', 'formattingRoundId',
 ]);
 const STATE_SCHEMA = 'yalken.rtk.formatting-return-state.v1';
 const SHA256_RE = /^sha256:[a-f0-9]{64}$/u;
@@ -1019,6 +1019,11 @@ async function normalizeRuntimeInput(input, cryptoPort) {
   if (!projectId || !projectRoot || !requestId || !SHA256_RE.test(returnArtifactSha256)) {
     return result(false, 'RTK_FORMATTING_PROJECT_AUTHORITY_REQUIRED');
   }
+  // Only Main's fresh durable round authority can admit this field. Legacy
+  // rounds retain their original global operation index and replay behavior.
+  const formattingRoundId = input.formattingRoundId;
+  if (formattingRoundId !== undefined && (typeof formattingRoundId !== 'string' || !/^round-[a-f0-9]{32}$/u.test(formattingRoundId)))
+    return result(false, 'RTK_FORMATTING_ROUND_AUTHORITY_INVALID');
   const operations = [];
   const operationIds = new Set();
   for (const [index, operation] of (Array.isArray(input.operations) ? input.operations : []).entries()) {
@@ -1028,6 +1033,7 @@ async function normalizeRuntimeInput(input, cryptoPort) {
       return result(false, 'RTK_FORMATTING_DUPLICATE_OPERATION_ID', { operationId: checked.operation.operationId });
     }
     operationIds.add(checked.operation.operationId);
+    if (formattingRoundId !== undefined) checked.operation.operationId = `rtk-format-round-v2-${sha256Json(cryptoPort, { roundId: formattingRoundId, operationId: checked.operation.operationId }).slice(7)}`;
     operations.push(checked.operation);
   }
   const sceneIds = [...new Set(operations.map((operation) => operation.sceneId))].sort();
