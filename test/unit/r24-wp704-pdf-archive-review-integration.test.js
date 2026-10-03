@@ -72,13 +72,19 @@ test('WP704 PDF port pins actual Electron options, denies resource navigation an
     isDestroyed() { return false; }
     destroy() { destroyed++; }
   }
-  const port = createElectronPdfProfilePort({ BrowserWindow: Window, versions: { electron: '41.10.3' }, readIdentity: f.identity });
+  const port = createElectronPdfProfilePort({ BrowserWindow: Window, versions: { electron: '41.10.6' }, readIdentity: f.identity });
   await port.render('<!doctype html><html>synthetic</html>'); assert.equal(destroyed, 1);
   assert.equal(options.show, false); assert.deepEqual(options.webPreferences, { contextIsolation: true, javascript: false, nodeIntegration: false, sandbox: true, webSecurity: true, partition: 'wp704-offline-pdf' });
   assert.deepEqual(open(), { action: 'deny' }); let prevented = false; navigation({ preventDefault() { prevented = true; } }); assert(prevented);
   assert(filter.urls.includes('https://*/*')); let decision; network({}, d => { decision = d; }); assert.deepEqual(decision, { cancel: true });
   fail = true; await assert.rejects(port.render('<!doctype html><html>synthetic</html>'), /synthetic print failure/); assert.equal(destroyed, 2);
-  assert.throws(() => createElectronPdfProfilePort({ BrowserWindow: Window, versions: { electron: '41.10.2' }, readIdentity: f.identity }), /E_PAR_ELECTRON_PROFILE/);
+  assert.equal(port.profileId, 'ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1');
+  for (const electron of ['41.10.2', '41.10.3', '41.10.7', undefined])
+    assert.throws(() => createElectronPdfProfilePort({ BrowserWindow: Window, versions: { electron }, readIdentity: f.identity }), /E_PAR_ELECTRON_PROFILE/);
+  const api = await load();
+  const historical = api.canonicalizePdfProfileBytes({ bytes: f.syntheticPdf(), profileId: 'ELECTRON_41_10_3_OFFLINE_CLASSIC_PDF_V1' });
+  assert.equal(historical.ok, false);
+  assert.equal(historical.error.code, 'E_PAR_PDF_RENDER_PROFILE');
 });
 
 test('WP704 pure profiles reject directory ambiguity, duplicate proposal ids and resolved decisions', async () => {
@@ -115,7 +121,7 @@ test('WP704 adapter deadline destroys a stalled window and never publishes parti
     isDestroyed() { return false; }
     destroy() { destroyed++; }
   }
-  const port = module.exports.createElectronPdfProfilePort({ BrowserWindow: StalledWindow, versions: { electron: '41.10.3' }, readIdentity: f.identity });
+  const port = module.exports.createElectronPdfProfilePort({ BrowserWindow: StalledWindow, versions: { electron: '41.10.6' }, readIdentity: f.identity });
   await assert.rejects(port.render('<!doctype html><html>synthetic</html>'), /E_PAR_ELECTRON_TIMEOUT/);
   assert.equal(deadline, 30000); assert.equal(destroyed, 1); assert.equal(timerCleared, 1);
   await assert.rejects(port.render('<!doctype html>' + 'x'.repeat(1048576)), /E_PAR_ELECTRON_HTML/); assert.equal(destroyed, 1);

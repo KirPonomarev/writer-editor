@@ -206,6 +206,7 @@ const RELEASE01_SUCCESSOR_CHAIN_CODES = Object.freeze({
   SURFACE_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_SURFACE_OVERRIDE_MISSING',
   CURRENT_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_CURRENT_OVERRIDE_MISSING',
   CURRENT_QUALIFICATION_INVALID: 'RTK_RELEASE01_WORDING_CURRENT_QUALIFICATION_INVALID',
+  SECURITY_SUCCESSOR_INVALID: 'RTK_RELEASE01_WORDING_SECURITY_SUCCESSOR_INVALID',
 });
 
 function failSuccessorChain(code, message) {
@@ -262,13 +263,14 @@ function applySurfaceOverrides(registry, surfaceOverrides, code) {
   return next;
 }
 
-function compileRelease01CurrentWordingRegistry({
+async function compileRelease01CurrentWordingRegistry({
   historicalRegistry,
   wp806SuccessorLoad = loadJsonWithBytes(WORDING_SUCCESSOR_PATH),
   commandPaletteSuccessorLoad = loadJsonWithBytes(COMMAND_PALETTE_SUCCESSOR_PATH),
   textSingleSceneSuccessorLoad = loadJsonWithBytes(TEXT_SINGLE_SCENE_SUCCESSOR_PATH),
   currentQualificationLoad = loadJsonWithBytes(C1_DATA_POLICY_PATH),
   currentQualificationPin = currentC1PolicyPin(),
+  securitySuccessorLoad,
 } = {}) {
   const registry = clone(historicalRegistry);
   const wp805Digest = sha256RawFile(WORDING_PREDECESSOR_PATH);
@@ -372,6 +374,24 @@ function compileRelease01CurrentWordingRegistry({
     sha256: `sha256:${editorBindings[0].sha256}`,
   }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
 
+  // Only after the preserved wording chain is validated may the exact
+  // security successor replace the current package surface binding.
+  const security = await import(pathToFileURL(path.join(REPO_ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
+  const admission = security.readWordMacDependencySecurityAdmission(REPO_ROOT);
+  const successor = securitySuccessorLoad === undefined
+    ? loadJsonWithBytes(path.join(REPO_ROOT, security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) : securitySuccessorLoad;
+  if (!admission || !successor || !Buffer.isBuffer(successor.bytes)
+    || sha256RawBytes(successor.bytes) !== admission.carrierSha256
+    || successor.digest !== admission.carrierSha256
+    || JSON.stringify(JSON.parse(successor.bytes.toString('utf8'))) !== JSON.stringify(successor.value)) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.SECURITY_SUCCESSOR_INVALID, 'validated exact security successor required');
+  }
+  const packageSurface = registry.wordingSurfaces.find(surface => surface.path === 'package.json');
+  const packageDigest = successor.value.currentFiles?.['package.json'];
+  if (!packageSurface || !/^[a-f0-9]{64}$/u.test(packageDigest)) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.SECURITY_SUCCESSOR_INVALID, 'one admitted package binding required');
+  }
+  applySurfaceOverrides(registry, [{ ...packageSurface, sha256: `sha256:${packageDigest}` }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
   return registry;
 }
 
@@ -810,7 +830,7 @@ test('RELEASE01-14-integration-real-registry-binds-all-wording-and-rolls-up', as
   assert.equal(loaded.ok, true, 'real terminal-claim registry must load');
   const historicalRegistry = loaded.registry || loaded.claims ? loaded.registry : null;
   assert.ok(historicalRegistry, 'loaded registry must expose the registry object');
-  const registry = compileRelease01CurrentWordingRegistry({ historicalRegistry });
+  const registry = await compileRelease01CurrentWordingRegistry({ historicalRegistry });
 
   // (a) Every wordingSurface path must exist with a matching sha256.
   for (const surface of registry.wordingSurfaces || []) {
@@ -904,7 +924,7 @@ test('RELEASE01-14a-successor-chain-rejects-broken-WP806-predecessor-hash', asyn
   const mutated = clone(wp806Load.value);
   mutated.predecessorSuccessor.sha256 = '0'.repeat(64);
 
-  assert.throws(() => compileRelease01CurrentWordingRegistry({
+  await assert.rejects(() => compileRelease01CurrentWordingRegistry({
     historicalRegistry: loaded.registry,
     wp806SuccessorLoad: { ...wp806Load, value: mutated },
   }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH);
@@ -919,7 +939,7 @@ test('RELEASE01-14b-successor-chain-rejects-missing-CORE-A4-current-editor-overr
   const mutated = clone(commandPaletteLoad.value);
   mutated.surfaceOverrides = [];
 
-  assert.throws(() => compileRelease01CurrentWordingRegistry({
+  await assert.rejects(() => compileRelease01CurrentWordingRegistry({
     historicalRegistry: loaded.registry,
     commandPaletteSuccessorLoad: { ...commandPaletteLoad, value: mutated },
   }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
@@ -934,7 +954,7 @@ test('RELEASE01-14c-successor-chain-rejects-broken-TEXT-SINGLE-SCENE-predecessor
   const mutated = clone(textSingleSceneLoad.value);
   mutated.predecessorSuccessor.sha256 = '0'.repeat(64);
 
-  assert.throws(() => compileRelease01CurrentWordingRegistry({
+  await assert.rejects(() => compileRelease01CurrentWordingRegistry({
     historicalRegistry: loaded.registry,
     textSingleSceneSuccessorLoad: { ...textSingleSceneLoad, value: mutated },
   }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH);
@@ -953,7 +973,7 @@ test('RELEASE01-14d-current-qualification-rejects-stale-bytes-and-decoded-tamper
     { ...qualification, digest: '0'.repeat(64) },
     { ...qualification, value: decodedTamper },
   ]) {
-    assert.throws(() => compileRelease01CurrentWordingRegistry({
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({
       historicalRegistry: loaded.registry, currentQualificationLoad,
     }), (error) => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
   }
@@ -973,7 +993,7 @@ test('RELEASE01-14e-current-qualification-rejects-invalid-or-ambiguous-editor-bi
     mutate(value.qualifiedRuntimeRepair);
     const bytes = Buffer.from(JSON.stringify(value));
     const digest = sha256RawBytes(bytes);
-    assert.throws(() => compileRelease01CurrentWordingRegistry({
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({
       historicalRegistry: loaded.registry,
       currentQualificationLoad: { bytes, value, digest },
       currentQualificationPin: digest,
@@ -2028,3 +2048,20 @@ test('RELEASE01-S13-real-registry-word-16-112-typed-adverse-schedules-still-fail
 
 // Keep stableJson referenced for fixture symmetry with sibling contracts.
 void stableJson;
+
+
+test('RELEASE01 security wording successor rejects missing changed and forged current package bindings',async()=>{
+ const module=await loadModule(),loaded=module.loadTerminalClaimRegistry(REGISTRY_PATH);
+ assert.equal(loaded.ok,true);
+ const security=await import(pathToFileURL(path.join(REPO_ROOT,'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
+ const original=loadJsonWithBytes(path.join(REPO_ROOT,security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
+ const tampered=clone(original.value);tampered.currentFiles['package.json']='0'.repeat(64);
+ const forgedBytes=Buffer.from(JSON.stringify(tampered));
+ for(const securitySuccessorLoad of [null,{...original,bytes:Buffer.concat([original.bytes,Buffer.from(' ')])},{...original,digest:'0'.repeat(64)},{...original,value:tampered},{bytes:forgedBytes,value:tampered,digest:sha256RawBytes(forgedBytes)}]){
+  await assert.rejects(()=>compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry,securitySuccessorLoad}),error=>error?.code===RELEASE01_SUCCESSOR_CHAIN_CODES.SECURITY_SUCCESSOR_INVALID);
+ }
+ const historicalBefore=JSON.stringify(loaded.registry);
+ const current=await compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry});
+ assert.equal(JSON.stringify(loaded.registry),historicalBefore,'security successor must preserve historical registry');
+ assert.equal(current.wordingSurfaces.find(surface=>surface.path==='package.json').sha256,`sha256:${original.value.currentFiles['package.json']}`);
+});

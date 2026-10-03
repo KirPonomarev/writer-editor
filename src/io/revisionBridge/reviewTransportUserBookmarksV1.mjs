@@ -292,7 +292,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       if(!same(expectedBreaks.map(b=>b.type),returnedBreaks.map(b=>b.type)))return reject('typed-break-semantic-change');
       if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists) || (name==='sectPr' && sectionVerified)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
-      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage',...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
+      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
+      if(!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null))return reject('paragraph-spacing-change');
+      if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');
       const before=runsForBase(block,defaultFontSize,ordinaryTextMode),after=runsForReturn(p,defaultFontSize,ordinaryTextMode);
       const languageChange={schemaVersion:1,paragraphMark:p.wordParagraphMarkLanguage||null,
@@ -306,7 +308,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         || !same(languages(before.map(run=>({from:run.from,to:run.to,language:run.inline?.wordLanguage||null}))),languages(languageChange.runs));
       const hasLanguage=languageChange.paragraphMark!==null || languageChange.runs.some(run=>run.language!==null)
         || baseP.wordParagraphMarkLanguage!=null || before.some(run=>run.inline?.wordLanguage!=null);
-      if(!ordinaryTextMode && hasLanguage) return reject('language-composite-unsupported');
+      // Bookmark-only returns preserve language through exact style signatures
+      // (including offset-adjusted label comparisons) and the paragraph-mark
+      // equality guard above. Presence alone is not a language mutation.
       let from=0,to=block.text.length,afterTo=p.paragraphText.length;
       if(block.text!==p.paragraphText || (ordinaryTextMode && hasLanguage && languageChanged)){
         const groups=[];
@@ -330,7 +334,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
           continue;
         }
-        if(hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
+        if(ordinaryTextMode && hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);

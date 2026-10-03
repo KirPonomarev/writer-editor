@@ -1265,3 +1265,95 @@ test('N3 physical canary refuses mixed formatting mutation lanes without one ato
     typedPendingLanes: { formatting: 'BLOCKED_MIXED_LANE_ATOMICITY_REQUIRED' },
   }), ['formatting is blocked until mixed return lanes share one atomic product transaction']);
 });
+
+test('N3 typed spacing and language actions persist objects and reject forged values without mutation',async()=>{
+ const runtime=await import(pathToFileURL(RUNTIME_PATH).href),envelope=await import(pathToFileURL(ENVELOPE_PATH).href);
+ const base=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Body'}]}]},metaEnabled:true,meta:{synopsis:'Keep',status:'draft'},cards:[{title:'Keep',text:'Card'}]});
+ const op={operationId:'spacing-language',sceneId:'scene-a',blockId:'block-a-1',paragraphOrdinal:0,from:0,to:4,selectedText:'Body',
+  inline:{wordLanguage:{action:'set',value:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}}},
+  paragraph:{wordParagraphSpacing:{action:'set',value:{after:160,line:278,lineRule:'auto'}},wordParagraphMarkLanguage:{action:'set',value:{val:'en-US'}}}};
+ const result=runtime.applyFormattingOperationsToObservableContent(base,[op]);assert.equal(result.ok,true,JSON.stringify(result));
+ const parsed=envelope.parseObservablePayload(result.content);
+ assert.deepEqual(parsed.doc.content[0].attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(parsed.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'en-US'});
+ assert.deepEqual(parsed.doc.content[0].content[0].marks[0].attrs.wordLanguage,op.inline.wordLanguage.value);
+ assert.equal(parsed.meta.synopsis,'Keep');assert.equal(parsed.cards[0].text,'Card');
+ for(const value of ['{"after":160}',{after:-1},{after:1000001},{lineRule:'invented'},{after:160,evil:true}]){
+  const bad=structuredClone(op);bad.paragraph.wordParagraphSpacing.value=value;
+  assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[bad]).ok,false);
+ }
+ const forged=structuredClone(op);forged.inline.wordLanguage.value='ru-RU';
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[forged]).ok,false);
+ assert.equal(envelope.parseObservablePayload(base).doc.content[0].attrs,undefined);
+});
+
+test('N3 authenticated empty paragraph spacing and mark language apply without invented text',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href),runtime=await import(pathToFileURL(RUNTIME_PATH).href),envelope=await import(pathToFileURL(ENVELOPE_PATH).href);
+ const formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{nodeType:'paragraph'},runs:[]};
+ const returned=docx('<w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr></w:p>');
+ const candidates=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(returned,{fullManuscriptExportMap:richExportMap('',formatIr),cryptoPort});
+ assert.equal(candidates.candidates.length,1,JSON.stringify(candidates));const op=candidates.candidates[0];
+ assert.equal(op.from,0);assert.equal(op.to,0);assert.equal(op.selectedText,'');assert.deepEqual(op.inline,{});
+ const base=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[]}]}});
+ const applied=runtime.applyFormattingOperationsToObservableContent(base,[op]);assert.equal(applied.ok,true,JSON.stringify(applied));
+ assert.equal(envelope.parseObservablePayload(applied.content).text,'');
+ assert.deepEqual(applied.doc.content[0].attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(applied.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-RU'});
+ const unbound=structuredClone(op);delete unbound.sourceAuthority;
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[unbound]).ok,false);
+ const nonempty=envelope.composeObservablePayload({text:'Keep'});
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(nonempty,[op]).ok,false);
+ const forged=structuredClone(op);forged.inline={bold:{action:'set',value:true}};
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[forged]).ok,false);
+});
+
+test('N3 candidate consumes proven default fonts and implicit left without copying unknown baseline values',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href);
+ const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+ const formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{nodeType:'paragraph',textAlign:'left'},runs:[{from:0,to:5,text:'Alpha',inline:{fontFamily:'Times New Roman',fontSize:'12pt'}}]};
+ const build=(extraP='',font='<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>')=>zipFixture([
+  {name:'word/document.xml',body:`<w:document xmlns:w="${ns}" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:body><w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr>${extraP}<w:spacing w:after="160"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Alpha</w:t></w:r></w:p></w:body></w:document>`},
+  {name:'word/styles.xml',body:`<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr>${font}<w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>`},
+ ]);
+ const good=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build(),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+ assert.deepEqual(good.diagnostics,[]);assert.equal(good.candidates.length,2);
+ assert.ok(good.candidates.some(op=>op.inline.bold?.action==='set'));
+ assert.ok(good.candidates.every(op=>!op.inline.fontFamily&&!op.paragraph.textAlign));
+ for(const [p,font]of [['<w:bidi/>',undefined],['<w:pStyle w:val="Unknown"/>',undefined],['','<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"><w:b/></w:rFonts>']]){
+  const bad=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build(p,font),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+  assert.equal(bad.candidates.length,0);assert.ok(bad.diagnostics.some(d=>d.code.includes('UNSUPPORTED')));
+ }
+ const missing=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(build('',''),{fullManuscriptExportMap:richExportMap('Alpha',formatIr),cryptoPort});
+ assert.ok(missing.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'&&d.keys.includes('fontFamily')));
+});
+
+test('N3 fresh round identities admit repeated transitions while legacy and same-round repacks remain no-write', async () => {
+  const runtime = await import(pathToFileURL(RUNTIME_PATH).href);
+  const project = runtimeProject();
+  const baseline = [fs.readFileSync(project.sceneA,'utf8'),fs.readFileSync(project.sceneB,'utf8')];
+  const restore = () => { fs.writeFileSync(project.sceneA,baseline[0]);fs.writeFileSync(project.sceneB,baseline[1]); };
+  const input = runtimeInput(project.projectRoot,project.scenePathBySceneId,'legacy-cycle');
+  assert.equal((await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort})).status,'applied');
+  const ledgerPath=path.join(project.projectRoot,'.yalken','recovery','rtk-formatting-return-v1.json');
+  const legacyReceipt=JSON.parse(fs.readFileSync(ledgerPath)).receiptsByRequestId[input.requestId];
+  for(const round of ['1','2']) {
+    restore();
+    const fresh={...input,requestId:`fresh-${round}`,formattingRoundId:`round-${round.repeat(32)}`};
+    assert.equal((await runtime.applyMultiSceneFormattingReturnRuntime(fresh,{cryptoPort})).status,'applied');
+    const replay=await runtime.applyMultiSceneFormattingReturnRuntime({...fresh,requestId:`replay-${round}`},{cryptoPort});
+    assert.equal(replay.status,'replay');assert.equal(replay.writerCalled,false);
+    assert.deepEqual(JSON.parse(fs.readFileSync(ledgerPath)).receiptsByRequestId[input.requestId],legacyReceipt);
+  }
+  restore();
+  for(const rejected of [
+    {...input,requestId:'legacy-exact-replay'},
+    {...input,requestId:'legacy-repack',returnArtifactSha256:`sha256:${'b'.repeat(64)}`},
+    {...input,requestId:'round-repack',formattingRoundId:`round-${'1'.repeat(32)}`,returnArtifactSha256:`sha256:${'c'.repeat(64)}`},
+  ]) {
+    const before=fs.readFileSync(ledgerPath,'utf8');
+    const result=await runtime.applyMultiSceneFormattingReturnRuntime(rejected,{cryptoPort});
+    assert.equal(result.ok,false);assert.match(result.code,/REPLAY_STATE_DIVERGED|OPERATION_REPLAY_CONFLICT/);
+    assert.equal(fs.readFileSync(project.sceneA,'utf8'),baseline[0]);assert.equal(fs.readFileSync(project.sceneB,'utf8'),baseline[1]);
+    assert.equal(fs.readFileSync(ledgerPath,'utf8'),before);
+  }
+});

@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003",
+  "objective": "Apply effective supported Word paragraph and character style changes through authenticated Mac review without losing inherited values or bypassing identity guards",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "e4be0d8d22937745f691dc6121541278668139ed",
+  "scopeIn": [
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "src/main.js",
+    "test/contracts/rtk-word-effective-style-return.contract.test.js",
+    "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+    "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+    "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "test/contracts/rtk-word-heading-outline.contract.test.js",
+    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+    "test/contracts/rtk-word-review-default-typography.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "src/core/word-paragraph-spacing-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/renderer/tiptap/documentParagraphAlignment.mjs",
+    "src/renderer/editor.bundle.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/export/docx/docxReviewPacketStories.js",
+    "src/export/docx/docxPendingRevisions.js",
+    "src/utils/docxImportLocalFilePreview.js",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+    "test/contracts/rtk-word-paragraph-spacing.contract.test.js",
+    "test/contracts/revision-bridge-docx-alignment.contract.test.js",
+    "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/contracts/rtk-word-pending-formatting.contract.test.js",
+    "test/contracts/rtk-word-http-links.contract.test.js",
+    "test/contracts/rtk-word-visibility-ruby.contract.test.js",
+    "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "src/core/writer-local-profile-v1.cjs",
+    "test/unit/r24-wp307-writer-local-profile.test.js",
+    "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+    "package.json",
+    "package-lock.json",
+    "scripts/electron-download-config.cjs",
+    "test/unit/electron-download-config.test.js",
+    "scripts/ops/r24/package-content-trust-pk0.mjs",
+    "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
+    "test/unit/r24-pk0-package-content-trust.test.js",
+    "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
+    "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+    "scripts/ops/rtk-interop-order-c1.mjs",
+    "scripts/ops/rtk-interop-text-order-c1.mjs",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+    "src/core/electron-pdf-profile-port-v1.cjs",
+    "src/core/pdf-archive-review-profile-v1.mjs",
+    "scripts/ops/r24/wp704-physical-pdf.cjs",
+    "test/unit/r24-wp704-pdf-archive-review-integration.test.js"
+  ],
+  "scopeOut": [
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/preload.js",
+    ".github/workflows"
+  ],
+  "productAuthority": "Original Mac plan P3-08 effective styles and paragraph formatting plus existing typed proofing language; owner-authorized full implementation. Same vertical slice and PR: native Word style creation adds spacing/lang that cannot be silently ignored.",
+  "commandAuthority": "Existing authenticated formatting return; source round/project/scene/revision/raw CAS and Main dispatch revalidation remain mandatory.",
+  "designAuthority": "Mechanical existing paragraph/heading document representation only. Core supplies immutable typed properties; existing Tiptap extension renders them. No new controls, composition, tokens, shell state or Design OS surface.",
+  "operationKinds": [
+    "QUERY",
+    "COMMAND",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated style-aware returned projection -> existing authority-bound formatting candidate -> explicit Apply -> existing atomic scene writer"
+  ],
+  "readPaths": [
+    "Bounded document/style/theme/settings XML and exact exported baseline map",
+    "Current scene and revision projections"
+  ],
+  "productPorts": [
+    "Existing Word intake, review Apply and scene persistence ports"
+  ],
+  "designOsPorts": [
+    "Existing immutable review/document projection"
+  ],
+  "readProjections": [
+    "Resolved supported effective formatting state; no authority from style ID or OOXML locator"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Existing project, round, scene, source revision, generation and raw-byte checks; exact e4be base"
+  ],
+  "capabilityRevalidation": "Existing Command Kernel and Main revalidate before Apply; styles may not mint scene or write authority.",
+  "fallbacks": [
+    "Unknown or unresolved active style semantics remain typed manual/refusal before write; no dropping unknown properties",
+    "Original DOCX preserved; no arbitrary style evaluation"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Style basedOn/default/direct precedence, explicit reset and Boolean toggle semantics",
+    "Cycle, duplicate IDs, malformed namespace, missing active style, unsupported properties, default ambiguity and resource bounds",
+    "Wrong project/stale revision/forged operation/no preview writes/replay rejection; recovery unchanged",
+    "Strict bounded tuple/accessor/unknown-key validation before clone, independently inherited spacing fields and language slots, zero reset, stale revision and unsaved authoring",
+    "Existing rich-body and auxiliary return allowlists must explicitly preserve/compare new typed attrs; no silent discard",
+    "Reject hostile getters before serialization; preserve original/current accepted/rejected/undo/redo snapshots and both exporters; exact old absence versus new spacing/language."
+  ],
+  "securityAndInputBoundary": "External XML bounded and validated before style resolution. Existing dependency families receive exact security updates; build artifact download retains checksum verification, bounded abort, actual target identity and explicit local distribution overrides. No product network or new product writer.",
+  "performanceAndAccessibility": "Cache bounded style catalog per parse; linear traversal; existing UI and keyboard semantics unchanged.",
+  "currentReality": [
+    "At c523dcb6 baseline, RTK2936 and OSS passed; full npm audit failed with16 affected packages. These checks are not current-head acceptance.",
+    "Native SOURCE and PACKAGED style cycles observed on recorded earlier revisions. Packaged replay proved at a6e1; independent native table accept/reject/Undo/pending export129 assertions passed.",
+    "At89d999 packaged recovery admission repaired; actual Main and profile184 checks passed. Full delivery and final candidate qualification pending."
+  ],
+  "targetOnly": [
+    "Typed wordParagraphSpacing={before?,after?,line?,lineRule?}; absent distinct from zero; before/after twips, auto line in240ths and exact/atLeast line in twips; unsupported attributes remain explicit refusal",
+    "Existing run and paragraph-mark language scopes resolved independently through per-attribute inheritance",
+    "Exact values survive editor load/edit/undo/save/restart and both exports in main text and admitted rich bodies; no pixel-identical page-layout claim",
+    "Existing pending source/history/before-after snapshots preserve strictly validated spacing and language; tracked export old formatting derives solely from before snapshot.",
+    "Bookmark comparison permits exactly unchanged language, still rejects changed language or unsupported composites; invalid default formatting and hidden text remain no-write refusals."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "SECURITY_UPDATES_EXISTING_DEPENDENCY_FAMILIES_ONLY; build-only bounded Electron artifact download through existing builder/get; NO_PRODUCT_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert single PR; preserve original artifacts and existing scene snapshots.",
+  "nativeDrivenAmendment": {
+    "baseSha": "1e9098df0c1df82a320f5a92022c77aad60d7c45",
+    "reason": "Preserve actual native Word-added spacing and inherited language rather than ignore unknown properties",
+    "newCoreFeature": "word-paragraph-spacing.v1",
+    "ports": "Existing envelope, import, formatting transaction and DOCX export adapters",
+    "ui": "Existing paragraph/heading representation only; no new controls or surface",
+    "proof": "Retained native failing artifact must positively apply with exact supported properties before broad gates"
+  },
+  "regressionRepairAmendment": {
+    "baseSha": "8221abe1e7b2c14ba201e600d19e05ad6ac32665",
+    "preflight": "PASS before edits",
+    "reason": "Preserve existing table pending revisions and bookmark routes under newly retained Word spacing and language",
+    "claim": "Implementation repair pending proofs; no acceptance"
+  },
+  "securityRemediationAmendment": {
+    "baseSha": "89d9991331013c26b724e3cbb17ea3faa7d058e9",
+    "preflight": "PASS before edits; 60 admitted paths",
+    "reason": "Full npm audit at stable candidate failed on inherited dependency graph; exact same-family repair required before delivery",
+    "proof": "Isolated trial full audit zero and unsigned Mac build completed; final repository candidate qualification still required",
+    "historicalEvidence": "Historical C6D and WP702 bindings remain immutable; exact successor validates current dependency bytes"
+  },
+  "securityWordingAmendment": {
+    "baseSha": "f7e463b26c137234e31358a6a299b83441e8160e",
+    "reason": "Preserve historical wording registry while current package surface follows validated exact security successor",
+    "preflight": "61 paths PASS before writes",
+    "acceptance": "Pending full committed-candidate checks"
+  },
+  "securityOrderAmendment": {
+    "baseSha": "e165c42971e927443a1bedaea7909e99d6714ddb",
+    "preflight": "64 paths PASS before writes",
+    "reason": "ORDER and TEXT_ORDER protect prior dependency bytes; exact candidate-aware successor must retain historical policies and all unrelated protected-file/drift rejections"
+  },
+  "securityManuscriptAmendment": {
+    "baseSha": "c130af1ac7ced8c93f68cdcfeefbf6e0c636542c",
+    "preflight": "65 paths PASS before writes",
+    "reason": "Historical manuscript assertion retains all Lab identities and cell sets while admitting only validated exact security successor protected bindings"
+  },
+  "securityPdfAmendment": {
+    "baseSha": "90eb2a58dfb69578a370f70c7ea9330f6336e850",
+    "preflight": "69 paths PASS before edits",
+    "reason": "Mandatory physical PDF CI and local disposable driver reject patched Electron before rendering due to exact old-version admission",
+    "profile": "ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1",
+    "authority": "Existing derived PDF port only; unchanged project mutation, network, print options and historical receipts",
+    "requiredProof": "Exact-version negatives, actual two-render byte equality, independent PDF readback and mandatory gates"
+  },
+  "formattingRoundIdentityAmendment": {
+    "baseSha": "b846381d418fe715cdca9eafee6b72852db035e4",
+    "preflight": "69 paths PASS before writes",
+    "observed": "Two distinct signed export rounds can produce identical semantic operation IDs; fresh return is blocked by project-global operation replay index",
+    "requiredProof": "Fresh authenticated round revisiting same state applies once; same-round duplicate, stale source and repacked prior return never bypass replay; legacy receipts preserved",
+    "nativeFailure": "SOURCE08 cycle02 center240 to left480; scene unchanged after rejection",
+    "authority": "Existing authenticated capsule and Main-owned formatting Apply only"
+  }
+}

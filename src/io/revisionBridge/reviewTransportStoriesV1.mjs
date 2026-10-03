@@ -26,7 +26,7 @@ function equivalentBody(left, right, defaults) {
       if(prior?.type==='text' && equal(prior.marks,marks))prior.text+=node.text;
       else runs.push({type:'text',text:node.text,marks});
     }
-    return {align:paragraph.attrs?.textAlign || 'left',runs,list};
+    return {align:paragraph.attrs?.textAlign || 'left',spacing:paragraph.attrs?.wordParagraphSpacing||null,language:paragraph.attrs?.wordParagraphMarkLanguage||null,runs,list};
   });
   return equal(meanings(a),meanings(b));
 }

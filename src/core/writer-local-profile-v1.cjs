@@ -15,6 +15,9 @@ const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS = Object.freeze([
   'cmd.project.review.applyExactTextChangesBatch',
   'cmd.project.review.applyFormattingReturn',
   'cmd.project.review.applyStructuralReturn',
+  'cmd.project.review.inspectFormattingReturnReplay',
+  'cmd.project.review.inspectStructuralReturnReplay',
+  'cmd.project.review.reloadReconciledScene',
 ]);
 const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_ID_SET = new Set(WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS);
 

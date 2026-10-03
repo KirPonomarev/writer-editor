@@ -3,9 +3,9 @@
 // Privileged adapter only. It returns derived bytes, never chooses a path or
 // publishes a file. BrowserWindow is supplied by the existing Electron host.
 function createElectronPdfProfilePort({ BrowserWindow, versions, readIdentity }) {
-  if (typeof BrowserWindow !== 'function' || versions?.electron !== '41.10.3' || typeof readIdentity !== 'function') throw new Error('E_PAR_ELECTRON_PROFILE');
+  if (typeof BrowserWindow !== 'function' || versions?.electron !== '41.10.6' || typeof readIdentity !== 'function') throw new Error('E_PAR_ELECTRON_PROFILE');
   return Object.freeze({
-    profileId: 'ELECTRON_41_10_3_OFFLINE_CLASSIC_PDF_V1',
+    profileId: 'ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1',
     readIdentity,
     async render(html) {
       if (typeof html !== 'string' || Buffer.byteLength(html) > 1048576 || !html.startsWith('<!doctype html>')) throw new Error('E_PAR_ELECTRON_HTML');

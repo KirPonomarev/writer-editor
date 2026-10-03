@@ -150,8 +150,26 @@ test('actual auxiliary editor schema normalizes only null language defaults befo
   assert.equal(Object.hasOwn(normalized.content[0].attrs,'wordParagraphMarkLanguage'),false);
   assert.equal(ui.applyStoryBody(editor,editor.getJSON(),'head',normalized),true);
   assert.match(stories.read(editor.getJSON()).stories[0].body.content[0].content.map(node=>node.text||'').join(''),/YALKEN EDIT EVEN PAGE HEADER/);
-  const explicit=structuredClone(body);explicit.content[0].attrs={wordParagraphMarkLanguage:{val:'ru-RU'}};
-  auxiliary.commands.setContent(explicit);assert.throws(()=>stories.replaceBodyProjection(editor.getJSON(),'head',readManuscriptBodyDocument(auxiliary)),/NOTE_BODY_PARAGRAPH_ATTRIBUTES/,'explicit unsupported language cannot be silently erased');
+  const paragraphLanguage={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'},runLanguage={val:'en-US',eastAsia:'ja-JP',bidi:'he-IL'};
+  const explicit=structuredClone(body);explicit.content[0].attrs={wordParagraphMarkLanguage:paragraphLanguage};
+  explicit.content[0].content[0].marks[0].attrs.wordLanguage=runLanguage;
+  auxiliary.commands.setContent(explicit);
+  const authored=readManuscriptBodyDocument(auxiliary);
+  assert.deepEqual(authored.content[0].attrs.wordParagraphMarkLanguage,paragraphLanguage);
+  assert.deepEqual(authored.content[0].content[0].marks[0].attrs.wordLanguage,runLanguage);
+  assert.equal(ui.applyStoryBody(editor,editor.getJSON(),'head',authored),true);
+  const saved=stories.read(editor.getJSON()).stories[0].body;
+  assert.deepEqual(saved.content[0].attrs.wordParagraphMarkLanguage,paragraphLanguage);
+  assert.deepEqual(saved.content[0].content[0].marks[0].attrs.wordLanguage,runLanguage);
+  const protectedDoc=JSON.stringify(editor.getJSON());
+  for(const scope of ['paragraph','run']){
+    const malformed=structuredClone(explicit);
+    if(scope==='paragraph')malformed.content[0].attrs.wordParagraphMarkLanguage={val:'bad tag'};
+    else malformed.content[0].content[0].marks[0].attrs.wordLanguage={val:'bad tag'};
+    auxiliary.commands.setContent(malformed);
+    assert.throws(()=>stories.replaceBodyProjection(editor.getJSON(),'head',readManuscriptBodyDocument(auxiliary)),/WORD_LANGUAGE_INVALID/);
+    assert.equal(JSON.stringify(editor.getJSON()),protectedDoc,'malformed language must not mutate the saved story');
+  }
   auxiliary.destroy();
 });
 

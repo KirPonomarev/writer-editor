@@ -17,7 +17,7 @@ const find = (root, label) => root?.label === label ? root : (root?.children || 
 
 // Compile the actual entire Main source with owned local adapters. Private
 // state access is added ONLY to this test module, never shipped in production.
-async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
+async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packagedMac = false) {
   const spelled = await fsp.mkdtemp(path.join(os.tmpdir(), 'scene-identity-main-'));
   const temp = await fsp.realpath(spelled);
   t.after(() => fsp.rm(temp, { recursive: true, force: true }));
@@ -30,7 +30,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
   const handles = new Map(), listeners = new Map();
   let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
   const warnings = [];
-  const app = { getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
+  const app = { isPackaged: packagedMac, getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
     encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
@@ -64,6 +64,13 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
+    formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
+    formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
+    setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
+    observeDeferredEditorSync() { const original=syncReviewExactTextApplyEditorFromMainState,pending=[];
+      syncReviewExactTextApplyEditorFromMainState=(...args)=>{const result=original(...args);pending.push(result);return result;};
+      return async()=>{await new Promise(resolve=>setImmediate(resolve));return Promise.all(pending.splice(0));}; },
     refreshReview:refreshActiveReviewExactTextUiPlan,reviewState:()=>cloneJsonSafe(activeReviewSessionStore),
     captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
     async observeLocalReviewReceipt(receipt) {
@@ -90,7 +97,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     },
   };`;
   Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
-  try { compiled._compile(fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
+  try { compiled._compile((packagedMac ? "const process=Object.create(global.process);Object.defineProperty(process,'platform',{value:'darwin'});\n" : '') + fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
   finally { Module._load = originalLoad; }
   const main = compiled.exports, probe = main.__probe;
   const manager = require('../../src/utils/fileManager');
@@ -1210,7 +1217,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1244,6 +1251,7 @@ async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,sch
   // Repeated quote belongs to a different signed block, not this operation.
   parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
   fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
   if(bookmarked){
@@ -1666,4 +1674,165 @@ for(const kind of ['orderedList','blockquote'])test(`actual Main section Save re
  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc}));const edited=structuredClone(doc),leaf=kind==='blockquote'?edited.content[0].content[0]:edited.content[0].content[0].content[0];leaf.content[0].text+=' typed';const working=envelope.composeObservablePayload({doc:edited});
  mountRenderer(f,()=>working,1,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation:1});
  assert.equal(await f.probe.save(),true);const persisted=envelope.parseObservablePayload(read(f.alpha)).doc;assert.deepEqual(model.read(persisted),model.read(doc));assert.match(envelope.deriveVisibleTextFromDocument(persisted),/First typed/);
+});
+
+for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle','word-defaults','native-normalized-defaults'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
+ const {f,activated,beforeActivation,getObserved}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,nativeDefaults:styleCase==='native-normalized-defaults',mutateReturn:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha');
+  const xml=parts['word/document.xml'];
+  const target=xml.match(/<w:p(?:\s[^>]*)?>[\s\S]*?<w:t[^>]*>Alpha<\/w:t>[\s\S]*?<\/w:p>/u);
+  assert.ok(target,'target paragraph must exist');
+  let paragraph=target[0];
+  paragraph=paragraph.includes('<w:pPr>')?paragraph.replace('<w:pPr>','<w:pPr><w:pStyle w:val="OwnerDerived"/>'):paragraph.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr><w:pStyle w:val="OwnerDerived"/></w:pPr>');
+  if(styleCase.includes('character')) { paragraph=paragraph.includes('<w:rPr>') ? paragraph.replace('<w:rPr>','<w:rPr><w:rStyle w:val="OwnerCharDerived"/>') : paragraph.replace('<w:r>','<w:r><w:rPr><w:rStyle w:val="OwnerCharDerived"/></w:rPr>'); assert.match(paragraph,/<w:rStyle w:val="OwnerCharDerived"\/>/u); }
+  parts['word/document.xml']=xml.replace(target[0],paragraph);
+  let styles='<w:style w:type="paragraph" w:styleId="OwnerBase"><w:name w:val="Owner Base"/><w:pPr><w:jc w:val="right"/></w:pPr><w:rPr><w:b/><w:color w:val="224466"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="OwnerDerived"><w:name w:val="Owner Derived"/><w:basedOn w:val="OwnerBase"/></w:style>';
+  if(styleCase==='paragraph-repeat-true')styles=styles.replace('<w:basedOn w:val="OwnerBase"/>','<w:basedOn w:val="OwnerBase"/><w:rPr><w:b/></w:rPr>');
+  if(styleCase==='paragraph-character-toggle')styles=styles.replace('<w:b/>','<w:b/><w:i/>');
+  if(styleCase.includes('character'))styles+='<w:style w:type="character" w:styleId="OwnerCharBase"><w:name w:val="Character Base"/><w:rPr><w:i/></w:rPr></w:style><w:style w:type="character" w:styleId="OwnerCharDerived"><w:name w:val="Character Derived"/><w:basedOn w:val="OwnerCharBase"/><w:rPr><w:i/></w:rPr></w:style>';
+  assert.match(parts['word/styles.xml'],/<\/w:styles>/u);
+  parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>',styles+'</w:styles>');
+  if(styleCase==='native-normalized-defaults'){
+   parts['word/document.xml']=parts['word/document.xml'].replace(/<w:jc\b[^>]*\/>/gu,'').replace(/<w:rFonts\b[^>]*\/>/gu,'');
+   parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:jc\b[^>]*\/>/gu,'').replace(/<w:rFonts\b[^>]*\/>/gu,'');
+   parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>');
+   assert.doesNotMatch(parts['word/document.xml'],/<w:(?:jc|rFonts)\b/u);
+  }
+  if(styleCase==='word-defaults'){
+   const language='<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>';
+   assert.match(parts['word/styles.xml'],/<w:rPrDefault><w:rPr>/u);
+   parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr>'+language);
+   const spacing='<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault>';
+   parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:pPrDefault>[\s\S]*?<\/w:pPrDefault>/u,'').replace('</w:docDefaults>',spacing+'</w:docDefaults>');
+  }
+
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));
+ assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+ assert.equal(activated.formattingProductPath.diagnosticCount,0,'all supported effective formatting must be actionable, not manual');
+ assert.deepEqual(f.capture(),beforeActivation,'intake and preview must not write');
+ const sibling=read(f.beta),before=envelope.parseObservablePayload(read(f.alpha));
+ const settleSync=f.probe.observeDeferredEditorSync();
+ const result=await f.probe.formatApply({requestId:'effective-style-apply'});
+ const sync=await settleSync();assert.equal(sync.length,1);assert.equal(sync[0].ok,true,JSON.stringify(sync));assert.equal(getObserved(),read(f.alpha));
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.status,'applied-and-replayed',JSON.stringify(result));assert.equal(result.replayVerified,true);
+ const after=envelope.parseObservablePayload(read(f.alpha));
+ assert.equal(after.text,before.text);assert.equal(read(f.beta),sibling);
+ assert.equal(after.doc.content[0].attrs.textAlign,styleCase==='native-normalized-defaults'?'left':'right');
+ const alpha=after.doc.content[0].content.find(node=>node.type==='text'&&node.text==='Alpha');
+ assert.ok(alpha);assert.ok(alpha.marks.some(mark=>mark.type==='bold'));
+ assert.equal(alpha.marks.some(mark=>mark.type==='italic'),styleCase==='character-chain','native Word chain assignment followed by one character toggle');
+ assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.color?.toLowerCase(),'#224466');
+ if(styleCase==='native-normalized-defaults')assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.fontFamily,'Times New Roman');
+ if(styleCase==='word-defaults'){
+  const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+  for(const paragraph of after.doc.content){assert.deepEqual(paragraph.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,language);for(const node of paragraph.content)if(node.type==='text')assert.deepEqual(node.marks.find(mark=>mark.type==='textStyle')?.attrs.wordLanguage,language);}
+ }
+
+ const persisted=f.capture();const replay=await f.probe.formatApply({requestId:'effective-style-replay'});await settleSync();
+ assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.status,'applied-and-replayed');assert.equal(replay.reviewSurface.formattingReturnResult.status,'replay');assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+ const exported=await f.probe.sceneSource(),built=await f.probe.reviewBuild(exported);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+});
+
+test('actual Main empty paragraph style return applies zero-length paragraph actions and replays without writes',async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph'}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+ f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const xml=parts['word/document.xml'];
+ parts['word/document.xml']=xml.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr><w:pStyle w:val="EmptyStyle"/></w:pPr>');
+ assert.notEqual(parts['word/document.xml'],xml);
+ parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>','<w:style w:type="paragraph" w:styleId="EmptyStyle"><w:pPr><w:jc w:val="right"/><w:spacing w:before="0" w:after="160" w:line="278" w:lineRule="auto"/></w:pPr><w:rPr><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:style></w:styles>');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const before=f.capture(),sibling=read(f.beta);
+ const activated=await f.probe.reviewActivate({requestId:'empty-style-intake',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),before);
+ const settle=f.probe.observeDeferredEditorSync();const applied=await f.probe.formatApply({requestId:'empty-style-apply'});await settle();
+ assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+ const after=envelope.parseObservablePayload(read(f.alpha));assert.equal(after.text,'');assert.equal(after.doc.content.length,1);assert.equal(after.doc.content[0].attrs.textAlign,'right');
+ assert.deepEqual(after.doc.content[0].attrs.wordParagraphSpacing,{before:0,after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(after.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+ assert.equal(observed,read(f.alpha));assert.equal(read(f.beta),sibling);
+ const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'empty-style-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+});
+
+
+test('packaged Mac actual bridge admits only read-only formatting and structural replay inspectors',async t=>{
+ const f=await fixture(t,false,'01_Alpha.txt',true),ui=mountRenderer(f,read(f.beta));
+ f.probe.state({projectName:'Роман'});
+ const protocol=require('../../src/core/ipc-envelope-v1.cjs');
+ const before=f.capture();
+ for(const kind of ['Formatting','Structural']){
+  const id=`cmd.project.review.inspect${kind}ReturnReplay`;
+  const request=protocol.createEnvelope('ui:command-bridge',id,{requestId:`packaged-${kind}-replay`});
+  const result=await f.handles.get('ui:command-bridge')(ui.event,request);
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.value.code,`RTK_${kind.toUpperCase()}_REPLAY_STATE_INSPECTED`);
+  assert.equal(result.value.writerCalled,false);
+  assert.deepEqual(f.capture(),before,'replay inspection must not alter scenes or project metadata');
+ }
+ const denied=await f.handles.get('ui:command-bridge')(ui.event,protocol.createEnvelope('ui:command-bridge','cmd.project.review.clearSession',{requestId:'unrelated-review'}));
+ assert.equal(denied.ok,false);assert.equal(denied.reason,'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+ assert.equal(denied.value.storageWritten,false);assert.deepEqual(f.capture(),before);
+});
+
+
+test('packaged Mac actual bridge reloads reconciled Word writes and retains no-loss guards',async t=>{
+ const f=await fixture(t,false,'01_Alpha.txt',true);
+ fs.writeFileSync(f.alpha,'Alpha beta gamma.');
+ const crashed=require('node:child_process').spawnSync(process.execPath,[path.join(ROOT,'test/fixtures/revision-bridge-exact-text-apply-crash-child.mjs'),f.root,'before_receipt','roman/Imported/01_Alpha.txt'],{cwd:ROOT,encoding:'utf8'});
+ assert.equal(crashed.status,73,crashed.stderr);
+ const ui=mountRenderer(f,read(f.alpha));f.probe.state({projectName:'Роман',filePath:f.alpha});
+ const startup=await f.probe.reconcileStartup();assert.deepEqual(startup.userRelevant[0].safeActions,['RELOAD_CANONICAL']);
+ const operationId='op_crash_before_receipt',journal=path.join(f.root,'backups/revision-bridge-apply-journal',operationId+'.json');
+ const before=f.capture(),journalBefore=read(journal),protocol=require('../../src/core/ipc-envelope-v1.cjs');
+ const dispatch=(extra={})=>f.handles.get('ui:command-bridge')(ui.event,protocol.createEnvelope('ui:command-bridge','cmd.project.review.reloadReconciledScene',{requestId:'packaged-reload',operationId,...extra}));
+ const unchanged=()=>{assert.deepEqual(f.capture(),before);assert.equal(read(journal),journalBefore);assert.equal(ui.sends.filter(x=>x.channel==='editor:set-text').length,0);};
+ f.probe.state({dirty:true});const dirty=await dispatch();assert.equal(dirty.ok,false);assert.match(JSON.stringify(dirty),/RECONCILIATION_DIRTY_EDITOR_BLOCKED/);unchanged();
+ f.probe.state({dirty:false,filePath:f.beta});const wrong=await dispatch();assert.equal(wrong.ok,false);assert.match(JSON.stringify(wrong),/RECONCILIATION_CURRENT_SCENE_MISMATCH/);unchanged();
+ f.probe.state({filePath:f.alpha});const forged=await dispatch({scenePath:f.beta});assert.equal(forged.ok,false);assert.match(JSON.stringify(forged),/RECONCILIATION_WRITE_AUTHORITY_DENIED/);unchanged();
+ const missing=await dispatch({operationId:'op_missing'});assert.equal(missing.ok,false);assert.match(JSON.stringify(missing),/ENOENT/);unchanged();
+ const result=await dispatch();assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.value.reloaded,true);
+ assert.deepEqual(f.capture(),before,'canonical reload never rewrites manuscript or metadata');
+ const acknowledged=JSON.parse(read(journal));assert.equal(acknowledged.status,'reconciled');assert.equal(acknowledged.reconciliation.acknowledgedAction,'RELOAD_CANONICAL');
+ const publications=ui.sends.filter(x=>x.channel==='editor:set-text');assert.equal(publications.length,1);assert.equal(publications[0].payload.content,read(f.alpha));
+});
+
+test('actual Main fresh authenticated formatting rounds revisit the same transition and deny forged round authority',async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph',attrs:{textAlign:'left'},content:[{type:'text',text:'Alpha'}]}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+ f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),settle=f.probe.observeDeferredEditorSync(),rounds=[],operationIds=[],baselines=[];
+ const sibling=read(f.beta);
+ for(const [index,alignment] of ['right','left','right'].entries()) {
+  baselines.push(read(f.alpha));
+  const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true);await f.probe.activate(source.pendingAuthorityStore);
+  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:jc\b[^>]*\/>/gu,`<w:jc w:val="${alignment}"/>`);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const before=f.capture(),activated=await f.probe.reviewActivate({requestId:`fresh-round-intake-${index}`,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),before);
+  const input=f.probe.formattingInput();rounds.push(input.formattingRoundId);operationIds.push(input.operations.map(o=>o.operationId));
+  assert.match(input.formattingRoundId,/^round-[a-f0-9]{32}$/u);
+  for(const wrong of [undefined,`round-${'0'.repeat(32)}`]){
+   f.probe.setFormattingRound(wrong);
+   const rejected=await f.probe.formatApply({requestId:`forged-round-${index}`});await settle();
+   assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.deepEqual(f.capture(),before);
+  }
+  f.probe.setFormattingRound(input.formattingRoundId);
+  const applied=await f.probe.formatApply({requestId:`fresh-round-apply-${index}`});await settle();
+  assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+  assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].attrs.textAlign,alignment);
+  assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ }
+ assert.equal(new Set(rounds).size,3,'exports mint distinct authenticated rounds');
+ assert.equal(baselines[0],baselines[2],'the same exact before bytes are revisited');
+ assert.deepEqual(operationIds[0],operationIds[2],'semantic operation identity repeats; round authority separates applications');
 });

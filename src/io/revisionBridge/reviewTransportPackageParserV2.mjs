@@ -1,3 +1,4 @@
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
@@ -2121,14 +2122,14 @@ function formattingParagraphState(children) {
       if (value !== null) state.textAlign = value;
     } catch { /* The scanner marks a jc without a supported value as invalid. */ }
   }
+  const spacing=children.find(t=>isWordToken(t,'spacing'));
+  if(spacing)try {state.wordParagraphSpacing=readEffectiveTuple(spacing,'spacing');} catch {}
   return state;
 }
 
 function formattingParagraphActions(children) {
   const state = formattingParagraphState(children);
-  return Object.hasOwn(state, 'textAlign')
-    ? { textAlign: { action: 'set', value: state.textAlign } }
-    : {};
+  return Object.fromEntries(Object.entries(state).map(([key,value])=>[key,{action:'set',value}]));
 }
 
 function formattingParagraphStructure(children) {
@@ -2575,6 +2576,175 @@ function reviewDefaultFontFamily(stylesScan) {
   return values[0];
 }
 
+// Resolve only active style chains. Style names and IDs provide formatting,
+// never paragraph identity or write authority. Unknown properties remain tokens
+// so the existing candidate gates refuse them instead of silently dropping them.
+function readEffectiveTuple(token,kind) {
+  const keys=kind==='spacing'?['before','after','line','lineRule']:wordLanguage.KEYS;
+  const value={};
+  for(const key of keys) {
+    const raw=attr(token,key,W_NS);
+    if(raw==='')continue;
+    if(kind==='spacing' && key!=='lineRule') {
+      if(!/^\d{1,7}$/u.test(raw))throw Error('spacing-value');
+      value[key]=Number(raw);
+    } else value[key]=raw;
+  }
+  return kind==='spacing'?paragraphSpacing.normalizeWordParagraphSpacing(value):wordLanguage.normalizeWordLanguage(value);
+}
+
+function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml, fontDefaults) {
+  // parseXmlPart emits completed elements; indexes require document-open order.
+  // Sort separate views so shared parser evidence retains its original ordering.
+  const orderedStyles = [...scan.tokens].sort((a,b)=>a.openStart-b.openStart);
+  const orderedDocument = [...documentScan.tokens].sort((a,b)=>a.openStart-b.openStart);
+  const nonLeaf = new Set();
+  for (const tokens of [orderedStyles,orderedDocument]) for(let i=0;i<tokens.length-1;i++) {
+    const token=tokens[i],next=tokens[i+1];
+    if(next.depth>token.depth && next.openStart<token.closeEnd)nonLeaf.add(token);
+  }
+  const validatedProperties = new Set();
+  const childIndex = new Map(), parents = [];
+  for(const token of orderedStyles) {
+    while(parents.length && parents.at(-1).depth>=token.depth)parents.pop();
+    const parent=parents.at(-1);
+    if(parent) { if(!childIndex.has(parent))childIndex.set(parent,[]);childIndex.get(parent).push(token); }
+    parents.push(token);
+  }
+  const children = parent => childIndex.get(parent) || [];
+  const catalog = new Map(), defaults = new Map(), cached = new Map();
+  let invalid = false;
+  const roots = scan.tokens.filter(t => t.depth === 0);
+  if (roots.length && (roots.length !== 1 || !isWordToken(roots[0], 'styles'))) invalid = true;
+  for (const token of scan.tokens.filter(t => isWordToken(t, 'style') && t.depth === 1)) {
+    const id = attr(token, 'styleId', W_NS), type = attr(token, 'type', W_NS);
+    if (!id || id.length > 256 || catalog.has(id) || catalog.size >= 4096) { invalid = true; continue; }
+    catalog.set(id, token);
+    if (['1','true','on'].includes(attr(token, 'default', W_NS))) {
+      if (defaults.has(type)) invalid = true;
+      defaults.set(type, id);
+    }
+  }
+  const propertyChildren = (owner, name) => {
+    const properties = children(owner).filter(t => isWordToken(t, name));
+    if (properties.length > 1) throw Error('duplicate-style-properties');
+    return properties.length ? children(properties[0]) : [];
+  };
+  const chain = (id, type, seen = new Set()) => {
+    if (!id) return [];
+    if (seen.has(id) || seen.size >= 64) throw Error('style-cycle-or-depth');
+    const cacheKey = type + ':' + id;
+    if (cached.has(cacheKey)) {
+      if(cached.get(cacheKey).length+seen.size>64)throw Error('style-cycle-or-depth');
+      return cached.get(cacheKey);
+    }
+    const token = catalog.get(id);
+    if (!token || attr(token, 'type', W_NS) !== type) throw Error('style-reference');
+    const nodes = children(token), parents = nodes.filter(t => isWordToken(t, 'basedOn'));
+    const metadata = new Set(['name','aliases','basedOn','next','link','autoRedefine','hidden','uiPriority','semiHidden','unhideWhenUsed','qFormat','locked','personal','personalCompose','personalReply','rsid','pPr','rPr']);
+    if (parents.some(t=>!validRef(t)) || parents.length > 1 || nodes.some(t => t.namespaceUri !== W_NS || !metadata.has(t.localName))) throw Error('style-definition');
+    if (type === 'character' && nodes.some(t => isWordToken(t, 'pPr'))) throw Error('character-paragraph-properties');
+    seen.add(id);
+    const inherited = parents.length ? chain(attr(parents[0], 'val', W_NS), type, seen) : [];
+    if (parents.length && !attr(parents[0], 'val', W_NS)) throw Error('style-parent');
+    const result = [...inherited, {type,paragraph:propertyChildren(token,'pPr'),run:propertyChildren(token,'rPr')}];
+    cached.set(cacheKey,result); return result;
+  };
+  let defaultParagraph = [], defaultRun = [];
+  const docs = scan.tokens.filter(t => isWordToken(t, 'docDefaults') && t.depth === 1);
+  try {
+    if (docs.length > 1) throw Error('duplicate-defaults');
+    if (docs.length) for (const [name, target] of [['pPrDefault','paragraph'],['rPrDefault','run']]) {
+      const holders = children(docs[0]).filter(t => isWordToken(t,name));
+      if (holders.length > 1) throw Error('duplicate-defaults');
+      const values = holders.length ? propertyChildren(holders[0],target === 'paragraph' ? 'pPr' : 'rPr') : [];
+      if (target === 'paragraph') defaultParagraph = values; else defaultRun = values;
+    }
+  } catch { invalid = true; }
+  const merge = (layers, toggleStyles) => {
+    const merged = new Map();
+    for (const [values, isStyle] of layers) {
+      const own = new Set();
+      for (const token of values) {
+        const key = token.namespaceUri + ':' + token.localName;
+        if (own.has(key)) throw Error('duplicate-property'); own.add(key);
+        if (token.namespaceUri !== W_NS) throw Error('property-namespace');
+        const permitted = {b:['val'],i:['val'],strike:['val'],u:['val'],jc:['val'],outlineLvl:['val'],
+          color:['val'],highlight:['val'],shd:['val','fill','color'],sz:['val'],szCs:['val'],
+          rFonts:['ascii','hAnsi','eastAsia','cs','hint'],spacing:['before','after','line','lineRule'],lang:wordLanguage.KEYS}[token.localName];
+        if (permitted && !validatedProperties.has(token)) {
+          const sourceXml=token.partName==='word/styles.xml' ? stylesXml : documentXml;
+          if(token.attributes.some(a=>a.qName!=='xmlns' && a.prefix!=='xmlns'
+            && (a.namespaceUri!==W_NS || !permitted.includes(a.localName)))
+            || nonLeaf.has(token) || (!token.selfClosing && sourceXml.slice(token.openEnd,token.closeStart).trim())) throw Error('property-shape');
+          validatedProperties.add(token);
+        }
+        if (token.localName==='shd' && !['','clear','nil'].includes(attr(token,'val',W_NS))) throw Error('shading-pattern');
+        let next = token;
+        // Font slots inherit independently. Replacing the whole rFonts element
+        // could hide a mixed-script font behind a single direct override.
+        const inheritedFont = ['rFonts','spacing','lang'].includes(token.localName) ? merged.get(key) : null;
+        if (inheritedFont) next = {...token,
+          attrsByLocal:{...inheritedFont.attrsByLocal,...token.attrsByLocal},
+          attrsByNs:{...inheritedFont.attrsByNs,...token.attrsByNs}};
+        if(['spacing','lang'].includes(token.localName))readEffectiveTuple(next,token.localName);
+        if (toggleStyles && ['b','i','strike'].includes(token.localName)) {
+          const value = attr(token,'val',W_NS).toLowerCase();
+          if (!['','1','0','true','false','on','off'].includes(value)) throw Error('toggle-value');
+          const enabled = !['0','false','off'].includes(value);
+          if (isStyle && !enabled) continue;
+          const prior = merged.get(key), priorOn = prior && !['0','false','off'].includes(attr(prior,'val',W_NS));
+          const effective = isStyle ? !priorOn : enabled, val = effective ? '1' : '0';
+          next = {...token,attrsByLocal:{...token.attrsByLocal,val},attrsByNs:{...token.attrsByNs,[W_NS+'|val']:val}};
+        }
+        merged.set(key,next);
+      }
+    }
+    return [...merged.values()];
+  };
+  let defaultRunValidated = false;
+  const validRef = token => !nonLeaf.has(token) && token.attributes.every(a=>a.qName==='xmlns' || a.prefix==='xmlns'
+    || (a.namespaceUri===W_NS && a.localName==='val'))
+    && (token.selfClosing || !(token.partName==='word/styles.xml'?stylesXml:documentXml).slice(token.openEnd,token.closeStart).trim());
+  const ref = (values, name, type) => {
+    const refs = values.filter(t => isWordToken(t,name));
+    if(refs.some(t=>!validRef(t)))throw Error('style-reference-shape');
+    if (refs.length > 1) throw Error('duplicate-style-reference');
+    if (refs.length && !attr(refs[0],'val',W_NS)) throw Error('empty-style-reference');
+    return chain(refs.length ? attr(refs[0],'val',W_NS) : defaults.get(type),type);
+  };
+  return {
+    directParagraph(direct) { return merge([[direct,false]],false); },
+    paragraph(direct) {
+      if (invalid) throw Error('style-catalog');
+      const layers = ref(direct,'pStyle','paragraph');
+      return {layers,values:merge([[defaultParagraph,false],...layers.map(s=>[s.paragraph,true]),[direct.filter(t=>!isWordToken(t,'pStyle')),false]],false)};
+    },
+    run(paragraph, direct, characterResolved = false) {
+      if (invalid) throw Error('style-catalog');
+      // Legacy inherited-font evidence proves values, not complete XML shape.
+      // Validate before omitting font tokens, once per parsed catalog.
+      if (!defaultRunValidated) {
+        merge([[defaultRun,false]],true);
+        defaultRunValidated = true;
+      }
+      const characterLayers = characterResolved ? [] : ref(direct,'rStyle','character');
+      const layers = [...paragraph.layers,...characterLayers];
+      // Keep existing separately proven default-font evidence when no active
+      // style contributes run properties; don't manufacture font edits.
+      // MS-OE376 2.1.260: Word assigns paragraph-style booleans; only
+      // a resolved character style toggles the accumulated paragraph value once.
+      // Its basedOn chain first resolves assignments into that single style.
+      const active = characterResolved || layers.some(s=>s.run.length > 0);
+      const inheritedDefaults = active ? defaultRun : defaultRun.filter(t=>!(t.localName==='rFonts' && fontDefaults.family)
+        && !(['sz','szCs'].includes(t.localName) && fontDefaults.size));
+      const characterProperties = merge(characterLayers.map(s=>[s.run,false]),true);
+      return merge([[inheritedDefaults,false],...paragraph.layers.map(s=>[s.run,false]),
+        [characterProperties,true],[direct.filter(t=>!isWordToken(t,'rStyle')),false]],true);
+    },
+  };
+}
+
 function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan, cache) {
   const refs = direct.filter(t => isWordToken(t, 'rStyle'));
   if (refs.length === 0) return direct;
@@ -2626,6 +2796,8 @@ function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsSc
   for (const token of direct) if (!isWordToken(token,'rStyle')) inherited.set(token.localName,token);
   const color = inherited.get('color');
   if (color && attr(color,'themeColor',W_NS)) {
+    if(color.attributes.some(a=>a.qName!=='xmlns' && a.prefix!=='xmlns'
+      && (a.namespaceUri!==W_NS || !['val','themeColor','themeTint','themeShade'].includes(a.localName))))return null;
     const name = attr(color,'themeColor',W_NS);
     if (!['hyperlink','followedHyperlink'].includes(name) || attr(color,'themeTint',W_NS) || attr(color,'themeShade',W_NS)) return null;
     const mappings = settingsScan.tokens.filter(t => isWordToken(t,'clrSchemeMapping'));
@@ -2642,7 +2814,7 @@ function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsSc
     if (values.length !== 1 || values[0].namespaceUri !== a || values[0].localName !== 'srgbClr') return null;
     const rgb = attr(values[0],'val');
     if (!/^[a-fA-F0-9]{6}$/.test(rgb)) return null;
-    inherited.set('color',{...color,attrsByLocal:{...color.attrsByLocal,val:rgb},attrsByNs:{...color.attrsByNs,[`${W_NS}|val`]:rgb}});
+    inherited.set('color',{...color,attributes:color.attributes.filter(a=>a.qName==='xmlns' || a.prefix==='xmlns' || (a.namespaceUri===W_NS && a.localName==='val')),attrsByLocal:{val:rgb},attrsByNs:{[`${W_NS}|val`]:rgb}});
   }
   return [...inherited.values()];
 }
@@ -2716,6 +2888,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
   const defaultFontFamily = reviewDefaultFontFamily(visibilityStyles);
   const linkStyleCache = {};
+  const effectiveStyles = reviewEffectiveStyleCatalog(visibilityStyles,documentScan,options.stylesXml || '',documentXml,{family:defaultFontFamily,size:defaultFontSize});
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
     try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
@@ -2736,26 +2909,40 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       token.localName === 'pPr'
       && token.namespaceUri === W_NS
     ));
-    const paragraphPropertyChildren = paragraphProperties
-      ? childTokensWithin(paragraphScan, paragraphProperties).filter((token) => token.namespaceUri === W_NS && token.depth === paragraphProperties.depth + 1)
+    const directParagraphChildren = paragraphProperties
+      ? childTokensWithin(paragraphScan, paragraphProperties).filter((token) => token.depth === paragraphProperties.depth + 1)
       : [];
+    let paragraphStyle = null;
+    try { if (!paragraphRecord.table) paragraphStyle = effectiveStyles.paragraph(directParagraphChildren); } catch {}
+    let directParagraphInvalid=false;
+    if(paragraphRecord.table)try{effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
+    const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directParagraphChildren;
     const paragraphSemanticNames = [...new Set(paragraphPropertyChildren.map((token) => token.localName))];
-    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl'].includes(name));
+    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl', 'spacing'].includes(name));
+    if (!paragraphRecord.table && !paragraphStyle) unsupportedParagraphNames.push('styleResolution');
+    if(directParagraphInvalid)unsupportedParagraphNames.push('propertyShape');
     const paragraphState = formattingParagraphState(paragraphPropertyChildren);
     const paragraphActions = formattingParagraphActions(paragraphPropertyChildren);
     const paragraphStructure = formattingParagraphStructure(paragraphPropertyChildren);
-    const paragraphFormattingInvalid = paragraphSemanticNames.includes('jc')
-      && !Object.hasOwn(paragraphState, 'textAlign');
+    const paragraphFormattingInvalid = (paragraphSemanticNames.includes('jc') && !Object.hasOwn(paragraphState,'textAlign'))
+      || (paragraphSemanticNames.includes('spacing') && !paragraphState.wordParagraphSpacing);
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
     const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
       .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
-    const markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
+    let markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
+    if(paragraphStyle)try {
+      const directMark=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
+      const effectiveMark=effectiveStyles.run(paragraphStyle,directMark,true).find(t=>isWordToken(t,'lang'));
+      if(effectiveMark)markLanguage={value:readEffectiveTuple(effectiveMark,'lang')};
+    }catch{markLanguage={invalid:true};}
+    if(markLanguage.value){paragraphState.wordParagraphMarkLanguage=markLanguage.value;paragraphActions.wordParagraphMarkLanguage={action:'set',value:markLanguage.value};}
     if (markProperties.length > 1 || markProperties.some(t => t.namespaceUri !== W_NS)) markLanguage.invalid = true;
     const markLanguageOnly = markProperties.length === 1 && markLanguage.value && !markLanguage.invalid
       && markProperties[0].attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns')
       && childTokensWithin(paragraphScan, markProperties[0]).every(t => t.depth === markProperties[0].depth + 1 && isWordToken(t, 'lang')
         && !documentXml.slice(markProperties[0].openEnd, t.openStart).trim()
         && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
+    if(markLanguageOnly){const i=unsupportedParagraphNames.indexOf('rPr');if(i>=0)unsupportedParagraphNames.splice(i,1);}
     let cursor = 0;
     const formattedRuns = [];
     const typedBreaks = [];
@@ -2787,18 +2974,27 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         token.localName === 'rPr'
         && token.namespaceUri === W_NS
       ));
-      const language = readWordLanguageProperties(runScan, properties, documentXml);
+      let language = readWordLanguageProperties(runScan, properties, documentXml);
       if (!text) continue;
       const directChildren = properties
-        ? childTokensWithin(runScan, properties).filter((token) => token.namespaceUri === W_NS)
+        ? childTokensWithin(runScan, properties).filter((token) => token.depth === properties.depth + 1)
         : [];
       const href = linkRuns.get(run.openStart);
+      let effectiveRun = null;
+      try { if (paragraphStyle) effectiveRun = effectiveStyles.run(paragraphStyle,directChildren); } catch {}
       const resolvedStyle = reviewLinkStyleChildren(directChildren,href,visibilityStyles,linkTheme,linkSettings,linkStyleCache);
-      const children = resolvedStyle || directChildren;
+      if (!effectiveRun && resolvedStyle && resolvedStyle !== directChildren && paragraphStyle) {
+        try { effectiveRun=effectiveStyles.run(paragraphStyle,resolvedStyle,true); } catch {}
+      }
+      const children = effectiveRun || resolvedStyle || directChildren;
+      const effectiveLanguage=children.find(t=>isWordToken(t,'lang'));
+      if(effectiveLanguage && effectiveRun)try {language={value:readEffectiveTuple(effectiveLanguage,'lang')};}catch{language={invalid:true};}
       const semanticNames = [...new Set(children.map((token) => token.localName))];
-      const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);
+      const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'lang']);
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
+      if (paragraphStyle && !effectiveRun) unsupportedNames.push('styleResolution');
       const inline = formattingInlineActions(children);
+      if(language.value)inline.wordLanguage={action:'set',value:language.value};
       inline.link = href ? { action:'set', value:href } : { action:'remove' };
       if (linkRuns.internalNames.has(run.openStart)) inline.wordBookmarkName = { action:'set', value:linkRuns.internalNames.get(run.openStart) };
       const expectedActionKeys = [
@@ -2811,7 +3007,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         ...(semanticNames.includes('sz') || semanticNames.includes('szCs') ? ['fontSize'] : []),
       ];
       const invalidSupportedValue = expectedActionKeys.some((key) => !Object.hasOwn(inline, key))
-        || inline.highlightConflict === true;
+        || inline.highlightConflict === true || language.invalid === true;
       delete inline.highlightConflict;
       formattedRuns.push({
         from,
@@ -2845,6 +3041,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       textId: attr(paragraph, 'textId'),
       bookmarkNames: bookmarks,
       paragraphState,
+      ...(paragraphStyle && !paragraphRecord.table && unsupportedParagraphNames.length===0
+        && !paragraphFormattingInvalid && !paragraphStructureInvalid && !markLanguage.invalid
+        && !Object.hasOwn(paragraphState,'textAlign') ? {resolvedTextAlign:'left'} : {}),
       ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),
       ...(markLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
       ...(markLanguage.invalid ? { wordLanguageInvalid: true } : {}),
@@ -2871,6 +3070,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     textId: paragraph.textId,
     bookmarkNames: paragraph.bookmarkNames,
     paragraphState: paragraph.paragraphState,
+    ...(paragraph.resolvedTextAlign ? {resolvedTextAlign:paragraph.resolvedTextAlign} : {}),
     ...(paragraph.wordParagraphMarkLanguage ? { wordParagraphMarkLanguage: paragraph.wordParagraphMarkLanguage } : {}),
     ...(paragraph.wordParagraphMarkLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
     ...(paragraph.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),
@@ -5587,7 +5787,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const propertyReplacements = [], propertyRemovals = [];
   const runProperties = new Set(['rPr', 'rPrChange', 'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight',
     'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
-  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId']);
+  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId', 'spacing', 'rPr', 'lang']);
   for (const token of propertyTokens) {
     const kind = token.localName === 'rPrChange' ? 'run' : 'paragraph';
     const propertyName = kind === 'run' ? 'rPr' : 'pPr';
@@ -5607,6 +5807,29 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     if (children.some(t => t.namespaceUri !== W_NS || !admitted.has(t.localName))
       || children.filter(t => t.localName === token.localName).length !== 1)
       throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+    // New typed properties are admitted in both current and previous snapshots
+    // only with their exact owners, namespaces, leaf shape and value grammar.
+    for(const child of children.filter(t=>['spacing','lang'].includes(t.localName))) {
+      const allowed=child.localName==='spacing'?['before','after','line','lineRule']:wordLanguage.KEYS;
+      const ownerName=child.localName==='spacing'?'pPr':'rPr';
+      const propertyOwner=scan.tokens.find(t=>t.depth===child.depth-1&&t.openEnd<=child.openStart&&t.closeStart>=child.closeEnd);
+      if(!isWordToken(propertyOwner,ownerName)
+        || child.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'&&(a.namespaceUri!==W_NS||!allowed.includes(a.localName)))
+        || scan.tokens.some(t=>t.openStart>=child.openEnd&&t.closeEnd<=child.closeStart)
+        || (!child.selfClosing&&documentXml.slice(child.openEnd,child.closeStart).trim()))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      readEffectiveTuple(child,child.localName);
+    }
+    if(kind==='paragraph')for(const mark of children.filter(t=>isWordToken(t,'rPr'))) {
+      const owner=scan.tokens.find(t=>t.depth===mark.depth-1&&t.openEnd<=mark.openStart&&t.closeStart>=mark.closeEnd);
+      if(!isWordToken(owner,'pPr')||mark.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns')
+        ||children.some(t=>t.depth===mark.depth+1&&t.openStart>=mark.openEnd&&t.closeEnd<=mark.closeStart&&!isWordToken(t,'lang')))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      let cursor=mark.openEnd;
+      for(const child of children.filter(t=>t.depth===mark.depth+1&&t.openStart>=mark.openEnd&&t.closeEnd<=mark.closeStart).sort((a,b)=>a.openStart-b.openStart)) {
+        if(documentXml.slice(cursor,child.openStart).trim())throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+        cursor=child.closeEnd;
+      }
+      if(!mark.selfClosing&&documentXml.slice(cursor,mark.closeStart).trim())throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+    }
     const nativeId = attr(token, 'id', W_NS);
     if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
     const from = kind === 'paragraph' ? 0

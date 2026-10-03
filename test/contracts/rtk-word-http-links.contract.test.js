@@ -234,9 +234,9 @@ test('P1a native Word body bookmark and inherited default size retain exact link
  assert.equal(changed.candidates[0].inline.fontSize.value,'14pt');
  const invalidAnalysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytes('bad'),hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
  const invalidPreview=b.buildDocxReviewPreviewSessionCandidateFromEvidence({returnedProjection:invalidAnalysis.reviewIr},{formattingExportMap:options.fullManuscriptExportMap,cryptoPort});
- assert(invalidPreview.reviewPacket.diagnosticItems.some(d=>d.message==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'));
+ assert(invalidPreview.reviewPacket.diagnosticItems.some(d=>d.message==='RTK_FORMATTING_RETURN_UNSUPPORTED_RUN_FORMATTING'));
  const invalid=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('bad'),options);
- assert.equal(invalid.candidates.length,0);assert(invalid.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'));
+ assert.equal(invalid.candidates.length,0);assert(invalid.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_UNSUPPORTED_RUN_FORMATTING'));
  const duplicate=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(bm,bm+bm)),options);
  assert.equal(duplicate.candidates.length,0);
  const wrongNs=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(bm,bm.replace('<w:bookmarkStart','<x:bookmarkStart xmlns:x="urn:spoof"'))),options);

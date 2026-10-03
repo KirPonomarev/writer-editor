@@ -1,3 +1,5 @@
+const { buildDocxWordParagraphSpacingXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 'use strict';
 
 const crypto = require('node:crypto');
@@ -176,7 +178,9 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
         return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
       }).join('') : `<w:r>${buildDocxRunContentXml(value)}</w:r>`;
       const align = paragraph?.attrs?.textAlign;
-      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${numPr}${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
+      const spacing = buildDocxWordParagraphSpacingXml(paragraph?.attrs?.wordParagraphSpacing);
+      const language = buildDocxWordLanguageXml(paragraph?.attrs?.wordParagraphMarkLanguage);
+      return `<w:p><w:pPr><w:pStyle w:val="${style}Text"/>${numPr}${align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : ''}${spacing}${language ? `<w:rPr>${language}</w:rPr>` : ''}</w:pPr>${index === 0 ? `<w:r><w:rPr><w:rStyle w:val="${style}Reference"/></w:rPr><w:${kind}Ref/></w:r>` : ''}${index === 0 && binding.transportIdentity ? `<w:bookmarkStart w:id="${100000 + binding.selectionOrdinal}" w:name="${binding.transportIdentity}"/><w:bookmarkEnd w:id="${100000 + binding.selectionOrdinal}"/>` : ''}${runs}</w:p>`;
     })}</w:${kind}>`; }).join('');
     const name = `${kind}s.xml`;
     entries.push({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s xmlns:w="${W_NS}" xmlns:r="${REL_NS.slice(0, -1)}">${separator}${body}</w:${kind}s>` });

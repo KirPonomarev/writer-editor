@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { readWordMacDependencySecurityAdmission } from '../package-content-trust-pk0.mjs';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 
@@ -45,6 +46,10 @@ export function verifyToolchain({ verifyRuntime = true, verifyBundles = true } =
   const pkg = readJson('package.json');
   const lock = readJson('package-lock.json');
   const electron = readJson('node_modules/electron/package.json');
+  const successor = readWordMacDependencySecurityAdmission(process.cwd());
+  assert(successor, 'E_ELECTRON_SECURITY_SUCCESSOR_BINDING');
+  const currentElectron = successor.targetElectronVersion;
+  assert(pkg.devDependencies?.electron === currentElectron, 'E_ELECTRON_PACKAGE_PIN');
   assert(fs.readFileSync('.node-version', 'utf8') === `${EXPECTED.node}\n`, 'E_NODE_PIN', '.node-version');
   assert(pkg.packageManager === EXPECTED.packageManager, 'E_PACKAGE_MANAGER_PIN', pkg.packageManager);
   assert(pkg.engines?.node === EXPECTED.nodeEngine && pkg.engines?.npm === EXPECTED.npmEngine, 'E_ENGINE_CONTRACT', JSON.stringify(pkg.engines));
@@ -57,8 +62,8 @@ export function verifyToolchain({ verifyRuntime = true, verifyBundles = true } =
   }
   assert(lock.lockfileVersion === 3, 'E_LOCKFILE_VERSION', lock.lockfileVersion);
   assert(lock.packages?.['']?.engines?.node === EXPECTED.nodeEngine && lock.packages?.['']?.engines?.npm === EXPECTED.npmEngine, 'E_LOCK_ROOT_ENGINES', JSON.stringify(lock.packages?.['']?.engines));
-  assert(lock.packages?.['']?.devDependencies?.electron === EXPECTED.electron, 'E_LOCK_ELECTRON_ROOT', lock.packages?.['']?.devDependencies?.electron);
-  assert(electron.version === EXPECTED.electron, 'E_ELECTRON_VERSION', electron.version);
+  assert(lock.packages?.['']?.devDependencies?.electron === currentElectron, 'E_LOCK_ELECTRON_ROOT', lock.packages?.['']?.devDependencies?.electron);
+  assert(electron.version === currentElectron, 'E_ELECTRON_VERSION', electron.version);
   if (verifyRuntime) {
     assert(process.versions.node === EXPECTED.node, 'E_NODE_RUNTIME', process.versions.node);
     assert(npmVersion() === EXPECTED.npm, 'E_NPM_RUNTIME', npmVersion());
@@ -69,7 +74,7 @@ export function verifyToolchain({ verifyRuntime = true, verifyBundles = true } =
     assert(sha256(gitObjectBytes(EXPECTED.bundleArtifactSha, 'src/renderer/editor.bundle.js')) === EXPECTED.editorBundleSha256, 'E_EDITOR_BUNDLE_DIGEST');
     assert(sha256(gitObjectBytes(EXPECTED.bundleArtifactSha, 'src/preload.bundle.cjs')) === EXPECTED.preloadBundleSha256, 'E_PRELOAD_BUNDLE_DIGEST');
   }
-  return { schemaVersion: 'POST_AUDIT_TOOLCHAIN_RESULT_V1', status: 'PASS', ...EXPECTED };
+  return { schemaVersion: 'POST_AUDIT_TOOLCHAIN_RESULT_V1', status: 'PASS', ...EXPECTED, electron: currentElectron, securitySuccessor: successor.schemaVersion };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

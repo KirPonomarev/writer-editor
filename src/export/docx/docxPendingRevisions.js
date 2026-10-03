@@ -1,5 +1,12 @@
 'use strict';
 const { escapeXml } = require('./docxTextXml.js');
+const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
+const { normalizeWordParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
+function buildDocxWordParagraphSpacingXml(value) {
+  if (value == null) return '';
+  const spacing = normalizeWordParagraphSpacing(value);
+  return '<w:spacing' + ['before','after','line','lineRule'].filter(key => Object.hasOwn(spacing,key)).map(key => ` w:${key}="${spacing[key]}"`).join('') + '/>';
+}
 function revisionAttributes(revision, counter) {
   return ` w:id="${counter.next++}" w:author="${escapeXml(revision.author)}"`
     + (revision.date ? ` w:date="${escapeXml(revision.date)}"` : '')
@@ -10,10 +17,15 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
-  const protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl)\b[^>]*\/>/gu, '');
+  let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang)\b[^>]*\/>/gu, '');
+  const oldLanguage = buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
+  if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
+  else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
+  protectedProperties = protectedProperties.replace(/<w:rPr><\/w:rPr>/gu, '');
   const old = `<w:pStyle w:val="${before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal'}"/>`
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
     + (before.attrs?.textAlign ? `<w:jc w:val="${escapeXml(before.attrs.textAlign === 'justify' ? 'both' : before.attrs.textAlign)}"/>` : '')
+    + buildDocxWordParagraphSpacingXml(before.attrs?.wordParagraphSpacing)
     + protectedProperties;
   return `<w:pPr>${body}<w:pPrChange${revisionAttributes(revision, counter)}><w:pPr>${old}</w:pPr></w:pPrChange></w:pPr>`;
 }
@@ -115,4 +127,4 @@ function pendingNoteMarkersForBlock(projection, block) {
   }
   return result;
 }
-module.exports = { pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
+module.exports = { buildDocxWordParagraphSpacingXml, pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };

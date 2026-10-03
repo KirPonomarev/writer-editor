@@ -99,6 +99,74 @@ export const WP702_DEPENDENCY_SECURITY_MUTATION_ADMISSION = Object.freeze({
   targetOverridesDigest: 'e4c9c2405dd67cd97e62a2e6e48bccd0d1c3d890f90d7cd03b6cfc2d3204c229',
 });
 
+// Current owner-authorized security successor; historical admissions above are immutable.
+export const WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH = 'docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json';
+export const WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION = Object.freeze({
+  allowedChangedFiles: Object.freeze(['package-lock.json', 'package.json']),
+  schemaVersion: 'WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION_V1',
+  baseSha: '89d9991331013c26b724e3cbb17ea3faa7d058e9',
+  carrierSha256: 'b828a56cc30440ae70d6084784dec01ea390bfb8ed505806954c83f7daddd952',
+  previousPackageCanonicalSha256: '54feb0d18a67aa4fb1ad7fc9cd8e41d2406f436369f139527add81e8e8b27c0c',
+  currentPackageCanonicalSha256: '2cddec908d680a9022b50cd61ecbd6063fa27081a698e0c54b57b59cccbf7190',
+  targetElectronVersion: '41.10.6',
+});
+function isWordMacSecurityAdmission(candidate) {
+  return candidate && typeof candidate === 'object' && !Array.isArray(candidate)
+    && hashCanonicalValue(candidate) === hashCanonicalValue(WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
+}
+function exactWordMacSecurityTransition(packageJson, baselinePackageJson) {
+  return hashCanonicalValue(packageJson) === WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256
+    && hashCanonicalValue(baselinePackageJson) === WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.previousPackageCanonicalSha256;
+}
+export function readWordMacDependencySecurityAdmission(root) {
+  try {
+    const bytes = fs.readFileSync(path.join(root, WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
+    const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+    if (digest(bytes) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.carrierSha256) return null;
+    const carrier = JSON.parse(bytes);
+    if (carrier.baseSha !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha) return null;
+    for (const [relative, expected] of Object.entries(carrier.currentFiles)) {
+      if (digest(fs.readFileSync(path.join(root, relative))) !== expected) return null;
+    }
+    for (const [relative, expected] of Object.entries(carrier.previousFiles)) {
+      const prior = spawnSync('git', ['show', `${carrier.baseSha}:${relative}`], { cwd: root });
+      if (prior.status !== 0 || digest(prior.stdout) !== expected) return null;
+    }
+    const pkg = readJson(path.join(root, 'package.json'));
+    if (hashCanonicalValue(pkg) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256) return null;
+    return WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
+  } catch { return null; }
+}
+
+export function readWordMacDependencySecurityCandidate({ candidateSha, git }) {
+  try {
+    const resolved = String(git(['rev-parse', candidateSha])).trim();
+    if (!/^[a-f0-9]{40}$/u.test(resolved)) return null;
+    git(['merge-base', '--is-ancestor', WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha, resolved]);
+    const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+    const bytes = git(['show', `${resolved}:${WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`]);
+    if (digest(bytes) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.carrierSha256) return null;
+    const carrier = JSON.parse(String(bytes));
+    if (carrier.baseSha !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha) return null;
+    for (const [relative, expected] of Object.entries(carrier.currentFiles)) {
+      if (digest(git(['show', `${resolved}:${relative}`])) !== expected) return null;
+    }
+    for (const [relative, expected] of Object.entries(carrier.previousFiles)) {
+      if (digest(git(['show', `${carrier.baseSha}:${relative}`])) !== expected) return null;
+    }
+    return carrier;
+  } catch { return null; }
+}
+export function admitsWordMacSecurityProtectedBinding(binding, actualSha256, carrier) {
+  return Boolean(carrier && ['package.json', 'package-lock.json', 'scripts/ops/rtk-interop-order-c1.mjs'].includes(binding.path)
+    && carrier.previousFiles[binding.path] === binding.sha256
+    && carrier.currentFiles[binding.path] === actualSha256);
+}
+export function admitsWordMacSecurityChecker(relative, actualSha256, carrier) {
+  return Boolean(carrier && ['scripts/ops/rtk-interop-order-c1.mjs', 'scripts/ops/rtk-interop-text-order-c1.mjs'].includes(relative)
+    && carrier.currentFiles[relative] === actualSha256);
+}
+
 function stableJson(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
   if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
@@ -204,7 +272,7 @@ export function validateDependencyMutationAdmission(candidate) {
     && typeof candidate === 'object'
     && !Array.isArray(candidate)
     && hashCanonicalValue(candidate) === hashCanonicalValue(WP702_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
-  return c6dValid || postAuditValid || wp702Valid;
+  return c6dValid || postAuditValid || wp702Valid || isWordMacSecurityAdmission(candidate);
 }
 
 function isPostAuditToolchainAdmission(candidate) {
@@ -263,6 +331,8 @@ function validatePackageDependencies({
   const admissionValid = validateDependencyMutationAdmission(dependencyMutationAdmission);
   const postAuditAdmissionValid = isPostAuditToolchainAdmission(dependencyMutationAdmission);
   const wp702AdmissionValid = isWp702DependencySecurityAdmission(dependencyMutationAdmission);
+  const wordMacAdmissionValid = isWordMacSecurityAdmission(dependencyMutationAdmission);
+  if (wordMacAdmissionValid && hashCanonicalValue(packageJson) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256) errors.push('PK0_WORD_MAC_SECURITY_PACKAGE_INVALID');
   if (changed.has('pnpm-lock.yaml') || changed.has('pnpm-workspace.yaml')) {
     errors.push('PK0_LOCKFILE_OR_WORKSPACE_MUTATION_FORBIDDEN');
   }
@@ -296,7 +366,8 @@ function validatePackageDependencies({
         const exactAdmittedWp702SecurityTransition = key === 'overrides'
           && wp702AdmissionValid
           && exactWp702DependencySecurityTransition(packageJson, baselinePackageJson);
-        if (!exactAdmittedElectronUpgrade && !exactAdmittedToolchainTransition && !exactAdmittedWp702SecurityTransition) {
+        if (!exactAdmittedElectronUpgrade && !exactAdmittedToolchainTransition && !exactAdmittedWp702SecurityTransition
+          && !(wordMacAdmissionValid && ['devDependencies', 'overrides'].includes(key) && exactWordMacSecurityTransition(packageJson, baselinePackageJson))) {
           errors.push(`PK0_${key.toUpperCase()}_MUTATION_FORBIDDEN`);
         }
       }
@@ -315,6 +386,7 @@ export function evaluatePackageContentTrust(input = {}) {
   const staged = new Set(stagedFiles);
   const tracked = new Set(trackedFiles);
   const errors = [];
+  if (input.wordMacSecuritySuccessorRequired === true && !isWordMacSecurityAdmission(input.dependencyMutationAdmission)) errors.push('PK0_WORD_MAC_SECURITY_SUCCESSOR_INVALID');
 
   if (hashCanonicalValue(buildFiles) !== hashCanonicalValue(PK0_REQUIRED_BUILD_FILES)) {
     errors.push('PK0_BUILD_FILES_MANIFEST_MISMATCH');
@@ -540,8 +612,10 @@ function readWp702DependencySecurityAdmission(root) {
 
 export function evaluateRepositoryPackageContentTrust({ repoRoot = process.cwd(), baselinePackageJson = null } = {}) {
   const root = path.resolve(repoRoot);
-  const dependencyMutationAdmission = readWp702DependencySecurityAdmission(root) || readPostAuditToolchainAdmission(root) || readC6DDependencyAdmission(root);
+  const wordMacSecuritySuccessorRequired = true;
+  const dependencyMutationAdmission = readWordMacDependencySecurityAdmission(root);
   return evaluatePackageContentTrust({
+    wordMacSecuritySuccessorRequired,
     packageJson: readJson(path.join(root, 'package.json')),
     baselinePackageJson: baselinePackageJson || gitShowJson({ cwd: root, revisionPath: 'origin/main:package.json' }),
     trackedFiles: gitLsFiles({ cwd: root }),
