@@ -31,6 +31,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 - `src/io/documentTables.js`
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/word-comment-anchor-save-v1.cjs`
+- `src/core/word-manuscript-notes-v1.cjs`
 - `src/renderer/tiptap/index.js`
 - `src/renderer/tiptap/documentListItems.mjs`
 - `src/renderer/editor.bundle.js`
@@ -98,3 +99,5 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY, bounded claims only.
 ## FAIL_PROTOCOL
 
 Retain expected/actual, exact SHA and artifacts; no disabled oracle or whole-feature claim.
+
+Scope extended on clean a7adf65b after successful preflight to include main-scene note anchor projection. The note body heading restriction remains unchanged.

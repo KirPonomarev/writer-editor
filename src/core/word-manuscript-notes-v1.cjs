@@ -164,7 +164,7 @@ function sceneParagraphs(doc) {
     need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647
       && (block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
     for (const item of block.content) {
-      need(item?.type === 'listItem' && Array.isArray(item.content) && item.content[0]?.type === 'paragraph'
+      need(item?.type === 'listItem' && Array.isArray(item.content) && ['paragraph', 'heading'].includes(item.content[0]?.type)
         && item.content.slice(1).every(child => ['bulletList', 'orderedList'].includes(child?.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
       append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1);
     }

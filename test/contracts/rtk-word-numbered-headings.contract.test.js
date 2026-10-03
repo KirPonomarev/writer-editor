@@ -81,3 +81,13 @@ for(const inTable of [false,true])test(`numbered heading review and ordinary exp
   assert.deepEqual(actual.content.map(item=>[item.content[0].type,item.content[0].attrs.level]),[['heading',9],['heading',2]]);
  }
 });
+
+test('numbered headings retain main-scene footnote anchors without widening the note-body profile',()=>{
+ const notes=require('../../src/core/word-manuscript-notes-v1.cjs');
+ const source={type:'doc',content:[ol(h('Heading'))]};
+ const content=envelope.composeObservablePayload({doc:source,metaEnabled:false});
+ assert.equal(notes.sceneText(content),'Heading');
+ const manuscript=notes.bindManuscriptPayload({kind:'footnote',body:{type:'doc',content:[p('Note')]},sceneId:'roman/test.txt',offsetUtf16:3,sceneContent:content});
+ assert.equal(manuscript.reference.offsetUtf16,3);
+ assert.throws(()=>notes.validateNoteBody(source),/NOTE_BODY_/);
+});
