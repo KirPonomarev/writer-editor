@@ -280,3 +280,32 @@ test('same-text Word unlink still creates a distinct canonical story identity',a
   assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);
   const slots=model.resolved(model.read(result.candidates[0].plan.doc));assert.notEqual(slots[0].header.default,slots[1].header.default);
 });
+
+test('Main empty-story fullbook capsule uses signed plain-scene baseline and rejects altered fallback bytes',async()=>{
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder');
+  const crypto=require('node:crypto'),hash=value=>crypto.createHash('sha256').update(value).digest('hex');
+  const stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stable(value[k])).join(',')+'}':JSON.stringify(value);
+  const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(stable(value)),byteLength:value=>Buffer.byteLength(value),
+    hmacSha256Json:(value,secret)=>'hmac-sha256:'+crypto.createHmac('sha256',secret).update(stable(value)).digest('hex'),
+    hmacSha256Text:(value,secret)=>'hmac-sha256:'+crypto.createHmac('sha256',secret).update(value).digest('hex')};
+  const raw='Plain sibling\nSecond paragraph';
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/test',manifestPath:'/test/project.craftsman.json',
+    scenes:[{sceneId:'roman/plain.txt',scenePath:'/test/roman/plain.txt',text:raw,observableContent:raw,order:0}]},{revisionBridge:bridge,cryptoPort});
+  const authority=copy(source.localAuthorityCapsule);
+  assert.equal(authority.baselineObservableContentBySceneId?.['roman/plain.txt'],undefined);
+  assert.equal(authority.baselineFinalTextBySceneId['roman/plain.txt'],raw);
+  const bytes=buildDocxReviewPacketBuffer(source),context={docxBytes:bytes,returnedArtifactSha256:'sha256:'+hash(bytes)};
+  const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+  const code=main.slice(main.indexOf('async function prepareCleanDocumentStoriesCapsule('),main.indexOf('async function prepareCleanUserBookmarksCapsule('));
+  const c=vm.createContext({JSON,Buffer,crypto,path,pathToFileURL,__dirname:path.resolve(__dirname,'../../src'),computeHash:hash,
+    loadRevisionBridgeModule:async()=>bridge,loadDocumentContentEnvelopeModule:async()=>envelope});
+  new vm.Script(code,{importModuleDynamically:vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER}).runInContext(c);
+  const result=await c.prepareCleanDocumentStoriesCapsule(authority,{},context);
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,false);
+  const changed=copy(authority);changed.baselineFinalTextBySceneId['roman/plain.txt']=raw+'tampered';
+  assert.equal((await c.prepareCleanDocumentStoriesCapsule(changed,{},context)).code,'WORD_STORIES_RETURN_BASELINE');
+  const missing=copy(authority);delete missing.baselineFinalTextBySceneId;
+  assert.equal((await c.prepareCleanDocumentStoriesCapsule(missing,{},context)).code,'WORD_STORIES_RETURN_BASELINE');
+});

@@ -64,7 +64,7 @@ async function controller(saveResponses = [true], options = {}) {
   }
   let body, hooks;let saveCount=0;const intents=[];
   const context = {isTiptapMode:true,currentDocumentKind:options.kind || 'scene',currentProjectId:'project-A',currentDocumentId:'scene-A',currentTreeContentPublicationId:'revision-A',flowModeState:{active:options.flow === true},
-    storyMutationPending:false,pendingStoryRequestId:null,storyEditorPanel:null,destroyStoryEditor:null,storyDrafts:new Map(),manuscriptDrafts:new Map(),wordCommentDraft:null,wordCommentBusy:false,notesMutationPending:false,
+    storyMutationPending:false,pendingStoryRequestId:null,storyRequestSequence:0,storyEditorPanel:null,destroyStoryEditor:null,storyDrafts:new Map(),manuscriptDrafts:new Map(),wordCommentDraft:null,wordCommentBusy:false,notesMutationPending:false,
     document:{createElement:tag=>new Element(tag),querySelector:()=>null},notesCaptureForm:new Element('form'),setNotesWorkspaceStatus:()=>{},
     storyInventory:h.ui.storyInventory,getTiptapDocumentSnapshot:()=>({doc:envelope.canonicalizeDocumentJson(h.editor.getJSON())}),
     applyTiptapStoryBody:(...args)=>h.ui.applyStoryBody(h.editor,...args),

@@ -739,7 +739,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8e00248e91cdd42922d026bfe6692f5a3c2e2162f5e17047829265a6d5bb9b01"
+        "sha256": "e7a97961deaf0de199b9a97e903a6f6069c3d4de4116e86145d7c255e0a9ee8c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -751,7 +751,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1981d67e5edebdf45b88f5c86efb67fd0258bc2fc1a478c43e2deedd3c0ecf4d"
+        "sha256": "4a4576a690a8bb210c2289b5369a635c55bb4002b3f688f716ef4afb3c936a5a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -915,7 +915,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "5c31e3f94db16a4a5c2442201ee228f1f1f07421e507c7e06e6a5bacbf492a5e"
+        "sha256": "2025a5283093f9f1d8f582f097a01bcfd045dd3913b16896513bd2cfb3afb1de"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -959,7 +959,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "d444c763bb2a86552501b93fd60add4f98419af0c4cca8534af14c8c59981ad8"
+        "sha256": "9a03ae1d40c55308a49c53b0e7e589c3e2e79c63ead0de82ec194ccd963939ae"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -1443,7 +1443,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "b92d3e9fc321b11f2d9b4db7932d9200882a9eecd1184d72efed7af005807354"
+        "sha256": "85b88b1ba6dca91025abb71479dec67df8e5038843f0b2d7f8db0ccda41688de"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -2147,7 +2147,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "6da885e0d8f8964371f8a0bcdb256f3c8e22838fbf7b83ee6475fe748abea253"
+        "sha256": "a27745e2df512c40fe0d91ffaab6a9ba6cc90b91abd76a1fbe6036690e594bcc"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
@@ -2175,15 +2175,15 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer.contract.test.js",
-        "sha256": "ff63d7763f360763511eb87f36fbbc39e4d63d6e97799d35a3bfafcd16eeffea"
+        "sha256": "8114e9bcbe45ca011efc9a56b01fac98b3500cf6583632b07b0457d8ce55542e"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
-        "sha256": "8c72dfadd4df55a32de8657ba6cfdf227b456ad717b3109308f99a3bb4f64c0a"
+        "sha256": "804dd1a58c0206447439da17fd5d9b903c8c16bec201153b3de235a8b1216ea2"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
-        "sha256": "3d1ff072d57e44317bec17cadaddc820d6df097588795375422dc13ca7397e1d"
+        "sha256": "1f21442b18358f34bafcc9202355f215ffcde9f3032b25938c55ca292708c8aa"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",

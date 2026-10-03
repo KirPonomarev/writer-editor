@@ -196,3 +196,21 @@ test('empty Review story projection binds actual shared folder sections without 
  assert.deepEqual(withReport.contentPreview.wordSections,withoutReport.contentPreview.wordSections);
  assert.equal(withReport.contentPreview.wordStories,undefined);
 });
+
+test('envelope optional story admission rejects raw accessors and keeps absent/null consumers dependency-compatible',()=>{
+ const fs=require('node:fs'),vm=require('node:vm');let loads=0,executed=0;
+ const sandbox={module:{exports:{}},require(name){
+  if(name==='./word-stories-v1.cjs'){loads++;throw Error('STORY_MODULE_NOT_COPIED');}
+  if(name==='./word-pending-text-revisions-v1.cjs')return {readLedger(){return null;}};
+  if(name==='./word-list-format-v1.cjs')return require('../../src/core/word-list-format-v1.cjs');
+  if(name==='./word-list-numbering-v1.cjs')return require('../../src/core/word-list-numbering-v1.cjs');
+  throw Error('Unexpected module '+name);
+ }};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../../src/core/document-content-envelope-v1.cjs'),'utf8'),sandbox);
+ const doc={type:'doc',content:[paragraph('legacy')]};
+ assert.doesNotThrow(()=>sandbox.module.exports.canonicalizeDocumentJson(doc));
+ assert.doesNotThrow(()=>sandbox.module.exports.canonicalizeDocumentJson({...doc,attrs:{wordStories:null}}));assert.equal(loads,0);
+ const hostile={...doc,attrs:{}};Object.defineProperty(hostile.attrs,'wordStories',{enumerable:true,get(){executed++;return {};}});
+ assert.throws(()=>envelope.canonicalizeDocumentJson(hostile),/WORD_STORIES_INVALID/);assert.equal(executed,0);
+ assert.throws(()=>sandbox.module.exports.canonicalizeDocumentJson({...doc,attrs:{wordStories:{}}}),/STORY_MODULE_NOT_COPIED/);assert.equal(loads,1);
+});

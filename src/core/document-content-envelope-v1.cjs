@@ -261,9 +261,6 @@ function canonicalizeDocumentJson(doc) {
   // Optional domain state is validated raw before JSON normalization. Keep the
   // absent/null historical path dependency-identical for isolated sandboxes.
   const attrsDescriptor = Object.getOwnPropertyDescriptor(doc, 'attrs');
-  require('./word-stories-v1.cjs').readProjection(doc);
-  const sectionDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordSections');
-  if (sectionDescriptor && (!Object.hasOwn(sectionDescriptor, 'value') || sectionDescriptor.value != null)) require('./word-sections-v1.cjs').read(doc);
   const bookmarkDescriptor = attrsDescriptor?.value
     && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordUserBookmarks');
   if ((attrsDescriptor && !Object.hasOwn(attrsDescriptor, 'value'))
@@ -273,6 +270,10 @@ function canonicalizeDocumentJson(doc) {
   if (bookmarkDescriptor?.value != null) {
     require('./word-user-bookmarks-v1.cjs').readRegistry(doc, { checkBounds: false });
   }
+  const storyDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordStories');
+  if (storyDescriptor && (!Object.hasOwn(storyDescriptor, 'value') || storyDescriptor.value != null)) require('./word-stories-v1.cjs').readProjection(doc);
+  const sectionDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordSections');
+  if (sectionDescriptor && (!Object.hasOwn(sectionDescriptor, 'value') || sectionDescriptor.value != null)) require('./word-sections-v1.cjs').read(doc);
   require('./word-pending-text-revisions-v1.cjs').readLedger(doc);
   if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
   require('./word-list-format-v1.cjs').inspectDocument(doc);

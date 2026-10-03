@@ -10,7 +10,7 @@ const { pathToFileURL } = require('node:url');
 const ROOT = path.resolve(__dirname, '../..');
 const main = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
 const builder = require('../../src/export/docx/docxReviewPacketBuilder');
-const { buildFormatIrParagraphs, buildFullManuscriptDocumentSections } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+const { buildFormatIrParagraphs, buildFullManuscriptDocumentSections, validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const plain = value => JSON.parse(JSON.stringify(value));
 function slice(start, end) {
@@ -25,7 +25,7 @@ async function harness(raw, changes = {}) {
   const context = vm.createContext({
     Buffer, crypto, path, Date,
     require: require('node:module').createRequire(path.join(ROOT, 'src/main.js')),
-    buildFullManuscriptDocumentSections,
+    buildFullManuscriptDocumentSections, validateFullManuscriptDocumentSectionsReturn,
     isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary,
     currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
     userBookmarkCapability() {},

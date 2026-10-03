@@ -760,6 +760,7 @@ const manuscriptDrafts = new Map();
 const storyDrafts = new Map();
 let storyMutationPending = false;
 let pendingStoryRequestId = null;
+let storyRequestSequence = 0;
 let storyEditorPanel = null;
 let destroyStoryEditor = null;
 let notesMutationPending = 0;
@@ -12310,7 +12311,7 @@ function openDocumentStories(preferredId = null) {
     if (storyDrafts.size || manuscriptDrafts.size || wordCommentDraft || wordCommentBusy || notesMutationPending) {
       status.textContent='Сначала сохраните или отмените правки колонтитулов, сносок и комментариев.'; return;
     }
-    const requestId=`story-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
+    const requestId=`story-${++storyRequestSequence}`;
     let completed = false, newStoryId = null;
     storyMutationPending=true; pendingStoryRequestId=requestId; editor.setEditable(false);select.disabled=true;topology.disabled=true;
     save.disabled=true;discard.disabled=true;
@@ -23989,7 +23990,7 @@ if (window.electronAPI) {
       return;
     }
     if (payload?.reviewSurface && storyDrafts.size) {
-      updateStatusText('Возврат из Word сохранён в файле; черновик колонтитула оставлен. Сохраните его отдельно перед переоткрытием сцены.', {visible:true});
+      updateStatusText('Черновик колонтитула оставлен в редакторе. Завершите правку перед обновлением сцены.', {visible:true});
       return;
     }
     let treeContentParsed = null;

@@ -9803,6 +9803,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
     const beforeDocs = {}, sources = {};
     for (const scene of authority.exportMap.scenes) {
       const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId]
+        ?? authority.baselineFinalTextBySceneId?.[scene.sceneId]
         ?? (authority.scope === 'scene' ? authority.baselineFinalText : undefined);
       if (typeof raw !== 'string' || scene.rawSha256 !== `sha256:${computeHash(raw)}`) throw Error('WORD_STORIES_RETURN_BASELINE');
       const parsed = envelope.parseObservablePayload(raw);
