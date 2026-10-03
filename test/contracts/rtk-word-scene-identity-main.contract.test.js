@@ -1210,11 +1210,12 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
   if(headingLevel)Object.assign(parsed.doc.content[0],{type:'heading',attrs:{level:headingLevel}});
+  if(typedBreak)parsed.doc.content[0].content.push({type:'hardBreak',attrs:{wordBreakType:typedBreak}},{type:'text',text:'After break'});
   if(listType)parsed.doc.content=[{type:'orderedList',attrs:{start:3,type:listType},content:[{type:'listItem',content:parsed.doc.content}]}];
   if(nativeStyle) {
     parsed.doc.attrs={wordPendingRevisions:null,wordUserBookmarks:null};
@@ -1554,8 +1555,9 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9','page-break','column-break']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
   const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
+    ...(variant.endsWith('-break')?{typedBreak:variant.split('-')[0]}:{}),
     ...(variant.startsWith('heading')?{headingLevel:Number(variant.slice(7))}:{}),
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
     ...(variant==='numbered-heading9'?{headingLevel:9,listType:'I',continuedList:true}:{}),
@@ -1576,6 +1578,7 @@ for(const variant of ['plain','outside-bookmark','continued-list','opened-import
   assert.equal(read(f.beta),sibling);
   assert.match(envelope.parseObservablePayload(read(f.alpha)).text,/Alpha CLEAN_EDIT/u);
   if(variant.startsWith('heading'))assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].attrs.level,Number(variant.slice(7)));
+  if(variant.endsWith('-break'))assert.equal(envelope.parseObservablePayload(read(f.alpha)).doc.content[0].content.find(n=>n.type==='hardBreak').attrs.wordBreakType,variant.split('-')[0]);
   if(variant==='numbered-heading9'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[0].content[0].content[0].attrs.level,9);assert.equal(doc.content[0].attrs.type,'I');assert.equal(doc.content[2].attrs.start,4);}
   if(variant==='continued-list'){const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.equal(doc.content[2].attrs.start,4);assert.equal(doc.content[2].attrs.wordListId,'chain');}
   const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
@@ -1615,4 +1618,19 @@ for(const variant of ['topology','format','tracked','stale-baseline']) test(`sin
   assert.deepEqual(f.capture(),beforeActivation);
   assert.notEqual((await f.probe.fullApply({requestId:'scene-rejected'})).applied,true);
   assert.deepEqual(f.capture(),beforeActivation);
+});
+
+for(const variant of ['type','delete','move','unknown'])test(`typed break return ${variant} rejects without writes`,async t=>{
+ const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,typedBreak:'page',mutateReturn:parts=>{
+  const before=parts['word/document.xml'];
+  parts['word/document.xml']=variant==='type'?before.replace('w:type="page"','w:type="column"'):
+   variant==='delete'?before.replace('<w:br w:type="page"/>',''):
+   variant==='unknown'?before.replace('w:type="page"','w:type="invalid"'):
+   before.replace('<w:br w:type="page"/>','').replace('After break','After<w:br w:type="page"/> break');
+  assert.notEqual(parts['word/document.xml'],before);
+ }});
+ assert.ok(activated.ok===false||activated.nonOverlapTrackedReplacementProductPath?.prepared!==true,JSON.stringify(activated));
+ assert.deepEqual(f.capture(),beforeActivation);
+ assert.notEqual((await f.probe.fullApply({requestId:'typed-break-rejected'})).applied,true);
+ assert.deepEqual(f.capture(),beforeActivation);
 });

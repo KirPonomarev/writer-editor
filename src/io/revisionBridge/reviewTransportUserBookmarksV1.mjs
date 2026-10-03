@@ -1,3 +1,4 @@
+import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import core from '../../core/word-user-bookmarks-v1.cjs';
 import source from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
@@ -216,6 +217,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       returnedDoc=stripRoot(baselineDoc);
       core.paragraphs(returnedDoc).forEach((p,index)=>{
         p.content=[];
+        const typed = wordBreaks.validateOffsets(observed[offset+index].paragraphText, observed[offset+index].typedBreaks);
+        const types = new Map(typed.map(item => [item.offset, item.type]));
+        let position = 0;
         for(const run of observed[offset+index].formattedRuns||[]){
           const marks=[];const inline=run.inlineState||{};
           for(const name of ['bold','italic','underline','strike'])if(inline[name]===true)marks.push({type:name});
@@ -223,7 +227,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           if(Object.keys(attrs).length)marks.push({type:'textStyle',attrs});
           if(inline.highlight)marks.push({type:'highlight',attrs:{color:inline.highlight}});
           if(inline.link)marks.push({type:'link',attrs:inline.link.startsWith('#')?{href:inline.link,wordBookmarkName:inline.link.slice(1)}:{href:inline.link}});
-          run.text.split('\n').forEach((text,i)=>{if(i)p.content.push({type:'hardBreak'});if(text)p.content.push({type:'text',text,...(marks.length?{marks}: {})});});
+          run.text.split('\n').forEach((text,i)=>{
+            if(i){const type=types.get(position);p.content.push({type:'hardBreak',...(type?{attrs:{wordBreakType:type}}:{})});position++;}
+            if(text)p.content.push({type:'text',text,...(marks.length?{marks}: {})});position+=text.length;
+          });
         }
       });
     }
@@ -275,6 +282,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
+      if(p.typedBreakInvalid)return reject('typed-break-invalid');
+      const expectedBreaks=wordBreaks.paragraphBreaks(basePs[i]);
+      const returnedBreaks=wordBreaks.textBreaks(p.paragraphText,p.typedBreaks);
+      if(!same(expectedBreaks.map(b=>b.type),returnedBreaks.map(b=>b.type)))return reject('typed-break-semantic-change');
       if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage',...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
@@ -302,13 +313,14 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           // Ordinary text has no bookmark mutation authority. Keep original
           // rich nodes/marks and prove a single uniform text leaf footprint;
           // linked labels and opaque inline objects retain their own lanes.
-          if(!block.text||!p.paragraphText||p.paragraphText.includes('\n')
+          if(!block.text||!p.paragraphText
             ||before.some(run=>run.link)||after.some(run=>run.link)
-            ||resultPs[i].content.some(node=>node.type!=='text')
+            ||resultPs[i].content.some(node=>!['text','hardBreak'].includes(node.type))
             ||!before.length||!after.length
             ||before.some(run=>!same(run.style,before[0].style))
             ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
           replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
+          if(!same(wordBreaks.paragraphBreaks(resultPs[i]),returnedBreaks))return reject('typed-break-position-change');
           if(hasLanguage){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
           ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
@@ -321,6 +333,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         replaceText(resultPs[i],from,to,p.paragraphText.slice(from,afterTo));
         effects.push({kind:'linkLabel',paragraphIndex:i,from,to,text:p.paragraphText.slice(from,afterTo)});
       }else compareStyles(before,after,0,0,block.text.length);
+      if(!same(wordBreaks.paragraphBreaks(resultPs[i]),returnedBreaks))return reject('typed-break-position-change');
       replaceLinks(resultPs[i],after,resultRegistry);
       const merged=[];
       for(const node of resultPs[i].content||[]){const last=merged.at(-1);if(node.type==='text'&&last?.type==='text'&&same(node.marks||[],last.marks||[])){last.text+=node.text;}else merged.push(node);}

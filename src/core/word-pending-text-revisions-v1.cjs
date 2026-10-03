@@ -165,7 +165,8 @@ function validateSource(doc) {
       && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)));
     assert(Array.isArray(p.content));
     for (const n of p.content) {
-      assert(exact(n, ['type', 'text', 'marks']) && ['text', 'hardBreak'].includes(n.type));
+      assert(exact(n, ['type', 'text', 'marks', ...(n.type === 'hardBreak' ? ['attrs'] : [])]) && ['text', 'hardBreak'].includes(n.type));
+      if (n.type === 'hardBreak' && n.attrs != null) require('./word-typed-breaks-v1.cjs').kind(n);
       assert(n.type === 'text' ? typeof n.text === 'string' && n.text.length > 0 : n.text === undefined && !n.marks?.length);
       assert(n.marks === undefined || Array.isArray(n.marks) && n.marks.length <= 8);
       const seen = new Set();

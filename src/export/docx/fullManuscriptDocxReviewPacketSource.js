@@ -284,6 +284,7 @@ function buildFormatIrParagraphs(scene) {
           nodeType: normalizeString(inlineNode?.type),
         });
       }
+      const breakType = inlineNode.type === 'hardBreak' ? require('../../core/word-typed-breaks-v1.cjs').kind(inlineNode) : 'line';
       const text = inlineNode.type === 'hardBreak' ? '\n' : normalizeSceneText(inlineNode.text);
       if (inlineNode.type === 'text' && !text) continue;
       const normalizedMarks = inlineNode.type === 'text'
@@ -293,6 +294,7 @@ function buildFormatIrParagraphs(scene) {
         from: cursor,
         to: cursor + text.length,
         text,
+        ...(breakType !== 'line' ? { wordBreakType: breakType } : {}),
         inline: normalizedMarks.inline,
         preservedMarks: normalizedMarks.preservedMarks,
       });

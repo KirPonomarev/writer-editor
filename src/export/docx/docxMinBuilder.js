@@ -147,7 +147,10 @@ function readDocumentInlineRuns(node) {
   if (node.type === 'text') {
     return [{ text: typeof node.text === 'string' ? node.text : '', marks: node.marks }];
   }
-  if (node.type === 'hardBreak') return [{ text: '\n', marks: [] }];
+  if (node.type === 'hardBreak') {
+    const type = require('../../core/word-typed-breaks-v1.cjs').kind(node);
+    return [{ text: '\n', marks: [], ...(type !== 'line' ? { wordBreakType: type } : {}) }];
+  }
   if (node.type === 'image') return [{ text: '', image: node.attrs }];
   return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);
 }
@@ -294,7 +297,9 @@ function buildDocxMarkedRunXml(run, hasColors = false, hasTypography = false) {
     + `<w:u w:val="${marks.has('underline') ? 'single' : 'none'}"/>`
     + (hasColors ? buildDocxColorPropertiesXml(readRunColors(run), { explicitOff: true }) : '')
     + (hasTypography ? buildDocxTypographyPropertiesXml(readRunTypography(run)) : '');
-  const content = buildDocxRunContentXml(run.text, { allowFormFeedPageBreak: true });
+  const breakType = run.wordBreakType;
+  if (breakType != null && (run.text !== '\n' || !['page', 'column'].includes(breakType))) throw Error('WORD_TYPED_BREAK_INVALID');
+  const content = breakType ? `<w:br w:type="${breakType}"/>` : buildDocxRunContentXml(run.text, { allowFormFeedPageBreak: true });
   return content ? `<w:r><w:rPr>${properties}</w:rPr>${content}</w:r>` : '';
 }
 
@@ -425,14 +430,15 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const hasColors = Array.isArray(runs) && runs.some(run => Object.keys(readRunColors(run)).length > 0);
       const hasTypography = Array.isArray(runs) && runs.some(run => Object.keys(readRunTypography(run)).length > 0);
       const hasLinks = Array.isArray(runs) && runs.some(run => readHref(run));
-      let runsXml = hasMarks || hasColors || hasTypography || hasMedia || hasLinks
+      const hasTypedBreaks = Array.isArray(runs) && runs.some(run => run.wordBreakType != null);
+      let runsXml = hasMarks || hasColors || hasTypography || hasMedia || hasLinks || hasTypedBreaks
         ? runs.map(run => run.image ? media.drawing(run.image)
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
       if (pendingLedger) {
         if (userMarkers.size || hasMedia || hasLinks) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
         const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(deps.documentNotes, noteBlock || {});
         runsXml = buildPendingRunsXml(rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index],
-          node => buildDocxMarkedRunXml({ text: node.type === 'hardBreak' ? '\n' : node.text, marks: node.marks }, true, true), revisionCounter, '', pendingMarkers);
+          node => buildDocxMarkedRunXml(node.type === 'hardBreak' ? readDocumentInlineRuns(node)[0] : { text: node.text, marks: node.marks }, true, true), revisionCounter, '', pendingMarkers);
       }
       if (markers.size && !pendingLedger) {
         const parts = [], boundaries = [...markers.keys()].sort((a, b) => a - b);

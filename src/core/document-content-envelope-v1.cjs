@@ -274,6 +274,12 @@ function canonicalizeDocumentJson(doc) {
   if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
   require('./word-list-format-v1.cjs').inspectDocument(doc);
   require('./word-list-numbering-v1.cjs').resolve(doc);
+  const breakNodes = [doc];
+  while (breakNodes.length) {
+    const node = breakNodes.pop();
+    if (node?.attrs && Object.hasOwn(node.attrs, 'wordBreakType')) require('./word-typed-breaks-v1.cjs').kind(node);
+    if (Array.isArray(node?.content)) for (const child of node.content) breakNodes.push(child);
+  }
   const copied = cloneJsonValue(doc);
   require('./word-list-numbering-v1.cjs').normalize(copied);
   const pending = [copied];
@@ -286,6 +292,10 @@ function canonicalizeDocumentJson(doc) {
     if (node?.type === 'orderedList' && node.attrs?.type === null) delete node.attrs.type;
     if (node?.attrs?.wordListId === null) delete node.attrs.wordListId;
     if (node?.attrs?.wordListStart === null) delete node.attrs.wordListStart;
+    if (node?.type === 'hardBreak' && node.attrs?.wordBreakType === null) {
+      delete node.attrs.wordBreakType;
+      if (!Object.keys(node.attrs).length) delete node.attrs;
+    }
     if (node?.type === 'table') require('../io/documentTables.js').inspectTable(node);
     if (Array.isArray(node?.content)) for (const child of node.content) pending.push(child);
   }
