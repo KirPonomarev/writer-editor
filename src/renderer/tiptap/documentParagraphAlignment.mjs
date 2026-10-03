@@ -43,9 +43,8 @@ export function wordTabAdvance({position,stops=[],defaultInterval=720,segmentWid
     // gap collapses instead of silently selecting a different alignment stop.
     return {width:Math.max(0,width),leader:stop.leader||'none'};
   }
-  let next=(Math.floor(Math.max(position,last)/interval)+1)*interval;
-  const cleared=stops.filter(stop=>stop.val==='clear').map(stop=>stop.pos*TWIP_PX);
-  while(cleared.some(value=>Math.abs(value-next)<0.05))next+=interval;
+  // A clear removes an inherited custom stop, not the document default grid.
+  const next=(Math.floor(Math.max(position,last)/interval)+1)*interval;
   return {width:Math.max(0,next-position),leader:'none'};
 }
 function tabLeaderCss(leader) {

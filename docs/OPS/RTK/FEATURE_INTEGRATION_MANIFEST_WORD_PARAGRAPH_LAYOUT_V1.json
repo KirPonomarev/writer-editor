@@ -49,7 +49,10 @@
     "test/contracts/revision-bridge-docx-typography.contract.test.js",
     "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
     "test/contracts/rtk-word-review-default-typography.contract.test.js",
-    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js"
+    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "test/contracts/rtk-word-http-links.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",

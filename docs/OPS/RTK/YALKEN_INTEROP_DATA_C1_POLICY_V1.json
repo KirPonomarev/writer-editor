@@ -779,7 +779,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4e0fd70bbda74b1914288f9a7a7a722c4be703c81683b4dc6c9991f3d310bdde"
+        "sha256": "26700dca543386bd0b2a147fd458dce658fd34eba3e94920d8218399a47fb50a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -939,7 +939,7 @@
       },
       {
         "path": "src/renderer/tiptap/documentParagraphAlignment.mjs",
-        "sha256": "87fc31d2e072f13ce1aeeb384342228a580f4f2b97f4f531d562883423c9b561"
+        "sha256": "1747c7f85461ad535be676eb86fe8c040fa35aa066f1e847afce2a1a941561e1"
       },
       {
         "path": "src/renderer/editor.js",
@@ -947,7 +947,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-        "sha256": "3c8022f3c07a8326fcb0cd816eac9aaf02dd7c1b353a943107d68facf249571d"
+        "sha256": "0e19f945f9205e686a76ee26b79fa3b1b7591fdb1fd864fd1b370367cba5c64d"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
@@ -1351,7 +1351,7 @@
       },
       {
         "path": "test/contracts/rtk-word-http-links.contract.test.js",
-        "sha256": "25a639bffcffb90208737f13b5bc48307dcddfb16d9b5d2595a9f42d47505c2b"
+        "sha256": "c2ce3a9dbbc4bf1fc50f6945f9c6732c9de5f47182674c713f973ebb04bd6524"
       },
       {
         "path": "test/contracts/rtk-word-link-authoring.contract.test.js",
@@ -1587,7 +1587,7 @@
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "b6236ac06f3927acb688876680815cb5fd49144dae93bd9006c35260132fa58a"
+        "sha256": "e80ae3687fac6b2369a3566fa280f0e4957522096a6d0ff1c220595d39b6e607"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
@@ -2211,7 +2211,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
-        "sha256": "5c654613fd97f5fc039ed742c2669d82483d50570a1d8c36f215696da5a86924"
+        "sha256": "56ab58071b45ee48ae51ff5892ac0cb7c5e81dc0409348dbcf3af2224ed82de9"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
@@ -2303,15 +2303,15 @@
       },
       {
         "path": "test/contracts/rtk-word-paragraph-layout.contract.test.js",
-        "sha256": "0de3ddddc81b0773d458e352c434ca2c36e48700b889f07cbe4d48c4357472bc"
+        "sha256": "b2dbb18bd16eab9e20abf25982379126ed45a029d7162229b38b584d70128135"
       },
       {
         "path": "docs/tasks/2026-10-03--word-paragraph-layout-mac.md",
-        "sha256": "822a912cf81409ed3791d5720b2e3e14a83be06582bec080e4ab154582d8dddd"
+        "sha256": "d90c0935a40ead4b7553b9581db6a3f7883914bfb16f16f0c1d8e3df3e6037c0"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_LAYOUT_V1.json",
-        "sha256": "aa35c18be4f0cd459d2dcbbc0ef1d6ab2c69596b36063327a26f4e4a34c692ce"
+        "sha256": "8161ae066aba816c1a3ab1090cfee2ae78f7634a3f11e211e16557ebe6477c87"
       }
     ],
     "followupRepair": {

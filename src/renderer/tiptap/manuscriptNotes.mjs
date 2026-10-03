@@ -66,7 +66,11 @@ export function manuscriptBodyExtensions() {
 }
 
 export function readManuscriptBodyDocument(editor) {
-  return canonicalizeDocumentJson(editor.getJSON());
+  const doc = canonicalizeDocumentJson(editor.getJSON());
+  // Shared editor extensions emit null document defaults. Once canonicalized,
+  // an empty attribute container is not part of the auxiliary rich-body model.
+  if (doc.attrs && Object.keys(doc.attrs).length === 0) delete doc.attrs;
+  return doc;
 }
 
 export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, bodyLabel = 'Текст сноски', toolbarLabel = 'Форматирование сноски', linkTitle = 'Ссылка в сноске' } = {}) {

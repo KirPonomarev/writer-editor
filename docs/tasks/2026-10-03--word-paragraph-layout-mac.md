@@ -69,6 +69,10 @@ One integrated paragraph-layout capability and independent native evidence.
 - `test/contracts/rtk-word-review-default-typography.contract.test.js`
 - `test/contracts/revision-bridge-docx-inline-styles.contract.test.js`
 
+- `src/renderer/tiptap/manuscriptNotes.mjs`
+- `test/contracts/rtk-word-header-footer-authoring.contract.test.js`
+- `test/contracts/rtk-word-http-links.contract.test.js`
+
 ## DENYLIST
 No changes outside allowlist. No new dependencies, runtime network, raw XML parallel truth, silent fallback, weakened checks, fabricated evidence, user-data edits, reset/stash/clean/force-push, shell redesign or historical receipt rewrite.
 
@@ -119,3 +123,7 @@ Observed prerequisite before runtime edits: ops-gate reports CORE_PURITY_VIOLATI
 Native repair scope amendment: clean preflight at67ce3adc admitted four typography regression files (45 total). An earlier agent-appended inline-styles test was outside the41-path scope: its exact bytes and patch were preserved externally, its owned delta withdrawn, and only reapplied after this clean preflight. Native SOURCE01 exposed lost Times New Roman12 defaults and zero-height leader paint. Repair uses actual script slots and an explicit leader paint area; no native acceptance claim until rerun.
 
 Native repair intermediate evidence: typography chain112of112 and header chain42of42 passed with zero skips; these are working-tree checks, not delivery. Header fixture settings ownership was repaired without changing its story content; orphan settings now report WORD_SETTINGS_BINDING_INVALID instead of INTERNAL_ERROR. SOURCE01 profile and documents are retained externally, and its verified owned process was stopped after Save. A final settings-root namespace adversarial check remains before freezing the next candidate.
+
+Final native and RTK repair amendment: clean preflight atde6e761d admits48paths before writes. Actual Word clear-default calibration places all three TARGET labels identically; isolated actual Tiptap reproduces incorrect37.8,75.6,75.6CSSpx. Repair only derived default-grid skipping, retain raw clear markers. RTK2960of2962 passed with zero skips; two failures require auxiliary authoring removal of empty root attrs after null normalization and complete content-type declarations in hyperlink-theme fixture. Nonempty root metadata must remain rejected in auxiliary bodies; runtime settings validation remains strict. de6e SOURCE03 and PACKAGED03 ten scoped native cycles and two ordinary exports are retained as intermediate evidence, not final-candidate acceptance.
+
+Repair evidence before final candidate freeze: isolated real Chromium using actual imported independent-clear-default-calibration.docx now places all three TARGET labels at37.8046875CSSpx, retaining identical model JSON. Native Word screenshot supplied expected equality independently. Targeted renderer chains36of36 and auxiliary/link chains31of31 pass with zero skips; nonempty root attributes remain rejected by auxiliary rich-body validation. Evidence basenames: native-clear-default-observation.json, isolated-browser-clear-red-de6e.json, isolated-browser-clear-green-de6e.json, renderer-clear-both-de6e.log, final-auxiliary-links-repair-31.log. Final runtime/build and mandatory delivery proofs remain required.

@@ -95,3 +95,17 @@ test('settings authority requires qualified relationship and content-type roots,
  // Existing degraded relationship diagnostics without a settings claim confer no authority.
  assert.doesNotThrow(()=>validate({relationshipsXml:'<Relationships><Relationship Id="unused" Type="other" Target="unused.xml"/></Relationships>'},{cryptoPort}));
 });
+
+test('native Word clear removes custom inheritance without suppressing the default tab grid',async()=>{
+ const {wordTabAdvance}=await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+ const none=[],direct=[{pos:567,val:'clear'}],inherited=model.mergeWordParagraphTabs([{pos:567,val:'left'}],direct);
+ assert.deepEqual(inherited,direct,'direct clear remains canonical evidence of inherited custom-stop removal');
+ const before=JSON.stringify([none,direct,inherited]);
+ for(const stops of [none,direct,inherited]){
+  const actual=wordTabAdvance({position:11.5546875,stops,defaultInterval:567,segmentWidth:61.8203125});
+  assert.ok(Math.abs(actual.width+11.5546875-37.8)<1e-9,'all native X TAB TARGET variants land on default567');
+  assert.equal(actual.leader,'none');
+ }
+ assert.equal(JSON.stringify([none,direct,inherited]),before,'derived measurement never removes stored clear provenance');
+ assert.equal(wordTabAdvance({position:1,stops:[{pos:720,val:'clear'}]}).width,47);
+});

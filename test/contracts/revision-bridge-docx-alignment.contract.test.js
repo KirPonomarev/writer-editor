@@ -357,7 +357,7 @@ test('paragraph tab projection handles center decimal cleared default and hangin
   const crowded=wordTabAdvance({position:117.383,stops:[{pos:2268,val:'right',leader:'dot'},{pos:3402,val:'center',leader:'hyphen'}],segmentWidth:47.109});
   assert.equal(crowded.width,0);assert.equal(crowded.leader,'dot','overcrowded right stop does not become next center stop');
   assert.equal(wordTabAdvance({position:20,stops:[{pos:1200,val:'decimal'}],segmentWidth:60,decimalWidth:25}).width,35);
-  assert.equal(wordTabAdvance({position:1,stops:[{pos:720,val:'clear'}]}).width,95);
+  assert.equal(wordTabAdvance({position:1,stops:[{pos:720,val:'clear'}]}).width,47);
   assert.equal(wordTabAdvance({position:5,hangingPosition:300,defaultInterval:567}).width,15);
 });
 
