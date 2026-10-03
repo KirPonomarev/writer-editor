@@ -512,7 +512,12 @@
     "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
     "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
     "src/core/word-rich-body-projection-v1.cjs",
-    "src/core/word-stories-projection-v1.cjs"
+    "src/core/word-stories-projection-v1.cjs",
+    "test/contracts/rtk-word-effective-style-return.contract.test.js",
+    "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+    "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
+    "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json"
   ],
   "protectedFiles": [
     {
@@ -777,7 +782,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "b5eebbeca5be7a35ef31a02acc9510f9b11459368a78e02fea8406af26a8769d"
+        "sha256": "fe50588d3425c95366519d82cf7905712bfce9081d8c9c33597163c4b16cdd7d"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -789,7 +794,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-        "sha256": "8985525ff217e54c07fa9ba6c7a2fe99438e36b0341e58c8d85394b6bf4a84b1"
+        "sha256": "d1f494763a46badc6c5f8536c6f7d4b6f141074d7ef3fab7f197c893b15d1144"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -857,7 +862,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "daad3e487f2f7c0250d875ed6a68c9c072b003db902e75a1ded4e97bed75fd88"
+        "sha256": "0bfd8d9f94837817d7ee176935b3acdc9bc8d37eef78cef0c98358c361c1d8c3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1589,7 +1594,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "5c697809cf8ef53037f8e3fdb05e24aba63b3b0d92e5c8ae6495d0698010c8d5"
+        "sha256": "f0f0ecf80a12242591aef2dca04767e027b3224909228c05185ba599f1e2ecdf"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1929,7 +1934,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "4a6019f173cc1bc1df13af9192185f29c832b935a270693a285757d4ce6d204f"
+        "sha256": "5f1468ea0ba3e3762a9b7ee4680c94f2891fb391d0914ea86beefb338faf2a2b"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2210,6 +2215,26 @@
       {
         "path": "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
         "sha256": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1"
+      },
+      {
+        "path": "test/contracts/rtk-word-effective-style-return.contract.test.js",
+        "sha256": "65e68138c1ee907e106c3a9887b9711532b88123df7f072de914335a09c39d21"
+      },
+      {
+        "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
+        "sha256": "d2b1bcf6e11ff083b8a1df26b81fc4e1378e8e59cb1d56c0abe5a1c78505e25b"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
+        "sha256": "45c5b2ff1e26dfb94f1c0db7effbc1804aea57ef73abf784a3caf78896eed54f"
+      },
+      {
+        "path": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+        "sha256": "7a5d254a850123d5182bdb41db244c58a0e92c3266b210d4abf69c9a33b11305"
+      },
+      {
+        "path": "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
+        "sha256": "b432ea9782d8f311664e6767a15b29aeb283f5f0473c90b5f5486b8cb4f70ee3"
       }
     ],
     "followupRepair": {

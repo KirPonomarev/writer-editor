@@ -5351,6 +5351,9 @@ export function buildDocxReviewStructuralReturnCandidatesFromZipBytes(input, opt
   const scanned = extractReviewTransportFormattingRunsV2(documentXml, {
     cryptoPort: options.cryptoPort,
     budgets: options.budgets,
+    stylesXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024) || new Uint8Array()),
+    themeXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/theme/theme1.xml', 1024 * 1024) || new Uint8Array()),
+    settingsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/settings.xml', 1024 * 1024) || new Uint8Array()),
   });
   if (!scanned.ok) {
     return {
@@ -9652,26 +9655,20 @@ function docxInlineApplyStyle(properties, id, type, catalog) {
     chain.push(style);
     id = style.basedOn;
   }
-  for (const style of chain.reverse()) {
-    for (const [mark, enabled] of Object.entries(style.properties)) {
-      if (['underline', 'color', 'highlight', 'shading', 'webHidden'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
-      else if (enabled) properties[mark] = !properties[mark];
-    }
+  // basedOn resolves one style first; Word paragraph properties assign, while
+  // the resolved character style toggles the paragraph value once. Native Mac
+  // eight-case truth table covers inherited true/false and repeated values.
+  const resolved = Object.assign({}, ...chain.reverse().map(style => style.properties));
+  for (const [mark, enabled] of Object.entries(resolved)) {
+    if (type === 'paragraph' || ['underline', 'color', 'highlight', 'shading', 'webHidden'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
+    else if (enabled) properties[mark] = !properties[mark];
   }
 }
 
 function docxInlineEffectiveRunProperties(metadata, run, catalog) {
   const properties = { ...catalog.defaults };
   docxInlineApplyStyle(properties, metadata.paragraphStyleId || catalog.defaultParagraph, 'paragraph', catalog);
-  if (!run?.styleId && catalog.defaultCharacter) {
-    const defaults = { ...properties };
-    docxInlineApplyStyle(defaults, catalog.defaultCharacter, 'character', catalog);
-    // This repair extends only visibility handling, not other font/mark policy.
-    for (const key of ['vanish', 'webHidden']) {
-      if (Object.hasOwn(defaults, key)) properties[key] = defaults[key];
-    }
-  }
-  docxInlineApplyStyle(properties, run?.styleId || '', 'character', catalog);
+  docxInlineApplyStyle(properties, run?.styleId || catalog.defaultCharacter || '', 'character', catalog);
   Object.assign(properties, run?.properties || {});
   // Neither hidden-display property has an editable representation yet.
   // Reject before publishing a writable projection, including image-only runs.

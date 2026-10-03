@@ -57,10 +57,10 @@ test('C1 inline: explicit off and split runs do not leak across boundaries or pa
   const { plan } = await planFrom(packageBytes(`<w:p>${r('a', '<w:b/>')}${r('b', '<w:b w:val="true"/>')}${r('c', '<w:b w:val="0"/>')}${r('d')}</w:p><w:p>${r('e')}</w:p>`));
   assert.deepEqual(await profile(plan), [[['a', ['bold']], ['b', ['bold']], ['c', []], ['d', []]], [['e', []]]]);
 });
-test('C1 inline: defaults, basedOn, paragraph and character style toggles precede direct formatting', async () => {
+test('C1 inline: Word paragraph assignment and character toggles precede direct formatting (MS-OE376 2.1.260)', async () => {
   const styles = styleXml('<w:docDefaults><w:rPrDefault><w:rPr><w:i/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:styleId="Base"><w:rPr><w:b/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Derived"><w:basedOn w:val="Base"/><w:rPr><w:b/><w:strike/></w:rPr></w:style><w:style w:type="character" w:styleId="Char"><w:rPr><w:i/><w:u w:val="single"/></w:rPr></w:style>');
   const { plan } = await planFrom(packageBytes(`<w:p><w:pPr><w:pStyle w:val="Derived"/></w:pPr>${r('a')}${r('b', '<w:rStyle w:val="Char"/><w:b/><w:strike w:val="off"/>')}</w:p>`, styles));
-  assert.deepEqual(await profile(plan), [[['a', ['italic', 'strike']], ['b', ['bold', 'underline']]]]);
+  assert.deepEqual(await profile(plan), [[['a', ['bold', 'italic', 'strike']], ['b', ['bold', 'underline']]]]);
 });
 test('C1 inline: default paragraph style applies; paragraph-mark properties do not format text', async () => {
   const styles = styleXml('<w:style w:type="paragraph" w:default="1" w:styleId="Body"><w:rPr><w:i/></w:rPr></w:style>');
@@ -146,4 +146,21 @@ test('C1 inline: the main-owned plan projection retains marks and both import ro
   const direct = bridge.buildDocxImportPreviewPlanFromContentPreview(report);
   assert.equal(plan.candidateCreatePlan.entries[0].candidateContentSha256, direct.candidateCreatePlan.entries[0].candidateContentSha256);
   assert.deepEqual(await profile(plan), await profile(direct));
+});
+
+test('C1 inline: native Word character ancestry resolves assignments before one paragraph-relative toggle',async()=>{
+ const cases=[
+  {p:false,c:null,d:null,expected:false}, {p:false,c:true,d:null,expected:true},
+  {p:false,c:true,d:true,expected:true}, {p:false,c:true,d:false,expected:false},
+  {p:true,c:true,d:null,expected:false}, {p:true,c:false,d:null,expected:true},
+  {p:true,c:true,d:true,expected:false}, {p:true,c:true,d:true,direct:false,expected:false},
+ ];
+ for(const row of cases){
+  const styles=styleXml(`<w:style w:type="paragraph" w:styleId="P"><w:rPr><w:i w:val="${Number(row.p)}"/></w:rPr></w:style>`
+   +(row.c===null?'':`<w:style w:type="character" w:styleId="C"><w:rPr><w:i w:val="${Number(row.c)}"/></w:rPr></w:style>`)
+   +(row.d===null?'':`<w:style w:type="character" w:styleId="D"><w:basedOn w:val="C"/><w:rPr><w:i w:val="${Number(row.d)}"/></w:rPr></w:style>`));
+  const direct=(row.c===null?'':`<w:rStyle w:val="${row.d===null?'C':'D'}"/>`)+(row.direct===false?'<w:i w:val="0"/>':'');
+  const {plan}=await planFrom(packageBytes(`<w:p><w:pPr><w:pStyle w:val="P"/></w:pPr>${r('x',direct)}</w:p>`,styles));
+  assert.deepEqual(await profile(plan),[[['x',row.expected?['italic']:[]]]],JSON.stringify(row));
+ }
 });

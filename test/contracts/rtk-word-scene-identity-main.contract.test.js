@@ -64,6 +64,10 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt') {
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
+    observeDeferredEditorSync() { const original=syncReviewExactTextApplyEditorFromMainState,pending=[];
+      syncReviewExactTextApplyEditorFromMainState=(...args)=>{const result=original(...args);pending.push(result);return result;};
+      return async()=>{await new Promise(resolve=>setImmediate(resolve));return Promise.all(pending.splice(0));}; },
     refreshReview:refreshActiveReviewExactTextUiPlan,reviewState:()=>cloneJsonSafe(activeReviewSessionStore),
     captureExportLogs() { const records=[]; const previous=logDevError; logDevError=(context,error)=>records.push({context,error}); return {records,restore(){logDevError=previous;}}; },
     async observeLocalReviewReceipt(receipt) {
@@ -1666,4 +1670,42 @@ for(const kind of ['orderedList','blockquote'])test(`actual Main section Save re
  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc}));const edited=structuredClone(doc),leaf=kind==='blockquote'?edited.content[0].content[0]:edited.content[0].content[0].content[0];leaf.content[0].text+=' typed';const working=envelope.composeObservablePayload({doc:edited});
  mountRenderer(f,()=>working,1,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation:1});
  assert.equal(await f.probe.save(),true);const persisted=envelope.parseObservablePayload(read(f.alpha)).doc;assert.deepEqual(model.read(persisted),model.read(doc));assert.match(envelope.deriveVisibleTextFromDocument(persisted),/First typed/);
+});
+
+for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
+ const {f,activated,beforeActivation,getObserved}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,mutateReturn:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha');
+  const xml=parts['word/document.xml'];
+  const target=xml.match(/<w:p(?:\s[^>]*)?>[\s\S]*?<w:t[^>]*>Alpha<\/w:t>[\s\S]*?<\/w:p>/u);
+  assert.ok(target,'target paragraph must exist');
+  let paragraph=target[0];
+  paragraph=paragraph.includes('<w:pPr>')?paragraph.replace('<w:pPr>','<w:pPr><w:pStyle w:val="OwnerDerived"/>'):paragraph.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr><w:pStyle w:val="OwnerDerived"/></w:pPr>');
+  if(styleCase.includes('character')) { paragraph=paragraph.includes('<w:rPr>') ? paragraph.replace('<w:rPr>','<w:rPr><w:rStyle w:val="OwnerCharDerived"/>') : paragraph.replace('<w:r>','<w:r><w:rPr><w:rStyle w:val="OwnerCharDerived"/></w:rPr>'); assert.match(paragraph,/<w:rStyle w:val="OwnerCharDerived"\/>/u); }
+  parts['word/document.xml']=xml.replace(target[0],paragraph);
+  let styles='<w:style w:type="paragraph" w:styleId="OwnerBase"><w:name w:val="Owner Base"/><w:pPr><w:jc w:val="right"/></w:pPr><w:rPr><w:b/><w:color w:val="224466"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="OwnerDerived"><w:name w:val="Owner Derived"/><w:basedOn w:val="OwnerBase"/></w:style>';
+  if(styleCase==='paragraph-repeat-true')styles=styles.replace('<w:basedOn w:val="OwnerBase"/>','<w:basedOn w:val="OwnerBase"/><w:rPr><w:b/></w:rPr>');
+  if(styleCase==='paragraph-character-toggle')styles=styles.replace('<w:b/>','<w:b/><w:i/>');
+  if(styleCase.includes('character'))styles+='<w:style w:type="character" w:styleId="OwnerCharBase"><w:name w:val="Character Base"/><w:rPr><w:i/></w:rPr></w:style><w:style w:type="character" w:styleId="OwnerCharDerived"><w:name w:val="Character Derived"/><w:basedOn w:val="OwnerCharBase"/><w:rPr><w:i/></w:rPr></w:style>';
+  assert.match(parts['word/styles.xml'],/<\/w:styles>/u);
+  parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>',styles+'</w:styles>');
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));
+ assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+ assert.deepEqual(f.capture(),beforeActivation,'intake and preview must not write');
+ const sibling=read(f.beta),before=envelope.parseObservablePayload(read(f.alpha));
+ const settleSync=f.probe.observeDeferredEditorSync();
+ const result=await f.probe.formatApply({requestId:'effective-style-apply'});
+ const sync=await settleSync();assert.equal(sync.length,1);assert.equal(sync[0].ok,true,JSON.stringify(sync));assert.equal(getObserved(),read(f.alpha));
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.status,'applied-and-replayed',JSON.stringify(result));assert.equal(result.replayVerified,true);
+ const after=envelope.parseObservablePayload(read(f.alpha));
+ assert.equal(after.text,before.text);assert.equal(read(f.beta),sibling);
+ assert.equal(after.doc.content[0].attrs.textAlign,'right');
+ const alpha=after.doc.content[0].content.find(node=>node.type==='text'&&node.text==='Alpha');
+ assert.ok(alpha);assert.ok(alpha.marks.some(mark=>mark.type==='bold'));
+ assert.equal(alpha.marks.some(mark=>mark.type==='italic'),styleCase==='character-chain','native Word chain assignment followed by one character toggle');
+ assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.color?.toLowerCase(),'#224466');
+ const persisted=f.capture();const replay=await f.probe.formatApply({requestId:'effective-style-replay'});await settleSync();
+ assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.status,'applied-and-replayed');assert.equal(replay.reviewSurface.formattingReturnResult.status,'replay');assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+ const exported=await f.probe.sceneSource(),built=await f.probe.reviewBuild(exported);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
 });

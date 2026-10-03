@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003",
+  "objective": "Apply effective supported Word paragraph and character style changes through authenticated Mac review without losing inherited values or bypassing identity guards",
+  "taskType": "PRODUCT_CODE",
+  "bindingBaseSha": "e4be0d8d22937745f691dc6121541278668139ed",
+  "scopeIn": [
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "src/main.js",
+    "test/contracts/rtk-word-effective-style-return.contract.test.js",
+    "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+    "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+    "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "test/contracts/rtk-word-heading-outline.contract.test.js",
+    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+    "test/contracts/rtk-word-review-default-typography.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js"
+  ],
+  "scopeOut": [
+    "src/renderer",
+    "src/core",
+    "src/export",
+    "src/preload.js",
+    "package.json",
+    "package-lock.json",
+    ".github/workflows"
+  ],
+  "productAuthority": "Original Mac plan P3-08 effective values and semantic roles. Existing Core formatting representation only; no named-style identity claim or new schema.",
+  "commandAuthority": "Existing authenticated formatting return; source round/project/scene/revision/raw CAS and Main dispatch revalidation remain mandatory.",
+  "designAuthority": "NOT_APPLICABLE: existing editor formatting and review UI unchanged; no new visual contract.",
+  "operationKinds": [
+    "QUERY",
+    "COMMAND",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated style-aware returned projection -> existing authority-bound formatting candidate -> explicit Apply -> existing atomic scene writer"
+  ],
+  "readPaths": [
+    "Bounded document/style/theme/settings XML and exact exported baseline map",
+    "Current scene and revision projections"
+  ],
+  "productPorts": [
+    "Existing Word intake, review Apply and scene persistence ports"
+  ],
+  "designOsPorts": [
+    "Existing immutable review/document projection"
+  ],
+  "readProjections": [
+    "Resolved supported effective formatting state; no authority from style ID or OOXML locator"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE"
+  ],
+  "identityGuards": [
+    "Existing project, round, scene, source revision, generation and raw-byte checks; exact e4be base"
+  ],
+  "capabilityRevalidation": "Existing Command Kernel and Main revalidate before Apply; styles may not mint scene or write authority.",
+  "fallbacks": [
+    "Unknown or unresolved active style semantics remain typed manual/refusal before write; no dropping unknown properties",
+    "Original DOCX preserved; no arbitrary style evaluation"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Style basedOn/default/direct precedence, explicit reset and Boolean toggle semantics",
+    "Cycle, duplicate IDs, malformed namespace, missing active style, unsupported properties, default ambiguity and resource bounds",
+    "Wrong project/stale revision/forged operation/no preview writes/replay rejection; recovery unchanged"
+  ],
+  "securityAndInputBoundary": "External XML bounded and validated before style resolution; no new dependencies, paths, writers, network or evaluation.",
+  "performanceAndAccessibility": "Cache bounded style catalog per parse; linear traversal; existing UI and keyboard semantics unchanged.",
+  "currentReality": [
+    "e4be read-only literal probe: Derived basedOn Base with jc right yields paragraphState empty and unsupported pStyle on return",
+    "Generic import already resolves inherited supported styles; authenticated formatting return does not",
+    "Inherited paragraph tabs/spacing and custom numbering remain separate original-plan gaps"
+  ],
+  "targetOnly": [
+    "Positive authenticated return of existing supported effective properties after full native and test proof",
+    "No full Mac-plan or arbitrary style-system acceptance"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert single PR; preserve original artifacts and existing scene snapshots."
+}
