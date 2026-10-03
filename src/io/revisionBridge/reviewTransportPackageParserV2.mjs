@@ -1,3 +1,4 @@
+import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
@@ -757,6 +758,7 @@ function trackedRejectedText(documentXml, documentScan) {
 
 const WORD_INLINE_TEXT_MARKERS = Object.freeze({ tab: '\t', br: '\n', cr: '\n', softHyphen: '\u00ad', noBreakHyphen: '\u2011' });
 function wordInlineTextValue(xml, token) {
+  if(token.localName==='tab'&&token.path?.at(-2)==='tabs'&&token.path?.at(-3)==='pPr')return '';
   if (token.namespaceUri !== W_NS) return '';
   if (Object.hasOwn(WORD_INLINE_TEXT_MARKERS, token.localName)) return WORD_INLINE_TEXT_MARKERS[token.localName];
   return ['t', 'delText'].includes(token.localName) ? decodeEntities(elementBody(xml, token)) : '';
@@ -835,6 +837,7 @@ function extractSemanticAtoms(xml, documentScan, container) {
       const text = preserve ? raw : raw;
       atoms.push({ kind: token.localName === 'delText' ? 'DeletedText' : 'Text', payload: text, order: token.openStart });
     } else if (token.localName === 'tab') {
+      if(token.path?.at(-2)==='tabs'&&token.path?.at(-3)==='pPr')continue;
       atoms.push({ kind: 'Tab', payload: '\t', order: token.openStart });
     } else if (token.localName === 'br') {
       const type = attr(token, 'type');
@@ -2122,6 +2125,7 @@ function formattingParagraphState(children) {
       if (value !== null) state.textAlign = value;
     } catch { /* The scanner marks a jc without a supported value as invalid. */ }
   }
+  for(const [name,key] of [['ind','wordParagraphIndent'],['tabs','wordParagraphTabs']]){const token=children.find(t=>isWordToken(t,name));if(token?.layoutValue!==undefined)state[key]=token.layoutValue;}
   const spacing=children.find(t=>isWordToken(t,'spacing'));
   if(spacing)try {state.wordParagraphSpacing=readEffectiveTuple(spacing,'spacing');} catch {}
   return state;
@@ -2605,7 +2609,8 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
   }
   const validatedProperties = new Set();
   const childIndex = new Map(), parents = [];
-  for(const token of orderedStyles) {
+  for(const token of [...orderedStyles,...orderedDocument]) {
+    if(token.depth===0)parents.length=0;
     while(parents.length && parents.at(-1).depth>=token.depth)parents.pop();
     const parent=parents.at(-1);
     if(parent) { if(!childIndex.has(parent))childIndex.set(parent,[]);childIndex.get(parent).push(token); }
@@ -2671,13 +2676,32 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
         if (token.namespaceUri !== W_NS) throw Error('property-namespace');
         const permitted = {b:['val'],i:['val'],strike:['val'],u:['val'],jc:['val'],outlineLvl:['val'],
           color:['val'],highlight:['val'],shd:['val','fill','color'],sz:['val'],szCs:['val'],
-          rFonts:['ascii','hAnsi','eastAsia','cs','hint'],spacing:['before','after','line','lineRule'],lang:wordLanguage.KEYS}[token.localName];
+          ind:paragraphLayout.INDENT_KEYS,rFonts:['ascii','hAnsi','eastAsia','cs','hint'],spacing:['before','after','line','lineRule'],lang:wordLanguage.KEYS}[token.localName];
         if (permitted && !validatedProperties.has(token)) {
           const sourceXml=token.partName==='word/styles.xml' ? stylesXml : documentXml;
           if(token.attributes.some(a=>a.qName!=='xmlns' && a.prefix!=='xmlns'
             && (a.namespaceUri!==W_NS || !permitted.includes(a.localName)))
             || nonLeaf.has(token) || (!token.selfClosing && sourceXml.slice(token.openEnd,token.closeStart).trim())) throw Error('property-shape');
           validatedProperties.add(token);
+        }
+        if(token.localName==='tabs') {
+          const sourceXml=token.partName==='word/styles.xml'?stylesXml:documentXml;
+          const stops=children(token);let cursor=token.openEnd;const raw=[];
+          if(token.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'))throw Error('tabs-shape');
+          for(const stop of stops) {
+            if(!isWordToken(stop,'tab')||nonLeaf.has(stop)||stop.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'&&(a.namespaceUri!==W_NS||!['pos','val','leader'].includes(a.localName)))
+              ||sourceXml.slice(cursor,stop.openStart).trim()||(!stop.selfClosing&&sourceXml.slice(stop.openEnd,stop.closeStart).trim()))throw Error('tabs-shape');
+            const pos=attr(stop,'pos',W_NS);if(!/^-?\d{1,6}$/u.test(pos))throw Error('tabs-position');
+            raw.push({pos:Number(pos),val:attr(stop,'val',W_NS),...(attr(stop,'leader',W_NS)?{leader:attr(stop,'leader',W_NS)}:{})});cursor=stop.closeEnd;
+          }
+          if(!token.selfClosing&&sourceXml.slice(cursor,token.closeStart).trim())throw Error('tabs-shape');
+          const layoutValue=paragraphLayout.mergeWordParagraphTabs(merged.get(key)?.layoutValue,paragraphLayout.normalizeWordParagraphTabs(raw));
+          merged.set(key,{...token,layoutValue});continue;
+        }
+        if(token.localName==='ind') {
+          const ownIndent={};for(const name of paragraphLayout.INDENT_KEYS){const raw=attr(token,name,W_NS);if(raw==='')continue;if(!/^-?\d{1,6}$/u.test(raw))throw Error('indent-value');ownIndent[name]=Number(raw);}
+          const layoutValue=paragraphLayout.mergeWordParagraphIndent(merged.get(key)?.layoutValue,paragraphLayout.normalizeWordParagraphIndent(ownIndent));
+          merged.set(key,{...token,layoutValue});continue;
         }
         if (token.localName==='shd' && !['','clear','nil'].includes(attr(token,'val',W_NS))) throw Error('shading-pattern');
         let next = token;
@@ -2839,6 +2863,41 @@ function readWordLanguageProperties(scan, properties, xml) {
   } catch { return { invalid: true }; }
 }
 
+export function validateDocumentSettingsBindingV1({settingsXml='',relationshipsXml='',contentTypesXml=''},options={}) {
+  const cryptoPort=resolveCryptoPort(options.cryptoPort);if(!cryptoPort.ok)throw Error('WORD_LAYOUT_CRYPTO_PORT_REQUIRED');
+  const budgets=normalizeBudgets(options.budgets),budget=createParserBudgetState(budgets,cryptoPort);
+  const rel=relationshipsXml?parseXmlPart('word/_rels/document.xml.rels',relationshipsXml,budgets,cryptoPort,budget):{tokens:[],diagnostics:[]};
+  if(rel.diagnostics.length)throw Error('WORD_SETTINGS_BINDING_INVALID');
+  const settings=rel.tokens.filter(token=>token.localName==='Relationship'&&attr(token,'Type')==='http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings');
+  if(settings.length>1||settingsXml&&settings.length!==1||!settingsXml&&settings.length)throw Error('WORD_SETTINGS_BINDING_INVALID');
+  if(!settingsXml)return;
+  const relationshipRoots=rel.tokens.filter(token=>token.depth===0);
+  if(relationshipRoots.length!==1||relationshipRoots[0].localName!=='Relationships'||relationshipRoots[0].namespaceUri!==REL_NS)throw Error('WORD_SETTINGS_BINDING_INVALID');
+  const relation=settings[0],target=attr(relation,'Target');
+  if(relation.namespaceUri!==REL_NS||relation.depth!==1||!['settings.xml','/word/settings.xml'].includes(target)||!['','Internal'].includes(attr(relation,'TargetMode')))throw Error('WORD_SETTINGS_BINDING_INVALID');
+  const types=parseXmlPart('[Content_Types].xml',contentTypesXml,budgets,cryptoPort,budget);
+  const declarations=types.tokens.filter(token=>token.localName==='Override'&&attr(token,'PartName')==='/word/settings.xml');
+  const typeRoots=types.tokens.filter(token=>token.depth===0);
+  if(types.diagnostics.length||typeRoots.length!==1||typeRoots[0].localName!=='Types'||typeRoots[0].namespaceUri!==CONTENT_TYPES_NS
+    ||declarations.length!==1||declarations[0].namespaceUri!==CONTENT_TYPES_NS||declarations[0].depth!==1
+    ||attr(declarations[0],'ContentType')!=='application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml')throw Error('WORD_SETTINGS_BINDING_INVALID');
+}
+
+export function extractDocumentDefaultTabStopV1(xml, options = {}) {
+  if(!xml)return {effective:720,explicit:false};
+  const cryptoPort=resolveCryptoPort(options.cryptoPort);if(!cryptoPort.ok)throw Error('WORD_LAYOUT_CRYPTO_PORT_REQUIRED');
+  const budgets=normalizeBudgets(options.budgets),scan=parseXmlPart('word/settings.xml',xml,budgets,cryptoPort,createParserBudgetState(budgets,cryptoPort));
+  const roots=scan.tokens.filter(t=>t.depth===0),tokens=scan.tokens.filter(t=>t.localName==='defaultTabStop');
+  if(scan.diagnostics.length||roots.length!==1||!isWordToken(roots[0],'settings')||tokens.length>1)throw Error('WORD_DEFAULT_TAB_STOP_INVALID');
+  if(!tokens.length)return {effective:720,explicit:false};
+  const token=tokens[0];
+  if(!isWordToken(token,'defaultTabStop')||token.depth!==1||childTokensWithin(scan,token).length
+    ||!token.selfClosing&&xml.slice(token.openEnd,token.closeStart).trim()
+    ||token.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'&&(a.namespaceUri!==W_NS||a.localName!=='val')))throw Error('WORD_DEFAULT_TAB_STOP_INVALID');
+  const raw=attr(token,'val',W_NS);if(!/^\d{1,6}$/u.test(raw))throw Error('WORD_DEFAULT_TAB_STOP_INVALID');
+  return {effective:paragraphLayout.normalizeWordDefaultTabStop(Number(raw)),explicit:true};
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2914,18 +2973,20 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       : [];
     let paragraphStyle = null;
     try { if (!paragraphRecord.table) paragraphStyle = effectiveStyles.paragraph(directParagraphChildren); } catch {}
-    let directParagraphInvalid=false;
-    if(paragraphRecord.table)try{effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
-    const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directParagraphChildren;
+    let directParagraphInvalid=false,directResolved=null;
+    if(paragraphRecord.table)try{directResolved=effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
+    const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directResolved || directParagraphChildren;
     const paragraphSemanticNames = [...new Set(paragraphPropertyChildren.map((token) => token.localName))];
-    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl', 'spacing'].includes(name));
+    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl', 'spacing','ind','tabs'].includes(name));
     if (!paragraphRecord.table && !paragraphStyle) unsupportedParagraphNames.push('styleResolution');
     if(directParagraphInvalid)unsupportedParagraphNames.push('propertyShape');
     const paragraphState = formattingParagraphState(paragraphPropertyChildren);
     const paragraphActions = formattingParagraphActions(paragraphPropertyChildren);
     const paragraphStructure = formattingParagraphStructure(paragraphPropertyChildren);
     const paragraphFormattingInvalid = (paragraphSemanticNames.includes('jc') && !Object.hasOwn(paragraphState,'textAlign'))
-      || (paragraphSemanticNames.includes('spacing') && !paragraphState.wordParagraphSpacing);
+      || (paragraphSemanticNames.includes('spacing') && !paragraphState.wordParagraphSpacing)
+      || paragraphSemanticNames.includes('ind')&&!paragraphState.wordParagraphIndent
+      || paragraphSemanticNames.includes('tabs')&&!paragraphState.wordParagraphTabs;
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
     const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
       .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
@@ -3055,7 +3116,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       ...(linkRuns.inertHyperlinkInstructions.length ? {inertHyperlinkInstructions:linkRuns.inertHyperlinkInstructions} : {}),
     });
   }
-  return { ok: true, code: 'RTK_FORMATTING_SCANNER_READY', reasons, paragraphs: results };
+  let documentProperties;try{if(options.requireSettingsBinding)validateDocumentSettingsBindingV1(options,options);documentProperties=extractDocumentDefaultTabStopV1(options.settingsXml||'',options);}catch(error){return {ok:false,code:'WORD_DEFAULT_TAB_STOP_INVALID',reasons:[reason('WORD_DEFAULT_TAB_STOP_INVALID','word/settings.xml',error.message)],paragraphs:[]};}
+  return { ok: true, code: 'RTK_FORMATTING_SCANNER_READY', reasons, paragraphs: results, documentProperties };
 }
 
 function formattingParagraphsSemanticProjection(paragraphs) {
@@ -4704,6 +4766,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     stylesXml: parts['word/styles.xml'],
     themeXml: parts['word/theme/theme1.xml'],
     settingsXml: parts['word/settings.xml'],
+    contentTypesXml:parts['[Content_Types].xml'],requireSettingsBinding:true,
   });
   const formattingParagraphs = [];
   if (!formattingParagraphScan.ok) {
@@ -4799,6 +4862,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     comments: comments.commentThreads,
     formattingDeltas,
     formattingParagraphs,
+    documentProperties:formattingParagraphScan.documentProperties,
     ...(userBookmarkInventory ? { userBookmarkInventory } : {}),
     technicalPartRelationships: relationships.relationships.filter(item=>item.partName.startsWith('customXml/')
       || item.type==='http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml'
@@ -5787,7 +5851,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const propertyReplacements = [], propertyRemovals = [];
   const runProperties = new Set(['rPr', 'rPrChange', 'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight',
     'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
-  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId', 'spacing', 'rPr', 'lang']);
+  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId', 'spacing', 'rPr', 'lang','ind','tabs','tab']);
   for (const token of propertyTokens) {
     const kind = token.localName === 'rPrChange' ? 'run' : 'paragraph';
     const propertyName = kind === 'run' ? 'rPr' : 'pPr';
@@ -5818,6 +5882,14 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
         || scan.tokens.some(t=>t.openStart>=child.openEnd&&t.closeEnd<=child.closeStart)
         || (!child.selfClosing&&documentXml.slice(child.openEnd,child.closeStart).trim()))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
       readEffectiveTuple(child,child.localName);
+    }
+    if(kind==='paragraph')for(const owner of [parent,previous[0]]) {
+      const layoutChildren=children.filter(t=>t.depth===owner.depth+1&&t.openStart>=owner.openEnd&&t.closeEnd<=owner.closeStart&&['ind','tabs'].includes(t.localName));
+      if(layoutChildren.length)reviewEffectiveStyleCatalog({tokens:[],diagnostics:[]},scan,'',documentXml,{}).directParagraph(layoutChildren);
+      for(const child of children.filter(t=>['ind','tabs','tab'].includes(t.localName))) {
+        const directOwner=scan.tokens.find(t=>t.depth===child.depth-1&&t.openEnd<=child.openStart&&t.closeStart>=child.closeEnd);
+        if(!isWordToken(directOwner,child.localName==='tab'?'tabs':'pPr'))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      }
     }
     if(kind==='paragraph')for(const mark of children.filter(t=>isWordToken(t,'rPr'))) {
       const owner=scan.tokens.find(t=>t.depth===mark.depth-1&&t.openEnd<=mark.openStart&&t.closeStart>=mark.closeEnd);

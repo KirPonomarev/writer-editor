@@ -139,19 +139,20 @@ test('actual checked scene-load chain replaces root story metadata together with
   editor.destroy();
 });
 
-test('actual auxiliary editor schema normalizes only null language defaults before story Save',async()=>{
+test('actual auxiliary editor schema removes empty root defaults and preserves paragraph layout and language before story Save',async()=>{
   const [{Editor},{manuscriptBodyExtensions,readManuscriptBodyDocument}]=await Promise.all([import('@tiptap/core'),import('../../src/renderer/tiptap/manuscriptNotes.mjs')]);
   const {editor,ui}=await harness();
   const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'EVEN PAGE HEADER',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt'}}]}]}]};
   const auxiliary=new Editor({element:null,extensions:manuscriptBodyExtensions(),content:body});
   auxiliary.commands.insertContentAt(1,{type:'text',text:'YALKEN EDIT '});
-  const raw=auxiliary.getJSON();assert.equal(raw.content[0].attrs.wordParagraphMarkLanguage,null);
+  const raw=auxiliary.getJSON();assert.equal(raw.content[0].attrs.wordParagraphMarkLanguage,null);assert.equal(raw.attrs.wordDefaultTabStop,null);
   const normalized=readManuscriptBodyDocument(auxiliary);
+  assert.equal(Object.hasOwn(normalized,'attrs'),false);
   assert.equal(Object.hasOwn(normalized.content[0].attrs,'wordParagraphMarkLanguage'),false);
   assert.equal(ui.applyStoryBody(editor,editor.getJSON(),'head',normalized),true);
   assert.match(stories.read(editor.getJSON()).stories[0].body.content[0].content.map(node=>node.text||'').join(''),/YALKEN EDIT EVEN PAGE HEADER/);
   const paragraphLanguage={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'},runLanguage={val:'en-US',eastAsia:'ja-JP',bidi:'he-IL'};
-  const explicit=structuredClone(body);explicit.content[0].attrs={wordParagraphMarkLanguage:paragraphLanguage};
+  const explicit=structuredClone(body);explicit.content[0].attrs={wordParagraphMarkLanguage:paragraphLanguage,wordParagraphIndent:{left:720,hanging:240},wordParagraphTabs:[{pos:1701,val:'right',leader:'dot'}]};
   explicit.content[0].content[0].marks[0].attrs.wordLanguage=runLanguage;
   auxiliary.commands.setContent(explicit);
   const authored=readManuscriptBodyDocument(auxiliary);
@@ -161,7 +162,15 @@ test('actual auxiliary editor schema normalizes only null language defaults befo
   const saved=stories.read(editor.getJSON()).stories[0].body;
   assert.deepEqual(saved.content[0].attrs.wordParagraphMarkLanguage,paragraphLanguage);
   assert.deepEqual(saved.content[0].content[0].marks[0].attrs.wordLanguage,runLanguage);
+  assert.deepEqual(saved.content[0].attrs.wordParagraphIndent,explicit.content[0].attrs.wordParagraphIndent);
+  assert.deepEqual(saved.content[0].attrs.wordParagraphTabs,explicit.content[0].attrs.wordParagraphTabs);
   const protectedDoc=JSON.stringify(editor.getJSON());
+  for(const attrs of [{wordDefaultTabStop:567},{unexpectedRootField:true}]){
+    const withRoot=readManuscriptBodyDocument({getJSON:()=>({...structuredClone(body),attrs})});
+    assert.deepEqual(withRoot.attrs,attrs,'nonempty root attrs must not be silently discarded');
+    assert.throws(()=>stories.replaceBodyProjection(editor.getJSON(),'head',withRoot),/NOTE_BODY_STRUCTURE/);
+    assert.equal(JSON.stringify(editor.getJSON()),protectedDoc);
+  }
   for(const scope of ['paragraph','run']){
     const malformed=structuredClone(explicit);
     if(scope==='paragraph')malformed.content[0].attrs.wordParagraphMarkLanguage={val:'bad tag'};

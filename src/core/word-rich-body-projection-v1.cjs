@@ -30,6 +30,7 @@ function validateImageProjection(attrs) {
 function validateRichBody(body, { validateImage = validateImageProjection, validateMedia = null } = {}) {
   // Validate optional typed data before any numbering normalization clones it.
   require('./word-paragraph-spacing-v1.cjs').inspectDocumentParagraphSpacing(body);
+  require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(body);
   require('./word-language-v1.cjs').inspectDocumentLanguage(body);
   const numbering = require('./word-list-numbering-v1.cjs');
   if (numbering.resolve(body).size) body = numbering.normalize(clone(body));
@@ -97,7 +98,7 @@ function validateRichBody(body, { validateImage = validateImageProjection, valid
   visit(body.content);
   const text = paragraphs.map(({ paragraph: block }) => {
     need(keys(block, ['type', 'attrs', 'content']) && block.type === 'paragraph', 'NOTE_BODY_BLOCK');
-    if (block.attrs !== undefined) need(keys(block.attrs, ['textAlign', 'wordParagraphSpacing', 'wordParagraphMarkLanguage'])
+    if (block.attrs !== undefined) need(keys(block.attrs, ['textAlign', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'])
       && [null, undefined, 'left', 'center', 'right', 'justify'].includes(block.attrs.textAlign), 'NOTE_BODY_PARAGRAPH_ATTRIBUTES');
     need(block.content === undefined || Array.isArray(block.content), 'NOTE_BODY_CONTENT');
     return (block.content || []).map(node => {
@@ -146,7 +147,7 @@ function validateRichBody(body, { validateImage = validateImageProjection, valid
   const checked = clone(body), pending = [checked];
   while (pending.length) {
     const node = pending.pop();
-    for (const key of ['wordParagraphSpacing', 'wordParagraphMarkLanguage', 'wordLanguage']) {
+    for (const key of ['wordParagraphSpacing', 'wordParagraphMarkLanguage', 'wordLanguage','wordParagraphIndent','wordParagraphTabs']) {
       if (node.attrs?.[key] === null) delete node.attrs[key];
     }
     for (const key of ['content', 'marks']) for (const child of node[key] || []) pending.push(child);

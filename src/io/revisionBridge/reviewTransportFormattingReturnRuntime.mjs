@@ -1,3 +1,5 @@
+import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
+import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
@@ -20,9 +22,9 @@ export const RTK_FORMATTING_RETURN_RUNTIME_SCHEMA = 'yalken.rtk.formatting-retur
 const INLINE_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
 const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguage']);
 const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
-const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage']);
+const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs']);
 const OPERATION_KEYS = new Set([
-  'operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
+  'kind','document','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
   'inline', 'paragraph', 'targetScope', 'sceneOrdinal', 'paragraphId', 'sourceAuthority', 'expectedOutcome',
   'sourceSceneRevision', 'sourceRawSha256',
 ]);
@@ -71,7 +73,22 @@ function graphemeBoundaries(text) {
   return boundaries;
 }
 
+function operationDataOnly(value) {
+  const pending=[{value,depth:0}],ancestors=new Set();let count=0;
+  while(pending.length){const item=pending.pop(),value=item.value;
+    if(item.exit){ancestors.delete(value);continue;}
+    if(value===null||['string','boolean'].includes(typeof value)||typeof value==='number'&&Number.isFinite(value))continue;
+    if(!value||typeof value!=='object'||item.depth>64||++count>16384||ancestors.has(value))return false;
+    const proto=Object.getPrototypeOf(value),ctor=proto&&Object.getOwnPropertyDescriptor(proto,'constructor');
+    if(Array.isArray(value)&&proto!==Array.prototype){const parent=proto&&Object.getPrototypeOf(proto),parentCtor=parent&&Object.getOwnPropertyDescriptor(parent,'constructor');if(typeof ctor?.value!=='function'||Function.prototype.toString.call(ctor.value)!==Function.prototype.toString.call(Array)||!parent||Object.getPrototypeOf(parent)!==null||typeof parentCtor?.value!=='function'||Function.prototype.toString.call(parentCtor.value)!==Function.prototype.toString.call(Object))return false;}
+    if(!Array.isArray(value)&&proto!==null&&proto!==Object.prototype&&!(Object.getPrototypeOf(proto)===null&&typeof ctor?.value==='function'&&Function.prototype.toString.call(ctor.value)===Function.prototype.toString.call(Object)))return false;
+    ancestors.add(value);pending.push({value,exit:true});
+    for(const key of Reflect.ownKeys(value)){if(Array.isArray(value)&&key==='length')continue;const d=Object.getOwnPropertyDescriptor(value,key);if(typeof key!=='string'||!d?.enumerable||!Object.hasOwn(d,'value'))return false;pending.push({value:d.value,depth:item.depth+1});}
+  }return true;
+}
 function normalizeAction(value, key) {
+  if(!operationDataOnly(value)||!isPlainObject(value)||Array.isArray(value))return null;
+  if(['wordParagraphIndent','wordParagraphTabs'].includes(key)){if(value?.action==='remove'&&Object.keys(value).length===1)return {action:'remove'};if(value?.action==='set'&&Object.keys(value).every(k=>['action','value'].includes(k)))try{return {action:'set',value:(key==='wordParagraphIndent'?paragraphLayout.normalizeWordParagraphIndent:paragraphLayout.normalizeWordParagraphTabs)(value.value)};}catch{}return null;}
   if (!isPlainObject(value)) return null;
   if (Object.keys(value).some((field) => !['action', 'value'].includes(field))) return null;
   const action = normalizedString(value.action);
@@ -108,11 +125,23 @@ function normalizeAction(value, key) {
 }
 
 function normalizeOperation(operation, index) {
-  if (!isPlainObject(operation)) return result(false, 'RTK_FORMATTING_OPERATION_INVALID', { operationIndex: index });
+  if (!isPlainObject(operation)||Array.isArray(operation)||!operationDataOnly(operation)) return result(false, 'RTK_FORMATTING_OPERATION_INVALID', { operationIndex: index });
   const unknownKeys = Object.keys(operation).filter((key) => !OPERATION_KEYS.has(key));
   if (unknownKeys.length > 0) {
     return result(false, 'RTK_FORMATTING_OPERATION_UNKNOWN_KEY', { operationIndex: index, unknownKeys });
   }
+  if(operation.kind==='document-properties') {
+    const keys=['kind','document','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
+    const action=operation.document?.wordDefaultTabStop;
+    if(Object.keys(operation).some(key=>!keys.includes(key))||!normalizedString(operation.operationId)||!normalizedString(operation.sceneId)
+      ||operation.sourceAuthority!=='authenticated-full-manuscript-export-map-document-properties-v1'
+      ||!SHA256_RE.test(operation.sourceSceneRevision)||!SHA256_RE.test(operation.sourceRawSha256)
+      ||!isPlainObject(operation.document)||Object.keys(operation.document).length!==1||!isPlainObject(action)
+      ||Object.keys(action).some(key=>!['action','value'].includes(key))||action.action!=='set')return result(false,'RTK_FORMATTING_DOCUMENT_AUTHORITY_INVALID');
+    try{paragraphLayout.normalizeWordDefaultTabStop(action.value);}catch{return result(false,'RTK_FORMATTING_DOCUMENT_ACTION_INVALID');}
+    return {ok:true,operation:cloneJson(operation)};
+  }
+  if(operation.kind!==undefined||operation.document!==undefined)return result(false,'RTK_FORMATTING_OPERATION_UNKNOWN_KIND');
   const operationId = normalizedString(operation.operationId);
   const sceneId = normalizedString(operation.sceneId);
   const blockId = normalizedString(operation.blockId);
@@ -289,6 +318,7 @@ function applyInlineRange(paragraph, operation) {
     const markLanguage=operation.paragraph.wordParagraphMarkLanguage;
     if(markLanguage?.action==='remove')delete attrs.wordParagraphMarkLanguage;
     else if(markLanguage?.action==='set')attrs.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(markLanguage.value);
+    for(const key of ['wordParagraphIndent','wordParagraphTabs']){const action=operation.paragraph[key];if(action?.action==='remove')delete attrs[key];else if(action?.action==='set')attrs[key]=cloneJson(action.value);}
     const spacing=operation.paragraph.wordParagraphSpacing;
     if(spacing?.action==='remove')delete attrs.wordParagraphSpacing;
     else if(spacing?.action==='set')attrs.wordParagraphSpacing=paragraphSpacing.normalizeWordParagraphSpacing(spacing.value);
@@ -348,9 +378,12 @@ export function applyFormattingOperationsToObservableContent(baseContent, operat
   const sceneIds = [...new Set(normalized.map((operation) => operation.sceneId))];
   if (sceneIds.length !== 1) return result(false, 'RTK_FORMATTING_SINGLE_SCENE_TRANSFORM_REQUIRED', { sceneIds });
 
-  const doc = parsed.doc ? cloneJson(parsed.doc) : buildParagraphDocumentFromText(parsed.text);
+  let doc = parsed.doc ? cloneJson(parsed.doc) : buildParagraphDocumentFromText(parsed.text);
   if (!Array.isArray(doc.content)) return result(false, 'RTK_FORMATTING_DOCUMENT_CONTENT_INVALID');
-  const ordered = normalized.slice().sort((left, right) => (
+  const rootOperations=normalized.filter(operation=>operation.kind==='document-properties');
+  if(rootOperations.length>1)return result(false,'RTK_FORMATTING_DOCUMENT_DUPLICATE_OPERATION');
+  if(rootOperations.length)doc=pendingTextRevisions.setDefaultTabStop(doc,rootOperations[0].document.wordDefaultTabStop.value);
+  const ordered = normalized.filter(operation=>operation.kind!=='document-properties').sort((left, right) => (
     left.paragraphOrdinal - right.paragraphOrdinal || left.from - right.from || left.operationId.localeCompare(right.operationId)
   ));
   for (const operation of ordered) {

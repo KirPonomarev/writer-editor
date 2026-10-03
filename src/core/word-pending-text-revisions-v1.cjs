@@ -45,7 +45,8 @@ function normalizeNode(node) {
 // text, list nesting and table coordinates. Returns references into this doc.
 function paragraphs(doc) {
   require('./word-list-numbering-v1.cjs').resolve(doc);
-  assert(exact(doc, ['type', 'content']) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
+  assert(exact(doc, ['type', 'content','attrs']) && (!doc.attrs||exact(doc.attrs,['wordDefaultTabStop'])) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
+  if(doc.attrs?.wordDefaultTabStop!=null)require('./word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(doc.attrs.wordDefaultTabStop);
   const result = []; let lists = 0;
   const visit = (node, depth = 0, inCell = false) => {
     assert(exact(node, ['type', 'attrs', 'content']));
@@ -161,10 +162,11 @@ function exportDocument(ledger) {
 }
 function validateSource(doc) {
   spacing.inspectDocumentParagraphSpacing(doc);
+  require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(doc);
   language.inspectDocumentLanguage(doc);
   for (const p of paragraphs(doc)) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
-    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage'])
+    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
       && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)));
     assert(Array.isArray(p.content));
@@ -566,7 +568,8 @@ function materialize(input, mode = 'current') {
 }
 function bindLedger(input) {
   const ledger = clone(validateLedger(input));
-  return { ...materialize(ledger), attrs: { [KEY]: ledger } };
+  const materialized=materialize(ledger);
+  return { ...materialized, attrs: { ...materialized.attrs,[KEY]: ledger } };
 }
 function readLedger(doc) {
   const ledger = doc?.attrs?.[KEY];
@@ -574,6 +577,13 @@ function readLedger(doc) {
   validateLedger(ledger);
   assert(stable(normalizeNode(doc)) === stable(normalizeNode(materialize(ledger))), 'PENDING_REVISIONS_PROJECTION_MISMATCH');
   return ledger;
+}
+function setDefaultTabStop(doc,value) {
+  const checked=require('./word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(value);
+  const ledger=readLedger(doc);if(!ledger)return {...clone(doc),attrs:{...clone(doc.attrs||{}),wordDefaultTabStop:checked}};
+  const next=clone(ledger),pending=[next];
+  while(pending.length){const frame=pending.pop();frame.source.attrs={...frame.source.attrs,wordDefaultTabStop:checked};for(const key of ['roundUndo','roundRedo'])for(const prior of frame[key]||[])pending.push(prior);}
+  return bindLedger(next);
 }
 function decide(doc, input) {
   const ledger = clone(readLedger(doc)); assert(ledger, 'PENDING_REVISIONS_REQUIRED');
@@ -619,4 +629,4 @@ function projection(doc) {
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: isTableRow(r) ? tableRows(ledger.source).filter(row => row.tableIndex === r.structure.tableIndex && row.rowIndex === r.structure.rowIndex).flatMap(row => sourceParagraphs.slice(row.paragraphIndex, row.paragraphIndex + row.paragraphCount)).map(p => p.content.map(textOf).join('')).join('\t') : isParagraphBoundary(r) ? '\n' : sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

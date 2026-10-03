@@ -93,12 +93,12 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       if (!plain(format) || !plain(next) || next.trackedRevision || next.table || format.table || format.media?.length
         || next.paragraphFormattingInvalid || next.unsupportedParagraphNames?.length) return reject('paragraph-semantics');
       const p=format.paragraph||{};
-      if (Object.keys(p).some(k=>!['nodeType','textAlign','headingLevel','wordParagraphSpacing','wordParagraphMarkLanguage'].includes(k))) return reject('unsupported-paragraph');
+      if (Object.keys(p).some(k=>!['nodeType','textAlign','headingLevel','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'].includes(k))) return reject('unsupported-paragraph');
       if (!['paragraph','heading'].includes(p.nodeType)) return reject('paragraph-kind');
       const structure=next.paragraphStructure||{};
       if (Object.keys(structure).some(k=>!['nodeType','headingLevel'].includes(k))) return reject('returned-structure');
       if ((p.textAlign||'left')!==(next.paragraphState?.textAlign||'left')) return reject('paragraph-format-change');
-      for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])if(stable(p[key]||{})!==stable(next.paragraphState?.[key]||{}))return reject('paragraph-format-change');
+      for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'])if(stable(p[key]||{})!==stable(next.paragraphState?.[key]||{}))return reject('paragraph-format-change');
       const nextType=Object.hasOwn(structure,'nodeType')?structure.nodeType:'paragraph';
       if (nextType!==p.nodeType) return reject('paragraph-kind-change');
       if (p.nodeType==='heading') {

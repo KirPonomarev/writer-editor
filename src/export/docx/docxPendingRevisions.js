@@ -1,11 +1,18 @@
 'use strict';
 const { escapeXml } = require('./docxTextXml.js');
 const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
+const layout = require('../../core/word-paragraph-layout-v1.cjs');
 const { normalizeWordParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
 function buildDocxWordParagraphSpacingXml(value) {
   if (value == null) return '';
   const spacing = normalizeWordParagraphSpacing(value);
   return '<w:spacing' + ['before','after','line','lineRule'].filter(key => Object.hasOwn(spacing,key)).map(key => ` w:${key}="${spacing[key]}"`).join('') + '/>';
+}
+function buildDocxWordParagraphLayoutXml(attrs = {}) {
+  let xml='';
+  if(attrs.wordParagraphIndent!=null){const value=layout.normalizeWordParagraphIndent(attrs.wordParagraphIndent);xml+='<w:ind'+Object.entries(value).map(([key,v])=>` w:${key}="${v}"`).join('')+'/>';}
+  if(attrs.wordParagraphTabs!=null){const values=layout.normalizeWordParagraphTabs(attrs.wordParagraphTabs);xml+='<w:tabs>'+values.map(value=>'<w:tab'+Object.entries(value).map(([key,v])=>` w:${key}="${v}"`).join('')+'/>').join('')+'</w:tabs>';}
+  return xml;
 }
 function revisionAttributes(revision, counter) {
   return ` w:id="${counter.next++}" w:author="${escapeXml(revision.author)}"`
@@ -17,7 +24,8 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
-  let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang)\b[^>]*\/>/gu, '');
+  let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang|ind)\b[^>]*\/>/gu, '');
+  protectedProperties=protectedProperties.replace(/<w:tabs\b[^>]*>[\s\S]*?<\/w:tabs>|<w:tabs\b[^>]*\/>/gu,'');
   const oldLanguage = buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
   if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
   else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
@@ -26,6 +34,7 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
     + (before.attrs?.textAlign ? `<w:jc w:val="${escapeXml(before.attrs.textAlign === 'justify' ? 'both' : before.attrs.textAlign)}"/>` : '')
     + buildDocxWordParagraphSpacingXml(before.attrs?.wordParagraphSpacing)
+    + buildDocxWordParagraphLayoutXml(before.attrs)
     + protectedProperties;
   return `<w:pPr>${body}<w:pPrChange${revisionAttributes(revision, counter)}><w:pPr>${old}</w:pPr></w:pPrChange></w:pPr>`;
 }
@@ -127,4 +136,4 @@ function pendingNoteMarkersForBlock(projection, block) {
   }
   return result;
 }
-module.exports = { buildDocxWordParagraphSpacingXml, pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
+module.exports = { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml, pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };

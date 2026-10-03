@@ -24,7 +24,7 @@ test('default style is active without pStyle and explicit style does not invent 
  assert.equal((await scan(styles,'')).paragraphs[0].paragraphState.textAlign,'right');
  assert.equal((await scan(styles)).paragraphs[0].paragraphState.textAlign,'center');
 });
-for(const extra of ['<w:spacing w:beforeLines="400"/>','<w:ind w:left="720"/>','<w:tabs><w:tab w:pos="720" w:val="left"/></w:tabs>'])test('unsupported inherited paragraph property remains non-applicable '+extra,async()=>{
+for(const extra of ['<w:spacing w:beforeLines="400"/>','<w:ind w:leftChars="100"/>','<w:tabs><w:tab w:pos="720" w:val="num"/></w:tabs>'])test('unsupported inherited paragraph property remains non-applicable '+extra,async()=>{
  const result=await scan(style('Derived','paragraph',`<w:pPr><w:jc w:val="right"/>${extra}</w:pPr>`));
  assert.ok(!result.ok||result.paragraphs[0].unsupportedParagraphNames.length>0);
 });

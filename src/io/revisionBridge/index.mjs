@@ -1,3 +1,4 @@
+import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import wordStories from '../../core/word-stories-v1.cjs';
@@ -22,6 +23,8 @@ import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs'
 import { genericCommentCandidates } from './genericWordComments.mjs';
 import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs';
 import {
+  validateDocumentSettingsBindingV1,
+  extractDocumentDefaultTabStopV1,
   extractReviewTransportFormattingRunsV2,
   extractPendingTextRevisionSourceV1,
   extractTransportParagraphOwnershipV1,
@@ -3951,7 +3954,8 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, opt
   // Keep the existing clean-producer projection for ordinary documents. The
   // final bounded package parser still executes in the publication gate.
   // Table ownership requires the namespace-aware grid projection below.
-  const scanned = hasTables || hasPendingRevisions ? extractReviewTransportFormattingRunsV2(xml, {
+  const hasInlineAtoms=/<(?:[^>\s/:]+:)?(?:tab|br|cr|softHyphen|noBreakHyphen)(?:\s|\/?>)/u.test(xml);
+  const scanned = hasTables || hasPendingRevisions || hasInlineAtoms ? extractReviewTransportFormattingRunsV2(xml, {
     ...options,
     cryptoPort: options.cryptoPort || {
       sha256Text: text => `sha256:${sha256Hex(text)}`,
@@ -5003,7 +5007,7 @@ export function buildDocxReviewFormattingReturnCandidatesFromZipBytes(input, opt
   }
   return buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     scanned.paragraphs,
-    options,
+    {...options,documentProperties:scanned.documentProperties},
     scanned.reasons,
   );
 }
@@ -5060,7 +5064,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       : docxReviewFormattingLegacyFormatIr(paragraph.paragraphText);
     const baselineRuns = Array.isArray(formatIr.runs) ? formatIr.runs : [];
     const baselineParagraphRecord = isPlainObject(formatIr.paragraph) ? formatIr.paragraph : {};
-    const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
+    const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
     const baselineStructure = baselineParagraphRecord.nodeType === 'heading'
       ? { nodeType: 'heading', headingLevel: Number(baselineParagraphRecord.headingLevel) }
       : { nodeType: 'paragraph' };
@@ -5068,9 +5072,11 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       ? paragraph.paragraphStructure
       : {};
     const returnedParagraphState = isPlainObject(paragraph.paragraphState) ? {...paragraph.paragraphState} : {};
+    for(const [key,effective] of [['wordParagraphIndent',paragraphLayout.effectiveWordParagraphIndent],['wordParagraphTabs',paragraphLayout.effectiveWordParagraphTabs]])if(Object.hasOwn(baselineParagraph,key)&&hashCanonicalValue(effective(baselineParagraph[key]))===hashCanonicalValue(effective(returnedParagraphState[key])))returnedParagraphState[key]=baselineParagraph[key];
     if(Object.hasOwn(baselineParagraph,'textAlign')&&!Object.hasOwn(returnedParagraphState,'textAlign')
       && paragraph.resolvedTextAlign==='left')returnedParagraphState.textAlign='left';
-    const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? paragraph.paragraphActions : {};
+    const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? {...paragraph.paragraphActions} : {};
+    if(!paragraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
     const paragraphAmbiguousRemovals = docxReviewFormattingAmbiguousRemovalKeys(
       baselineParagraph,
       returnedParagraphState,
@@ -5243,6 +5249,22 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       candidates.push(operation);
     }
   }
+  if(options.documentProperties) {
+    const value=paragraphLayout.normalizeWordDefaultTabStop(options.documentProperties.effective);
+    for(const scene of options.fullManuscriptExportMap.scenes||[]) {
+      const baseline=scene.documentFormatIr;
+      if(!baseline)continue; // Legacy capsule did not declare document-property authority.
+      if(!isPlainObject(baseline)||!Number.isSafeInteger(baseline.wordDefaultTabStop)||typeof baseline.explicit!=='boolean'
+        ||!/^sha256:[a-f0-9]{64}$/u.test(scene.rawSha256)||!/^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision)) {
+        diagnostics.push({code:'RTK_FORMATTING_DOCUMENT_SOURCE_INVALID',sceneId:scene.sceneId});continue;
+      }
+      paragraphLayout.normalizeWordDefaultTabStop(baseline.wordDefaultTabStop);
+      if(value===baseline.wordDefaultTabStop)continue;
+      const operation={kind:'document-properties',sceneId:scene.sceneId,sourceAuthority:'authenticated-full-manuscript-export-map-document-properties-v1',
+        sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,document:{wordDefaultTabStop:{action:'set',value}}};
+      operation.operationId='rtk-document-format-'+hashCanonicalValue(operation);candidates.push(operation);
+    }
+  }
   // MATCH-01: unclassified topology invariant. A returned paragraph with
   // styled content but no resolvable identity is an unclassified block. While
   // unclassifiedBlocks > 0 the contour is NOT ready: the topology-level typed
@@ -5359,7 +5381,7 @@ export function buildDocxReviewStructuralReturnCandidatesFromZipBytes(input, opt
   }
   return buildDocxReviewStructuralReturnCandidatesFromFormattingParagraphs(
     scanned.paragraphs,
-    options,
+    {...options,documentProperties:scanned.documentProperties},
     scanned.reasons,
   );
 }
@@ -7601,7 +7623,7 @@ export function buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, op
   }
   return buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     projection.formattingParagraphs,
-    options,
+    {...options,documentProperties:projection.documentProperties},
   );
 }
 
@@ -7880,6 +7902,8 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_BLOCK_STYLE_DEFINITION_REQUIRED',
     'DOCX_BLOCK_STYLE_LIST_CONFLICT',
     'DOCX_BLOCK_STYLE_PROJECTION_INVALID',
+    'WORD_SETTINGS_BINDING_INVALID',
+    'WORD_DEFAULT_TAB_STOP_INVALID',
     'DOCX_FONT_ATTRIBUTES_INVALID',
     'DOCX_FONT_ATTRIBUTE_NAMESPACE',
     'DOCX_FONT_FACE_DUPLICATE_OR_INVALID',
@@ -9434,17 +9458,19 @@ function docxInlineReadTypography(properties, tag, token, namespaces) {
 function docxInlineEffectiveTypography(properties, metadata, catalog, text) {
   const result = {};
   const resolved = Object.fromEntries(DOCX_FONT_SLOTS.map(slot => [slot, docxFontResolveTheme(properties[`font_${slot}`], catalog.themeFonts)]));
-  const hasTheme = DOCX_FONT_SLOTS.some(slot => typeof properties[`font_${slot}`] === 'object');
-  const familySlots = hasTheme ? docxFontUsedSlots(text, properties, resolved) : DOCX_FONT_SLOTS;
+  // Literal and theme declarations both select fonts by the actual run script.
+  // Unused East Asian/complex-script slots need not be declared for Latin text.
+  const familySlots = docxFontUsedSlots(text, properties, resolved);
   const families = familySlots?.map(slot => resolved[slot]);
   if (Object.values(resolved).some(value => value !== undefined)) {
     if (!families?.length || families.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(families).size !== 1) metadata.unsupportedTypography = true;
     else result.fontFamily = families[0];
   }
-  const sizes = [properties.font_size, properties.font_sizeCs];
-  if (sizes.some(value => value !== undefined)) {
-    if (sizes.some(value => value === undefined) || new Set(sizes).size !== 1) metadata.unsupportedTypography = true;
-    else result.fontSize = sizes[0];
+  // Word selects complex-script size by explicit cs/rtl flags (MS-OI29500 2.1.99).
+  const size = properties.font_forceCs || properties.font_rtl ? properties.font_sizeCs : properties.font_size;
+  if (properties.font_size !== undefined || properties.font_sizeCs !== undefined) {
+    if (size === undefined) metadata.unsupportedTypography = true;
+    else result.fontSize = size;
   }
   return result;
 }
@@ -9475,6 +9501,16 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
   } else properties[key] = `#${fill.toLowerCase()}`;
 }
 
+function docxReadLayoutTuple(token,namespaces,kind) {
+  const attrs=docxFontAttributes(token,namespaces),value={};
+  const keys=kind==='ind'?paragraphLayout.INDENT_KEYS:['pos','val','leader'];
+  for(const [name,raw] of attrs) {
+    const key=name.split('\u0000')[1];
+    if(!name.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!keys.includes(key))throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+    if(kind==='ind'||key==='pos') {if(!/^-?\d{1,6}$/u.test(raw))throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');value[key]=Number(raw);} else value[key]=raw;
+  }
+  return kind==='ind'?paragraphLayout.normalizeWordParagraphIndent(value):paragraphLayout.normalizeWordParagraphTabs([value])[0];
+}
 function docxReadSpacingTuple(token,namespaces) {
   const attrs=docxFontAttributes(token,namespaces),value={};
   for(const [name,raw] of attrs) {
@@ -9580,9 +9616,10 @@ function docxInlineStyleCatalog(bytes) {
     }
     const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.ns || new Map());
     if (!parsed) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+    if(['ind','tabs','tab','defaultTabStop'].includes(parsed.localName)&&parsed.namespaceUri!==DOCX_WORDPROCESSINGML_MAIN_NAMESPACE)throw Error('WORD_PARAGRAPH_LAYOUT_NAMESPACE');
     const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? `w:${parsed.localName}` : '';
     const parent = stack.at(-1)?.tag;
-    if(['w:lang','w:spacing'].includes(parent))throw Error('WORD_PROPERTY_SHAPE_INVALID');
+    if(['w:lang','w:spacing','w:ind','w:tab'].includes(parent))throw Error('WORD_PROPERTY_SHAPE_INVALID');
     if (!stack.length) {
       if (root) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
       root = tag;
@@ -9608,6 +9645,15 @@ function docxInlineStyleCatalog(bytes) {
         catalog.defaultNumbering ??= {};
         docxReadNumberingProperty(catalog.defaultNumbering, tag, token, parsed.namespaceMap);
       }
+    } else if (['w:ind','w:tabs'].includes(tag) && parent === 'w:pPr') {
+      const target=stack.at(-2)?.tag==='w:style'&&current?.type==='paragraph'?current:stack.at(-2)?.tag==='w:pPrDefault'?catalog:null;
+      if(target){const key=tag==='w:ind'?'wordParagraphIndent':'wordParagraphTabs';if(target[key]!==undefined)throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+        if(tag==='w:tabs'&&docxFontAttributes(token,parsed.namespaceMap).size)throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+        target[key]=tag==='w:ind'?docxReadLayoutTuple(token,parsed.namespaceMap,'ind'):[];}
+    } else if (parent==='w:tabs') {
+      if(tag!=='w:tab')throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+      const target=stack.at(-3)?.tag==='w:style'&&current?.type==='paragraph'?current:stack.at(-3)?.tag==='w:pPrDefault'?catalog:null;
+      if(target)target.wordParagraphTabs=paragraphLayout.normalizeWordParagraphTabs([...target.wordParagraphTabs,docxReadLayoutTuple(token,parsed.namespaceMap,'tab')]);
     } else if (tag === 'w:spacing' && parent === 'w:pPr') {
       const target=stack.at(-2)?.tag==='w:style'&&current?.type==='paragraph'?current:stack.at(-2)?.tag==='w:pPrDefault'?catalog:null;
       if(target){if(target.wordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');target.wordParagraphSpacing=docxReadSpacingTuple(token,parsed.namespaceMap);}
@@ -9751,10 +9797,14 @@ function docxResolveParagraphAlignment(metadata, catalog) {
   const markProperties={...catalog.defaults};docxInlineApplyStyle(markProperties,metadata.paragraphStyleId||catalog.defaultParagraph,'paragraph',catalog);
   const language={...markProperties.wordLanguage,...metadata.wordParagraphMarkLanguage};
   if(Object.keys(language).length)metadata.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(language);
+  const layoutLayers=[metadata];
   const spacingLayers=[metadata.wordParagraphSpacing];
   let spacingId=metadata.paragraphStyleId||catalog.defaultParagraph;const spacingSeen=new Set();
-  while(spacingId){if(spacingSeen.has(spacingId)||spacingSeen.size>=64)throw Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');spacingSeen.add(spacingId);const style=catalog.styles.get(spacingId);if(!style||style.type!=='paragraph')break;spacingLayers.push(style.wordParagraphSpacing);spacingId=style.basedOn;}
-  spacingLayers.push(catalog.wordParagraphSpacing);
+  while(spacingId){if(spacingSeen.has(spacingId)||spacingSeen.size>=64)throw Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');spacingSeen.add(spacingId);const style=catalog.styles.get(spacingId);if(!style||style.type!=='paragraph')break;spacingLayers.push(style.wordParagraphSpacing);layoutLayers.push(style);spacingId=style.basedOn;}
+  spacingLayers.push(catalog.wordParagraphSpacing);layoutLayers.push(catalog);
+  let indent,tabs,tabsPresent=false;
+  for(const layer of layoutLayers.reverse()){indent=paragraphLayout.mergeWordParagraphIndent(indent,layer.wordParagraphIndent);if(layer.wordParagraphTabs!==undefined){tabs=paragraphLayout.mergeWordParagraphTabs(tabs,layer.wordParagraphTabs);tabsPresent=true;}}
+  if(indent)metadata.wordParagraphIndent=indent;if(tabsPresent)metadata.wordParagraphTabs=tabs;
   const spacing=Object.assign({},...spacingLayers.reverse().filter(Boolean));
   if(Object.keys(spacing).length)metadata.wordParagraphSpacing=paragraphSpacing.normalizeWordParagraphSpacing(spacing);
   let value = metadata.wordAlignment;
@@ -9835,7 +9885,8 @@ function docxInlineCanonicalContent(paragraphs) {
       throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
     }
     if(paragraph.wordParagraphSpacing!==undefined)paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing);
-    needsRichContent ||= paragraph.wordParagraphMarkLanguage!==undefined || paragraph.wordParagraphSpacing!==undefined || level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
+    for(const [key,normalize] of [['wordParagraphIndent',paragraphLayout.normalizeWordParagraphIndent],['wordParagraphTabs',paragraphLayout.normalizeWordParagraphTabs]])if(paragraph[key]!==undefined)normalize(paragraph[key]);
+    needsRichContent ||= paragraph.wordParagraphIndent!==undefined || paragraph.wordParagraphTabs!==undefined || paragraph.wordParagraphMarkLanguage!==undefined || paragraph.wordParagraphSpacing!==undefined || level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
     const typedBreaks = wordTypedBreaks.validateOffsets(paragraph.text, paragraph.typedBreaks);
     const breakTypes = new Map(typedBreaks.map(item => [item.offset, item.type]));
     if (codeBlock && typedBreaks.length) throw new Error('WORD_TYPED_BREAK_INVALID');
@@ -9898,7 +9949,7 @@ function docxInlineCanonicalContent(paragraphs) {
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
-    const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}),...(paragraph.wordParagraphSpacing?{wordParagraphSpacing:paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing)}:{}),...(paragraph.wordParagraphMarkLanguage?{wordParagraphMarkLanguage:wordLanguage.normalizeWordLanguage(paragraph.wordParagraphMarkLanguage)}:{}) };
+    const attrs = { ...(paragraph.wordParagraphIndent!==undefined?{wordParagraphIndent:paragraph.wordParagraphIndent}:{}),...(paragraph.wordParagraphTabs!==undefined?{wordParagraphTabs:paragraph.wordParagraphTabs}:{}), ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}),...(paragraph.wordParagraphSpacing?{wordParagraphSpacing:paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing)}:{}),...(paragraph.wordParagraphMarkLanguage?{wordParagraphMarkLanguage:wordLanguage.normalizeWordLanguage(paragraph.wordParagraphMarkLanguage)}:{}) };
     if (paragraph.media !== undefined) {
       if (codeBlock || !Array.isArray(paragraph.media) || !paragraph.media.length || paragraph.media.length > 4096) throw Error('DOCUMENT_MEDIA_PLACEMENT');
       let previous = -1;
@@ -10016,6 +10067,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   }
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
   if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
+  for(const key of ['wordParagraphIndent','wordParagraphTabs'])if(metadata[key]!==undefined)paragraph[key]=metadata[key];
   if(metadata.wordParagraphSpacing!==undefined)paragraph.wordParagraphSpacing=metadata.wordParagraphSpacing;
   if(metadata.wordParagraphMarkLanguage!==undefined)paragraph.wordParagraphMarkLanguage=metadata.wordParagraphMarkLanguage;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
@@ -10298,6 +10350,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     // Literal w prefixes can be rebound. The table reader receives only names
     // whose namespace identity is proved, just like the review table reader.
     const tableParent = elementStack.at(closing || selfClosing ? -1 : -2);
+    if(!closing&&['ind','tabs','tab'].includes(rawTagName.split(':').at(-1))&&docxContentPreviewNamespaceUriForTagName(rawTagName,tokenNamespaceMap)!==DOCX_WORDPROCESSINGML_MAIN_NAMESPACE)throw Error('WORD_PARAGRAPH_LAYOUT_NAMESPACE');
     const tableTag = docxContentPreviewNamespaceUriForTagName(rawTagName, tokenNamespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
       ? tagName : `other:${rawTagName.split(':').at(-1)}`;
     const tableParentTag = tableParent && docxContentPreviewNamespaceUriForTagName(tableParent.rawTagName, tableParent.namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
@@ -10325,7 +10378,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if(activeParagraphMetadata.wordParagraphMarkLanguage)throw Error('WORD_LANGUAGE_INVALID');
       activeParagraphMetadata.wordParagraphMarkLanguage=docxReadLanguageTuple(token,tokenNamespaceMap);
     }
-    if(!closing&&['w:lang','w:spacing'].includes(parentTag))throw Error('WORD_PROPERTY_SHAPE_INVALID');
+    if(!closing&&['w:lang','w:spacing','w:ind','w:tab'].includes(parentTag))throw Error('WORD_PROPERTY_SHAPE_INVALID');
 
     if (insideParagraph && tagName === 'w:hyperlink') {
       if (closing) {
@@ -10476,6 +10529,15 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
       if (Object.hasOwn(activeParagraphMetadata, 'outlineLevel')) throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
       activeParagraphMetadata.outlineLevel = docxReadOutlineLevel(token, tokenNamespaceMap);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && ['w:ind','w:tabs'].includes(tagName)) {
+      const key=tagName==='w:ind'?'wordParagraphIndent':'wordParagraphTabs';
+      if(activeParagraphMetadata[key]!==undefined)throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+      if(tagName==='w:tabs'&&docxFontAttributes(token,tokenNamespaceMap).size)throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+      activeParagraphMetadata[key]=tagName==='w:ind'?docxReadLayoutTuple(token,tokenNamespaceMap,'ind'):[];
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag==='w:tabs') {
+      if(tagName!=='w:tab'||activeParagraphMetadata.wordParagraphTabs===undefined)throw Error('WORD_PARAGRAPH_LAYOUT_INVALID');
+      activeParagraphMetadata.wordParagraphTabs=paragraphLayout.normalizeWordParagraphTabs([...activeParagraphMetadata.wordParagraphTabs,docxReadLayoutTuple(token,tokenNamespaceMap,'tab')]);
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:spacing') {
       if(activeParagraphMetadata.wordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');
@@ -10699,14 +10761,15 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
   const relationships = new Map(), sections = [], byPart = new Map(), stories = [];
   if (auxiliary('word/_rels/document.xml.rels')) docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', P, 'Relationships', (node, stack, attr) => {
-    if (node.localName !== 'Relationship') return;
+    // Diagnostic-only unqualified relationships never confer part authority.
+    if (node.localName !== 'Relationship' || node.namespaceUri !== P || stack[0]?.namespaceUri !== P) return;
     const type = attr('Type'), role = type === `${R}/header` ? 'header' : type === `${R}/footer` ? 'footer' : null;
     if (!role) return;
     const id = attr('Id'), target = attr('Target');
     if (stack.length !== 1 || node.namespaceUri !== P || !id || relationships.has(id) || ![undefined,'Internal'].includes(attr('TargetMode'))
       || typeof target !== 'string' || !/^(?:\/word\/)?[A-Za-z0-9_.-]+\.xml$/.test(target) || target.includes('..')) throw Error('WORD_STORY_RELATIONSHIP_INVALID');
     relationships.set(id, { role, part: target.startsWith('/word/') ? target.slice(1) : `word/${target}` });
-  });
+  }, { allowUnqualifiedRoot: true });
   let current = null;
   docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
     if (node.namespaceUri !== W) return;
@@ -10930,6 +10993,10 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   let allDocumentRelationshipsPreserved = false;
   let namedStylesNormalized = false;
   try {
+    const settingsPart=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
+    const settingsCrypto={cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
+    validateDocumentSettingsBindingV1({settingsXml:settingsPart('word/settings.xml'),relationshipsXml:settingsPart('word/_rels/document.xml.rels'),contentTypesXml:settingsPart('[Content_Types].xml')},settingsCrypto);
+    const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
     const inlineStyles = docxInlineStyleCatalog(bytes);
     namedStylesNormalized = inlineStyles.styles.size > 0;
     const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { cryptoPort: {
@@ -10938,6 +11005,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure) {
+      if(defaultTabs.explicit)parsed.contentPreview.wordDefaultTabStop=defaultTabs.effective;
       const stories = parseDocumentStoriesRichReturn(bytes, {includeParts:true});
       const sections = docxSectionInventory(bytes, parsed, Boolean(stories));
       if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
@@ -10964,12 +11032,14 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       if (!supported(parsed) || parsed.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
       const source = pendingTextRevisions.normalizeNode(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n')));
+      if(defaultTabs.explicit)source.attrs={...source.attrs,wordDefaultTabStop:defaultTabs.effective};
       pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
       const canonicalParse = (xml, expectedCount = pendingSource.paragraphCount) => {
         const result = docxContentPreviewParseMainDocumentXml(xml, inlineStyles, docxNumberingCatalog(bytes));
         if (!supported(result) || result.sourceParagraphCount !== expectedCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
         const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs);
-        return rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
+        const doc=rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
+        if(defaultTabs.explicit)doc.attrs={...doc.attrs,wordDefaultTabStop:defaultTabs.effective};return doc;
       };
       const beforeFormatting = pendingSource.formatBeforeXml ? canonicalParse(pendingSource.formatBeforeXml) : null;
       const beforeLeaves = beforeFormatting ? pendingTextRevisions.paragraphs(beforeFormatting) : null;
@@ -11012,11 +11082,13 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const currentRich = docxInlineCanonicalContent(currentParsed.contentPreview.paragraphs);
       const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
         : buildParagraphDocumentFromText(currentParsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
+      if(defaultTabs.explicit)currentDoc.attrs={...currentDoc.attrs,wordDefaultTabStop:defaultTabs.effective};
       if (hashCanonicalValue(pendingTextRevisions.normalizeNode(currentDoc)) !== hashCanonicalValue(pendingTextRevisions.normalizeNode(current))) throw Error('PENDING_REVISIONS_CURRENT_BINDING');
       if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml, pendingSource.originalParagraphCount)))
         !== hashCanonicalValue(pendingTextRevisions.normalizeNode(pendingTextRevisions.materialize(ledger, 'original'))))
         throw Error('PENDING_REVISIONS_ORIGINAL_BINDING');
       parsed = currentParsed;
+      if(defaultTabs.explicit)parsed.contentPreview.wordDefaultTabStop=defaultTabs.effective;
       parsed.contentPreview.pendingRevisionDocument = doc;
       parsed.contentPreview.pendingNoteReferences = pendingSource.noteReferences.map(ref => {
         const paragraphIndex = occurrenceToLeaf.get(ref.paragraphIndex);
@@ -12089,6 +12161,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   } catch (error) {
     return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { field: 'contentPreview.paragraphs.inlineRuns', sourceCode: error.message });
   }
+  if(contentPreview.wordDefaultTabStop!==undefined){const doc=parseObservablePayload(richContent||importedText).doc||buildParagraphDocumentFromText(importedText);doc.attrs={...doc.attrs,wordDefaultTabStop:paragraphLayout.normalizeWordDefaultTabStop(contentPreview.wordDefaultTabStop)};richContent=composeObservablePayload({doc});}
   const sourceHash = docxImportPreviewStableHash(input);
   const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, richContent ?? importedText, {
     googleDocsTabs,

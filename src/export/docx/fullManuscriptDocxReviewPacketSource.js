@@ -1,3 +1,4 @@
+const paragraphLayout = require('../../core/word-paragraph-layout-v1.cjs');
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
 function bookmarkDomain() { return require('../../core/word-user-bookmarks-v1.cjs'); }
 function sceneBookmarkRegistry(scene) {
@@ -217,10 +218,10 @@ function buildFormatIrParagraphs(scene) {
     const paragraphOrdinal = result.length;
     const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
     const allowedAttrs = node.type === 'heading'
-      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage', 'wordParagraphSpacing'])
+      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs'])
       : node.type === 'codeBlock'
         ? new Set(['language'])
-        : new Set(['textAlign', 'wordParagraphMarkLanguage', 'wordParagraphSpacing']);
+        : new Set(['textAlign', 'wordParagraphMarkLanguage', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs']);
     const unknownAttrs = Object.keys(attrs).filter((key) => (
       !allowedAttrs.has(key) && attrs[key] !== null && attrs[key] !== undefined
     ));
@@ -232,6 +233,8 @@ function buildFormatIrParagraphs(scene) {
       });
     }
     const paragraphFormat = { nodeType: node.type };
+    if(attrs.wordParagraphIndent!=null)paragraphFormat.wordParagraphIndent=paragraphLayout.normalizeWordParagraphIndent(attrs.wordParagraphIndent);
+    if(attrs.wordParagraphTabs!=null)paragraphFormat.wordParagraphTabs=paragraphLayout.normalizeWordParagraphTabs(attrs.wordParagraphTabs);
     if (attrs.wordParagraphSpacing != null) paragraphFormat.wordParagraphSpacing = normalizeWordParagraphSpacing(attrs.wordParagraphSpacing);
     if (attrs.wordParagraphMarkLanguage != null) paragraphFormat.wordParagraphMarkLanguage = normalizeWordLanguage(attrs.wordParagraphMarkLanguage);
     if (node.type === 'heading') {
@@ -1266,6 +1269,10 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       ? deps.deriveWordBookmarkNameV1
       : undefined,
   });
+  const documentFormats=scenes.map(scene=>({wordDefaultTabStop:scene.doc?.attrs?.wordDefaultTabStop??720,explicit:scene.doc?.attrs?.wordDefaultTabStop!=null}));
+  for(const format of documentFormats)paragraphLayout.normalizeWordDefaultTabStop(format.wordDefaultTabStop);
+  if(new Set(documentFormats.map(format=>format.wordDefaultTabStop)).size>1)throw Error('WORD_DEFAULT_TAB_STOP_MIXED_SCENES');
+  const wordDefaultTabStop=documentFormats.some(format=>format.explicit)?documentFormats[0].wordDefaultTabStop:undefined;
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
@@ -1311,6 +1318,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       sceneOrdinal: scene.sceneOrdinal,
       sceneRevision: scene.sceneRevision,
       rawSha256: scene.rawSha256,
+      documentFormatIr:{wordDefaultTabStop:scene.doc?.attrs?.wordDefaultTabStop??720,explicit:scene.doc?.attrs?.wordDefaultTabStop!=null},
       ...(sceneBookmarkRegistry(scene) ? {userBookmarks:sceneBookmarkRegistry(scene)} : {}),
       blocks: blocks
         .filter((block) => block.sceneId === scene.sceneId)
@@ -1347,6 +1355,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     commentExport,
     documentNotes,
     documentStories,
+    wordDefaultTabStop,
     documentMetadata,
     documentSections,
     customProperties: [
@@ -1572,6 +1581,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     commentExport,
     documentNotes,
     documentStories,
+    wordDefaultTabStop,
     documentMetadata,
     documentSections,
     forbiddenSecret: hmacSecret,

@@ -319,3 +319,84 @@ test('both export entrypoints reject raw spacing accessors before cloning or rea
   await assert.rejects(exportDoc(doc),/WORD_PARAGRAPH_SPACING_INVALID/);assert.equal(reads,0);
  }
 });
+
+function tabRuntimeParts(overrides={}) {
+  const vm=require('node:vm');
+  const code=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/documentParagraphAlignment.mjs'),'utf8');
+  const start=code.indexOf('const tabDecorationKey'),end=code.indexOf('\nexport const DocumentParagraphAlignment');
+  let script=code.slice(start,end).replace('export function wordTabAdvance','function wordTabAdvance');
+  if(overrides.paragraphMeasurement){const a=script.indexOf('function paragraphMeasurement('),b=script.indexOf('function wordTabDecorations(',a);script=script.slice(0,a)+script.slice(b);}
+  const context={console,paragraphLayout:require('../../src/core/word-paragraph-layout-v1.cjs'),...require('@tiptap/pm/state'),...require('@tiptap/pm/view'),...overrides};
+  vm.createContext(context);vm.runInContext(script+'\nglobalThis.api={wordTabAdvance,wordTabDecorations,wordTabPlugin,paragraphMeasurement};',context);
+  return context.api;
+}
+
+test('paragraph tab rendering resolves later origins after previous widths, retains marked text and uses explicit bar origin',async()=>{
+  const input={type:'doc',attrs:{wordDefaultTabStop:567},content:[{type:'paragraph',attrs:{wordParagraphIndent:{left:300,hanging:120},wordParagraphTabs:[{pos:1200,val:'left'},{pos:2400,val:'right',leader:'dot'},{pos:900,val:'bar'}]},content:[{type:'text',text:'A\t'},{type:'text',marks:[{type:'bold'}],text:'B\tC'}]}]};
+  const setup=await editorState(input);let firstWidth=8,disposed=0,measurements=0;
+  const api=tabRuntimeParts({paragraphMeasurement(){measurements++;return {paragraph:{getBoundingClientRect:()=>({left:0,height:40})},dispose(){disposed++;},width:()=>10,range(from){const index=from===2?0:1;const parent={getBoundingClientRect:()=>({left:index===0?10:20+firstWidth})};Object.defineProperty(parent,'style',{value:{}});Object.defineProperty(parent.style,'cssText',{set(value){if(index===0)firstWidth=Number(/width:([\d.]+)(?:px)?/.exec(value)[1]);}});return {startContainer:{nodeType:3,nodeValue:'\t',parentElement:parent},getBoundingClientRect:()=>({left:index===0?10:20+firstWidth})};}};}});
+  const view={state:setup.state,nodeDOM:()=>({clientWidth:400,getBoundingClientRect:()=>({width:400})}),dom:{ownerDocument:{defaultView:{getComputedStyle:()=>({getPropertyValue:()=>''})},createElement:()=>({style:{},setAttribute(){}})}}};
+  const original=JSON.stringify(view.state.doc.toJSON()),selection=view.state.selection.toJSON(),cache=new WeakMap();
+  const result=api.wordTabDecorations(view,cache),all=result.decorations.find();
+  const tabs=all.filter(d=>d.type.attrs?.class==='word-tab-layout');
+  assert.equal(tabs.length,2);assert.match(tabs[0].type.attrs.style,/width:50px/);
+  // Second origin is 10 + new first-tab50 + B10 + indent20 = 90;
+  // right stop160 minus origin90 minus following C10 = 60, not stale102.
+  assert.match(tabs[1].type.attrs.style,/width:60px/);
+  assert.match(tabs[1].type.attrs.style,/height:2px;vertical-align:baseline;/,'dot leader has a paint area even when font-size is zero');
+  assert.match(tabs[1].type.attrs.style,/background-image:radial-gradient/);
+  assert.ok(all.some(d=>d.type.attrs?.style==='position:relative;'));
+  const bar=all.find(d=>d.type.toDOM);assert.match(bar.type.toDOM().style.cssText,/left:40px;top:0/);
+  assert.equal(JSON.stringify(view.state.doc.toJSON()),original);assert.deepEqual(view.state.selection.toJSON(),selection);
+  api.wordTabDecorations(view,cache);assert.equal(measurements,1);assert.equal(disposed,1);
+});
+
+test('paragraph tab projection handles center decimal cleared default and hanging stops without changing text',()=>{
+  const {wordTabAdvance}=tabRuntimeParts();
+  assert.equal(wordTabAdvance({position:20,stops:[{pos:1200,val:'center'}],segmentWidth:40}).width,40);
+  const crowded=wordTabAdvance({position:117.383,stops:[{pos:2268,val:'right',leader:'dot'},{pos:3402,val:'center',leader:'hyphen'}],segmentWidth:47.109});
+  assert.equal(crowded.width,0);assert.equal(crowded.leader,'dot','overcrowded right stop does not become next center stop');
+  assert.equal(wordTabAdvance({position:20,stops:[{pos:1200,val:'decimal'}],segmentWidth:60,decimalWidth:25}).width,35);
+  assert.equal(wordTabAdvance({position:1,stops:[{pos:720,val:'clear'}]}).width,47);
+  assert.equal(wordTabAdvance({position:5,hangingPosition:300,defaultInterval:567}).width,15);
+});
+
+test('paragraph tab plugin publishes derived state once and guards composition, deferred fonts and disposal',async()=>{
+  const setup=await editorState({type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'literal\ttext'}]}]});
+  const vm=require('node:vm');let code=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/documentParagraphAlignment.mjs'),'utf8');
+  const pluginSource=code.slice(code.indexOf('function wordTabPlugin()'),code.indexOf('\nexport const DocumentParagraphAlignment'));
+  const key=new (require('@tiptap/pm/state').PluginKey)('tab-test');let frames=[],dispatches=0,warningCount=0,measurements=0,fail=false,fontReady;
+  const {DecorationSet}=require('@tiptap/pm/view');
+  const c={Plugin:require('@tiptap/pm/state').Plugin,DecorationSet,tabDecorationKey:key,console:{warn(message){assert.equal(message,'WORD_TAB_LAYOUT_MEASUREMENT_FAILED');warningCount++;}},wordTabDecorations(){measurements++;if(fail)throw Error('private manuscript must not escape');return {decorations:DecorationSet.empty,signature:'stable'};}};
+  vm.createContext(c);vm.runInContext(pluginSource+'\nglobalThis.plugin=wordTabPlugin();',c);
+  let state=setup.state.reconfigure({plugins:[...setup.state.plugins,c.plugin]});const handlers=new Map(),fontHandlers=new Map();
+  const view={state,composing:false,dom:{addEventListener:(k,f)=>handlers.set(k,f),removeEventListener:k=>handlers.delete(k),ownerDocument:{defaultView:{requestAnimationFrame:f=>(frames.push(f),frames.length),cancelAnimationFrame(){frames=[];}},fonts:{ready:new Promise(resolve=>{fontReady=resolve;}),addEventListener:(k,f)=>fontHandlers.set(k,f),removeEventListener:k=>fontHandlers.delete(k)}}},dispatch(tr){dispatches++;assert.equal(tr.docChanged,false);assert.equal(tr.getMeta('addToHistory'),false);const previous=this.state;this.state=this.state.apply(tr);controller.update(this,previous);}};
+  const original=JSON.stringify(state.doc.toJSON()),selection=state.selection.toJSON();const controller=c.plugin.spec.view(view);const flush=()=>{const pending=frames;frames=[];for(const f of pending)f();};
+  view.composing=true;flush();assert.equal(dispatches,0);view.composing=false;handlers.get('compositionend')();flush();assert.equal(dispatches,1);assert.equal(frames.length,0);
+  fontHandlers.get('loadingdone')();flush();assert.equal(dispatches,1);
+  fail=true;fontHandlers.get('loadingdone')();flush();fontHandlers.get('loadingdone')();flush();assert.equal(warningCount,1);
+  controller.destroy();fontReady();await Promise.resolve();flush();assert.equal(dispatches,1);assert.equal(handlers.size,0);assert.equal(fontHandlers.size,0);
+  assert.equal(JSON.stringify(view.state.doc.toJSON()),original);assert.deepEqual(view.state.selection.toJSON(),selection);assert.equal(require('@tiptap/pm/history').undo(view.state,()=>assert.fail('derived layout entered Undo history')),false);
+});
+
+test('paragraph measurement unwraps rich following text and never clones image requests or authoring attributes',()=>{
+  let rectReads=0;const styles=()=>({setProperty(key,value){this[key]=value;}});
+  class Element {
+    constructor(tag='span'){this.nodeType=1;this.tagName=tag.toUpperCase();this.childNodes=[];this.style=styles();this.classList={contains:()=>false};this.attributes={};this.clientWidth=80;}
+    appendChild(child){this.childNodes.push(child);child.parentElement=this;return child;}
+    setAttribute(k,v){this.attributes[k]=v;}
+    remove(){if(this.parentElement)this.parentElement.childNodes=this.parentElement.childNodes.filter(x=>x!==this);}
+    cloneNode(){const clone=new Element(this.tagName);Object.assign(clone.style,this.style);return clone;}
+    querySelectorAll(){return this.childNodes.flatMap(c=>c.nodeType===1?[c,...c.querySelectorAll()]:[]);}
+    getBoundingClientRect(){rectReads++;if(this.style.width==='max-content'){assert.equal(this.style.whiteSpace,'pre');assert.equal(this.style.textIndent,'0');assert.equal(this.style['font-weight'],'700','probe retains common ancestor formatting');assert.equal(this.querySelectorAll().every(x=>x.style.whiteSpace==='pre'),true);return {width:120,height:20,left:0};}return {width:80,height:40,left:0};}
+  }
+  const body=new Element('body'),paragraph=new Element('p'),mark=new Element('strong'),image=new Element('img');
+  const text={nodeType:3,nodeValue:'mixed wrapped text',parentElement:mark};mark.appendChild(text);paragraph.appendChild(mark);paragraph.appendChild(image);image.setAttribute('src','https://must-not-be-copied.invalid/image');
+  const document={body,defaultView:{getComputedStyle(node){return {fontSize:'16px',getPropertyValue(key){if(key==='white-space')return 'pre-wrap';if(key==='font-weight')return node.tagName==='STRONG'?'700':'400';return '';}}; }},createElement:tag=>new Element(tag),createTextNode:value=>({nodeType:3,nodeValue:value}),createRange(){return {commonAncestorContainer:mark,setStart(node,offset){this.startContainer=node;this.startOffset=offset;},setEnd(node,offset){this.endContainer=node;this.endOffset=offset;},cloneContents(){const strong=new Element('strong');strong.style.fontWeight='700';strong.style.whiteSpace='pre-wrap';strong.appendChild({nodeType:3,nodeValue:'mixed wrapped text'});return strong;}};}};
+  const view={dom:{ownerDocument:document},domAtPos(pos){return {node:text,offset:pos};}};
+  const api=tabRuntimeParts(),measurement=api.paragraphMeasurement(view,paragraph);
+  assert.equal(body.childNodes.length,1);assert.equal(measurement.host.inert,true);assert.equal(measurement.host.attributes['aria-hidden'],'true');
+  const cloned=measurement.host.querySelectorAll();assert.equal(cloned.some(n=>n.tagName==='IMG'||n.attributes.src||n.attributes.contenteditable),false);
+  assert.equal(measurement.width(0,text.nodeValue.length),120,'intrinsic rich width, not wrapped line width80');
+  assert.equal(measurement.host.childNodes.length,1,'temporary probe removed');measurement.dispose();assert.equal(body.childNodes.length,0);assert.ok(rectReads>0);
+});

@@ -291,3 +291,14 @@ test('Pending spacing/language old and current XML properties reject malformed s
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(xml)).ok, false, `${old ? 'previous' : 'current'} ${property}`);
   }
 });
+test('Pending paragraph layout retains root default and distinct before/current through both exports and decisions',async()=>{
+ const ledger=structuredClone(model.readLedger(await parse(pack()))),revision=ledger.revisions[1];
+ ledger.source.attrs={wordDefaultTabStop:567};
+ const before={wordParagraphIndent:{left:0,firstLine:0},wordParagraphTabs:[{pos:567,val:'left'}]};
+ const after={wordParagraphIndent:{left:720,hanging:240},wordParagraphTabs:[{pos:1701,val:'right',leader:'dot'}]};
+ revision.format.before.attrs={...revision.format.before.attrs,...before};revision.format.after.attrs={...revision.format.after.attrs,...after};ledger.source.content[1].attrs=structuredClone(revision.format.after.attrs);
+ const doc=model.bindLedger(ledger);assert.equal(doc.attrs.wordDefaultTabStop,567);
+ for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));assert.equal(returned.attrs.wordDefaultTabStop,567);for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));}
+ const changed=model.setDefaultTabStop(doc,851);assert.equal(changed.attrs.wordDefaultTabStop,851);
+ for(const action of ['acceptAll','rejectAll']){const decided=model.decide(changed,{action}).doc;assert.equal(decided.attrs.wordDefaultTabStop,851);const undone=model.decide(decided,{action:'undo'}).doc;assert.equal(undone.attrs.wordDefaultTabStop,851);assert.deepEqual(model.readLedger(undone).revisions,model.readLedger(changed).revisions);}
+});

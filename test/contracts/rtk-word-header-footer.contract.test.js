@@ -12,10 +12,10 @@ function literalParts(){
  const ref=(kind,type,id)=>`<w:${kind}Reference w:type="${type}" r:id="${id}"/>`;
  const sect=extra=>`<w:sectPr>${extra}<w:type w:val="nextPage"/></w:sectPr>`;
  return [
- {name:'[Content_Types].xml',data:`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>${['header1','header2','header3','header4','footer1'].map(n=>`<Override PartName="/word/${n}.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${n.startsWith('header')?'header':'footer'}+xml"/>`).join('')}</Types>`},
+ {name:'[Content_Types].xml',data:`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>${['header1','header2','header3','header4','footer1'].map(n=>`<Override PartName="/word/${n}.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${n.startsWith('header')?'header':'footer'}+xml"/>`).join('')}</Types>`},
  {name:'_rels/.rels',data:`<Relationships xmlns="${P}"><Relationship Id="main" Type="${R}/officeDocument" Target="word/document.xml"/></Relationships>`},
  {name:'word/document.xml',data:`<w:document xmlns:w="${W}" xmlns:r="${R}"><w:body><w:p><w:pPr>${sect(ref('header','default','h1')+ref('header','first','h2')+ref('header','even','h3')+ref('footer','default','f1')+'<w:titlePg/>')}</w:pPr><w:hyperlink r:id="same"><w:r><w:t>MAIN LINK</w:t></w:r></w:hyperlink></w:p><w:p><w:pPr>${sect('')}</w:pPr><w:r><w:t>INHERITED</w:t></w:r></w:p><w:p><w:r><w:t>EMPTY HEADER</w:t></w:r></w:p>${sect(ref('header','default','h4'))}</w:body></w:document>`},
- {name:'word/_rels/document.xml.rels',data:`<Relationships xmlns="${P}">${['header1','header2','header3','header4','footer1'].map(n=>`<Relationship Id="${n[0]}${n.at(-1)}" Type="${R}/${n.startsWith('header')?'header':'footer'}" Target="${n}.xml"/>`).join('')}<Relationship Id="same" Type="${R}/hyperlink" Target="https://example.invalid/main" TargetMode="External"/></Relationships>`},
+ {name:'word/_rels/document.xml.rels',data:`<Relationships xmlns="${P}"><Relationship Id="settings" Type="${R}/settings" Target="settings.xml"/>${['header1','header2','header3','header4','footer1'].map(n=>`<Relationship Id="${n[0]}${n.at(-1)}" Type="${R}/${n.startsWith('header')?'header':'footer'}" Target="${n}.xml"/>`).join('')}<Relationship Id="same" Type="${R}/hyperlink" Target="https://example.invalid/main" TargetMode="External"/></Relationships>`},
  ...['DEFAULT','FIRST','EVEN',''].map((text,i)=>({name:`word/header${i+1}.xml`,data:`<w:hdr xmlns:w="${W}" xmlns:r="${R}"><w:p><w:r><w:t>${text}</w:t></w:r>${i===0?'<w:hyperlink r:id="same"><w:r><w:t>HEADER LINK</w:t></w:r></w:hyperlink>':''}</w:p></w:hdr>`})),
  {name:'word/footer1.xml',data:`<w:ftr xmlns:w="${W}"><w:p><w:r><w:t>FOOTER</w:t></w:r></w:p></w:ftr>`},
  {name:'word/_rels/header1.xml.rels',data:`<Relationships xmlns="${P}"><Relationship Id="same" Type="${R}/hyperlink" Target="https://example.invalid/header" TargetMode="External"/></Relationships>`},
@@ -100,21 +100,21 @@ test('Core story intents create native slots, copy inheritance, clear or relink 
  const native={type:'doc',content:[paragraph('NATIVE')]};
  const trustedSections={schemaVersion:1,boundaries:[],final:{type:'nextPage',columns:{count:2,spaceTwips:400}}};
  assert.throws(()=>model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'}),/TRUSTED_GEOMETRY/);
- const created=model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections});
+ const created=model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections,idSeed:'native-create'});
  assert.deepEqual(native,{type:'doc',content:[paragraph('NATIVE')]});
  assert.deepEqual(created.doc.attrs.wordSections,trustedSections);
  assert.match(created.storyId,/^story-[a-f0-9]{64}$/u);
- let next=model.planStoryMutation(created.doc,{op:'create',sectionIndex:0,role:'footer',variant:'even'}).doc;
+ let next=model.planStoryMutation(created.doc,{op:'create',sectionIndex:0,role:'footer',variant:'even'},{idSeed:'native-footer'}).doc;
  next=model.planStoryMutation(next,{op:'setSectionOptions',sectionIndex:0,titlePage:true,evenAndOddHeaders:true}).doc;
  assert.equal(model.read(next).stories.length,2);assert.equal(model.read(next).sections[0].titlePage,true);
  assert.equal(model.read(next).evenAndOddHeaders,true);
  const {doc}=await importDoc(buildStoredZip(literalParts())),before=model.read(doc), original=JSON.stringify(doc);
- const copied=model.planStoryMutation(doc,{op:'create',sectionIndex:1,role:'header',variant:'default'});
+ const copied=model.planStoryMutation(doc,{op:'create',sectionIndex:1,role:'header',variant:'default'},{idSeed:'copy-inherited'});
  const copiedValue=model.read(copied.doc);
  assert.notEqual(copied.storyId,before.sections[0].header.default);
  assert.deepEqual(copiedValue.stories.find(s=>s.id===copied.storyId).body,before.stories.find(s=>s.id===before.sections[0].header.default).body);
  assert.deepEqual(copied.doc.attrs.wordSections,doc.attrs.wordSections);
- const removed=model.planStoryMutation(copied.doc,{op:'remove',sectionIndex:1,role:'header',variant:'default'});
+ const removed=model.planStoryMutation(copied.doc,{op:'remove',sectionIndex:1,role:'header',variant:'default'},{idSeed:'clear-inherited'});
  assert.deepEqual(model.read(removed.doc).stories.find(s=>s.id===removed.storyId).body,{type:'doc',content:[{type:'paragraph'}]});
  assert.equal(model.read(removed.doc).stories.some(s=>s.id===copied.storyId),false);
  const relinked=model.planStoryMutation(removed.doc,{op:'linkPrevious',sectionIndex:1,role:'header',variant:'default'});
@@ -148,9 +148,11 @@ test('flags-only zero-story authoring retains first/even semantics through ordin
 test('Core fresh IDs never recycle a removed identity, while trusted seed regeneration is deterministic',async()=>{
  const {doc}=await importDoc(buildStoredZip(literalParts()));
  const intent={op:'create',sectionIndex:1,role:'header',variant:'default'};
- const first=model.planStoryMutation(doc,intent);
+ for(const op of ['create','remove']) for(const idSeed of [undefined,'',42,'x'.repeat(1025)])
+  assert.throws(()=>model.planStoryMutation(doc,{...intent,op},idSeed===undefined?{}:{idSeed}),/WORD_STORY_ID_SEED/);
+ const first=model.planStoryMutation(doc,intent,{idSeed:'allocation-1'});
  const linked=model.planStoryMutation(first.doc,{...intent,op:'linkPrevious'});
- const second=model.planStoryMutation(linked.doc,intent);
+ const second=model.planStoryMutation(linked.doc,intent,{idSeed:'allocation-2'});
  assert.notEqual(second.storyId,first.storyId);
  assert.deepEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}),model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}));
  assert.notEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-2'}).storyId,model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}).storyId);
@@ -184,7 +186,7 @@ test('empty Review story projection binds actual shared folder sections without 
  assert.equal(binding.registry,null);assert.deepEqual(binding.trustedSections.boundaries,[]);
  assert.deepEqual(binding.trustedSections.final,source.documentSections.protectedSections[0].properties);
  const scene=scenes.find(s=>s.sceneId===binding.sceneId);
- const created=model.planStoryMutation(scene.doc,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections:binding.trustedSections});
+ const created=model.planStoryMutation(scene.doc,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections:binding.trustedSections,idSeed:'first-header'});
  assert.deepEqual(created.doc.content,scene.doc.content);
  }
  assert.equal(buildDocumentStoriesExport(scenes,source.documentSections),null,'ordinary helper behavior remains unchanged');
@@ -246,3 +248,8 @@ test('full Review export preserves rich headers and raw plain/empty siblings in 
  const malformed={...doc,content:[{type:'unsupported'}]};
  assert.throws(()=>buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/synthetic',scenes:[{sceneId:'roman/bad.txt',doc:malformed,text:'bad',order:0}, {...originals[1],order:1}]}));
 });
+
+ test('orphan settings fail with a bounded settings diagnostic, not an internal error',async()=>{
+ const [bridge]=await modules;const parts=literalParts();const rel=parts.find(p=>p.name==='word/_rels/document.xml.rels');rel.data=rel.data.replace(/<Relationship Id="settings"[^>]*\/>/u,'');
+ const report=bridge.buildDocxContentPreviewFromZipBytes(buildStoredZip(parts));assert.equal(report.ok,false);assert.equal(report.reason,'WORD_SETTINGS_BINDING_INVALID');assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);
+ });
