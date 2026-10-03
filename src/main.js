@@ -22808,7 +22808,10 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           let nextBookmarkAliases;
           let userBookmarkHistorySnapshot = null;
           if (beforeDocument.doc || afterDocument.doc) {
-            const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(beforeDocument.text);
+            const replayPlainText = options.storyReturnPlan?.storyMutationReplay
+              && !beforeDocument.hasMetaBlock && !beforeDocument.hasCardsBlock
+              ? expectedSceneContent || '' : beforeDocument.text;
+            const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(replayPlainText);
             const workingDoc = afterDocument.doc || envelope.buildParagraphDocumentFromText(afterDocument.text);
             if (options.storyReturnPlan?.storyMutationReplay) {
               const stories = await import(pathToFileURL(path.join(__dirname,'io','revisionBridge','reviewTransportStoriesV1.mjs')).href);

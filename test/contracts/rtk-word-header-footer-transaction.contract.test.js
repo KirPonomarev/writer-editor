@@ -167,3 +167,60 @@ test('actual Main batch capture admits unchanged open plain and empty scenes wit
     fs.writeFileSync(current,open.raw);
   }
 });
+
+async function firstPlainHeaderFixture(t,raw) {
+  const f=await fixture(t),parsed=envelope.parseObservablePayload(raw);
+  const before=parsed.doc || envelope.buildParagraphDocumentFromText(!parsed.hasMetaBlock&&!parsed.hasCardsBlock?raw:parsed.text);
+  const step={kind:'intent',intent:{op:'create',sectionIndex:0,role:'header',variant:'default',source:'empty'},
+    options:{idSeed:'private-cohort-plain',trustedSections:{schemaVersion:1,boundaries:[],final:{type:'nextPage'}}}};
+  const planned=stories.planStoryMutation(before,step.intent,step.options);
+  const afterContent=envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:planned.doc});
+  const changed={sceneId:'roman/plain.txt',beforeContent:raw,afterContent,commitText:null,storyMutationReplay:[step]};
+  const guard={...f.changes[0],afterContent:f.changes[0].beforeContent};
+  f.input.changes=[changed,guard];fs.writeFileSync(path.join(f.root,changed.sceneId),raw);
+  f.request.treeCohort=f.model.planProjectStoryBodyCohort(f.input);
+  return {...f,changed,guard,before};
+}
+for(const raw of ['\n\nLeading','Trailing\n','One\n\n\nTwo','\r\nOne\r\n\r\nTwo\r\n','',
+ '[meta]\nstatus: draft\n[/meta]\n\nManuscript\n',
+ '[cards]\n[card]\ntitle: Private card\ntext: Card body\ntags: local\n[/card]\n[/cards]\n\nManuscript\n'])test(`first Word header on plain source preserves authored paragraphs ${JSON.stringify(raw)}`,async t=>{
+ const f=await firstPlainHeaderFixture(t,raw);
+ assert.equal((await txn.commitProjectTransaction(f.request)).success,true);
+ assert.deepEqual(envelope.parseObservablePayload(fs.readFileSync(path.join(f.root,f.changed.sceneId),'utf8')).doc.content,f.before.content);
+ assert.equal(fs.readFileSync(path.join(f.root,f.guard.sceneId),'utf8'),f.guard.beforeContent);
+ const bad=JSON.parse(JSON.stringify(f.input));const after=envelope.parseObservablePayload(bad.changes[0].afterContent);
+ after.doc.content.push({type:'paragraph',content:[{type:'text',text:'forged manuscript'}]});bad.changes[0].afterContent=envelope.composeObservablePayload({...after,metaEnabled:after.hasMetaBlock,doc:after.doc});
+ assert.throws(()=>f.model.planProjectStoryBodyCohort(bad),/E_STORY_COHORT_INTENT/);
+});
+test('first header on CRLF plain source retains exact raw CAS and rollback bytes',async t=>{
+ const raw='\r\nOne\r\n\r\nTwo\r\n',f=await firstPlainHeaderFixture(t,raw),target=path.join(f.root,f.changed.sceneId);
+ fs.writeFileSync(target,raw.replaceAll('\r\n','\n'));
+ await assert.rejects(txn.commitProjectTransaction(f.request),/UNKNOWN_BYTES|CAS/);
+ assert.equal(fs.readFileSync(path.join(f.root,f.guard.sceneId),'utf8'),f.guard.beforeContent);
+ fs.writeFileSync(target,raw);
+ await assert.rejects(txn.commitProjectTransaction({...f.request,afterTreeFilesPublish:()=>{throw Error('INJECT_PLAIN_HEADER');}}),/INJECT_PLAIN_HEADER/);
+ await txn.recoverProjectTransaction(f.request);
+ assert.equal(fs.readFileSync(target,'utf8'),raw);
+ assert.equal(fs.readFileSync(path.join(f.root,f.guard.sceneId),'utf8'),f.guard.beforeContent);
+});
+
+test('single-scene Main writer replays first-header intent from exact plain paragraphs with metadata exclusion',async t=>{
+ const vm=require('node:vm'),{pathToFileURL}=require('node:url');
+ const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+ const start=main.indexOf('            const replayPlainText = options.storyReturnPlan?.storyMutationReplay');
+ const end=main.indexOf('            if (options.storyAuthoringIntent)',start);
+ assert.ok(start>0&&end>start);
+ const code='async function validate(){'+main.slice(start,end)+'return {beforeDoc,workingDoc};}';
+ for(const raw of ['\n\nLeading','Trailing\n','One\n\n\nTwo','\r\nOne\r\n\r\nTwo\r\n','',
+ '[meta]\nstatus: draft\n[/meta]\n\nManuscript\n',
+ '[cards]\n[card]\ntitle: Card\ntext: Private\ntags: local\n[/card]\n[/cards]\nManuscript\n']){
+  const f=await firstPlainHeaderFixture(t,raw);
+  const c=vm.createContext({JSON,path,pathToFileURL,__dirname:path.resolve(__dirname,'../../src'),envelope,
+   beforeDocument:envelope.parseObservablePayload(raw),afterDocument:envelope.parseObservablePayload(f.changed.afterContent),expectedSceneContent:raw,
+   options:{storyReturnPlan:{storyMutationReplay:f.changed.storyMutationReplay}}});
+  new vm.Script(code,{importModuleDynamically:vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER}).runInContext(c);
+  const checked=await c.validate();assert.deepEqual(checked.beforeDoc.content,f.before.content);
+  c.afterDocument.doc.content.push({type:'paragraph',content:[{type:'text',text:'forged'}]});
+  await assert.rejects(c.validate(),/WORD_STORIES_INTENT_MISMATCH/);
+ }
+});

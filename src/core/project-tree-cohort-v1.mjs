@@ -544,8 +544,10 @@ export function planProjectStoryBodyCohort(input) {
       && (change.commitText === null || typeof change.commitText === 'string'), 'E_STORY_COHORT_CONTENT');
     const before = parsedScene(change.beforeContent), after = parsedScene(change.afterContent);
     need((after.doc || change.beforeContent === change.afterContent) && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
-    const beforeDoc=before.doc || envelope.buildParagraphDocumentFromText(before.text);
-    const afterDoc=after.doc || envelope.buildParagraphDocumentFromText(after.text);
+    // Replay against authored plain paragraphs, not normalized display text.
+    // Metadata and cards remain outside the manuscript projection.
+    const beforeDoc=before.doc || envelope.buildParagraphDocumentFromText(!before.hasMetaBlock && !before.hasCardsBlock ? change.beforeContent : before.text);
+    const afterDoc=after.doc || envelope.buildParagraphDocumentFromText(!after.hasMetaBlock && !after.hasCardsBlock ? change.afterContent : after.text);
     if(change.storyMutationReplay)need(same(replayDocumentStoryMutationSteps(beforeDoc,change.storyMutationReplay),afterDoc),'E_STORY_COHORT_INTENT');
     else storyModel.validateSave(beforeDoc, afterDoc);
     for (const asset of mediaData.documentMedia({type:'doc',content:storyModel.read(afterDoc)?.stories.flatMap(story=>story.body.content) || []}).assets) {

@@ -741,7 +741,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "31c9e9e9d6e8a154b50a43df5a3b2e4b23911b8cc9d8c5d498db2768f316d894"
+        "sha256": "18ce052ddb698c3e6f5e7ad4678c016b20949fbbabcc9dc00a6b9e4a87064491"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1921,7 +1921,7 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "b18c874469629954c2d8fc85421715a6424ae4adbe3b8b895c6ad079e0f1d1cf"
+        "sha256": "3cf054cbf50d9a256586fbba8838bb514413426c0cbad20709038b52e64a25e3"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -2149,11 +2149,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "8f5e5270da456aaea160f2c75d88cd53832d9e14d4527aac7717b2e5e9c9ff89"
+        "sha256": "71958fc5a24df6a242572d86738a40b1b3d8386144bf824f9191fabee8a84f6e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "983dbdbaea1e7a58474ec5cec00401e4b23bde575cd8e2169065cbeb7ea126e3"
+        "sha256": "e6756d4b9563a2a686bdba2d399f36859d41478436b0ebf590b663a4feb5d734"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
@@ -2189,7 +2189,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
-        "sha256": "191f5a44df0905e983a43a9c44208458fcebad8f2c5d29131e23846d3e2c244f"
+        "sha256": "d3c1ea9b59551632435d3e37a14cdeb8e91d33ac0b87729645192a6a8648abc1"
       },
       {
         "path": "src/core/word-rich-body-projection-v1.cjs",

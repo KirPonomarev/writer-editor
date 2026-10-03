@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "7d9ab2c9a5d6f45cddbb674db41f2e3fa9085d54",
+  "bindingBaseSha": "778fbd096a41c36cb659e22b62d612155e4b49c8",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -130,7 +130,8 @@
   "currentReality": [
     "Full baseline59 passed2129 with59historicalskips; source and packaged fivecycles/restart/reexports independently passed.",
     "Native wholebook mixed rich/plain/empty export reproduced USER_BOOKMARK_DOCUMENT_INVALID: section builder calls paragraphs(null) on plain sibling. Existing export source and header contracts admitted; fix preserves validated export-block boundaries and strict rich validation. No wholeplan PASS.",
-    "Native SOURCE06 fullbook artifact independently valid; intake loses trailing plain paragraph through parsed display text. Preserving raw baseline exposes formatter visible-text mismatch. Same outcome repair preserves raw hashes, paragraph topology, metadata and authority guards; focused negative tests before native repeat."
+    "Native SOURCE06 fullbook artifact independently valid; intake loses trailing plain paragraph through parsed display text. Preserving raw baseline exposes formatter visible-text mismatch. Same outcome repair preserves raw hashes, paragraph topology, metadata and authority guards; focused negative tests before native repeat.",
+    "SOURCE07 and PACKAGED07 actual mixed fullbook return PASS. Read-only review reproduces first-story creation on changed plain scene with trailing empty paragraph rejected by typed cohort replay deriving normalized before.text. Repair same raw fallback invariant in existing admitted cohort; gates on778 interrupted and not PASS."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"

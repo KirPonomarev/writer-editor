@@ -205,7 +205,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
@@ -697,7 +697,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -796,7 +796,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -913,7 +913,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "5c697809cf8ef53037f8e3fdb05e24aba63b3b0d92e5c8ae6495d0698010c8d5",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1590,7 +1590,7 @@
       "filePath": "src/export/docx/docxMinBuilder.js",
       "sha256": "0290cc9f17cf142f88910f7bdf549c0ebb2a5864403905a3ae8bb40867d8aa9d",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "59257f6f772cc4d821e8da5ec1f276bd649461785a01d4507f2634f120c07bef",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1608,7 +1608,7 @@
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
       "sha256": "c6b6c68ef85fccc2b2eb22fafcd1bd952ba0a4cb96558b68b0fcf754d080be8c",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "b5eebbeca5be7a35ef31a02acc9510f9b11459368a78e02fea8406af26a8769d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1651,9 +1651,9 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "31c9e9e9d6e8a154b50a43df5a3b2e4b23911b8cc9d8c5d498db2768f316d894",
+      "sha256": "18ce052ddb698c3e6f5e7ad4678c016b20949fbbabcc9dc00a6b9e4a87064491",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "59fd1084b0ac882ae4d3f213086484380e826db1e54a1935fb3d7acff061ca2a",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "7d58155987be743175fb7f2307c1eb145d51432d02ad71d03357b1c8d35aa3e8",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "9464bb6b69a3154d2fa7bd63f014285a62a9ae5c2d164f57d45832c11fae6d9b",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1698,7 +1698,7 @@
       "filePath": "src/utils/docxImportLocalFilePreview.js",
       "sha256": "cfac91593137b3932a924466675d76e3027e13d8403f816f7bb4926d16f74cb5",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1707,7 +1707,7 @@
       "filePath": "src/utils/docxImportSafeCreate.js",
       "sha256": "08406d889e1bf514927a38679232673694f60065cd195cc1e73a91b57d6d8855",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b7ba2fdad93b4554526b19d78ba4e0768cdc39b8b4932732f7fb4f0c8244b8bd",
+      "sha256": "b8349fa873c1eb04de5380fe1f7b555350f87cf4c42230433c2e1b43884971c8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a2c7c42237fc19f76be4bb8ffa6ff84ca28fcead3356a1662a057605f8a45214",
+      "sha256": "a3ead793322370ad7fd3196dd85e0d96130e31582174a33d8e36c10687d848d4",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "917a0039829c5861c8d421c19e4b401f093746e2fabffc1a0a0c1b32fea5e71f",
+      "sha256": "69528d9952cc8564cd0f4608343f45e8232871101a9b1d025ac3e2f16958bfcd",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2282,7 +2282,7 @@
     {
       "filePath": "test/unit/project-tree-pathless-contract.test.js",
       "sha256": "2f3d912a6d2ed86191e749ca1a56b4f8b81b439103315dd3ba129b9b3a23e131",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2372,7 +2372,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
       "sha256": "15256849a5ce26941b8400af20a76a7b21fcc14a764a3529e958b877f5f43373",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2390,7 +2390,7 @@
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
       "sha256": "30cfbd3522b2342bdbe5e1a5f5ae0b5fce3eeed9a2bf3ff94fa3224c3dc3b0bd",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2462,7 +2462,7 @@
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
       "sha256": "9b39f9a817a69e2193f8a65a19e69aa265640ab4a7ffc04d7d724fd12872b086",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2480,7 +2480,7 @@
     {
       "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
       "sha256": "69e8a87744585f2581ed900eae18a7aebf99abf7524b87eec957f858c414b7a7",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "22bbe857d44bf8d88ea69c89f4c7a7d9fa2e493672138c6f548956b37ba1a54b",
+      "sha256": "8d807e6738fd2476d6d2a1c813495c483fceb45e37b2713d5e2c27ac38a8d691",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "564484f4dd9fee1b9c931b41752c67ed6757b552213a222bf8dbe2371ab6ca99",
+      "sha256": "2a94178c2861a70dfa553340e9076863124536c7ca9e8df6ba63d3d367758a3d",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5978a6eb26b8dd9896dd3df11dda85f0c3d01680cf1e9761beb283b326e9bce0",
+      "sha256": "35f8fe775f50a8839652883cefcb8fa4227700925bfedb2e458147fad48fd4e8",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2777,7 +2777,7 @@
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "sha256": "21ea431b55bc72773d2208a3b22d939b5b1c651f799aa57f5cb5c073c21aec20",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2786,7 +2786,7 @@
     {
       "filePath": "src/renderer/tiptap/manuscriptNotes.mjs",
       "sha256": "b6236ac06f3927acb688876680815cb5fd49144dae93bd9006c35260132fa58a",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2795,7 +2795,7 @@
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
       "sha256": "a50375dfbd37d1a25b0687f596abd78ce314528af4ddbfc4f79bfaaa65209e38",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2867,7 +2867,7 @@
     {
       "filePath": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
       "sha256": "fc5a22a8976ce3fd2c084939b1afc9b0ae8c07425158c31a80fb5c8723025532",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3218,7 +3218,7 @@
     {
       "filePath": "test/unit/r24-r5-lifecycle-physics.test.js",
       "sha256": "bfddd5d7257d052dd6e9a7df52574779f4045b6b376d96ae58841a6f1735ce3f",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3227,7 +3227,7 @@
     {
       "filePath": "test/unit/r24-wp200-durable-save-physics.test.js",
       "sha256": "48a760c5698e8f010778f398b122b92bc3da31b1af36fe29b82b39abeae9842d",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3281,7 +3281,7 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
       "sha256": "ba4c426f0e295a70b8ccebf45fec82d976840094a1523680ee2e7ad1b6374d57",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3578,7 +3578,7 @@
     {
       "filePath": "test/contracts/rtk-word-local-image.contract.test.js",
       "sha256": "9d13ccaceffe1d6574dc32c7daf7c66b722cd73b3e17dd8544a58053fe93ee04",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3632,7 +3632,7 @@
     {
       "filePath": "test/contracts/rtk-word-nested-tables.contract.test.js",
       "sha256": "de666b5b03b4802adf31654ac01c4d8114f60ef5cf14c23bd0a212d6ac89334a",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3703,8 +3703,8 @@
     },
     {
       "filePath": "src/core/project-tree-cohort-v1.mjs",
-      "sha256": "b18c874469629954c2d8fc85421715a6424ae4adbe3b8b895c6ad079e0f1d1cf",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "sha256": "3cf054cbf50d9a256586fbba8838bb514413426c0cbad20709038b52e64a25e3",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3767,7 +3767,7 @@
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
       "sha256": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3776,7 +3776,7 @@
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
       "sha256": "9277fc9867ec6985d6eb17bfa54a8eb6e5a25cb67d309802a21998e86813873e",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4001,7 +4001,7 @@
     {
       "filePath": "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
       "sha256": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4261,8 +4261,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-      "sha256": "8f5e5270da456aaea160f2c75d88cd53832d9e14d4527aac7717b2e5e9c9ff89",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "sha256": "71958fc5a24df6a242572d86738a40b1b3d8386144bf824f9191fabee8a84f6e",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4270,8 +4270,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-      "sha256": "983dbdbaea1e7a58474ec5cec00401e4b23bde575cd8e2169065cbeb7ea126e3",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "sha256": "e6756d4b9563a2a686bdba2d399f36859d41478436b0ebf590b663a4feb5d734",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4280,7 +4280,7 @@
     {
       "filePath": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
       "sha256": "d20b946bdcd593bad321c9bbb8af091fe2485b260a3f56cddf1408fc3df862c1",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4289,7 +4289,7 @@
     {
       "filePath": "src/core/word-stories-v1.cjs",
       "sha256": "a598aa7ec2073d6e85d3bb26a8657809e24d3bd429280b5ca85dcd7efcb297a5",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4298,7 +4298,7 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
       "sha256": "57acf93086a2d73cf97d913bb2dd375c7e8c3e0be4b205a4c07eb5d0ed869474",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4307,7 +4307,7 @@
     {
       "filePath": "src/renderer/tiptap/documentStories.mjs",
       "sha256": "8e749cbb1e9fc57fa6562351708d9f03564814054487f7bed2c66b0e2fbb9ca7",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4316,7 +4316,7 @@
     {
       "filePath": "src/export/docx/docxReviewPacketStories.js",
       "sha256": "34af47896a8166442f01d401d8240736c73a8f44e4e4105b5749cff6ddc99307",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4325,7 +4325,7 @@
     {
       "filePath": "test/contracts/rtk-word-header-footer.contract.test.js",
       "sha256": "b577519249eb2fec9b70f9780d0da492bdc6ceda3d7c3222ff5326b7f1aa48e3",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4334,7 +4334,7 @@
     {
       "filePath": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
       "sha256": "c234066d395a1c3e7919d307df171c8a96d2995ac25bebb3102a75f5e8cf012d",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4343,7 +4343,7 @@
     {
       "filePath": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
       "sha256": "e57cc017217b8de64169e3f1b3ae060967bb4c32a71a6e7462eab0e3a31201ab",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4351,8 +4351,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
-      "sha256": "191f5a44df0905e983a43a9c44208458fcebad8f2c5d29131e23846d3e2c244f",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "sha256": "d3c1ea9b59551632435d3e37a14cdeb8e91d33ac0b87729645192a6a8648abc1",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4361,7 +4361,7 @@
     {
       "filePath": "src/core/word-rich-body-projection-v1.cjs",
       "sha256": "0e1c16304ad30ac3e9c87ffb0e6996aa5b1cf02cf325ba6a0efc4291c7c85d20",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4370,7 +4370,7 @@
     {
       "filePath": "src/core/word-stories-projection-v1.cjs",
       "sha256": "92c1e4032c72ae414f2645fdb198eae41e2b0bfa47d003b09a569518d9ed6435",
-      "approvedAtUtc": "2026-10-03T08:27:04.126142Z",
+      "approvedAtUtc": "2026-10-03T08:41:34.682500Z",
       "approvedBy": "owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003",
       "rationale": "Owner-authorized native editable header/footer import, export, authoring and authenticated return on Mac. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
