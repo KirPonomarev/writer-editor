@@ -63,8 +63,9 @@ function applyParagraphLanguage(paragraph, change) {
     || !['paragraph', 'heading'].includes(paragraph?.type)) fail();
   const mark = change.paragraphMark === null ? null : normalizeWordLanguage(change.paragraphMark);
   const content = paragraph.content || [];
-  if (content.some(node => node.type !== 'text' || typeof node.text !== 'string')) fail();
-  const text = content.map(node => node.text).join('');
+  if (content.some(node => node.type !== 'hardBreak' && (node.type !== 'text' || typeof node.text !== 'string'))) fail();
+  for (const node of content) if (node.type === 'hardBreak') require('./word-typed-breaks-v1.cjs').kind(node);
+  const text = content.map(node => node.type === 'hardBreak' ? '\n' : node.text).join('');
   let end = 0;
   const runs = change.runs.map(run => {
     if (!run || Object.keys(run).sort().join(',') !== 'from,language,to' || run.from !== end
@@ -79,6 +80,9 @@ function applyParagraphLanguage(paragraph, change) {
   else if (out.attrs) delete out.attrs.wordParagraphMarkLanguage;
   const next = []; let offset = 0, ri = 0;
   for (const node of out.content || []) {
+    // A break occupies one coordinate but contains no language-bearing glyph.
+    // Keep its structure untouched while proofing applies to adjacent text.
+    if (node.type === 'hardBreak') { next.push(node); offset++; continue; }
     const limit = offset + node.text.length; let local = offset;
     while (local < limit) {
       while (runs[ri].to <= local) ri++;
