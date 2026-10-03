@@ -768,13 +768,6 @@ function applyRichInlineReplacement(block, operation) {
       details: { changeId: operation.changeId, from, to },
     };
   }
-  if (/[\r\n]/u.test(operation.replacementText)) {
-    return {
-      ok: false,
-      code: 'REVISION_BRIDGE_EXACT_TEXT_RICH_STRUCTURAL_REPLACEMENT_UNSUPPORTED',
-      details: { changeId: operation.changeId },
-    };
-  }
   const boundaries = graphemeBoundaries(blockText);
   if (!boundaries) {
     return {
@@ -839,6 +832,15 @@ function applyRichInlineReplacement(block, operation) {
     to -= suffix;
     operation = { ...operation, replacementText: replacement.slice(prefix, replacement.length - suffix) };
 
+  }
+
+  // Unchanged authenticated context may contain breaks; the actual replacement may not.
+  if (/[\r\n]/u.test(operation.replacementText)) {
+    return {
+      ok: false,
+      code: 'REVISION_BRIDGE_EXACT_TEXT_RICH_STRUCTURAL_REPLACEMENT_UNSUPPORTED',
+      details: { changeId: operation.changeId },
+    };
   }
 
   const content = Array.isArray(block.content) ? block.content : [];

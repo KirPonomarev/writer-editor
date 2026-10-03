@@ -55,3 +55,30 @@ for(const attrs of ['w:type="bad"','w:type="page" w:type="column"','type="page"'
  const [bridge]=await modules;const bytes=min.buildStoredZip([{name:'word/document.xml',data:`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Before</w:t><w:br ${attrs}/><w:t>After</w:t></w:r></w:p></w:body></w:document>`}]);
  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok,false);
 });
+
+for(const container of ['heading','list','table'])test(`typed breaks survive ${container} import/export`,async()=>{
+ const mods=await modules;const doc=fixture();
+ if(container==='heading'){doc.content[0].type='heading';doc.content[0].attrs={level:9};}
+ if(container==='list')doc.content=[{type:'orderedList',attrs:{start:3,type:'I'},content:[{type:'listItem',content:doc.content}]}];
+ if(container==='table')doc.content=[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:doc.content}]}]}];
+ for(const bytes of [ordinary(doc,mods),packet(doc)]){
+  const report=mods[0].buildDocxContentPreviewFromZipBytes(bytes);assert.equal(report.ok,true,JSON.stringify(report));
+  const plan=mods[0].buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
+  const imported=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  const ps=[];const visit=n=>{if(n.type==='paragraph'||n.type==='heading')ps.push(n);else for(const child of n.content||[])visit(child);};visit(imported);
+  assert.deepEqual(breaks.paragraphBreaks(ps[0]),breaks.paragraphBreaks(fixture().content[0]));
+ }
+});
+
+test('pending adjacent text decision preserves both typed breaks and exports them',async()=>{
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const doc=pending.bindLedger({schemaVersion:1,source:fixture(),revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Reviewer',date:'2026-10-03T00:00:00Z',dateUtc:'2026-10-03T00:00:00Z',groupId:null,paragraphIndex:0,from:0,to:1,state:'pending'}],undo:[],redo:[]});
+ const mods=await modules;
+ for(const state of [doc,...['accept','reject'].map(action=>pending.decide(doc,{action,revisionId:'revision-1'}).doc)]){
+  assert.deepEqual(breaks.paragraphBreaks(state.content[0]).map(b=>b.type),['page','column','line']);
+  for(const bytes of [ordinary(state,mods),packet(state)]){
+   const xml=mods[0].extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+   assert.match(xml,/<w:br w:type="page"\/>/);assert.match(xml,/<w:br w:type="column"\/>/);
+  }
+ }
+});
