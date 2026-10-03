@@ -286,7 +286,7 @@ function normalizeDocumentSections(input, blockCount) {
     const columns = isPlainObjectValue(properties.columns) ? properties.columns : {};
     const type = normalizeString(properties.type);
     const orientation = normalizeString(pageSize.orientation);
-    if (!['nextPage', 'continuous', 'evenPage', 'oddPage'].includes(type)
+    if (!['nextPage', 'continuous', 'evenPage', 'oddPage', 'nextColumn'].includes(type)
       || !['portrait', 'landscape'].includes(orientation)) {
       throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PROPERTIES_INVALID');
     }
@@ -328,7 +328,7 @@ function buildSectionPropertiesXml(section, options = {}) {
   const columns = properties.columns;
   return [
     '<w:sectPr>',
-    ...(options.final === true ? [] : [`<w:type w:val="${escapeXml(properties.type)}"/>`]),
+    `<w:type w:val="${escapeXml(properties.type)}"/>`,
     `<w:pgSz w:w="${pageSize.widthTwips}" w:h="${pageSize.heightTwips}" w:orient="${escapeXml(pageSize.orientation)}"/>`,
     `<w:pgMar w:top="${margins.topTwips}" w:right="${margins.rightTwips}" w:bottom="${margins.bottomTwips}" w:left="${margins.leftTwips}" w:header="${margins.headerTwips}" w:footer="${margins.footerTwips}" w:gutter="${margins.gutterTwips}"/>`,
     `<w:cols w:num="${columns.count}" w:space="${columns.spaceTwips}"/>`,

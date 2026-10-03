@@ -1210,7 +1210,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1244,6 +1244,7 @@ async function cleanTextReturnFixture(t,{typedBreak,headingLevel,schemaDefaults=
   // Repeated quote belongs to a different signed block, not this operation.
   parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
   fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
   if(bookmarked){
     const notePath=path.join(f.root,'notes.craftsman.json'),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
@@ -1555,9 +1556,10 @@ test('actual whole Main continued list survives authenticated text Apply and re-
 });
 
 
-for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9','page-break','column-break','page-break-language']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
+for(const variant of ['plain','outside-bookmark','continued-list','opened-import-defaults','heading7','heading8','heading9','numbered-heading9','page-break','column-break','page-break-language','section-continuous','section-nextColumn']) test(`actual Main single-scene ordinary Word return reaches preview and guarded Apply: ${variant}`,async t=>{
   const {f,activated}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,schemaDefaults:variant==='opened-import-defaults',
     ...(variant.includes('-break')?{typedBreak:variant.split('-')[0]}:{}),
+    ...(variant.startsWith('section-')?{sectionType:variant.slice(8)}:{}),
     ...(variant.startsWith('heading')?{headingLevel:Number(variant.slice(7))}:{}),
     ...(variant==='continued-list'?{listType:'I',continuedList:true}:{}),
     ...(variant==='numbered-heading9'?{headingLevel:9,listType:'I',continuedList:true}:{}),
@@ -1634,4 +1636,27 @@ for(const variant of ['type','delete','move','unknown'])test(`typed break return
  assert.deepEqual(f.capture(),beforeActivation);
  assert.notEqual((await f.probe.fullApply({requestId:'typed-break-rejected'})).applied,true);
  assert.deepEqual(f.capture(),beforeActivation);
+});
+
+for(const variant of ['type','final','delete'])test(`section return ${variant} rejects without writes`,async t=>{
+ const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,sectionType:'continuous',mutateReturn:parts=>{
+  const before=parts['word/document.xml'];parts['word/document.xml']=variant==='type'?before.replace('w:val="continuous"','w:val="nextPage"'):variant==='final'?before.replace('w:val="oddPage"','w:val="evenPage"'):before.replace(/<w:sectPr>[\s\S]*?<\/w:sectPr>/u,'');
+  assert.notEqual(parts['word/document.xml'],before);
+ }});
+ assert.ok(activated.ok===false||activated.nonOverlapTrackedReplacementProductPath?.prepared!==true,JSON.stringify(activated));
+ assert.deepEqual(f.capture(),beforeActivation);assert.notEqual((await f.probe.fullApply({requestId:'section-rejected'})).applied,true);assert.deepEqual(f.capture(),beforeActivation);
+});
+test('actual Main section Save proves separated splits, undo and redo; forged boundary movement refuses',async t=>{
+ const f=await fixture(t),model=require('../../src/core/word-sections-v1.cjs');
+ const p=text=>({type:'paragraph',content:[{type:'text',text}]});
+ const initial=model.bind({type:'doc',content:[p('AAA'),p('BBB'),p('CCC'),p('DDD')]},{schemaVersion:1,boundaries:[{endParagraphIndex:1,properties:{type:'continuous'}}],final:{type:'oddPage'}});
+ const raw=doc=>envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,raw(initial));
+ let working=raw(initial),generation=0;mountRenderer(f,()=>working,()=>generation,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));
+ const save=async doc=>{working=raw(doc);generation++;f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation});return f.probe.save();};
+ const divided=structuredClone(initial);divided.content=[p('A'),p('AA'),p('BBB'),p('C'),p('CC'),p('DDD')];
+ const split=model.bind(divided,model.project(initial,divided));assert.equal(await save(split),true);assert.deepEqual(model.read(envelope.parseObservablePayload(read(f.alpha)).doc),model.read(split));
+ assert.equal(await save(initial),true,'undo after Save');assert.equal(await save(split),true,'redo after Save');
+ const typed=structuredClone(split);typed.content[3].content[0].text+=' typed';assert.equal(await save(initial),true);assert.equal(await save(typed),true,'two splits plus typing before Save');
+ assert.equal(await save(initial),true,'undo mixed split and text');assert.equal(await save(split),true);
+ const forged=structuredClone(split);forged.attrs.wordSections.boundaries[0].endParagraphIndex=3;const before=read(f.alpha);assert.notEqual(await save(forged),true);assert.equal(read(f.alpha),before);
 });

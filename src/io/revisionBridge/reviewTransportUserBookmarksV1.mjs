@@ -134,9 +134,12 @@ function replaceLinks(p,runs,registry) {
 
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
-export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,ordinaryTextMode=false}={}) {
+export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
   try {
     const registry=core.readRegistry(baselineDoc);
+    const sectionVerified = Boolean(protectedSections && sectionProof?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
+      && sectionProof.protectedDigest === protectedSections.protectedDigest
+      && same(sectionProof.protectedSections, protectedSections.protectedSections));
     if(baselineRegistry!==undefined&&!same(registry,baselineRegistry))return reject('baseline-registry');
     const scene=exportMap?.scenes?.find(item=>item.sceneId===sceneId);
     const allBlocks=exportMap?.scenes?.flatMap(item=>item.blocks||[]), observed=reviewIr.formattingParagraphs;
@@ -286,7 +289,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const expectedBreaks=wordBreaks.paragraphBreaks(basePs[i]);
       const returnedBreaks=wordBreaks.textBreaks(p.paragraphText,p.typedBreaks);
       if(!same(expectedBreaks.map(b=>b.type),returnedBreaks.map(b=>b.type)))return reject('typed-break-semantic-change');
-      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists)))))return reject('rich-paragraph-unsupported');
+      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists) || (name==='sectPr' && sectionVerified)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign',...(ordinaryTextMode?['wordParagraphMarkLanguage',...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');

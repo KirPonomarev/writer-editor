@@ -244,6 +244,7 @@ const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotes
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
+  buildFullManuscriptDocumentSections,
   buildFormatIrParagraphs,
   validateFullManuscriptDocumentMetadataReturn,
   validateFullManuscriptDocumentSectionsReturn,
@@ -4618,6 +4619,8 @@ async function readDocxReviewPacketExportSource() {
     roundId, doc: parsedDocument.doc, formatPlainText: true,
   });
   blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
+  const documentSections = parsedDocument.doc?.attrs?.wordSections != null
+    ? buildFullManuscriptDocumentSections([{ sceneId, doc: parsedDocument.doc }], blocks, cryptoPort) : null;
   const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId });
   if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
     throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
@@ -4681,7 +4684,7 @@ async function readDocxReviewPacketExportSource() {
     ],
   };
   const provisionalBuffer = buildDocxReviewPacketBufferCore({
-    documentNotes, commentExport,
+    documentNotes, documentSections, commentExport,
     sceneText,
     blocks,
     customProperties: [
@@ -4774,6 +4777,7 @@ async function readDocxReviewPacketExportSource() {
     blockCount: blocks.length,
     commentStateDigest: commentExport.stateDigest, commentSummary,
     ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
+    ...(documentSections ? { documentSectionsDigest: documentSections.protectedDigest } : {}),
   };
   const authorityEncoded = buildReviewDocxPacketAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
@@ -4798,6 +4802,7 @@ async function readDocxReviewPacketExportSource() {
     productRuntimeWired: true,
     returnIntakeWired: false,
     ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
+    ...(documentSections ? { documentSectionsDigest: documentSections.protectedDigest } : {}),
   };
   // ROUND-01 (V3): the raw hmacSecret is imported into the main-process-only
   // key vault and the durable capsule carries only an opaque keyRef plus public
@@ -4808,6 +4813,7 @@ async function readDocxReviewPacketExportSource() {
   const localAuthorityCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.local-authority.v1',
     commentExport,
+    ...(documentSections ? { documentSections } : {}),
     projectRoot,
     scenePath: currentFilePath,
     baselineFinalText: sceneText,
@@ -4856,7 +4862,7 @@ async function readDocxReviewPacketExportSource() {
   // assignment keeps the current session usable until publication.
 
   return {
-    documentNotes, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
+    documentNotes, documentSections, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
     provisionalSelfParseArtifact: { bytes: provisionalBuffer },
     sceneText,
     blocks,
@@ -5166,6 +5172,10 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
     baselineFinalText: source.sceneText }, { cryptoPort });
   if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
     throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
+  if (source.documentSections) {
+    const proof = validateFullManuscriptDocumentSectionsReturn({ expected: source.documentSections, returned: parsed.reviewIr?.documentSections, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest });
+    if (!proof.ok) throw Error('REVIEW_DOCX_EXPORT_SECTIONS_MISMATCH');
+  }
   const commentProofs = [];
   if (source.commentExport) {
     const projection = source.commentExport, payload = parsed.authorityCarrier.selectedCarrier.payload;
@@ -9780,6 +9790,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     const beforeDoc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
     const analysis = module.analyzeUserBookmarksReturn({ baselineDoc: beforeDoc, exportMap: authority.exportMap,
       sceneId: scene.sceneId, reviewIr: parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography,
+      protectedSections: authority.documentSections, sectionProof: parserResult.documentSectionsBinding,
       ordinaryTextMode: true });
     if (!analysis.ok) return analysis;
     if (analysis.ordinaryTextChanges?.length) {
@@ -12235,6 +12246,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(sourceReport.contentPreview.wordSections ? { wordSections: cloneJsonSafe(sourceReport.contentPreview.wordSections) } : {}),
         ...(userBookmarkInventory !== null ? { userBookmarkInventory } : {}),
         ...(isPlainObjectValue(sourceReport.contentPreview.pendingRevisionDocument) ? { pendingRevisionDocument: cloneJsonSafe(sourceReport.contentPreview.pendingRevisionDocument) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.manuscriptNotes)
@@ -22675,6 +22687,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           if (beforeDocument.doc || afterDocument.doc) {
             const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(beforeDocument.text);
             const workingDoc = afterDocument.doc || envelope.buildParagraphDocumentFromText(afterDocument.text);
+            if (expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
             if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
               bookmarkSubjectId = currentLifecycleSubjectId(); bookmarkSessionId = commentAuthoringSessionId;
               bookmarkAliases = boundUserBookmarkRenameLineage(filePath, prepared.projectId, expectedSceneContent);

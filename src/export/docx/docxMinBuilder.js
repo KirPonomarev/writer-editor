@@ -322,6 +322,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   const media = buildMediaPackage(snapshot.doc);
+  const sections = require('../../core/word-sections-v1.cjs');
+  const sectionRegistry = sections.read(snapshot.doc);
+  const sectionEnds = new Map((sectionRegistry?.boundaries || []).map(item => [item.endParagraphIndex, item.properties]));
   // Historical text-only exports need no new domain dependency. Present
   // registry bytes are validated before any payload receives export meaning.
   const bookmarkCore=snapshot.doc?.attrs?.wordUserBookmarks!=null?require('../../core/word-user-bookmarks-v1.cjs'):null;
@@ -368,7 +371,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       : { sourceId: 'docx-export', text: plainText },
   );
   const styleMap = deps.styleMapModule.createStyleMap();
-  const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
+  const profileSectionXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
+  const sectionPropertiesXml = sectionRegistry ? sections.xml(sectionRegistry.final) : profileSectionXml;
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
   if (deps.commentExport?.threads?.length) {
     if (!Array.isArray(deps.commentBlocks) || deps.commentBlocks.length !== entries.length
@@ -406,7 +410,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '')
-        + (markLanguage ? `<w:rPr>${markLanguage}</w:rPr>` : '');
+        + (markLanguage ? `<w:rPr>${markLanguage}</w:rPr>` : '')
+        + (sectionEnds.has(index) ? sections.xml(sectionEnds.get(index)) : '');
       const paragraphRevision = pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger?.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r));
       let styleXml = buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(properties ? `<w:pPr>${properties}</w:pPr>` : '', paragraphRevision, revisionCounter), pendingExport?.paragraphs[index].boundaryRevision, revisionCounter);
       const rowRevision = pendingExport?.paragraphs[index].rowRevision;
