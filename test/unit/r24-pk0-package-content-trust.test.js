@@ -383,3 +383,33 @@ test('PK0 admits only the exact WP702 security override transition and rejects f
   assert.equal(dependencyExpansionResult.ok, false);
   assert.equal(dependencyExpansionResult.error.value.errors.includes('PK0_DEPENDENCIES_MUTATION_FORBIDDEN'), true);
 });
+
+test('PK0 current Word Mac security successor binds exact graph and rejects expansion or forged admission', async () => {
+  const module=await loadModule(),fs=require('node:fs'),cp=require('node:child_process');
+  const admission=module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
+  const baselinePackageJson=JSON.parse(cp.execFileSync('git',['show',`${admission.baseSha}:package.json`],{cwd:ROOT,encoding:'utf8'}));
+  const packageJson=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8'));
+  const evaluate=(pkg,candidate=admission,changedFiles=['package.json','package-lock.json'])=>module.evaluatePackageContentTrust({packageJson:pkg,baselinePackageJson,trackedFiles:trackedFixture(),changedFiles,dependencyMutationAdmission:candidate,wordMacSecuritySuccessorRequired:true,programDag:programDagFixture(),scientificContracts:scientificContractsFixture()});
+  assert.equal(evaluate(packageJson).ok,true);
+  for(const mutate of [p=>p.dependencies.unapproved='1.0.0',p=>p.devDependencies.electron='41.10.7',p=>p.overrides['fast-uri']='4.1.6',p=>p.engines.node='>=24',p=>p.build.extends='./unapproved.cjs']){
+    const expanded=structuredClone(packageJson);mutate(expanded);assert.equal(evaluate(expanded).ok,false);
+  }
+  assert.equal(evaluate(packageJson,{...admission,carrierSha256:'0'.repeat(64)}).ok,false);
+  assert.equal(evaluate(packageJson,admission,['package.json','package-lock.json','pnpm-lock.yaml']).ok,false);
+});
+
+test('PK0 repository security successor refuses altered carrier package lock hook and missing admission', async t=>{
+  const module=await loadModule(),fs=require('node:fs'),os=require('node:os');
+  assert.deepEqual(module.readWordMacDependencySecurityAdmission(ROOT),module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'word-mac-security-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const carrierPath=module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH;
+  const carrier=JSON.parse(fs.readFileSync(path.join(ROOT,carrierPath),'utf8'));
+  const gitDir=require('node:child_process').execFileSync('git',['rev-parse','--absolute-git-dir'],{cwd:ROOT,encoding:'utf8'}).trim();
+  fs.writeFileSync(path.join(temp,'.git'),`gitdir: ${gitDir}\n`);
+  const files=[carrierPath,...Object.keys(carrier.currentFiles)];
+  for(const relative of files){fs.mkdirSync(path.dirname(path.join(temp,relative)),{recursive:true});fs.copyFileSync(path.join(ROOT,relative),path.join(temp,relative));}
+  assert.ok(module.readWordMacDependencySecurityAdmission(temp));
+  for(const relative of files){const target=path.join(temp,relative),before=fs.readFileSync(target);fs.appendFileSync(target,' ');assert.equal(module.readWordMacDependencySecurityAdmission(temp),null,relative);fs.writeFileSync(target,before);}
+  fs.unlinkSync(path.join(temp,carrierPath));assert.equal(module.readWordMacDependencySecurityAdmission(temp),null);
+});

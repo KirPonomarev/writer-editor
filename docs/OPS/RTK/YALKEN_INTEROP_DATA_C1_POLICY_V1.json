@@ -519,7 +519,16 @@
     "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
     "src/core/word-paragraph-spacing-v1.cjs",
-    "test/contracts/rtk-word-paragraph-spacing.contract.test.js"
+    "test/contracts/rtk-word-paragraph-spacing.contract.test.js",
+    "package.json",
+    "package-lock.json",
+    "scripts/electron-download-config.cjs",
+    "test/unit/electron-download-config.test.js",
+    "scripts/ops/r24/package-content-trust-pk0.mjs",
+    "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
+    "test/unit/r24-pk0-package-content-trust.test.js",
+    "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json"
   ],
   "protectedFiles": [
     {
@@ -548,11 +557,11 @@
     },
     {
       "path": "package.json",
-      "sha256": "f4ccb9cb2c6f7c0753ead9730caf009b16c9b06fd9bbb8083e937d51f9f913e1"
+      "sha256": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696"
     },
     {
       "path": "package-lock.json",
-      "sha256": "ee4b7532f24371b7678eece7cb95df23ce4509830361c4629582dcb91507d432"
+      "sha256": "f4576445e5e73be0ee6388f1379297dd9f9f232f1361b6ab172ccd1c827ec9f1"
     },
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
@@ -2224,11 +2233,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "c13fbc7c828749ddbfe0239bb2e79c29551c5a998037c39f894cd3ef821fd92f"
+        "sha256": "472715311e5f7c4fd0011c78bb45a2496e1c516522c537d12524e3d287ec2e92"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "9afa2904edbc6127dd74de5ae3b66b1276f4faabb1f4acd3204718c008a80a38"
+        "sha256": "3581757e261f05e676b20fea95253661b6ffc6693ebee114f1c2841b24f96a71"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",
@@ -2239,12 +2248,32 @@
         "sha256": "f138d9f6aa9494f2cfd380c4e111115d2b3e63ff5103143d7cf32322bfb092e2"
       },
       {
+        "path": "scripts/electron-download-config.cjs",
+        "sha256": "75347c0f003529acef299f07eee7ac03007666576d4e3b0133e719379ecbdc7a"
+      },
+      {
+        "path": "test/unit/electron-download-config.test.js",
+        "sha256": "f96737147413cb8919c89bc7d07a8b05324171a873e7d43e8c3d5ad2747ca3b0"
+      },
+      {
+        "path": "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
+        "sha256": "b0696b67fff9b06b51aec93c5549ac6fdf41276a98ae83ebb93638c8dff5ac07"
+      },
+      {
         "path": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
         "sha256": "168354e0173d49d6614e5e32d8dba783d6641a5a83aba10bb9c1307bf145223d"
       },
       {
         "path": "test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js",
         "sha256": "b432ea9782d8f311664e6767a15b29aeb283f5f0473c90b5f5486b8cb4f70ee3"
+      },
+      {
+        "path": "test/unit/r24-pk0-package-content-trust.test.js",
+        "sha256": "df620477f2ef52fefb42b6e4ba3ee590fe4322b820d040782b03903e1a1bedd1"
+      },
+      {
+        "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+        "sha256": "6101fe24fdbc32111e286c6f3a3a264747b15e694ac70d8193067d1908391080"
       }
     ],
     "followupRepair": {

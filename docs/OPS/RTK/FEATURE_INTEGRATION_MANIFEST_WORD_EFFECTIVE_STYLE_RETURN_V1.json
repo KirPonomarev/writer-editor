@@ -52,14 +52,24 @@
     "test/contracts/rtk-word-http-links.contract.test.js",
     "test/contracts/rtk-word-visibility-ruby.contract.test.js",
     "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-    "test/contracts/rtk-word-header-footer-authoring.contract.test.js"
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "src/core/writer-local-profile-v1.cjs",
+    "test/unit/r24-wp307-writer-local-profile.test.js",
+    "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+    "package.json",
+    "package-lock.json",
+    "scripts/electron-download-config.cjs",
+    "test/unit/electron-download-config.test.js",
+    "scripts/ops/r24/package-content-trust-pk0.mjs",
+    "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
+    "test/unit/r24-pk0-package-content-trust.test.js",
+    "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json"
   ],
   "scopeOut": [
     "src/renderer/index.html",
     "src/renderer/styles.css",
     "src/preload.js",
-    "package.json",
-    "package-lock.json",
     ".github/workflows"
   ],
   "productAuthority": "Original Mac plan P3-08 effective styles and paragraph formatting plus existing typed proofing language; owner-authorized full implementation. Same vertical slice and PR: native Word style creation adds spacing/lang that cannot be silently ignored.",
@@ -107,11 +117,12 @@
     "Existing rich-body and auxiliary return allowlists must explicitly preserve/compare new typed attrs; no silent discard",
     "Reject hostile getters before serialization; preserve original/current accepted/rejected/undo/redo snapshots and both exporters; exact old absence versus new spacing/language."
   ],
-  "securityAndInputBoundary": "External XML bounded and validated before style resolution; no new dependencies, paths, writers, network or evaluation.",
+  "securityAndInputBoundary": "External XML bounded and validated before style resolution. Existing dependency families receive exact security updates; build artifact download retains checksum verification, bounded abort, actual target identity and explicit local distribution overrides. No product network or new product writer.",
   "performanceAndAccessibility": "Cache bounded style catalog per parse; linear traversal; existing UI and keyboard semantics unchanged.",
   "currentReality": [
-    "Clean8221: focused existing-chain suite281 tests267pass14fail. Pending Core rejects preserved spacing/language; bookmarks reject unchanged language; header and visibility tests contain superseded expectations.",
-    "Five native SOURCE style cycles observed; packaged and complete regression acceptance remain pending."
+    "At c523dcb6 baseline, RTK2936 and OSS passed; full npm audit failed with16 affected packages. These checks are not current-head acceptance.",
+    "Native SOURCE and PACKAGED style cycles observed on recorded earlier revisions. Packaged replay proved at a6e1; independent native table accept/reject/Undo/pending export129 assertions passed.",
+    "At89d999 packaged recovery admission repaired; actual Main and profile184 checks passed. Full delivery and final candidate qualification pending."
   ],
   "targetOnly": [
     "Typed wordParagraphSpacing={before?,after?,line?,lineRule?}; absent distinct from zero; before/after twips, auto line in240ths and exact/atLeast line in twips; unsupported attributes remain explicit refusal",
@@ -121,7 +132,7 @@
     "Bookmark comparison permits exactly unchanged language, still rejects changed language or unsupported composites; invalid default formatting and hidden text remain no-write refusals."
   ],
   "designToolRouter": "NOT_APPLICABLE",
-  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "dependenciesAndNetwork": "SECURITY_UPDATES_EXISTING_DEPENDENCY_FAMILIES_ONLY; build-only bounded Electron artifact download through existing builder/get; NO_PRODUCT_RUNTIME_NETWORK",
   "deliveryPolicy": {
     "commitRequired": true,
     "pushRequired": true,
@@ -143,5 +154,12 @@
     "preflight": "PASS before edits",
     "reason": "Preserve existing table pending revisions and bookmark routes under newly retained Word spacing and language",
     "claim": "Implementation repair pending proofs; no acceptance"
+  },
+  "securityRemediationAmendment": {
+    "baseSha": "89d9991331013c26b724e3cbb17ea3faa7d058e9",
+    "preflight": "PASS before edits; 60 admitted paths",
+    "reason": "Full npm audit at stable candidate failed on inherited dependency graph; exact same-family repair required before delivery",
+    "proof": "Isolated trial full audit zero and unsigned Mac build completed; final repository candidate qualification still required",
+    "historicalEvidence": "Historical C6D and WP702 bindings remain immutable; exact successor validates current dependency bytes"
   }
 }
