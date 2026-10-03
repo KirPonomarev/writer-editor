@@ -8,12 +8,13 @@ const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
-function fixture({ kind = 'footnote', id = '7', reference = id, body, href = 'https://example.invalid/note', extra = '', customXml = '' } = {}) {
+function fixture({ kind = 'footnote', id = '7', reference = id, body, href = 'https://example.invalid/note', extra = '', customXml = '', styles = '' } = {}) {
   return buildStoredZip([
+    ...(styles ? [{ name: 'word/styles.xml', data: styles }] : []),
     ...(customXml ? [{ name: 'customXml/item1.xml', data: '<b:Sources xmlns:b="http://schemas.openxmlformats.org/officeDocument/2006/bibliography"/>' }] : []),
-    { name: '[Content_Types].xml', data: `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/${kind}s.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/></Types>` },
+    { name: '[Content_Types].xml', data: `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/${kind}s.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>${styles ? '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' : ''}</Types>` },
     { name: '_rels/.rels', data: `<Relationships xmlns="${P}"><Relationship Id="d" Type="${R}/officeDocument" Target="word/document.xml"/></Relationships>` },
-    { name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${P}"><Relationship Id="n" Type="${R}/${kind}s" Target="${kind}s.xml"/>${customXml ? `<Relationship Id="cx" Type="${R}/customXml" Target="${customXml}"/>` : ''}</Relationships>` },
+    { name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${P}"><Relationship Id="n" Type="${R}/${kind}s" Target="${kind}s.xml"/>${styles ? `<Relationship Id="styles" Type="${R}/styles" Target="styles.xml"/>` : ''}${customXml ? `<Relationship Id="cx" Type="${R}/customXml" Target="${customXml}"/>` : ''}</Relationships>` },
     { name: `word/_rels/${kind}s.xml.rels`, data: `<Relationships xmlns="${P}"><Relationship Id="l" Type="${R}/hyperlink" Target="${href}" TargetMode="External"/></Relationships>` },
     { name: 'word/document.xml', data: `<w:document xmlns:w="${W}"><w:body><w:p><w:r><w:t xml:space="preserve">До </w:t></w:r><w:r><w:${kind}Reference w:id="${reference}"/></w:r><w:r><w:t>слова</w:t></w:r></w:p></w:body></w:document>` },
     { name: `word/${kind}s.xml`, data: `<w:${kind}s xmlns:w="${W}" xmlns:r="${R}"><w:${kind} w:id="${id}"><w:p><w:r><w:${kind}Ref/></w:r>${body || '<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">Точная </w:t><w:tab/><w:t>😀</w:t><w:br/><w:t>строка</w:t></w:r><w:hyperlink r:id="l"><w:r><w:t>ссылка</w:t></w:r></w:hyperlink>'}</w:p><w:p/></w:${kind}>${extra}</w:${kind}s>` },
@@ -121,4 +122,35 @@ test('native file picker and main preview projection retain notes through actual
   assert.equal(plan.ok, true, JSON.stringify(plan));
   assert.deepEqual(plan.candidateCreatePlan.entries[0].notes, direct.contentPreview.manuscriptNotes);
   assert.deepEqual(selected.docxImportPreviewPlan.candidateCreatePlan.entries[0].notes, direct.contentPreview.manuscriptNotes);
+});
+
+for (const kind of ['footnote', 'endnote']) test(`${kind} symbol is refused before candidate and safe-create writes`, async t => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const body = '<w:r><w:t>A</w:t><w:sym w:font="Wingdings" w:char="F0FC"/><w:t>B</w:t></w:r><w:hyperlink r:id="l"><w:r><w:t>link</w:t></w:r></w:hyperlink>';
+  const control = bridge.buildDocxContentPreviewFromZipBytes(fixture({ kind, body: body.replace('<w:sym w:font="Wingdings" w:char="F0FC"/>', '<w:t>✓</w:t>') }));
+  assert.equal(control.ok, true, JSON.stringify(control));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(fixture({ kind, body }));
+  assert.equal(preview.ok, false, JSON.stringify(preview));
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, false); assert.equal(plan.candidateCreatePlan, null);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'note-symbol-refusal-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const result = await require('../fixtures/docx-import-real-authority.cjs').applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, {
+    projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'note-symbol',
+  });
+  assert.equal(result.ok, false); assert.deepEqual(fs.readdirSync(root), []);
+});
+
+test('named character-style inheritance in notes retains effective body values and public disclosure', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const styles = `<w:styles xmlns:w="${W}"><w:style w:type="character" w:styleId="Base"><w:name w:val="Base"/><w:rPr><w:b/><w:color w:val="123456"/></w:rPr></w:style><w:style w:type="character" w:styleId="Child"><w:name w:val="Child"/><w:basedOn w:val="Base"/></w:style></w:styles>`;
+  const body = '<w:r><w:rPr><w:rStyle w:val="Child"/></w:rPr><w:t>Styled note</w:t></w:r><w:hyperlink r:id="l"><w:r><w:t>link</w:t></w:r></w:hyperlink>';
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(fixture({ styles, body }));
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.lossReport.items.filter(item => item.code === 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED').length, 1);
+  assert.deepEqual(plan.candidateCreatePlan.entries[0].notes[0].body.content[0].content[0], {
+    type: 'text', text: 'Styled note', marks: [{ type: 'bold' }, { type: 'textStyle', attrs: { color: '#123456' } }],
+  });
 });

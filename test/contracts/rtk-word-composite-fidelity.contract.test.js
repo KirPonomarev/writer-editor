@@ -153,3 +153,76 @@ test('W6 composite: malformed table plus PNG and tampered admitted content never
   assert.equal(result.ok, false);
   assert.deepEqual(fs.readdirSync(root), []);
 });
+
+async function actualFilePreview(bytes, root) {
+  const [bridge] = await modules;
+  const file = path.join(root, 'source.docx'); fs.writeFileSync(file, bytes);
+  return require('../../src/utils/docxImportLocalFilePreview.js').createDocxImportLocalFilePreview(
+    { requestId: 'w6-import-fidelity' }, {
+      pickLocalFile: async () => ({ path: file }),
+      readLocalFileBytes: selection => fs.promises.readFile(selection.path),
+      loadRevisionBridgeModule: async () => bridge,
+    });
+}
+const symbolRun = '<w:r><w:rPr><w:b/></w:rPr><w:t>A</w:t><w:sym w:font="Wingdings" w:char="F0FC"/><w:t>B</w:t></w:r>';
+for (const [kind, body, prefix] of [
+  ['paragraph', `<w:p>${symbolRun}</w:p>`],
+  ['table cell', `<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="1440"/></w:tblGrid><w:tr><w:tc><w:p>${symbolRun}</w:p></w:tc></w:tr></w:tbl>`],
+  ['content control', `<w:sdt><w:sdtContent><w:p>${symbolRun}</w:p></w:sdtContent></w:sdt>`],
+  ['namespace alias', `<w:p>${symbolRun}</w:p>`.replaceAll('w:', 'q:'), 'q'],
+  ['malformed symbol', '<w:p><w:r><w:t>A</w:t><w:sym w:char="ZZ"/><w:t>B</w:t></w:r></w:p>'],
+  ['foreign namespace', '<w:p><w:r><w:t>A</w:t><x:sym xmlns:x="urn:not-word" x:char="F0FC"/><w:t>B</w:t></w:r></w:p>'],
+]) test(`W6 symbol ${kind}: actual local preview refuses without candidate or filesystem mutation`, async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-symbol-refusal-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, 'manifest.json'), '{"protected":true}');
+  const bytes = packageBytes(body, '', prefix);
+  const preview = await actualFilePreview(bytes, root);
+  assert.equal(preview.status, 'blocked', JSON.stringify(preview));
+  assert.equal(preview.importPreviewOk, false);
+  assert.equal(preview.docxImportPreviewPlan, null);
+  if (kind !== 'foreign namespace') assert.match(JSON.stringify(preview.docxContentPreviewReport), /DOCX_SYMBOL_UNMAPPED/);
+  const before = Object.fromEntries(fs.readdirSync(root).map(name => [name, fs.readFileSync(path.join(root, name)).toString('base64')]));
+  const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: preview.docxImportPreviewPlan }, {
+    projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'w6-symbol',
+  });
+  assert.equal(result.ok, false);
+  assert.deepEqual(Object.fromEntries(fs.readdirSync(root).map(name => [name, fs.readFileSync(path.join(root, name)).toString('base64')])), before);
+});
+
+test('W6 named style inheritance: actual adapter discloses normalization and persists effective heading and run formatting', async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-style-normalization-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const styles = `<w:styles xmlns:w="${W}"><w:style w:type="paragraph" w:styleId="Base"><w:name w:val="Owner base"/><w:pPr><w:outlineLvl w:val="2"/></w:pPr><w:rPr><w:b/><w:color w:val="123456"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Child"><w:name w:val="Owner chapter"/><w:basedOn w:val="Base"/></w:style></w:styles>`;
+  const preview = await actualFilePreview(packageBytes('<w:p><w:pPr><w:pStyle w:val="Child"/></w:pPr><w:r><w:t>Styled chapter</w:t></w:r></w:p>', styles), root);
+  assert.equal(preview.importPreviewOk, true, JSON.stringify(preview));
+  const plan = preview.docxImportPreviewPlan;
+  const disclosures = plan.lossReport.items.filter(item => item.code === 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED');
+  assert.equal(disclosures.length, 1); assert.equal(disclosures[0].sourcePart, 'word/styles.xml');
+  assert.match(disclosures[0].message, /identities, names and inheritance are not retained/);
+  assert.equal(plan.lossReport.itemCount, plan.lossReport.items.length);
+  const [, envelope] = await modules;
+  const doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.equal(doc.content[0].type, 'heading'); assert.equal(doc.content[0].attrs.level, 3);
+  assert.deepEqual(doc.content[0].content[0], { type: 'text', text: 'Styled chapter', marks: [{ type: 'bold' }, { type: 'textStyle', attrs: { color: '#123456' } }] });
+  rememberDocxImportPreviewPlanAdmission(plan);
+  const options = { projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'w6-style' };
+  const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const folder = path.join(options.romanRoot, 'Imported');
+  const scenes = fs.readdirSync(folder).filter(name => name.endsWith('.txt')); assert.equal(scenes.length, 1);
+  assert.deepEqual(envelope.parseObservablePayload(fs.readFileSync(path.join(folder, scenes[0]), 'utf8')).doc, doc);
+  const plain = await planFrom(packageBytes('<w:p><w:r><w:t>plain</w:t></w:r></w:p>'));
+  assert.equal(plain.plan.lossReport.items.some(item => item.code === 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED'), false);
+});
+
+test('W6 named style disclosure does not enter pending revision semantic admission', async () => {
+  const styles = `<w:styles xmlns:w="${W}"><w:style w:type="paragraph" w:styleId="Custom"><w:name w:val="Custom"/><w:rPr><w:b/></w:rPr></w:style></w:styles>`;
+  const { plan } = await planFrom(packageBytes('<w:p><w:pPr><w:pStyle w:val="Custom"/></w:pPr><w:r><w:t>A</w:t></w:r><w:ins w:id="1" w:author="Owner" w:date="2026-10-03T00:00:00Z"><w:r><w:t>B</w:t></w:r></w:ins></w:p>', styles));
+  const [, envelope] = await modules;
+  const doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  const model = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  assert.equal(model.projection(doc).original, 'A'); assert.equal(model.projection(doc).current, 'AB');
+  assert.equal(model.readLedger(doc).source.content[0].content[0].marks[0].type, 'bold');
+  assert.equal(plan.lossReport.items.filter(item => item.code === 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED').length, 1);
+});

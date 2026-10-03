@@ -10229,6 +10229,15 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       rootTagName = rawTagName;
       rootSemanticTagName = tagName;
     }
+    // Font-specific character codes are not Unicode text. Until a proven
+    // font mapping exists, refuse even inside an otherwise skipped wrapper.
+    if (!closing && tagName === 'w:sym') {
+      return { failure: docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_FEATURE', {
+        sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART, sourceCode: 'DOCX_SYMBOL_UNMAPPED',
+        tagName: 'w:sym', paragraphIndex: activeParagraphIndex,
+        message: 'Font-specific Word symbols cannot be mapped safely to Unicode; import was refused without creating a document.',
+      }) };
+    }
     const diagnostic = DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS.has(tagName);
     if (diagnostic) docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenUnsupportedTags, tagName);
     const unsupported = DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS.has(tagName);
@@ -10797,8 +10806,10 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   }
   let parsed;
   let allDocumentRelationshipsPreserved = false;
+  let namedStylesNormalized = false;
   try {
     const inlineStyles = docxInlineStyleCatalog(bytes);
+    namedStylesNormalized = inlineStyles.styles.size > 0;
     const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
       byteLength: value => new TextEncoder().encode(value).length,
@@ -11013,6 +11024,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     parseCompleted: true,
     diagnostics: [
       ...parsed.diagnostics,
+      // Public normalization disclosure is added after semantic admission.
+      // It must never enter note/pending parsers' unsupported-content gates.
+      ...(namedStylesNormalized ? [docxContentPreviewDiagnostic('DOCX_NAMED_STYLES_NORMALIZED', {
+        sourcePart: 'word/styles.xml',
+        message: 'Named style identities, names and inheritance are not retained; supported effective formatting and semantic paragraph roles are imported as document properties.',
+      })] : []),
       ...docxContentPreviewBuildCustomMetadataDiagnostics(bytes),
       ...preflight.diagnostics.filter(diagnostic => !(allDocumentRelationshipsPreserved
         && diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY
@@ -11615,6 +11632,10 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoun
       message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
     };
   }
+  if (diagnosticCode === 'DOCX_NAMED_STYLES_NORMALIZED') return {
+    code: 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED', category: 'formatting',
+    message: 'Named style identities, names and inheritance are not retained; supported effective formatting and semantic paragraph roles are imported as document properties.',
+  };
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -11768,6 +11789,7 @@ function docxImportPreviewBuildLossReport(
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
     const knownContentDiagnostic = [
+      'DOCX_NAMED_STYLES_NORMALIZED',
       'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS',
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
       DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,
