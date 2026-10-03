@@ -69,7 +69,11 @@
     "scripts/ops/rtk-interop-order-c1.mjs",
     "scripts/ops/rtk-interop-text-order-c1.mjs",
     "test/contracts/rtk-interop-100-denominator.contract.test.js",
-    "test/contracts/rtk-interop-word-manuscript.contract.test.js"
+    "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+    "src/core/electron-pdf-profile-port-v1.cjs",
+    "src/core/pdf-archive-review-profile-v1.mjs",
+    "scripts/ops/r24/wp704-physical-pdf.cjs",
+    "test/unit/r24-wp704-pdf-archive-review-integration.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -182,5 +186,13 @@
     "baseSha": "c130af1ac7ced8c93f68cdcfeefbf6e0c636542c",
     "preflight": "65 paths PASS before writes",
     "reason": "Historical manuscript assertion retains all Lab identities and cell sets while admitting only validated exact security successor protected bindings"
+  },
+  "securityPdfAmendment": {
+    "baseSha": "90eb2a58dfb69578a370f70c7ea9330f6336e850",
+    "preflight": "69 paths PASS before edits",
+    "reason": "Mandatory physical PDF CI and local disposable driver reject patched Electron before rendering due to exact old-version admission",
+    "profile": "ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1",
+    "authority": "Existing derived PDF port only; unchanged project mutation, network, print options and historical receipts",
+    "requiredProof": "Exact-version negatives, actual two-render byte equality, independent PDF readback and mandatory gates"
   }
 }

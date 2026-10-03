@@ -16,7 +16,7 @@ function verify(dir) {
   const pdf = fs.readFileSync(path.join(dir, 'synthetic.pdf'));
   assert.equal(hash(pdf), receipt.pdfSha256); assert.equal(pdf.length, receipt.pdfBytes);
   assert.equal(receipt.repeatedRenderDenominator, 2); assert.equal(receipt.repeatedEqual, true);
-  assert.equal(receipt.electron, '41.10.3'); assert.equal(receipt.syntheticOnly, true);
+  assert.equal(receipt.electron, '41.10.6'); assert.equal(receipt.syntheticOnly, true);
   for (const binding of receipt.implementationArtifacts) assert.equal(hash(fs.readFileSync(path.join(root, binding.path))), binding.sha256);
   return { schemaVersion: 'WP704_PHYSICAL_PDF_BYTE_READBACK_V1', status: 'PASS', pdfSha256: hash(pdf), byteLength: pdf.length, renderingDenominator: 2, independentPdfSemanticOrVisualClaim: false, outputDirectory: dir };
 }
@@ -74,7 +74,7 @@ async function main() {
       ? spawnSync('xvfb-run', ['-a', electron, ...args], { cwd: root, env, encoding: 'utf8', timeout: 60000, maxBuffer: 8388608 })
       : spawnSync(electron, args, { cwd: root, env, encoding: 'utf8', timeout: 60000, maxBuffer: 8388608 });
     write(dir, 'electron-stdout.txt', result.stdout || ''); write(dir, 'electron-stderr.txt', result.stderr || '');
-    if (result.status !== 0) { console.error(raw({ status: 'FAIL', outputDirectory: dir, exitCode: result.status, error: result.error?.message, stderr: result.stderr })); process.exitCode = 1; return; }
+    if (result.status !== 0) { console.error(raw({ status: 'FAIL', outputDirectory: dir, exitCode: result.status, error: result.error?.message, signal: result.signal, stdout: result.stdout, stderr: result.stderr, failure: fs.existsSync(path.join(dir, 'synthetic-failure.json')) ? JSON.parse(fs.readFileSync(path.join(dir, 'synthetic-failure.json'))) : null })); process.exitCode = 1; return; }
     console.log(raw(verify(dir))); return;
   }
   if (process.argv.includes('--verify')) { console.log(raw(independentReadback(process.env.WP704_PHYSICAL_DIR))); return; }
@@ -115,4 +115,15 @@ async function main() {
     write(dir, 'physical-receipt.json', raw(receipt)); console.log(raw(receipt));
   } finally { app.quit(); }
 }
-main().catch(error => { console.error(error.stack || error); process.exitCode = 1; if (process.versions.electron) require('electron').app.exit(1); });
+main().catch(error => {
+  if (process.argv.includes('--electron')) {
+    const dir = process.argv[process.argv.indexOf('--electron') + 1];
+    if (dir && path.basename(dir).startsWith('yalken-wp704-pdf-') && fs.existsSync(dir)) {
+      write(dir, 'synthetic-failure.json', raw({ status: 'FAIL', syntheticOnly: true,
+        electron: process.versions.electron, errorName: String(error.name || 'Error').slice(0, 80),
+        message: String(error.message || error).slice(0, 2048) }));
+    }
+  }
+  console.error(error.stack || error); process.exitCode = 1;
+  if (process.versions.electron) require('electron').app.exit(1);
+});

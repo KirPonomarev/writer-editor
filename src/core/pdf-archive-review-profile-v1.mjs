@@ -7,7 +7,7 @@ import archiveCodec from '../export/archive/projectArchiveExportHandler.js';
 import { buildRevisionPacketPreview } from '../io/revisionBridge/index.mjs';
 
 export const PDF_ARCHIVE_REVIEW_PROFILE_VERSION = 'yalken.pdf-archive-review.profiles.v1';
-export const PDF_RENDER_PROFILE = 'ELECTRON_41_10_3_OFFLINE_CLASSIC_PDF_V1';
+export const PDF_RENDER_PROFILE = 'ELECTRON_41_10_6_OFFLINE_CLASSIC_PDF_V1';
 export const PDF_ARCHIVE_REVIEW_LIMITS = Object.freeze({ maxJsonBytes: 1048576, maxOutputBytes: 8388608, maxEntries: 255, maxFileBytes: 196608, maxTotalFileBytes: 524288, maxReviewItems: 1024, maxPdfObjects: 20000 });
 const L = PDF_ARCHIVE_REVIEW_LIMITS;
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');

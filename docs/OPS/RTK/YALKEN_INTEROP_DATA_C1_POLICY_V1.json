@@ -530,7 +530,11 @@
     "test/contracts/r24-post-audit-corrections.contract.test.mjs",
     "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
     "scripts/ops/rtk-interop-order-c1.mjs",
-    "scripts/ops/rtk-interop-text-order-c1.mjs"
+    "scripts/ops/rtk-interop-text-order-c1.mjs",
+    "src/core/electron-pdf-profile-port-v1.cjs",
+    "src/core/pdf-archive-review-profile-v1.mjs",
+    "scripts/ops/r24/wp704-physical-pdf.cjs",
+    "test/unit/r24-wp704-pdf-archive-review-integration.test.js"
   ],
   "protectedFiles": [
     {
@@ -2235,11 +2239,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "77219c881c2f85bb027e2546cc0a6e1facd04e864cae4e8c96b364aa2d233988"
+        "sha256": "99ab0fedcace5c6f5dc88d934166f0130e7288613e4130539890eb90355f269e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "8820df3515b47fa5825a06e164d10d4819578f6c025169a6b58bbf93028adf73"
+        "sha256": "308f93cc24dbe246b521d8cc11dbdf729518078d0559d7da3c06deeb562c320e"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",
@@ -2276,6 +2280,18 @@
       {
         "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
         "sha256": "6101fe24fdbc32111e286c6f3a3a264747b15e694ac70d8193067d1908391080"
+      },
+      {
+        "path": "src/core/electron-pdf-profile-port-v1.cjs",
+        "sha256": "70acd9dfcd427abb106b77f22a46ae8a90b404518cad06f9a64fcb78a65c91df"
+      },
+      {
+        "path": "src/core/pdf-archive-review-profile-v1.mjs",
+        "sha256": "e476c25f970b5275377c1bb13be76e5536848788b8d410cf3471c1fb9dc79997"
+      },
+      {
+        "path": "test/unit/r24-wp704-pdf-archive-review-integration.test.js",
+        "sha256": "53797bf493c8da1da7d2355120bd4acfa42ac9b3364691e153c40ddf6c6d8c73"
       }
     ],
     "followupRepair": {
