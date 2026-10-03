@@ -309,12 +309,22 @@ function serializeDocumentJson(doc) {
 // Retain the readable rich JSON and existing length frame. A separate feature
 // declaration deliberately prevents older single-JSON readers from accepting
 // a scene whose semantic registry they cannot preserve.
+function documentHasTypedBreaks(doc) {
+  const nodes = [doc];
+  while (nodes.length) {
+    const node = nodes.pop();
+    if (node?.type === 'hardBreak' && node.attrs?.wordBreakType != null) return true;
+    for (const child of node?.content || []) nodes.push(child);
+  }
+  return false;
+}
 function requiredSceneFeatures(doc) {
   return [...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
     ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
     ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : []),
     ...(require('./word-list-format-v1.cjs').inspectDocument(doc) ? ['word-list-format.v1'] : []),
-    ...(require('./word-list-numbering-v1.cjs').resolve(doc).size ? ['word-list-numbering.v1'] : [])];
+    ...(require('./word-list-numbering-v1.cjs').resolve(doc).size ? ['word-list-numbering.v1'] : []),
+    ...(documentHasTypedBreaks(doc) ? ['word-typed-breaks.v1'] : [])];
 }
 function encodeSceneDocument(doc) {
   const json = serializeDocumentJson(doc), requiredFeatures = requiredSceneFeatures(doc);
@@ -348,8 +358,8 @@ function decodeSceneDocument(serializedDoc) {
   if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
-    || declaration.requiredFeatures.length > 4 || declaration.requiredFeatures.some(feature =>
-      !['word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-list-format.v1', 'word-list-numbering.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+    || declaration.requiredFeatures.length > 6 || declaration.requiredFeatures.some(feature =>
+      !['word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

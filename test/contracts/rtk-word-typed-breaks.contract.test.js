@@ -93,3 +93,10 @@ test('real local-file preview adapter retains typed breaks through both sanitiza
  const doc=envelope.parseObservablePayload(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content).doc;
  assert.deepEqual(breaks.paragraphBreaks(doc.content[0]),breaks.paragraphBreaks(fixture().content[0]));
 });
+
+test('typed breaks require explicit scene feature admission and unknown kinds refuse instead of flattening',()=>{
+ const saved=envelope.composeObservablePayload({doc:fixture()});assert.match(saved,/word-typed-breaks.v1/);
+ const parsed=envelope.parseObservablePayload(saved);assert.equal(parsed.issue,null);
+ assert.equal(envelope.parseObservablePayload(saved.replace('word-typed-breaks.v1','word-typed-Xreaks.v1')).issue.reason,'DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+ assert.doesNotMatch(envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[text('A'),br(),text('B')]}]}}),/word-typed-breaks.v1/);
+});
