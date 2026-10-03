@@ -51,7 +51,8 @@ test('table editor: production trailing-node policy preserves a table-only docum
     import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),import('@tiptap/pm/state')]);
   const {DocumentHeadings}=await import('../../src/renderer/tiptap/documentHeadings.mjs');
     const {DocumentListItems}=await import('../../src/renderer/tiptap/documentListItems.mjs');
-  const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings,DocumentListItems,DocumentTables]);
+    const {DocumentBreaks}=await import('../../src/renderer/tiptap/documentBreaks.mjs');
+  const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings,DocumentListItems,DocumentBreaks,DocumentTables]);
   const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
   const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
   const table=schema.nodeFromJSON({type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'paragraph',content:[{type:'text',text:'Only table'}]}]}]}]});
@@ -113,7 +114,8 @@ for (const kind of ['heading','codeBlock','blockquote','bulletList','orderedList
     ]);
     const {DocumentHeadings}=await import('../../src/renderer/tiptap/documentHeadings.mjs');
     const {DocumentListItems}=await import('../../src/renderer/tiptap/documentListItems.mjs');
-    const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings,DocumentListItems]);
+    const {DocumentBreaks}=await import('../../src/renderer/tiptap/documentBreaks.mjs');
+    const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentHeadings,DocumentListItems,DocumentBreaks]);
     const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
     const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
     const text='  Authored é 😀 text  ';

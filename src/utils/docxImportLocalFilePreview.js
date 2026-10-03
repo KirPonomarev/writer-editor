@@ -239,6 +239,7 @@ function sanitizeContentPreviewReport(report) {
                 'textHash',
                 'charCount',
                 'inlineRuns',
+                'typedBreaks',
                 'headingLevel',
                 'textAlign',
                 'list',

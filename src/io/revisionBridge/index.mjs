@@ -1,3 +1,4 @@
+import wordTypedBreaks from '../../core/word-typed-breaks-v1.cjs';
 import listFormat from '../../core/word-list-format-v1.cjs';
 import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
@@ -8726,10 +8727,21 @@ function docxContentPreviewAddListNumberingDiagnostic(diagnostics, numberingCont
 }
 
 function docxContentPreviewNormalizeTypedBreakType(token, namespaceMap) {
-  const rawType = docxContentPreviewWordAttributeValue(token, namespaceMap, 'type').trim();
-  if (rawType === 'page') return 'page';
-  if (rawType === 'column') return 'column';
-  return 'line';
+  let rawType = null;
+  const seen = new Set();
+  for (const match of String(token).matchAll(/\s([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)\s*=\s*(["'])([\s\S]*?)\2/gu)) {
+    const name = match[1];
+    if (name === 'xmlns' || name.startsWith('xmlns:')) continue;
+    const local = docxContentPreviewLocalName(name);
+    if (docxContentPreviewAttributeNamespaceUri(name, namespaceMap) !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw Error('WORD_TYPED_BREAK_INVALID');
+    const value = docxContentPreviewDecodeText(match[3]);
+    if (seen.has(local)) throw Error('WORD_TYPED_BREAK_INVALID');
+    seen.add(local);
+    if (local === 'clear' && value === 'none') continue;
+    if (local !== 'type' || rawType !== null || !['textWrapping', 'page', 'column'].includes(value)) throw Error('WORD_TYPED_BREAK_INVALID');
+    rawType = value;
+  }
+  return rawType === 'page' || rawType === 'column' ? rawType : 'line';
 }
 
 function docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenKinds, breakType) {
@@ -9744,6 +9756,9 @@ function docxInlineCanonicalContent(paragraphs) {
       throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
     }
     needsRichContent ||= level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
+    const typedBreaks = wordTypedBreaks.validateOffsets(paragraph.text, paragraph.typedBreaks);
+    const breakTypes = new Map(typedBreaks.map(item => [item.offset, item.type]));
+    if (codeBlock && typedBreaks.length) throw new Error('WORD_TYPED_BREAK_INVALID');
     const runs = paragraph.inlineRuns === undefined
       ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
       : paragraph.inlineRuns;
@@ -9786,13 +9801,19 @@ function docxInlineCanonicalContent(paragraphs) {
       const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
       if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
+      let breakOffset = joined.length - run.text.length;
       const parts = run.text.split('\n');
       // A line break and a paragraph boundary have distinct document meaning.
       // Plain text uses the same separator for both and cannot retain that identity.
       needsRichContent ||= parts.length > 1;
       parts.forEach((text, index) => {
-        if (index) nodes.push({ type: 'hardBreak' });
+        if (index) {
+          const type = breakTypes.get(breakOffset);
+          nodes.push({ type: 'hardBreak', ...(type ? { attrs: { wordBreakType: type } } : {}) });
+          breakOffset++;
+        }
         if (text) nodes.push({ type: 'text', text, ...(marks.length ? { marks } : {}) });
+        breakOffset += text.length;
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
@@ -9915,6 +9936,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
   if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
+  if (metadata.typedBreaks?.length) paragraph.typedBreaks = metadata.typedBreaks;
   if (metadata.blockKind !== undefined) paragraph.blockKind = metadata.blockKind;
   if (metadata.blockquoteDepth !== undefined) paragraph.blockquoteDepth = metadata.blockquoteDepth;
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
@@ -10384,11 +10406,12 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       const marker = tagName === 'w:tab' ? '\t' : tagName === 'w:noBreakHyphen' ? '\u2011'
         : tagName === 'w:softHyphen' ? '\u00ad' : '\n';
       if (tagName === 'w:br') {
-        docxContentPreviewAddTypedBreakDiagnostic(
-          diagnostics,
-          seenTypedBreakKinds,
-          docxContentPreviewNormalizeTypedBreakType(token, tokenNamespaceMap),
-        );
+        const breakType = docxContentPreviewNormalizeTypedBreakType(token, tokenNamespaceMap);
+        if (breakType !== 'line') {
+          activeParagraphMetadata.typedBreaks ||= [];
+          activeParagraphMetadata.typedBreaks.push({ offset: paragraphText.length, type: breakType });
+        }
+        docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenTypedBreakKinds, breakType);
       }
       paragraphText += marker;
       docxInlineAppendText(activeParagraphMetadata, activeInlineRun, marker, inlineStyles, inlineBudget);
@@ -11676,7 +11699,7 @@ function docxImportPreviewBuildLossReport(
     if (!isPlainObject(diagnostic)) continue;
     if (isDocxPackageRootRelationshipDiagnostic(diagnostic)) continue;
     if (richCandidate && diagnostic.code === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC
-      && diagnostic.sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.line) continue;
+      && Object.values(DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES).includes(diagnostic.sourceCode)) continue;
     if ((contentPreview.paragraphs.some(p => p.media?.length) || contentPreview.noteMediaParts?.length)
       && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
         || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
@@ -11929,7 +11952,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
     }
     if (importParagraphs.some(p => p.text.includes('\n'))) {
-      formatting.message = 'Line breaks within paragraphs and separate paragraph boundaries are preserved. Page and column layout losses remain listed separately. ' + formatting.message;
+      formatting.message = 'Line, page and column break kinds and separate paragraph boundaries are preserved. Section layout limitations remain listed separately. ' + formatting.message;
     }
     if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
       formatting.message = 'Table rows, cells, empty cell paragraphs, horizontal/vertical merges, bounded absolute column widths, literal shading and supported borders are preserved. Unsupported table properties are listed separately. ' + formatting.message;

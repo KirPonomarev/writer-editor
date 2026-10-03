@@ -1,3 +1,4 @@
+import { DocumentBreaks } from './documentBreaks.mjs';
 import { DocumentListNumbering } from './documentListNumbering.mjs';
 import { DocumentListItems } from './documentListItems.mjs';
 import { DocumentHeadings } from './documentHeadings.mjs';
@@ -575,12 +576,14 @@ export function initTiptap(mountEl, options = {}) {
         trailingNode: false,
         heading: false,
         listItem: false,
+        hardBreak: false,
         link: false,
         underline: false,
       }),
       DocumentListNumbering,
       DocumentHeadings,
       DocumentListItems,
+      DocumentBreaks,
       DocumentTextStyle,
       DocumentParagraphAlignment,
       DocumentTables,

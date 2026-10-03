@@ -602,7 +602,7 @@ test('DOCX content preview: XML character data follows parser legality and prese
   }
 });
 
-test('DOCX content preview: typed breaks preserve paragraph boundaries and disclose page/column/section losses', async () => {
+test('DOCX content preview: typed breaks retain page and column meaning and disclose section losses', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
     '<w:p><w:r><w:t>T04_LINE_BEFORE</w:t><w:br/><w:t>T04_LINE_AFTER</w:t></w:r></w:p>',
@@ -666,6 +666,8 @@ test('DOCX content preview: typed breaks preserve paragraph boundaries and discl
   const { parseObservablePayload, deriveVisibleTextFromDocument } = await import('../../src/renderer/documentContentEnvelope.mjs');
   const doc = parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content).doc;
   assert.equal(doc.content.length, 7);
+  assert.deepEqual(doc.content.slice(0,3).map(p=>p.content.find(n=>n.type==='hardBreak')?.attrs?.wordBreakType||'line'),['line','page','column']);
+  assert.equal(importPreview.lossReport.items.some(item=>['pageBreak','columnBreak'].includes(item.category)),false);
   assert.equal(deriveVisibleTextFromDocument(doc), [
     'T04_LINE_BEFORE\nT04_LINE_AFTER',
     'T04_PAGE_BEFORE\nT04_PAGE_AFTER',
@@ -676,8 +678,6 @@ test('DOCX content preview: typed breaks preserve paragraph boundaries and discl
     'T04_SECTION_TWO',
   ].join('\n'));
   for (const expected of [
-    ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
-    ['DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY', 'columnBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'],
     [
       'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
       'sectionBreak',

@@ -2758,11 +2758,29 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
     let cursor = 0;
     const formattedRuns = [];
+    const typedBreaks = [];
+    let typedBreakInvalid = false;
     for (const runRecord of paragraphRecord.runs) {
       const run = runRecord.token;
       const runScan = { tokens: runRecord.tokens };
       const text = textInsideToken(documentXml, runScan, run);
       const from = cursor;
+      let atomOffset = from;
+      for (const token of runRecord.tokens) {
+        if (isWordToken(token, 'br')) {
+          let type = null;
+          const seen = new Set();
+          for (const attribute of token.attributes) {
+            if (attribute.qName === 'xmlns' || attribute.prefix === 'xmlns') continue;
+            if (attribute.namespaceUri !== W_NS || seen.has(attribute.localName)) { typedBreakInvalid = true; continue; }
+            seen.add(attribute.localName);
+            if (attribute.localName === 'type' && ['textWrapping', 'page', 'column'].includes(attribute.value)) type = attribute.value;
+            else if (!(attribute.localName === 'clear' && attribute.value === 'none')) typedBreakInvalid = true;
+          }
+          if (type === 'page' || type === 'column') typedBreaks.push({ offset: atomOffset, type });
+        }
+        atomOffset += wordInlineTextValue(documentXml, token).length;
+      }
       const to = from + text.length;
       cursor = to;
       const properties = runRecord.tokens.find((token) => (
@@ -2819,6 +2837,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     results.push({
       paragraphIndex,
       paragraphText,
+      ...(typedBreaks.length ? { typedBreaks } : {}),
+      ...(typedBreakInvalid ? { typedBreakInvalid: true } : {}),
       ...(paragraphRecord.table ? { table: paragraphRecord.table } : {}),
       trackedRevision,
       paraId: attr(paragraph, 'paraId'),
@@ -2843,6 +2863,8 @@ function formattingParagraphsSemanticProjection(paragraphs) {
   return paragraphs.map((paragraph) => ({
     paragraphIndex: paragraph.paragraphIndex,
     paragraphText: paragraph.paragraphText,
+    ...(paragraph.typedBreaks?.length ? { typedBreaks: paragraph.typedBreaks } : {}),
+    ...(paragraph.typedBreakInvalid ? { typedBreakInvalid: true } : {}),
     ...(paragraph.table ? { table: paragraph.table } : {}),
     trackedRevision: paragraph.trackedRevision,
     paraId: paragraph.paraId,

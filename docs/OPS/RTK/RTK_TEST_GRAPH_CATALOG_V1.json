@@ -195,6 +195,7 @@
     "rtk-word-table-review.contract.test.js",
     "rtk-word-table-row-revisions.contract.test.js",
     "rtk-word-tables.contract.test.js",
+    "rtk-word-typed-breaks.contract.test.js",
     "rtk-word-user-bookmarks-authoring.contract.test.js",
     "rtk-word-user-bookmarks-runtime.contract.test.js",
     "rtk-word-user-bookmarks.contract.test.js",

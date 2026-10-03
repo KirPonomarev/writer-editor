@@ -204,7 +204,8 @@ function buildFormatIrRunsXml(block, hyperlinkByHref) {
   const text = runs.map((run) => normalizeString(run?.text)).join('');
   if (text !== block.text) throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_TEXT_MISMATCH');
   return runs.map((run) => {
-    const content = buildRunContentXml(run.text);
+    if (run.wordBreakType != null && (run.text !== '\n' || !['page', 'column'].includes(run.wordBreakType))) throw Error('WORD_TYPED_BREAK_INVALID');
+    const content = run.wordBreakType ? `<w:br w:type="${run.wordBreakType}"/>` : buildRunContentXml(run.text);
     if (!content) return '';
     const preservedMarks = Array.isArray(run.preservedMarks) ? run.preservedMarks : [];
     const unsupported = preservedMarks.filter((mark) => !['link', 'code'].includes(mark?.type));
@@ -360,8 +361,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
         else if (mark.type === 'highlight') inline.highlight = mark.attrs.color;
         else throw Error('PENDING_REVISIONS_MARK_EXPORT_UNSUPPORTED');
       }
+      const breakType = node.type === 'hardBreak' ? require('../../core/word-typed-breaks-v1.cjs').kind(node) : 'line';
       const text = node.type === 'hardBreak' ? '\n' : node.text;
-      return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks }] } }, hyperlinkByHref);
+      return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks, ...(breakType !== 'line' ? { wordBreakType: breakType } : {}) }] } }, hyperlinkByHref);
     }, revisionCounter, block.sceneId || '', pendingMarkers);
   }
   // Google Office drops an otherwise empty paragraph carrying a section
