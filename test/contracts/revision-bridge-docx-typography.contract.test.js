@@ -107,10 +107,14 @@ test('C1 typography: per-slot defaults, basedOn, paragraph, character and direct
   assert.equal(hasFontLoss(plan),false);
 });
 
-test('C1 typography: themes, partial slots and differing script sizes are declared losses, never guessed', async () => {
-  for(const properties of ['<w:rFonts w:ascii="Georgia"/>',fonts('Georgia').replace('w:cs="Georgia"','w:cs="Arial"'),
-    fonts('Georgia').replace('/>',' w:cstheme="minorBidi"/>')+'<w:cs/>','<w:sz w:val="24"/>',size(24).replace('szCs w:val="24"','szCs w:val="36"')]) {
-    const {plan}=await preview(pack('<w:p>'+run('x',properties)+'</w:p>'));
+test('C1 typography: missing used slots and unresolved themes remain declared losses', async () => {
+  for(const [text,properties] of [
+    ['Кириллица','<w:rFonts w:ascii="Georgia"/>'],
+    ['x漢',fonts('Georgia').replace('w:eastAsia="Georgia"','w:eastAsia="Arial"')],
+    ['x',fonts('Georgia').replace('/>',' w:cstheme="minorBidi"/>')+'<w:cs/>'],
+    ['forced','<w:cs/><w:sz w:val="24"/>'],
+  ]) {
+    const {plan}=await preview(pack('<w:p>'+run(text,properties)+'</w:p>'));
     assert.equal(hasFontLoss(plan),true,properties);
   }
   const styles=stylesXml('<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:hAnsiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:cstheme="minorBidi"/></w:rPr></w:rPrDefault></w:docDefaults>');

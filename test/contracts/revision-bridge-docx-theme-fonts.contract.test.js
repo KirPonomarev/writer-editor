@@ -219,3 +219,27 @@ test('C1 theme fonts: malformed and duplicate language settings block while name
   const value = await preview(pack({ settings: `<v:themeFontLang xmlns:v="${W}" v:val="ru-FI"/>`, relationshipPrefix: 'r' }));
   assert.deepEqual(value.families, ['Aptos']);
 });
+
+test('C1 inert unqualified relationship root cannot authorize a qualified header child', async () => {
+  const [bridge] = await modules;
+  const bytes = pack({
+    body: `<w:p>${run('Keep')}</w:p><w:sectPr><w:headerReference xmlns:r="${OFFICE}" w:type="default" r:id="header"/></w:sectPr>`,
+    transformParts: parts => parts.map(part => part.name === 'word/_rels/document.xml.rels'
+      ? { ...part, data: `<Relationships><p:Relationship xmlns:p="${REL}" Id="header" Type="${OFFICE}/header" Target="header1.xml"/></Relationships>` } : part)
+      .concat({ name: 'word/header1.xml', data: `<w:hdr xmlns:w="${W}"><w:p>${run('Must not gain authority')}</w:p></w:hdr>` }),
+  });
+  assert.throws(() => bridge.parseDocumentStoriesRichReturn(bytes), /WORD_STORY_REFERENCE_INVALID/);
+  const report = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(report.ok,false,JSON.stringify(report));
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);
+});
+
+test('C1 Word size selection follows explicit cs and rtl flags rather than Unicode guessing', async () => {
+  for (const [flags, size] of [['', '12pt'], ['<w:cs/>','18pt'], ['<w:rtl/>','18pt'], ['<w:cs w:val="0"/><w:rtl w:val="0"/>','12pt']]) {
+    const value = await preview(pack({ body: `<w:p>${run('مرحبا Latin',literal('Arial')+'<w:sz w:val="24"/><w:szCs w:val="36"/>'+flags)}</w:p>`, styles:'',theme:'' }));
+    const attrs=value.nodes[0].marks.find(mark=>mark.type==='textStyle').attrs;
+    assert.equal(attrs.fontSize,size);
+    assert.equal(attrs.fontFamily,'Arial');
+    assert.equal(hasLoss(value.plan),false);
+  }
+});

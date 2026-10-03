@@ -79,3 +79,19 @@ test('generic layout rejects foreign properties and orphan/mistyped settings own
  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(buildStoredZip(parts)).ok,true);
  for(const mutate of [p=>p.find(p=>p.name==='word/document.xml').data=p.find(p=>p.name==='word/document.xml').data.replace('<w:ind w:left="720"/>','<x:ind xmlns:x="wrong" w:left="720"/>'),p=>p.splice(p.findIndex(p=>p.name==='word/_rels/document.xml.rels'),1),p=>{const part=p.find(p=>p.name==='[Content_Types].xml');part.data=part.data.replace('wordprocessingml.settings+xml','wordprocessingml.styles+xml');}]){const next=structuredClone(parts);mutate(next);const report=bridge.buildDocxContentPreviewFromZipBytes(buildStoredZip(next));assert.equal(report.ok,false,JSON.stringify(report));assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);}
 });
+
+test('settings authority requires qualified relationship and content-type roots, not only qualified children',async()=>{
+ const {validateDocumentSettingsBindingV1:validate}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+ const P='http://schemas.openxmlformats.org/package/2006/relationships',C='http://schemas.openxmlformats.org/package/2006/content-types';
+ const rel=`<p:Relationship xmlns:p="${P}" Id="settings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>`;
+ const type=`<c:Override xmlns:c="${C}" PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>`;
+ const valid={settingsXml:`<w:settings xmlns:w="${W}"><w:defaultTabStop w:val="567"/></w:settings>`,relationshipsXml:`<Relationships xmlns="${P}">${rel}</Relationships>`,contentTypesXml:`<Types xmlns="${C}">${type}</Types>`};
+ assert.doesNotThrow(()=>validate(valid,{cryptoPort}));
+ for(const [field,child,name,namespace] of [['relationshipsXml',rel,'Relationships',P],['contentTypesXml',type,'Types',C]]){
+  for(const wrapper of [`<${name}>${child}</${name}>`,`<${name} xmlns="urn:foreign">${child}</${name}>`,`<Wrong xmlns="${namespace}">${child}</Wrong>`]){
+   assert.throws(()=>validate({...valid,[field]:wrapper},{cryptoPort}),/WORD_SETTINGS_BINDING_INVALID/,field+wrapper);
+  }
+ }
+ // Existing degraded relationship diagnostics without a settings claim confer no authority.
+ assert.doesNotThrow(()=>validate({relationshipsXml:'<Relationships><Relationship Id="unused" Type="other" Target="unused.xml"/></Relationships>'},{cryptoPort}));
+});

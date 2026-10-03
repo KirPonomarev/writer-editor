@@ -64,6 +64,11 @@ One integrated paragraph-layout capability and independent native evidence.
 - `src/core/word-stories-v1.cjs`
 - `test/contracts/rtk-word-header-footer.contract.test.js`
 
+- `test/contracts/revision-bridge-docx-typography.contract.test.js`
+- `test/contracts/revision-bridge-docx-theme-fonts.contract.test.js`
+- `test/contracts/rtk-word-review-default-typography.contract.test.js`
+- `test/contracts/revision-bridge-docx-inline-styles.contract.test.js`
+
 ## DENYLIST
 No changes outside allowlist. No new dependencies, runtime network, raw XML parallel truth, silent fallback, weakened checks, fabricated evidence, user-data edits, reset/stash/clean/force-push, shell redesign or historical receipt rewrite.
 
@@ -110,3 +115,7 @@ One text block, exact SHA and changed basenames, tests and delivery outcomes, li
 Record exact input, observed and expected, first failing invariant. After third identical signature stop retries and change hypothesis.
 
 Observed prerequisite before runtime edits: ops-gate reports CORE_PURITY_VIOLATION in existing word-stories-v1.cjs randomUUID fallback. Main already supplies seed. Minimal repair must require supplied allocation seed and add negative tests, retaining all state behavior; no gate exception or weakened assertion.
+
+Native repair scope amendment: clean preflight at67ce3adc admitted four typography regression files (45 total). An earlier agent-appended inline-styles test was outside the41-path scope: its exact bytes and patch were preserved externally, its owned delta withdrawn, and only reapplied after this clean preflight. Native SOURCE01 exposed lost Times New Roman12 defaults and zero-height leader paint. Repair uses actual script slots and an explicit leader paint area; no native acceptance claim until rerun.
+
+Native repair intermediate evidence: typography chain112of112 and header chain42of42 passed with zero skips; these are working-tree checks, not delivery. Header fixture settings ownership was repaired without changing its story content; orphan settings now report WORD_SETTINGS_BINDING_INVALID instead of INTERNAL_ERROR. SOURCE01 profile and documents are retained externally, and its verified owned process was stopped after Save. A final settings-root namespace adversarial check remains before freezing the next candidate.

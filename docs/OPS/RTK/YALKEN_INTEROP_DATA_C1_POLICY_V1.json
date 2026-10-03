@@ -779,7 +779,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "b5defe6a770ef69d89497209406dbebc5ccfbbd51778811760d930ef9d46f35a"
+        "sha256": "9a84037bb743943b0dc5e4537af49de9be5b984aa3536bed316cf7c67fcdc645"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -803,7 +803,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "af58cb29c6cca277dea941b72b532e8f2c54713fb73578377058ee10b8e116c7"
+        "sha256": "fbaf373a9db0290ccb420259369be9c094c9cf9fc0092382a58ff1a4c98e5d9c"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -815,7 +815,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-        "sha256": "9b8e739e95349cd7030a8148d3ae703c5b964b5babc06121401740d720315f90"
+        "sha256": "c720023d11665e630f5fcaa1097a77da2e9b16d6a764a2b463afa12737a1acf4"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -883,7 +883,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "48ef3ecc45dc83033c1da15502ddfa76a3ad1d0e1d6d7b7b6b1cdbff5cf74dca"
+        "sha256": "89130132498d4182509a047dcabc45f6955bd358f45363784740a7611ec489e0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -915,7 +915,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-typography.contract.test.js",
-        "sha256": "1e7c7676ffdf6abfef1686edd3c17924b2e022a29d9e53100fe6e7589cc83ce0"
+        "sha256": "bcf1d7014046ed544cb2dc9da6651427cb9dd8985cb388b47a84671bb88408a0"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
@@ -939,7 +939,7 @@
       },
       {
         "path": "src/renderer/tiptap/documentParagraphAlignment.mjs",
-        "sha256": "9b5e7233e588bd3fff5d66b899ed80446c4b9958348377c39ed20059cde0afed"
+        "sha256": "06e9801b97a6c3eaceec22743b6a890cf9b65384a7e29d5c6099a97168063fa2"
       },
       {
         "path": "src/renderer/editor.js",
@@ -947,7 +947,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-        "sha256": "115b213869a3f7fd48e654de92d6f769852ae170cbb7ee10a29ef4d4cdc3089c"
+        "sha256": "70580ce84cfafdfd4a458f608c45e59a9f2750a12c41ead93ea68f8756cdca78"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
@@ -963,7 +963,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
-        "sha256": "f58b8e4dc179cab39508b130896b00492fd4de55858807e4071dbd53c4630423"
+        "sha256": "a49e3f4da088608f24dcae4d745ca6a0946d911175ebdc403980a288c0000ee5"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-theme-fonts.md",
@@ -1411,7 +1411,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "d4f9498e41aecf8237e7c5717005768e551cc77b78ad7dacc0770e5b7f199551"
+        "sha256": "a34a3965120831e649012067b814c8584565d5bc4136bdf320068376b7b0d068"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2203,7 +2203,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer.contract.test.js",
-        "sha256": "83c167c49cd775c0c98c24c5b47b57ab9a28828fd846e55052cd1a1882f0b46f"
+        "sha256": "600be8542ff0bda29ff8f487da6c4d2242cd8d79afd6244ba4ef8cfed5293c5c"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
@@ -2303,15 +2303,15 @@
       },
       {
         "path": "test/contracts/rtk-word-paragraph-layout.contract.test.js",
-        "sha256": "5f5fe202029f137e0ed93cc042ac4c94ffe495ec8aa91ee7969b0c414caa5e20"
+        "sha256": "0de3ddddc81b0773d458e352c434ca2c36e48700b889f07cbe4d48c4357472bc"
       },
       {
         "path": "docs/tasks/2026-10-03--word-paragraph-layout-mac.md",
-        "sha256": "b2fe1fac58be2d2cf792a7aebc61c051eecf59aff4d5077a46091e2bfe93bcc0"
+        "sha256": "822a912cf81409ed3791d5720b2e3e14a83be06582bec080e4ab154582d8dddd"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_LAYOUT_V1.json",
-        "sha256": "c5c7148cbb8859060f2b6e84d306ffa17a901a4035c9c307566828e28b92fb7a"
+        "sha256": "aa35c18be4f0cd459d2dcbbc0ef1d6ab2c69596b36063327a26f4e4a34c692ce"
       }
     ],
     "followupRepair": {

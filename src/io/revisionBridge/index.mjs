@@ -7902,6 +7902,8 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_BLOCK_STYLE_DEFINITION_REQUIRED',
     'DOCX_BLOCK_STYLE_LIST_CONFLICT',
     'DOCX_BLOCK_STYLE_PROJECTION_INVALID',
+    'WORD_SETTINGS_BINDING_INVALID',
+    'WORD_DEFAULT_TAB_STOP_INVALID',
     'DOCX_FONT_ATTRIBUTES_INVALID',
     'DOCX_FONT_ATTRIBUTE_NAMESPACE',
     'DOCX_FONT_FACE_DUPLICATE_OR_INVALID',
@@ -9464,6 +9466,7 @@ function docxInlineEffectiveTypography(properties, metadata, catalog, text) {
     if (!families?.length || families.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(families).size !== 1) metadata.unsupportedTypography = true;
     else result.fontFamily = families[0];
   }
+  // Word selects complex-script size by explicit cs/rtl flags (MS-OI29500 2.1.99).
   const size = properties.font_forceCs || properties.font_rtl ? properties.font_sizeCs : properties.font_size;
   if (properties.font_size !== undefined || properties.font_sizeCs !== undefined) {
     if (size === undefined) metadata.unsupportedTypography = true;
@@ -10758,14 +10761,15 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
   const relationships = new Map(), sections = [], byPart = new Map(), stories = [];
   if (auxiliary('word/_rels/document.xml.rels')) docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', P, 'Relationships', (node, stack, attr) => {
-    if (node.localName !== 'Relationship') return;
+    // Diagnostic-only unqualified relationships never confer part authority.
+    if (node.localName !== 'Relationship' || node.namespaceUri !== P || stack[0]?.namespaceUri !== P) return;
     const type = attr('Type'), role = type === `${R}/header` ? 'header' : type === `${R}/footer` ? 'footer' : null;
     if (!role) return;
     const id = attr('Id'), target = attr('Target');
     if (stack.length !== 1 || node.namespaceUri !== P || !id || relationships.has(id) || ![undefined,'Internal'].includes(attr('TargetMode'))
       || typeof target !== 'string' || !/^(?:\/word\/)?[A-Za-z0-9_.-]+\.xml$/.test(target) || target.includes('..')) throw Error('WORD_STORY_RELATIONSHIP_INVALID');
     relationships.set(id, { role, part: target.startsWith('/word/') ? target.slice(1) : `word/${target}` });
-  });
+  }, { allowUnqualifiedRoot: true });
   let current = null;
   docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
     if (node.namespaceUri !== W) return;

@@ -178,3 +178,34 @@ test('C1 effective spacing and language survive canonical import and ordinary re
  assert.deepEqual(returned.content[0].attrs,doc.content[0].attrs);
  assert.deepEqual(returned.content[0].content[0].marks,doc.content[0].content[0].marks);
 });
+
+test('C1 literal document default typography applies without pStyle and survives ordinary export', async () => {
+  const [bridge, envelope, docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
+  const defaults = '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>';
+  for (const normal of ['', '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"/>']) {
+    const bytes = packageBytes(`<w:p>${r('Latin Кириллица')}${r('Override','<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="28"/>')}</w:p>`, styleXml(defaults + normal));
+    const { plan, report } = await planFrom(bytes);
+    assert.equal(report.diagnostics.some(d => /TYPOGRAPHY/.test(d.code || '')), false);
+    const doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+    assert.ok(doc, 'Explicit effective default typography must create a rich document');
+    const styles = doc.content[0].content.map(n => n.marks.find(m => m.type === 'textStyle').attrs);
+    assert.deepEqual(styles.map(s => [s.fontFamily,s.fontSize]), [['Times New Roman','12pt'],['Arial','14pt']]);
+    const exported = await buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule,semanticMappingModule,styleMapModule });
+    const again = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(exported));
+    assert.equal(again.ok,true,JSON.stringify(again));
+    assert.deepEqual(envelope.parseObservablePayload(again.candidateCreatePlan.entries[0].content).doc.content,doc.content);
+  }
+});
+
+test('C1 used typography slots refuse unresolved mixed scripts and missing forced complex-script size', async () => {
+  const [bridge] = await modules;
+  for (const [text, properties] of [
+    ['Latin漢', '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="24"/>'],
+    ['Latin Кириллица', '<w:rFonts w:ascii="Arial" w:hAnsi="Georgia"/><w:sz w:val="24"/>'],
+    ['forced', '<w:rFonts w:cs="Arial"/><w:cs/><w:sz w:val="24"/>'],
+  ]) {
+    const report = bridge.buildDocxContentPreviewFromZipBytes(packageBytes(`<w:p>${r(text,properties)}</w:p>`));
+    assert.equal(report.ok,true,JSON.stringify(report));
+    assert.ok(report.diagnostics.some(d => d.sourceCode === 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED'),JSON.stringify(report));
+  }
+});

@@ -2871,11 +2871,15 @@ export function validateDocumentSettingsBindingV1({settingsXml='',relationshipsX
   const settings=rel.tokens.filter(token=>token.localName==='Relationship'&&attr(token,'Type')==='http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings');
   if(settings.length>1||settingsXml&&settings.length!==1||!settingsXml&&settings.length)throw Error('WORD_SETTINGS_BINDING_INVALID');
   if(!settingsXml)return;
+  const relationshipRoots=rel.tokens.filter(token=>token.depth===0);
+  if(relationshipRoots.length!==1||relationshipRoots[0].localName!=='Relationships'||relationshipRoots[0].namespaceUri!==REL_NS)throw Error('WORD_SETTINGS_BINDING_INVALID');
   const relation=settings[0],target=attr(relation,'Target');
   if(relation.namespaceUri!==REL_NS||relation.depth!==1||!['settings.xml','/word/settings.xml'].includes(target)||!['','Internal'].includes(attr(relation,'TargetMode')))throw Error('WORD_SETTINGS_BINDING_INVALID');
   const types=parseXmlPart('[Content_Types].xml',contentTypesXml,budgets,cryptoPort,budget);
   const declarations=types.tokens.filter(token=>token.localName==='Override'&&attr(token,'PartName')==='/word/settings.xml');
-  if(types.diagnostics.length||declarations.length!==1||declarations[0].namespaceUri!==CONTENT_TYPES_NS||declarations[0].depth!==1
+  const typeRoots=types.tokens.filter(token=>token.depth===0);
+  if(types.diagnostics.length||typeRoots.length!==1||typeRoots[0].localName!=='Types'||typeRoots[0].namespaceUri!==CONTENT_TYPES_NS
+    ||declarations.length!==1||declarations[0].namespaceUri!==CONTENT_TYPES_NS||declarations[0].depth!==1
     ||attr(declarations[0],'ContentType')!=='application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml')throw Error('WORD_SETTINGS_BINDING_INVALID');
 }
 
