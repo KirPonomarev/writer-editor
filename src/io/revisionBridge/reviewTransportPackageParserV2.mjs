@@ -1,3 +1,4 @@
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
@@ -2121,14 +2122,14 @@ function formattingParagraphState(children) {
       if (value !== null) state.textAlign = value;
     } catch { /* The scanner marks a jc without a supported value as invalid. */ }
   }
+  const spacing=children.find(t=>isWordToken(t,'spacing'));
+  if(spacing)try {state.wordParagraphSpacing=readEffectiveTuple(spacing,'spacing');} catch {}
   return state;
 }
 
 function formattingParagraphActions(children) {
   const state = formattingParagraphState(children);
-  return Object.hasOwn(state, 'textAlign')
-    ? { textAlign: { action: 'set', value: state.textAlign } }
-    : {};
+  return Object.fromEntries(Object.entries(state).map(([key,value])=>[key,{action:'set',value}]));
 }
 
 function formattingParagraphStructure(children) {
@@ -2578,6 +2579,20 @@ function reviewDefaultFontFamily(stylesScan) {
 // Resolve only active style chains. Style names and IDs provide formatting,
 // never paragraph identity or write authority. Unknown properties remain tokens
 // so the existing candidate gates refuse them instead of silently dropping them.
+function readEffectiveTuple(token,kind) {
+  const keys=kind==='spacing'?['before','after','line','lineRule']:wordLanguage.KEYS;
+  const value={};
+  for(const key of keys) {
+    const raw=attr(token,key,W_NS);
+    if(raw==='')continue;
+    if(kind==='spacing' && key!=='lineRule') {
+      if(!/^\d{1,7}$/u.test(raw))throw Error('spacing-value');
+      value[key]=Number(raw);
+    } else value[key]=raw;
+  }
+  return kind==='spacing'?paragraphSpacing.normalizeWordParagraphSpacing(value):wordLanguage.normalizeWordLanguage(value);
+}
+
 function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml, fontDefaults) {
   // parseXmlPart emits completed elements; indexes require document-open order.
   // Sort separate views so shared parser evidence retains its original ordering.
@@ -2656,7 +2671,7 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
         if (token.namespaceUri !== W_NS) throw Error('property-namespace');
         const permitted = {b:['val'],i:['val'],strike:['val'],u:['val'],jc:['val'],outlineLvl:['val'],
           color:['val'],highlight:['val'],shd:['val','fill','color'],sz:['val'],szCs:['val'],
-          rFonts:['ascii','hAnsi','eastAsia','cs','hint']}[token.localName];
+          rFonts:['ascii','hAnsi','eastAsia','cs','hint'],spacing:['before','after','line','lineRule'],lang:wordLanguage.KEYS}[token.localName];
         if (permitted && !validatedProperties.has(token)) {
           const sourceXml=token.partName==='word/styles.xml' ? stylesXml : documentXml;
           if(token.attributes.some(a=>a.qName!=='xmlns' && a.prefix!=='xmlns'
@@ -2668,10 +2683,11 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
         let next = token;
         // Font slots inherit independently. Replacing the whole rFonts element
         // could hide a mixed-script font behind a single direct override.
-        const inheritedFont = token.localName === 'rFonts' ? merged.get(key) : null;
+        const inheritedFont = ['rFonts','spacing','lang'].includes(token.localName) ? merged.get(key) : null;
         if (inheritedFont) next = {...token,
           attrsByLocal:{...inheritedFont.attrsByLocal,...token.attrsByLocal},
           attrsByNs:{...inheritedFont.attrsByNs,...token.attrsByNs}};
+        if(['spacing','lang'].includes(token.localName))readEffectiveTuple(next,token.localName);
         if (toggleStyles && ['b','i','strike'].includes(token.localName)) {
           const value = attr(token,'val',W_NS).toLowerCase();
           if (!['','1','0','true','false','on','off'].includes(value)) throw Error('toggle-value');
@@ -2698,6 +2714,7 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
     return chain(refs.length ? attr(refs[0],'val',W_NS) : defaults.get(type),type);
   };
   return {
+    directParagraph(direct) { return merge([[direct,false]],false); },
     paragraph(direct) {
       if (invalid) throw Error('style-catalog');
       const layers = ref(direct,'pStyle','paragraph');
@@ -2897,25 +2914,35 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       : [];
     let paragraphStyle = null;
     try { if (!paragraphRecord.table) paragraphStyle = effectiveStyles.paragraph(directParagraphChildren); } catch {}
+    let directParagraphInvalid=false;
+    if(paragraphRecord.table)try{effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
     const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directParagraphChildren;
     const paragraphSemanticNames = [...new Set(paragraphPropertyChildren.map((token) => token.localName))];
-    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl'].includes(name));
+    const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl', 'spacing'].includes(name));
     if (!paragraphRecord.table && !paragraphStyle) unsupportedParagraphNames.push('styleResolution');
+    if(directParagraphInvalid)unsupportedParagraphNames.push('propertyShape');
     const paragraphState = formattingParagraphState(paragraphPropertyChildren);
     const paragraphActions = formattingParagraphActions(paragraphPropertyChildren);
     const paragraphStructure = formattingParagraphStructure(paragraphPropertyChildren);
-    const paragraphFormattingInvalid = paragraphSemanticNames.includes('jc')
-      && !Object.hasOwn(paragraphState, 'textAlign');
+    const paragraphFormattingInvalid = (paragraphSemanticNames.includes('jc') && !Object.hasOwn(paragraphState,'textAlign'))
+      || (paragraphSemanticNames.includes('spacing') && !paragraphState.wordParagraphSpacing);
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
     const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
       .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
-    const markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
+    let markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
+    if(paragraphStyle)try {
+      const directMark=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
+      const effectiveMark=effectiveStyles.run(paragraphStyle,directMark,true).find(t=>isWordToken(t,'lang'));
+      if(effectiveMark)markLanguage={value:readEffectiveTuple(effectiveMark,'lang')};
+    }catch{markLanguage={invalid:true};}
+    if(markLanguage.value){paragraphState.wordParagraphMarkLanguage=markLanguage.value;paragraphActions.wordParagraphMarkLanguage={action:'set',value:markLanguage.value};}
     if (markProperties.length > 1 || markProperties.some(t => t.namespaceUri !== W_NS)) markLanguage.invalid = true;
     const markLanguageOnly = markProperties.length === 1 && markLanguage.value && !markLanguage.invalid
       && markProperties[0].attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns')
       && childTokensWithin(paragraphScan, markProperties[0]).every(t => t.depth === markProperties[0].depth + 1 && isWordToken(t, 'lang')
         && !documentXml.slice(markProperties[0].openEnd, t.openStart).trim()
         && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
+    if(markLanguageOnly){const i=unsupportedParagraphNames.indexOf('rPr');if(i>=0)unsupportedParagraphNames.splice(i,1);}
     let cursor = 0;
     const formattedRuns = [];
     const typedBreaks = [];
@@ -2947,7 +2974,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         token.localName === 'rPr'
         && token.namespaceUri === W_NS
       ));
-      const language = readWordLanguageProperties(runScan, properties, documentXml);
+      let language = readWordLanguageProperties(runScan, properties, documentXml);
       if (!text) continue;
       const directChildren = properties
         ? childTokensWithin(runScan, properties).filter((token) => token.depth === properties.depth + 1)
@@ -2960,11 +2987,14 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         try { effectiveRun=effectiveStyles.run(paragraphStyle,resolvedStyle,true); } catch {}
       }
       const children = effectiveRun || resolvedStyle || directChildren;
+      const effectiveLanguage=children.find(t=>isWordToken(t,'lang'));
+      if(effectiveLanguage && effectiveRun)try {language={value:readEffectiveTuple(effectiveLanguage,'lang')};}catch{language={invalid:true};}
       const semanticNames = [...new Set(children.map((token) => token.localName))];
-      const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);
+      const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'lang']);
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
       if (paragraphStyle && !effectiveRun) unsupportedNames.push('styleResolution');
       const inline = formattingInlineActions(children);
+      if(language.value)inline.wordLanguage={action:'set',value:language.value};
       inline.link = href ? { action:'set', value:href } : { action:'remove' };
       if (linkRuns.internalNames.has(run.openStart)) inline.wordBookmarkName = { action:'set', value:linkRuns.internalNames.get(run.openStart) };
       const expectedActionKeys = [
@@ -2977,7 +3007,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         ...(semanticNames.includes('sz') || semanticNames.includes('szCs') ? ['fontSize'] : []),
       ];
       const invalidSupportedValue = expectedActionKeys.some((key) => !Object.hasOwn(inline, key))
-        || inline.highlightConflict === true;
+        || inline.highlightConflict === true || language.invalid === true;
       delete inline.highlightConflict;
       formattedRuns.push({
         from,

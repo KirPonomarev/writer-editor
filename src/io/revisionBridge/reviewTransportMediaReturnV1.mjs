@@ -132,8 +132,10 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
           || b.canonicalTextSha256 !== `sha256:${sha256Hex(baseFormats[i].text)}`) return reject('private-source-binding');
         if (p.trackedRevision || p.table || format.table || p.paragraphFormattingInvalid || p.unsupportedParagraphNames?.length
           || !['paragraph', 'heading'].includes(paragraph.nodeType)
-          || Object.keys(paragraph).some(k => !['nodeType', 'headingLevel', 'textAlign'].includes(k))
+          || Object.keys(paragraph).some(k => !['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage'].includes(k))
           || (paragraph.textAlign || 'left') !== (p.paragraphState?.textAlign || 'left')
+          || !same(paragraph.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null)
+          || !same(paragraph.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null)
           || paragraph.nodeType !== (p.paragraphStructure?.nodeType || 'paragraph')
           || (paragraph.headingLevel ?? null) !== (p.paragraphStructure?.headingLevel ?? null)) return reject('paragraph-change');
         compareRuns(baseRuns(b, defaultSize), returnRuns(p, defaultSize), p.paragraphText);

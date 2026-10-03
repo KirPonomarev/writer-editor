@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { normalizeParagraphAlignment } from '../../io/paragraphAlignment.mjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
+import wordSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 
 function selectedTextBlocks(state) {
   if (!state?.doc || !state.selection) return [];
@@ -28,6 +29,27 @@ export const DocumentParagraphAlignment = Extension.create({
     return [{
       types: ['paragraph', 'heading'],
       attributes: {
+        wordParagraphSpacing: {
+          default: null,
+          parseHTML: element => {
+            const raw = element.getAttribute('data-word-paragraph-spacing');
+            if (raw == null) return null;
+            try { return wordSpacing.normalizeWordParagraphSpacing(JSON.parse(raw)); } catch { return null; }
+          },
+          renderHTML: attributes => {
+            if (attributes.wordParagraphSpacing == null) return {};
+            const spacing = wordSpacing.normalizeWordParagraphSpacing(attributes.wordParagraphSpacing);
+            const css = [];
+            if (spacing.before !== undefined) css.push(`margin-top: ${spacing.before / 20}pt`);
+            if (spacing.after !== undefined) css.push(`margin-bottom: ${spacing.after / 20}pt`);
+            if (spacing.line !== undefined) {
+              if (!spacing.lineRule || spacing.lineRule === 'auto') css.push(`line-height: ${spacing.line / 240}`);
+              else if (spacing.lineRule === 'exact') css.push(`line-height: ${spacing.line / 20}pt`);
+              else css.push(`line-height: max(1em, ${spacing.line / 20}pt)`);
+            }
+            return { 'data-word-paragraph-spacing': JSON.stringify(spacing), ...(css.length ? { style: css.join('; ') } : {}) };
+          },
+        },
         wordParagraphMarkLanguage: {
           default: null,
           parseHTML: element => {

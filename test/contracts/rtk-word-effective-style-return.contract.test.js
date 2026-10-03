@@ -24,7 +24,7 @@ test('default style is active without pStyle and explicit style does not invent 
  assert.equal((await scan(styles,'')).paragraphs[0].paragraphState.textAlign,'right');
  assert.equal((await scan(styles)).paragraphs[0].paragraphState.textAlign,'center');
 });
-for(const extra of ['<w:spacing w:after="400"/>','<w:ind w:left="720"/>','<w:tabs><w:tab w:pos="720" w:val="left"/></w:tabs>'])test('unsupported inherited paragraph property remains non-applicable '+extra,async()=>{
+for(const extra of ['<w:spacing w:beforeLines="400"/>','<w:ind w:left="720"/>','<w:tabs><w:tab w:pos="720" w:val="left"/></w:tabs>'])test('unsupported inherited paragraph property remains non-applicable '+extra,async()=>{
  const result=await scan(style('Derived','paragraph',`<w:pPr><w:jc w:val="right"/>${extra}</w:pPr>`));
  assert.ok(!result.ok||result.paragraphs[0].unsupportedParagraphNames.length>0);
 });
@@ -102,5 +102,35 @@ test('default-font evidence cannot omit malformed font tokens before shape valid
   const result=await scan(`<w:docDefaults><w:rPrDefault><w:rPr>${pr}</w:rPr></w:rPrDefault></w:docDefaults>`,'');
   const p=result.paragraphs[0],r=p?.formattedRuns[0];
   assert.ok(!result.ok||p.unsupportedParagraphNames.length||r.unsupportedNames.length||r.invalidSupportedValue,pr);
+ }
+});
+
+test('effective spacing and language preserve inherited slots with direct overrides and independent paragraph mark',async()=>{
+ const styles='<w:docDefaults><w:rPrDefault><w:rPr><w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:before="120" w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>'
+ +style('Derived','paragraph','<w:pPr><w:spacing w:after="240"/></w:pPr><w:rPr><w:lang w:val="ru-RU"/></w:rPr>')
+ +style('Char','character','<w:rPr><w:lang w:eastAsia="zh-CN"/></w:rPr>');
+ const result=await scan(styles,'<w:pStyle w:val="Derived"/><w:spacing w:before="0"/><w:rPr><w:lang w:bidi="he-IL"/></w:rPr>','<w:rStyle w:val="Char"/><w:lang w:val="fr-FR"/>');
+ const p=result.paragraphs[0],r=p.formattedRuns[0];
+ assert.deepEqual(p.unsupportedParagraphNames,[]);assert.deepEqual(r.unsupportedNames,[]);
+ assert.deepEqual(p.paragraphState.wordParagraphSpacing,{before:0,after:240,line:278,lineRule:'auto'});
+ assert.deepEqual(p.paragraphState.wordParagraphMarkLanguage,{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'});
+ assert.deepEqual(r.inlineState.wordLanguage,{val:'fr-FR',eastAsia:'zh-CN',bidi:'ar-SA'});
+});
+test('malformed effective spacing/language cannot gain typed formatting authority',async()=>{
+ for(const property of ['<w:spacing w:after="-1"/>','<w:spacing w:after="1000001"/>','<w:spacing w:lineRule="other"/>','<w:spacing w:after="160"><w:jc/></w:spacing>']){
+  const p=(await scan(style('Derived','paragraph',`<w:pPr>${property}</w:pPr>`))).paragraphs[0];
+  assert.ok(p.unsupportedParagraphNames.length||p.paragraphFormattingInvalid,property);
+ }
+ for(const property of ['<w:lang w:val="invalid_underscore"/>','<w:lang w:val="en-US" w:evil="x"/>','<w:lang w:val="en-US"><w:b/></w:lang>']){
+  const r=(await scan(style('Derived','paragraph',`<w:rPr>${property}</w:rPr>`))).paragraphs[0].formattedRuns[0];
+  assert.ok(r.unsupportedNames.length||r.invalidSupportedValue,property);
+ }
+});
+
+test('direct table spacing uses the same strict shape gate without admitting table style inheritance',async()=>{
+ for(const spacing of ['<w:spacing w:after="160" w:beforeLines="400"/>','<w:spacing w:after="160"><w:b/></w:spacing>']){
+  const xml=`<w:document xmlns:w="${W}"><w:body><w:tbl><w:tblGrid><w:gridCol w:w="2000"/></w:tblGrid><w:tr><w:tc><w:p><w:pPr>${spacing}</w:pPr><w:r><w:t>x</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>`;
+  const result=(await scanner).extractReviewTransportFormattingRunsV2(xml,{cryptoPort});
+  assert.equal(result.ok,true);assert.ok(result.paragraphs[0].unsupportedParagraphNames.includes('propertyShape'));
  }
 });

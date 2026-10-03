@@ -12393,6 +12393,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'typedBreaks',
                 'headingLevel',
                 'textAlign',
+                'wordParagraphSpacing',
+                'wordParagraphMarkLanguage',
                 'list',
                 'blockKind',
                 'blockquoteDepth',

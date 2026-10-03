@@ -1265,3 +1265,44 @@ test('N3 physical canary refuses mixed formatting mutation lanes without one ato
     typedPendingLanes: { formatting: 'BLOCKED_MIXED_LANE_ATOMICITY_REQUIRED' },
   }), ['formatting is blocked until mixed return lanes share one atomic product transaction']);
 });
+
+test('N3 typed spacing and language actions persist objects and reject forged values without mutation',async()=>{
+ const runtime=await import(pathToFileURL(RUNTIME_PATH).href),envelope=await import(pathToFileURL(ENVELOPE_PATH).href);
+ const base=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Body'}]}]},metaEnabled:true,meta:{synopsis:'Keep',status:'draft'},cards:[{title:'Keep',text:'Card'}]});
+ const op={operationId:'spacing-language',sceneId:'scene-a',blockId:'block-a-1',paragraphOrdinal:0,from:0,to:4,selectedText:'Body',
+  inline:{wordLanguage:{action:'set',value:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}}},
+  paragraph:{wordParagraphSpacing:{action:'set',value:{after:160,line:278,lineRule:'auto'}},wordParagraphMarkLanguage:{action:'set',value:{val:'en-US'}}}};
+ const result=runtime.applyFormattingOperationsToObservableContent(base,[op]);assert.equal(result.ok,true,JSON.stringify(result));
+ const parsed=envelope.parseObservablePayload(result.content);
+ assert.deepEqual(parsed.doc.content[0].attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(parsed.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'en-US'});
+ assert.deepEqual(parsed.doc.content[0].content[0].marks[0].attrs.wordLanguage,op.inline.wordLanguage.value);
+ assert.equal(parsed.meta.synopsis,'Keep');assert.equal(parsed.cards[0].text,'Card');
+ for(const value of ['{"after":160}',{after:-1},{after:1000001},{lineRule:'invented'},{after:160,evil:true}]){
+  const bad=structuredClone(op);bad.paragraph.wordParagraphSpacing.value=value;
+  assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[bad]).ok,false);
+ }
+ const forged=structuredClone(op);forged.inline.wordLanguage.value='ru-RU';
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[forged]).ok,false);
+ assert.equal(envelope.parseObservablePayload(base).doc.content[0].attrs,undefined);
+});
+
+test('N3 authenticated empty paragraph spacing and mark language apply without invented text',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href),runtime=await import(pathToFileURL(RUNTIME_PATH).href),envelope=await import(pathToFileURL(ENVELOPE_PATH).href);
+ const formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{nodeType:'paragraph'},runs:[]};
+ const returned=docx('<w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr></w:p>');
+ const candidates=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(returned,{fullManuscriptExportMap:richExportMap('',formatIr),cryptoPort});
+ assert.equal(candidates.candidates.length,1,JSON.stringify(candidates));const op=candidates.candidates[0];
+ assert.equal(op.from,0);assert.equal(op.to,0);assert.equal(op.selectedText,'');assert.deepEqual(op.inline,{});
+ const base=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[]}]}});
+ const applied=runtime.applyFormattingOperationsToObservableContent(base,[op]);assert.equal(applied.ok,true,JSON.stringify(applied));
+ assert.equal(envelope.parseObservablePayload(applied.content).text,'');
+ assert.deepEqual(applied.doc.content[0].attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(applied.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-RU'});
+ const unbound=structuredClone(op);delete unbound.sourceAuthority;
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[unbound]).ok,false);
+ const nonempty=envelope.composeObservablePayload({text:'Keep'});
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(nonempty,[op]).ok,false);
+ const forged=structuredClone(op);forged.inline={bold:{action:'set',value:true}};
+ assert.equal(runtime.applyFormattingOperationsToObservableContent(base,[forged]).ok,false);
+});

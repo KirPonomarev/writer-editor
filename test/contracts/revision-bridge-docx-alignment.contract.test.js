@@ -57,7 +57,7 @@ test('C1 alignment: all four alignments survive codec, including rich headings, 
   const input=source();const bytes=await exportDoc(input);const {doc,plan}=await preview(bytes);
   assert.deepEqual(profile(doc),profile(input));assert.equal(hasAlignmentLoss(plan),false);
   assert.ok(bytes.includes(Buffer.from('<w:jc w:val="both"/>')));assert.equal(bytes.includes(Buffer.from('w:val="justify"')),false);
-  assert.match(plan.lossReport.items.find(i=>i.category==='formatting').message,/justified paragraph alignment are preserved/);
+  assert.match(plan.lossReport.items.find(i=>i.category==='formatting').message,/supported effective formatting and semantic paragraph roles are imported/);
 });
 
 test('C1 alignment: implicit alignment and explicit left remain distinct in source and returned data', async()=>{
@@ -138,7 +138,7 @@ const withoutAlignment = doc => JSON.parse(JSON.stringify(doc,(key,value)=>key==
 
 test('C1 alignment: actual editor schema retains all paragraph attributes and rich marks',async()=>{
   const input=source();const {state}=await editorState(input);
-  assert.deepEqual(profile(state.doc.toJSON()),profile(input));
+  const [,envelope]=await modules;assert.deepEqual(profile(envelope.canonicalizeDocumentJson(state.doc.toJSON())),profile(envelope.canonicalizeDocumentJson(input)));
 });
 
 test('C1 alignment: structured selected paragraph changes preserve all other content and undo/redo',async()=>{
@@ -224,4 +224,58 @@ test('C1 alignment: native selection events refresh formatting instead of being 
   vm.runInNewContext(bindings[0],{document:{addEventListener:(_name,callback)=>callbacks.push(callback)},syncToolbarFormattingState:(...args)=>calls.push(args)});
   callbacks[0]({type:'selectionchange',target:{}});
   assert.equal(calls.length,1);assert.deepEqual(calls[0],[],'The event must not masquerade as a document formatting projection');
+});
+
+test('typed paragraph spacing survives actual editor split Undo and both DOCX serializers',async()=>{
+ const spacing={before:0,after:160,line:278,lineRule:'auto'},language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ const input=document([{type:'paragraph',attrs:{wordParagraphSpacing:spacing,wordParagraphMarkLanguage:language},content:[{type:'text',text:'Spacing',marks:[{type:'textStyle',attrs:{wordLanguage:language}}]}]}]);
+ let {state}=await editorState(input);const before=state.doc.toJSON();
+ state=state.apply(state.tr.split(3));assert.deepEqual(state.doc.firstChild.attrs.wordParagraphSpacing,spacing);
+ assert.equal(require('@tiptap/pm/history').undo(state,tr=>{state=state.apply(tr);}),true);assert.deepEqual(state.doc.toJSON(),before);
+ const [,envelope]=await modules;const persisted=envelope.parseObservablePayload(envelope.composeObservablePayload({doc:state.doc.toJSON()}));
+ assert.equal(persisted.issue,null);assert.deepEqual(persisted.doc.content[0].attrs.wordParagraphSpacing,spacing);
+ const ordinary=await exportDoc(persisted.doc);
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const formats=source.buildFormatIrParagraphs({sceneId:'s',doc:persisted.doc,text:'Spacing'});
+ const review=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({customProperties:[{name:'YRTK_C01_AUTH',value:'YRTK1.spacing-codec'},{name:'YRTK2_TOKEN',value:'YRTK2.spacing-codec'}],blocks:formats.map(p=>({text:p.text,formatIr:p.formatIr}))});
+ for(const bytes of [ordinary,review]){
+  assert.ok(bytes.includes(Buffer.from('<w:spacing w:before="0" w:after="160" w:line="278" w:lineRule="auto"/>')));
+  assert.ok(bytes.includes(Buffer.from('<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>')));
+ }
+ const extension=(await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs')).DocumentParagraphAlignment;
+ const attr=extension.config.addGlobalAttributes.call(extension)[0].attributes.wordParagraphSpacing;
+ assert.equal(attr.default,null);assert.deepEqual(attr.parseHTML({getAttribute:()=>JSON.stringify(spacing)}),spacing);
+ assert.match(attr.renderHTML({wordParagraphSpacing:spacing}).style,/margin-top: 0pt/);
+ assert.match(attr.renderHTML({wordParagraphSpacing:spacing}).style,/line-height: 1\.158333/);
+ assert.equal(attr.parseHTML({getAttribute:()=>'{"after":-1}'}),null);
+});
+
+test('header and note paragraph spacing and paragraph-mark language serialize without flattening',()=>{
+ const spacing={before:0,after:160,line:278,lineRule:'auto'},language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ const richBody=document([{type:'paragraph',attrs:{wordParagraphSpacing:spacing,wordParagraphMarkLanguage:language},content:[{type:'text',text:'Body',marks:[{type:'textStyle',attrs:{wordLanguage:language}}]}]}]);
+ const registry={schemaVersion:1,evenAndOddHeaders:false,stories:[{id:'head',role:'header',body:richBody}],sections:[{titlePage:false,header:{default:'head'},footer:{}}]};
+ const header=require('../../src/export/docx/docxReviewPacketStories.js').storyPackageParts(registry).entries[0].data;
+ const notes=require('../../src/export/docx/docxReviewPacketNotes.js');
+ const note=notes.notePackageParts({schemaVersion:notes.DOCUMENT_NOTES_SCHEMA,sourceBindings:[{kind:'footnote',nativeId:1,richBody,paragraphs:['Body']}]}).entries[0].data;
+ for(const xml of [header,note]){assert.match(xml,/<w:spacing w:before="0" w:after="160" w:line="278" w:lineRule="auto"\/>/);assert.match(xml,/<w:rPr><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"\/><\/w:rPr>/);}
+});
+
+test('pending paragraph formatting refuses spacing/language without an expressible old-state snapshot',()=>{
+ const {buildPendingParagraphPropertiesXml}=require('../../src/export/docx/docxPendingRevisions.js');
+ const revision={state:'pending',operation:'format',author:'A',format:{kind:'paragraph',before:{type:'paragraph',attrs:{textAlign:'left'}}}};
+ for(const properties of ['<w:spacing w:after="160"/>','<w:rPr><w:lang w:val="ru-FI"/></w:rPr>'])assert.throws(()=>buildPendingParagraphPropertiesXml(`<w:pPr>${properties}</w:pPr>`,revision,{next:1}),/PENDING_FORMAT_PARAGRAPH_SPACING_LANGUAGE_UNSUPPORTED/);
+ assert.match(buildPendingParagraphPropertiesXml('<w:pPr><w:jc w:val="right"/></w:pPr>',revision,{next:1}),/<w:pPrChange[^>]*><w:pPr><w:pStyle w:val="Normal"\/><w:jc w:val="left"\/>/);
+});
+
+test('both export entrypoints reject raw spacing accessors before cloning or reading authored values',async()=>{
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ for(const target of ['spacing','value']){
+  let reads=0;const attrs={};
+  if(target==='spacing')Object.defineProperty(attrs,'wordParagraphSpacing',{enumerable:true,get(){reads++;return{after:160};}});
+  else {attrs.wordParagraphSpacing={};Object.defineProperty(attrs.wordParagraphSpacing,'after',{enumerable:true,get(){reads++;return 160;}});}
+  const doc=document([{type:'paragraph',attrs,content:[{type:'text',text:'Protected'}]}]);
+  assert.throws(()=>source.buildFormatIrParagraphs({sceneId:'s',doc,text:'Protected'}),/WORD_PARAGRAPH_SPACING_INVALID/);
+  assert.equal(reads,0);
+  await assert.rejects(exportDoc(doc),/WORD_PARAGRAPH_SPACING_INVALID/);assert.equal(reads,0);
+ }
 });

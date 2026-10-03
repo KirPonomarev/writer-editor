@@ -1,3 +1,5 @@
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
+import wordLanguage from '../../core/word-language-v1.cjs';
 import wordStories from '../../core/word-stories-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import wordTypedBreaks from '../../core/word-typed-breaks-v1.cjs';
@@ -5058,9 +5060,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       : docxReviewFormattingLegacyFormatIr(paragraph.paragraphText);
     const baselineRuns = Array.isArray(formatIr.runs) ? formatIr.runs : [];
     const baselineParagraphRecord = isPlainObject(formatIr.paragraph) ? formatIr.paragraph : {};
-    const baselineParagraph = Object.hasOwn(baselineParagraphRecord, 'textAlign')
-      ? { textAlign: baselineParagraphRecord.textAlign }
-      : {};
+    const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
     const baselineStructure = baselineParagraphRecord.nodeType === 'heading'
       ? { nodeType: 'heading', headingLevel: Number(baselineParagraphRecord.headingLevel) }
       : { nodeType: 'paragraph' };
@@ -5216,21 +5216,9 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       }
     }
     if (Object.keys(paragraphActions).length > 0) {
-      if (!paragraph.paragraphText) {
-        diagnostics.push({
-          code: 'RTK_FORMATTING_RETURN_EMPTY_PARAGRAPH_FORMATTING_BLOCKED',
-          sceneId: authority.sceneId,
-          blockId: authority.blockId,
-        });
-      } else {
-        intervalOperations.push(docxReviewFormattingBuildOperation({
-          authority,
-          paragraph,
-          from: 0,
-          to: paragraph.paragraphText.length,
-          paragraphActions,
-        }));
-      }
+      intervalOperations.push(docxReviewFormattingBuildOperation({
+        authority, paragraph, from:0, to:paragraph.paragraphText.length, paragraphActions,
+      }));
     }
     if (intervalOperations.length > 0 && paragraph.trackedRevision === true) {
       diagnostics.push({
@@ -9483,7 +9471,28 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
   } else properties[key] = `#${fill.toLowerCase()}`;
 }
 
+function docxReadSpacingTuple(token,namespaces) {
+  const attrs=docxFontAttributes(token,namespaces),value={};
+  for(const [name,raw] of attrs) {
+    const key=name.split('\u0000')[1];
+    if(!name.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!['before','after','line','lineRule'].includes(key))throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+    if(key!=='lineRule'&&!/^\d{1,7}$/u.test(raw))throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+    value[key]=key==='lineRule'?raw:Number(raw);
+  }
+  return paragraphSpacing.normalizeWordParagraphSpacing(value);
+}
+function docxReadLanguageTuple(token,namespaces) {
+  const attrs=docxFontAttributes(token,namespaces),value={};
+  for(const [name,raw] of attrs) {
+    const key=name.split('\u0000')[1];
+    if(!name.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!wordLanguage.KEYS.includes(key))throw Error('WORD_LANGUAGE_INVALID');
+    value[key]=raw;
+  }
+  return wordLanguage.normalizeWordLanguage(value);
+}
+
 function docxInlineReadProperty(properties, tag, token, namespaces) {
+  if(tag==='w:lang'){ if(properties.wordLanguage)throw Error('WORD_LANGUAGE_INVALID');properties.wordLanguage=docxReadLanguageTuple(token,namespaces);return;}
   const mark = DOCX_INLINE_MARKS[tag];
   const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
   const isTypography = ['w:rFonts', 'w:sz', 'w:szCs', 'w:cs', 'w:rtl'].includes(tag);
@@ -9569,6 +9578,7 @@ function docxInlineStyleCatalog(bytes) {
     if (!parsed) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
     const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? `w:${parsed.localName}` : '';
     const parent = stack.at(-1)?.tag;
+    if(['w:lang','w:spacing'].includes(parent))throw Error('WORD_PROPERTY_SHAPE_INVALID');
     if (!stack.length) {
       if (root) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
       root = tag;
@@ -9594,6 +9604,9 @@ function docxInlineStyleCatalog(bytes) {
         catalog.defaultNumbering ??= {};
         docxReadNumberingProperty(catalog.defaultNumbering, tag, token, parsed.namespaceMap);
       }
+    } else if (tag === 'w:spacing' && parent === 'w:pPr') {
+      const target=stack.at(-2)?.tag==='w:style'&&current?.type==='paragraph'?current:stack.at(-2)?.tag==='w:pPrDefault'?catalog:null;
+      if(target){if(target.wordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');target.wordParagraphSpacing=docxReadSpacingTuple(token,parsed.namespaceMap);}
     } else if (tag === 'w:jc' && parent === 'w:pPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current?.type === 'paragraph') {
@@ -9658,8 +9671,12 @@ function docxInlineApplyStyle(properties, id, type, catalog) {
   // basedOn resolves one style first; Word paragraph properties assign, while
   // the resolved character style toggles the paragraph value once. Native Mac
   // eight-case truth table covers inherited true/false and repeated values.
-  const resolved = Object.assign({}, ...chain.reverse().map(style => style.properties));
+  const resolved={};
+  for(const style of chain.reverse())for(const [key,value]of Object.entries(style.properties)){
+    resolved[key]=key==='wordLanguage'?{...resolved[key],...value}:value;
+  }
   for (const [mark, enabled] of Object.entries(resolved)) {
+    if(mark==='wordLanguage'){properties.wordLanguage={...properties.wordLanguage,...enabled};continue;}
     if (type === 'paragraph' || ['underline', 'color', 'highlight', 'shading', 'webHidden'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
     else if (enabled) properties[mark] = !properties[mark];
   }
@@ -9669,7 +9686,9 @@ function docxInlineEffectiveRunProperties(metadata, run, catalog) {
   const properties = { ...catalog.defaults };
   docxInlineApplyStyle(properties, metadata.paragraphStyleId || catalog.defaultParagraph, 'paragraph', catalog);
   docxInlineApplyStyle(properties, run?.styleId || catalog.defaultCharacter || '', 'character', catalog);
+  const effectiveLanguage={...properties.wordLanguage,...run?.properties?.wordLanguage};
   Object.assign(properties, run?.properties || {});
+  if(Object.keys(effectiveLanguage).length)properties.wordLanguage=wordLanguage.normalizeWordLanguage(effectiveLanguage);
   // Neither hidden-display property has an editable representation yet.
   // Reject before publishing a writable projection, including image-only runs.
   const reason = properties.vanish ? 'DOCX_HIDDEN_TEXT_UNSUPPORTED'
@@ -9693,13 +9712,13 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
     ...(typeof color === 'string' && color !== DOCX_UNSUPPORTED_COLOR ? { color } : {}),
     ...(typeof highlight === 'string' && highlight !== DOCX_UNSUPPORTED_COLOR ? { highlight } : {}),
   };
-  const typography = docxInlineEffectiveTypography(properties, metadata, catalog, text);
+  const typography = {...docxInlineEffectiveTypography(properties, metadata, catalog, text),...(properties.wordLanguage?{wordLanguage:properties.wordLanguage}:{})};
   const href = metadata.currentHref;
   const last = metadata.inlineRuns.at(-1);
   if (last && JSON.stringify(last.marks) === JSON.stringify(marks)
     && last.color === colors.color && last.highlight === colors.highlight
     && last.fontFamily === typography.fontFamily && last.fontSize === typography.fontSize
-    && last.href === href) last.text += text;
+    && JSON.stringify(last.wordLanguage)===JSON.stringify(typography.wordLanguage) && last.href === href) last.text += text;
   else {
     if (++budget.count > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
     metadata.inlineRuns.push({ text, marks, ...colors, ...typography, ...(href ? { href } : {}) });
@@ -9725,6 +9744,15 @@ function docxReadParagraphAlignment(properties, token, namespaces) {
 }
 
 function docxResolveParagraphAlignment(metadata, catalog) {
+  const markProperties={...catalog.defaults};docxInlineApplyStyle(markProperties,metadata.paragraphStyleId||catalog.defaultParagraph,'paragraph',catalog);
+  const language={...markProperties.wordLanguage,...metadata.wordParagraphMarkLanguage};
+  if(Object.keys(language).length)metadata.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(language);
+  const spacingLayers=[metadata.wordParagraphSpacing];
+  let spacingId=metadata.paragraphStyleId||catalog.defaultParagraph;const spacingSeen=new Set();
+  while(spacingId){if(spacingSeen.has(spacingId)||spacingSeen.size>=64)throw Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');spacingSeen.add(spacingId);const style=catalog.styles.get(spacingId);if(!style||style.type!=='paragraph')break;spacingLayers.push(style.wordParagraphSpacing);spacingId=style.basedOn;}
+  spacingLayers.push(catalog.wordParagraphSpacing);
+  const spacing=Object.assign({},...spacingLayers.reverse().filter(Boolean));
+  if(Object.keys(spacing).length)metadata.wordParagraphSpacing=paragraphSpacing.normalizeWordParagraphSpacing(spacing);
   let value = metadata.wordAlignment;
   let id = metadata.paragraphStyleId || catalog.defaultParagraph;
   const seen = new Set();
@@ -9802,7 +9830,8 @@ function docxInlineCanonicalContent(paragraphs) {
     if (Object.hasOwn(paragraph, 'textAlign') && (textAlign === null || normalizeParagraphAlignment(textAlign) !== textAlign)) {
       throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
     }
-    needsRichContent ||= level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
+    if(paragraph.wordParagraphSpacing!==undefined)paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing);
+    needsRichContent ||= paragraph.wordParagraphMarkLanguage!==undefined || paragraph.wordParagraphSpacing!==undefined || level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
     const typedBreaks = wordTypedBreaks.validateOffsets(paragraph.text, paragraph.typedBreaks);
     const breakTypes = new Map(typedBreaks.map(item => [item.offset, item.type]));
     if (codeBlock && typedBreaks.length) throw new Error('WORD_TYPED_BREAK_INVALID');
@@ -9813,7 +9842,7 @@ function docxInlineCanonicalContent(paragraphs) {
     const nodes = [];
     let joined = '';
     for (const run of runs) {
-      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight', 'fontFamily', 'fontSize', 'href'].includes(key))
+      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight', 'fontFamily', 'fontSize', 'wordLanguage', 'href'].includes(key))
         || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
         || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
         || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
@@ -9840,12 +9869,13 @@ function docxInlineCanonicalContent(paragraphs) {
         }
         continue;
       }
-      needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize || run.href);
+      needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize || run.wordLanguage || run.href);
       const marks = run.marks.map((type) => ({ type }));
       if (run.href) marks.push({ type: 'link', attrs: run.href.startsWith('#')
         ? {href:run.href,wordBookmarkName:run.href.slice(1)}
         : { href: run.href, target: '_blank', rel: 'noopener noreferrer nofollow' } });
-      const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
+      if(run.wordLanguage)wordLanguage.normalizeWordLanguage(run.wordLanguage);
+      const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize', 'wordLanguage'].filter(key => run[key]).map(key => [key, run[key]]));
       if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
       let breakOffset = joined.length - run.text.length;
@@ -9864,7 +9894,7 @@ function docxInlineCanonicalContent(paragraphs) {
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
-    const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}) };
+    const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}),...(paragraph.wordParagraphSpacing?{wordParagraphSpacing:paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing)}:{}),...(paragraph.wordParagraphMarkLanguage?{wordParagraphMarkLanguage:wordLanguage.normalizeWordLanguage(paragraph.wordParagraphMarkLanguage)}:{}) };
     if (paragraph.media !== undefined) {
       if (codeBlock || !Array.isArray(paragraph.media) || !paragraph.media.length || paragraph.media.length > 4096) throw Error('DOCUMENT_MEDIA_PLACEMENT');
       let previous = -1;
@@ -9974,7 +10004,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
-  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight || run.fontFamily || run.fontSize || run.href)) {
+  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight || run.fontFamily || run.fontSize || run.wordLanguage || run.href)) {
     paragraph.inlineRuns = metadata.inlineRuns;
   }
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
@@ -9982,6 +10012,8 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   }
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
   if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
+  if(metadata.wordParagraphSpacing!==undefined)paragraph.wordParagraphSpacing=metadata.wordParagraphSpacing;
+  if(metadata.wordParagraphMarkLanguage!==undefined)paragraph.wordParagraphMarkLanguage=metadata.wordParagraphMarkLanguage;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
   if (metadata.typedBreaks?.length) paragraph.typedBreaks = metadata.typedBreaks;
   if (metadata.blockKind !== undefined) paragraph.blockKind = metadata.blockKind;
@@ -10285,6 +10317,12 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
     }
 
+    if(insideParagraph&&!closing&&tagName==='w:lang'&&parentTag==='w:rPr'&&elementStack.at(selfClosing?-2:-3)?.semanticTagName==='w:pPr'){
+      if(activeParagraphMetadata.wordParagraphMarkLanguage)throw Error('WORD_LANGUAGE_INVALID');
+      activeParagraphMetadata.wordParagraphMarkLanguage=docxReadLanguageTuple(token,tokenNamespaceMap);
+    }
+    if(!closing&&['w:lang','w:spacing'].includes(parentTag))throw Error('WORD_PROPERTY_SHAPE_INVALID');
+
     if (insideParagraph && tagName === 'w:hyperlink') {
       if (closing) {
         if (!activeParagraphMetadata.elementLink) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
@@ -10434,6 +10472,10 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
       if (Object.hasOwn(activeParagraphMetadata, 'outlineLevel')) throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
       activeParagraphMetadata.outlineLevel = docxReadOutlineLevel(token, tokenNamespaceMap);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:spacing') {
+      if(activeParagraphMetadata.wordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+      activeParagraphMetadata.wordParagraphSpacing=docxReadSpacingTuple(token,tokenNamespaceMap);
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:jc') {
       docxReadParagraphAlignment(activeParagraphMetadata, token, tokenNamespaceMap);

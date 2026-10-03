@@ -1,5 +1,11 @@
 'use strict';
 const { escapeXml } = require('./docxTextXml.js');
+const { normalizeWordParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
+function buildDocxWordParagraphSpacingXml(value) {
+  if (value == null) return '';
+  const spacing = normalizeWordParagraphSpacing(value);
+  return '<w:spacing' + ['before','after','line','lineRule'].filter(key => Object.hasOwn(spacing,key)).map(key => ` w:${key}="${spacing[key]}"`).join('') + '/>';
+}
 function revisionAttributes(revision, counter) {
   return ` w:id="${counter.next++}" w:author="${escapeXml(revision.author)}"`
     + (revision.date ? ` w:date="${escapeXml(revision.date)}"` : '')
@@ -10,6 +16,7 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
+  if (/<w:(?:spacing|lang)\b/u.test(body)) throw Error('PENDING_FORMAT_PARAGRAPH_SPACING_LANGUAGE_UNSUPPORTED');
   const protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl)\b[^>]*\/>/gu, '');
   const old = `<w:pStyle w:val="${before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal'}"/>`
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
@@ -115,4 +122,4 @@ function pendingNoteMarkersForBlock(projection, block) {
   }
   return result;
 }
-module.exports = { pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };
+module.exports = { buildDocxWordParagraphSpacingXml, pendingNoteMarkersForBlock, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml };

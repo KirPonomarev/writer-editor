@@ -1,3 +1,5 @@
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
+import wordLanguage from '../../core/word-language-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 const { normalizeDocxHttpHref } = docxHyperlinks;
 import fs from 'node:fs/promises';
@@ -16,9 +18,9 @@ export const RTK_FORMATTING_RETURN_COMMAND_ID = 'cmd.rtk.review.applyMultiSceneF
 export const RTK_FORMATTING_RETURN_RUNTIME_SCHEMA = 'yalken.rtk.formatting-return-runtime.v1';
 
 const INLINE_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
-const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize']);
+const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguage']);
 const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
-const PARAGRAPH_KEYS = new Set(['textAlign']);
+const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage']);
 const OPERATION_KEYS = new Set([
   'operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
   'inline', 'paragraph', 'targetScope', 'sceneOrdinal', 'paragraphId', 'sourceAuthority', 'expectedOutcome',
@@ -76,6 +78,9 @@ function normalizeAction(value, key) {
   if (action === 'remove') return Object.hasOwn(value, 'value') ? null : { action: 'remove' };
   if (action !== 'set') return null;
   if (INLINE_BOOLEAN_MARKS.has(key)) return value.value === true ? { action: 'set', value: true } : null;
+  if(key==='wordLanguage'||key==='wordParagraphMarkLanguage'||key==='wordParagraphSpacing') {
+    try{return {action:'set',value:key!=='wordParagraphSpacing'?wordLanguage.normalizeWordLanguage(value.value):paragraphSpacing.normalizeWordParagraphSpacing(value.value)};}catch{return null;}
+  }
   const stringValue = rawString(value.value);
   if (!stringValue || /[\u0000-\u001f\u007f]/u.test(stringValue)) return null;
   if (key === 'link') {
@@ -118,6 +123,10 @@ function normalizeOperation(operation, index) {
   const sourceAuthority = normalizedString(operation.sourceAuthority);
   const sourceSceneRevision = normalizedString(operation.sourceSceneRevision);
   const sourceRawSha256 = normalizedString(operation.sourceRawSha256).toLowerCase();
+  const emptyParagraphOnly=sourceAuthority==='authenticated-full-manuscript-export-map-format-ir-v1'
+    &&from===0&&to===0&&operation.selectedText===''
+    &&isPlainObject(operation.paragraph)&&Object.keys(operation.paragraph).length>0
+    &&(!operation.inline||isPlainObject(operation.inline)&&Object.keys(operation.inline).length===0);
   if (
     !operationId
     || !sceneId
@@ -127,8 +136,8 @@ function normalizeOperation(operation, index) {
     || !Number.isSafeInteger(from)
     || !Number.isSafeInteger(to)
     || from < 0
-    || to <= from
-    || !selectedText
+    || (to <= from && !emptyParagraphOnly)
+    || (!selectedText && !emptyParagraphOnly)
   ) {
     return result(false, 'RTK_FORMATTING_OPERATION_AUTHORITY_INVALID', { operationIndex: index, operationId });
   }
@@ -171,6 +180,7 @@ function normalizeOperation(operation, index) {
       paragraph,
       sourceSceneRevision,
       sourceRawSha256,
+      ...(sourceAuthority ? {sourceAuthority} : {}),
     },
   };
 }
@@ -196,7 +206,7 @@ function applyTextStyle(marks, key, action) {
   const existing = marks.find((mark) => mark.type === 'textStyle');
   const attrs = isPlainObject(existing?.attrs) ? cloneJson(existing.attrs) : {};
   if (action.action === 'remove') delete attrs[key];
-  else attrs[key] = rawString(action.value);
+  else attrs[key] = key==='wordLanguage'?wordLanguage.normalizeWordLanguage(action.value):rawString(action.value);
   const next = marks.filter((mark) => mark.type !== 'textStyle');
   if (Object.keys(attrs).length > 0) next.push({ type: 'textStyle', attrs });
   return next;
@@ -232,7 +242,8 @@ function textNode(text, marks) {
 
 function applyInlineRange(paragraph, operation) {
   const paragraphText = deriveVisibleTextFromDocument({ type: 'doc', content: [paragraph] });
-  if (operation.to > paragraphText.length || paragraphText.slice(operation.from, operation.to) !== operation.selectedText) {
+  if ((operation.from===operation.to && (paragraphText!==''||Object.keys(operation.inline).length>0))
+    || operation.to > paragraphText.length || paragraphText.slice(operation.from, operation.to) !== operation.selectedText) {
     return result(false, 'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH', {
       operationId: operation.operationId,
       paragraphText,
@@ -275,6 +286,12 @@ function applyInlineRange(paragraph, operation) {
   const nextParagraph = { ...cloneJson(paragraph), content: nextContent };
   if (Object.keys(operation.paragraph).length > 0) {
     const attrs = isPlainObject(nextParagraph.attrs) ? cloneJson(nextParagraph.attrs) : {};
+    const markLanguage=operation.paragraph.wordParagraphMarkLanguage;
+    if(markLanguage?.action==='remove')delete attrs.wordParagraphMarkLanguage;
+    else if(markLanguage?.action==='set')attrs.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(markLanguage.value);
+    const spacing=operation.paragraph.wordParagraphSpacing;
+    if(spacing?.action==='remove')delete attrs.wordParagraphSpacing;
+    else if(spacing?.action==='set')attrs.wordParagraphSpacing=paragraphSpacing.normalizeWordParagraphSpacing(spacing.value);
     const align = operation.paragraph.textAlign;
     if (align?.action === 'remove') delete attrs.textAlign;
     else if (align?.action === 'set') attrs.textAlign = rawString(align.value);

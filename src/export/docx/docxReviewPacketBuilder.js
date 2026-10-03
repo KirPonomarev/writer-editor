@@ -1,4 +1,4 @@
-const { buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
@@ -403,6 +403,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
+  paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(block.formatIr?.paragraph?.wordParagraphSpacing));
   const markLanguage = buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
   if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
   if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));

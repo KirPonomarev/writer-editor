@@ -8,7 +8,7 @@ AUTHORITY: Original Mac Word plan P3-08; existing effective-values and semantic-
 O: Actual Word style-based changes of supported alignment, outline and inline formatting become correctly bound explicit Apply candidates, persist, restart and reexport through existing writers.
 T: Untrusted bounded Word XML -> validated effective-style projection -> existing round/scene/block authority -> Main capability and revision revalidation -> existing atomic formatting writer -> renderer projection.
 H: Current scanner reads only direct pPr and marks pStyle unsupported. A literal Derived basedOn Base with jc right yields empty paragraphState and unsupported pStyle. Resolve active style defaults and chains before existing action construction; unknown properties must stay unsupported.
-B: Preserve source DOCX, unrelated content, exact text/scene identities, pending review, private notes, unsaved authoring, CAS and recovery. No new Core schema, style-ID persistence, UI controls, dependency or runtime network.
+B: Preserve source DOCX, unrelated content, exact text/scene identities, pending review, private notes, unsaved authoring, CAS and recovery. No style-ID persistence, UI controls, dependency or runtime network. The native-driven spacing amendment below adds a bounded Core feature declaration.
 P: Red independent literal XML; positive/default/basedOn/direct/reset/toggle tests and hostile/cycle/budget tests; actual Main Apply and no-write preview; native SOURCE/PACKAGED altered exchange early; stable candidate mandatory tests and CI; merged-SHA verification.
 I: Exact base above, branch codex/word-effective-style-return-mac-20261003, existing isolated worktree. Bootstrap PASS and clean preflight PASS before writes; T7 identity verified.
 
@@ -39,7 +39,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 ROLLBACK: Revert one PR; original documents and existing snapshots retained.
 
 ## Explicit remaining original-plan gaps
-Paragraph spacing, indentation and custom tab stops; custom/multilevel numbering patterns; other original Mac families and whole-plan qualification remain open. This package cannot claim these from style resolution alone. Named style identity loss is allowed only with existing explicit disclosure.
+Spacing beyond the admitted numeric before/after/line tuple, indentation and custom tab stops; custom/multilevel numbering patterns; other original Mac families and whole-plan qualification remain open. This package cannot claim these from style resolution alone. Named style identity loss is allowed only with existing explicit disclosure.
 
 ## Allowlist
 - `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
@@ -75,3 +75,60 @@ The first Word-profile XML checker was insufficient: it predicted CHARACTER_STYL
 
 ## Implemented checks before native candidate
 Four actual-Main integration cases passed with no skips: inherited paragraph properties, repeated paragraph true, repeated character true, and paragraph true plus resolved character true. Each checks no-write preview, explicit existing menu Apply, real asynchronous renderer sync, exact persisted properties and unchanged sibling, idempotent replay without a second writer, and Review reexport. The independent Word-profile V2 oracle matches original, actual Word-resaved and eight-case diagnostic inputs and detects five deliberate corruptions. Native application round-trip acceptance, full gates and delivery remain pending.
+
+## Native-driven scope amendment at clean checkpoint 1e9098df
+CHECK_01 repeated for the newly admitted paths BEFORE their writes: bootstrap READY and clean 41-path preflight PASS. Same outcome, branch, PR and rollback; initial checkpoint is not accepted delivery.
+Native Word creation of a paragraph style inserted active default spacing after160,line278auto and proofing language ru-FI/eastAsia ru-RU/bidi ar-SA. Six formatting rows were refused, with byte-identical source scene. No equivalence to omitted export defaults is proven. The amendment preserves those properties rather than removing them from the native fixture or ignoring them.
+Core representation: optional paragraph/heading wordParagraphSpacing={before?,after?,line?,lineRule?}. Finite integers0..1000000; before/after are twips; line is240ths for auto or omitted lineRule, twips for exact/atLeast. Preserve absence versus explicit0; unknown spacing attributes remain typed-refused. Core owns a pure validator/inspector only; XML serialization stays in exporters. Existing word-language.v1 owns separate run and paragraph-mark language tuples, merged per attribute. Source semantics reference: Microsoft OpenXML SpacingBetweenLines.Line documentation.
+Existing command/transaction and atomic write remain sole mutation path. Both exporters, import, persisted envelope, rich-body grammar and auxiliary comparators must preserve/compare the new values. Existing paragraph/heading extension renders document properties; no new UI controls, tokens or shell state. Native Word output and exact semantic values are required; pixel-identical page layout remains outside original baseline.
+P: first reproduce actual retained Word artifact positive Apply and independent saved/reexport checks, then complete SOURCE/PACKAGED cycles and stable candidate mandatory gates. Negative tuple/descriptor/unknown-property, partial inheritance, zero, malformed units, stale revision, unsaved authoring, replay and no-write preview remain mandatory.
+B: preserve original input, current failing artifact, complete imported scene and owned profile snapshot. No fixture rewrite to force acceptance. Rollback remains the single complete style-return PR.
+
+Amended exact allowlist:
+- `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
+- `src/io/revisionBridge/index.mjs`
+- `src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs`
+- `src/main.js`
+- `test/contracts/rtk-word-effective-style-return.contract.test.js`
+- `test/contracts/rtk-word-n3-formatting-return.contract.test.js`
+- `test/contracts/rtk-word-v4-e08-effective-formatting.contract.test.js`
+- `test/contracts/rtk-word-header-footer-transaction.contract.test.js`
+- `docs/tasks/2026-10-03--word-effective-style-return-mac.md`
+- `docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
+- `test/contracts/rtk-word-heading-outline.contract.test.js`
+- `test/contracts/revision-bridge-docx-inline-styles.contract.test.js`
+- `test/contracts/rtk-word-review-default-typography.contract.test.js`
+- `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `src/core/word-paragraph-spacing-v1.cjs`
+- `src/core/document-content-envelope-v1.cjs`
+- `src/core/word-rich-body-projection-v1.cjs`
+- `src/renderer/tiptap/documentParagraphAlignment.mjs`
+- `src/renderer/editor.bundle.js`
+- `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
+- `src/export/docx/docxReviewPacketBuilder.js`
+- `src/export/docx/docxMinBuilder.js`
+- `src/export/docx/docxReviewPacketNotes.js`
+- `src/export/docx/docxReviewPacketStories.js`
+- `src/export/docx/docxPendingRevisions.js`
+- `src/utils/docxImportLocalFilePreview.js`
+- `src/io/revisionBridge/reviewTransportStoriesV1.mjs`
+- `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
+- `src/io/revisionBridge/reviewTransportMediaReturnV1.mjs`
+- `src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs`
+- `test/contracts/rtk-word-paragraph-spacing.contract.test.js`
+- `test/contracts/revision-bridge-docx-alignment.contract.test.js`
+- `test/contracts/rtk-word-header-footer-runtime.contract.test.js`
+
+## Current checks and retained limitation
+Core spacing validation and persistence passed73 focused checks; renderer and export20, including raw accessor rejection before clone without invoking getters; actual Main six cases include the native-like spacing and three-slot language defaults. These are bounded automated evidence, not native acceptance or delivery. Exact run logs remain in the external task evidence directory.
+Pending paragraph-format revisions with current spacing or paragraph-mark language are explicitly refused on export because the existing prior-state grammar cannot encode those properties. No current values are copied into historical pPrChange. This tracked-format limitation remains an open original-plan requirement; legacy alignment-only revisions retain their positive route.
+
+Authenticated empty paragraphs now accept paragraph-only formatting operations with exact zero range and no inline actions. The transaction revalidates the signed source identity and requires an actually empty target; forged zero-range edits of nonempty text are refused. Actual Main evidence includes persistence, renderer publication and replay without a second write. This does not widen tracked-revision old-state support.

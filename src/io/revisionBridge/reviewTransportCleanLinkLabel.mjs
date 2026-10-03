@@ -1,3 +1,4 @@
+import wordLanguage from '../../core/word-language-v1.cjs';
 import { createHash } from 'node:crypto';
 import links from '../docxHyperlinks.cjs';
 
@@ -6,7 +7,7 @@ import links from '../docxHyperlinks.cjs';
 const plain = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const stable = value => JSON.stringify(Object.fromEntries(Object.entries(value).sort(([a],[b]) => a.localeCompare(b))));
 const reject = detail => ({ ok:false, code:'RTK_CLEAN_LINK_LABEL_NOT_EXACT', detail, canWriteManuscript:false });
-const keys = new Set(['bold','italic','underline','strike','color','highlight','fontFamily','fontSize','link']);
+const keys = new Set(['bold','italic','underline','strike','color','highlight','fontFamily','fontSize','wordLanguage','link']);
 const sha = value => createHash('sha256').update(value).digest('hex');
 function shape(state) {
   if (!plain(state) || Object.keys(state).some(k => !keys.has(k))) throw Error('inline-shape');
@@ -15,6 +16,7 @@ function shape(state) {
     if (out[k] === false) delete out[k];
     else if (Object.hasOwn(out,k) && out[k] !== true) throw Error('boolean');
   }
+  if(Object.hasOwn(out,'wordLanguage'))out.wordLanguage=wordLanguage.normalizeWordLanguage(out.wordLanguage);
   if (Object.hasOwn(out,'link')) out.link = links.normalizeDocxHttpHref(out.link);
   return out;
 }
@@ -91,11 +93,12 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       if (!plain(format) || !plain(next) || next.trackedRevision || next.table || format.table || format.media?.length
         || next.paragraphFormattingInvalid || next.unsupportedParagraphNames?.length) return reject('paragraph-semantics');
       const p=format.paragraph||{};
-      if (Object.keys(p).some(k=>!['nodeType','textAlign','headingLevel'].includes(k))) return reject('unsupported-paragraph');
+      if (Object.keys(p).some(k=>!['nodeType','textAlign','headingLevel','wordParagraphSpacing','wordParagraphMarkLanguage'].includes(k))) return reject('unsupported-paragraph');
       if (!['paragraph','heading'].includes(p.nodeType)) return reject('paragraph-kind');
       const structure=next.paragraphStructure||{};
       if (Object.keys(structure).some(k=>!['nodeType','headingLevel'].includes(k))) return reject('returned-structure');
       if ((p.textAlign||'left')!==(next.paragraphState?.textAlign||'left')) return reject('paragraph-format-change');
+      for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])if(stable(p[key]||{})!==stable(next.paragraphState?.[key]||{}))return reject('paragraph-format-change');
       const nextType=Object.hasOwn(structure,'nodeType')?structure.nodeType:'paragraph';
       if (nextType!==p.nodeType) return reject('paragraph-kind-change');
       if (p.nodeType==='heading') {

@@ -99,5 +99,13 @@
     "mergeRequired": true,
     "postMergeExactHeadVerificationRequired": true
   },
-  "rollbackPlan": "Revert single PR; preserve original artifacts and existing scene snapshots."
+  "rollbackPlan": "Revert single PR; preserve original artifacts and existing scene snapshots.",
+  "nativeDrivenAmendment": {
+    "baseSha": "1e9098df0c1df82a320f5a92022c77aad60d7c45",
+    "reason": "Preserve actual native Word-added spacing and inherited language rather than ignore unknown properties",
+    "newCoreFeature": "word-paragraph-spacing.v1",
+    "ports": "Existing envelope, import, formatting transaction and DOCX export adapters",
+    "ui": "Existing paragraph/heading representation only; no new controls or surface",
+    "proof": "Retained native failing artifact must positively apply with exact supported properties before broad gates"
+  }
 }

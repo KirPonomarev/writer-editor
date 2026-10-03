@@ -1672,7 +1672,7 @@ for(const kind of ['orderedList','blockquote'])test(`actual Main section Save re
  assert.equal(await f.probe.save(),true);const persisted=envelope.parseObservablePayload(read(f.alpha)).doc;assert.deepEqual(model.read(persisted),model.read(doc));assert.match(envelope.deriveVisibleTextFromDocument(persisted),/First typed/);
 });
 
-for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
+for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-chain','paragraph-character-toggle','word-defaults'])test(`actual Main style cascade return ${styleCase} previews without writes and applies effective formatting through native menu handler`,async t=>{
  const {f,activated,beforeActivation,getObserved}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,mutateReturn:parts=>{
   parts['word/document.xml']=parts['word/document.xml'].replace('Alpha CLEAN_EDIT','Alpha');
   const xml=parts['word/document.xml'];
@@ -1688,6 +1688,14 @@ for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-c
   if(styleCase.includes('character'))styles+='<w:style w:type="character" w:styleId="OwnerCharBase"><w:name w:val="Character Base"/><w:rPr><w:i/></w:rPr></w:style><w:style w:type="character" w:styleId="OwnerCharDerived"><w:name w:val="Character Derived"/><w:basedOn w:val="OwnerCharBase"/><w:rPr><w:i/></w:rPr></w:style>';
   assert.match(parts['word/styles.xml'],/<\/w:styles>/u);
   parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>',styles+'</w:styles>');
+  if(styleCase==='word-defaults'){
+   const language='<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>';
+   assert.match(parts['word/styles.xml'],/<w:rPrDefault><w:rPr>/u);
+   parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr>'+language);
+   const spacing='<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault>';
+   parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:pPrDefault>[\s\S]*?<\/w:pPrDefault>/u,'').replace('</w:docDefaults>',spacing+'</w:docDefaults>');
+  }
+
  }});
  assert.equal(activated.ok,true,JSON.stringify(activated));
  assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
@@ -1704,8 +1712,39 @@ for(const styleCase of ['paragraph-inherit','paragraph-repeat-true','character-c
  assert.ok(alpha);assert.ok(alpha.marks.some(mark=>mark.type==='bold'));
  assert.equal(alpha.marks.some(mark=>mark.type==='italic'),styleCase==='character-chain','native Word chain assignment followed by one character toggle');
  assert.equal(alpha.marks.find(mark=>mark.type==='textStyle')?.attrs.color?.toLowerCase(),'#224466');
+ if(styleCase==='word-defaults'){
+  const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+  for(const paragraph of after.doc.content){assert.deepEqual(paragraph.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,language);for(const node of paragraph.content)if(node.type==='text')assert.deepEqual(node.marks.find(mark=>mark.type==='textStyle')?.attrs.wordLanguage,language);}
+ }
+
  const persisted=f.capture();const replay=await f.probe.formatApply({requestId:'effective-style-replay'});await settleSync();
  assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.status,'applied-and-replayed');assert.equal(replay.reviewSurface.formattingReturnResult.status,'replay');assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
  const exported=await f.probe.sceneSource(),built=await f.probe.reviewBuild(exported);
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+});
+
+test('actual Main empty paragraph style return applies zero-length paragraph actions and replays without writes',async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph'}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});
+ f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const xml=parts['word/document.xml'];
+ parts['word/document.xml']=xml.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr><w:pStyle w:val="EmptyStyle"/></w:pPr>');
+ assert.notEqual(parts['word/document.xml'],xml);
+ parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>','<w:style w:type="paragraph" w:styleId="EmptyStyle"><w:pPr><w:jc w:val="right"/><w:spacing w:before="0" w:after="160" w:line="278" w:lineRule="auto"/></w:pPr><w:rPr><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:style></w:styles>');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const before=f.capture(),sibling=read(f.beta);
+ const activated=await f.probe.reviewActivate({requestId:'empty-style-intake',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),before);
+ const settle=f.probe.observeDeferredEditorSync();const applied=await f.probe.formatApply({requestId:'empty-style-apply'});await settle();
+ assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+ const after=envelope.parseObservablePayload(read(f.alpha));assert.equal(after.text,'');assert.equal(after.doc.content.length,1);assert.equal(after.doc.content[0].attrs.textAlign,'right');
+ assert.deepEqual(after.doc.content[0].attrs.wordParagraphSpacing,{before:0,after:160,line:278,lineRule:'auto'});
+ assert.deepEqual(after.doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+ assert.equal(observed,read(f.alpha));assert.equal(read(f.beta),sibling);
+ const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'empty-style-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
 });

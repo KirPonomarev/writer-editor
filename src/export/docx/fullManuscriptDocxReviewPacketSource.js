@@ -17,6 +17,7 @@ const { buildDocxReviewPacketBuffer, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require
 const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
 const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
+const { normalizeWordParagraphSpacing, inspectDocumentParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
 const { normalizeWordLanguage, inspectDocumentLanguage } = require('../../core/word-language-v1.cjs');
 const { normalizeOpaqueRgb } = require('./docxInlineColors.js');
 
@@ -190,6 +191,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal, registry
 }
 
 function buildFormatIrParagraphs(scene) {
+  if (isPlainObjectValue(scene.doc)) inspectDocumentParagraphSpacing(scene.doc);
   const registry = sceneBookmarkRegistry(scene);
   const sourceDoc = isPlainObjectValue(scene.doc) ? cloneJson(scene.doc) : null;
   if (sourceDoc) { documentMedia(sourceDoc); inspectDocumentLanguage(sourceDoc); require('../../core/word-list-numbering-v1.cjs').normalize(sourceDoc); }
@@ -215,10 +217,10 @@ function buildFormatIrParagraphs(scene) {
     const paragraphOrdinal = result.length;
     const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
     const allowedAttrs = node.type === 'heading'
-      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage'])
+      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage', 'wordParagraphSpacing'])
       : node.type === 'codeBlock'
         ? new Set(['language'])
-        : new Set(['textAlign', 'wordParagraphMarkLanguage']);
+        : new Set(['textAlign', 'wordParagraphMarkLanguage', 'wordParagraphSpacing']);
     const unknownAttrs = Object.keys(attrs).filter((key) => (
       !allowedAttrs.has(key) && attrs[key] !== null && attrs[key] !== undefined
     ));
@@ -230,6 +232,7 @@ function buildFormatIrParagraphs(scene) {
       });
     }
     const paragraphFormat = { nodeType: node.type };
+    if (attrs.wordParagraphSpacing != null) paragraphFormat.wordParagraphSpacing = normalizeWordParagraphSpacing(attrs.wordParagraphSpacing);
     if (attrs.wordParagraphMarkLanguage != null) paragraphFormat.wordParagraphMarkLanguage = normalizeWordLanguage(attrs.wordParagraphMarkLanguage);
     if (node.type === 'heading') {
       const headingLevel = Number(attrs.level);

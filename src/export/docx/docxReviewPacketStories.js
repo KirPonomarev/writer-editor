@@ -1,3 +1,5 @@
+const { buildDocxWordParagraphSpacingXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 'use strict';
 const model = require('../../core/word-stories-v1.cjs');
 const { validateNoteBody } = require('../../core/word-manuscript-notes-v1.cjs');
@@ -96,7 +98,8 @@ function storyPackageParts(projection, {firstNumId=1}={}) {
         return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
       }).join('');
       const align=paragraph.attrs?.textAlign;
-      const pr=(list?`<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${numbers.get(list.numId)}"/></w:numPr>`:'')+(align?`<w:jc w:val="${align==='justify'?'both':align}"/>`:'');
+      const spacing=buildDocxWordParagraphSpacingXml(paragraph.attrs?.wordParagraphSpacing),language=buildDocxWordLanguageXml(paragraph.attrs?.wordParagraphMarkLanguage);
+      const pr=spacing+(language?`<w:rPr>${language}</w:rPr>`:'')+(list?`<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${numbers.get(list.numId)}"/></w:numPr>`:'')+(align?`<w:jc w:val="${align==='justify'?'both':align}"/>`:'');
       return `<w:p>${pr?`<w:pPr>${pr}</w:pPr>`:''}${runs}</w:p>`;
     });
     const tag=story.role==='header'?'hdr':'ftr';

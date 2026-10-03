@@ -164,3 +164,17 @@ test('C1 inline: native Word character ancestry resolves assignments before one 
   assert.deepEqual(await profile(plan),[[['x',row.expected?['italic']:[]]]],JSON.stringify(row));
  }
 });
+
+test('C1 effective spacing and language survive canonical import and ordinary reexport without leaking character language to mark',async()=>{
+ const styles=styleXml('<w:docDefaults><w:rPrDefault><w:rPr><w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:before="120" w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:styleId="P"><w:pPr><w:spacing w:after="240"/></w:pPr><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:style><w:style w:type="character" w:styleId="C"><w:rPr><w:lang w:eastAsia="zh-CN"/></w:rPr></w:style>');
+ const body='<w:p><w:pPr><w:pStyle w:val="P"/><w:spacing w:before="0"/><w:rPr><w:lang w:bidi="he-IL"/></w:rPr></w:pPr>'+r('x','<w:rStyle w:val="C"/><w:lang w:val="fr-FR"/>')+'</w:p>';
+ const {plan}=await planFrom(packageBytes(body,styles));const [,envelope,page,semantic,styleMap]=await modules;
+ const doc=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+ assert.deepEqual(doc.content[0].attrs.wordParagraphSpacing,{before:0,after:240,line:278,lineRule:'auto'});
+ assert.deepEqual(doc.content[0].attrs.wordParagraphMarkLanguage,{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'});
+ assert.deepEqual(doc.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.wordLanguage,{val:'fr-FR',eastAsia:'zh-CN',bidi:'ar-SA'});
+ const bytes=buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule:page,semanticMappingModule:semantic,styleMapModule:styleMap});
+ const again=await planFrom(bytes),returned=envelope.parseObservablePayload(again.plan.candidateCreatePlan.entries[0].content).doc;
+ assert.deepEqual(returned.content[0].attrs,doc.content[0].attrs);
+ assert.deepEqual(returned.content[0].content[0].marks,doc.content[0].content[0].marks);
+});
