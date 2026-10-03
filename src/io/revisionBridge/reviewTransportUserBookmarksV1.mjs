@@ -196,7 +196,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const proof = reviewIr.listNumbering;
       if (!ordinaryTextMode || proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1'
         || !Array.isArray(proof.paragraphs) || proof.paragraphs.length !== allBlocks.length) return reject('list-numbering-proof-required');
-      const forward = new Map(), reverse = new Map();
+      const forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
       const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
       for (let j = 0; j < allBlocks.length; j++) {
         const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
@@ -211,6 +211,16 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         if ((forward.has(identity) && forward.get(identity) !== list.numId)
           || (reverse.has(list.numId) && reverse.get(list.numId) !== identity)) return reject('list-identity-change');
         forward.set(identity, list.numId); reverse.set(list.numId, identity);
+        if (expected.wordNumbering) {
+          const canonical = listNumbering.validateNumbering(expected.wordNumbering);
+          if (!same(canonical.levels, list.numberingLevels)
+            || !same(canonical.startOverrides || [], list.numberingStartOverrides || [])) return reject('list-definition-change');
+          const lineage = `${owners[j]}:${canonical.lineageId || canonical.instanceId}`, actualLineage = list.numberingLineageId;
+          if (typeof actualLineage !== 'string' || !actualLineage
+            || lineageForward.has(lineage) && lineageForward.get(lineage) !== actualLineage
+            || lineageReverse.has(actualLineage) && lineageReverse.get(actualLineage) !== lineage) return reject('list-lineage-change');
+          lineageForward.set(lineage, actualLineage); lineageReverse.set(actualLineage, lineage);
+        } else if (list.wordNumbering) return reject('list-definition-added');
       }
     }
     const basePs=core.paragraphs(baselineDoc);
@@ -389,7 +399,7 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
     if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)
       || !Array.isArray(observed) || proof.paragraphs.length !== rows.length || observed.length !== rows.length
       || typeof resolveBlock !== 'function') return fail('same-byte-proof-required');
-    const groups = new Map(), forward = new Map(), reverse = new Map();
+    const groups = new Map(), forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
     for (let i=0;i<rows.length;i++) {
       const {scene,block} = rows[i], p = observed[i], actual = proof.paragraphs[i];
       const authority = resolveBlock({...p,paragraphIndex:i});
@@ -413,10 +423,17 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
       const canonical = listNumbering.validateNumbering(expected.wordNumbering);
       const levels = listNumbering.validateLevels(returned.numberingLevels);
       if (canonical.level !== returned.level || (returned.type || '1') !== levels[returned.level]?.format) return fail('effective-definition');
-      const groupKey = `${scene.sceneId}:${canonical.instanceId}`;
+      const lineage = `${scene.sceneId}:${canonical.lineageId || canonical.instanceId}`;
+      const returnedLineage = returned.numberingLineageId;
+      if (typeof returnedLineage !== 'string' || !returnedLineage
+        || !same(canonical.startOverrides || [], returned.numberingStartOverrides || [])) return fail('lineage-or-start-override');
+      if (lineageForward.has(lineage) && lineageForward.get(lineage) !== returnedLineage
+        || lineageReverse.has(returnedLineage) && lineageReverse.get(returnedLineage) !== lineage) return fail('list-lineage-bijection');
+      lineageForward.set(lineage, returnedLineage); lineageReverse.set(returnedLineage, lineage);
+      const groupKey = lineage;
       const prior = groups.get(groupKey);
-      if (prior && (!same(prior.expectedLevels,canonical.levels) || !same(prior.levels,levels) || prior.numId!==returned.numId)) return fail('group-definition-consistency');
-      groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels,numId:returned.numId});
+      if (prior && (!same(prior.expectedLevels,canonical.levels) || !same(prior.levels,levels))) return fail('group-definition-consistency');
+      if (!prior) groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels});
     }
     const operations = [];
     for (const group of groups.values()) {

@@ -629,7 +629,7 @@ function collectNumberingDefinitions(blocks) {
     if (!isPlainObjectValue(list)) continue;
     const numId = Number(list.numId);
     const start = Number(list.start);
-    const definition = list.wordNumbering ? { numId, wordNumbering: { ...require('../../core/word-list-numbering-v1.cjs').validateNumbering(list.wordNumbering), level:0 } } : {
+    const definition = list.wordNumbering ? { numId, scope:block.sceneId, wordNumbering: { ...require('../../core/word-list-numbering-v1.cjs').validateNumbering(list.wordNumbering), level:0 } } : {
       numId,
       kind: normalizeString(list.kind),
       type: require('../../core/word-list-format-v1.cjs').normalizeType(list.type),

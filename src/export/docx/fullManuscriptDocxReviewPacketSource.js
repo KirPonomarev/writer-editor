@@ -211,7 +211,9 @@ function buildFormatIrParagraphs(scene) {
   const numberId = attrs => {
     const id = attrs?.wordNumbering?.instanceId || attrs?.wordListId;
     if (!id) return nextListNumId++;
-    if (!linkedIds.has(id)) linkedIds.set(id, nextListNumId++);
+    if (!linkedIds.has(id)) linkedIds.set(id, attrs?.wordNumbering
+      ? 2000000 + crypto.createHash('sha256').update(`${scene.sceneId}\u0000${id}`).digest().readUInt32BE(0) % 2145483647
+      : nextListNumId++);
     return linkedIds.get(id);
   };
   let nextTableId = 0;

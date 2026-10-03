@@ -15,12 +15,12 @@ I: Clean merged base above, verified encrypted mounted writable T7, fresh bootst
 
 ## Model and boundaries
 Optional orderedList attrs.wordNumbering: schemaVersion1, canonical instanceId, zero-based level, complete contiguous1..9 levels with format/start/text/restartAfterLevel. Restart is zero-based ancestor, null means never. Legacy wordListId/wordListStart mutually exclusive. attrs.start and displayed labels derived by Core; no persisted label strings. New required feature word-list-pattern.v1 refuses old readers.
-Decimal starts0..2147483647; alpha1..2147483647; Roman1..3999. Overflow and outside-profile semantics refuse explicitly, never clamp. Templates bounded256UTF16, valid scalar text, placeholders reference defined levels no deeper than current. Native boundary proof required.
+Decimal starts0..2147483647; alpha1..780; Roman1..3999. Overflow and outside-profile semantics refuse explicitly, never clamp. Templates bounded256UTF16, valid scalar text, placeholders reference defined levels no deeper than current. Native boundary proof: decimal0, Roman3999, alpha26..29 and52..54 observed. Word alphabetic markers repeat one letter (z,aa,bb,cc;zz,aaa,bbb), not spreadsheet-style bijective labels. Alpha authoring bound780 follows observed Word dialog range; larger file values remain explicitly outside current positive profile, not claimed impossible in Word.
 Main scene and supported table cells are positive scope. New patterns in notes/stories remain explicit compatibility gaps; existing supported legacy lists must not regress. Unknown number formats, marker-specific semantics not represented by the model, picture bullets, style links and isLgl receive explicit outcomes.
 Word-side template changes must produce one source-bound group operation through existing formatting Apply. Baseline/actual identity bijection, expected levels, scene revision/raw SHA and replay/conflict behavior remain mandatory. Import/export-only proof cannot close this contour.
 
 ## Native counter calibration
-Native Word screenshots of independent handwritten fixtures establish shared counters for distinct num instances referencing the same abstract definition: 3,4,9,10,11,12 with a first-use override; 3,4,5,6,7,8 without it. Distinct abstract identities with equal definitions remain independent: 3,4,9,5,10,6. Evidence and input hashes are in external native-counter-calibration.json. Initial per-instance-only counter hypothesis is disproved. Preserve canonical lineageId separately from instanceId and explicit first-use startOverrides; do not infer identity from definition equality. Child-level reset calibration remains unresolved until corrected fixture is observed. This is external Word behavior evidence, not product acceptance.
+Native Word screenshots of independent handwritten fixtures establish shared counters for distinct num instances referencing the same abstract definition: 3,4,9,10,11,12 with a first-use override; 3,4,5,6,7,8 without it. Distinct abstract identities with equal definitions remain independent: 3,4,9,5,10,6. Evidence and input hashes are in external native-counter-calibration.json. Initial per-instance-only counter hypothesis is disproved. Preserve canonical lineageId separately from instanceId and explicit first-use startOverrides; do not infer identity from definition equality. Native child controls establish previous-parent restart via omission and never restart via0. Redundant explicit1 at ilvl1 drops child markers in tested Word (schema-order and modern-compatibility changes did not fix it). A native Word-authored ilvl2 definition with explicit restart1 correctly renders 3.,3.a.,1,2,3.b.,3,4.,1. Export default ancestor via omission and nondefault ancestor via explicit index. This is external Word behavior evidence, not product acceptance.
 
 ## UI
 One existing list-menu entry opens current dialog primitives: level/format/template/start/restart/continue and Core-computed preview. Preserve tokens/font/shell. Capture exact editor/document/selection; stale/read-only or auxiliary context cannot redirect mutation. One undoable command transaction, existing Save only.
@@ -55,6 +55,7 @@ Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Pa
 - `src/renderer/tiptap/documentListNumbering.mjs`
 - `src/renderer/tiptap/index.js`
 - `src/renderer/commands/projectCommands.mjs`
+- `src/renderer/commands/capabilityPolicy.mjs`
 - `test/contracts/rtk-word-list-pattern.contract.test.js`
 - `test/contracts/rtk-word-list-pattern-return.contract.test.js`
 - `test/contracts/rtk-word-list-pattern-parser.contract.test.js`
@@ -72,6 +73,9 @@ Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Pa
 - `scripts/ops/rtk-interop-data-c1.mjs`
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
+
+## Capability integration amendment
+Intermediate owned WIP checkpoint80bd485494cda45080245e7732edd570141d916d preserves the unverified implementation. New list command required an explicit capabilityPolicy binding; initial dirty preflight refused, then clean38path preflight passed on this checkpoint before that file was edited. Original delivery base remains2c831673. This amendment adds no platform authority and no second delivery contour.
 
 ## Delivery
 COMMIT_REQUIRED: true

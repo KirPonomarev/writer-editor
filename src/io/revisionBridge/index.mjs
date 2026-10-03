@@ -7628,7 +7628,8 @@ export function buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, op
   }
   const numbering = analyzeListNumberingReturn({exportMap:options.fullManuscriptExportMap,reviewIr:projection,
     resolveBlock:docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap)});
-  if (!numbering.ok && projection.formattingParagraphs.some(p=>p.unsupportedParagraphNames?.includes('numPr'))) return {
+  if (!numbering.ok && (options.fullManuscriptExportMap?.scenes?.some(scene=>scene.blocks?.some(block=>block.formatIr?.paragraph?.list?.wordNumbering))
+    || projection.formattingParagraphs.some(p=>p.unsupportedParagraphNames?.includes('numPr')))) return {
     ok:false,status:'blocked',code:numbering.code,reason:numbering.detail,candidates:[],diagnostics:[{code:numbering.code,detail:numbering.detail}],candidateCount:0,
   };
   const paragraphs = numbering.hasPatterns ? projection.formattingParagraphs.map(p=>({...p,
@@ -9125,7 +9126,7 @@ function docxNumberingCatalog(bytes) {
   const stack = [];
   let cursor = 0;
   let root = '';
-  const scalarNumbering = new Set(['abstractNumId','startOverride','start','numFmt','lvlText','lvlRestart','pStyle','numStyleLink','styleLink','isLgl','lvlPicBulletId','nsid','multiLevelType','tmpl','name','suff','lvlJc','numIdMacAtCleanup']);
+  const scalarNumbering = new Set(['abstractNumId','startOverride','start','numFmt','lvlText','lvlRestart','pStyle','numStyleLink','styleLink','isLgl','lvlPicBulletId','nsid','multiLevelType','tmpl','name','suff','lvlJc','numIdMacAtCleanup','rFonts']);
   const guarded = new Set(['numbering', 'abstractNum', 'num', 'abstractNumId', 'lvlOverride', 'startOverride', 'lvl', 'start', 'numFmt', 'lvlText', 'lvlRestart', 'pStyle', 'numStyleLink', 'styleLink', 'isLgl', 'lvlPicBulletId']);
   while (cursor < text.length) {
     const next = docxContentPreviewNextXmlToken(text, cursor);
@@ -9141,7 +9142,7 @@ function docxNumberingCatalog(bytes) {
     const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.ns || new Map());
     if (!parsed) throw new Error('DOCX_LIST_XML_INVALID');
     const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? parsed.localName : '';
-    if (!tag && guarded.has(parsed.localName)) throw new Error('DOCX_LIST_NAMESPACE');
+    if (!tag && (guarded.has(parsed.localName) || scalarNumbering.has(parsed.localName))) throw new Error('DOCX_LIST_NAMESPACE');
     const parent = stack.at(-1);
     if (scalarNumbering.has(parent?.tag)) throw Error('DOCX_LIST_XML_SCALAR');
     const parents = { abstractNum:['numbering'],num:['numbering'],abstractNumId:['num'],lvlOverride:['num'],startOverride:['lvlOverride'],lvl:['abstractNum','lvlOverride'],start:['lvl'],numFmt:['lvl'],lvlText:['lvl'],lvlRestart:['lvl'],pStyle:['lvl'],numStyleLink:['abstractNum'],styleLink:['abstractNum'],isLgl:['lvl'],lvlPicBulletId:['lvl'] };
@@ -9151,7 +9152,7 @@ function docxNumberingCatalog(bytes) {
       if (position >= 0) {
         if (parent.lastChildOrder !== undefined && position <= parent.lastChildOrder) throw Error('DOCX_LIST_LEVEL_PROPERTY_ORDER');
         parent.lastChildOrder = position;
-      }
+      } else parent.data.unsupported = true;
     }
 
 
@@ -9162,6 +9163,8 @@ function docxNumberingCatalog(bytes) {
       root = tag;
     }
     if (parent?.tag === 'numbering' && ['abstractNum', 'num'].includes(tag)) {
+      if (tag === 'abstractNum' && parent.instancesStarted) throw Error('DOCX_LIST_ROOT_PROPERTY_ORDER');
+      if (tag === 'num') parent.instancesStarted = true;
       const map = tag === 'num' ? catalog.instances : catalog.abstracts;
       const id = String(docxListInteger(value(tag === 'num' ? 'numId' : 'abstractNumId')));
       if (map.has(id) || map.size >= 2048) throw new Error('DOCX_LIST_DEFINITION_ID_OR_LIMIT');
@@ -9196,10 +9199,18 @@ function docxNumberingCatalog(bytes) {
     } else if (parent?.tag === 'lvl' && ['suff','lvlJc'].includes(tag)) {
       if (Object.hasOwn(parent.data, tag)) throw Error('DOCX_LIST_DUPLICATE_PROPERTY');
       parent.data[tag] = value();
+    } else if (stack.some(frame => frame.tag === 'pPr') && stack.some(frame => frame.tag === 'lvl')) {
+      const definition = stack.findLast(frame => frame.tag === 'lvl').data;
+      definition.markerLayout ||= [];
+      definition.markerLayout.push({tag:parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? tag : parsed.rawTagName,
+        attributes:Object.fromEntries([...docxFontAttributes(token, parsed.namespaceMap)].sort(([a],[b])=>a.localeCompare(b)))});
     } else if (parent?.tag === 'rPr' && stack.some(frame => frame.tag === 'lvl')) {
       // Marker-specific font/size/theme/decoration is not body text formatting.
       // The bounded model cannot silently discard it.
-      stack.findLast(frame => frame.tag === 'lvl').data.markerUnsupported = true;
+      const attributes = docxFontAttributes(token, parsed.namespaceMap);
+      const onlyDefaultHint = tag === 'rFonts' && attributes.size === 1
+        && attributes.get(`${DOCX_WORDPROCESSINGML_MAIN_NAMESPACE}\u0000hint`) === 'default';
+      if (!onlyDefaultHint) stack.findLast(frame => frame.tag === 'lvl').data.markerUnsupported = true;
     } else if ((parent?.tag === 'abstractNum' && ['numStyleLink', 'styleLink'].includes(tag))
       || (parent?.tag === 'lvl' && ['isLgl', 'lvlPicBulletId'].includes(tag))) {
       parent.data.unsupported = true;
@@ -9296,6 +9307,19 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
     return;
   }
   const type = listFormat.fromWordFormat(definition.numFmt ?? 'decimal');
+  if (customPattern && definition.markerLayout?.length) {
+    const attrs = values => Object.fromEntries(Object.entries(values).map(([key,value])=>[`${DOCX_WORDPROCESSINGML_MAIN_NAMESPACE}\u0000${key}`,value]));
+    const canonicalLayout = [
+      {tag:'tabs',attributes:{}},
+      {tag:'tab',attributes:attrs({val:'num',pos:String((level+1)*720)})},
+      {tag:'ind',attributes:attrs({left:String((level+1)*720),hanging:'360'})},
+    ];
+    if (hashCanonicalValue(definition.markerLayout) !== hashCanonicalValue(canonicalLayout)
+      && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) diagnostics.push(docxContentPreviewDiagnostic('DOCX_LIST_MARKER_LAYOUT_NORMALIZED', {
+        severity:'warning',sourcePart:'word/numbering.xml',paragraphIndex,numId:reference.numId,ilvl:String(level),
+        message:'List marker indentation and tab layout are normalized to Yalken list layout; numbering labels and restart semantics are preserved.',
+      }));
+  }
   metadata.list = { numId: reference.numId, level, kind, ordinal, ...(kind === 'orderedList' && type !== '1' ? { type } : {}),
     ...(kind === 'orderedList' && effectiveLevels ? { numberingLevels: effectiveLevels, numberingLineageId:lineageId, numberingStartOverrides:startOverrides } : {}),
     ...(kind === 'orderedList' && customPattern ? { wordNumbering: listNumbering.validateNumbering({ schemaVersion:1,
@@ -10098,7 +10122,7 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
       || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
-      || !['paragraph', 'heading'].includes(block.type) || list.level > listStack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
+      || !['paragraph', 'heading'].includes(block.type) || (!list.wordNumbering && list.level > listStack.length)) throw new Error('DOCX_LIST_PROJECTION_INVALID');
         if (list.numberingLevels !== undefined) listNumbering.validateNumbering({schemaVersion:1,instanceId:`word-numbering-${list.numId}`,
       level:list.level,levels:list.numberingLevels,lineageId:list.numberingLineageId,...(list.numberingStartOverrides?.length?{startOverrides:list.numberingStartOverrides}:{})});
     const pattern = list.wordNumbering === undefined ? null : listNumbering.validateNumbering(list.wordNumbering);
@@ -10113,9 +10137,12 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
       const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal, ...(list.type ? { type: list.type } : {}), ...(pattern ? { wordNumbering: pattern } : {}) } } : {}), content: [] };
       if (list.level === 0) target.push(node);
       else {
-        const parentItem = listStack[list.level - 1]?.node.content.at(-1);
-        if (!parentItem) throw new Error('DOCX_LIST_ORPHAN_LEVEL');
-        parentItem.content.push(node);
+        const parentList = pattern ? listStack.slice(0, list.level).findLast(Boolean) : listStack[list.level - 1];
+        const parentItem = parentList?.node.content.at(-1);
+        if (!parentItem) {
+          if (!pattern) throw new Error('DOCX_LIST_ORPHAN_LEVEL');
+          target.push(node);
+        } else parentItem.content.push(node);
       }
       active = { numId: list.numId, node };
       if (list.kind === 'orderedList' && !pattern) {
@@ -11862,6 +11889,9 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null, richCandidate = false) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  if (diagnosticCode === 'DOCX_LIST_MARKER_LAYOUT_NORMALIZED') {
+    return { code:'DOCX_IMPORT_PREVIEW_LIST_MARKER_LAYOUT_NORMALIZED', category:'formatting', message:diagnostic.message };
+  }
   if (diagnosticCode === 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS') {
     return { code: 'DOCX_IMPORT_PREVIEW_TABLE_PROPERTY_LOSS', category: 'formatting', message: diagnostic.message };
   }
@@ -12112,6 +12142,7 @@ function docxImportPreviewBuildLossReport(
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
     const knownContentDiagnostic = [
+      'DOCX_LIST_MARKER_LAYOUT_NORMALIZED',
       'DOCX_NAMED_STYLES_NORMALIZED',
       'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS',
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',

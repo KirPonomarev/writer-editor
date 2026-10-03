@@ -25,7 +25,7 @@ function validateLevels(value) {
     const type = own(raw, 'format'), start = own(raw, 'start'), text = own(raw, 'text');
     const restart = own(raw, 'restartAfterLevel');
     if (typeof type !== 'string' || !['1', 'I', 'i', 'A', 'a'].includes(type)) fail();
-    const max = ['I', 'i'].includes(type) ? 3999 : 2147483647;
+    const max = ['I', 'i'].includes(type) ? 3999 : ['A','a'].includes(type) ? 780 : 2147483647;
     if (!Number.isSafeInteger(start) || start < (type === '1' ? 0 : 1) || start > max) fail();
     if (typeof text !== 'string' || !text.length || text.length > 256
       || /[\u0000-\u001f\u007f]/u.test(text) || /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(text)) fail();
@@ -72,7 +72,7 @@ function formatOrdinal(value, type) {
   if (type === '1') return String(value);
   let output = '';
   if (type === 'A' || type === 'a') {
-    for (let n = value; n > 0; n = Math.floor((n - 1) / 26)) output = String.fromCharCode(65 + (n - 1) % 26) + output;
+    output = String.fromCharCode(65 + (value - 1) % 26).repeat(Math.floor((value - 1) / 26) + 1);
   } else {
     let n = value;
     for (const [amount, token] of [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']]) {
@@ -161,7 +161,7 @@ function resolveMarkers(doc) {
     if (raw != null) {
       if (type !== 'orderedList' || !Array.isArray(own(node, 'content')) || !node.content.length) fail();
       const pattern = validateNumbering(raw), { instanceId, level, levels } = pattern;
-      if (attrs.type != null && attrs.type !== levels[level].format) fail();
+      if (own(attrs, 'type') != null && own(attrs, 'type') !== levels[level].format) fail();
       const definition = JSON.stringify({ ...pattern, level: 0 });
       let instance = instances.get(instanceId);
       if (!instance) {
@@ -169,8 +169,10 @@ function resolveMarkers(doc) {
         instance = { definition, applied: new Set(), pattern }; instances.set(instanceId, instance);
       } else if (definition !== instance.definition) fail();
       const lineageId = pattern.lineageId || instanceId;
-      if (!lineages.has(lineageId)) lineages.set(lineageId, []);
-      result.set(node, { path, instanceId, level, start: null, items: [], pattern, instance, counters: lineages.get(lineageId) });
+      if (!lineages.has(lineageId)) lineages.set(lineageId, { counters: [], levels: JSON.stringify(levels) });
+      const lineage = lineages.get(lineageId);
+      if (lineage.levels !== JSON.stringify(levels)) fail();
+      result.set(node, { path, instanceId, level, start: null, items: [], pattern, instance, counters: lineage.counters });
     }
     if (type !== 'listItem') return;
     const list = parents.at(-1), item = result.get(list);
@@ -189,6 +191,7 @@ function resolveMarkers(doc) {
       const referenced = Number(digit) - 1;
       return formatOrdinal(counters[referenced] ?? pattern.levels[referenced].start, pattern.levels[referenced].format);
     });
+    if (label.length > 4096) fail();
     if (item.start === null) item.start = ordinal;
     item.items.push({ ordinal, label });
   });
@@ -222,12 +225,17 @@ function planNumberingEdit(doc, intent) {
       if (JSON.stringify(item.path) === JSON.stringify(path)) break;
       if (item.instanceId === requested) found = validateNumbering(node.attrs.wordNumbering);
     }
+    if (found && !current && own(intent, 'levels') === undefined) levels = found.levels;
     if (!found || current?.level > 0 || JSON.stringify(found.levels) !== JSON.stringify(levels)) fail();
     prototype = { ...found, level: 0 }; instanceId = found.instanceId;
   } else if (action === 'restart') {
     if (current?.level > 0) fail();
     instanceId = `numbering-${fresh}`;
-    prototype = { schemaVersion: 1, instanceId, level: 0, levels };
+    if (current) {
+      if (JSON.stringify(levels.map((value,index)=>({...value,start:current.levels[index]?.start}))) !== JSON.stringify(current.levels)) fail();
+      prototype = {...current, instanceId, lineageId:current.lineageId || current.instanceId, startOverrides:[{level:0,start:levels[0].start}]};
+      levels = current.levels;
+    } else prototype = { schemaVersion: 1, instanceId, level: 0, levels };
   } else if (current) prototype = { ...current, levels };
   if (['paragraph','heading'].includes(target.type)) {
     if (action !== 'configure' || !path.length) fail();
@@ -245,7 +253,7 @@ function planNumberingEdit(doc, intent) {
   };
   if (current && action === 'configure') {
     visitNodes(next, node => {
-      if (node.attrs?.wordNumbering?.instanceId === current.instanceId) {
+      if (node.attrs?.wordNumbering && (node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === (current.lineageId || current.instanceId)) {
         const level = node.attrs.wordNumbering.level;
         if (level >= levels.length) fail();
         node.attrs.wordNumbering.levels = cloneData(levels); node.attrs.type = levels[level].format;
@@ -262,13 +270,24 @@ function normalizeAuthoring(doc, oldDoc) {
     const parent = [...parents].reverse().find(value => value.type === 'orderedList' || value.type === 'bulletList');
     const inherited = parent?.attrs?.wordNumbering;
     let pattern = node.attrs?.wordNumbering;
+    let oldNode = null;
+    if (oldDoc) { try { oldNode = nodeAt(oldDoc, path); } catch {} }
+    const existingAtPath = oldNode?.type === 'orderedList' && oldNode.attrs?.wordNumbering?.instanceId === pattern?.instanceId && oldNode.attrs?.wordNumbering?.level === pattern?.level;
+    let sameAncestry = existingAtPath;
+    if (sameAncestry) {
+      const priorParents = []; let prior = oldDoc;
+      for (const index of path) { priorParents.push(prior); prior = prior.content[index]; }
+      const priorParent = [...priorParents].reverse().find(value => value.type === 'orderedList' || value.type === 'bulletList');
+      sameAncestry = (priorParent?.attrs?.wordNumbering?.instanceId || null) === (inherited?.instanceId || null) && (priorParent?.attrs?.wordNumbering?.level ?? null) === (inherited?.level ?? null);
+    }
     if (!pattern && inherited && oldPatterns) {
       // A pre-existing plain nested list is not a newly authored level.
       const unchanged = [...oldPatterns.keys()].some(old => (old.content || []).some(item => (item.content || []).some(child => child.type === 'orderedList' && !child.attrs?.wordNumbering && JSON.stringify(child) === JSON.stringify(node))));
       if (!unchanged && node.attrs?.wordListId == null) pattern = { ...cloneData(inherited), level: inherited.level + 1 };
-    } else if (pattern && inherited && pattern.instanceId === inherited.instanceId && oldPatterns) {
+    } else if (pattern && inherited && pattern.instanceId === inherited.instanceId && oldPatterns && !sameAncestry) {
       pattern = { ...pattern, level: inherited.level + 1 };
     }
+    if (pattern && !parent && oldPatterns && !sameAncestry) pattern = {...pattern,level:0};
     if (pattern) {
       pattern = validateNumbering(pattern);
       node.attrs = { ...(node.attrs || {}), wordNumbering: pattern, type:pattern.levels[pattern.level].format };
@@ -281,15 +300,17 @@ function applyDefinitionChange(doc, change) {
   const expected = validateLevels(own(change, 'expectedLevels')), levels = validateLevels(own(change, 'levels'));
   const id = own(change, 'instanceId'), markers = resolveMarkers(doc);
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(id)) fail();
+  const representative = [...markers.keys()].find(node => node.attrs.wordNumbering.instanceId === id);
+  const lineageId = representative?.attrs.wordNumbering.lineageId || id;
   let found = false;
-  for (const [node, item] of markers) if (item.instanceId === id) {
+  for (const [node] of markers) if ((node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === lineageId) {
     found = true;
     if (JSON.stringify(validateNumbering(node.attrs.wordNumbering).levels) !== JSON.stringify(expected)) fail();
   }
   if (!found) fail();
   const next = cloneData(doc);
   visitNodes(next, node => {
-    if (node.attrs?.wordNumbering?.instanceId === id) {
+    if (node.attrs?.wordNumbering && (node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === lineageId) {
       node.attrs.wordNumbering.levels = cloneData(levels);
       node.attrs.type = levels[node.attrs.wordNumbering.level]?.format;
     }

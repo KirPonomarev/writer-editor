@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { closeHistory } from '@tiptap/pm/history';
 import numbering from '../../core/word-list-numbering-v1.cjs';
 
 // The Core counter owns semantics. This adapter only applies its projection to
@@ -126,7 +127,7 @@ export function captureNumberingTarget(editor, isCurrent = () => true) {
       applyNode(doc, next, 0);
       if (!current()) throw Error('STALE_EDITOR_TARGET');
       tr.setSelection(selection.map(tr.doc, tr.mapping));
-      editor.view.dispatch(tr); editor.commands.focus();
+      editor.view.dispatch(closeHistory(tr)); editor.commands.focus();
       return { performed: tr.docChanged, action: 'configureNumbering', reason: tr.docChanged ? null : 'NO_OP' };
     },
   });

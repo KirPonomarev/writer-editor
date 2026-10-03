@@ -168,7 +168,7 @@ function buildDocxPatternNumberingParts(definitions) {
     const id = Number(definition.numId);
     if (!Number.isSafeInteger(id) || id < 1 || ids.has(id)) throw Error('DOCX_LIST_PATTERN_ID_INVALID');
     ids.add(id);
-    const lineage = pattern.lineageId || pattern.instanceId;
+    const lineage = `${definition.scope || ''}\u0000${pattern.lineageId || pattern.instanceId}`;
     const existing = lineages.get(lineage);
     if (existing && JSON.stringify(existing.levels) !== JSON.stringify(pattern.levels)) throw Error('DOCX_LIST_PATTERN_LEVEL_OVERRIDE_UNSUPPORTED');
     if (!existing) lineages.set(lineage, { id, levels:pattern.levels });

@@ -35,6 +35,7 @@ function noteSceneSchemaDefaults(value) {
 // The same leaf occurrence order used by DOCX export. Empty and repeated
 // paragraphs retain their position; table/container boundaries add no text.
 function sceneParagraphs(doc) {
+  require('./word-list-numbering-v1.cjs').resolve(doc);
   const paragraphs = []; let lists = 0;
   const append = block => {
     need(['paragraph', 'heading', 'codeBlock'].includes(block?.type), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');

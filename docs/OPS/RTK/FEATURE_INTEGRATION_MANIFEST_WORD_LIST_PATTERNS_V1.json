@@ -41,7 +41,8 @@
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "scripts/ops/rtk-interop-data-c1.mjs",
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "src/renderer/commands/capabilityPolicy.mjs"
   ],
   "scopeOut": [
     "package.json",
@@ -50,7 +51,7 @@
     ".github/workflows"
   ],
   "productAuthority": "Owner-authorized complete Mac Word plan P3d and section8 numbering; Core owns versioned wordNumbering definitions, counters, authoring plan and return validation.",
-  "commandAuthority": "Existing governed editor commands with explicit list settings command; existing Main scene Save and authenticated formatting Apply with exact source revalidation; no new IPC/persistence owner.",
+  "commandAuthority": "Existing governed editor commands with explicit list settings command; existing Main scene Save and authenticated formatting Apply with exact source revalidation; no new IPC/persistence owner. Explicit new command capability binding uses existing editor-mode and platform policy.",
   "designAuthority": "Reuse existing list menu, current dialog primitives and tokens. Single list settings entry, scoped derived list markers, no shell redesign. Lazyweb619b1c31-cef5-439f-96cc-a957d88f2bfa context only; ui-craft and Design OS guide read.",
   "operationKinds": [
     "COMMAND",
@@ -85,7 +86,8 @@
   "identityGuards": [
     "Project/scene/editor identity, exact document/selection and generation at dialog completion",
     "Canonical instance identity and identical complete level definitions per group",
-    "Return artifact, baseline scene revision/raw SHA, group definition before and publication CAS"
+    "Return artifact, baseline scene revision/raw SHA, group definition before and publication CAS",
+    "Preserve distinct abstract lineage and instance identity; explicit per-level start overrides apply on first use. No identity deduplication by equal formatting."
   ],
   "capabilityRevalidation": "Existing Kernel dispatch and Main source checks; list settings checks captured writable manuscript editor and exact current doc before command transaction; auxiliary unsupported contexts refuse.",
   "fallbacks": [

@@ -52,3 +52,38 @@ test('authoring wraps a paragraph and edits the complete group without changing 
  const levels=model.defaultLevels(2);levels[0].text='Article %1';
  const changed=model.planNumberingEdit(next,{listPath:[0],action:'configure',levels});assert.deepEqual(labels(changed),['Article 1']);
 });
+function storedPart(bytes,name){let offset=0;while(bytes.readUInt32LE(offset)===0x04034b50){const size=bytes.readUInt32LE(offset+18),length=bytes.readUInt16LE(offset+26),extra=bytes.readUInt16LE(offset+28),start=offset+30+length+extra;if(bytes.subarray(offset+30,offset+30+length).toString()===name)return bytes.subarray(start,start+size).toString();offset=start+size;}throw Error('missing '+name);}
+test('scene save and both exports preserve live hierarchy, literal templates and reset lineage',async()=>{
+ const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+ const levels=model.defaultLevels(2);levels[0].text='Article %1';levels[0].start=3;levels[1].text='%1.%2)';
+ const root={...pattern(levels),lineageId:'lineage'},child={...root,level:1};
+ const doc=document(list(root,item('one',list(child,item('child')))),paragraph('gap'),list({...root,instanceId:'reset',startOverrides:[{level:0,start:9}]},item('reset')),list(root,item('continue')));
+ const raw=envelope.composeObservablePayload({doc});assert.match(raw,/word-list-pattern.v1/);
+ const reopened=envelope.parseObservablePayload(raw);assert.equal(reopened.issue,null);assert.deepEqual(labels(reopened.doc),['Article 3','3.1)','Article 9','Article 10']);
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule,bridge]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs'),import('../../src/io/revisionBridge/index.mjs')]);
+ const min=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const blocks=source.buildFormatIrParagraphs({sceneId:'scene',doc,text:'one\nchild\ngap\nreset\ncontinue'}).map((p,i)=>({...p,sceneId:'scene',blockId:'b'+i,paragraphId:'p'+i}));
+ const review=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({blocks,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]});
+ for(const bytes of [min,review]) {
+  const xml=storedPart(bytes,'word/numbering.xml');assert.equal((xml.match(/<w:abstractNum /g)||[]).length,1);assert.match(xml,/<w:startOverride w:val="9"/);assert.match(xml,/Article %1/);assert.doesNotMatch(xml,/<w:lvlRestart w:val="1"/);
+  const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+  const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));
+  const imported=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content);assert.equal(imported.issue,null);
+  assert.deepEqual(labels(imported.doc),['Article 3','3.1)','Article 9','Article 10']);
+ }
+});
+test('full manuscript scopes equal canonical instance IDs and abstract lineages to their owning scene',()=>{
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const doc=document(list(pattern(model.defaultLevels(1)),item('same')));
+ const full=source.buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/synthetic',scenes:[0,1].map(i=>({sceneId:`roman/${i}.txt`,scenePath:`/synthetic/roman/${i}.txt`,order:i,doc,text:'same'}))});
+ const ids=full.blocks.filter(b=>b.formatIr?.paragraph?.list).map(b=>b.formatIr.paragraph.list.numId);assert.equal(new Set(ids).size,2);
+ const bytes=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer(full),xml=storedPart(bytes,'word/numbering.xml');
+ assert.equal((xml.match(/<w:abstractNum /g)||[]).length,2);
+});
+
+test('native Word alphabetic sequence repeats letters rather than spreadsheet column digits',()=>{
+ assert.deepEqual([26,27,28,29,52,53,54].map(n=>model.formatOrdinal(n,'a')),['z','aa','bb','cc','zz','aaa','bbb']);
+ assert.equal(model.formatOrdinal(780,'A'),'Z'.repeat(30));
+ assert.throws(()=>model.formatOrdinal(781,'A'),/WORD_LIST_NUMBERING_INVALID/);
+});

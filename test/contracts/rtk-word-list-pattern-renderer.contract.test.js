@@ -142,3 +142,49 @@ test('real command runner enforces numbering capability and editor mode before i
   assert.equal((await run(id,{platformId:'unknown',editorMode:'tiptap'})).ok,false);assert.equal(calls,1);
   assert.equal(enforceCapabilityForCommand(id,{platformId:'node',editorMode:'tiptap'}).ok,true);
 });
+
+test('ordinary typing maps marker decorations without rescanning the numbering model',async()=>{
+  const input=core.planNumberingEdit(doc(p('Alpha')),{listPath:[0],action:'configure',levels:core.defaultLevels()});
+  const {editor}=await harness(input);const original=core.resolveMarkers;let calls=0;
+  try {
+    core.resolveMarkers=(...args)=>{calls++;return original(...args);};
+    editor.commands.setTextSelection(4);editor.commands.insertContent({type:'text',text:'z'});
+    assert.equal(calls,0);assert.match(editor.state.doc.textContent,/z/);
+  }finally{core.resolveMarkers=original;editor.destroy();}
+});
+
+test('unrelated structural edit retains explicit imported skipped numbering levels',async()=>{
+  const input=core.planNumberingEdit(doc(p('Parent')),{listPath:[0],action:'configure',levels:core.defaultLevels()});
+  const pattern=structuredClone(input.content[0].attrs.wordNumbering);pattern.level=2;
+  input.content[0].content[0].content.push({type:'orderedList',attrs:{wordNumbering:pattern,start:1,type:'1'},content:[{type:'listItem',content:[p('Child')]}]});
+  const {editor}=await harness(input);
+  try {
+    editor.commands.insertContentAt(editor.state.doc.content.size,p('Unrelated'));
+    assert.equal(editor.getJSON().content[0].content[0].content[1].attrs.wordNumbering.level,2);
+  }finally{editor.destroy();}
+});
+
+test('consecutive settings commands have separate Undo steps',async()=>{
+  const {editor,ui}=await harness(doc(p('Alpha')));
+  try{
+    const levels=core.defaultLevels();levels[0].text='Article %1';ui.captureNumberingTarget(editor).apply({action:'configure',levels});
+    const first=editor.getJSON();levels[0].text='(%1)';ui.captureNumberingTarget(editor).apply({action:'configure',levels});
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),first);
+    assert.equal(editor.commands.redo(),true);assert.equal(editor.getJSON().content[0].attrs.wordNumbering.levels[0].text,'(%1)');
+  }finally{editor.destroy();}
+});
+
+test('new list continues the explicitly selected custom definition and restart is independently undoable',async()=>{
+  const levels=core.defaultLevels();levels[0].text='Article %1';
+  const initial=core.planNumberingEdit(doc(p('Alpha'),p('gap'),{type:'orderedList',content:[{type:'listItem',content:[p('Beta')]}]}),{listPath:[0],action:'configure',levels});
+  const {editor,ui}=await harness(initial);
+  try{
+    let position;editor.state.doc.descendants((node,pos)=>{if(node.isText&&node.text==='Beta')position=pos;});editor.commands.setTextSelection(position);
+    const target=ui.captureNumberingTarget(editor);assert.equal(target.candidates.length,1);
+    assert.deepEqual(target.preview({action:'continue',instanceId:target.candidates[0].instanceId}),['Article 2']);
+    target.apply({action:'continue',instanceId:target.candidates[0].instanceId});const continued=editor.getJSON();
+    const next=ui.captureNumberingTarget(editor);assert.deepEqual(next.preview({action:'restart',levels:next.levels}),['Article 1']);
+    next.apply({action:'restart',levels:next.levels});assert.notEqual(editor.getJSON().content[0].attrs.wordNumbering.instanceId,editor.getJSON().content[2].attrs.wordNumbering.instanceId);
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),continued);
+  }finally{editor.destroy();}
+});

@@ -399,8 +399,10 @@ export function applyFormattingOperationsToObservableContent(baseContent, operat
   const numberingOperations = normalized.filter(operation => operation.kind === 'list-numbering');
   const numberingGroups = new Set();
   for (const operation of numberingOperations) {
-    if (numberingGroups.has(operation.numbering.instanceId)) return result(false, 'RTK_FORMATTING_NUMBERING_DUPLICATE_OPERATION');
-    numberingGroups.add(operation.numbering.instanceId);
+    const representative = [...listNumbering.resolveMarkers(doc).keys()].find(node => node.attrs.wordNumbering.instanceId === operation.numbering.instanceId);
+    const lineageId = representative?.attrs.wordNumbering.lineageId || operation.numbering.instanceId;
+    if (numberingGroups.has(lineageId)) return result(false, 'RTK_FORMATTING_NUMBERING_DUPLICATE_OPERATION');
+    numberingGroups.add(lineageId);
     try { doc = listNumbering.applyDefinitionChange(doc, operation.numbering); }
     catch (error) { return result(false, 'RTK_FORMATTING_NUMBERING_CONFLICT', { detail: error.message }); }
   }
