@@ -1,6 +1,6 @@
 # WORD_HEADING_OUTLINE_MAC_20261003
 
-STATUS: TARGET_DECLARED_NOT_ACCEPTED
+STATUS: NATIVE_OBSERVED_DELIVERY_PENDING
 DOCUMENT_CLASS: TASK_CONTRACT
 TYPE: CORE
 CANON_VERSION: v3.13a-final
@@ -77,6 +77,8 @@ Current: higher levels are rejected by existing parser/export and return validat
 Target: selected heading preservation only; not all P3-08 or whole Mac-plan acceptance.
 
 Generated tracked editor.bundle.js admitted after clean scope-extension preflight at 0ecf044d; original delivery base remains b2c7c5aa. Regeneration uses the existing build:renderer command. The historical heading fixture's missing revision ID also fails on the immutable base; its valid form and missing-ID negative are now separate tests.
+
+Native SOURCE and PACKAGED observed at 830530c55f15804a52700dc80185693eb6a84335: independent DOCX levels7/8/9 plus body imported; native Cmd-Alt-9 changed body to heading9; Undo/Redo, Save, review export, real Word text change, explicit Apply, process restart and re-export completed. Independent OOXML readback of three artifacts per build preserved outlines6/7/8/8 and exactly one expected text suffix. No native level flattening observed. Word Open dialog retained a disabled button, including a short-path identical copy; Finder successfully opened the same document. Native text insertion uses the documented text format to avoid keyboard-layout loss. Formatting lane still reports manual diagnostics (unsupported Word formatting in SOURCE, baseline not exact in PACKAGED); these remain open and are not accepted by this heading-level repair. Whole P3-08 and whole Mac plan remain unaccepted.
 
 ## IMPLEMENTATION_STEPS
 
