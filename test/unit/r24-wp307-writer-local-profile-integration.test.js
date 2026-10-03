@@ -55,6 +55,7 @@ test('WP307 main revalidates profile before command/query dispatch and package l
     'cmd.project.review.applyStructuralReturn',
     'cmd.project.review.inspectFormattingReturnReplay',
     'cmd.project.review.inspectStructuralReturnReplay',
+    'cmd.project.review.reloadReconciledScene',
   ]) {
     assert.equal(profileSource.includes(commandId), true, commandId);
   }
@@ -71,6 +72,7 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
     'cmd.project.review.applyStructuralReturn',
     'cmd.project.review.inspectFormattingReturnReplay',
     'cmd.project.review.inspectStructuralReturnReplay',
+    'cmd.project.review.reloadReconciledScene',
   ];
   const allowlistStart = source.indexOf('const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([');
   const allowlistEnd = source.indexOf(']);', allowlistStart);

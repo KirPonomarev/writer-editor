@@ -102,6 +102,7 @@ test('WP307 admits only owner-authorized DOCX review roundtrip survivors in pack
     'cmd.project.review.applyStructuralReturn',
     'cmd.project.review.inspectFormattingReturnReplay',
     'cmd.project.review.inspectStructuralReturnReplay',
+    'cmd.project.review.reloadReconciledScene',
   ]);
   for (const commandId of WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) {
     const decision = evaluateWriterLocalCommandAccess({ profile, commandId });

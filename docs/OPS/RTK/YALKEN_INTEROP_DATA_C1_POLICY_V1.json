@@ -772,7 +772,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "51d4faa669277179e5a5b5ecd6f2337687096c548841cfe216512de44fdbc7a5"
+        "sha256": "5ddc9c1d3c8350239704e5f0287b9af34569d2e6105c03c365e92b000e5f60d1"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -988,11 +988,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "b10c373f88d62ae8e19c4f10f4be2b48f2569c0505f641d271921593bb84c5ee"
+        "sha256": "b2c95d46ea0effd725e457fba178bdb1371164ecb97e022f0c25dfb18bf86b37"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "7152ed6ae08b502fc72eaeec9d6d6140eed4ddb0cd4244f43224b252f17e1b77"
+        "sha256": "6603cbbe62b021930021e5e1c6a9467f6725f85695857ee25930d838ba4ae309"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -1936,7 +1936,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "ed42949a711fa15ffa0617165c67e8ac9519edb2b661c4f0ff70b0061950ba99"
+        "sha256": "db74100c8147e70c11aad3874696d54e019d4de2770e9842dde320520b159307"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2224,7 +2224,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "beb938d56b6e395d134a9c35588986c5b2a867b68e35dcfae3e4f0e40eeaced7"
+        "sha256": "c13fbc7c828749ddbfe0239bb2e79c29551c5a998037c39f894cd3ef821fd92f"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",

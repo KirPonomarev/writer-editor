@@ -64,6 +64,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
     observeDeferredEditorSync() { const original=syncReviewExactTextApplyEditorFromMainState,pending=[];
       syncReviewExactTextApplyEditorFromMainState=(...args)=>{const result=original(...args);pending.push(result);return result;};
@@ -1776,4 +1777,26 @@ test('packaged Mac actual bridge admits only read-only formatting and structural
  const denied=await f.handles.get('ui:command-bridge')(ui.event,protocol.createEnvelope('ui:command-bridge','cmd.project.review.clearSession',{requestId:'unrelated-review'}));
  assert.equal(denied.ok,false);assert.equal(denied.reason,'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
  assert.equal(denied.value.storageWritten,false);assert.deepEqual(f.capture(),before);
+});
+
+
+test('packaged Mac actual bridge reloads reconciled Word writes and retains no-loss guards',async t=>{
+ const f=await fixture(t,false,'01_Alpha.txt',true);
+ fs.writeFileSync(f.alpha,'Alpha beta gamma.');
+ const crashed=require('node:child_process').spawnSync(process.execPath,[path.join(ROOT,'test/fixtures/revision-bridge-exact-text-apply-crash-child.mjs'),f.root,'before_receipt','roman/Imported/01_Alpha.txt'],{cwd:ROOT,encoding:'utf8'});
+ assert.equal(crashed.status,73,crashed.stderr);
+ const ui=mountRenderer(f,read(f.alpha));f.probe.state({projectName:'Роман',filePath:f.alpha});
+ const startup=await f.probe.reconcileStartup();assert.deepEqual(startup.userRelevant[0].safeActions,['RELOAD_CANONICAL']);
+ const operationId='op_crash_before_receipt',journal=path.join(f.root,'backups/revision-bridge-apply-journal',operationId+'.json');
+ const before=f.capture(),journalBefore=read(journal),protocol=require('../../src/core/ipc-envelope-v1.cjs');
+ const dispatch=(extra={})=>f.handles.get('ui:command-bridge')(ui.event,protocol.createEnvelope('ui:command-bridge','cmd.project.review.reloadReconciledScene',{requestId:'packaged-reload',operationId,...extra}));
+ const unchanged=()=>{assert.deepEqual(f.capture(),before);assert.equal(read(journal),journalBefore);assert.equal(ui.sends.filter(x=>x.channel==='editor:set-text').length,0);};
+ f.probe.state({dirty:true});const dirty=await dispatch();assert.equal(dirty.ok,false);assert.match(JSON.stringify(dirty),/RECONCILIATION_DIRTY_EDITOR_BLOCKED/);unchanged();
+ f.probe.state({dirty:false,filePath:f.beta});const wrong=await dispatch();assert.equal(wrong.ok,false);assert.match(JSON.stringify(wrong),/RECONCILIATION_CURRENT_SCENE_MISMATCH/);unchanged();
+ f.probe.state({filePath:f.alpha});const forged=await dispatch({scenePath:f.beta});assert.equal(forged.ok,false);assert.match(JSON.stringify(forged),/RECONCILIATION_WRITE_AUTHORITY_DENIED/);unchanged();
+ const missing=await dispatch({operationId:'op_missing'});assert.equal(missing.ok,false);assert.match(JSON.stringify(missing),/ENOENT/);unchanged();
+ const result=await dispatch();assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.value.reloaded,true);
+ assert.deepEqual(f.capture(),before,'canonical reload never rewrites manuscript or metadata');
+ const acknowledged=JSON.parse(read(journal));assert.equal(acknowledged.status,'reconciled');assert.equal(acknowledged.reconciliation.acknowledgedAction,'RELOAD_CANONICAL');
+ const publications=ui.sends.filter(x=>x.channel==='editor:set-text');assert.equal(publications.length,1);assert.equal(publications[0].payload.content,read(f.alpha));
 });
