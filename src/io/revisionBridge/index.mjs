@@ -11952,7 +11952,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
     }
     if (importParagraphs.some(p => p.text.includes('\n'))) {
-      formatting.message = 'Line breaks within paragraphs and separate paragraph boundaries are preserved. Page and column layout losses remain listed separately. ' + formatting.message;
+      formatting.message = 'Line, page and column break kinds and separate paragraph boundaries are preserved. Section layout limitations remain listed separately. ' + formatting.message;
     }
     if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
       formatting.message = 'Table rows, cells, empty cell paragraphs, horizontal/vertical merges, bounded absolute column widths, literal shading and supported borders are preserved. Unsupported table properties are listed separately. ' + formatting.message;

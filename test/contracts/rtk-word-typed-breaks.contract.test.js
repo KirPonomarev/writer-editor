@@ -82,3 +82,14 @@ test('pending adjacent text decision preserves both typed breaks and exports the
   }
  }
 });
+
+test('real local-file preview adapter retains typed breaks through both sanitization passes',async()=>{
+ const mods=await modules;
+ const result=await require('../../src/utils/docxImportLocalFilePreview.js').createDocxImportLocalFilePreview({requestId:'typed-break-import'}, {
+  pickLocalFile:async()=>({path:require('node:path').join(require('node:os').tmpdir(),'typed-break.docx')}),
+  readLocalFileBytes:async()=>ordinary(fixture(),mods),loadRevisionBridgeModule:async()=>mods[0]
+ });
+ assert.equal(result.importPreviewOk,true,JSON.stringify(result));
+ const doc=envelope.parseObservablePayload(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content).doc;
+ assert.deepEqual(breaks.paragraphBreaks(doc.content[0]),breaks.paragraphBreaks(fixture().content[0]));
+});
