@@ -6,6 +6,31 @@ const os = require('node:os');
 const path = require('node:path');
 const { test } = require('node:test');
 
+// The immutable carrier's branch-local base can disappear from a fresh main
+// clone after squash. Fixtures use only its exact, byte-equivalent main parent.
+function securityHistoricalFixture(relative, git = args => execFileSync('git', args, { cwd: path.resolve(__dirname, '../..') })) {
+  const parent = 'e4be0d8d22937745f691dc6121541278668139ed';
+  const root = path.resolve(__dirname, '../..');
+  const bytes = fs.readFileSync(path.join(root, 'docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json'));
+  const hash = value => createHash('sha256').update(value).digest('hex');
+  assert.equal(hash(bytes), 'b828a56cc30440ae70d6084784dec01ea390bfb8ed505806954c83f7daddd952');
+  const expected = JSON.parse(bytes).previousFiles[relative];
+  assert.equal(typeof expected, 'string', 'only declared historical files are fixtures');
+  assert.equal(String(git(['rev-parse', `${parent}^{tree}`])).trim(), '70cf7e632b3b4808563d97fc628a8bde30bee208');
+  const historical = git(['show', `${parent}:${relative}`]);
+  assert.equal(hash(historical), expected, `exact historical bytes: ${relative}`);
+  return historical;
+}
+
+test('security historical fixtures reject unrelated paths, wrong parent tree and altered prior bytes', () => {
+  const actualGit = args => execFileSync('git', args, { cwd: path.resolve(__dirname, '../..') });
+  assert.ok(securityHistoricalFixture('package.json').length > 0);
+  assert.throws(() => securityHistoricalFixture('src/main.js'), /only declared historical/);
+  assert.throws(() => securityHistoricalFixture('package.json', args => args[0] === 'rev-parse' ? '0'.repeat(40) : actualGit(args)));
+  assert.throws(() => securityHistoricalFixture('package.json', args => args[0] === 'show' ? Buffer.from('{}') : actualGit(args)), /exact historical bytes/);
+  assert.throws(() => securityHistoricalFixture('package.json', () => { throw Error('MISSING_PARENT'); }), /MISSING_PARENT/);
+});
+
 test('manuscript cohort reconciliation rejects overlapping, failed, and forged admission', async () => {
   const verifier = await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
   const repoRoot = path.resolve(__dirname, '../..');
@@ -1443,7 +1468,7 @@ test('governance admission is bounded to the delivery and never grants cell cred
     if(args[0]==='log') return delivery;
     if(args[0]==='merge-base') return '';
     if(args[0]==='diff') return (args[3]===ORDER_BASE?changed:drift).join('\n');
-    if(args[0]==='show') return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:') ? require('node:child_process').execFileSync('git',args,{cwd:root}) : fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    if(args[0]==='show') return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:') ? securityHistoricalFixture(args[1].slice(args[1].indexOf(':')+1)) : fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
     throw Error('unexpected git');
   };
   const good=verifyOrderPostEvaluation({candidateSha:candidate,git});
@@ -1549,9 +1574,8 @@ it('shared policy binds two exact fields and preserves the delivered single-fiel
     const actual=shared.sharedHash(fs.readFileSync(path.join(root,binding.path)));
     if(actual===binding.sha256) continue;
     assert.equal(security.admitsWordMacSecurityProtectedBinding(binding,actual,carrier),true,binding.path);
-    const previous=spawnSync('git',['show',`${admission.baseSha}:${binding.path}`],{cwd:root,maxBuffer:16*1024*1024});
-    assert.equal(previous.status,0,previous.stderr?.toString());
-    assert.equal(shared.sharedHash(previous.stdout),binding.sha256,`historical policy remains exact: ${binding.path}`);
+    const previous=securityHistoricalFixture(binding.path);
+    assert.equal(shared.sharedHash(previous),binding.sha256,`historical policy remains exact: ${binding.path}`);
   }
   assert.throws(()=>shared.readSharedPolicy(Buffer.from(JSON.stringify({...p,targetCellIds:[p.sourceCellId]}))),/POLICY_PIN/);
 });
@@ -1635,7 +1659,7 @@ it('shared governance admits only the delivered successor scope and gives no run
     if(args[0]==='log')return delivery;
     if(args[0]==='merge-base')return '';
     if(args[0]==='diff')return (args[3]===shared.SHARED_BASE?changed:drift).join('\n');
-    if(args[0]==='show')return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:')?require('node:child_process').execFileSync('git',args,{cwd:root}):fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    if(args[0]==='show')return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:')?securityHistoricalFixture(args[1].slice(args[1].indexOf(':')+1)):fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
     throw Error('unexpected git');
   };
   const good=shared.verifyTextOrderPostEvaluation({git});
@@ -1787,7 +1811,7 @@ test('security successor admits exact candidate ORDER and TEXT checkers without 
    if(args[0]==='merge-base'){if(args[2]===base&&!ancestry)throw Error('NOT_ANCESTOR');return '';}
    if(args[0]==='diff')return (args[3]===entry.base?entry.paths:drift).join('\n');
    if(args[0]==='show'){
-    if(args[1].startsWith(base+':'))return cp.execFileSync('git',args,{cwd:root});
+    if(args[1].startsWith(base+':'))return securityHistoricalFixture(args[1].slice(base.length+1));
     const relative=args[1].slice(args[1].indexOf(':')+1);
     if(relative===security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH&&missing)throw Error('MISSING_CARRIER');
     const bytes=fs.readFileSync(path.join(root,relative));return relative===tamper?Buffer.concat([bytes,Buffer.from(' ')]):bytes;

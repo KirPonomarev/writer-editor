@@ -979,7 +979,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "a5c4d186111b45d3c0800c45218017cc63a9c1358735580536cb108fb47db103"
+        "sha256": "7d825113dd71d7b485bdaa0602e45ef6f58de9ba80c1cfeb514ff5782bb88c30"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -2239,7 +2239,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "45b02b857dcd5b1d6150b0779ebcfcd0226a5b1291bfe289a89bbf9e6fa80075"
+        "sha256": "9e5ca7c906be89686e1c13e5dbb573b61485d4d0377dee48ddd5794688b993bc"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
@@ -2275,7 +2275,7 @@
       },
       {
         "path": "test/unit/r24-pk0-package-content-trust.test.js",
-        "sha256": "df620477f2ef52fefb42b6e4ba3ee590fe4322b820d040782b03903e1a1bedd1"
+        "sha256": "730a8a22dab6ef86845dd77f696dd2abcb4058ce308df1378ead44fd06c0614c"
       },
       {
         "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",

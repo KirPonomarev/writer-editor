@@ -118,8 +118,40 @@ function exactWordMacSecurityTransition(packageJson, baselinePackageJson) {
   return hashCanonicalValue(packageJson) === WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256
     && hashCanonicalValue(baselinePackageJson) === WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.previousPackageCanonicalSha256;
 }
+// PR2071 was squash-merged: the branch-local admission base is not an
+// ancestor of main. Only this exact reviewed tree and single-parent delivery
+// may use the byte-identical historical inputs from its preserved main parent.
+const WORD_MAC_SECURITY_SQUASH = Object.freeze({
+  commit: 'be11163f98ad992d9f522c4f3e40e2d1361e016d',
+  tree: '76d16692cbfe3b586acf671017cdf0815dd36146',
+  parent: 'e4be0d8d22937745f691dc6121541278668139ed',
+  parentTree: '70cf7e632b3b4808563d97fc628a8bde30bee208',
+});
+function wordMacSecurityHistoricalRevision(resolved, git) {
+  try {
+    git(['merge-base', '--is-ancestor', WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha, resolved]);
+    return WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha;
+  } catch {
+    const squash = WORD_MAC_SECURITY_SQUASH;
+    git(['merge-base', '--is-ancestor', squash.commit, resolved]);
+    if (String(git(['rev-parse', `${squash.commit}^{tree}`])).trim() !== squash.tree
+      || String(git(['show', '-s', '--format=%P', squash.commit])).trim() !== squash.parent
+      || String(git(['rev-parse', `${squash.parent}^{tree}`])).trim() !== squash.parentTree) {
+      throw new Error('WORD_MAC_SECURITY_SQUASH_PROVENANCE_INVALID');
+    }
+    return squash.parent;
+  }
+}
 export function readWordMacDependencySecurityAdmission(root) {
   try {
+    const git = args => {
+      const call = spawnSync('git', args, { cwd: root });
+      if (call.status !== 0) throw new Error('WORD_MAC_SECURITY_GIT_PROVENANCE_INVALID');
+      return call.stdout;
+    };
+    const resolved = String(git(['rev-parse', 'HEAD'])).trim();
+    if (!/^[a-f0-9]{40}$/u.test(resolved)) return null;
+    const historicalRevision = wordMacSecurityHistoricalRevision(resolved, git);
     const bytes = fs.readFileSync(path.join(root, WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
     const digest = value => crypto.createHash('sha256').update(value).digest('hex');
     if (digest(bytes) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.carrierSha256) return null;
@@ -129,8 +161,7 @@ export function readWordMacDependencySecurityAdmission(root) {
       if (digest(fs.readFileSync(path.join(root, relative))) !== expected) return null;
     }
     for (const [relative, expected] of Object.entries(carrier.previousFiles)) {
-      const prior = spawnSync('git', ['show', `${carrier.baseSha}:${relative}`], { cwd: root });
-      if (prior.status !== 0 || digest(prior.stdout) !== expected) return null;
+      if (digest(git(['show', `${historicalRevision}:${relative}`])) !== expected) return null;
     }
     const pkg = readJson(path.join(root, 'package.json'));
     if (hashCanonicalValue(pkg) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256) return null;
@@ -142,7 +173,7 @@ export function readWordMacDependencySecurityCandidate({ candidateSha, git }) {
   try {
     const resolved = String(git(['rev-parse', candidateSha])).trim();
     if (!/^[a-f0-9]{40}$/u.test(resolved)) return null;
-    git(['merge-base', '--is-ancestor', WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha, resolved]);
+    const historicalRevision = wordMacSecurityHistoricalRevision(resolved, git);
     const digest = value => crypto.createHash('sha256').update(value).digest('hex');
     const bytes = git(['show', `${resolved}:${WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`]);
     if (digest(bytes) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.carrierSha256) return null;
@@ -152,7 +183,7 @@ export function readWordMacDependencySecurityCandidate({ candidateSha, git }) {
       if (digest(git(['show', `${resolved}:${relative}`])) !== expected) return null;
     }
     for (const [relative, expected] of Object.entries(carrier.previousFiles)) {
-      if (digest(git(['show', `${carrier.baseSha}:${relative}`])) !== expected) return null;
+      if (digest(git(['show', `${historicalRevision}:${relative}`])) !== expected) return null;
     }
     return carrier;
   } catch { return null; }
