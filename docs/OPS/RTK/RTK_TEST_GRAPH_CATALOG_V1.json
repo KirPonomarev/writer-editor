@@ -17,8 +17,6 @@
     "R2.4 EXH0: extraMaintainedContractBasenames declares non-prefix contracts carrying live runtime claims (committed status artifacts or canonical registry expectations); membership is fail-closed both directions through the runner drift gate."
   ],
   "contractBasenames": [
-    "revision-bridge-docx-alignment.contract.test.js",
-    "revision-bridge-docx-inline-styles.contract.test.js",
     "rtk-admit01-accountable-lanes.contract.test.js",
     "rtk-c4-canonical-comment-product-query.contract.test.js",
     "rtk-canon01-ordered-projections.contract.test.js",

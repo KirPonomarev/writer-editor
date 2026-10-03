@@ -1596,7 +1596,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "469bf17fe66c30d6f2b96b72517ebf74cfe2dd3789bf95916f77bb93f2ce9c76"
+        "sha256": "e5b123e618640f124871d97e7bf2ac8c1022bfca99b3b92ff0e8e4e8ce900837"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2224,7 +2224,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "1a9d04d3444cac87e7d7e89b46cb4b32d5686454a46e22ff820d1a269ce7eb25"
+        "sha256": "3cd35f7472b8ff0e91bb85ebd8a16e22ee3ce9ca332c71e28fbaaa857abf353f"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
