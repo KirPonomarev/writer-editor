@@ -25619,8 +25619,9 @@ async function capturePrivateDocumentStoriesBatch(input, store) {
   const parsed = envelope.parseObservablePayload(snapshot.content), baseline = envelope.parseObservablePayload(open.raw);
   const nonText = await loadRtkNonTextReturnModule();
   if (snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending || parsed.issue || baseline.issue
-    || !userBookmarkEnvelopeMetadataEqual(parsed, baseline)
-    || !nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(parsed.doc), userBookmarkModel.materializeInternalLinkSchemaDefaults(baseline.doc))
+    || !(baseline.doc ? userBookmarkEnvelopeMetadataEqual(parsed, baseline) : mediaReturnEnvelopeMetadataEqual(parsed, baseline, envelope))
+    || !(baseline.doc ? nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text)), userBookmarkModel.materializeInternalLinkSchemaDefaults(baseline.doc))
+      : wordMediaReturnModel.mediaSourceEqual(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), envelope.buildParagraphDocumentFromText(baseline.text)))
     || !Number.isSafeInteger(snapshot.generation) || lastSignaledEditGeneration > snapshot.generation
     || await fs.readFile(open.path, 'utf8') !== open.raw) throw Error('WORD_STORIES_BATCH_EDITOR_STALE');
   const owner = activeStage10ApplicationBootstrap, subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId;
@@ -34778,7 +34779,10 @@ const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.media.insertLocal',
   ...PRODUCT_COMMAND_ID_LIST,
-  ...['create','remove','linkPrevious','options'].map(action => 'cmd.project.documentStories.' + action),
+  'cmd.project.documentStories.create',
+  'cmd.project.documentStories.remove',
+  'cmd.project.documentStories.linkPrevious',
+  'cmd.project.documentStories.options',
   'cmd.project.bookmarks.managePrompt',
   'cmd.project.bookmarks.create',
   'cmd.project.bookmarks.copy',

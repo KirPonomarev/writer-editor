@@ -119,3 +119,51 @@ test('shared empty exported section creates first header in two scenes through o
   assert.equal((await txn.commitProjectTransaction(f.request)).success,true);
   for(const change of f.input.changes)assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.afterContent);
 });
+
+async function mixedPlainGuardsFixture(t) {
+  const f=await fixture(t);
+  const guards=[{sceneId:'roman/plain.txt',raw:'Untouched plain sibling\nSecond paragraph'},{sceneId:'roman/empty.txt',raw:''}];
+  for(const guard of guards){fs.writeFileSync(path.join(f.root,guard.sceneId),guard.raw);f.input.changes.push({sceneId:guard.sceneId,beforeContent:guard.raw,afterContent:guard.raw,commitText:null});}
+  f.request.treeCohort=f.model.planProjectStoryBodyCohort(f.input);
+  return {...f,guards};
+}
+test('two header changes retain exact plain and empty sibling bytes as cohort CAS guards',async t=>{
+  const f=await mixedPlainGuardsFixture(t);assert.equal(f.request.treeCohort.affectedScenes.length,2);
+  assert.equal((await txn.commitProjectTransaction(f.request)).success,true);
+  for(const change of f.input.changes)assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.afterContent);
+  for(const guard of f.guards)assert.equal(fs.readFileSync(path.join(f.root,guard.sceneId),'utf8'),guard.raw);
+});
+for(const target of ['plain.txt','empty.txt'])test(`changed ${target} guard blocks all header writes`,async t=>{
+  const f=await mixedPlainGuardsFixture(t);fs.writeFileSync(path.join(f.root,'roman',target),'External edit');
+  await assert.rejects(txn.commitProjectTransaction(f.request),/UNKNOWN_BYTES|CAS/);
+  for(const change of f.input.changes.slice(0,2))assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.beforeContent);
+  assert.equal(fs.existsSync(f.request.manifestPath+'.wp201-transaction.json'),false);
+});
+test('mixed rich/plain/empty cohort restores every original after interrupted publication',async t=>{
+  const f=await mixedPlainGuardsFixture(t);
+  await assert.rejects(txn.commitProjectTransaction({...f.request,afterTreeFilesPublish:()=>{throw Error('INJECT_MIXED_FILES');}}),/INJECT_MIXED_FILES/);
+  await txn.recoverProjectTransaction(f.request);
+  for(const change of f.input.changes)assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.beforeContent);
+});
+test('actual Main batch capture admits unchanged open plain and empty scenes without weakening raw CAS',async t=>{
+  const f=await mixedPlainGuardsFixture(t),vm=require('node:vm');
+  const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+  const code=main.slice(main.indexOf('function mediaReturnEnvelopeMetadataEqual('),main.indexOf('async function buildPrivateDocumentStoriesBatchPreview('));
+  for(const open of f.guards){
+    const current=path.join(f.root,open.sceneId),candidate={changeId:'test',batchScenes:[{}],sourceScenes:f.input.changes.map(change=>({sceneId:change.sceneId,path:path.join(f.root,change.sceneId),raw:change.beforeContent}))};
+    const store={storyReturnCandidate:candidate};
+    const c=vm.createContext({activeRtkCleanLinkLabelApplyStore:store,activePendingRecording:null,currentFilePath:current,
+      activeStage10ApplicationBootstrap:{},commentAuthoringSessionId:'session',lastSignaledEditGeneration:0,
+      REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:'cmd.project.review.applyExactTextChangesBatch',
+      revalidateCleanLinkLabelApplyInput:async()=>({ok:true}),userBookmarkCapability:()=>{},cleanLinkLabelStoreMatches:()=>true,
+      requestEditorSnapshot:async()=>{const doc=envelope.buildParagraphDocumentFromText(open.raw);doc.attrs={wordUserBookmarks:null,wordPendingRevisions:null};for(const p of doc.content)p.attrs={textAlign:null};return {content:envelope.composeObservablePayload({doc,metaEnabled:true,meta:envelope.createDefaultDocumentMeta()}),generation:1};},loadDocumentContentEnvelopeModule:async()=>envelope,
+      loadRtkNonTextReturnModule:async()=>({commentSceneSnapshotsEqual:(a,b)=>JSON.stringify(a)===JSON.stringify(b)}),
+      userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),wordMediaReturnModel:require('../../src/core/word-media-return-v1.cjs'),userBookmarkEnvelopeMetadataEqual:(a,b)=>JSON.stringify(a.meta)===JSON.stringify(b.meta)&&a.hasMetaBlock===b.hasMetaBlock,
+      currentLifecycleSubjectId:()=>'life',fs:fs.promises});
+    new vm.Script(code).runInContext(c);
+    assert.equal((await c.capturePrivateDocumentStoriesBatch({reviewItems:[{changeId:'test'}]},store)).open.raw,open.raw);
+    fs.writeFileSync(current,'External change');
+    await assert.rejects(c.capturePrivateDocumentStoriesBatch({reviewItems:[{changeId:'test'}]},store),/EDITOR_STALE/);
+    fs.writeFileSync(current,open.raw);
+  }
+});

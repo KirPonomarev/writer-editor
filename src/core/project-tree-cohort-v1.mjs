@@ -543,22 +543,23 @@ export function planProjectStoryBodyCohort(input) {
     need(typeof change.beforeContent === 'string' && typeof change.afterContent === 'string'
       && (change.commitText === null || typeof change.commitText === 'string'), 'E_STORY_COHORT_CONTENT');
     const before = parsedScene(change.beforeContent), after = parsedScene(change.afterContent);
-    need(after.doc && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
+    need((after.doc || change.beforeContent === change.afterContent) && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
     const beforeDoc=before.doc || envelope.buildParagraphDocumentFromText(before.text);
-    if(change.storyMutationReplay)need(same(replayDocumentStoryMutationSteps(beforeDoc,change.storyMutationReplay),after.doc),'E_STORY_COHORT_INTENT');
-    else storyModel.validateSave(beforeDoc, after.doc);
-    for (const asset of mediaData.documentMedia({type:'doc',content:storyModel.read(after.doc)?.stories.flatMap(story=>story.body.content) || []}).assets) {
+    const afterDoc=after.doc || envelope.buildParagraphDocumentFromText(after.text);
+    if(change.storyMutationReplay)need(same(replayDocumentStoryMutationSteps(beforeDoc,change.storyMutationReplay),afterDoc),'E_STORY_COHORT_INTENT');
+    else storyModel.validateSave(beforeDoc, afterDoc);
+    for (const asset of mediaData.documentMedia({type:'doc',content:storyModel.read(afterDoc)?.stories.flatMap(story=>story.body.content) || []}).assets) {
       const existing=storyAssets.get(asset.attrs.assetPath);
       need(!existing || existing===asset.attrs.dataBase64,'E_STORY_COHORT_ASSET_CONFLICT');
       storyAssets.set(asset.attrs.assetPath,asset.attrs.dataBase64);
     }
-    const restored = clone(after.doc);
+    const restored = clone(afterDoc);
     if(beforeDoc.attrs?.wordStories !== undefined) {restored.attrs={...restored.attrs,wordStories:clone(beforeDoc.attrs.wordStories)};}
     else if(restored.attrs)delete restored.attrs.wordStories;
     if(!change.storyMutationReplay)need(same(restored,beforeDoc), 'E_STORY_COHORT_BODY_ONLY');
     entries.push({relativePath,role:'scene',beforeBase64:b64(change.beforeContent),afterBase64:b64(change.afterContent)},
       {relativePath:relativePath+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(change.commitText),afterBase64:b64(change.commitText)});
-    if(!same(beforeDoc,after.doc))affectedScenes.push({from:relativePath,to:relativePath,copy:false});
+    if(!same(beforeDoc,afterDoc))affectedScenes.push({from:relativePath,to:relativePath,copy:false});
   }
   for (const [role,relativePath,value] of [['notes',NOTE_PATH,input.notesText],['comments',COMMENT_PATH,input.commentsText]]) {
     need(value === null || typeof value === 'string', 'E_STORY_COHORT_ANNOTATIONS');
