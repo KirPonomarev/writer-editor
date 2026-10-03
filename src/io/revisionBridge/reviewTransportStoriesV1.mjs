@@ -169,9 +169,12 @@ function analyzeTopologyReturn({expected,returned,beforeDocs,exportTypography,id
     const localBaseline=registry || {evenAndOddHeaders:false,sections:Array.from({length:source.sectionCount},()=>({titlePage:false,header:{},footer:{}}))};
     let even=localBaseline.evenAndOddHeaders;
     if(actual.evenAndOddHeaders!==baseline.evenAndOddHeaders)even=actual.evenAndOddHeaders;
-    else if(!even)for(let local=0;local<source.sectionCount;local++)for(const role of storiesModel.ROLES) {
+    else if(!even && actual.evenAndOddHeaders)for(let local=0;local<source.sectionCount;local++)for(const role of storiesModel.ROLES) {
       const idx=source.sectionStart+local;
-      if(!equivalentBody(bodyAt(baseline,oldSlots[idx][role].even),bodyAt(actual,nextSlots[idx][role].even),exportTypography))even=true;
+      // A local single-variant scene exports its default on both odd and even
+      // pages. Keep that mode only while the returned effective bodies agree.
+      // Comparing only old/new even bodies misses a new odd-only header.
+      if(!equivalentBody(bodyAt(actual,nextSlots[idx][role].default),bodyAt(actual,nextSlots[idx][role].even),exportTypography))even=true;
     }
     for(let local=0;local<source.sectionCount;local++) {
       const global=source.sectionStart+local, target=nextSlots[global];if(!target)reject('WORD_STORIES_RETURN_SOURCE_BINDING');

@@ -320,3 +320,32 @@ test('Main empty-story fullbook capsule uses signed plain-scene baseline and rej
   const missing=copy(authority);delete missing.baselineFinalTextBySceneId;
   assert.equal((await c.prepareCleanDocumentStoriesCapsule(missing,{},context)).code,'WORD_STORIES_RETURN_BASELINE');
 });
+
+test('mixed global even mode preserves newly divergent plain header/footer variants without changing peers',async()=>{
+ const {analyzeDocumentStoriesReturn,revalidateDocumentStoryCandidate}=await moduleReady;
+ const peer=scene('Peer'),plain={type:'doc',content:[...body('Plain1').content,...body('Plain2').content],attrs:{wordSections:{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:'nextPage'}}],final:{type:'nextPage'}}}};peer.attrs.wordStories.evenAndOddHeaders=true;
+ for(const role of ['header','footer'])for(const variant of ['default','even']){
+  const expected=buildDocumentStoriesExport([{sceneId:'peer',doc:peer},{sceneId:'plain',doc:plain}]),returned=copy(expected.registry);
+  returned.stories.push({id:'new-word-story',role,body:body('New '+variant)});returned.sections[1][role][variant]='new-word-story';
+  const result=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:{peer,plain},allowTopology:true,idSeed:'private'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result.candidates.map(c=>c.sceneId),['plain']);
+  const candidate=result.candidates[0];assert.equal(model.read(candidate.plan.doc).evenAndOddHeaders,true);
+  assert.deepEqual(candidate.plan.doc.content,plain.content);assert.deepEqual(revalidateDocumentStoryCandidate(candidate).doc,candidate.plan.doc);
+  const reexport=buildDocumentStoriesExport([{sceneId:'peer',doc:peer},{sceneId:'plain',doc:candidate.plan.doc}]);
+  const meanings=(registry,index)=>{const slot=model.resolved(registry)[index];return Object.fromEntries(model.ROLES.map(r=>[r,Object.fromEntries(['default','even'].map(v=>[v,envelope.deriveVisibleTextFromDocument(registry.stories.find(s=>s.id===slot[r][v])?.body||body(''))]))]));};
+  for(const index of [1,2])assert.deepEqual(meanings(reexport.registry,index),meanings(returned,index));
+  assert.deepEqual(meanings(reexport.registry,0),meanings(expected.registry,0));
+ }
+});
+
+test('global even mode keeps equivalent returned odd/even stories local-default and retains unchanged scenes',async()=>{
+ const {analyzeDocumentStoriesReturn}=await moduleReady;
+ const peer=scene('Peer'),plain={...body('Plain'),attrs:{wordSections:{schemaVersion:1,boundaries:[],final:{type:'nextPage'}}}};peer.attrs.wordStories.evenAndOddHeaders=true;
+ const expected=buildDocumentStoriesExport([{sceneId:'peer',doc:peer},{sceneId:'plain',doc:plain}]);
+ assert.equal(analyzeDocumentStoriesReturn({expected,returned:copy(expected.registry),beforeDocs:{peer,plain},allowTopology:true,idSeed:'private'}).changed,false);
+ const returned=copy(expected.registry);returned.stories.push({id:'same-odd-even',role:'header',body:body('Both pages')});
+ returned.sections[1].header.default='same-odd-even';returned.sections[1].header.even='same-odd-even';
+ const result=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:{peer,plain},allowTopology:true,idSeed:'private'});
+ assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result.candidates.map(c=>c.sceneId),['plain']);
+ assert.equal(model.read(result.candidates[0].plan.doc).evenAndOddHeaders,false);
+});

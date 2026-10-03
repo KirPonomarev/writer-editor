@@ -224,3 +224,52 @@ test('single-scene Main writer replays first-header intent from exact plain para
   await assert.rejects(c.validate(),/WORD_STORIES_INTENT_MISMATCH/);
  }
 });
+
+test('actual single-scene story preview and Apply admit only inert plain editor defaults',async t=>{
+ const vm=require('node:vm'),{pathToFileURL}=require('node:url');
+ const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+ const extract=start=>main.slice(main.indexOf(start),main.indexOf('\n}\n',main.indexOf(start))+3);
+ const code=extract('function userBookmarkEnvelopeMetadataEqual(', 'function userBookmarkCapability(')
+  +extract('function mediaReturnEnvelopeMetadataEqual(', 'async function capturePrivateDocumentStoriesBatch(')
+  +extract('async function buildPrivateUserBookmarksUiPlan(', 'async function applyPrivateUserBookmarksReturn(')
+  +extract('async function applyPrivateUserBookmarksReturn(', 'async function syncReviewExactTextApplyEditorFromMainState(');
+ for(const raw of ['', 'Plain manuscript', 'Trailing\n', '\n\nLeading', 'One\n\n\nTwo', '\r\nOne\r\n\r\nTwo\r\n']){
+  const f=await firstPlainHeaderFixture(t,raw),scenePath=path.join(f.root,f.changed.sceneId);
+  const after=envelope.parseObservablePayload(f.changed.afterContent).doc;
+  const candidate={sceneId:f.changed.sceneId,raw,parsed:envelope.parseObservablePayload(raw),beforeDoc:f.before,
+   plan:{changed:true,doc:after},storyMutationReplay:f.changed.storyMutationReplay,changeId:'story-test',
+   changes:[{role:'header',beforeBody:envelope.buildParagraphDocumentFromText(''),afterBody:envelope.buildParagraphDocumentFromText('')}]};
+  const input={scenePath,projectSnapshot:{projectId:'p'},reviewItems:[{changeId:candidate.changeId}]};
+  const store={storyReturnCandidate:candidate,input,sessionToken:{sessionId:'s'}};
+  const live=envelope.buildParagraphDocumentFromText(candidate.parsed.text);live.attrs={wordPendingRevisions:null,wordUserBookmarks:null};
+  for(const p of live.content)p.attrs={textAlign:null};
+  let snapshot={content:envelope.composeObservablePayload({doc:live,metaEnabled:true,meta:envelope.createDefaultDocumentMeta()}),generation:1};
+  let writes=0;
+  const c=vm.createContext({JSON,path,pathToFileURL,__dirname:path.resolve(__dirname,'../../src'),fs:fs.promises,fsSync:fs,
+   activePendingRecording:null,activeRtkCleanLinkLabelApplyStore:store,currentFilePath:scenePath,isDirty:false,autoSaveInProgress:false,lastSignaledEditGeneration:0,
+   REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:'cmd.project.review.applyExactTextChangesBatch',REVIEW_EXACT_TEXT_UI_PLAN_SCHEMA:'test',
+   buildCleanLinkLabelApplyInput:()=>({ok:true,input}),revalidateCleanLinkLabelApplyInput:async()=>({ok:true}),cleanLinkLabelStoreMatches:()=>true,
+   userBookmarkCapability(){},loadDocumentContentEnvelopeModule:async()=>envelope,requestEditorSnapshot:async()=>snapshot,
+   loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+   userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),wordMediaReturnModel:require('../../src/core/word-media-return-v1.cjs'),
+   buildReviewExactTextUiBlockedPreview:reasons=>({status:'blocked',reasons}),makeReviewExactTextUiPlanReason:code=>code,
+   computeHash:()=> 'hash',commitWriterProjectSnapshot:async(_path,content,_generation,_profile,_label,options)=>{
+    await options.beforeScenePublish();assert.equal(options.expectedSceneContent,raw);assert.equal(content,f.changed.afterContent);writes++;return{success:true};}});
+  new vm.Script(code,{importModuleDynamically:vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER}).runInContext(c);
+  const preview=await c.buildPrivateUserBookmarksUiPlan([{changeId:candidate.changeId}]);assert.equal(preview.status,'ready',JSON.stringify(preview));
+  assert.equal(writes,0);assert.equal(fs.readFileSync(scenePath,'utf8'),raw);
+  assert.equal((await c.applyPrivateUserBookmarksReturn(input)).applied,true);assert.equal(writes,1);
+  const valid=snapshot;
+  for(const mode of ['metadata','text','draft','generation','raw']){
+   snapshot={...valid};const parsed=envelope.parseObservablePayload(valid.content);
+   if(mode==='metadata'){parsed.meta.status='authored';snapshot.content=envelope.composeObservablePayload({...parsed,metaEnabled:true});}
+   if(mode==='text'){parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'new authored text'}]});snapshot.content=envelope.composeObservablePayload({...parsed,metaEnabled:true});}
+   if(mode==='draft')snapshot.manuscriptNoteAuthoringPending=true;
+   if(mode==='generation')c.lastSignaledEditGeneration=2;
+   if(mode==='raw')fs.writeFileSync(scenePath,raw+'external');
+   assert.equal((await c.buildPrivateUserBookmarksUiPlan([{changeId:candidate.changeId}])).status,'blocked',mode);
+   assert.equal((await c.applyPrivateUserBookmarksReturn(input)).applied,false,mode);assert.equal(writes,1,mode);
+   c.lastSignaledEditGeneration=0;fs.writeFileSync(scenePath,raw);
+  }
+ }
+});

@@ -25706,6 +25706,7 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
   if (activePendingRecording) return blocked('RECORDING_STOP_BEFORE_ANNOTATIONS_OR_REVIEW');
   const store = activeRtkCleanLinkLabelApplyStore, candidate = store?.storyReturnCandidate || store?.mediaReturnCandidate || store?.userBookmarksCandidate;
   const isMedia = Boolean(store?.mediaReturnCandidate), isStory = Boolean(store?.storyReturnCandidate);
+  const plainStorySource = isStory && !candidate?.parsed?.doc;
   const selected = buildCleanLinkLabelApplyInput(changes);
   if (isStory && candidate?.batchScenes) return buildPrivateDocumentStoriesBatchPreview(changes, selected, store);
   if (!selected.ok || !candidate || changes.length !== 1 || changes[0].changeId !== candidate.changeId) {
@@ -25718,13 +25719,13 @@ async function buildPrivateUserBookmarksUiPlan(changes) {
     const keyGate = await revalidateCleanLinkLabelApplyInput(selected.input);
     userBookmarkCapability(REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID);
     if (activePendingRecording || !keyGate.ok || !cleanLinkLabelStoreMatches(store) || activeRtkCleanLinkLabelApplyStore !== store
-      || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+      || live.issue || !((isMedia || plainStorySource) ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
         : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
       || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
       || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
       || lastSignaledEditGeneration > snapshot.generation
       || fsSync.readFileSync(selected.input.scenePath, 'utf8') !== candidate.raw
-      || !(isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc)
+      || !((isMedia || plainStorySource) ? wordMediaReturnModel.mediaSourceEqual(plainStorySource ? (live.doc || envelope.buildParagraphDocumentFromText(live.text)) : live.doc, plainStorySource ? envelope.buildParagraphDocumentFromText(candidate.parsed.text) : candidate.beforeDoc)
         : nonText.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
           userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc)))) {
       return blocked(keyGate.reason || 'RTK_USER_BOOKMARK_SOURCE_STALE');
@@ -25986,6 +25987,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   const store = activeRtkCleanLinkLabelApplyStore;
   const candidate = store?.storyReturnCandidate || store?.mediaReturnCandidate || store?.userBookmarksCandidate;
   const isMedia = Boolean(store?.mediaReturnCandidate), isStory = Boolean(store?.storyReturnCandidate);
+  const plainStorySource = isStory && !candidate?.parsed?.doc;
   if (isStory && candidate?.batchScenes) return applyPrivateDocumentStoriesBatch(input, store);
   const gate = await revalidateCleanLinkLabelApplyInput(input);
   if (!gate.ok) return gate;
@@ -26002,13 +26004,13 @@ async function applyPrivateUserBookmarksReturn(input) {
   let richSourceEqual = false;
   if (!live.issue) {
     try {
-      richSourceEqual = isMedia ? wordMediaReturnModel.mediaSourceEqual(live.doc, candidate.beforeDoc) : nonText.commentSceneSnapshotsEqual(
+      richSourceEqual = (isMedia || plainStorySource) ? wordMediaReturnModel.mediaSourceEqual(plainStorySource ? (live.doc || envelope.buildParagraphDocumentFromText(live.text)) : live.doc, plainStorySource ? envelope.buildParagraphDocumentFromText(candidate.parsed.text) : candidate.beforeDoc) : nonText.commentSceneSnapshotsEqual(
         userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc),
         userBookmarkModel.materializeInternalLinkSchemaDefaults(candidate.beforeDoc),
       );
     } catch { return blocked('RTK_USER_BOOKMARK_SOURCE_STALE'); }
   }
-  if (activePendingRecording || live.issue || !(isMedia ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
+  if (activePendingRecording || live.issue || !((isMedia || plainStorySource) ? mediaReturnEnvelopeMetadataEqual(live, candidate.parsed, envelope)
     : userBookmarkEnvelopeMetadataEqual(live, candidate.parsed))
     || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
     || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0

@@ -741,7 +741,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "18ce052ddb698c3e6f5e7ad4678c016b20949fbbabcc9dc00a6b9e4a87064491"
+        "sha256": "589c14b37031c16f5b3163f9ecce703ea4fcd110548a317f492d87d2cf16b415"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2149,11 +2149,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "71958fc5a24df6a242572d86738a40b1b3d8386144bf824f9191fabee8a84f6e"
+        "sha256": "fc74fe9db8f20daace95456548eb6364c226a43ae5ffe35bfe17651abff7a104"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "e6756d4b9563a2a686bdba2d399f36859d41478436b0ebf590b663a4feb5d734"
+        "sha256": "2353b0a326a7ebcb643b9d0f3abf23e50979cb1120fb606c33f68fb649ed3405"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
@@ -2165,7 +2165,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
-        "sha256": "57acf93086a2d73cf97d913bb2dd375c7e8c3e0be4b205a4c07eb5d0ed869474"
+        "sha256": "eb477480e24a4aa7981cd7cad24c17527de2d8343d9b9a24b46b1acab2a61e51"
       },
       {
         "path": "src/renderer/tiptap/documentStories.mjs",
@@ -2181,7 +2181,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
-        "sha256": "c234066d395a1c3e7919d307df171c8a96d2995ac25bebb3102a75f5e8cf012d"
+        "sha256": "7489ce7d1ea3a0e0c0bb4f31e91c46190ddead884105f770cfa8e6185e303a7c"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
@@ -2189,7 +2189,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
-        "sha256": "d3c1ea9b59551632435d3e37a14cdeb8e91d33ac0b87729645192a6a8648abc1"
+        "sha256": "773c36fd630bf6922c90d9ab152afb2dbfea65402f4bdbf14662fbc478400b0d"
       },
       {
         "path": "src/core/word-rich-body-projection-v1.cjs",
