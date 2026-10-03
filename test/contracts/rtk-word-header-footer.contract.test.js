@@ -95,3 +95,104 @@ test('explicit empty self-closing header retains empty override through ordinary
  assert.deepEqual(resolvedBodies(next.doc),resolvedBodies(doc));
  }
 });
+
+test('Core story intents create native slots, copy inheritance, clear or relink without losing peers or geometry',async()=>{
+ const native={type:'doc',content:[paragraph('NATIVE')]};
+ const trustedSections={schemaVersion:1,boundaries:[],final:{type:'nextPage',columns:{count:2,spaceTwips:400}}};
+ assert.throws(()=>model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'}),/TRUSTED_GEOMETRY/);
+ const created=model.planStoryMutation(native,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections});
+ assert.deepEqual(native,{type:'doc',content:[paragraph('NATIVE')]});
+ assert.deepEqual(created.doc.attrs.wordSections,trustedSections);
+ assert.match(created.storyId,/^story-[a-f0-9]{64}$/u);
+ let next=model.planStoryMutation(created.doc,{op:'create',sectionIndex:0,role:'footer',variant:'even'}).doc;
+ next=model.planStoryMutation(next,{op:'setSectionOptions',sectionIndex:0,titlePage:true,evenAndOddHeaders:true}).doc;
+ assert.equal(model.read(next).stories.length,2);assert.equal(model.read(next).sections[0].titlePage,true);
+ assert.equal(model.read(next).evenAndOddHeaders,true);
+ const {doc}=await importDoc(buildStoredZip(literalParts())),before=model.read(doc), original=JSON.stringify(doc);
+ const copied=model.planStoryMutation(doc,{op:'create',sectionIndex:1,role:'header',variant:'default'});
+ const copiedValue=model.read(copied.doc);
+ assert.notEqual(copied.storyId,before.sections[0].header.default);
+ assert.deepEqual(copiedValue.stories.find(s=>s.id===copied.storyId).body,before.stories.find(s=>s.id===before.sections[0].header.default).body);
+ assert.deepEqual(copied.doc.attrs.wordSections,doc.attrs.wordSections);
+ const removed=model.planStoryMutation(copied.doc,{op:'remove',sectionIndex:1,role:'header',variant:'default'});
+ assert.deepEqual(model.read(removed.doc).stories.find(s=>s.id===removed.storyId).body,{type:'doc',content:[{type:'paragraph'}]});
+ assert.equal(model.read(removed.doc).stories.some(s=>s.id===copied.storyId),false);
+ const relinked=model.planStoryMutation(removed.doc,{op:'linkPrevious',sectionIndex:1,role:'header',variant:'default'});
+ assert.equal(relinked.storyId,before.sections[0].header.default);
+ assert.deepEqual(model.read(relinked.doc),before);assert.equal(JSON.stringify(doc),original);
+ for(const kind of ['ordinary','review'])assert.deepEqual(resolvedBodies((await importDoc(await exported(removed.doc,kind))).doc),resolvedBodies(removed.doc));
+ for(const intent of [
+ {op:'create',sectionIndex:-1,role:'header',variant:'default'},
+ {op:'create',sectionIndex:3,role:'header',variant:'default'},
+ {op:'create',sectionIndex:0,role:'header',variant:'default',storyId:'forged'},
+ {op:'create',sectionIndex:0,role:'header',variant:'wrong'},
+ {op:'linkPrevious',sectionIndex:0,role:'header',variant:'default'},
+ {op:'setSectionOptions',sectionIndex:0,titlePage:'true'},
+ ])assert.throws(()=>model.planStoryMutation(doc,intent),/WORD_STOR/);
+});
+
+test('flags-only zero-story authoring retains first/even semantics through ordinary and Review',async()=>{
+ for(const flags of [{titlePage:true},{evenAndOddHeaders:true},{titlePage:true,evenAndOddHeaders:true}]){
+ const doc=model.planStoryMutation({type:'doc',content:[paragraph('FLAGS')]},
+ {op:'setSectionOptions',sectionIndex:0,...flags},{trustedSections:{schemaVersion:1,boundaries:[],final:{type:'nextPage'}}}).doc;
+ assert.equal(model.read(doc).stories.length,0);
+ for(const kind of ['ordinary','review']){
+ const next=(await importDoc(await exported(doc,kind))).doc,registry=model.read(next);
+ assert.equal(registry.evenAndOddHeaders,Boolean(flags.evenAndOddHeaders));
+ assert.equal(registry.sections[0].titlePage,Boolean(flags.titlePage));
+ assert.deepEqual(resolvedBodies(next),resolvedBodies(doc));
+ }
+ }
+});
+
+test('Core fresh IDs never recycle a removed identity, while trusted seed regeneration is deterministic',async()=>{
+ const {doc}=await importDoc(buildStoredZip(literalParts()));
+ const intent={op:'create',sectionIndex:1,role:'header',variant:'default'};
+ const first=model.planStoryMutation(doc,intent);
+ const linked=model.planStoryMutation(first.doc,{...intent,op:'linkPrevious'});
+ const second=model.planStoryMutation(linked.doc,intent);
+ assert.notEqual(second.storyId,first.storyId);
+ assert.deepEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}),model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}));
+ assert.notEqual(model.planStoryMutation(doc,intent,{idSeed:'trusted-request-2'}).storyId,model.planStoryMutation(doc,intent,{idSeed:'trusted-request-1'}).storyId);
+});
+
+test('private return reference planner preserves canonical shared aliases and rejects transport ID or cross-role authority',async()=>{
+ const {doc}=await importDoc(buildStoredZip(literalParts())), original=structuredClone(doc);
+ const intent={sectionIndex:1,role:'header',variant:'even',sourceSectionIndex:0,sourceVariant:'default'};
+ const planned=model.planStoryReference(doc,intent),value=model.read(planned.doc);
+ assert.equal(planned.storyId,model.read(doc).sections[0].header.default);
+ assert.equal(model.resolved(value)[2].header.even,planned.storyId);
+ assert.deepEqual(doc,original);assert.deepEqual(planned.doc.content,doc.content);
+ assert.deepEqual(planned.doc.attrs.wordSections,doc.attrs.wordSections);
+ assert.deepEqual(value.stories.find(s=>s.id===planned.storyId),model.read(doc).stories.find(s=>s.id===planned.storyId));
+ for(const bad of [{...intent,storyId:'external'}, {...intent,sourceSectionIndex:3}, {...intent,sourceVariant:'missing'},
+ {...intent,role:'footer',sourceVariant:'even'}, {...intent,sourceRole:'footer'}])assert.throws(()=>model.planStoryReference(doc,bad),/WORD_STOR/);
+ let getterCalls=0;const accessor={...intent};Object.defineProperty(accessor,'sourceSectionIndex',{enumerable:true,get(){getterCalls++;return 0;}});
+ assert.throws(()=>model.planStoryReference(doc,accessor),/WORD_STOR/);assert.equal(getterCalls,0);
+ for(const kind of ['ordinary','review'])assert.deepEqual(resolvedBodies((await importDoc(await exported(planned.doc,kind))).doc),resolvedBodies(planned.doc));
+});
+
+test('empty Review story projection binds actual shared folder sections without changing exported layout',async()=>{
+ const docs=[{type:'doc',content:[paragraph('ONE'),paragraph('TWO')]},{type:'doc',content:[paragraph('THREE')]}];
+ const scenes=docs.map((doc,i)=>({sceneId:`roman/${i}.txt`,scenePath:`/synthetic/roman/${i}.txt`,order:i,doc,text:envelope.deriveVisibleTextFromDocument(doc)}));
+ const source=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/synthetic',scenes});
+ assert.equal(source.documentSections.protectedSections.length,1);
+ const projection=source.documentStories;
+ assert.deepEqual(projection.registry.stories,[]);assert.equal(projection.registry.sections.length,1);
+ assert.deepEqual(projection.sourceScenes.map(s=>[s.sectionStart,s.sectionCount]),[[0,1],[0,1]]);
+ for(const binding of projection.sourceScenes){
+ assert.equal(binding.registry,null);assert.deepEqual(binding.trustedSections.boundaries,[]);
+ assert.deepEqual(binding.trustedSections.final,source.documentSections.protectedSections[0].properties);
+ const scene=scenes.find(s=>s.sceneId===binding.sceneId);
+ const created=model.planStoryMutation(scene.doc,{op:'create',sectionIndex:0,role:'header',variant:'default'},{trustedSections:binding.trustedSections});
+ assert.deepEqual(created.doc.content,scene.doc.content);
+ }
+ assert.equal(buildDocumentStoriesExport(scenes,source.documentSections),null,'ordinary helper behavior remains unchanged');
+ const withProjection=buildDocxReviewPacketBuffer(source),withoutProjection=buildDocxReviewPacketBuffer({...source,documentStories:null});
+ const [bridge]=await modules;
+ const withReport=bridge.buildDocxContentPreviewFromZipBytes(withProjection),withoutReport=bridge.buildDocxContentPreviewFromZipBytes(withoutProjection);
+ assert.equal(withReport.ok,true);assert.equal(withoutReport.ok,true);
+ assert.deepEqual(withReport.contentPreview.paragraphs,withoutReport.contentPreview.paragraphs);
+ assert.deepEqual(withReport.contentPreview.wordSections,withoutReport.contentPreview.wordSections);
+ assert.equal(withReport.contentPreview.wordStories,undefined);
+});

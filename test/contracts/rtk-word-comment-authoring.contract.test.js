@@ -222,7 +222,7 @@ test('actual lifecycle confirmation vetoes pending comment authoring before docu
   assert.equal(await ctx.confirmDiscardChanges(),false);assert.equal(barrierCalls,1);
   const editor=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
   const sa=editor.indexOf('function composeEditorSnapshot() {'), sb=editor.indexOf('function applyIncomingBookProfile',sa);
-  const snapshotCtx=vm.createContext({isTiptapMode:true,getTiptapImageInsertionPosition:()=>6,currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false});
+  const snapshotCtx=vm.createContext({isTiptapMode:true,getTiptapImageInsertionPosition:()=>6,currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(editor.slice(sa,sb),snapshotCtx);assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);
   snapshotCtx.wordCommentDraft=null;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,false);
   snapshotCtx.wordCommentBusy=true;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);

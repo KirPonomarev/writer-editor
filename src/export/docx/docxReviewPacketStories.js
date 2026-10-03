@@ -7,15 +7,40 @@ const { escapeXml } = require('./docxTextXml.js');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const copy = v => JSON.parse(JSON.stringify(v));
-function buildDocumentStoriesExport(scenes, documentSections = null) {
-  if (!scenes.some(scene => model.read(scene.doc))) return null;
+function sceneStoryGeometry(scene, sections, blocks) {
+  const local = require('../../core/word-sections-v1.cjs').read(scene.doc);
+  const ownBlocks = blocks?.filter(block=>block.sceneId===scene.sceneId);
+  if (!ownBlocks?.length) throw Error('WORD_STORIES_EXPORT_SOURCE_BLOCKS');
+  const start = ownBlocks[0].documentParagraphIndex, end = ownBlocks.at(-1).documentParagraphIndex;
+  const covered = sections.filter(section=>section.startParagraphIndex<=end && section.endParagraphIndex>=start);
+  if (!covered.length || covered[0].startParagraphIndex>start || covered.at(-1).endParagraphIndex<end) throw Error('WORD_STORIES_EXPORT_SOURCE_SECTIONS');
+  const trustedSections = local || {schemaVersion:1,boundaries:covered.slice(0,-1).map(section=>{
+    const index=ownBlocks.findIndex(block=>block.documentParagraphIndex===section.endParagraphIndex);
+    if(index<0)throw Error('WORD_STORIES_EXPORT_SOURCE_BOUNDARY');
+    return {endParagraphIndex:index,properties:copy(section.properties)};
+  }),final:copy(covered.at(-1).properties)};
+  return {sectionStart:covered[0].ordinal,sectionCount:covered.length,trustedSections};
+}
+function buildDocumentStoriesExport(scenes, documentSections = null, {includeEmpty=false,blocks=null}={}) {
+  if (!scenes.some(scene => model.read(scene.doc))) {
+    if (!includeEmpty) return null;
+    const sections=documentSections?.protectedSections;
+    if (!Array.isArray(sections) || !sections.length) throw Error('WORD_STORIES_EXPORT_SECTIONS_REQUIRED');
+    const registry={schemaVersion:1,evenAndOddHeaders:false,stories:[],sections:sections.map(()=>({titlePage:false,header:{},footer:{}}))};
+    const sourceScenes=scenes.map(scene=>({sceneId:scene.sceneId,registry:null,...sceneStoryGeometry(scene,sections,blocks)}));
+    model.validate(registry,sections.length);
+    const sourceBindings=[];
+    const protectedDigest=require('node:crypto').createHash('sha256').update(JSON.stringify({registry,sourceBindings,sourceScenes})).digest('hex');
+    return {schemaVersion:1,registry,sourceBindings,sourceScenes,protectedDigest};
+  }
   const globalEven = scenes.some(scene => model.read(scene.doc)?.evenAndOddHeaders);
   const registry = {schemaVersion:1,evenAndOddHeaders:globalEven,stories:[],sections:[]}, sourceBindings = [], sourceScenes = [];
   for (const scene of scenes) {
     const original = model.read(scene.doc);
     const count = (require('../../core/word-sections-v1.cjs').read(scene.doc)?.boundaries.length || 0) + 1;
     const sectionStart = registry.sections.length;
-    sourceScenes.push({sceneId:scene.sceneId,sectionStart,sectionCount:count,registry:original});
+    sourceScenes.push({sceneId:scene.sceneId,sectionStart,sectionCount:count,registry:original,
+      ...(!original && documentSections && blocks ? {trustedSections:sceneStoryGeometry(scene,documentSections.protectedSections,blocks).trustedSections} : {})});
     const mapping = new Map();
     for (const story of original?.stories || []) {
       const id = `global-story-${registry.stories.length + 1}`; mapping.set(story.id,id);

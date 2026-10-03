@@ -78,3 +78,44 @@ test('Main batch Apply publishes both authenticated scene body candidates with o
   for(const item of f.changes)assert.equal(fs.readFileSync(path.join(f.root,item.sceneId),'utf8'),item.afterContent);
   assert.equal(result.receipt.bookmarkPublication.savedContent,f.changes[0].afterContent);
 });
+
+async function mediaFixture(t) {
+  const f=await fixture(t),attrs=require('../../src/io/documentMedia.js').createImageAttrs(require('../fixtures/document-jpeg-fixtures.cjs').rgb);
+  for(const change of f.input.changes){const parsed=envelope.parseObservablePayload(change.afterContent);parsed.doc.attrs.wordStories.stories[0].body.content[0].content.push({type:'image',attrs});change.afterContent=envelope.composeObservablePayload({doc:parsed.doc});}
+  f.input.mediaResources=[{relativePath:attrs.assetPath,contentBase64:attrs.dataBase64}];
+  f.request.treeCohort=f.model.planProjectStoryBodyCohort(f.input);
+  return {...f,attrs};
+}
+test('cohort persists new shared header image once with both scene resource proofs',async t=>{
+  const f=await mediaFixture(t);assert.equal((await txn.commitProjectTransaction(f.request)).success,true);
+  assert.equal(fs.readFileSync(path.join(f.root,f.attrs.assetPath)).toString('base64'),f.attrs.dataBase64);
+  for(const change of f.changes){const record=JSON.parse(fs.readFileSync(path.join(f.root,change.sceneId+'.wp201-commit.json'),'utf8'));assert.ok(record.resources.some(r=>r.path===path.join(f.root,f.attrs.assetPath)));}
+  assert.equal((await txn.readVerifiedProjectTreeMutation({manifestPath:f.request.manifestPath,projectId:'p'})).treeRevision,1);
+});
+test('cohort rejects image bytes or paths not derived from validated canonical story bodies',async t=>{
+  const f=await mediaFixture(t);for(const mutation of [x=>x.mediaResources[0].contentBase64='YWJj',x=>x.mediaResources[0].relativePath='../foreign']){const bad=JSON.parse(JSON.stringify(f.input));mutation(bad);assert.throws(()=>f.model.planProjectStoryBodyCohort(bad),/ASSET_BINDING/);}
+});
+test('interruption after new image publication restores asset absence and both original scenes',async t=>{
+  const f=await mediaFixture(t);let injected=false;
+  const adapter={...fs.promises,rename:async(a,b)=>{await fs.promises.rename(a,b);if(b===path.join(f.root,f.attrs.assetPath)){injected=true;throw Error('INJECT_IMAGE_PUBLISHED');}}};
+  await assert.rejects(txn.commitProjectTransaction({...f.request,fsAdapter:adapter}),/INJECT_IMAGE_PUBLISHED/);assert.equal(injected,true);
+  await txn.recoverProjectTransaction(f.request);
+  assert.equal(fs.existsSync(path.join(f.root,f.attrs.assetPath)),false);
+  for(const change of f.changes)assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.beforeContent);
+});
+
+test('shared empty exported section creates first header in two scenes through one typed atomic cohort',async t=>{
+  const f=await fixture(t),source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),exporter=require('../../src/export/docx/docxReviewPacketStories.js');
+  const {analyzeDocumentStoriesReturn}=await import('../../src/io/revisionBridge/reviewTransportStoriesV1.mjs');
+  const scenes=f.changes.map((change,index)=>({sceneId:change.sceneId,doc:body('Plain scene '+index)}));
+  const blocks=scenes.map((scene,index)=>({sceneId:scene.sceneId,documentParagraphIndex:index}));
+  const sections=source.buildFullManuscriptDocumentSections(scenes,blocks),expected=exporter.buildDocumentStoriesExport(scenes,sections,{includeEmpty:true,blocks});
+  assert.equal(expected.registry.sections.length,1);
+  const returned={schemaVersion:1,evenAndOddHeaders:false,stories:[{id:'native-new',role:'header',body:body('First shared Word header')}],sections:[{titlePage:false,header:{default:'native-new'},footer:{}}]};
+  const analyzed=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:Object.fromEntries(scenes.map(scene=>[scene.sceneId,scene.doc])),allowTopology:true,idSeed:'main-trusted'});
+  assert.equal(analyzed.ok,true,JSON.stringify(analyzed));assert.equal(analyzed.candidates.length,2);
+  f.input.changes=analyzed.candidates.map(candidate=>{const change={sceneId:candidate.sceneId,beforeContent:envelope.composeObservablePayload({doc:candidate.beforeDoc}),afterContent:envelope.composeObservablePayload({doc:candidate.plan.doc}),storyMutationReplay:candidate.storyMutationReplay,commitText:null};fs.writeFileSync(path.join(f.root,change.sceneId),change.beforeContent);return change;});
+  f.request.treeCohort=f.model.planProjectStoryBodyCohort(f.input);
+  assert.equal((await txn.commitProjectTransaction(f.request)).success,true);
+  for(const change of f.input.changes)assert.equal(fs.readFileSync(path.join(f.root,change.sceneId),'utf8'),change.afterContent);
+});

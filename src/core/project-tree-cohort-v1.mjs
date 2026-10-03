@@ -9,6 +9,8 @@ import commentsModel from './word-comment-authoring-v1.cjs';
 import commentAnchors from './word-comment-anchor-save-v1.cjs';
 import mediaModel from './word-media-return-v1.cjs';
 import storyModel from './word-stories-v1.cjs';
+import mediaData from '../io/documentMedia.js';
+import { replayDocumentStoryMutationSteps } from '../io/revisionBridge/reviewTransportStoriesV1.mjs';
 
 export const TREE_COHORT_MODE = 'PROJECT_TREE_COHORT_V1';
 export const TREE_COHORT_LIMITS = Object.freeze({ files: 2048, bytes: 32 * 1024 * 1024, scenes: 512 });
@@ -534,27 +536,43 @@ export function planProjectStoryBodyCohort(input) {
     && typeof input.beforeManifestText === 'string' && JSON.parse(input.beforeManifestText).projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
   need(Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_TREE_REVISION_CAS');
   need(Array.isArray(input.changes) && input.changes.length > 0 && input.changes.length <= TREE_COHORT_LIMITS.scenes, 'E_STORY_COHORT_BUDGET');
-  const entries = [], affectedScenes = [], seen = new Set();
+  const entries = [], affectedScenes = [], seen = new Set(), storyAssets = new Map();
   for (const change of input.changes) {
     const relativePath = treeRelativePath(change.sceneId);
     need(relativePath.startsWith('roman/') && /\.(?:txt|md)$/iu.test(relativePath) && !seen.has(relativePath), 'E_STORY_COHORT_PATH'); seen.add(relativePath);
     need(typeof change.beforeContent === 'string' && typeof change.afterContent === 'string'
       && (change.commitText === null || typeof change.commitText === 'string'), 'E_STORY_COHORT_CONTENT');
     const before = parsedScene(change.beforeContent), after = parsedScene(change.afterContent);
-    need(before.doc && after.doc && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
-    storyModel.validateSave(before.doc, after.doc);
+    need(after.doc && same([before.meta,before.cards,before.hasMetaBlock],[after.meta,after.cards,after.hasMetaBlock]), 'E_STORY_COHORT_CONTENT');
+    const beforeDoc=before.doc || envelope.buildParagraphDocumentFromText(before.text);
+    if(change.storyMutationReplay)need(same(replayDocumentStoryMutationSteps(beforeDoc,change.storyMutationReplay),after.doc),'E_STORY_COHORT_INTENT');
+    else storyModel.validateSave(beforeDoc, after.doc);
+    for (const asset of mediaData.documentMedia({type:'doc',content:storyModel.read(after.doc)?.stories.flatMap(story=>story.body.content) || []}).assets) {
+      const existing=storyAssets.get(asset.attrs.assetPath);
+      need(!existing || existing===asset.attrs.dataBase64,'E_STORY_COHORT_ASSET_CONFLICT');
+      storyAssets.set(asset.attrs.assetPath,asset.attrs.dataBase64);
+    }
     const restored = clone(after.doc);
-    if(before.doc.attrs?.wordStories !== undefined) {restored.attrs={...restored.attrs,wordStories:clone(before.doc.attrs.wordStories)};}
+    if(beforeDoc.attrs?.wordStories !== undefined) {restored.attrs={...restored.attrs,wordStories:clone(beforeDoc.attrs.wordStories)};}
     else if(restored.attrs)delete restored.attrs.wordStories;
-    need(same(restored,before.doc), 'E_STORY_COHORT_BODY_ONLY');
+    if(!change.storyMutationReplay)need(same(restored,beforeDoc), 'E_STORY_COHORT_BODY_ONLY');
     entries.push({relativePath,role:'scene',beforeBase64:b64(change.beforeContent),afterBase64:b64(change.afterContent)},
       {relativePath:relativePath+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(change.commitText),afterBase64:b64(change.commitText)});
-    if(!same(before.doc,after.doc))affectedScenes.push({from:relativePath,to:relativePath,copy:false});
+    if(!same(beforeDoc,after.doc))affectedScenes.push({from:relativePath,to:relativePath,copy:false});
   }
   for (const [role,relativePath,value] of [['notes',NOTE_PATH,input.notesText],['comments',COMMENT_PATH,input.commentsText]]) {
     need(value === null || typeof value === 'string', 'E_STORY_COHORT_ANNOTATIONS');
     if(value!==null) { if(role==='notes')notesModel.validateManuscriptDocument(JSON.parse(value),input.projectId);else commentsModel.readState(value,input.projectId); }
     entries.push({relativePath,role,beforeBase64:b64(value),afterBase64:b64(value)});
+  }
+  need(input.mediaResources === undefined || Array.isArray(input.mediaResources),'E_STORY_COHORT_ASSETS');
+  const mediaPaths = new Set();
+  for (const resource of input.mediaResources || []) {
+    need(resource && Object.keys(resource).every(key=>['relativePath','contentBase64'].includes(key))
+      && typeof resource.relativePath === 'string' && typeof resource.contentBase64 === 'string'
+      && storyAssets.get(resource.relativePath)===resource.contentBase64 && !mediaPaths.has(resource.relativePath),'E_STORY_COHORT_ASSET_BINDING');
+    mediaPaths.add(resource.relativePath);
+    entries.push({relativePath:treeRelativePath(resource.relativePath),role:'storyMedia',beforeBase64:null,afterBase64:resource.contentBase64});
   }
   need(affectedScenes.length>0,'E_STORY_COHORT_NO_CHANGE');
   const plan = {mode:TREE_COHORT_MODE,projectId:input.projectId,operationId:input.operationId,

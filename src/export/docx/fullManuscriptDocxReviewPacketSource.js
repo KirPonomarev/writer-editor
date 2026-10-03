@@ -1259,7 +1259,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       : undefined,
   });
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
-  const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections);
+  const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.

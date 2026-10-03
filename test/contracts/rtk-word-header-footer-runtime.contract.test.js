@@ -90,7 +90,7 @@ test('Main private Apply routes story changes through checked scene transaction;
   const source = main.slice(main.indexOf('async function applyPrivateUserBookmarksReturn('), main.indexOf('async function syncReviewExactTextApplyEditorFromMainState('));
   let raw = candidate.raw, writes = 0, draft = false;
   const store = { storyReturnCandidate: candidate }, input = { scenePath: '/test/a.txt', reviewItems: [{ changeId: candidate.changeId }] };
-  const c = vm.createContext({ JSON, Buffer, path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
+  const c = vm.createContext({ JSON, Buffer, crypto:require('node:crypto'), path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
     activeRtkCleanLinkLabelApplyStore: store, activePendingRecording: null, currentFilePath: input.scenePath,
     isDirty: false, autoSaveInProgress: false, lastSignaledEditGeneration: 0,
     revalidateCleanLinkLabelApplyInput: async () => ({ ok: true }),
@@ -120,7 +120,7 @@ test('Main private Apply routes story changes through checked scene transaction;
   assert.deepEqual(saved.doc.content, before.content);
 });
 
-for (const bodyKind of ['plain','table','image']) test(`Main prepares a zero-write story candidate alongside unchanged ${bodyKind} body and rejects artifact mismatch`, async () => {
+for (const bodyKind of ['plain','table','image','first-story']) test(`Main prepares a zero-write story candidate alongside unchanged ${bodyKind} body and rejects artifact mismatch`, async () => {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { buildFullManuscriptDocxReviewPacketSource, validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
   const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder');
@@ -131,13 +131,17 @@ for (const bodyKind of ['plain','table','image']) test(`Main prepares a zero-wri
     hmacSha256Json: (value, secret) => `hmac-sha256:${crypto.createHmac('sha256', secret).update(stable(value)).digest('hex')}`,
     hmacSha256Text: (value, secret) => `hmac-sha256:${crypto.createHmac('sha256', secret).update(value).digest('hex')}` };
   const before = envelope.canonicalizeDocumentJson(scene());
+  if(bodyKind==='first-story'){delete before.attrs.wordStories;delete before.attrs.wordSections;}
   if(bodyKind==='table')before.content=[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:before.content}]}]}];
   if(bodyKind==='image')before.content[0].content.push({type:'image',attrs:require('../../src/io/documentMedia.js').createImageAttrs(require('../fixtures/document-jpeg-fixtures.cjs').rgb)});
   const raw = envelope.composeObservablePayload({ doc: before });
   const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/test', manifestPath: '/test/project.craftsman.json',
     scenes: [{ sceneId: 'a.txt', scenePath: '/test/a.txt', text: 'Main text', doc: before, observableContent: raw, order: 0 }] }, { revisionBridge: bridge, cryptoPort });
   const changed = { ...source, documentStories: copy(source.documentStories) };
-  changed.documentStories.registry.stories.find(item => item.id === changed.documentStories.sourceBindings.find(item => !item.reset).exportStoryId).body = body('Actual DOCX header edit');
+  if(bodyKind==='first-story'){
+    changed.documentStories.registry.stories.push({id:'native-added',role:'header',body:body('Actual DOCX header edit')});
+    changed.documentStories.registry.sections[0].header.default='native-added';
+  }else changed.documentStories.registry.stories.find(item => item.id === changed.documentStories.sourceBindings.find(item => !item.reset).exportStoryId).body = body('Actual DOCX header edit');
   const bytes = buildDocxReviewPacketBuffer(changed);
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes, hmacSecret: source.forbiddenSecret, expectedAuthority: source.localAuthorityCapsule.expectedAuthority }, { cryptoPort });
   assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
@@ -150,7 +154,7 @@ for (const bodyKind of ['plain','table','image']) test(`Main prepares a zero-wri
   assert.equal(authority.exportMap.scenes[0].rawSha256, `sha256:${hash(raw)}`);
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const code = main.slice(main.indexOf('async function prepareCleanDocumentStoriesCapsule('), main.indexOf('async function prepareCleanUserBookmarksCapsule('));
-  const c = vm.createContext({ JSON, Buffer, path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
+  const c = vm.createContext({ JSON, Buffer, crypto:require('node:crypto'), path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
     require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), cloneJsonSafe: copy, stableRtkReviewTransportJson: stable,
     currentFilePath: '/test/a.txt', computeHash: hash, loadRevisionBridgeModule: async () => bridge,
     loadDocumentContentEnvelopeModule: async () => envelope,
@@ -170,4 +174,109 @@ for (const bodyKind of ['plain','table','image']) test(`Main prepares a zero-wri
   changedBody.documentSectionsBinding = parsed.documentSectionsBinding;
   const rejected = await c.prepareCleanDocumentStoriesCapsule(authority,changedBody,{...context,docxBytes:corrupt,returnedArtifactSha256:`sha256:${hash(corrupt)}`});
   assert.equal(rejected.ok,false,'A header edit must never conceal manuscript text changes');
+});
+
+async function storyAuthoringHarness({ stale = false, draft = false, rejectPublication = false, revokeDuringSnapshot = false } = {}) {
+  const main = fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+  const code = main.slice(main.indexOf('async function handleDocumentStoriesMutation('), main.indexOf('let localImageInsertionPending = false;'));
+  const doc = envelope.canonicalizeDocumentJson(scene());
+  const raw = envelope.composeObservablePayload({ doc, text:'', metaEnabled:false });
+  const source = { doc, raw, parsed:envelope.parseObservablePayload(raw), filePath:'/project/roman/a.txt',
+    sceneId:'roman/a.txt', projectId:'p', subjectId:'life:session', sceneSha256:'sha', manifestPath:'/project/project.craftsman.json',manifestRaw:'manifest',bookProfile:{} };
+  let disk = raw, observed = raw, writes = 0, intentChecked = false, snapshotCalls = 0, revoked = false;
+  const snapshot = () => ({content:observed,generation:3,manuscriptNoteAuthoringPending:draft});
+  const c = vm.createContext({ JSON, Object, RegExp, Number, Error, crypto:require('node:crypto'),
+    require:id=>id==='./core/word-stories-v1.cjs'?{...model,planStoryMutation:(doc,intent,opts)=>model.planStoryMutation(doc,copy(intent),copy(opts))}:require('node:module').createRequire(path.join(__dirname,'../../src/main.js'))(id),
+    isPlainObjectValue: value => value && typeof value==='object' && !Array.isArray(value),
+    userBookmarkCapability:()=>{if(revoked)throw Error('CAPABILITY_REVOKED');}, queueDiskOperation:fn=>fn(),readDocumentStoriesContext:async()=>source,
+    requestEditorSnapshot:async()=>{if(++snapshotCalls===2 && revokeDuringSnapshot)revoked=true;return snapshot();}, loadDocumentContentEnvelopeModule:async()=>envelope,
+    loadRtkNonTextReturnModule:async()=>({commentSceneSnapshotsEqual:(a,b)=>JSON.stringify(a)===JSON.stringify(b)}),
+    userBookmarkModel:{materializeInternalLinkSchemaDefaults:x=>x},userBookmarkEnvelopeMetadataEqual:()=>true,
+    readUserBookmarkProjectBinding:async()=>({projectId:'p'}), currentFilePath:source.filePath,
+    currentLifecycleSubjectId:()=> 'life',commentAuthoringSessionId:'session',isDirty:false,autoSaveInProgress:false,
+    activePendingRecording:null,lastSignaledEditGeneration:3,
+    fs:{readFile:async file=>file===source.manifestPath?'manifest':disk},
+    commitWriterProjectSnapshot:async(file,content,generation,profile,reason,options)=>{
+      await options.beforeScenePublish();
+      const regenerated = model.planStoryMutation(doc,copy(options.storyAuthoringIntent.intent),copy(options.storyAuthoringIntent.options));
+      assert.deepEqual(envelope.parseObservablePayload(content).doc,envelope.canonicalizeDocumentJson(regenerated.doc));
+      assert.notEqual(options.storyAuthoringIntent.options.idSeed,'request');intentChecked=true;
+      disk=content;writes++;return {success:true};
+    },mainWindow:{webContents:{send:(_channel,payload)=>{if(!rejectPublication) observed=payload.content;}}},
+    userBookmarkSaveContinuation:null,computeHash:x=>x,lastAutosaveHash:null,
+    acknowledgeMainOwnedSave:async()=>({kind:'SAVED'}),SAVE_ACK_KINDS:{SAVED:'SAVED'},setDirtyState:()=>{},
+    logDevError:()=>{}, makeReviewMutateTypedError:(_id,reason)=>({ok:false,reason}),
+  });
+  new vm.Script(code).runInContext(c);
+  const renderer=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const decorator=renderer.slice(renderer.indexOf('function withEditorModeCommandPayload('),renderer.indexOf('async function dispatchUiCommand(',renderer.indexOf('function withEditorModeCommandPayload(')));
+  const dc=vm.createContext({isTiptapMode:true});new vm.Script(decorator).runInContext(dc);
+  const payload = copy(dc.withEditorModeCommandPayload({requestId:'request',projectId:'p',sceneId:'roman/a.txt',subjectId:'life:session',
+    expectedSceneSha256:stale?'old':'sha',sectionIndex:0,role:'footer',variant:'first',source:'empty'}));
+  const result = await c.handleDocumentStoriesMutation('create',payload);
+  return {result,writes,intentChecked,disk,source,c,payload};
+}
+
+test('actual Main story creation regenerates private intent and publishes revision-bound receipt', async()=>{
+  const h=await storyAuthoringHarness();assert.equal(h.result.ok,true,JSON.stringify(h.result));assert.equal(h.writes,1);assert.equal(h.intentChecked,true);
+  const registry=model.read(envelope.parseObservablePayload(h.disk).doc);
+  assert.equal(registry.stories.length,2);assert.ok(registry.sections[0].footer.first);
+  assert.deepEqual(envelope.parseObservablePayload(h.disk).doc.content,h.source.doc.content);
+});
+test('actual Main story command stale binding or auxiliary draft performs no write',async()=>{
+  for(const input of [{stale:true},{draft:true}]) {const h=await storyAuthoringHarness(input);assert.equal(h.result.ok,false);assert.equal(h.writes,0);}
+  const h=await storyAuthoringHarness();const result=await h.c.handleDocumentStoriesMutation('create',{...h.payload,registry:{}});
+  assert.equal(result.ok,false);assert.equal(result.reason,'WORD_STORIES_INPUT_INVALID');
+  const legacy=await h.c.handleDocumentStoriesMutation('create',{...h.payload,editorMode:'legacy'});assert.equal(legacy.ok,false);assert.equal(legacy.reason,'WORD_STORIES_INPUT_INVALID');
+});
+test('actual Main story command reports durable write when renderer refuses stale publication',async()=>{
+  const h=await storyAuthoringHarness({rejectPublication:true});assert.equal(h.writes,1);assert.equal(h.result.ok,false);
+  assert.equal(h.result.storageWritten,true);assert.equal(h.result.reason,'WORD_STORIES_PUBLICATION_STALE');
+});
+
+test('authenticated Word unlink creates fresh canonical story and keeps subsequent section inherited',async()=>{
+  const {analyzeDocumentStoriesReturn,revalidateDocumentStoryCandidate}=await moduleReady;
+  const before=scene();before.content.push(...body('Second').content,...body('Third').content);
+  before.attrs.wordSections.boundaries=[0,1].map(endParagraphIndex=>({endParagraphIndex,properties:{type:'nextPage'}}));
+  before.attrs.wordStories.sections.push({titlePage:false,header:{},footer:{}},{titlePage:false,header:{},footer:{}});
+  const expected=buildDocumentStoriesExport([{sceneId:'a',doc:before}]),returned=copy(expected.registry);
+  returned.stories.push({id:'native-new-part',role:'header',body:body('Unlinked second header')});
+  returned.sections[1].header.default='native-new-part';
+  const result=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:{a:before},allowTopology:true,idSeed:'main-private-nonce'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.candidates.length,1);
+  const candidate=result.candidates[0],registry=model.read(candidate.plan.doc),resolved=model.resolved(registry);
+  assert.equal(resolved[0].header.default,'local-header');assert.notEqual(resolved[1].header.default,'local-header');
+  assert.equal(resolved[1].header.default,resolved[2].header.default);assert.equal(registry.sections[2].header.default,undefined);
+  assert.deepEqual(revalidateDocumentStoryCandidate(candidate).doc,candidate.plan.doc);
+  assert.deepEqual(candidate.plan.doc.attrs.wordSections,before.attrs.wordSections);
+});
+
+test('Main story authoring rechecks capability after the final awaited editor snapshot',async()=>{
+  const h=await storyAuthoringHarness({revokeDuringSnapshot:true});assert.equal(h.writes,0);assert.equal(h.result.reason,'CAPABILITY_REVOKED');
+});
+
+test('first Word-created header is bound to protected empty section geometry and private replay',async()=>{
+  const {analyzeDocumentStoriesReturn,revalidateDocumentStoryCandidate}=await moduleReady;
+  const before=body('Before any header');
+  const {buildFullManuscriptDocumentSections}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const blocks=[{sceneId:'roman/a.txt',documentParagraphIndex:0}];
+  const sections=buildFullManuscriptDocumentSections([{sceneId:'roman/a.txt',doc:before}],blocks);
+  const expected=buildDocumentStoriesExport([{sceneId:'roman/a.txt',doc:before}],sections,{includeEmpty:true,blocks});
+  const returned={schemaVersion:1,evenAndOddHeaders:false,stories:[{id:'word-new',role:'header',body:body('First Word header')}],sections:[{titlePage:false,header:{default:'word-new'},footer:{}}]};
+  const result=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:{'roman/a.txt':before},allowTopology:true,idSeed:'private-nonce'});
+  assert.equal(result.ok,true,JSON.stringify(result));const candidate=result.candidates[0];
+  assert.deepEqual(candidate.plan.doc.content,before.content);assert.equal(model.read(candidate.plan.doc).stories[0].body.content[0].content[0].text,'First Word header');
+  assert.deepEqual(candidate.plan.doc.attrs.wordSections,expected.sourceScenes[0].trustedSections);
+  assert.deepEqual(revalidateDocumentStoryCandidate(candidate).doc,candidate.plan.doc);
+  assert.equal(analyzeDocumentStoriesReturn({expected,returned:null,beforeDocs:{'roman/a.txt':before},allowTopology:true,idSeed:'private-nonce'}).changed,false);
+});
+
+test('same-text Word unlink still creates a distinct canonical story identity',async()=>{
+  const {analyzeDocumentStoriesReturn}=await moduleReady;
+  const before=scene();before.content.push(...body('Second').content);before.attrs.wordSections.boundaries=[{endParagraphIndex:0,properties:{type:'nextPage'}}];before.attrs.wordStories.sections.push({titlePage:false,header:{},footer:{}});
+  const expected=buildDocumentStoriesExport([{sceneId:'a',doc:before}]),returned=copy(expected.registry);
+  returned.stories.push({id:'same-text-new',role:'header',body:copy(returned.stories[0].body)});returned.sections[1].header.default='same-text-new';
+  const result=analyzeDocumentStoriesReturn({expected,returned,beforeDocs:{a:before},allowTopology:true,idSeed:'private'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);
+  const slots=model.resolved(model.read(result.candidates[0].plan.doc));assert.notEqual(slots[0].header.default,slots[1].header.default);
 });

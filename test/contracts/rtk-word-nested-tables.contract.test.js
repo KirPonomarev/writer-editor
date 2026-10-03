@@ -522,6 +522,12 @@ test('Single-scene source reexports nested pending insertion/deletion and decide
   const sourceText = fs.readFileSync(harnessFile, 'utf8').split('\nfunction doc(paragraphs)')[0] + '\nmodule.exports={harness};';
   const module = { exports: {} };
   new Function('require', 'module', '__dirname', sourceText)(createRequire(harnessFile), module, __dirname);
+  const extractedHarness = module.exports.harness;
+  module.exports.harness = async (...args) => {
+    const h = await extractedHarness(...args);
+    h.context.require = createRequire(require.resolve('../../src/main.js'));
+    return h;
+  };
   const geometric = d(t(r(c(p('outer'), t(r(c(p('inner')))), p('')))));
   const bindGeometry = node => { if (node.type === 'table') node.attrs = { wordTable: { version: 1, grid: [1440], layout: 'fixed', widthDxa: 1440, shading: null, borders: {} } };
     for (const child of node.content || []) bindGeometry(child); };

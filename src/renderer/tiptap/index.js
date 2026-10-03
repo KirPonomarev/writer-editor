@@ -443,6 +443,7 @@ function createIpcSession(editor, options = {}) {
       })
     },
     applyIncomingPayload(payload) {
+      if (payload?.storyPublication === true) return // The scene controller validates request, draft and generation before publication.
       if (payload?.localImageAuthoringPublication === true) {
         applyTiptapLocalImagePublication(payload, this.readObservablePayload())
         return

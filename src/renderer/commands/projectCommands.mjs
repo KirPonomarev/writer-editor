@@ -33,6 +33,7 @@ export const COMMAND_IDS = Object.freeze({
 
 export const EXTRA_COMMAND_IDS = Object.freeze({
   LOCAL_IMAGE_INSERT: 'cmd.project.media.insertLocal',
+  ...Object.fromEntries(['create', 'remove', 'linkPrevious', 'options'].map(action => [`DOCUMENT_STORIES_${action.toUpperCase()}`, `cmd.project.documentStories.${action}`])),
   ...Object.fromEntries(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => [`USER_BOOKMARK_${action.toUpperCase()}`, `cmd.project.bookmarks.${action}`])),
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create',
@@ -1138,6 +1139,12 @@ export function registerProjectCommands(registry, options = {}) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS[`USER_BOOKMARK_${action.toUpperCase()}`], {
       label: action === 'managePrompt' ? 'Закладки…' : `Bookmark ${action}`,
       group: 'insert', surface: action === 'managePrompt' ? ['palette'] : ['internal'],
+    });
+  }
+
+  for (const action of ['create', 'remove', 'linkPrevious', 'options']) {
+    registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS[`DOCUMENT_STORIES_${action.toUpperCase()}`], {
+      label: `Колонтитулы: ${action}`, group: 'insert', surface: ['internal'],
     });
   }
 

@@ -4619,10 +4619,9 @@ async function readDocxReviewPacketExportSource() {
     roundId, doc: parsedDocument.doc, formatPlainText: true,
   });
   blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
-  const documentStories = parsedDocument.doc?.attrs?.wordStories != null
-    ? require('./export/docx/docxReviewPacketStories').buildDocumentStoriesExport([{ sceneId, doc: parsedDocument.doc }]) : null;
-  const documentSections = parsedDocument.doc?.attrs?.wordSections != null
-    ? buildFullManuscriptDocumentSections([{ sceneId, doc: parsedDocument.doc }], blocks, cryptoPort) : null;
+  const storySourceScenes = [{ sceneId, doc: parsedDocument.doc || envelopeModule.buildParagraphDocumentFromText(parsedDocument.text) }];
+  const documentSections = buildFullManuscriptDocumentSections(storySourceScenes, blocks, cryptoPort);
+  const documentStories = require('./export/docx/docxReviewPacketStories').buildDocumentStoriesExport(storySourceScenes, documentSections, {includeEmpty:true,blocks});
   const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId });
   if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
     throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
@@ -9811,7 +9810,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
       beforeDocs[scene.sceneId] = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
       sources[scene.sceneId] = { raw, parsed };
     }
-    const analysis = module.analyzeDocumentStoriesReturn({ expected: authority.documentStories, returned, beforeDocs, exportTypography: authority.exportMap.exportTypography });
+    const analysis = module.analyzeDocumentStoriesReturn({ expected: authority.documentStories, returned, beforeDocs, exportTypography: authority.exportMap.exportTypography, allowTopology: true, idSeed: crypto.randomUUID() });
     if (!analysis.ok || !analysis.changed) return analysis;
     if (['textRevisions', 'moveRevisions', 'propertyRevisions'].some(key => parserResult.reviewIr?.[key]?.length))
       throw Error('WORD_STORIES_RETURN_COMPOSITE_REQUIRES_BATCH');
@@ -22808,8 +22807,19 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           if (beforeDocument.doc || afterDocument.doc) {
             const beforeDoc = beforeDocument.doc || envelope.buildParagraphDocumentFromText(beforeDocument.text);
             const workingDoc = afterDocument.doc || envelope.buildParagraphDocumentFromText(afterDocument.text);
-            if (expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
-            if (expectedSceneContent !== null && (beforeDoc.attrs?.wordStories != null || workingDoc.attrs?.wordStories != null)) require('./core/word-stories-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (options.storyReturnPlan?.storyMutationReplay) {
+              const stories = await import(pathToFileURL(path.join(__dirname,'io','revisionBridge','reviewTransportStoriesV1.mjs')).href);
+              const checked = stories.replayDocumentStoryMutationSteps(beforeDoc,options.storyReturnPlan.storyMutationReplay);
+              if (JSON.stringify(envelope.canonicalizeDocumentJson(checked)) !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('WORD_STORIES_INTENT_MISMATCH');
+            }
+            if (options.storyAuthoringIntent) {
+              const checked = require('./core/word-stories-v1.cjs').planStoryMutation(beforeDoc,
+                options.storyAuthoringIntent.intent, options.storyAuthoringIntent.options);
+              if (!checked.changed || JSON.stringify(envelope.canonicalizeDocumentJson(checked.doc))
+                !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('WORD_STORIES_INTENT_MISMATCH');
+            }
+            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordStories != null || workingDoc.attrs?.wordStories != null)) require('./core/word-stories-v1.cjs').validateSave(beforeDoc, workingDoc);
             if (workingDoc.attrs?.wordStories != null) mediaUpdateResources = await prepareWordMediaReturnResources(workingDoc, prepared.manifestPath);
             if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
               bookmarkSubjectId = currentLifecycleSubjectId(); bookmarkSessionId = commentAuthoringSessionId;
@@ -22818,8 +22828,8 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             }
             if (options.storyReturnPlan) {
               const onlyStoryChanges = JSON.parse(JSON.stringify(workingDoc));
-              onlyStoryChanges.attrs = { ...onlyStoryChanges.attrs, wordStories: beforeDoc.attrs.wordStories };
-              if (JSON.stringify(envelope.canonicalizeDocumentJson(onlyStoryChanges)) !== JSON.stringify(envelope.canonicalizeDocumentJson(beforeDoc))
+              onlyStoryChanges.attrs = { ...onlyStoryChanges.attrs, wordStories: beforeDoc.attrs?.wordStories };
+              if ((!options.storyReturnPlan.storyMutationReplay && JSON.stringify(envelope.canonicalizeDocumentJson(onlyStoryChanges)) !== JSON.stringify(envelope.canonicalizeDocumentJson(beforeDoc)))
                 || JSON.stringify(envelope.canonicalizeDocumentJson(options.storyReturnPlan.doc)) !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc)))
                 throw Error('WORD_STORIES_RETURN_PLAN_MISMATCH');
               bookmarkPublication = { capturedContent: options.storyReturnCapturedContent, savedContent: content,
@@ -22925,7 +22935,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || options.storyReturnPlan || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
+          if ((options.historyRestore === true || options.userBookmarkPlan || options.mediaReturnPlan || options.storyReturnPlan || options.storyAuthoringIntent || (beforeDocument.payloadVersion !== 3 && afterDocument.payloadVersion === 3))
             && expectedSceneContent !== content) {
             const markdownIo = await loadMarkdownIoModule();
             const paths = await markdownIo.listRecoverySnapshots(filePath);
@@ -24535,6 +24545,129 @@ async function handleUserBookmarkMutation(action, payload = {}) {
   }
 }
 
+async function readDocumentStoriesContext() {
+  const source = await readUserBookmarkContext();
+  const registry = require('./core/word-stories-v1.cjs').read(source.doc);
+  const sections = require('./core/word-sections-v1.cjs').read(source.doc);
+  const manifestPath = getProjectManifestPath();
+  const manifestRaw = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+  if (manifest.projectId !== source.projectId) throw Error('WORD_STORIES_PROJECT_STALE');
+  const bookProfile = Object.hasOwn(manifest, 'bookProfile') ? manifest.bookProfile
+    : (await loadBookProfileModule()).createDefaultBookProfile();
+  let trustedSections;
+  if (!sections) {
+    const setup = (await loadDocxPageSetupBindModule()).buildDocxPageSetup(bookProfile);
+    trustedSections = { schemaVersion: 1, boundaries: [], final: { type: 'nextPage',
+      pageSize: { widthTwips: setup.pageWidthTwips, heightTwips: setup.pageHeightTwips, orientation: setup.orientation },
+      margins: Object.fromEntries(['top','right','bottom','left','header','footer','gutter'].map(key =>
+        [key + 'Twips', setup[(key === 'header' || key === 'footer' || key === 'gutter' ? key : 'margin' + key[0].toUpperCase() + key.slice(1)) + 'Twips']])) } };
+  }
+  return { ...source, registry, sectionCount: (sections?.boundaries.length || 0) + 1,
+    manifestPath, manifestRaw, bookProfile, trustedSections };
+}
+
+async function handleDocumentStoriesQuery(payload = {}) {
+  try {
+    if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId','admissionOnly'].includes(key))
+      || payload.admissionOnly !== undefined && typeof payload.admissionOnly !== 'boolean') throw Error('WORD_STORIES_QUERY_INVALID');
+    userBookmarkCapability('cmd.project.documentStories.create');
+    const source = await readDocumentStoriesContext();
+    if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+      || isDirty || autoSaveInProgress || await fs.readFile(source.filePath, 'utf8') !== source.raw
+      || await fs.readFile(source.manifestPath, 'utf8') !== source.manifestRaw) throw Error('WORD_STORIES_QUERY_STALE');
+    userBookmarkCapability('cmd.project.documentStories.create');
+    if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+      || isDirty || autoSaveInProgress) throw Error('WORD_STORIES_QUERY_STALE');
+    return Object.freeze({ ok: true, available: true, projectId: source.projectId, sceneId: source.sceneId,
+      subjectId: source.subjectId, expectedSceneSha256: source.sceneSha256,
+      sectionCount: source.sectionCount, registry: cloneJsonSafe(source.registry) });
+  } catch (error) { return { ok: false, available: false, reason: error.message }; }
+}
+
+async function handleDocumentStoriesMutation(action, payload = {}) {
+  const commandId = 'cmd.project.documentStories.' + action;
+  try {
+    const allowed = ['editorMode','requestId','projectId','sceneId','subjectId','expectedSceneSha256','sectionIndex',
+      ...(action === 'options' ? ['titlePage','evenAndOddHeaders'] : ['role','variant', ...(action === 'create' ? ['source'] : [])])];
+    if (!['create','remove','linkPrevious','options'].includes(action) || !isPlainObjectValue(payload)
+      || Object.keys(payload).some(key => !allowed.includes(key))
+      || payload.editorMode !== undefined && payload.editorMode !== 'tiptap'
+      || typeof payload.requestId !== 'string' || !/^[\w:.-]{1,160}$/u.test(payload.requestId)) throw Error('WORD_STORIES_INPUT_INVALID');
+    userBookmarkCapability(commandId);
+    return await queueDiskOperation(async () => {
+      const source = await readDocumentStoriesContext();
+      if (payload.projectId !== source.projectId || payload.sceneId !== source.sceneId
+        || payload.subjectId !== source.subjectId || payload.expectedSceneSha256 !== source.sceneSha256) throw Error('WORD_STORIES_SOURCE_STALE');
+      const snapshot = await requestEditorSnapshot(), envelope = await loadDocumentContentEnvelopeModule();
+      const checkSnapshot = observed => {
+        if (observed.content !== snapshot.content || observed.generation !== snapshot.generation
+          || observed.commentAuthoringPending || observed.manuscriptNoteAuthoringPending) throw Error('WORD_STORIES_EDITOR_STALE');
+      };
+      checkSnapshot(snapshot);
+      const live = envelope.parseObservablePayload(snapshot.content);
+      const review = await loadRtkNonTextReturnModule();
+      if (live.issue || !userBookmarkEnvelopeMetadataEqual(live, source.parsed)
+        || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0
+        || !review.commentSceneSnapshotsEqual(userBookmarkModel.materializeInternalLinkSchemaDefaults(live.doc || envelope.buildParagraphDocumentFromText(live.text)),
+          userBookmarkModel.materializeInternalLinkSchemaDefaults(source.doc))) throw Error('WORD_STORIES_EDITOR_STALE');
+      const intent = { op: action === 'options' ? 'setSectionOptions' : action, sectionIndex: payload.sectionIndex };
+      for (const key of ['role','variant','source','titlePage','evenAndOddHeaders']) if (Object.hasOwn(payload,key)) intent[key] = payload[key];
+      const planOptions = { idSeed: crypto.randomUUID(), ...(source.trustedSections ? { trustedSections: source.trustedSections } : {}) };
+      const plan = require('./core/word-stories-v1.cjs').planStoryMutation(source.doc, intent, planOptions);
+      if (!plan.changed) return { ok: true, changed: false, storyId: plan.storyId };
+      const content = envelope.composeObservablePayload({ ...source.parsed, metaEnabled: source.parsed.hasMetaBlock, doc: plan.doc });
+      const beforeScenePublish = async () => {
+        const binding = await readUserBookmarkProjectBinding(source.filePath);
+        userBookmarkCapability(commandId);
+        if (binding.projectId !== source.projectId || currentFilePath !== source.filePath
+          || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+          || isDirty || autoSaveInProgress || activePendingRecording || lastSignaledEditGeneration > snapshot.generation
+          || await fs.readFile(source.filePath,'utf8') !== source.raw
+          || await fs.readFile(source.manifestPath,'utf8') !== source.manifestRaw) throw Error('WORD_STORIES_SOURCE_STALE');
+        checkSnapshot(await requestEditorSnapshot());
+        userBookmarkCapability(commandId);
+        if (currentFilePath !== source.filePath || source.subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+          || isDirty || autoSaveInProgress || activePendingRecording || lastSignaledEditGeneration > snapshot.generation) throw Error('WORD_STORIES_SOURCE_STALE');
+      };
+      await beforeScenePublish();
+      const receipt = await commitWriterProjectSnapshot(source.filePath, content, snapshot.generation, source.bookProfile,
+        'canonical document stories authoring', { expectedSceneContent: source.raw, beforeScenePublish,
+          storyAuthoringIntent: { intent, options: planOptions } });
+      if (!receipt.success) throw Error(receipt.code || receipt.error || 'WORD_STORIES_WRITE_FAILED');
+      const publicationCurrent = () => currentFilePath === source.filePath
+        && source.subjectId === currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+        && !isDirty && !autoSaveInProgress && lastSignaledEditGeneration <= snapshot.generation;
+      let ok = publicationCurrent();
+      try {
+        userBookmarkCapability(commandId);
+        if (ok && await fs.readFile(source.filePath,'utf8') === content) {
+          mainWindow.webContents.send('editor:set-text', { content, expectedContent: snapshot.content,
+            expectedGeneration: snapshot.generation, projectId: source.projectId, documentId: snapshot.documentId,
+            storyPublication: true, storyPublicationRequestId: payload.requestId });
+          const observed = await requestEditorSnapshot();
+          ok = publicationCurrent() && observed.content === content && observed.generation === snapshot.generation
+            && !observed.commentAuthoringPending && !observed.manuscriptNoteAuthoringPending
+            && await fs.readFile(source.filePath,'utf8') === content;
+        } else ok = false;
+      } catch { ok = false; }
+      if (ok) {
+        userBookmarkSaveContinuation = null;
+        lastAutosaveHash = computeHash(content);
+        const { bookmarkPublication, ...durable } = receipt;
+        ok = (await acknowledgeMainOwnedSave(durable, content, snapshot.generation)).kind === SAVE_ACK_KINDS.SAVED;
+      } else setDirtyState(true);
+      return { ok, changed: true, storageWritten: true, storyId: plan.storyId,
+        reason: ok ? null : 'WORD_STORIES_PUBLICATION_STALE',
+        ...(ok ? {} : { details: { changed: true, storageWritten: true, storyId: plan.storyId } }) };
+    }, 'canonical document stories authoring');
+  } catch (error) {
+    logDevError('handleDocumentStoriesMutation', { code: error.code || error.message, message: error.message });
+    return { ...makeReviewMutateTypedError(commandId, error.code || error.message, error.message),
+      code: error.code || error.message, reason: error.message };
+  }
+}
+
 let localImageInsertionPending = false;
 async function handleLocalImageInsertion(payload = {}) {
   const commandId = 'cmd.project.media.insertLocal';
@@ -25523,19 +25656,24 @@ async function applyPrivateDocumentStoriesBatch(input,store) {
       const state = await readVerifiedProjectTreeMutation({manifestPath,projectId:input.projectSnapshot.projectId});
       const optional = async relative => { try { return await fs.readFile(path.join(input.projectRoot,relative),'utf8'); } catch(error){if(error.code==='ENOENT')return null;throw error;} };
       const stories = await import(pathToFileURL(path.join(__dirname,'io','revisionBridge','reviewTransportStoriesV1.mjs')).href);
-      const changes=[];
+      const changes=[], mediaResources=new Map();
       for(const scene of candidate.sourceScenes) {
         if(typeof scene.path!=='string' || path.resolve(input.projectRoot,scene.sceneId)!==scene.path
           || await fs.readFile(scene.path,'utf8')!==scene.raw)throw Error('WORD_STORIES_BATCH_SCENE_CAS');
         const changed=candidate.batchScenes.find(item=>item.sceneId===scene.sceneId);
         const plan=changed ? stories.revalidateDocumentStoryCandidate(changed) : null;
         const afterContent=plan ? envelope.composeObservablePayload({...changed.parsed,metaEnabled:changed.parsed.hasMetaBlock,doc:plan.doc}) : scene.raw;
-        if(plan && (await prepareWordMediaReturnResources(plan.doc,manifestPath)).length)throw Error('WORD_STORIES_BATCH_MEDIA_RESOURCE_REQUIRED');
-        changes.push({sceneId:scene.sceneId,beforeContent:scene.raw,afterContent,commitText:await optional(scene.sceneId+'.wp201-commit.json')});
+        if(plan)for(const resource of await prepareWordMediaReturnResources(plan.doc,manifestPath)) {
+          const relativePath=path.relative(input.projectRoot,resource.path).split(path.sep).join('/');
+          const contentBase64=resource.content.toString('base64');
+          if(mediaResources.has(relativePath) && mediaResources.get(relativePath).contentBase64!==contentBase64)throw Error('WORD_STORIES_BATCH_MEDIA_CONFLICT');
+          mediaResources.set(relativePath,{relativePath,contentBase64});
+        }
+        changes.push({sceneId:scene.sceneId,beforeContent:scene.raw,afterContent,...(plan?.storyMutationReplay ? {storyMutationReplay:plan.storyMutationReplay}:{}),commitText:await optional(scene.sceneId+'.wp201-commit.json')});
       }
       const model=await loadProjectTreeCohortModule();
       const plan=model.planProjectStoryBodyCohort({operation:'story-bodies',operationId:candidate.changeId,projectId:input.projectSnapshot.projectId,
-        manifestPath,beforeManifestText,expectedTreeRevision:state.treeRevision,changes,
+        manifestPath,beforeManifestText,expectedTreeRevision:state.treeRevision,changes,mediaResources:[...mediaResources.values()],
         notesText:await optional('notes.craftsman.json'),commentsText:await optional('.yalken/word-review/non-text-return-state.v1.json')});
       guard();
       const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate:guard,
@@ -31685,6 +31823,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
 
 const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
   ['query.project.userBookmarks', handleUserBookmarkQuery],
+  ['query.project.documentStories', handleDocumentStoriesQuery],
   [PROJECT_TREE_QUERY_ID, handleWorkspaceProjectTreeQuery],
   [PROJECT_LIBRARY_QUERY_ID, handleWorkspaceProjectLibraryQuery],
   [SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, handleWorkspaceSelectedScenesTxtExportScopeQuery],
@@ -34638,6 +34777,7 @@ const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.media.insertLocal',
   ...PRODUCT_COMMAND_ID_LIST,
+  ...['create','remove','linkPrevious','options'].map(action => 'cmd.project.documentStories.' + action),
   'cmd.project.bookmarks.managePrompt',
   'cmd.project.bookmarks.create',
   'cmd.project.bookmarks.copy',
@@ -34758,6 +34898,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     userBookmarkCapability('cmd.project.bookmarks.managePrompt');
     return { ok: sendCanonicalRuntimeCommand('cmd.project.bookmarks.managePrompt') };
   },
+  ...Object.fromEntries(['create','remove','linkPrevious','options'].map(action => [
+    'cmd.project.documentStories.' + action, payload => handleDocumentStoriesMutation(action, payload),
+  ])),
   ...Object.fromEntries(['create', 'copy', 'rename', 'delete'].map(action => [
     `cmd.project.bookmarks.${action}`, payload => handleUserBookmarkMutation(action, payload),
   ])),

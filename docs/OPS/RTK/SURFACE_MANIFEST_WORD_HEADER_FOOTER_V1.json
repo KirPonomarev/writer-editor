@@ -8,9 +8,13 @@
   "newVisualLanguage": false,
   "contributionKind": "Revision-bound story inventory and authoring intent",
   "commands": [
-    "cmd.project.save"
+    "cmd.project.save",
+    "cmd.project.documentStories.create",
+    "cmd.project.documentStories.remove",
+    "cmd.project.documentStories.linkPrevious",
+    "cmd.project.documentStories.options"
   ],
-  "projection": "Current checked scene document; story IDs, roles and resolved section references, no independent storage authority",
+  "projection": "Main checked revision-bound scene story inventory, section geometry and resolved references; publication bound to project, scene, generation and private request identity",
   "activation": {
     "explicitOpenRequired": true,
     "backgroundRefresh": false,
@@ -46,5 +50,16 @@
   },
   "tokens": "Existing Yalken contextual panel controls and CSS variables; no global styles",
   "fallback": "Retain unsaved story drafts on failed Save or stale revision; no silent content flattening",
-  "performance": "Resolve bounded inventory on open; no package parsing or full story traversal on manuscript keystrokes"
+  "performance": "Resolve bounded inventory on open; no package parsing or full story traversal on manuscript keystrokes",
+  "queries": [
+    "query.project.documentStories"
+  ],
+  "authoringControls": [
+    "Section and header/footer role",
+    "Default, first and even variant",
+    "Create separate empty or copy inherited body",
+    "Clear this section with explicit empty story",
+    "Link to previous section",
+    "First-page and even/odd settings"
+  ]
 }

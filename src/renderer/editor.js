@@ -759,6 +759,7 @@ let manuscriptProjectionRequest = 0;
 const manuscriptDrafts = new Map();
 const storyDrafts = new Map();
 let storyMutationPending = false;
+let pendingStoryRequestId = null;
 let storyEditorPanel = null;
 let destroyStoryEditor = null;
 let notesMutationPending = 0;
@@ -8538,7 +8539,7 @@ function composeEditorSnapshot() {
     rootSplitBoundary: isTiptapMode ? getTiptapRootSplitBoundary() : null,
     generation: localEditGeneration,
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
-    manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending),
+    manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending || storyDrafts.size || (storyMutationPending && !pendingStoryRequestId)),
   };
 }
 
@@ -12199,9 +12200,9 @@ function renderManuscriptNoteBody(note) {
   if (notesDetailMeta) notesDetailMeta.textContent = `${note.manuscript.kind === 'endnote' ? 'Концевая сноска' : 'Сноска'}${note.deleted ? ' · удалена' : ''}`;
 }
 
-function openDocumentStories() {
-  if (!isTiptapMode || currentDocumentKind !== 'scene' || !currentProjectId || !currentDocumentId || flowModeState.active) {
-    setNotesWorkspaceStatus('Откройте отдельную сцену для редактирования колонтитулов'); return;
+function openDocumentStories(preferredId = null) {
+  if (!isTiptapMode || !['scene', 'chapter-file'].includes(currentDocumentKind) || !currentProjectId || !currentDocumentId || flowModeState.active) {
+    setNotesWorkspaceStatus('Откройте отдельную сцену или главу-документ для редактирования колонтитулов'); return;
   }
   if (storyMutationPending) return;
   destroyStoryEditor?.();
@@ -12216,6 +12217,7 @@ function openDocumentStories() {
   const status = document.createElement('p'); status.setAttribute('role', 'status');
   const select = document.createElement('select'); select.className = 'notes-button'; select.setAttribute('aria-label', 'Колонтитул и раздел');
   for (const story of inventory) { const option = document.createElement('option'); option.value = story.id; option.textContent = story.label; select.append(option); }
+  if (typeof preferredId === 'string' && inventory.some(story => story.id === preferredId)) select.value = preferredId;
   const host = document.createElement('section'); host.className = 'manuscript-note-editor';
   host.setAttribute('aria-label', 'Редактор колонтитула');
   const buttons = document.createElement('div'); buttons.className = 'notes-capture__footer';
@@ -12245,7 +12247,7 @@ function openDocumentStories() {
     select.hidden = !inventory.length; host.hidden = !selected;
     status.textContent = draft ? 'Есть несохранённый черновик колонтитула.' : selected
       ? `${selected.label}. Изменения действуют во всех указанных разделах.`
-      : 'В этой сцене нет колонтитулов. Колонтитулы импортируются из Word.';
+      : 'Колонтитулов пока нет. Выберите раздел и создайте колонтитул.';
   };
   const commit = async () => {
     if (storyMutationPending || !baseline || !current()) { status.textContent = 'Сцена изменилась. Черновик сохранён.'; return; }
@@ -12284,6 +12286,65 @@ function openDocumentStories() {
     document.querySelector('[data-document-stories-open]')?.focus(); };
   close.addEventListener('click', dismiss);
   panel.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); dismiss(); } });
+  const topology = document.createElement('fieldset'); topology.className = 'notes-capture';
+  const legend = document.createElement('legend'); legend.textContent = 'Колонтитулы раздела'; topology.append(legend);
+  const chooser = (label, options) => {
+    const wrapper = document.createElement('label'); wrapper.textContent = label;
+    const control = document.createElement('select'); control.className = 'notes-button'; control.setAttribute('aria-label', label);
+    for (const [value, text] of options) { const option = document.createElement('option'); option.value = String(value); option.textContent = text; control.append(option); }
+    wrapper.append(control); topology.append(wrapper); return control;
+  };
+  const currentDoc = getTiptapDocumentSnapshot().doc;
+  const sectionChoice = chooser('Раздел', Array.from({length:(currentDoc.attrs?.wordSections?.boundaries?.length || 0)+1}, (_,i)=>[i,`Раздел ${i+1}`]));
+  const roleChoice = chooser('Положение', [['header','Верхний колонтитул'],['footer','Нижний колонтитул']]);
+  const variantChoice = chooser('Страницы', [['default','Обычные'],['first','Первая'],['even','Чётные']]);
+  const sourceChoice = chooser('Новый колонтитул', [['copy','Копия текущего'],['empty','Пустой']]);
+  const checkbox = label => { const wrapper=document.createElement('label'); wrapper.textContent=label; const input=document.createElement('input');input.type='checkbox';input.setAttribute('aria-label',label);wrapper.append(input);topology.append(wrapper);return input; };
+  const titlePage = checkbox('Особый колонтитул первой страницы');
+  const evenPages = checkbox('Разные колонтитулы чётных и нечётных страниц');
+  const setFlags = () => { const registry=getTiptapDocumentSnapshot().doc.attrs?.wordStories; titlePage.checked=registry?.sections?.[Number(sectionChoice.value)]?.titlePage===true;evenPages.checked=registry?.evenAndOddHeaders===true; };
+  sectionChoice.addEventListener('change',setFlags);setFlags();
+  const actions = [];
+  const mutate = async action => {
+    if (storyMutationPending || !current()) return;
+    if (storyDrafts.size || manuscriptDrafts.size || wordCommentDraft || wordCommentBusy || notesMutationPending) {
+      status.textContent='Сначала сохраните или отмените правки колонтитулов, сносок и комментариев.'; return;
+    }
+    const requestId=`story-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
+    let completed = false, newStoryId = null;
+    storyMutationPending=true; pendingStoryRequestId=requestId; editor.setEditable(false);select.disabled=true;topology.disabled=true;
+    save.disabled=true;discard.disabled=true;
+    try {
+      const saved=await dispatchUiCommand('cmd.project.save',{});
+      if (!saved?.ok || !current()) throw Error('STORY_SAVE_REQUIRED');
+      const projection=await invokeWorkspaceQueryBridge('query.project.documentStories',{requestId});
+      if (!projection?.ok || projection.projectId!==identity.projectId || !current()) throw Error(projection?.reason || 'STORY_QUERY_STALE');
+      const binding={requestId,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256};
+      const payload=action==='options' ? {...binding,sectionIndex:Number(sectionChoice.value),titlePage:titlePage.checked,evenAndOddHeaders:evenPages.checked}
+        : {...binding,sectionIndex:Number(sectionChoice.value),role:roleChoice.value,variant:variantChoice.value,...(action==='create'?{source:sourceChoice.value}:{})};
+      const result=await dispatchUiCommand(`cmd.project.documentStories.${action}`,payload);
+      const value=result?.value?.result || result?.value || result?.error?.details || result;
+      if (!result?.ok || !value?.ok || !current()) {
+        status.textContent=value?.storageWritten ? 'Файл сохранён, но редактор изменился. Переоткройте сцену; повторно действие не применяйте.' : 'Колонтитул не изменён. Проверьте состояние сцены и повторите действие.';
+        return;
+      }
+      completed=true;newStoryId=value.storyId;
+    } catch { status.textContent='Изменение колонтитула не выполнено. Сохраните сцену и повторите действие.'; }
+    finally {
+      storyMutationPending=false;pendingStoryRequestId=null;select.disabled=false;topology.disabled=false;editor.setEditable(current() && Boolean(select.value));save.disabled=!current()||!select.value;
+      if(completed)openDocumentStories(newStoryId);
+    }
+  };
+  for(const [action,label] of [['create','Создать отдельный колонтитул'],['remove','Очистить колонтитул раздела'],['linkPrevious','Связать с предыдущим разделом'],['options','Применить настройки страниц']]) {
+    const button=document.createElement('button');button.type='button';button.className='notes-button';button.textContent=label;
+    button.addEventListener('click',()=>{void mutate(action);});
+    if(action==='linkPrevious') {
+      const refreshLinkAvailability=()=>{button.disabled=Number(sectionChoice.value)===0;button.title=button.disabled?'У первого раздела нет предыдущего':'';};
+      sectionChoice.addEventListener('change',refreshLinkAvailability);refreshLinkAvailability();
+    }
+    topology.append(button);actions.push(button);
+  }
+  panel.append(topology);
   load(); select.focus();
 }
 
@@ -23918,6 +23979,19 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.storyPublication === true) {
+      const checked = parseDocumentContent(payload.content);
+      if (pendingStoryRequestId && payload.storyPublicationRequestId === pendingStoryRequestId
+        && payload.projectId === currentProjectId && payload.documentId === currentDocumentId
+        && payload.expectedGeneration === localEditGeneration && payload.expectedContent === composeDocumentContent()
+        && !storyDrafts.size && !manuscriptDrafts.size && !wordCommentDraft && !wordCommentBusy && !notesMutationPending
+        && !checked.issue && checked.doc) replaceTiptapTreeDocumentSnapshot({doc:checked.doc});
+      return;
+    }
+    if (payload?.reviewSurface && storyDrafts.size) {
+      updateStatusText('Возврат из Word сохранён в файле; черновик колонтитула оставлен. Сохраните его отдельно перед переоткрытием сцены.', {visible:true});
+      return;
+    }
     let treeContentParsed = null;
     if (payload?.treeContentReplacement === true) {
       const reason = treeContentReplacementRefusalReason(payload);

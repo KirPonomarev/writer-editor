@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "1baa4e0b0e5a8b994a5a9580cc010c7c411d62fa",
+  "bindingBaseSha": "82a6ba0f9da5483700e55ce4b3835e024642caf3",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -39,7 +39,21 @@
     "src/utils/docxImportSafeCreate.js",
     "src/core/project-transaction-v1.cjs",
     "src/core/project-tree-cohort-v1.mjs",
-    "test/contracts/rtk-word-header-footer-transaction.contract.test.js"
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/core/entitlement-law-v1.cjs",
+    "src/shared/workspaceQueryRegistry.cjs",
+    "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
+    "docs/OPS/CAPABILITIES_MATRIX.json",
+    "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
+    "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+    "test/contracts/rtk-word-nested-tables.contract.test.js",
+    "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+    "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+    "test/unit/project-tree-pathless-contract.test.js",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -51,7 +65,7 @@
     "src/core/notesStorage.mjs"
   ],
   "productAuthority": "Owner entire Mac Word plan P4-01; Product Core owns typed header/footer identity, rich bodies and per-section references in existing document envelope; no raw XML parallel truth",
-  "commandAuthority": "Existing Save and authenticated Review Apply commands revalidate project, lifecycle, scene identity, baseline revision and topology; immutable UI projection cannot authorize writes",
+  "commandAuthority": "Existing Save and authenticated Review Apply commands revalidate project, lifecycle, scene identity, baseline revision and topology; immutable UI projection cannot authorize writes; explicit story create/remove/linkPrevious/setSectionOptions commands with fresh Core IDs, revision-bound query, Kernel capability and Main precommit CAS; renderer never supplies full canonical replacement graph.",
   "designAuthority": "Existing contextual editor host and rich-body controls, existing tokens and layout, role/section labels; dedicated surface manifest, no global shell redesign",
   "operationKinds": [
     "COMMAND",
@@ -62,7 +76,9 @@
     "Untrusted DOCX part relationships and bounded XML -> typed Core story validation -> Main import admission -> existing atomic safe-create",
     "Rich-body authoring intent -> current scene working document -> existing Kernel Save -> Main validates protected story reference graph and bodies -> existing atomic scene persistence",
     "Authenticated Word return -> original round capsule and protected topology -> Core body delta -> existing Apply atomic writer",
-    "Same header/footer outcome: extend existing recoverable project transaction with typed multi-scene story body cohort; existing scene/image safe-create collects story assets; no new writer"
+    "Same header/footer outcome: extend existing recoverable project transaction with typed multi-scene story body cohort; existing scene/image safe-create collects story assets; no new writer",
+    "Explicit native story authoring intent -> Kernel capability -> Main revision/project/lifecycle validation -> typed Core story mutation -> existing atomic scene writer and protected editor publication",
+    "Authenticated Word topology changes -> protected round source binding and validated independent section/relationship graph -> typed Core add/remove/reference delta -> existing recoverable writer; ambiguity stays explicit, not guessed identity"
   ],
   "readPaths": [
     "Part-local header/footer relationships, default/first/even section refs and flags; canonical scene story projection",
@@ -95,13 +111,15 @@
     "Forged renderer role/reference/identity, stale Save or Apply, preview/cancel no writes; atomic failure preserves prior state",
     "Body split/Undo/Redo preserves ownership; unsaved story drafts survive failed Save; native SOURCE/PACKAGED alternating edit and new-process recovery",
     "Browser-bundled envelope and real checked editor load without Node Buffer/process; malformed image projection rejected; Main binary digest/signature guards remain mandatory",
-    "Multi-scene story transaction per-scene CAS and recoverable journal with interruption injection: all-before or all-after, no partial ACK"
+    "Multi-scene story transaction per-scene CAS and recoverable journal with interruption injection: all-before or all-after, no partial ACK",
+    "Create absent header/footer; copy inherited versus link previous; explicit empty deletion versus inherited removal; first/even options; shared identity and unreferenced-body collection; both-side topology mutations and stale/forged command refusal",
+    "New story images in multi-scene return use same recoverable asset/scene cohort, injected failures cannot publish partial graph"
   ],
   "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
   "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
   "currentReality": [
-    "Header/footer parts have no canonical editable story model; section references currently refuse import; earlier typed-section and rich-note components provide integration seams",
-    "DRAFT checkpoint 1baa4e0b: native editor blank due Node-only validator dependency; focused tests19pass1fail; full Main candidate has unchanged-body misclassification. Neither delivery nor acceptance."
+    "DRAFT checkpoint 82a6ba0f9da5483700e55ce4b3835e024642caf3: 39 focused header tests passed with zero skips; native mixed diagnostic source body edit, Word return Apply and new-process readback observed. Final exact-head/source+packaged acceptance and delivery remain open.",
+    "Existing story-body route integrated; explicit creation/removal commands and Word topology mutation remain target until implemented and proved."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"

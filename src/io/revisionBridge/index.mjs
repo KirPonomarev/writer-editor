@@ -9235,7 +9235,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
 }
 
 // Literal semantic inventory; provider revision identifiers are inert, never authority.
-function docxSectionInventory(bytes, parsed) {
+function docxSectionInventory(bytes, parsed, preserveDefault = false) {
   const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, records = [], owners = new WeakMap();
   let paragraph = -1, finalSeen = false;
   docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
@@ -9273,7 +9273,7 @@ function docxSectionInventory(bytes, parsed) {
   const defaultColumns = !single?.columns || (single.columns.count === 1 && single.columns.spaceTwips === 720);
   // Only the exact historical default can remain on the plain-document path.
   // A final-only custom page geometry is still durable document meaning.
-  if (single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns && !records.some(record => ['headerReference','footerReference','titlePg'].some(key => record.seen.has(key)))) return null;
+  if (!preserveDefault && single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns && !records.some(record => ['headerReference','footerReference','titlePg'].some(key => record.seen.has(key)))) return null;
   for (const record of records.slice(0,-1)) {
     record.endParagraphIndex = parsed.paragraphSourceIndexes.indexOf(record.endParagraphIndex);
     if (record.endParagraphIndex < 0) throw Error('WORD_SECTIONS_INVALID');
@@ -10686,7 +10686,7 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
     if (byPart.get(rel.part).role !== role) throw Error('WORD_STORY_ROLE_CONFLICT');
     current[role][variant] = byPart.get(rel.part).id;
   }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
-  if (!stories.length) { if (relationships.size) throw Error('WORD_STORY_ORPHAN'); return null; }
+  if (!stories.length && relationships.size) throw Error('WORD_STORY_ORPHAN');
   if (new Set([...relationships.values()].map(rel => rel.part)).size !== byPart.size) throw Error('WORD_STORY_ORPHAN');
   let evenAndOddHeaders = false, evenFlagCount = 0;
   if (auxiliary('word/settings.xml')) docxFontVisitPart(bytes, 'word/settings.xml', W, 'settings', (node, stack, attr, attributes) => {
@@ -10696,6 +10696,7 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
     const value = attr('val', W); if (stack.length !== 1 || value !== undefined && !['0','1','false','true','off','on'].includes(value)) throw Error('WORD_STORY_FLAG_INVALID');
     evenAndOddHeaders = !['0','false','off'].includes(value);
   });
+  if (!stories.length && !evenAndOddHeaders && !sections.some(section=>section.titlePage)) return null;
   const types = new Map();
   docxFontVisitPart(bytes, '[Content_Types].xml', 'http://schemas.openxmlformats.org/package/2006/content-types', 'Types', (node, stack, attr) => {
     if (node.localName === 'Override') types.set(attr('PartName'), attr('ContentType'));
@@ -10894,8 +10895,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     } });
     parsed = docxContentPreviewParseMainDocumentXml(pendingSource.xml, inlineStyles, docxNumberingCatalog(bytes));
     if (!parsed.failure) {
-      const sections = docxSectionInventory(bytes, parsed);
       const stories = parseDocumentStoriesRichReturn(bytes, {includeParts:true});
+      const sections = docxSectionInventory(bytes, parsed, Boolean(stories));
       if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
       if (sections) {
         if (pendingSource.revisions.length) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');

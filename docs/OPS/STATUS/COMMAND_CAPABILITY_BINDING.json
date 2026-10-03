@@ -629,6 +629,22 @@
     {
       "commandId": "cmd.project.tree.mergeNextScene",
       "capabilityId": "cap.project.tree.mergeNextScene"
+    },
+    {
+      "commandId": "cmd.project.documentStories.create",
+      "capabilityId": "cap.project.stories.authoring"
+    },
+    {
+      "commandId": "cmd.project.documentStories.remove",
+      "capabilityId": "cap.project.stories.authoring"
+    },
+    {
+      "commandId": "cmd.project.documentStories.linkPrevious",
+      "capabilityId": "cap.project.stories.authoring"
+    },
+    {
+      "commandId": "cmd.project.documentStories.options",
+      "capabilityId": "cap.project.stories.authoring"
     }
   ]
 }
