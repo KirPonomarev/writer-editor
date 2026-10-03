@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "d6ca7f1832b9effd482ad26266b54945d2c46761b00f81be465aca4e0b83f0f2",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1590,7 +1590,7 @@
       "filePath": "src/export/docx/docxMinBuilder.js",
       "sha256": "a52d0a14a8283e81e8bf0fb77f8331b05fd6198079fcd9f500775551c7a7b0b7",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "66263801819d94c03e5f07d1bfdeaf0742da08df37e1654ca3d87c046c012a98",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1608,7 +1608,7 @@
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
       "sha256": "caf471160b51226d06604e2381b4e5c9b68f30af95f03b92e21af592e795c865",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "519c60948f2f02bf2dcc693eb780ccf5bc00519b75b48edf8cb0fac3a820bebe",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1653,7 +1653,7 @@
       "filePath": "src/main.js",
       "sha256": "f9970d58ccc84b14edc5535b863826bf3f3bd26f443006a2c466bee777f22ff5",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "cd430bc52abfc1287d2e9b26555fc29484630bf604db10dfc896b34ad4051e0e",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1689,7 +1689,7 @@
       "filePath": "src/renderer/tiptap/index.js",
       "sha256": "b181255134c5f3b2581b2989ac769a41ae49bbf44d2f545d060ccbe0ac498e6c",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1698,7 +1698,7 @@
       "filePath": "src/utils/docxImportLocalFilePreview.js",
       "sha256": "3776254af95d7f8f733edfe65007345f54c6cfe314087a64a1fa2b3afebf7d37",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ebc1c009290856b85a64f2f21ca761b34ff7f4712812d8457416b75c0a9adeab",
+      "sha256": "2b22121c734641aaac3c61f674b3e8f85e0f8f380d9a2b473a015a7cc0af2b04",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3ceac6fe29adc99ed81b1e682bdf62ef6dd701c65ab0cc415e7b569abd6dc71e",
+      "sha256": "327ee97fd1f2e67a0173b3beea4ec452f29168796fff449d5fc66f7ffa5b2ba3",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "870a480ac34cc6c1a1c887cb04c24ca756c55b0fd5b6dcd9bab5d0562689ce96",
+      "sha256": "b3d1bdb4833d5c2c4302711b1131c451b1503032c3b8f91bb5f4ea8c9cdcebf6",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2462,7 +2462,7 @@
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
       "sha256": "f47e487d8de6cb0dc25055e773281ab5324bcfc2fdb15462627c08a560048d34",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2533,9 +2533,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "feeac2f518354ecf8e008bc16479e5a9167a2364858d8cf51433fd57fcd41dd1",
+      "sha256": "4fa27ae216633fe505dd1429883ec06c7448b1c203380a546e0ded1c75b46234",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2544,7 +2544,7 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "sha256": "2503e3710f1cdd69f0d779719d62cbecbc20cf5c3a6dc721deed053cd0882af3",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2553,7 +2553,7 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "1d2eec74875100493d8baf3309d3bd84f1cf682fc7da400fe5488fb5b862f452",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -3272,7 +3272,7 @@
     {
       "filePath": "src/core/word-user-bookmarks-v1.cjs",
       "sha256": "6becc09f5ecb87eb3131cc2ab2f2dcbaf89aa5e4d7cea2acea67a6db7025c25a",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3281,7 +3281,7 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
       "sha256": "f8a4ffab30d6913448e5cf562b4641019d9069d92836fc30757dcccffbf00ead",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -3722,7 +3722,7 @@
     {
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
       "sha256": "4a6019f173cc1bc1df13af9192185f29c832b935a270693a285757d4ce6d204f",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4216,8 +4216,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-03--word-sections-mac.md",
-      "sha256": "04d0c5c5541c88e51314a9955207933bb54826968246a642341fcbb26fdb5059",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "sha256": "7035a633dcdc23a1134e65e655529f079635c003144f365a7288def4dace4ba8",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4226,7 +4226,7 @@
     {
       "filePath": "src/renderer/tiptap/documentSections.mjs",
       "sha256": "1e863a6836da04179305f0d56e1d64ec8c2a6206a35ad7bb37b8fd928e9b9a68",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4235,7 +4235,7 @@
     {
       "filePath": "src/core/word-sections-v1.cjs",
       "sha256": "647c058464717f854de6e963804b60fd9d7b2654d51754e6b31bde386df0d08b",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4244,7 +4244,7 @@
     {
       "filePath": "test/contracts/rtk-word-sections.contract.test.js",
       "sha256": "f285cd275f945c8a7e779ec65d8b3fb0b5beec6d553c70993bae5bed4ec24775",
-      "approvedAtUtc": "2026-10-03T03:18:32.874743Z",
+      "approvedAtUtc": "2026-10-03T03:27:48.216476Z",
       "approvedBy": "owner-delegated-codex:WORD_SECTIONS_MAC_20261003",
       "rationale": "Owner-authorized typed section preservation in Mac import, save, export and guarded text return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,

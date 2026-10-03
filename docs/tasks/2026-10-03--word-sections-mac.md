@@ -1,6 +1,6 @@
 # WORD_SECTIONS_MAC_20261003
 
-STATUS: IMPLEMENTATION_IN_PROGRESS
+STATUS: NATIVE_VERIFIED_REQUIRED_GATES_PENDING
 DOCUMENT_CLASS: TASK_CONTRACT
 TYPE: CORE
 CANON_VERSION: v3.13a-final
@@ -109,3 +109,11 @@ Record expected/actual, exact head, seed and hashes; fix one grounded hypothesis
 Candidate 4a93cd75685343eb3c4ac262beb273b8ea51c2d6: SOURCE import, text edit, Undo/Redo, Save, Review export, actual Word text edit, explicit Apply, Save, process restart and re-export observed. Apply reported 1 applied, 0 blocked, 0 failed. Independent ZIP/XML oracle confirmed six types including final continuous, two columns, page geometry and returned text. SOURCE input actually selected was an independently exported and Word-saved fixture; original fixture selection was not claimed. PACKAGED original-fixture import observed only, then owned processes stopped. These observations do not accept a successor candidate.
 
 Pre-delivery independent review found canonical numbered-paragraph carrier rejection and default-type single-final geometry loss. Both require repair before delivery. Multiple text-edit regions combined with topology changes remain conservative refusal and are an open authoring limitation. Unsupported section properties refuse explicitly; no full layout compatibility claim. Unchanged dependency audit reports 5 moderate and 11 high advisories, 0 critical; OSS policy passed.
+
+## OBSERVED_CANDIDATE_02
+
+Candidate b2eb0473d2e0ead9f1e6a9347f624d2fc0e6d649 corrected list/blockquote carrier admission and custom final-only geometry. Focused current-candidate checks: 227 passed, 0 skipped, 0 todo.
+
+SOURCE and PACKAGED each completed native import from independent-six-sections.docx, editor text change, Undo/Redo, Save, Review export, actual Word text change and Save, explicit Apply (1 applied, 0 blocked, 0 failed), Save, owned process restart and Review re-export. PACKAGED also completed ordinary current-scene DOCX export after restart. Independent Python ZIP/XML observations verified each ordered section type, final continuous, two-column properties, supported page geometry and exact changed paragraph texts across output artifacts. Runtime copy evidence binds both profiles to the exact candidate. All owned native processes stopped after observation.
+
+No whole-plan completion claim. Renderer pagination fidelity, unsupported section properties, section-boundary edits from Word and arbitrary mixed multi-region text/structural authoring remain outside this qualified slice. Required full RTK, baseline, CI and merged-head verification still pending at this evidence commit.

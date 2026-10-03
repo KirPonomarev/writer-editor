@@ -2115,7 +2115,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-sections-mac.md",
-        "sha256": "04d0c5c5541c88e51314a9955207933bb54826968246a642341fcbb26fdb5059"
+        "sha256": "7035a633dcdc23a1134e65e655529f079635c003144f365a7288def4dace4ba8"
       },
       {
         "path": "src/renderer/tiptap/documentSections.mjs",
