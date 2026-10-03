@@ -387,7 +387,7 @@ test('PK0 admits only the exact WP702 security override transition and rejects f
 test('PK0 current Word Mac security successor binds exact graph and rejects expansion or forged admission', async () => {
   const module=await loadModule(),fs=require('node:fs'),cp=require('node:child_process');
   const admission=module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
-  const baselinePackageJson=JSON.parse(cp.execFileSync('git',['show',`${admission.baseSha}:package.json`],{cwd:ROOT,encoding:'utf8'}));
+  const baselinePackageJson=JSON.parse(cp.execFileSync('git',['show','e4be0d8d22937745f691dc6121541278668139ed:package.json'],{cwd:ROOT,encoding:'utf8'}));
   const packageJson=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8'));
   const evaluate=(pkg,candidate=admission,changedFiles=['package.json','package-lock.json'])=>module.evaluatePackageContentTrust({packageJson:pkg,baselinePackageJson,trackedFiles:trackedFixture(),changedFiles,dependencyMutationAdmission:candidate,wordMacSecuritySuccessorRequired:true,programDag:programDagFixture(),scientificContracts:scientificContractsFixture()});
   assert.equal(evaluate(packageJson).ok,true);
@@ -412,4 +412,75 @@ test('PK0 repository security successor refuses altered carrier package lock hoo
   assert.ok(module.readWordMacDependencySecurityAdmission(temp));
   for(const relative of files){const target=path.join(temp,relative),before=fs.readFileSync(target);fs.appendFileSync(target,' ');assert.equal(module.readWordMacDependencySecurityAdmission(temp),null,relative);fs.writeFileSync(target,before);}
   fs.unlinkSync(path.join(temp,carrierPath));assert.equal(module.readWordMacDependencySecurityAdmission(temp),null);
+});
+
+test('PK0 recognizes only the exact squash lineage and retains all candidate byte guards', async () => {
+  const module = await loadModule(), cp = require('node:child_process');
+  const original = module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha;
+  const squash = 'be11163f98ad992d9f522c4f3e40e2d1361e016d';
+  const parent = 'e4be0d8d22937745f691dc6121541278668139ed';
+  const real = args => cp.execFileSync('git', args, { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+  const carrier = JSON.parse(real(['show', `${squash}:${module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`]));
+  let fault = null;
+  const git = args => {
+    // Model a fresh main clone in which the branch-only admission commit is absent.
+    if (args.some(arg => arg.includes(original))) throw Error('MISSING_BRANCH_OBJECT');
+    if (fault === 'ancestry' && args[0] === 'merge-base') throw Error('NOT_ANCESTOR');
+    if (fault === 'tree' && args[0] === 'rev-parse' && args[1] === `${squash}^{tree}`) return '0'.repeat(40);
+    if (fault === 'parentTree' && args[0] === 'rev-parse' && args[1] === `${parent}^{tree}`) return '0'.repeat(40);
+    if (fault === 'parent' && args.includes('--format=%P')) return `${parent} ${original}`;
+    const bytes = real(args);
+    if (fault === args[1] && args[0] === 'show') return Buffer.concat([bytes, Buffer.from(' ')]);
+    return bytes;
+  };
+  assert.deepEqual(module.readWordMacDependencySecurityCandidate({ candidateSha: squash, git }), carrier);
+  for (const failure of ['ancestry', 'tree', 'parent', 'parentTree',
+    `${squash}:${module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`,
+    ...Object.keys(carrier.currentFiles).map(p => `${squash}:${p}`),
+    ...Object.keys(carrier.previousFiles).map(p => `${parent}:${p}`)]) {
+    fault = failure;
+    assert.equal(module.readWordMacDependencySecurityCandidate({ candidateSha: squash, git }), null, failure);
+  }
+  fault = null;
+  const branchCandidate = 'a'.repeat(40);
+  const branchGit = args => {
+    if (args[0] === 'rev-parse' && args[1] === branchCandidate) return branchCandidate;
+    if (args[0] === 'merge-base') { assert.deepEqual(args.slice(1), ['--is-ancestor', original, branchCandidate]); return ''; }
+    return real(args.map(arg => arg.replace(`${branchCandidate}:`, `${squash}:`).replace(`${original}:`, `${parent}:`)));
+  };
+  assert.ok(module.readWordMacDependencySecurityCandidate({ candidateSha: branchCandidate, git: branchGit }), 'original ancestry route remains valid without requiring orphan objects in the test checkout');
+  const descendant = 'd'.repeat(40);
+  const descendantGit = args => {
+    if (args[0] === 'rev-parse' && args[1] === descendant) return descendant;
+    if (args[0] === 'merge-base' && args[2] === squash && args[3] === descendant) return '';
+    return git(args.map(arg => arg.replace(`${descendant}:`, `${squash}:`)));
+  };
+  assert.ok(module.readWordMacDependencySecurityCandidate({ candidateSha: descendant, git: descendantGit }), 'descendants retain only the exact pinned squash authority');
+});
+
+test('PK0 filesystem reader supports a main clone without the branch admission object and refuses false squash ancestry', async t => {
+  const fs = require('node:fs'), os = require('node:os'), cp = require('node:child_process');
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'word-squash-git-'));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const preload = path.join(directory, 'git-boundary.cjs');
+  const original = '89d9991331013c26b724e3cbb17ea3faa7d058e9';
+  // Patch only the isolated child's process boundary before the production ESM
+  // import. All non-faulted calls still execute the actual platform Git binary.
+  fs.writeFileSync(preload, `const cp=require('node:child_process');
+const real=cp.spawnSync;
+cp.spawnSync=function(command,args,options){
+ if(command==='git' && (args.some(arg=>arg.includes('${original}')) ||
+   (process.env.YALKEN_TEST_SQUASH_BAD_ANCESTRY==='1' && args[0]==='merge-base')))
+   return {status:1,stdout:Buffer.alloc(0),stderr:Buffer.from('MISSING_OR_NONANCESTOR')};
+ return real.call(this,command,args,options);
+};
+require('node:module').syncBuiltinESMExports();
+`);
+  const moduleUrl = require('node:url').pathToFileURL(path.join(ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href;
+  const probe = `import {readWordMacDependencySecurityAdmission} from ${JSON.stringify(moduleUrl)};console.log(JSON.stringify(Boolean(readWordMacDependencySecurityAdmission(process.cwd()))));`;
+  const run = invalid => cp.execFileSync(process.execPath, ['--require', preload, '--input-type=module', '-e', probe], {
+    cwd: ROOT, encoding: 'utf8', env: { ...process.env, YALKEN_TEST_SQUASH_BAD_ANCESTRY: invalid ? '1' : '0' },
+  }).trim();
+  assert.equal(run(false), 'true');
+  assert.equal(run(true), 'false');
 });

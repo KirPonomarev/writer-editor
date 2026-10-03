@@ -2239,7 +2239,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "45b02b857dcd5b1d6150b0779ebcfcd0226a5b1291bfe289a89bbf9e6fa80075"
+        "sha256": "ec758d4e6b4f626b468bc91d9a8ffe8bd8ba36cfc424b69cf7ffeeb0569c4dc4"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
@@ -2275,7 +2275,7 @@
       },
       {
         "path": "test/unit/r24-pk0-package-content-trust.test.js",
-        "sha256": "df620477f2ef52fefb42b6e4ba3ee590fe4322b820d040782b03903e1a1bedd1"
+        "sha256": "730a8a22dab6ef86845dd77f696dd2abcb4058ce308df1378ead44fd06c0614c"
       },
       {
         "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
