@@ -1011,7 +1011,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "2ce29aa211746bc8b92660c388102025dc5fdde227b94ef2d28649a1be04d66e"
+        "sha256": "5945db1e5867c880e5fd27ddfa4f7f9d15d068e1e68f706cb27f82e462963ac0"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -2235,11 +2235,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "0f1f4639b6e1c9e164985a6332c7d5f27883e063e646fd536aeedd58ac4c1152"
+        "sha256": "77219c881c2f85bb027e2546cc0a6e1facd04e864cae4e8c96b364aa2d233988"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "09b4d007351749b7a582234392daf7c1e228b7c79037f6461a83e94cd3565fbd"
+        "sha256": "8820df3515b47fa5825a06e164d10d4819578f6c025169a6b58bbf93028adf73"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",

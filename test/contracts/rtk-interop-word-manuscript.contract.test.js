@@ -709,8 +709,27 @@ test('Word native file transport admits only exact Lab successors and their nega
  assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
 });
 
+async function assertSecurityProtectedSuccessor(before,after,{
+ git=args=>execFileSync('git',args,{cwd:ROOT,maxBuffer:16*1024*1024}),
+ readFile=relative=>fs.readFileSync(path.join(ROOT,relative)),
+}={}) {
+ const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
+ const carrier=security.readWordMacDependencySecurityCandidate({candidateSha:'HEAD',git});
+ assert.ok(carrier,'exact committed security successor required');
+ for(const [relative,sha256] of Object.entries(carrier.currentFiles))
+  assert.equal(digest(readFile(relative)),sha256,relative);
+ const admitted=new Set(['package.json','package-lock.json','scripts/ops/rtk-interop-order-c1.mjs','scripts/ops/rtk-interop-text-order-c1.mjs']);
+ const expected=before.map(binding=>{
+  if(!admitted.has(binding.path))return binding;
+  assert.equal(binding.sha256,carrier.previousFiles[binding.path],`historical protected binding: ${binding.path}`);
+  assert.ok(carrier.currentFiles[binding.path],binding.path);
+  return {...binding,sha256:carrier.currentFiles[binding.path]};
+ });
+ assert.deepEqual(after,expected,'only exact security successor protected bindings may change');
+}
+
 // Current product repair may change source bindings, never historical Lab identities.
-test('Word import transaction admission preserves every historical Lab identity and frozen cell set',()=>{
+test('Word import transaction admission preserves every historical Lab identity and frozen cell set',async()=>{
  const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
  const base=JSON.parse(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
  const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
@@ -744,6 +763,8 @@ test('Word import transaction admission preserves every historical Lab identity 
  for(const binding of expected.wordManuscriptBatch.readerBindings)if(autoFitReaderPins[binding.path])binding.sha256=autoFitReaderPins[binding.path];
  // Host upgraded; exact native qualification changes only these OS identity fields.
  expected.qualifiedProvider={...expected.qualifiedProvider,macosVersion:'27.0',macosBuild:'26A428'};
+ await assertSecurityProtectedSuccessor(base.protectedFiles,actual.protectedFiles);
+ expected.protectedFiles=structuredClone(actual.protectedFiles);
  for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],expected[key],key);
  for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
  const bindings=actual.qualifiedRuntimeRepair.sourceBindings;
@@ -757,4 +778,31 @@ test('Current manuscript policy binds every actual reader before any physical co
  const readers=policy.wordManuscriptBatch.readerBindings;
  assert.equal(readers.length,10);
  for(const binding of readers)assert.equal(digest(fs.readFileSync(path.join(ROOT,binding.path))),binding.sha256,binding.path);
+});
+
+
+test('Manuscript security successor rejects missing carrier, tampered bytes and unrelated protected drift',async()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const before=JSON.parse(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:'+policyPath],{cwd:ROOT})).protectedFiles;
+ const after=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath))).protectedFiles;
+ const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
+ const git=args=>execFileSync('git',args,{cwd:ROOT,maxBuffer:16*1024*1024});
+ for(const mode of ['missing','tampered']) {
+  await assert.rejects(()=>assertSecurityProtectedSuccessor(before,after,{git:args=>{
+   if(args[0]==='show'&&args[1].endsWith(':'+security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) {
+    if(mode==='missing')throw new Error('missing carrier');
+    return Buffer.concat([git(args),Buffer.from(' ')]);
+   }
+   return git(args);
+  }}),/exact committed security successor required/);
+ }
+ await assert.rejects(()=>assertSecurityProtectedSuccessor(before,after,{readFile:relative=>{
+  const bytes=fs.readFileSync(path.join(ROOT,relative));
+  return relative==='package.json'?Buffer.concat([bytes,Buffer.from(' ')]):bytes;
+ }}),/package.json/);
+ const drift=structuredClone(after);
+ const unrelated=drift.find(binding=>!['package.json','package-lock.json','scripts/ops/rtk-interop-order-c1.mjs','scripts/ops/rtk-interop-text-order-c1.mjs'].includes(binding.path));
+ assert.ok(unrelated,'independent protected binding exists');
+ unrelated.sha256='0'.repeat(64);
+ await assert.rejects(()=>assertSecurityProtectedSuccessor(before,drift),/only exact security successor protected bindings may change/);
 });

@@ -68,7 +68,8 @@
     "test/contracts/rtk-release01-terminal-claims.contract.test.js",
     "scripts/ops/rtk-interop-order-c1.mjs",
     "scripts/ops/rtk-interop-text-order-c1.mjs",
-    "test/contracts/rtk-interop-100-denominator.contract.test.js"
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "test/contracts/rtk-interop-word-manuscript.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -176,5 +177,10 @@
     "baseSha": "e165c42971e927443a1bedaea7909e99d6714ddb",
     "preflight": "64 paths PASS before writes",
     "reason": "ORDER and TEXT_ORDER protect prior dependency bytes; exact candidate-aware successor must retain historical policies and all unrelated protected-file/drift rejections"
+  },
+  "securityManuscriptAmendment": {
+    "baseSha": "c130af1ac7ced8c93f68cdcfeefbf6e0c636542c",
+    "preflight": "65 paths PASS before writes",
+    "reason": "Historical manuscript assertion retains all Lab identities and cell sets while admitting only validated exact security successor protected bindings"
   }
 }
