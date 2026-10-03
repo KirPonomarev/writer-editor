@@ -77,10 +77,11 @@ function blockAt(starts, offset) {
   return lo - 1;
 }
 
-function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent }) {
+function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent, includeUnchanged = false }) {
   if (beforeText === null) return null;
   const before = readState(beforeText, projectId);
-  if (!before.threads.some(t => t.sceneId === sceneId && t.status !== 'deleted')) return null;
+  const unchanged = () => includeUnchanged === true ? { mode: MODE, beforeText, afterText: beforeText } : null;
+  if (!before.threads.some(t => t.sceneId === sceneId && t.status !== 'deleted')) return unchanged();
   const old = paragraphs(beforeContent), next = paragraphs(afterContent);
   // A local text edit may move an anchor within its leaf. A changed cell
   // topology cannot silently reassign a repeated paragraph to another owner.
@@ -118,7 +119,7 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
         startUtf16: start, blockTextSha256: sha(next[newIndex].text) }; changed = true;
     }
   }
-  if (!changed) return null;
+  if (!changed) return unchanged();
   if (before.revision === Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');
   after.revision++;
   const afterText = JSON.stringify(after, null, 2) + '\n';

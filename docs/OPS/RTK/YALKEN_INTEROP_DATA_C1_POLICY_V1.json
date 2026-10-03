@@ -775,7 +775,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "71ff077739d3f4135aa5969731a582e2891ec6ab6cf13a315dfe9a307c57f783"
+        "sha256": "c3320b59358232de9a950deebfca9c254323d60b106b94c8877ba5823f84be7c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1047,7 +1047,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "012cdf82ed27b5d7992ff8988954ac04a6bb04020bf2859ba14a66ac231e7fb8"
+        "sha256": "322fd618a0d6a564408cec529c32d208f785ed197d13d7f2f0fd040901de75db"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1471,11 +1471,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "f490043b12e3db203e3e2b8a3977e4dc1d5ffb24340c4ffee76d51ae87a5de6f"
+        "sha256": "1be3bea51aacc5f544b6ec669b89a0c8b90dc1c995c78fb1a276df30315b83fa"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "8bd5a8f3b6e191e1c60e165d45669bf3b6e1c7dbc93674e2913f1539ca59ad4d"
+        "sha256": "1fdce78ed2f6722dd3932735113d4bfba338f1e2c42493985518ae3dd94fe8cb"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -2339,7 +2339,7 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-rich-comments-mac.md",
-        "sha256": "93b799ef8a40581e70184e943792f27e336feb3a7c33266b9adfb665c0f7fc63"
+        "sha256": "37ea3944c7609cddfcf150197ca0d38ea7bf15d2fa57cbed98b787e5323dafd3"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json",
@@ -2347,7 +2347,7 @@
       },
       {
         "path": "test/unit/r24-wp201-project-transaction.test.js",
-        "sha256": "1a065e60723c8d1bad83efbcadf844db4ff297e91ef7e183245495733027280f"
+        "sha256": "812e5858906ffcb4326f4002441b57211bf3367d845e030503f079ffe786ff28"
       },
       {
         "path": "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",

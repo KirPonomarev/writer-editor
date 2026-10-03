@@ -22940,7 +22940,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               });
               commentState = planCommentAnchorSave({ beforeText: current.text,
                 projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-                beforeContent: expectedSceneContent, afterContent: content });
+                beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true });
             }
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });

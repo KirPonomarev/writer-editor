@@ -192,7 +192,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       if (typeof projectId !== 'string' || !projectId) fail();
       expected = planCommentAnchorSave({ beforeText: value.beforeText, projectId,
         sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
-        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene });
+        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene, includeUnchanged: true });
     } catch { fail(); }
     if (!expected || expected.afterText !== value.afterText) fail();
     return expected;
@@ -983,6 +983,15 @@ async function commitProjectTransaction({
   let retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
     && retainedCommit.record.resources?.length ? normalizeRetainedResources(retainedCommit.record.resources, scenePath, manifestPath) : [];
   retainedResources = await consumeRestoredTreeAnnotationResources(retainedResources, scenePath, manifestPath, before, fsAdapter);
+  if (commentState?.mode === COMMENT_REBASE_MODE) {
+    // The independently recomputed anchor plan takes ownership of this one
+    // mutable canonical file. Its current bytes remain bound by the existing
+    // comment CAS, journal and recovery protocol; other import pins stay exact.
+    if (await inspectCommentState(commentState, manifestPath, fsAdapter) !== commentState.beforeText) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_CAS', TRANSACTION_PHASES.ADMIT);
+    }
+    retainedResources = retainedResources.filter(entry => entry.path !== commentStatePath(manifestPath));
+  }
   await verifyRetainedResources(retainedResources, scenePath, manifestPath, fsAdapter);
   for (const entry of resources) {
     if (await readResource(entry, manifestPath, fsAdapter) !== null) {
