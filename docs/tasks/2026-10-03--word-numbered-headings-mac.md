@@ -1,6 +1,6 @@
 # WORD_NUMBERED_HEADINGS_MAC_20261003
 
-STATUS: IMPLEMENTATION_IN_PROGRESS
+STATUS: NATIVE_OBSERVED_DELIVERY_PENDING
 DOCUMENT_CLASS: TASK_CONTRACT
 TYPE: CORE
 CANON_VERSION: v3.13a-final
@@ -101,3 +101,5 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY, bounded claims only.
 Retain expected/actual, exact SHA and artifacts; no disabled oracle or whole-feature claim.
 
 Scope extended on clean a7adf65b after successful preflight to include main-scene note anchor projection. The note body heading restriction remains unchanged.
+
+Native SOURCE and PACKAGED at 4c4b005100f2523349971bc0787632dce3f0f83f: independent input with heading levels9,3,2,body,9 and numbering III,nested1,IV,gap,V imported; text authored, Undo/Redo, Save, review export, actual Word suffix, explicit Apply (1 applied,0 blocked,0 failed), process restart and re-export observed. Independent Python standard-library XML oracle verified all five paragraphs, heading levels, numbering formats/levels/ordinals in three artifacts per build. Formatting lane manual diagnostics and the broader P3-08/whole Mac plan remain unaccepted.
