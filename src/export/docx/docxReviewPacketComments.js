@@ -1,5 +1,8 @@
 'use strict';
 
+const commentBody = require('../../core/word-comment-body-v1.cjs');
+const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml } = require('./docxPendingRevisions.js');
+const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 const crypto = require('node:crypto');
 const { buildDocxRunContentXml, escapeXml, segmentDocxTextForSerialization } = require('./docxTextXml.js');
 
@@ -89,11 +92,17 @@ function exactCommentAnchor(thread, blocks) {
 }
 
 function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
-  demand(plain(options) && Object.keys(options).every(key => key === 'sceneId')
+  demand(plain(options) && Object.keys(options).every(key => ['sceneId', 'exportTypography'].includes(key))
     && (!Object.hasOwn(options, 'sceneId') || (typeof options.sceneId === 'string' && options.sceneId.length > 0)),
   'DOCX_COMMENT_SCOPE_INVALID');
+  const exportTypography = options.exportTypography;
+  demand(exportTypography === undefined || (plain(exportTypography)
+    && Object.keys(exportTypography).sort().join(',') === 'fontSize,schemaVersion'
+    && exportTypography.schemaVersion === 'yalken.review-docx.typography-defaults.v1'
+    && require('../../io/inlineTypography.cjs').normalizeFontSize(exportTypography.fontSize) === exportTypography.fontSize),
+  'DOCX_COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   if (state === undefined) return null;
-  demand(plain(state) && state.schemaVersion === COMMENT_STATE_SCHEMA && state.projectId === projectId
+  demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2].includes(state.schemaVersion) && state.projectId === projectId
     && Number.isSafeInteger(state.revision) && state.revision >= 0
     && Array.isArray(state.threads) && Array.isArray(state.events), 'DOCX_COMMENT_STATE_INVALID');
   const ids = new Set();
@@ -123,15 +132,20 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
         && message.kind === (index === 0 ? 'root' : 'reply')
         && typeof message.body === 'string' && message.body.trim()
         && Buffer.byteLength(message.body, 'utf8') <= 16384, 'DOCX_COMMENT_MESSAGE_INVALID');
+      const content = commentBody.validateCommentMessageContent(message);
+      demand(!content.richBody || state.schemaVersion === commentBody.STATE_V2, 'COMMENT_RICH_STATE_VERSION_REQUIRED');
       reserve(ids, message.commentId);
       segmentDocxTextForSerialization(message.body);
       demand(!message.body.includes('\r'), 'DOCX_COMMENT_BODY_NON_CANONICAL_NEWLINE');
+      const transportRichBody = exportTypography ? commentBody.commentBodyWithTypography(content, exportTypography) : null;
       const provenance = normalizeCommentProvenance(message.provenance);
       const transportDateUtc = explicitUtcTransportDate(provenance);
       return {
-        canonicalCommentId: message.commentId, kind: message.kind, body: message.body,
+        canonicalCommentId: message.commentId, kind: message.kind, ...content,
+        ...(transportRichBody ? {transportRichBody} : {}),
         provenance, ...(transportDateUtc ? { transportDateUtc } : {}),
         paraId: reserve(paraIds, wordId('comment-paragraph', message.commentId)),
+        ...(content.richBody ? { precedingParaIds: content.richBody.document.content.slice(0,-1).map((_,i) => reserve(paraIds,wordId('comment-paragraph-'+i,message.commentId))) } : {}),
         durableId: reserve(durableIds, wordId('comment-durable', message.commentId)),
       };
     });
@@ -173,24 +187,44 @@ const xmlAttribute = value => escapeXml(value).replaceAll('\t', '&#9;').replaceA
 function commentPackageParts(projection) {
   if (!projection || projection.threads.length === 0) return { entries: [], contentTypes: '', relationships: '' };
   demand(projection.schemaVersion === COMMENT_EXPORT_SCHEMA, 'DOCX_COMMENT_EXPORT_SCHEMA_INVALID');
-  const comments = [], extended = [], ids = [], extensible = [];
+  const comments = [], extended = [], ids = [], extensible = [], links = new Map();
   for (const thread of projection.threads) {
     for (const message of thread.messages) {
       const { author = '', initials = '', date = '', dateUtc = message.transportDateUtc || '' } = message.provenance;
-      comments.push(`<w:comment w:id="${message.commentId}" w:author="${xmlAttribute(author)}"${initials ? ` w:initials="${xmlAttribute(initials)}"` : ''}${date ? ` w:date="${xmlAttribute(date)}"` : ''}><w:p w14:paraId="${message.paraId}"><w:r>${buildDocxRunContentXml(message.body)}</w:r></w:p></w:comment>`);
+      const content = commentBody.validateCommentMessageContent(message);
+      const paragraphs = content.richBody ? content.richBody.document.content.map((p,index,array) => {
+        const id = index === array.length - 1 ? message.paraId : message.precedingParaIds[index];
+        demand(/^[A-F0-9]{8}$/u.test(id), 'DOCX_COMMENT_PARAGRAPH_ID_INVALID');
+        const align = p.attrs?.textAlign;
+        const lang = buildDocxWordLanguageXml(p.attrs?.wordParagraphMarkLanguage);
+        const props = (align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : '')
+          + buildDocxWordParagraphSpacingXml(p.attrs?.wordParagraphSpacing)
+          + buildDocxWordParagraphLayoutXml(p.attrs) + (lang ? `<w:rPr>${lang}</w:rPr>` : '');
+        const runs = (p.content || []).map(node => {
+          const run = node.type === 'hardBreak' ? {type:'text',text:'\n',...(node.marks ? {marks:node.marks} : {})} : node;
+          const xml = require('./docxMinBuilder.js').buildDocxMarkedRunXml(run, true, true);
+          const href = node.marks?.find(m => m.type === 'link')?.attrs?.href;
+          if (!href) return xml;
+          if (!links.has(href)) links.set(href, `commentLink${links.size + 1}`);
+          return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
+        }).join('');
+        return `<w:p w14:paraId="${id}">${props ? `<w:pPr>${props}</w:pPr>` : ''}${runs}</w:p>`;
+      }).join('') : `<w:p w14:paraId="${message.paraId}"><w:r>${buildDocxRunContentXml(message.body)}</w:r></w:p>`;
+      comments.push(`<w:comment w:id="${message.commentId}" w:author="${xmlAttribute(author)}"${initials ? ` w:initials="${xmlAttribute(initials)}"` : ''}${date ? ` w:date="${xmlAttribute(date)}"` : ''}>${paragraphs}</w:comment>`);
       extended.push(`<w15:commentEx w15:paraId="${message.paraId}"${message.kind === 'reply' ? ` w15:paraIdParent="${thread.messages[0].paraId}"` : ''} w15:done="${thread.status === 'resolved' ? 1 : 0}"/>`);
       ids.push(`<w16cid:commentId w16cid:paraId="${message.paraId}" w16cid:durableId="${message.durableId}"/>`);
       extensible.push(`<w16cex:commentExtensible w16cex:durableId="${message.durableId}"${dateUtc ? ` w16cex:dateUtc="${xmlAttribute(dateUtc)}"` : ''}/>`);
     }
   }
   const xml = [
-    `<w:comments xmlns:w="${NS.w}" xmlns:w14="${NS.w14}">${comments.join('')}</w:comments>`,
+    `<w:comments xmlns:w="${NS.w}" xmlns:w14="${NS.w14}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${comments.join('')}</w:comments>`,
     `<w15:commentsEx xmlns:w15="${NS.w15}">${extended.join('')}</w15:commentsEx>`,
     `<w16cid:commentsIds xmlns:w16cid="${NS.w16cid}">${ids.join('')}</w16cid:commentsIds>`,
     `<w16cex:commentsExtensible xmlns:w16cex="${NS.w16cex}">${extensible.join('')}</w16cex:commentsExtensible>`,
   ];
   return {
-    entries: PARTS.map(([name], index) => ({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${xml[index]}` })),
+    entries: [...PARTS.map(([name], index) => ({ name: `word/${name}`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${xml[index]}` })),
+      ...(links.size ? [{ name: 'word/_rels/comments.xml.rels', data: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...links].map(([href,id]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${xmlAttribute(href)}" TargetMode="External"/>`).join('')}</Relationships>` }] : [])],
     contentTypes: PARTS.map(([name, type]) => `<Override PartName="/word/${name}" ContentType="${type}"/>`).join(''),
     relationships: PARTS.map(([name, , type], index) => `<Relationship Id="rIdYalkenComment${index}" Type="${type}" Target="${name}"/>`).join(''),
   };
@@ -252,9 +286,9 @@ function compareCommentExportReadback(projection, returned) {
     const root = expected.messages[0];
     const actual = byDurable.get(root.durableId);
     if (!actual) { missing.push({ threadId: expected.threadId, canonicalCommentId: root.canonicalCommentId, code: 'COMMENT_ROOT_MISSING' }); continue; }
-    const messages = [{ body: actual.body, durableId: actual.durableId,
+    const messages = [{ body: actual.body, richBody: actual.richBody, durableId: actual.durableId,
       provenance: { ...actual.authorPersonIdentity, date: actual.date, dateUtc: actual.dateUtc || actual.modernMetadata?.dateUtc } },
-    ...(actual.replies || []).map(reply => ({ body: reply.body, durableId: reply.durableId,
+    ...(actual.replies || []).map(reply => ({ body: reply.body, richBody: reply.richBody, durableId: reply.durableId,
       provenance: { author: reply.author, initials: reply.initials, date: reply.date, dateUtc: reply.dateUtc } }))];
     const before = changed.length + missing.length;
     if (actual.quotedAnchorText !== expected.anchor.selectedText
@@ -274,7 +308,10 @@ function compareCommentExportReadback(projection, returned) {
       let metadataEqual = false;
       try { metadataEqual = stable(normalizeCommentProvenance(actualMetadata)) === stable({ ...message.provenance,
         ...(message.transportDateUtc ? { dateUtc: message.transportDateUtc } : {}) }); } catch { /* Malformed provider provenance never grants continuity. */ }
-      if (seen.body !== message.body || !metadataEqual) {
+      let contentEqual = false;
+      try { contentEqual = commentBody.commentBodyEqual(seen, message.transportRichBody ? {...message,richBody:message.transportRichBody} : message); }
+      catch { /* Invalid returned rich content is a publication mismatch, never continuity. */ }
+      if (!contentEqual || !metadataEqual) {
         changed.push({ threadId: expected.threadId, canonicalCommentId: message.canonicalCommentId, code: 'COMMENT_BODY_OR_PROVENANCE_CHANGED' });
       }
     }

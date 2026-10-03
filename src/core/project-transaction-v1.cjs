@@ -203,15 +203,19 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       && Buffer.byteLength(value[key]) <= 65536)) fail();
   let before, after;
   try { before = JSON.parse(value.beforeText); after = JSON.parse(value.afterText); } catch { fail(); }
-  if (!before || !after || before.schemaVersion !== 'yalken.rtk.word.non-text-return-state.v1'
-    || after.schemaVersion !== before.schemaVersion || typeof before.projectId !== 'string' || !before.projectId
+  if (!before || !after || !['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2'].includes(before.schemaVersion)
+    || ![before.schemaVersion, 'yalken.rtk.word.non-text-return-state.v2'].includes(after.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
     || after.projectId !== before.projectId || !Number.isSafeInteger(before.revision) || before.revision < 0
     || !Number.isSafeInteger(after.revision) || after.revision !== before.revision + 1
     || !Array.isArray(before.threads) || !Array.isArray(after.threads) || !Array.isArray(before.events)
     || canonicalize(after.events) !== canonicalize(before.events)
     || after.threads.length <= before.threads.length
     || canonicalize(after.threads.slice(0, before.threads.length)) !== canonicalize(before.threads)
-    || canonicalize({ ...after, revision: before.revision, threads: before.threads }) !== canonicalize(before)) fail();
+    || canonicalize({ ...after, schemaVersion: before.schemaVersion, revision: before.revision, threads: before.threads }) !== canonicalize(before)) fail();
+  try {
+    require('./word-comment-authoring-v1.cjs').readState(value.beforeText, before.projectId);
+    require('./word-comment-authoring-v1.cjs').readState(value.afterText, before.projectId);
+  } catch { fail(); }
   const newScene = path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/');
   if (after.threads.slice(before.threads.length).some(thread => thread?.sceneId !== newScene)) fail();
   return { beforeText: value.beforeText, afterText: value.afterText };

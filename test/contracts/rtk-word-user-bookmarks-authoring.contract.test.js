@@ -11,6 +11,9 @@ function handlerHarness() {
     window: { electronAPI: { invokeWorkspaceQueryBridge() {} } }, LINK_PROMPT_TITLE: 'Link', EXTRA_COMMAND_IDS: { INSERT_LINK_PROMPT: 'link' },
     composeDocumentContent: () => c.content, getTiptapSelectionOffsets: () => ({ start: 2, end: 5 }),
     getTiptapFormattingState: () => c.state, syncToolbarFormattingState() {}, withEditorModeCommandPayload: () => ({}),
+    captureTiptapLinkTarget: () => ({ auxiliary: false, formattingState: c.state, apply: (action, payload) => {
+      effects.push(['selection', 2, 5]); effects.push([action, payload]); return { performed: true };
+    } }),
     enforceCapabilityForCommand: () => c.allowed ? { ok: true } : { ok: false, error: { reason: 'REVOKED' } },
     setTiptapSelectionOffsets: (...v) => { effects.push(['selection', ...v]); return { performed: true }; },
     handleTiptapFormatCommand: (action,payload) => { effects.push([action, payload]); return { performed: true }; },

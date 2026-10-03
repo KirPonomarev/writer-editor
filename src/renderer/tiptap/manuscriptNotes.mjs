@@ -1,6 +1,8 @@
+import { normalizeFontFamily, normalizeFontSize } from '../../io/inlineTypography.mjs';
+import commentBody from '../../core/word-comment-body-v1.cjs';
 import { canonicalizeDocumentJson } from '../documentContentEnvelope.mjs';
 import { DocumentListNumbering } from './documentListNumbering.mjs';
-import { Editor, Extension } from '@tiptap/core';
+import { Editor, Extension, generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
@@ -56,13 +58,24 @@ export function getFocusedManuscriptBodyEditor(doc = globalThis.document) {
   return host ? bodyEditors.get(host) || null : null;
 }
 
-export function manuscriptBodyExtensions() {
+export function manuscriptBodyExtensions({ profile = 'manuscript' } = {}) {
+  const comment = profile === 'comment';
   return [StarterKit.configure({ heading: false,
+      ...(comment ? { bulletList: false, orderedList: false, listItem: false } : {}),
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
-    DocumentListNumbering, DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
-    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' }),
+    ...(!comment ? [DocumentListNumbering] : []), DocumentTextStyle, DocumentParagraphAlignment, Color,
+    ...(!comment ? [DocumentMedia, DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' })] : []),
     Highlight.configure({ multicolor: true }), Underline,
     Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })];
+}
+
+export function commentBodyDocumentForEditor(message) {
+  if (!message) return { type: 'doc', content: [{ type: 'paragraph' }] };
+  return commentBody.commentBodyDocument(message);
+}
+
+export function renderCommentBodyHtml(message) {
+  return generateHTML(commentBodyDocumentForEditor(message), manuscriptBodyExtensions({ profile: 'comment' }));
 }
 
 export function readManuscriptBodyDocument(editor) {
@@ -73,12 +86,12 @@ export function readManuscriptBodyDocument(editor) {
   return doc;
 }
 
-export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, bodyLabel = 'Текст сноски', toolbarLabel = 'Форматирование сноски', linkTitle = 'Ссылка в сноске' } = {}) {
+export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, bodyLabel = 'Текст сноски', toolbarLabel = 'Форматирование сноски', linkTitle = 'Ссылка в сноске', profile = 'manuscript' } = {}) {
   const controls = document.createElement('div'); controls.className = 'manuscript-note-toolbar';
   controls.setAttribute('role', 'toolbar'); controls.setAttribute('aria-label', toolbarLabel);
   const surface = document.createElement('div'); surface.className = 'manuscript-note-body'; host.append(controls, surface);
   const editor = new Editor({ element: surface,
-    extensions: manuscriptBodyExtensions(),
+    extensions: manuscriptBodyExtensions({ profile }),
     content: { type: 'doc', content: [{ type: 'paragraph' }] },
     editorProps: { attributes: { role: 'textbox', 'aria-label': bodyLabel, 'aria-multiline': 'true' },
       handlePaste: (_view, event) => {
@@ -97,12 +110,44 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
     const button = document.createElement('button');button.type = 'button';button.className = 'notes-button';button.textContent = label;
     button.addEventListener('click', () => editor.chain().focus()[command]().run());controls.append(button);
   }
-  for (const [label, command, args] of [
+  for (const [label, command, args] of (profile === 'comment' ? [] : [
     ['Маркированный список', 'toggleBulletList', []], ['Нумерованный список', 'toggleOrderedList', []],
     ['Увеличить уровень списка', 'sinkListItem', ['listItem']], ['Уменьшить уровень списка', 'liftListItem', ['listItem']],
-  ]) {
+  ])) {
     const button = document.createElement('button'); button.type = 'button'; button.className = 'notes-button'; button.textContent = label;
     button.addEventListener('click', () => { if (editor.isEditable) editor.chain().focus()[command](...args).run(); }); controls.append(button);
+  }
+  if (profile === 'comment') {
+    const field = (label, type, apply) => {
+      const wrapper = document.createElement('label'); wrapper.textContent = label;
+      const input = document.createElement('input'); input.type = type; input.setAttribute('aria-label', label);
+      input.className = 'notes-button'; wrapper.append(input); controls.append(wrapper);
+      input.addEventListener('change', () => {
+        if (!editor.isEditable) return;
+        try { apply(input.value); input.removeAttribute('aria-invalid'); }
+        catch { input.setAttribute('aria-invalid', 'true'); }
+      });
+      return input;
+    };
+    const font = field('Шрифт', 'text', value => editor.chain().focus().setMark('textStyle', { fontFamily: value ? normalizeFontFamily(value) : null }).run());
+    font.placeholder = 'По умолчанию'; font.size = 12;
+    const size = field('Кегль', 'number', value => editor.chain().focus().setMark('textStyle', { fontSize: value ? normalizeFontSize(value + 'pt') : null }).run());
+    size.min = '1'; size.max = '400'; size.step = '0.5'; size.placeholder = 'пт';
+    const color = field('Цвет текста', 'color', value => editor.chain().focus().setColor(value).run());
+    const highlight = field('Выделение цветом', 'color', value => editor.chain().focus().setHighlight({ color: value }).run());
+    for (const [label, command] of [['Убрать цвет текста', 'unsetColor'], ['Убрать выделение', 'unsetHighlight']]) {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'notes-button'; button.textContent = label;
+      button.addEventListener('click', () => { if (editor.isEditable) editor.chain().focus()[command]().run(); }); controls.append(button);
+    }
+    const sync = () => {
+      const style = editor.getAttributes('textStyle');
+      if (document.activeElement !== font) font.value = style.fontFamily || '';
+      if (document.activeElement !== size) size.value = style.fontSize ? String(parseFloat(style.fontSize)) : '';
+      if (/^#[0-9a-f]{6}$/iu.test(style.color || '')) color.value = style.color;
+      const highlightColor = editor.getAttributes('highlight').color;
+      if (/^#[0-9a-f]{6}$/iu.test(highlightColor || '')) highlight.value = highlightColor;
+    };
+    editor.on('selectionUpdate', sync); editor.on('update', sync);
   }
   let documentGeneration = 0;
   const linkButton = document.createElement('button'); linkButton.type = 'button'; linkButton.className = 'notes-button'; linkButton.textContent = 'Ссылка';
@@ -130,6 +175,6 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
     // expose the previous entity's body through Undo.
     editor.view.updateState(EditorState.create({ schema: editor.schema, doc: editor.state.doc, plugins: editor.state.plugins }));
   },
-    setEditable: value => { editor.setEditable(value, false); for (const button of controls.querySelectorAll('button')) button.disabled = !value; },
-    focus: () => editor.commands.focus('end'), destroy: () => { bodyEditors.delete(host); editor.destroy(); } };
+    setEditable: value => { editor.setEditable(value, false); for (const button of controls.querySelectorAll('button, input, select')) button.disabled = !value; },
+    focus: () => editor.commands.focus('end'), focusPreservingSelection: () => editor.view.focus(), destroy: () => { bodyEditors.delete(host); editor.destroy(); } };
 }

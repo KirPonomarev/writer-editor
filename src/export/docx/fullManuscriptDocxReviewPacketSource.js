@@ -1275,7 +1275,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const wordDefaultTabStop=documentFormats.some(format=>format.explicit)?documentFormats[0].wordDefaultTabStop:undefined;
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
-  const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
+  const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.

@@ -1,3 +1,4 @@
+import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
@@ -3565,12 +3566,9 @@ function lastCommentParagraphParaId(scans, commentToken) {
     .filter((token) => isWordToken(token, 'p'))
     .filter((token) => token.openStart > commentToken.openStart && token.closeEnd <= commentToken.closeStart)
     .sort((left, right) => left.openStart - right.openStart || left.closeEnd - right.closeEnd);
-  let lastParaId = '';
-  for (const token of candidates) {
-    const paraId = attr(token, 'paraId', W14_NS);
-    if (isValidModernCommentParaId(paraId)) lastParaId = paraId;
-  }
-  return lastParaId;
+  const final = candidates.filter(token => token.depth === commentToken.depth + 1).at(-1);
+  const paraId = final ? attr(final, 'paraId', W14_NS) : '';
+  return isValidModernCommentParaId(paraId) ? paraId : '';
 }
 
 function expectedCommentRecords(input) {
@@ -4829,25 +4827,28 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   if (sourceMode === 'MIXED') reasons.push(reason('RTK_MANUAL_MIXED_RETURN', 'sourceMode', 'MIXED return remains manual review in B02.'));
   const commentGraphCapability = buildCommentGraphCapability(input, partNames, comments.commentThreads);
 
-  let commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'ABSENT' };
+  let commentBodyGrammar = { profile: 'RICH_INLINE_V1', status: 'ABSENT' };
   if (parts['word/comments.xml']) {
     const byPart = { 'word/comments.xml': scans.comments, 'word/commentsExtended.xml': scans.commentsExtended,
       'word/commentsIds.xml': scans.commentsIds, 'word/commentsExtensible.xml': scans.commentsExtensible };
     try {
       const normalizationLedger = [];
-      validateCommentMetadataScans(parts, name => byPart[name], { normalizationLedger, stylesScan });
-      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED',
-        ...(normalizationLedger.length ? {
-          normalizationPolicy: normalizationLedger.some(item => item.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION')
-            ? 'LITERAL_COMMENT_TEXT_RETURN_DECLARED_PRESENTATION_AND_PROOFING'
-            : normalizationLedger.some(item => item.definitionPart === 'word/styles.xml')
-            ? 'LITERAL_COMMENT_TEXT_RETURN_BUILTIN_PRESENTATION_AND_PROOFING'
-            : 'LITERAL_COMMENT_TEXT_RETURN_PROOFING_METADATA_ONLY',
-          normalizationLedger,
-        } : {}) };
+      validateCommentMetadataScans(parts, name => byPart[name]);
+      const bodies = parseRichCommentBodies(parts, scans.comments, { budgets, cryptoPort,
+        readCommentRichDocument: ports.readCommentRichDocument, normalizationLedger });
+      for (const thread of comments.commentThreads) {
+        for (const item of [thread, ...thread.replies]) {
+          const id = item === thread ? item.commentId : item.rawId;
+          const content = bodies.get(id);
+          if (!content || content.body !== item.body) throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+          item.richBody = content.richBody;
+          if (item !== thread) item.bodyDigest = cryptoPort.sha256Json({ rawId: id, body: item.body, richBody: item.richBody });
+        }
+      }
+      commentBodyGrammar = { profile: 'RICH_INLINE_V1', status: 'SUPPORTED', normalizationLedger };
     } catch (error) {
       if (error.message !== 'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED') throw error;
-      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'UNSUPPORTED', code: error.message };
+      commentBodyGrammar = { profile: 'RICH_INLINE_V1', status: 'UNSUPPORTED', code: error.message, ...(error.detail ? {detail:error.detail} : {}) };
     }
   }
 
@@ -4964,7 +4965,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
         }
         : null,
       replyDigests: thread.replies.map((reply) => reply.bodyDigest),
-      bodyDigest: cryptoPort.sha256Json({ commentId: thread.commentId, body: thread.body }),
+      bodyDigest: cryptoPort.sha256Json({ commentId: thread.commentId, body: thread.body,
+        ...(thread.richBody ? { richBody: thread.richBody } : {}) }),
       // CANON-01 C6b: anchor placement participates so relocating a comment between paragraphs
       // changes supportedSemanticDigest.
       placement: placementForCommentAnchor(documentScan, {
@@ -5151,145 +5153,230 @@ export function verifyAuthorityCarrierSignatureWithSecret(selectedCarrier, input
 }
 
 
-// Closed ordinary-comment intake profile. Unknown body effects and metadata
-// must not disappear when the canonical message model stores literal text.
+// A comment part owns its own relationships. The synthetic document below is
+// only a bounded formatting projection; it never grants document identity.
+function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentRichDocument, normalizationLedger = [] }) {
+  const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
+  const require = value => { if (!value) fail(); };
+  let xml = parts['word/comments.xml'];
+  const roots = scan.tokens.filter(t => t.depth === 0);
+  require(!scan.diagnostics.length && roots.length === 1 && isWordToken(roots[0], 'comments'));
+  const children = parent => directChildTokensWithin(scan, parent);
+  const attrs = (token, allowed, extra = {}) => {
+    require(token.attributes.every(a=>a.namespaceUri!==W_NS || !a.localName.startsWith('rsid') || /^[a-fA-F0-9]{8}$/u.test(a.value)));
+    require(token.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
+      || a.namespaceUri === W_NS && allowed.includes(a.localName)
+      || (extra[a.namespaceUri] || []).includes(a.localName)
+      || a.prefix === 'xml' && a.namespaceUri === '' && (extra['http://www.w3.org/XML/1998/namespace'] || []).includes(a.localName)));
+  };
+  const noText = (token, ownChildren = children(token)) => {
+    let cursor = token.openEnd;
+    for (const child of ownChildren.sort((a,b) => a.openStart-b.openStart)) {
+      require(!xml.slice(cursor, child.openStart).trim()); cursor = child.closeEnd;
+    }
+    require(token.selfClosing || !xml.slice(cursor,token.closeStart).trim());
+  };
+  const scalar = token => { require(!children(token).length); noText(token); };
+  const runProperties = new Set(['b','bCs','i','iCs','u','strike','color','highlight','shd','rFonts','sz','szCs','lang','rStyle','cs','rtl','kern']);
+  const propertyAttributes = {
+    b:['val'],bCs:['val'],i:['val'],iCs:['val'],u:['val'],strike:['val'],color:['val','themeColor','themeTint','themeShade'],
+    highlight:['val'],shd:['val','color','fill','themeFill','themeFillTint','themeFillShade'],
+    rFonts:['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme','hint'],
+    sz:['val'],szCs:['val'],lang:['val','eastAsia','bidi'],rStyle:['val'],cs:['val'],rtl:['val'],kern:['val'],
+    pStyle:['val'],jc:['val'],spacing:['before','after','line','lineRule'],ind:paragraphLayout.INDENT_KEYS,
+    tab:['pos','val','leader'],
+  };
+  const property = (token, run) => {
+    if (token.namespaceUri === W14_NS && token.localName === 'ligatures') {
+      require(run && ['none','standardContextual'].includes(attr(token,'val',W14_NS)));
+      attrs(token,[],{[W14_NS]:['val']}); scalar(token);
+      normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,attribute:'ligatures',value:attr(token,'val',W14_NS),disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'WORD_COMMENT_NON_AUTHORING_PRESENTATION',...(token.partName==='word/styles.xml'?{definitionPart:token.partName}:{})});return;
+    }
+    require(token.namespaceUri === W_NS && (run ? runProperties.has(token.localName)
+      : ['pStyle','jc','spacing','ind','tabs','rPr'].includes(token.localName)));
+    if (token.localName === 'tabs' || token.localName === 'rPr') {
+      attrs(token,[]); noText(token); const own = children(token), seen = new Set();
+      for (const item of own) {
+        if (token.localName === 'tabs') { require(isWordToken(item,'tab')); attrs(item,propertyAttributes.tab); scalar(item); }
+        else { require(!seen.has(item.localName)); seen.add(item.localName); property(item,true); }
+      }
+    } else { attrs(token,propertyAttributes[token.localName]); scalar(token);
+      if(token.localName==='rFonts') require(token.attributes.some(a=>a.namespaceUri===W_NS&&a.localName!=='hint'));
+      if(token.localName==='kern') {require(/^\d{1,4}$/u.test(attr(token,'val',W_NS)) && Number(attr(token,'val',W_NS))<=1638);normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,attribute:'kern',value:attr(token,'val',W_NS),disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'WORD_COMMENT_NON_AUTHORING_PRESENTATION',...(token.partName==='word/styles.xml'?{definitionPart:token.partName}:{})});}
+      if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));}
+    }
+  };
+  const relXml = parts['word/_rels/comments.xml.rels'];
+  const state = createParserBudgetState(budgets,cryptoPort);
+  const rels = relXml === undefined ? new Map() : reviewHyperlinkRelationships(relXml,budgets,cryptoPort,state);
+  if(relXml!==undefined){
+    const originalScan=scan, originalXml=xml;
+    scan=parseXmlPart('word/_rels/comments.xml.rels',relXml,budgets,cryptoPort,state);xml=relXml;
+    try{
+      const roots=scan.tokens.filter(t=>t.depth===0);
+      require(!scan.diagnostics.length&&roots.length===1&&roots[0].namespaceUri===REL_NS&&roots[0].localName==='Relationships');
+      const plainAttrs=(token,allowed)=>require(token.attributes.every(a=>a.qName==='xmlns'||a.prefix==='xmlns'||a.namespaceUri===''&&allowed.includes(a.localName)));
+      plainAttrs(roots[0],[]);noText(roots[0]);
+      for(const rel of children(roots[0])){
+        require(rel.namespaceUri===REL_NS&&rel.localName==='Relationship');plainAttrs(rel,['Id','Type','Target','TargetMode']);scalar(rel);
+      }
+    }finally{scan=originalScan;xml=originalXml;}
+  }
+  for (const value of rels.values()) {
+    require(value.type === HYPERLINK_REL_TYPE && value.mode === 'External');
+    try { normalizeDocxHttpHref(value.target); } catch { fail(); }
+  }
+  const used = new Set(), bodies = new Map(), finalParaIds = new Set(), allParaIds = new Set();
+  let richStylesScan;
+  const validateStyles = documentXml => {
+    const sourceScan=scan, sourceXml=xml;
+    const bodyScan=parseXmlPart('word/document.xml',documentXml,budgets,cryptoPort,state);
+    const refs=bodyScan.tokens.filter(t=>isWordToken(t,'pStyle')||isWordToken(t,'rStyle'));
+    if(!parts['word/styles.xml']) { require(refs.length===0); return; }
+    scan=richStylesScan ||= parseXmlPart('word/styles.xml',parts['word/styles.xml'],budgets,cryptoPort,state);xml=parts['word/styles.xml'];
+    try {
+      require(!scan.diagnostics.length);
+      const roots=scan.tokens.filter(t=>t.depth===0);require(roots.length===1&&isWordToken(roots[0],'styles'));
+      const catalog=new Map(), defaults=new Map();
+      for(const style of children(roots[0]).filter(t=>isWordToken(t,'style'))){
+        const id=attr(style,'styleId',W_NS), type=attr(style,'type',W_NS);require(id&&!catalog.has(id));catalog.set(id,style);
+        if(['1','true','on'].includes(attr(style,'default',W_NS))){require(!defaults.has(type));defaults.set(type,id);}
+      }
+      const properties = (node,run) => {
+        attrs(node,[]);noText(node);const seen=new Set();
+        for(const value of children(node)){require(!seen.has(value.localName));seen.add(value.localName);property(value,run);}
+      };
+      const docs=children(roots[0]).filter(t=>isWordToken(t,'docDefaults'));require(docs.length<=1);
+      for(const doc of docs){attrs(doc,[]);noText(doc);const seen=new Set();for(const holder of children(doc)){
+        require(holder.namespaceUri===W_NS&&['rPrDefault','pPrDefault'].includes(holder.localName)&&!seen.has(holder.localName));seen.add(holder.localName);attrs(holder,[]);noText(holder);
+        const own=children(holder);require(own.length<=1);for(const node of own){require(isWordToken(node,holder.localName==='rPrDefault'?'rPr':'pPr'));properties(node,holder.localName==='rPrDefault');}
+      }}
+      const resolved=new Set();
+      const visit=(id,type,path=new Set())=>{
+        require(!path.has(id)&&path.size<64);if(resolved.has(id))return;
+        const style=catalog.get(id);require(style&&attr(style,'type',W_NS)===type);attrs(style,['type','styleId','default','customStyle']);noText(style);
+        const seen=new Set();path.add(id);
+        for(const node of children(style)){
+          require(node.namespaceUri===W_NS&&!seen.has(node.localName));seen.add(node.localName);
+          if(['rPr','pPr'].includes(node.localName)){require(node.localName!=='pPr'||type==='paragraph');properties(node,node.localName==='rPr');}
+          else if(['name','aliases','basedOn','next','link','uiPriority','rsid'].includes(node.localName)){
+            attrs(node,['val']);scalar(node);require(attr(node,'val',W_NS));
+            if(node.localName==='basedOn')visit(attr(node,'val',W_NS),type,new Set(path));
+          } else {require(['autoRedefine','hidden','semiHidden','unhideWhenUsed','qFormat','locked','personal','personalCompose','personalReply'].includes(node.localName));attrs(node,['val']);scalar(node);}
+        }
+        resolved.add(id);
+      };
+      for(const type of ['paragraph','character'])if(defaults.has(type))visit(defaults.get(type),type);
+      for(const ref of refs)visit(attr(ref,'val',W_NS),ref.localName==='pStyle'?'paragraph':'character');
+    } finally {scan=sourceScan;xml=sourceXml;}
+  };
+  attrs(roots[0],[],{'http://schemas.openxmlformats.org/markup-compatibility/2006':['Ignorable']}); noText(roots[0]);
+  for (const comment of children(roots[0])) {
+    require(isWordToken(comment,'comment')); attrs(comment,['id','author','initials','date'],{[W16DU_NS]:['dateUtc']}); noText(comment);
+    const id = attr(comment,'id',W_NS); require(id && !bodies.has(id));
+    const paragraphs = children(comment); require(paragraphs.length > 0 && paragraphs.length <= 128);
+    for(const p of paragraphs){const pid=attr(p,'paraId',W14_NS);if(pid){require(isValidModernCommentParaId(pid)&&!allParaIds.has(pid));allParaIds.add(pid);}}
+    const finalParaId=attr(paragraphs.at(-1),'paraId',W14_NS);if(finalParaId)finalParaIds.add(finalParaId);
+    const removed = [];
+    const validateRun = run => {
+      require(isWordToken(run,'r')); attrs(run,['rsidR','rsidRPr']); noText(run);
+      const own = children(run), properties = own.filter(t=>isWordToken(t,'rPr'));
+      require(properties.length <= 1 && (!properties.length || own[0] === properties[0]));
+      for (const atom of own) {
+        require(atom.namespaceUri === W_NS);
+        if (atom.localName === 'rPr') { attrs(atom,[]);noText(atom);const seen = new Set();for (const p of children(atom)) {require(!seen.has(p.localName));seen.add(p.localName);property(p,true);} }
+        else if (atom.localName === 't') {
+          attrs(atom,[],{'http://www.w3.org/XML/1998/namespace':['space']});require(!children(atom).length);
+          require(atom.attributes.every(a=>a.localName!=='space'||['preserve','default'].includes(a.value)));
+        } else if (atom.localName === 'br') { attrs(atom,['type']);scalar(atom);require(['','textWrapping'].includes(attr(atom,'type',W_NS))); }
+        else { require(['tab','cr','noBreakHyphen','softHyphen','annotationRef'].includes(atom.localName));attrs(atom,[]);scalar(atom); }
+      }
+      if (own.some(t=>isWordToken(t,'annotationRef'))) {
+        require(own.filter(t=>isWordToken(t,'annotationRef')).length===1 && own.every(t=>['annotationRef','rPr'].includes(t.localName)));
+        removed.push(run);
+      }
+    };
+    for (const p of paragraphs) {
+      require(isWordToken(p,'p'));attrs(p,['rsidR','rsidRDefault','rsidP','rsidRPr'],{[W14_NS]:['paraId','textId']});noText(p);
+      const own = children(p), properties = own.filter(t=>isWordToken(t,'pPr'));
+      require(properties.length <= 1 && (!properties.length || own[0]===properties[0]));
+      for (const node of own) {
+        if (isWordToken(node,'pPr')) {attrs(node,[]);noText(node);const seen=new Set();for(const value of children(node)){require(!seen.has(value.localName));seen.add(value.localName);property(value,false);}}
+        else if (isWordToken(node,'hyperlink')) {
+          const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+          attrs(node,['history','tooltip'],{[R]:['id']});noText(node);const linkId=attr(node,'id',R);
+          require(rels.has(linkId) && children(node).length>0);used.add(linkId);for(const run of children(node))validateRun(run);
+        } else validateRun(node);
+      }
+    }
+    const root=roots[0], prefix=root.prefix?`${root.prefix}:`:'';
+    const opening=xml.slice(root.openStart,root.openEnd).replace(`<${root.qName}`,`<${prefix}document`);
+    let content=xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd);
+    for(const token of removed.sort((a,b)=>b.openStart-a.openStart)) content=content.slice(0,token.openStart-paragraphs[0].openStart)+content.slice(token.closeEnd-paragraphs[0].openStart);
+    const xmlns = comment.attributes.filter(a=>a.qName==='xmlns'||a.prefix==='xmlns').map(a=>` ${a.qName}="${a.value.replaceAll('&','&amp;').replaceAll('"','&quot;')}"`).join('');
+    const bodyPrefix = '__yalkenCommentBody';
+    require(!comment.attributes.some(a=>a.qName===`xmlns:${bodyPrefix}`));
+    const documentXml=`${opening}<${bodyPrefix}:body xmlns:${bodyPrefix}="${W_NS}"${xmlns}>${content}</${bodyPrefix}:body></${prefix}document>`;
+    validateStyles(documentXml);
+    let document;
+    try {
+      document = typeof readCommentRichDocument === 'function'
+        ? readCommentRichDocument({documentXml,relationshipPart:'word/_rels/comments.xml.rels'})
+        : richCommentScannerDocument(documentXml,parts,{budgets,cryptoPort});
+      const richBody={schemaVersion:'yalken.word.comment-body.v1',document};
+      bodies.set(id,commentBodyModel.validateCommentRichBody(richBody));
+    } catch (error) { throw Object.assign(Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'), { detail:error.message }); }
+  }
+  require(used.size===rels.size && bodies.size<=256);
+  for(const [name,ns,tag]of [['word/commentsExtended.xml',W15_NS,'commentEx'],['word/commentsIds.xml',W16CID_NS,'commentId'],['word/commentsExtensible.xml',W16CEX_NS,'commentExtensible']]){
+    if(!parts[name])continue;
+    const metadata=parseXmlPart(name,parts[name],budgets,cryptoPort,state);
+    for(const item of metadata.tokens.filter(t=>t.namespaceUri===ns&&t.localName===tag)){
+      const paraId=attr(item,'paraId',ns);if(paraId)require(finalParaIds.has(paraId));
+    }
+  }
+  return bodies;
+}
+
+function richCommentScannerDocument(xml,parts,options) {
+  const parsed=extractReviewTransportFormattingRunsV2(xml,{...options,
+    stylesXml:parts['word/styles.xml'],themeXml:parts['word/theme/theme1.xml'],settingsXml:parts['word/settings.xml'],
+    relationshipsXml:parts['word/_rels/comments.xml.rels']});
+  if(!parsed.ok)throw Error('COMMENT_FORMATTING');
+  const content=parsed.paragraphs.map(p=>{
+    if(p.trackedRevision||p.table||p.typedBreakInvalid||p.unsupportedParagraphNames.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid
+      ||p.paragraphStructure?.nodeType!=='paragraph')throw Error('COMMENT_PARAGRAPH');
+    const content=[];
+    for(const run of p.formattedRuns){
+      if(run.unsupportedNames.length||run.invalidSupportedValue||run.wordLanguageInvalid)throw Error('COMMENT_RUN');
+      const state=run.inlineState, marks=['bold','italic','underline','strike'].filter(k=>state[k]===true).map(type=>({type}));
+      const style=Object.fromEntries(['color','fontFamily','fontSize','wordLanguage'].filter(k=>state[k]!==undefined).map(k=>[k,state[k]]));
+      if(Object.keys(style).length)marks.push({type:'textStyle',attrs:style});
+      if(state.highlight)marks.push({type:'highlight',attrs:{color:state.highlight}});
+      if(state.link)marks.push({type:'link',attrs:{href:normalizeDocxHttpHref(state.link),target:'_blank',rel:'noopener noreferrer nofollow'}});
+      run.text.split('\n').forEach((text,i)=>{if(i)content.push({type:'hardBreak',...(marks.length?{marks}: {})});if(text)content.push({type:'text',text,...(marks.length?{marks}: {})});});
+    }
+    return {type:'paragraph',...(Object.keys(p.paragraphState).length?{attrs:p.paragraphState}:{}),content};
+  });
+  return {type:'doc',content};
+}
+
+// Rich intake and return share strict body and modern metadata validation.
+// Standalone callers retain a bounded scanner; ZIP adapters provide the shared
+// document style/theme projection through the explicit read-only port.
 export function validateGenericCommentMetadataV1(parts, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   if (!cryptoPort.ok) fail();
   const state = createParserBudgetState(budgets, cryptoPort);
-  return validateCommentMetadataScans(parts, name => parseXmlPart(name, rawString(parts[name]), budgets, cryptoPort, state));
+  const scanPart = name => parseXmlPart(name, rawString(parts[name]), budgets, cryptoPort, state);
+  validateCommentMetadataScans(parts, scanPart);
+  if (parts['word/comments.xml']) parseRichCommentBodies(parts, scanPart('word/comments.xml'), { ...options, budgets, cryptoPort });
+  return true;
 }
 
-// Word's built-in comment paragraph style has a localized ID. Resolve its
-// actual definition and inherited defaults; the name alone proves nothing.
-// Only literal-text presentation (font, size, spacing, proofing) is admitted.
-// Hidden text, numbering, transforms, rich emphasis and unknown properties
-// remain outside this return profile, even when injected through a parent.
-function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
-  if (!stylesScan || stylesScan.diagnostics.length) return false;
-  const tokens = stylesScan.tokens, roots = tokens.filter(t => t.depth === 0);
-  if (roots.length !== 1 || !isWordToken(roots[0], 'styles')) return false;
-  const children = parent => childTokensWithin(stylesScan, parent).filter(t => t.depth === parent.depth + 1);
-  const onlyAttrs = (token, allowed) => token.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
-    || (a.namespaceUri === W_NS && allowed.includes(a.localName)));
-  const val = token => attr(token, 'val', W_NS);
-  const noUnrepresentedText = token => {
-    let cursor = token.openEnd;
-    for (const child of children(token)) {
-      if (stylesXml.slice(cursor, child.openStart).trim()) return false;
-      cursor = child.closeEnd;
-    }
-    return token.selfClosing || !stylesXml.slice(cursor, token.closeStart).trim();
-  };
-  const leaf = (token, allowed) => !children(token).length && onlyAttrs(token, allowed) && noUnrepresentedText(token);
-  const language = value => value.length <= 63 && /^(?:[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*|x-none)$/u.test(value);
-  const properties = parent => {
-    if (!onlyAttrs(parent, []) || !noUnrepresentedText(parent)) return false;
-    const seen = new Set();
-    return children(parent).every(t => {
-      if (seen.has(t.localName)) return false;
-      seen.add(t.localName);
-      // Native Word's default ligatures and kerning change presentation, not
-      // literal code points. Unknown effects remain outside this grammar.
-      if (t.namespaceUri === W14_NS && t.localName === 'ligatures') {
-        return parent.localName === 'rPr' && !children(t).length && noUnrepresentedText(t)
-          && t.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
-            || a.namespaceUri === W14_NS && a.localName === 'val'
-              && ['none', 'standardContextual'].includes(a.value))
-          && ['none', 'standardContextual'].includes(attr(t, 'val', W14_NS));
-      }
-      if (t.namespaceUri !== W_NS) return false;
-      if (parent.localName === 'pPr') return t.localName === 'spacing'
-        && leaf(t, ['before', 'after', 'line', 'lineRule'])
-        && t.attributes.every(a => a.namespaceUri !== W_NS || (a.localName === 'lineRule'
-          ? ['auto', 'exact', 'atLeast'].includes(a.value) : /^\d{1,5}$/u.test(a.value)));
-      if (['sz', 'szCs'].includes(t.localName)) return leaf(t, ['val']) && /^\d{1,4}$/u.test(val(t))
-        && Number(val(t)) >= 2 && Number(val(t)) <= 1638;
-      if (t.localName === 'lang') return leaf(t, ['val', 'eastAsia', 'bidi'])
-        && t.attributes.every(a => a.namespaceUri !== W_NS || language(a.value));
-      if (t.localName === 'kern') return leaf(t, ['val']) && /^\d{1,4}$/u.test(val(t)) && Number(val(t)) <= 1638;
-      return t.localName === 'rFonts' && leaf(t, ['ascii', 'hAnsi', 'eastAsia', 'cs',
-        'asciiTheme', 'hAnsiTheme', 'eastAsiaTheme', 'cstheme'])
-        && t.attributes.every(a => a.namespaceUri !== W_NS || (/theme$/iu.test(a.localName)
-          ? /^(?:major|minor)(?:Ascii|HAnsi|EastAsia|Bidi)$/u.test(a.value)
-          : a.value.length > 0 && a.value.length <= 128 && !/[\u0000-\u001f]/u.test(a.value)));
-    });
-  };
-  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults') && t.depth === 1);
-  if (defaults.length > 1) return false;
-  if (defaults.length) {
-    if (!onlyAttrs(defaults[0], []) || !noUnrepresentedText(defaults[0])) return false;
-    const seen = new Set();
-    for (const wrapper of children(defaults[0])) {
-      if (wrapper.namespaceUri !== W_NS || !['rPrDefault', 'pPrDefault'].includes(wrapper.localName)
-        || seen.has(wrapper.localName) || !onlyAttrs(wrapper, []) || !noUnrepresentedText(wrapper)) return false;
-      seen.add(wrapper.localName);
-      const values = children(wrapper);
-      if (values.length > 1 || values.some(t => t.namespaceUri !== W_NS
-        || t.localName !== wrapper.localName.replace('Default', '') || !properties(t))) return false;
-    }
-  }
-  const styles = tokens.filter(t => isWordToken(t, 'style') && t.depth === 1);
-  const defaultCharacters = styles.filter(t => attr(t, 'type', W_NS) === 'character'
-    && ['1', 'true'].includes(attr(t, 'default', W_NS)));
-  if (defaultCharacters.length > 1) return false;
-  for (const style of defaultCharacters) {
-    if (!onlyAttrs(style, ['type', 'default', 'styleId']) || !noUnrepresentedText(style)) return false;
-    const seen = new Set();
-    for (const node of children(style)) {
-      if (node.namespaceUri !== W_NS || seen.has(node.localName)) return false;
-      seen.add(node.localName);
-      if (node.localName === 'rPr') { if (!properties(node)) return false; }
-      else if (['name', 'uiPriority'].includes(node.localName)) { if (!leaf(node, ['val']) || !val(node)) return false; }
-      else if (!['qFormat', 'semiHidden', 'unhideWhenUsed'].includes(node.localName) || !leaf(node, [])) return false;
-    }
-  }
-  const seen = new Set();
-  const visit = (id, first) => {
-    if (!id || seen.has(id) || seen.size >= 16) return false;
-    seen.add(id);
-    const matches = styles.filter(t => attr(t, 'styleId', W_NS) === id);
-    if (matches.length !== 1) return false;
-    const style = matches[0];
-    if (!noUnrepresentedText(style) || attr(style, 'type', W_NS) !== 'paragraph'
-      || !onlyAttrs(style, ['type', 'styleId', 'default'])
-      || (attr(style, 'default', W_NS) && !['0', '1', 'true', 'false'].includes(attr(style, 'default', W_NS)))) return false;
-    const nodes = children(style), names = new Set();
-    for (const t of nodes) {
-      if (t.namespaceUri !== W_NS || names.has(t.localName)) return false;
-      names.add(t.localName);
-      if (['pPr', 'rPr'].includes(t.localName)) { if (!properties(t)) return false; continue; }
-      if (['name', 'basedOn', 'link', 'uiPriority', 'rsid'].includes(t.localName)) {
-        if (!leaf(t, ['val']) || !val(t)) return false;
-      } else if (!['qFormat', 'semiHidden', 'unhideWhenUsed'].includes(t.localName) || !leaf(t, [])) return false;
-    }
-    const name = nodes.find(t => t.localName === 'name');
-    if (!name || (first ? !['annotation text', 'comment text'].includes(val(name).toLowerCase())
-      : val(name) !== 'Normal')) return false;
-    const parent = nodes.find(t => t.localName === 'basedOn');
-    // A built-in comment style must explicitly resolve to the default Normal
-    // paragraph style. This avoids guessing implicit inheritance.
-    if (first) return !!parent && visit(val(parent), false);
-    return !parent && ['1', 'true'].includes(attr(style, 'default', W_NS))
-      && styles.filter(t => attr(t, 'type', W_NS) === 'paragraph'
-        && ['1', 'true'].includes(attr(t, 'default', W_NS))).length === 1;
-  };
-  if (styleId !== null) return visit(styleId, true);
-  const defaultParagraphs = styles.filter(t => attr(t, 'type', W_NS) === 'paragraph'
-    && ['1', 'true'].includes(attr(t, 'default', W_NS)));
-  return defaultParagraphs.length === 0 || defaultParagraphs.length === 1
-    && visit(attr(defaultParagraphs[0], 'styleId', W_NS), false);
-}
-
-function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, stylesScan } = {}) {
+function validateCommentMetadataScans(parts, scanPart) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
-  const literalStyles = new Map();
-  const literalStyle = id => {
-    if (!literalStyles.has(id)) literalStyles.set(id,
-      isLiteralCommentParagraphStyle(stylesScan, rawString(parts['word/styles.xml']), id));
-    return literalStyles.get(id);
-  };
   const childrenFor = scan => {
     const map = new Map(), stack = [];
     for (const token of [...scan.tokens].sort((a, b) => a.openStart - b.openStart)) {
@@ -5309,108 +5396,6 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
     }
     if (!token.selfClosing && xml.slice(cursor, token.closeStart).trim()) fail();
   };
-  if (parts['word/comments.xml']) {
-    const xml = rawString(parts['word/comments.xml']);
-    const scan = scanPart('word/comments.xml');
-    const childrenMap = childrenFor(scan);
-    const parentsMap = new Map();
-    for (const [parent, children] of childrenMap) for (const child of children) parentsMap.set(child, parent);
-    const paths = new Set(['comments', 'comments/comment', 'comments/comment/p',
-      'comments/comment/p/r', 'comments/comment/p/r/t', 'comments/comment/p/r/tab',
-      'comments/comment/p/r/br', 'comments/comment/p/r/cr', 'comments/comment/p/r/annotationRef',
-      'comments/comment/p/r/noBreakHyphen', 'comments/comment/p/r/softHyphen',
-      'comments/comment/p/pPr', 'comments/comment/p/pPr/pStyle',
-      'comments/comment/p/r/rPr', 'comments/comment/p/r/rPr/rStyle']);
-    // Authenticated return publishes literal comment text, not Word's proofing
-    // preferences. Record every accepted proofing occurrence; generic import
-    // retains its stricter contract. No rich content or style is admitted here.
-    if (normalizationLedger) {
-      paths.add('comments/comment/p/pPr/rPr');
-      paths.add('comments/comment/p/pPr/rPr/lang');
-      paths.add('comments/comment/p/r/rPr/lang');
-      // Native Word inserts a display-font run for Unicode glyph fallback.
-      // The literal profile preserves code points, not font presentation.
-      paths.add('comments/comment/p/r/rPr/rFonts');
-    }
-    if (scan.diagnostics.length || scan.tokens.filter(token => token.depth === 0).length !== 1) fail();
-    for (const token of scan.tokens) {
-      if (token.namespaceUri !== W_NS || !paths.has(token.path.join('/'))) fail();
-      if (normalizationLedger && stylesScan && parts['word/styles.xml'] && token.localName === 'p'
-        && !(childrenMap.get(token) || []).some(p => p.localName === 'pPr'
-          && (childrenMap.get(p) || []).some(t => t.localName === 'pStyle'))) {
-        if (!literalStyle(null)) fail();
-        normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
-          offset: token.openStart, attribute: 'implicitStyle', value: 'default paragraph and character presentation',
-          disposition: 'NORMALIZED_NON_AUTHORING_METADATA', reason: 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION',
-          definitionPart: 'word/styles.xml' });
-      }
-      if (token.localName === 'rFonts') {
-        const parent = parentsMap.get(token);
-        if (!normalizationLedger || !parent || (childrenMap.get(token) || []).length
-          || !(token.attributes.some(a => a.namespaceUri === W_NS))
-          || (childrenMap.get(parent) || []).filter(t => t.localName === 'rFonts').length !== 1) fail();
-      }
-      for (const attribute of token.attributes) {
-        if (attribute.qName === 'xmlns' || attribute.prefix === 'xmlns') continue;
-        const name = attribute.localName, ns = attribute.namespaceUri;
-        if (token.localName === 'comments' && ns === 'http://schemas.openxmlformats.org/markup-compatibility/2006' && name === 'Ignorable') continue;
-        if (token.localName === 'comment' && ((ns === W_NS && ['id', 'author', 'initials', 'date'].includes(name))
-          || (ns === W16DU_NS && name === 'dateUtc'))) continue;
-        if (token.localName === 'p' && ((ns === W14_NS && ['paraId', 'textId'].includes(name))
-          || (ns === W_NS && ['rsidR', 'rsidRDefault', 'rsidP'].includes(name)))) continue;
-        if (token.localName === 'r' && ns === W_NS && ['rsidR', 'rsidRPr'].includes(name)) continue;
-        if (normalizationLedger && token.localName === 'rFonts' && ns === W_NS
-          && ['ascii', 'hAnsi', 'eastAsia', 'cs'].includes(name)
-          && attribute.value.trim().length > 0 && attribute.value.length <= 128
-          && !/[\u0000-\u001f\u007f]/u.test(attribute.value)) {
-          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
-            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
-            disposition: 'NORMALIZED_NON_AUTHORING_METADATA', reason: 'WORD_LITERAL_COMMENT_FONT_PRESENTATION' });
-          continue;
-        }
-        if (normalizationLedger && ns === W_NS
-          && ((token.localName === 'p' && name === 'rsidRPr' && /^[A-Fa-f0-9]{8}$/u.test(attribute.value))
-            || (token.localName === 'lang' && ['val', 'eastAsia', 'bidi'].includes(name)
-              && /^(?:[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*|x-none)$/u.test(attribute.value)
-              && attribute.value.length <= 63))) {
-          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
-            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
-            disposition: 'NORMALIZED_NON_AUTHORING_METADATA',
-            reason: token.localName === 'lang' ? 'WORD_PROOFING_LANGUAGE_NOT_COMMENT_TEXT' : 'WORD_EDIT_SESSION_IDENTIFIER' });
-          continue;
-        }
-        if (token.localName === 't' && attribute.prefix === 'xml'
-          && ['', 'http://www.w3.org/XML/1998/namespace'].includes(ns) && name === 'space'
-          && ['preserve', 'default'].includes(attribute.value)) continue;
-        if (token.localName === 'br' && ns === W_NS && name === 'type' && attribute.value === 'textWrapping') continue;
-        // Legacy metadata-only callers retain their original minimal profile.
-        // Literal intake/return must inspect even the English built-in style:
-        // a familiar style ID cannot hide a substituted definition.
-        if (!normalizationLedger && token.localName === 'pStyle' && ns === W_NS && name === 'val'
-          && attribute.value === 'CommentText') continue;
-        if (normalizationLedger && token.localName === 'pStyle' && ns === W_NS && name === 'val'
-          && literalStyle(attribute.value)) {
-          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
-            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
-            disposition: 'NORMALIZED_NON_AUTHORING_METADATA',
-            reason: 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION',
-            definitionPart: 'word/styles.xml' });
-          continue;
-        }
-        // Word localizes the annotation-reference style ID. It is safe only
-        // on the generated marker run, which contains no author message text.
-        if (token.localName === 'rStyle' && ns === W_NS && name === 'val') {
-          const run = scan.tokens.find(parent => parent.localName === 'r' && parent.depth === 3
-            && parent.openStart < token.openStart && parent.closeEnd > token.closeEnd);
-          const children = childrenMap.get(run) || [];
-          if (children.some(child => child.localName === 'annotationRef')
-            && children.every(child => ['annotationRef', 'rPr'].includes(child.localName))) continue;
-        }
-        fail();
-      }
-      if (token.localName !== 't') rejectUnrepresentedText(xml, childrenMap, token);
-    }
-  }
   for (const [partName, ns, rootName, childName, attributes] of [
     ['word/commentsExtended.xml', W15_NS, 'commentsEx', 'commentEx', ['paraId', 'paraIdParent', 'done']],
     ['word/commentsIds.xml', W16CID_NS, 'commentsIds', 'commentId', ['paraId', 'durableId', 'dateUtc']],

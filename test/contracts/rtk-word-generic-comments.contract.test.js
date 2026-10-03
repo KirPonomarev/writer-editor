@@ -336,14 +336,14 @@ test('generic-imported comments survive actual single-scene export; malformed st
     else malformed.threads.at(-1).messages[0].body = '\uD800';
     fs.writeFileSync(bad.statePath, JSON.stringify(malformed));
     const canonicalBefore = bad.capture(), keysBefore = captureFiles(path.join(bad.temp, 'userData'));
-    await assert.rejects(bad.probe.reviewSource(), mutation === 'selected-anchor' ? /DOCX_COMMENT_ANCHOR_INVALID/ : /SURROGATE/);
+    await assert.rejects(bad.probe.reviewSource(), mutation === 'selected-anchor' ? /DOCX_COMMENT_ANCHOR_INVALID/ : /COMMENT_BODY_INVALID/);
     assert.deepEqual(bad.capture(), canonicalBefore);
     assert.deepEqual(captureFiles(path.join(bad.temp, 'userData')), keysBefore);
     assert.equal(bad.probe.strict(bad.root).record, null);
   }
 });
 
-async function nativeLiteralCommentBytes({ styleId = 'ad', mutate = () => {} } = {}) {
+async function nativeLiteralCommentBytes({ styleId = 'ad', includeTheme = true, mutate = () => {} } = {}) {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: ordinaryBytes() }).parts };
   const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -356,6 +356,11 @@ async function nativeLiteralCommentBytes({ styleId = 'ad', mutate = () => {} } =
     '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
   parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace('</Types>',
     '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>');
+  if (includeTheme) {
+    parts['word/theme/theme1.xml'] = '<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:themeElements><a:fontScheme name="Comment fixture"><a:majorFont><a:latin typeface="Aptos"/><a:ea typeface="Aptos"/><a:cs typeface="Arial"/></a:majorFont><a:minorFont><a:latin typeface="Aptos"/><a:ea typeface="Aptos"/><a:cs typeface="Arial"/></a:minorFont></a:fontScheme></a:themeElements></a:theme>';
+    parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace('</Relationships>', '<Relationship Id="theme" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/></Relationships>');
+    parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace('</Types>', '<Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/></Types>');
+  }
   mutate(parts);
   return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
 }
@@ -377,7 +382,7 @@ test('native literal comment presentation survives main preview and real import 
   assert.equal(item.severity, 'warning');
   assert.deepEqual(item.normalizationLedger, preview.contentPreview.commentNormalizationLedger);
   assert(item.normalizationLedger.some(item => item.definitionPart === 'word/styles.xml'));
-  assert(item.normalizationLedger.some(item => item.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION'));
+  assert(item.normalizationLedger.some(item => item.reason === 'WORD_COMMENT_NON_AUTHORING_PRESENTATION'));
   const safe = require('../fixtures/docx-import-real-authority.cjs');
   safe.rememberDocxImportPreviewPlanAdmission(plan);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'word-native-literal-'));
@@ -408,7 +413,7 @@ test('localized and English comment styles require safe definitions in both gene
   const mutants = [
     p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:vanish/>'); },
     p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:webHidden/>'); },
-    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:b/>'); },
+    p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:sz w:val="20"/>', '<w:vertAlign w:val="superscript"/>'); },
     p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:qFormat/>', '<w:qFormat/><w:rPr><w:vanish/></w:rPr>'); },
     p => { p['word/styles.xml'] = p['word/styles.xml'].replace('<w:kern w:val="2"/>', '<w:kern w:val="2"/><w:vanish/>'); },
     p => { p['word/styles.xml'] = p['word/styles.xml'].replace('w:val="Normal"/><w:pPr>', 'w:val="unknown"/><w:pPr>'); },
@@ -442,7 +447,7 @@ test('implicit paragraph and character defaults cannot hide literal comment text
     } });
     const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
     assert.equal(preview.ok, hidden === 'none', hidden + JSON.stringify(preview));
-    if (hidden === 'none') assert(preview.contentPreview.commentNormalizationLedger.some(item => item.attribute === 'implicitStyle'));
+    if (hidden === 'none') assert.equal(preview.contentPreview.genericComments[0].messages[0].richBody.document.content[0].attrs.wordParagraphMarkLanguage.val,'ru-RU');
   }
 });
 
@@ -467,4 +472,44 @@ test('native file-selection preview retains the full comment graph and normaliza
       loadRevisionBridgeModule: async () => ({ ...bridge, buildDocxContentPreviewFromZipBytes: () => malformed }) });
     assert.equal(rejected.ok, false); assert.equal(rejected.error.reason, 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_OUTPUT_FORBIDDEN');
   }
+});
+
+// Preserve the original unresolved-theme fixture as a typed refusal. Its old
+// text-only admission discarded the theme semantics; rich intake cannot.
+test('comment themes require their actual bound definition instead of literal-only flattening',async()=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const original=bridge.buildDocxContentPreviewFromZipBytes(await nativeLiteralCommentBytes({includeTheme:false}));
+ assert.equal(original.ok,false);assert.match(JSON.stringify(original),/DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/);
+ const complete=bridge.buildDocxContentPreviewFromZipBytes(await nativeLiteralCommentBytes());
+ assert.equal(complete.ok,true,JSON.stringify(complete));
+ const p=complete.contentPreview.genericComments[0].messages[0].richBody.document.content[0];
+ assert.equal(p.attrs.wordParagraphMarkLanguage.val,'ru-RU');
+ assert.equal(p.content[0].marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Aptos');
+ assert.equal(p.content[0].marks.find(m=>m.type==='textStyle').attrs.fontSize,'10pt');
+});
+
+test('generic rich import refuses an invalid legacy rich state before upgrading',async()=>{
+ const api=await generic;const base=api.materializeGenericComments({candidates:[candidate()],paragraphs:[{text}],projectId:'p',sceneId:'scene',importOperationId:'old',beforeText:null});
+ const corrupt=JSON.parse(base.afterText);corrupt.threads[0].messages[0].richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:corrupt.threads[0].messages[0].body}]}]}};
+ assert.throws(()=>api.materializeGenericComments({candidates:[candidate()],paragraphs:[{text}],projectId:'p',sceneId:'scene',importOperationId:'new',beforeText:JSON.stringify(corrupt)}),/COMMENT_RICH_STATE_VERSION_REQUIRED/);
+});
+
+test('real safe-create upgrades a valid legacy state once and retains previous threads on rich import and replay',async()=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const safe=require('../fixtures/docx-import-real-authority.cjs');
+ const api=await generic;
+ const previous=api.materializeGenericComments({candidates:[candidate()],paragraphs:[{text}],projectId:'upgrade-project',sceneId:'roman/existing.txt',importOperationId:'old',beforeText:null});
+ const old=JSON.parse(previous.afterText);
+ const preview=bridge.buildDocxContentPreviewFromZipBytes(await nativeLiteralCommentBytes());
+ const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));
+ safe.rememberDocxImportPreviewPlanAdmission(plan);
+ const projectRoot=fs.mkdtempSync(path.join(os.tmpdir(),'word-rich-upgrade-')),romanRoot=path.join(projectRoot,'roman');fs.mkdirSync(romanRoot);
+ fs.writeFileSync(path.join(romanRoot,'existing.txt'),text);
+ const stateFile=path.join(projectRoot,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(stateFile),{recursive:true});fs.writeFileSync(stateFile,previous.afterText);
+ const options={projectRoot,romanRoot,projectId:'upgrade-project'};
+ const result=await safe.applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(result.ok,true,JSON.stringify(result));
+ const after=JSON.parse(fs.readFileSync(stateFile));assert.equal(after.schemaVersion,'yalken.rtk.word.non-text-return-state.v2');
+ assert.deepEqual(after.threads.slice(0,old.threads.length),old.threads);assert(after.threads.at(-1).messages[0].richBody);
+ const bytes=fs.readFileSync(stateFile);
+ const repeated=await safe.applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(repeated.ok,true,JSON.stringify(repeated));assert.equal(repeated.value.idempotent,true);assert.deepEqual(fs.readFileSync(stateFile),bytes);
 });

@@ -17,6 +17,9 @@ function harness() {
     state: { selectionEmpty: false, link: true, linkHref: 'https://example.invalid/old' },
     composeDocumentContent: () => context.content,
     getTiptapFormattingState: () => context.state,
+    captureTiptapLinkTarget: () => ({ auxiliary: false, formattingState: context.state, apply: (name, payload) => {
+      effects.push(['selection', 7, 16]); effects.push([name, payload?.href]); return { performed: true };
+    } }),
     syncToolbarFormattingState: () => {},
     getTiptapSelectionOffsets: () => ({ start: 7, end: 16 }),
     setTiptapSelectionOffsets: (start, end) => { effects.push(['selection', start, end]); return { performed: true }; },

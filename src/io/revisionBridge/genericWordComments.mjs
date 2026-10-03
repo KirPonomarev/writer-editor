@@ -1,9 +1,10 @@
+import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
+import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import documentTables from '../documentTables.js';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 
 // Ordinary import has no return authority. Native IDs are retained only as
 // provenance; every canonical identity is scoped to the new import operation.
-const schema = 'yalken.rtk.word.non-text-return-state.v1';
 const plain = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const bytes = value => new TextEncoder().encode(value).length;
 const demand = (condition, suffix) => {
@@ -31,7 +32,7 @@ function message(source, reply = false) {
     if (value) provenance[key] = value;
   }
   return { sourceCommentId: literal(reply ? source.rawId : source.commentId, 128, true),
-    body: literal(source.body, 16384, true), provenance };
+    ...commentBodyModel.validateCommentMessageContent(source), provenance };
 }
 
 export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false } = {}) {
@@ -90,9 +91,8 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   demand(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= 128, 'BUDGET');
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
   demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
-  const before = beforeText === null ? { schemaVersion: schema, projectId, revision: 0, threads: [], events: [] }
-    : JSON.parse(beforeText);
-  demand(plain(before) && before.schemaVersion === schema && before.projectId === projectId
+  const before = commentAuthoring.readState(beforeText, projectId);
+  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2].includes(before.schemaVersion) && before.projectId === projectId
     && Number.isSafeInteger(before.revision) && before.revision >= 0 && before.revision < Number.MAX_SAFE_INTEGER
     && Array.isArray(before.threads) && Array.isArray(before.events), 'STATE');
   const existing = new Set();
@@ -116,16 +116,17 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
       && text.slice(candidate.startUtf16, candidate.startUtf16 + candidate.selectedText.length) === candidate.selectedText, 'ANCHOR');
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
     const messages = candidate.messages.map((item, index) => {
-      demand(plain(item) && Object.keys(item).every(key => ['sourceCommentId', 'body', 'provenance'].includes(key))
+      demand(plain(item) && Object.keys(item).every(key => ['sourceCommentId', 'body', 'richBody', 'provenance'].includes(key))
         && plain(item.provenance), 'MESSAGE');
-      const body = literal(item.body, 16384, true);
+      const content = commentBodyModel.validateCommentMessageContent(item);
+      literal(content.body, 16384, true);
       for (const [key, value] of Object.entries(item.provenance)) {
         demand(['author', 'initials', 'date', 'dateUtc'].includes(key), 'PROVENANCE');
         literal(value, key === 'author' ? 1024 : 128);
       }
       literal(item.sourceCommentId, 128, true);
       return { commentId: reserve(`${threadId}:message-${index}`), kind: index === 0 ? 'root' : 'reply',
-        body, provenance: clone(item.provenance) };
+        ...content, provenance: clone(item.provenance) };
     });
     return { threadId, sceneId, rootCommentId: messages[0].commentId, status: candidate.status,
       anchor: { sceneId, sceneParagraphIndex: candidate.paragraphIndex,
@@ -135,6 +136,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
         sourceChangeId: importOperationId }, messages };
   });
   const after = { ...clone(before), revision: before.revision + 1, threads: [...clone(before.threads), ...threads] };
+  commentBodyModel.upgradeCommentState(after);
   const afterText = `${JSON.stringify(after, null, 2)}\n`;
   demand(bytes(afterText) <= 65536, 'STATE_BUDGET');
   return { beforeText, afterText, threadIds: threads.map(thread => thread.threadId) };

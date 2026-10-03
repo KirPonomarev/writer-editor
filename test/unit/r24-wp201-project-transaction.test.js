@@ -366,3 +366,35 @@ for (const packetOnly of [false, true]) test(`WP201 media corrupt-commit repair 
   assert.equal(fs.readFileSync(s.manifestPath, 'utf8'), '{"revision":1}');
   assert.equal(fs.existsSync(s.resource.path), false);
 });
+
+function richCommentAppend(t, mode = 'upgrade') {
+  const s = sandbox(); t.after(() => fs.rmSync(s.root, { recursive: true, force: true }));
+  fs.unlinkSync(s.scenePath);
+  const model = require('../../src/core/word-comment-authoring-v1.cjs');
+  const hash = value => require('node:crypto').createHash('sha256').update(value).digest('hex');
+  const before = { schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'p',revision:0,threads:[],events:[] };
+  const made = model.planCommentAuthoring({beforeText:null,projectId:'p',sceneId:'scenes/scene.txt',sceneSha256:hash('anchor'),paragraphs:['anchor'],now:'2026-10-03T00:00:00Z',input:{requestId:'rich-create',action:'create',projectId:'p',sceneId:'scenes/scene.txt',expectedSceneSha256:hash('anchor'),expectedStateSha256:'',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'anchor'},richBody:{schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'rich',marks:[{type:'bold'}]}]}]}}}});
+  const after = {...made.state,events:[]};
+  if (mode === 'downgrade') { before.schemaVersion='yalken.rtk.word.non-text-return-state.v2'; after.schemaVersion='yalken.rtk.word.non-text-return-state.v1'; delete after.threads[0].messages[0].richBody; }
+  if (mode === 'mismatch') after.threads[0].messages[0].body='lost formatting text';
+  if (mode === 'v1-rich') after.schemaVersion=before.schemaVersion;
+  const statePath=path.join(s.root,'.yalken','word-review','non-text-return-state.v1.json');
+  fs.mkdirSync(path.dirname(statePath),{recursive:true});
+  const beforeText=JSON.stringify(before,null,2)+'\n',afterText=JSON.stringify(after,null,2)+'\n';fs.writeFileSync(statePath,beforeText);
+  const companion=path.join(s.root,'import-metadata.json');
+  return {...s,statePath,beforeText,afterText,companion,input:{scenePath:s.scenePath,manifestPath:s.manifestPath,expectedSceneContent:null,sceneContent:'anchor',expectedManifestContent:'{"revision":1}',manifestContent:'{"revision":2}',revision:2,createResources:[{path:companion,content:'{}'}],commentState:{beforeText,afterText},publishManifest:manifestPublisher()}};
+}
+
+test('WP201 rich comment append upgrades v1 atomically and recovery restores exact legacy state',async t=>{
+  const s=richCommentAppend(t);const result=await commitProjectTransaction(s.input);assert.equal(result.success,true);
+  assert.equal(fs.readFileSync(s.statePath,'utf8'),s.afterText);
+  const interrupted=richCommentAppend(t);
+  await assert.rejects(commitProjectTransaction({...interrupted.input,publishManifest:async()=>{throw Error('injected');}}));
+  const recovery=await recoverProjectTransaction({...interrupted,publishManifest:manifestPublisher()});
+  assert.equal(recovery.outcome,'UNCOMMITTED_ROLLED_BACK');assert.equal(fs.readFileSync(interrupted.statePath,'utf8'),interrupted.beforeText);
+});
+
+for(const mode of ['downgrade','mismatch','v1-rich']) test(`WP201 refuses ${mode} before any comment or scene publication`,async t=>{
+  const s=richCommentAppend(t,mode);await assert.rejects(commitProjectTransaction(s.input),/E_PROJECT_TRANSACTION_COMMENT_STATE/);
+  assert.equal(fs.readFileSync(s.statePath,'utf8'),s.beforeText);assert.equal(fs.existsSync(s.scenePath),false);assert.equal(fs.existsSync(s.companion),false);
+});
