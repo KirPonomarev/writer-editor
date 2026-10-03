@@ -10,7 +10,7 @@ const { pathToFileURL } = require('node:url');
 const ROOT = path.resolve(__dirname, '../..');
 const main = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
 const builder = require('../../src/export/docx/docxReviewPacketBuilder');
-const { buildFormatIrParagraphs } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+const { buildFormatIrParagraphs, buildFullManuscriptDocumentSections } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const plain = value => JSON.parse(JSON.stringify(value));
 function slice(start, end) {
@@ -24,6 +24,8 @@ async function harness(raw, changes = {}) {
   let keyImports = 0;
   const context = vm.createContext({
     Buffer, crypto, path, Date,
+    require: require('node:module').createRequire(path.join(ROOT, 'src/main.js')),
+    buildFullManuscriptDocumentSections,
     isPathInside: require('../../src/core/io/path-boundary').isPathInsideBoundary,
     currentLifecycleSubjectId: () => "source-subject", activeStage10ApplicationBootstrap: {},
     userBookmarkCapability() {},
@@ -86,6 +88,11 @@ test('C2 reexport uses rich paragraphs while signing the exact saved envelope by
   assert.equal(source.exportCapsule.sceneRevision, 'sha256:' + hash(raw));
   assert.equal(source.exportCapsule.blockCount, paragraphs.length);
   assert.equal(h.keys(), 1);
+  assert.deepEqual(plain(source.documentStories.registry.stories), []);
+  assert.equal(source.documentStories.registry.sections.length, source.documentSections.protectedSections.length);
+  assert.equal(source.documentStories.sourceScenes[0].sceneId, 'roman/scene.txt');
+  assert.equal(source.documentStories.sourceScenes[0].registry, null);
+  assert.deepEqual(plain(source.localAuthorityCapsule.documentStories), plain(source.documentStories));
   const xml = builder.buildDocxReviewPacketBuffer(source).toString('utf8');
   assert.ok(xml.includes('Привет Café 🧑‍💻'));
   assert.ok(xml.includes('<w:b/>'));

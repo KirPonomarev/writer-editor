@@ -959,7 +959,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "ff173c15a9e1fe1f00ab620330967f368341c372573612aca123355e9a544e3a"
+        "sha256": "d444c763bb2a86552501b93fd60add4f98419af0c4cca8534af14c8c59981ad8"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -2147,11 +2147,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "36bc78d9638992649614895e565ad6a08d395229f0b1b53ce9f0d74d6982a5b2"
+        "sha256": "d902dd39b24ef4a4e0ac5aec89880f9f21c3d258feefc1f6216ddc0733932e8f"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "97c902d09c12b129797c7d27679765e9887ea6235410d9f672bbeb878f5a340a"
+        "sha256": "0fd90705d42d23ac314bc5a7ed64e11d0e13f0f3d535234b46335693c85620d7"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",

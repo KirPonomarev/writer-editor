@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "82a6ba0f9da5483700e55ce4b3835e024642caf3",
+  "bindingBaseSha": "177dec6511ca9ba0aca7f9cd3086f3a13e890bde",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -53,7 +53,8 @@
     "test/unit/sector-m-tiptap-runtime-bridge.test.js",
     "test/unit/project-tree-pathless-contract.test.js",
     "test/contracts/rtk-word-local-image.contract.test.js",
-    "test/contracts/rtk-word-comment-authoring.contract.test.js"
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -118,8 +119,8 @@
   "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
   "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
   "currentReality": [
-    "DRAFT checkpoint 82a6ba0f9da5483700e55ce4b3835e024642caf3: 39 focused header tests passed with zero skips; native mixed diagnostic source body edit, Word return Apply and new-process readback observed. Final exact-head/source+packaged acceptance and delivery remain open.",
-    "Existing story-body route integrated; explicit creation/removal commands and Word topology mutation remain target until implemented and proved."
+    "DRAFT checkpoint 177dec6511ca9ba0aca7f9cd3086f3a13e890bde: 217 focused Main/transaction/affected tests passed; native diagnostic creation, Save, export and Word open plus edited-text unlink return Apply observed.",
+    "One affected extraction harness has four missing-dependency failures; final exact-head SOURCE/PACKAGED qualification, baseline, RTK, CI and delivery remain open. No full-plan or full-family PASS claimed."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"
