@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "35f872024b73978d4e40cf26452ebf1a77670ba1",
+  "bindingBaseSha": "59b1421ef0b57e4f275f6ac36b7da265ffd4384f",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -127,8 +127,8 @@
   "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
   "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
   "currentReality": [
-    "Candidate35 full RTK2878 passed and native SOURCE/PACKAGED five cycles independently passed; full-plan acceptance remains incomplete.",
-    "CI baseline caught missing pure projection dependency in isolated WP204 mutant sandbox; repair copies actual dependency and verifies unmodified positive control, preserving all mutant assertions. Runtime source and packaged bytes stay frozen."
+    "Full baseline59 passed2129 with59historicalskips; source and packaged fivecycles/restart/reexports independently passed.",
+    "Native wholebook mixed rich/plain/empty export reproduced USER_BOOKMARK_DOCUMENT_INVALID: section builder calls paragraphs(null) on plain sibling. Existing export source and header contracts admitted; fix preserves validated export-block boundaries and strict rich validation. No wholeplan PASS."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"

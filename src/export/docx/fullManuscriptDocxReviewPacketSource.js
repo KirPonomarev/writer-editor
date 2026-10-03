@@ -689,8 +689,13 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
     const registry = sectionsCore.read(scene.doc);
     if (!registry && !hasStories) continue;
     const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
-    const leaves = require('../../core/word-user-bookmarks-v1.cjs').paragraphs(scene.doc);
-    if (sceneBlocks.length !== leaves.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
+    // Plain and empty scenes already have authoritative transport paragraphs.
+    // Only rich scenes have a document tree whose leaf mapping needs validation.
+    if (scene.doc != null) {
+      const leaves = require('../../core/word-user-bookmarks-v1.cjs').paragraphs(scene.doc);
+      if (sceneBlocks.length !== leaves.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
+    }
+    if (!sceneBlocks.length) throw Error('WORD_SECTIONS_EXPORT_TOPOLOGY');
     for (const item of registry?.boundaries || []) semanticEnds.set(sceneBlocks[item.endParagraphIndex].documentParagraphIndex, item.properties);
     semanticEnds.set(sceneBlocks.at(-1).documentParagraphIndex, registry?.final || canonicalSectionProperties());
   }

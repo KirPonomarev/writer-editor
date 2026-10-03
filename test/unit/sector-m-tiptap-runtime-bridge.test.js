@@ -6,6 +6,43 @@ const { pathToFileURL } = require('node:url')
 
 const ROOT = process.cwd()
 
+test('actual status subscription exposes bounded DOCX export failure without exposing background status', () => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const helperStart = source.indexOf('function updateStatusText(');
+  const helperEnd = source.indexOf('\nfunction updateSaveStateText(', helperStart);
+  const listenerStart = source.indexOf('window.electronAPI.onStatusUpdate((status) => {');
+  const listenerEnd = source.indexOf('\n  window.electronAPI.onSetDirty(', listenerStart);
+  assert.ok(helperStart >= 0 && helperEnd > helperStart && listenerStart >= 0 && listenerEnd > listenerStart);
+  let onStatus;
+  const c = {statusElement:{textContent:'',style:{visibility:''}},heldCommandStatusMessage:false,
+    window:{electronAPI:{onStatusUpdate(fn){onStatus=fn;}}},
+    updateWarningStateText(){},updatePerfHintText(){},updateInspectorSnapshot(){}};
+  vm.createContext(c);
+  vm.runInContext(source.slice(helperStart,helperEnd)+'\n'+source.slice(listenerStart,listenerEnd),c);
+  onStatus('Фоновая операция');
+  assert.equal(c.statusElement.style.visibility,'');
+  assert.equal(c.heldCommandStatusMessage,false);
+  c.heldCommandStatusMessage=true;c.statusElement.textContent='Предыдущее сообщение';
+  const failure='Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: FULL_MANUSCRIPT_INVALID).';
+  onStatus(failure);
+  assert.equal(c.statusElement.style.visibility,'visible');
+  assert.equal(c.statusElement.textContent,failure);
+  onStatus('Фоновая операция');
+  assert.equal(c.statusElement.textContent,failure);
+  onStatus('Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED).');
+  assert.equal(c.statusElement.textContent,'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED).');
+  assert.equal(c.statusElement.style.visibility,'visible');
+  for(const unexpected of ['Не удалось экспортировать DOCX (/private/manuscript).',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: private text).',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED). extra',
+    'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: RTK_WORD_'+ 'A'.repeat(321)+').']) {
+    c.heldCommandStatusMessage=false;c.statusElement.style.visibility='';onStatus(unexpected);
+    assert.equal(c.statusElement.style.visibility,'');
+    assert.equal(c.heldCommandStatusMessage,false);
+  }
+});
+
 async function loadEsmSourceFromFile(filePath) {
   let code = fs.readFileSync(filePath, 'utf8')
   if (filePath.endsWith(path.join('tiptap', 'ipc.js'))) {

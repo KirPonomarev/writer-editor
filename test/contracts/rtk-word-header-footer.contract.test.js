@@ -214,3 +214,35 @@ test('envelope optional story admission rejects raw accessors and keeps absent/n
  assert.throws(()=>envelope.canonicalizeDocumentJson(hostile),/WORD_STORIES_INVALID/);assert.equal(executed,0);
  assert.throws(()=>sandbox.module.exports.canonicalizeDocumentJson({...doc,attrs:{wordStories:{}}}),/STORY_MODULE_NOT_COPIED/);assert.equal(loads,1);
 });
+
+test('full Review export preserves rich headers and raw plain/empty siblings in every scene order',async()=>{
+ const {doc}=await importDoc(buildStoredZip(literalParts()));
+ const richRaw=envelope.composeObservablePayload({doc});
+ const originals=[
+ {sceneId:'roman/rich.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:richRaw},
+ {sceneId:'roman/plain.txt',doc:null,text:'PLAIN FIRST\r\n\r\nPLAIN LAST',observableContent:'PLAIN FIRST\r\n\r\nPLAIN LAST'},
+ {sceneId:'roman/empty.txt',doc:null,text:'',observableContent:''},
+ ];
+ const before=JSON.stringify(originals),sha=value=>'sha256:'+require('node:crypto').createHash('sha256').update(value).digest('hex');
+ for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]){
+ const scenes=order.map((index,i)=>({...originals[index],order:i,scenePath:'/synthetic/'+originals[index].sceneId}));
+ const source=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/synthetic',scenes});
+ const actual=await importDoc(buildDocxReviewPacketBuffer(source));
+ assert.equal(source.documentSections.protectedSections.length,5);
+ const resolved=resolvedBodies(actual.doc);
+ assert.equal(resolved.length,5);
+ for(const binding of source.documentStories.sourceScenes){
+ const original=scenes.find(scene=>scene.sceneId===binding.sceneId);
+ const expected=original.doc?resolvedBodies(original.doc):[{titlePage:false,
+ header:Object.fromEntries(model.VARIANTS.map(v=>[v,{type:'doc',content:[{type:'paragraph'}]}])),
+ footer:Object.fromEntries(model.VARIANTS.map(v=>[v,{type:'doc',content:[{type:'paragraph'}]}]))}];
+ assert.deepEqual(resolved.slice(binding.sectionStart,binding.sectionStart+binding.sectionCount),expected);
+ const capsule=source.localAuthorityCapsule;
+ assert.equal(capsule.baselineObservableContentBySceneId[original.sceneId]??capsule.baselineFinalTextBySceneId[original.sceneId],original.observableContent);
+ assert.equal(capsule.exportMap.scenes.find(scene=>scene.sceneId===original.sceneId).rawSha256,sha(original.observableContent));
+ }
+ assert.equal(JSON.stringify(originals),before);
+ }
+ const malformed={...doc,content:[{type:'unsupported'}]};
+ assert.throws(()=>buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/synthetic',scenes:[{sceneId:'roman/bad.txt',doc:malformed,text:'bad',order:0}, {...originals[1],order:1}]}));
+});

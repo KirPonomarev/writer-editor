@@ -753,7 +753,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cdfac16a6c727df1d7f4bb1d038cbd334802c9f3b86c12c9d380f2410e3f5fe3"
+        "sha256": "59fd1084b0ac882ae4d3f213086484380e826db1e54a1935fb3d7acff061ca2a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -877,7 +877,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "e074003bd32fd8622501e9ff2ef7211791e1db2cf90afb49a445812a4198bf2d"
+        "sha256": "c6b6c68ef85fccc2b2eb22fafcd1bd952ba0a4cb96558b68b0fcf754d080be8c"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -897,7 +897,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "d819bcee900cd98db6d21c571ac2e0b68c7c0a34664655df1038d74e2ce85590"
+        "sha256": "215d0093f7955011724c1185a3d43871ece6b9bd61c635edd52c58cd8d9892ca"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -917,7 +917,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "2025a5283093f9f1d8f582f097a01bcfd045dd3913b16896513bd2cfb3afb1de"
+        "sha256": "7d58155987be743175fb7f2307c1eb145d51432d02ad71d03357b1c8d35aa3e8"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2149,11 +2149,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "6520f670930fa2efdaa727859d412e72ccce771d88e260d5eff55b502fed1e35"
+        "sha256": "cdbe44fb294c7b4c143f5357383e90230a7b2076b9d87eaa0089bd8cc126a6f9"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "2e8dc9d77e131ce811711e18eb41a8fba11b95ed02a98ab0c43b4448426c8acf"
+        "sha256": "6d7ca21cd72a206a034ca661999e14fb8a15c0335a073416e007cb46d596e261"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
@@ -2177,7 +2177,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer.contract.test.js",
-        "sha256": "c36c0985a06e676d59492a57c602ad256edd7b90e4f7c74dca2da789ae9ca47b"
+        "sha256": "b577519249eb2fec9b70f9780d0da492bdc6ceda3d7c3222ff5326b7f1aa48e3"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",

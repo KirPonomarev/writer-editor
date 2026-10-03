@@ -24615,7 +24615,9 @@ if (window.electronAPI) {
       updateStatusText('Сноски обновлены');
       return;
     }
-    updateStatusText(status);
+    const exportFailure = typeof status === 'string' && status.length <= 320
+      && /^Не удалось экспортировать DOCX \(E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}(?:: (?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+)?\)\.$/u.test(status);
+    updateStatusText(status, { visible: exportFailure });
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
       updateWarningStateText('recovery');
