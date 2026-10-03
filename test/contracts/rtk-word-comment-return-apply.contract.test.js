@@ -92,7 +92,10 @@ async function fixture({ deletion = false, addition = false, replyDeletion = fal
 async function preparedHarness(t, { deletion = false, addition = false, replyDeletion = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
   const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion });
-  if (!deletion && !addition && !replyDeletion) input.returnedThreads[0].body = 'Main Word delta';
+  if (!deletion && !addition && !replyDeletion) {
+    input.returnedThreads[0].body = 'Main Word delta';
+    input.returnedThreads[0].richBody.document.content[0].content[0].text = 'Main Word delta';
+  }
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -134,7 +137,7 @@ async function preparedHarness(t, { deletion = false, addition = false, replyDel
   const result = await ctx.applyAuthenticatedCommentDelta({ context, docxBytes: bytes,
     requestId: 'prepared', explicitCanonicalApplyConfirmed: explicitConfirmed, isCurrent: () => current,
     onPrepared: value => { prepared = value; } });
-  assert.equal(result.status, 'preview-ready'); assert.equal(typeof prepared.apply, 'function');
+  assert.equal(result.status, 'preview-ready', JSON.stringify(result)); assert.equal(typeof prepared.apply, 'function');
   assert.equal(await fs.readFile(stateFile, 'utf8'), input.beforeText);
   return { sandbox, prepared, stateFile, input, fs, supersede: () => { current = false; }, draft: () => { draft = true; } };
 }

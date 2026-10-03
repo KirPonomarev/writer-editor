@@ -11,13 +11,25 @@ const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ twoThreads = false, empty = false, threeReplies = false } = {}) {
+function setReturnedBody(message, body) {
+  message.body = body;
+  if (message.richBody) {
+    const marks = message.richBody.document.content[0]?.content?.find(n => n.type === 'text')?.marks;
+    message.richBody.document = {type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body,...(marks ? {marks:structuredClone(marks)} : {})}]}]};
+  }
+}
+
+async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
       anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 7, selectedText: '🧭 anchor' }, sceneId, [text]),
       messages: [{ commentId: 'root-a', kind: 'root', body: 'Root before', provenance: { author: 'Alice', date: '2026-09-26T00:00:00Z' } },
         { commentId: 'reply-a', kind: 'reply', body: 'Reply before', provenance: { author: 'Bob' } }] }] };
+  if (richBreak) {
+    state.schemaVersion='yalken.rtk.word.non-text-return-state.v2';
+    Object.assign(state.threads[0].messages[0], {body:'Root\nbefore',richBody:{schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Root'},{type:'hardBreak'},{type:'text',text:'before'}]}]}}});
+  }
   if (threeReplies) for (const suffix of ['middle', 'last']) state.threads[0].messages.push({
     commentId: 'reply-' + suffix, kind: 'reply', body: 'Reply ' + suffix, provenance: { author: suffix } });
   if (twoThreads) {
@@ -155,7 +167,7 @@ test('last-thread absence reaches a diagnostic preview only with the local authe
     { authenticatedCommentExport: input.baseline }).reviewPacket, null);
 });
 
-test('Word proofing metadata has an explicit return ledger and never widens rich-comment admission', async () => {
+test('Word proofing language is retained as rich authoring data and unsafe metadata remains refused', async () => {
   const { bytes, input, state } = await fixture();
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
@@ -175,26 +187,22 @@ test('Word proofing metadata has an explicit return ledger and never widens rich
   };
   const { returned, parsed } = analyze(changed);
   assert.equal(parsed.ok, true);
-  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
-  const proofing = parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(item => item.attribute !== 'implicitStyle');
-  assert.equal(proofing.length, 5);
-  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(item => item.attribute === 'implicitStyle').length, 2);
-  assert.deepEqual(proofing.map(item => item.value).sort(),
-    ['002E54A5', 'ru-RU', 'ru-RU', 'ja-JP', 'ar-SA'].sort());
-  assert(parsed.reviewIr.commentBodyGrammar.normalizationLedger.every(item => item.part === 'word/comments.xml'
-    && Number.isInteger(item.offset) && item.disposition === 'NORMALIZED_NON_AUTHORING_METADATA'));
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED', JSON.stringify(parsed.reviewIr.commentBodyGrammar));
+  const rootRich = parsed.reviewIr.commentThreads[0].richBody.document.content[0];
+  assert.deepEqual(rootRich.attrs.wordParagraphMarkLanguage, {val:'ru-RU'});
+  assert.deepEqual(rootRich.content.find(n=>n.type==='text').marks.find(m=>m.type==='textStyle').attrs.wordLanguage,
+    {val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'});
   const result = plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
     returnedParagraphs: parsed.reviewIr.formattingParagraphs });
   const after = JSON.parse(result.afterText);
   assert.equal(after.threads[0].messages[0].body, 'Из Word 🧭');
   assert.deepEqual(after.threads[0].messages[1], state.threads[0].messages[1]);
   assert.deepEqual(after.threads[0].anchor, state.threads[0].anchor);
-  assert.throws(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options), /METADATA_UNSUPPORTED/u);
+  assert.doesNotThrow(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options));
   for (const bad of [
     changed.replace('ru-RU', '../../foreign'),
     changed.replace('w:lang w:val', 'w:lang w:unknown'),
     changed.replace('<w:lang', '<w:vanish/><w:lang'),
-    changed.replace('<w:lang', '<w:b/><w:lang'),
     changed.replace('<w:lang', '<w:rStyle w:val="Hidden"/><w:lang'),
     changed.replace('<w:lang', '<w:drawing/><w:lang'),
     changed.replace('002E54A5', 'command'),
@@ -202,7 +210,7 @@ test('Word proofing metadata has an explicit return ledger and never widens rich
   ]) assert.equal(analyze(bad).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', bad);
 });
 
-test('native Unicode reply font fallback is ledgered without changing text or relaxing generic intake', async () => {
+test('native Unicode reply font fallback survives typed rich return', async () => {
   const { bytes, input, state } = await fixture();
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
@@ -219,27 +227,28 @@ test('native Unicode reply font fallback is ledgered without changing text or re
   };
   const { returned, parsed } = analyze(changed);
   assert.equal(parsed.ok, true);
-  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
-  const ledger = parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(x => x.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION');
-  assert.deepEqual(ledger.map(x => [x.attribute, x.value]).sort(), ['ascii', 'hAnsi', 'cs'].map(x => ['w:' + x, 'Segoe UI Symbol']).sort());
-  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationPolicy, 'LITERAL_COMMENT_TEXT_RETURN_DECLARED_PRESENTATION_AND_PROOFING');
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED', JSON.stringify(parsed.reviewIr.commentBodyGrammar));
+  const symbol = parsed.reviewIr.commentThreads[0].replies[0].richBody.document.content[0].content.find(n=>n.text === '✓');
+  assert.equal(symbol.marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Segoe UI Symbol');
   const after = JSON.parse(plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
     returnedParagraphs: parsed.reviewIr.formattingParagraphs }).afterText);
   const expected = structuredClone(state.threads); expected[0].messages[1].body = 'Reply edited 🧭 — ✓';
+  expected[0].messages[1].richBody = after.threads[0].messages[1].richBody;
+  assert.equal(expected[0].messages[1].richBody.document.content[0].content.find(n=>n.text==='✓').marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Segoe UI Symbol');
   assert.deepEqual(after.threads, expected);
-  assert.throws(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options), /METADATA_UNSUPPORTED/);
+  assert.doesNotThrow(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options));
   for (const badFont of [
     '<w:rFonts/>', font + font, font.replace('w:ascii=', 'w:asciiTheme='),
     font.replace('w:ascii=', 'w:hint='), font.replace('Segoe UI Symbol', ''),
     font.replace('Segoe UI Symbol', 'x'.repeat(129)), font.replace('Segoe UI Symbol', 'bad&#10;font'),
     font.replace('/>', '>unrepresented</w:rFonts>'), font.replace('/>', '><w:lang w:val="en-US"/></w:rFonts>'),
-    '<w:vanish/>' + font, '<w:b/>' + font, '<w:rStyle w:val="Hidden"/>' + font,
+    '<w:vanish/>' + font, '<w:rStyle w:val="Hidden"/>' + font,
   ]) assert.equal(analyze(changed.replace(font, badFont)).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', badFont);
 });
 
 test('one delta preserves canonical IDs and combines root/reply edits, resolution and a proved range', async () => {
   const { input, state } = await fixture(), t = input.returnedThreads[0];
-  t.body = '  Changed 🧭 root\nsecond line '; t.replies[0].body = 'Changed reply'; t.status = 'RESOLVED';
+  setReturnedBody(t, '  Changed 🧭 root\nsecond line '); setReturnedBody(t.replies[0], 'Changed reply'); t.status = 'RESOLVED';
   t.quotedAnchorText = 'after'; t.finalTextAnchorRange = { startUtf16: 17, endUtf16: 22,
     selectedText: 'after', blockTextSha256: hash(input.returnedParagraphs[0].paragraphText) };
   const result = plan(input), after = JSON.parse(result.afterText);
@@ -260,14 +269,14 @@ test('new reply uses a fresh local identity and preserves the parent/root', asyn
   assert.equal(after.threads[0].messages[2].body, 'New reply');
 });
 
-test('native Word reply style resolves definitions, defaults and parent before literal return', async () => {
+test('native Word reply style resolves and preserves definitions, defaults and parent', async () => {
   const { bytes, input, state } = await fixture();
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
   const options = { cryptoPort: { sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } };
   const ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
-  const styles = `<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman"/><w:sz w:val="24"/><w:lang w:val="ru-FI"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="a"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="paragraph" w:styleId="a3"><w:name w:val="annotation text"/><w:basedOn w:val="a"/><w:link w:val="a4"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:line="240" w:lineRule="auto"/></w:pPr><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:style></w:styles>`;
+  const styles = `<w:styles xmlns:w="${ns}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:lang w:val="ru-FI"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="a"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="paragraph" w:styleId="a3"><w:name w:val="annotation text"/><w:basedOn w:val="a"/><w:link w:val="a4"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:line="240" w:lineRule="auto"/></w:pPr><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:style></w:styles>`;
   const rootPara = parts['word/comments.xml'].match(/w14:paraId="([^"]+)"/u)[1];
   const comments = parts['word/comments.xml'].replace('</w:comments>', '<w:comment w:id="9" w:author="Carol" w:initials="C" w:date="2026-09-27T14:29:00Z"><w:p w14:paraId="6AEAA8E0" w:rsidRPr="00E65C11"><w:pPr><w:pStyle w:val="a3"/><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr><w:r><w:rPr><w:rStyle w:val="a5"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="ru-RU"/></w:rPr><w:t>Ответ 🧭 مرحبا</w:t></w:r></w:p></w:comment></w:comments>');
   const extended = parts['word/commentsExtended.xml'].replace('</w15:commentsEx>', `<w15:commentEx w15:paraId="6AEAA8E0" w15:paraIdParent="${rootPara}" w15:done="0"/></w15:commentsEx>`);
@@ -281,31 +290,32 @@ test('native Word reply style resolves definitions, defaults and parent before l
   };
   const { returned, parsed } = analyze(styles);
   assert.equal(parsed.ok, true);
-  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
-  assert(parsed.reviewIr.commentBodyGrammar.normalizationLedger.some(x => x.value === 'a3'
-    && x.definitionPart === 'word/styles.xml' && x.reason === 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION'));
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED', JSON.stringify(parsed.reviewIr.commentBodyGrammar));
+  const parsedReply = parsed.reviewIr.commentThreads[0].replies.at(-1);
+  assert.equal(parsedReply.richBody.document.content[0].content.find(n=>n.type==='text').marks.find(m=>m.type==='textStyle').attrs.fontSize, '10pt');
   const planned = plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
     returnedParagraphs: parsed.reviewIr.formattingParagraphs });
   const after = JSON.parse(planned.afterText);
-  assert.deepEqual(after.threads[0].messages.slice(0, 2), state.threads[0].messages);
+  for (const [i,message] of after.threads[0].messages.slice(0,2).entries()) {
+    assert.equal(message.body,state.threads[0].messages[i].body);
+    assert.deepEqual(message.provenance,state.threads[0].messages[i].provenance);
+    assert.equal(message.richBody.document.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Times New Roman');
+  }
   assert.deepEqual(after.threads[0].anchor, state.threads[0].anchor);
   const reply = after.threads[0].messages[2];
   assert.equal(reply.body, 'Ответ 🧭 مرحبا');
   assert.equal(reply.provenance.author, 'Carol');
   assert.match(reply.commentId, /^word-reply-[a-f0-9]{64}$/u);
-  assert.throws(() => validateGenericCommentMetadataV1(returnedParts, options), /METADATA_UNSUPPORTED/u);
+  assert.doesNotThrow(() => validateGenericCommentMetadataV1(returnedParts, options));
   assert.equal(analyze(styles.replaceAll('a3', 'LocalizedComment'), comments.replaceAll('a3', 'LocalizedComment')).parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
   for (const bad of [
     styles.replace('<w:sz w:val="20"/>', '<w:vanish/>'),
-    styles.replace('<w:sz w:val="20"/>', '<w:b/>'),
     styles.replace('<w:qFormat/>', '<w:rPr><w:vanish/></w:rPr>'),
     styles.replace('<w:sz w:val="24"/>', '<w:vanish/>'),
     styles.replace('<w:spacing w:line="240" w:lineRule="auto"/>', '<w:numPr><w:numId w:val="1"/></w:numPr>'),
     styles.replace('w:basedOn w:val="a"', 'w:basedOn w:val="a3"'),
     styles.replace('w:basedOn w:val="a"', 'w:basedOn w:val="missing"'),
     styles.replace('w:type="paragraph" w:styleId="a3"', 'w:type="character" w:styleId="a3"'),
-    styles.replace('<w:basedOn w:val="a"/>', ''),
-    styles.replace('annotation text', 'Untrusted style'),
     styles.replace('<w:qFormat/>', '<w:qFormat>hidden payload</w:qFormat>'),
     styles.replace('w:sz w:val="20"', 'w:sz w:val="0"'),
     styles.replace('w:lang w:val="ru-FI"', 'w:lang w:unknown="ru-FI"'),
@@ -318,10 +328,10 @@ test('native Word reply style resolves definitions, defaults and parent before l
 });
 
 test('duplicate Apply is no-write; mutated payload or intervening canonical state is rejected', async () => {
-  const { input } = await fixture(); input.returnedThreads[0].body = 'Changed';
+  const { input } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Changed');
   const result = plan(input); const replay = { ...input, beforeText: result.afterText };
   assert.equal(plan(replay).replay, true);
-  const altered = structuredClone(replay); altered.returnedThreads[0].body = 'Different';
+  const altered = structuredClone(replay); setReturnedBody(altered.returnedThreads[0], 'Different');
   assert.throws(() => plan(altered), /COMMENT_RETURN_REPLAY_CONFLICT/u);
   const state = JSON.parse(result.afterText); state.revision++;
   assert.throws(() => plan({ ...replay, beforeText: JSON.stringify(state) }), /COMMENT_RETURN_REPLAY_CONFLICT/u);
@@ -330,7 +340,7 @@ test('duplicate Apply is no-write; mutated payload or intervening canonical stat
 test('concurrent local body/status/anchor change and revision-only change cannot be overwritten', async () => {
   for (const mutate of [s => s.revision++, s => s.threads[0].messages[0].body = 'local',
     s => s.threads[0].status = 'resolved', s => s.threads[0].anchor.startUtf16++]) {
-    const { input, state } = await fixture(); input.returnedThreads[0].body = 'Word'; mutate(state);
+    const { input, state } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Word'); mutate(state);
     assert.throws(() => plan({ ...input, beforeText: JSON.stringify(state) }), /COMMENT_RETURN_BASELINE_CONFLICT/u);
   }
 });
@@ -353,7 +363,7 @@ test('mixed manuscript text/revisions, cross-scene routing and malformed range a
 
 test('literal body/provenance budgets and invalid Unicode refuse before serialization', async () => {
   for (const value of ['', 'x'.repeat(16385), 'bad\u0000', '\ud800']) {
-    const { input } = await fixture(); input.returnedThreads[0].body = value;
+    const { input } = await fixture(); setReturnedBody(input.returnedThreads[0], value);
     assert.throws(() => plan(input), /COMMENT_RETURN_BODY_INVALID/u);
   }
   const { input } = await fixture(); input.returnedThreads[0].authorPersonIdentity.author = '\ud800';
@@ -365,7 +375,7 @@ test('atomic return port recovers failures before publication and reconciles a c
   const runtime = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
   const { atomicWriteFile } = await import('../../src/io/markdown/atomicWriteFile.mjs');
   for (const failure of ['recovery', 'before-canonical', 'after-canonical', 'none']) {
-    const { input } = await fixture(); input.returnedThreads[0].body = 'Word changed';
+    const { input } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Word changed');
     const projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'comment-delta-port-'));
     t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
     const target = path.join(projectRoot, '.yalken/word-review/non-text-return-state.v1.json');
@@ -396,7 +406,7 @@ test('atomic return port recovers failures before publication and reconciles a c
 test('return port requires publication authority and rejects lease loss without canonical changes', async t => {
   const fs = require('node:fs/promises'), os = require('node:os'), path = require('node:path');
   const runtime = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
-  const { input } = await fixture(); input.returnedThreads[0].body = 'Changed';
+  const { input } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Changed');
   await assert.rejects(() => runtime.commitAuthenticatedCommentDelta(input), /AUTHORITY_REQUIRED/u);
   const projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'comment-delta-lease-'));
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
@@ -411,7 +421,7 @@ test('return port requires publication authority and rejects lease loss without 
 
 test('actual main command with real project lease applies once; forged admission, dirty editor and stale intake cannot write', async t => {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture(); input.returnedThreads[0].body = 'Main Word delta';
+  const { input, source, bytes, reviewIr } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Main Word delta');
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -452,11 +462,15 @@ test('actual main command with real project lease applies once; forged admission
   const run = (explicitCanonicalApplyConfirmed, docxBytes = bytes) => ctx.applyAuthenticatedCommentDelta({ context, docxBytes, revisionBridge,
     requestId: 'test', explicitCanonicalApplyConfirmed, isCurrent: () => current });
   assert.equal((await kernel.dispatch('cmd.rtk.review.applyCommentLifecycleReturn', { action: 'authenticated-comment-delta' })).error.code, 'COMMENT_RETURN_ADMISSION_REQUIRED');
+  const supportedProfile=reviewIr.commentBodyGrammar.profile;
+  reviewIr.commentBodyGrammar.profile='UNKNOWN_RICH_PROFILE';
+  assert.equal((await run(false)).status,'blocked');assert.equal(await fs.readFile(stateFile,'utf8'),input.beforeText);
+  reviewIr.commentBodyGrammar.profile=supportedProfile;
   assert.equal((await run(false)).status, 'preview-ready'); assert.equal(await fs.readFile(stateFile, 'utf8'), input.beforeText);
   assert.equal((await run(true, Buffer.from('foreign'))).code, 'COMMENT_RETURN_ARTIFACT_MISMATCH');
   const parts = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
   const originalComments = parts['word/comments.xml'];
-  parts['word/comments.xml'] = originalComments.replace('<w:r>', '<w:r><w:rPr><w:b/></w:rPr>');
+  parts['word/comments.xml'] = originalComments.replace('<w:r>', '<w:r><w:rPr><w:vanish/></w:rPr>');
   assert.notEqual(parts['word/comments.xml'], originalComments);
   const richBytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
   context.reviewTransportReturnIntake.returnedArtifactSha256 = hash(richBytes);
@@ -485,7 +499,7 @@ test('Word minute rounding preserves original provenance; unrelated author or da
   before.threads[0].messages[0].provenance.date = '2026-09-26T00:00:52.402Z';
   input.baseline.threads[0].messages[0].provenance.date = '2026-09-26T00:00:52.402Z';
   input.baseline.stateDigest = hash(stable(before)); input.beforeText = JSON.stringify(before);
-  input.returnedThreads[0].body = 'Word body edit';
+  setReturnedBody(input.returnedThreads[0], 'Word body edit');
   const after = JSON.parse(plan(input).afterText);
   assert.equal(after.threads[0].messages[0].provenance.date, '2026-09-26T00:00:52.402Z');
   input.returnedThreads[0].date = '2026-09-25T00:00:00Z';
@@ -693,7 +707,7 @@ test('export-only explicit UTC transport survives return without rewriting canon
   assert.equal(root.provenance.dateUtc, undefined);
   assert.equal(f.reviewIr.commentThreads[0].dateUtc, root.transportDateUtc);
   assert.equal(plan(f.input).unchanged, true);
-  f.input.returnedThreads[0].body = 'edited';
+  setReturnedBody(f.input.returnedThreads[0], 'edited');
   assert.deepEqual(JSON.parse(plan(f.input).afterText).threads[0].messages[0].provenance, f.state.threads[0].messages[0].provenance);
   f.input.returnedThreads[0].dateUtc = '2026-09-25T00:00:00Z';
   assert.throws(() => plan(f.input), /PROVENANCE_CHANGED/);
@@ -706,4 +720,56 @@ test('export-only explicit UTC transport survives return without rewriting canon
     assert.equal(source.commentExport.threads[0].messages[0].transportDateUtc, undefined);
     assert.deepEqual(source.commentExport.threads[0].messages[0].provenance, state.threads[0].messages[0].provenance);
   }
+});
+
+test('format-only root and reply deltas upgrade state, replay exactly and explicitly clear stale rich content', async () => {
+  const { input, state } = await fixture();
+  const enriched = structuredClone(input.returnedThreads);
+  const rich = (body, type) => ({ schemaVersion:'yalken.word.comment-body.v1', document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body,marks:[{type}]}]}]} });
+  enriched[0].richBody = rich(enriched[0].body,'bold');
+  enriched[0].replies[0].richBody = rich(enriched[0].replies[0].body,'italic');
+  const changedInput = {...input, returnedThreads:enriched};
+  const result=plan(changedInput), after=JSON.parse(result.afterText);
+  assert.equal(after.schemaVersion,'yalken.rtk.word.non-text-return-state.v2');
+  assert.deepEqual(result.changes[0].messageIds,['root-a','reply-a']);
+  assert.equal(after.threads[0].messages[0].body,state.threads[0].messages[0].body);
+  assert.deepEqual(after.threads[0].messages[0].provenance,state.threads[0].messages[0].provenance);
+  assert.equal(plan({...changedInput,beforeText:result.afterText}).replay,true);
+  const clearInput={...input,beforeText:result.afterText,roundId:'clear-rich-format',artifactSha256:'e'.repeat(64),baseline:{...input.baseline,stateDigest:hash(stable(after)),stateRevision:after.revision,threads:input.baseline.threads.map((t,i)=>({...t,messages:t.messages.map((m,j)=>({...m,richBody:after.threads[i].messages[j].richBody}))}))}};
+  clearInput.returnedThreads=structuredClone(input.returnedThreads);
+  delete clearInput.returnedThreads[0].richBody;delete clearInput.returnedThreads[0].replies[0].richBody;
+  const cleared=plan(clearInput), final=JSON.parse(cleared.afterText);
+  assert.equal(final.schemaVersion,'yalken.rtk.word.non-text-return-state.v2');
+  assert.equal(final.threads[0].messages[0].richBody,undefined);
+  assert.equal(final.threads[0].messages[1].richBody,undefined);
+  const malformed=structuredClone(changedInput);malformed.returnedThreads[0].richBody.document.content[0].content[0].text='different';
+  assert.throws(()=>plan(malformed),/COMMENT_BODY_PROJECTION_MISMATCH/);
+});
+
+test('prior-round baseline lacking rich transport projection derives only its authenticated export typography',async()=>{
+ const {input}=await fixture();for(const thread of input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
+ const before=input.beforeText;
+ assert.equal(plan(input).unchanged,true);assert.equal(plan(input).afterText,before);
+ const changed=structuredClone(input);
+ changed.returnedThreads[0].richBody.document.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.fontSize='14pt';
+ const result=plan(changed),after=JSON.parse(result.afterText);
+ assert.equal(after.threads[0].messages[0].body,JSON.parse(before).threads[0].messages[0].body);
+ assert.equal(after.threads[0].messages[0].richBody.document.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.fontSize,'14pt');
+ const forged=structuredClone(input);forged.exportMap.exportTypography.schemaVersion='unknown-profile';assert.throws(()=>plan(forged),/TYPOGRAPHY_INVALID/);
+});
+
+test('formatting only a line break is a comment delta, while text and other messages remain exact',async()=>{
+ const {input,state,source}=await fixture({richBreak:true});
+ assert.equal(plan(input).unchanged,true);
+ const changed=structuredClone(input),line=changed.returnedThreads[0].richBody.document.content[0].content.find(n=>n.type==='hardBreak');
+ line.marks.push({type:'underline'});
+ const result=plan(changed),after=JSON.parse(result.afterText);
+ assert.deepEqual(result.changes[0].messageIds,['root-a']);
+ assert.equal(after.threads[0].messages[0].body,state.threads[0].messages[0].body);
+ assert.deepEqual(after.threads[0].messages[1],state.threads[0].messages[1]);
+ assert(after.threads[0].messages[0].richBody.document.content[0].content.find(n=>n.type==='hardBreak').marks.some(m=>m.type==='underline'));
+ const {buildCanonicalCommentExport,commentPackageParts}=require('../../src/export/docx/docxReviewPacketComments.js');
+ const projection=buildCanonicalCommentExport(after,source.blocks,input.projectId,{exportTypography:input.exportMap.exportTypography});
+ const xml=commentPackageParts(projection).entries.find(e=>e.name==='word/comments.xml').data;
+ assert.match(xml,/<w:r><w:rPr>[^]*?<w:u w:val="single"\/[^]*?<\/w:rPr><w:br\/><\/w:r>/);
 });

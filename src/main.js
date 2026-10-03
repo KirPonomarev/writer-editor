@@ -4623,7 +4623,7 @@ async function readDocxReviewPacketExportSource() {
   const storySourceScenes = [{ sceneId, doc: parsedDocument.doc || envelopeModule.buildParagraphDocumentFromText(parsedDocument.text) }];
   const documentSections = buildFullManuscriptDocumentSections(storySourceScenes, blocks, cryptoPort);
   const documentStories = require('./export/docx/docxReviewPacketStories').buildDocumentStoriesExport(storySourceScenes, documentSections, {includeEmpty:true,blocks});
-  const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId });
+  const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId, exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
   if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
     throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
   const commentSummary = { stateRevision: commentExport.stateRevision, exportedThreadCount: commentExport.threads.length,
@@ -6361,7 +6361,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     const inventory = intake.parserResult?.reviewIr?.commentReturnInventory;
     const completeAbsence = grammar?.status === 'ABSENT' && inventory?.status === 'COMPLETE'
       && inventory?.packageState === 'ABSENT';
-    if (grammar?.profile !== 'PLAIN_TEXT_V1' || (grammar?.status !== 'SUPPORTED' && !completeAbsence)) {
+    if (!['PLAIN_TEXT_V1', 'RICH_INLINE_V1'].includes(grammar?.profile) || (grammar?.status !== 'SUPPORTED' && !completeAbsence)) {
       throw rejected('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
     }
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
@@ -15044,6 +15044,7 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
       commentId: docxReviewPreviewSessionDetailString(message.commentId),
       kind: docxReviewPreviewSessionDetailString(message.kind),
       body: typeof message.body === 'string' ? message.body : '',
+      ...(message.richBody ? { richBody: JSON.parse(JSON.stringify(message.richBody)) } : {}),
       provenance: normalizeCommentProvenance(message.provenance),
     }))
     : [];
@@ -22939,7 +22940,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               });
               commentState = planCommentAnchorSave({ beforeText: current.text,
                 projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-                beforeContent: expectedSceneContent, afterContent: content });
+                beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true });
             }
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });

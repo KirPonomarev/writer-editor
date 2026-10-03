@@ -534,7 +534,8 @@ if (testFiles.length === 0) {
   // R2.4 E0 runner truth: capture the TAP stream instead of inheriting so
   // the lane fails closed on a zero executed denominator and reports the
   // exact skip inventory instead of hiding it inside an aggregate exit code.
-  const result = spawnSync(process.execPath, ['--test', ...testFiles], {
+  // Keep elapsed-time contracts isolated from competing test-file processes.
+  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...testFiles], {
     cwd: rootDir,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,

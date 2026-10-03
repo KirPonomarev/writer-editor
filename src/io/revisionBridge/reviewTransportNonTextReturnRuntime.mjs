@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
+import commentBody from '../../core/word-comment-body-v1.cjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import commentReturnDelta from '../../core/word-comment-return-delta-v1.cjs';
 import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
@@ -25,7 +26,8 @@ export function commentSceneSnapshotsEqual(left, right) {
     if (Array.isArray(value)) return value.map(canonical);
     if (value === null || typeof value !== 'object') return value;
     let source = value;
-    const defaults = ['paragraph', 'heading'].includes(value.type) ? { textAlign: null }
+    const defaults = value.type === 'doc' ? { wordPendingRevisions: null, wordUserBookmarks: null }
+      : ['paragraph', 'heading'].includes(value.type) ? { textAlign: null }
       : value.type === 'textStyle' ? { color: null, fontFamily: null, fontSize: null } : null;
     if (defaults && (value.attrs === undefined || (value.attrs && typeof value.attrs === 'object' && !Array.isArray(value.attrs)))) {
       source = { ...value, attrs: { ...defaults, ...value.attrs } };
@@ -184,12 +186,16 @@ function emptyState(projectId) {
 }
 
 function validateState(value, projectId) {
-  if (!isPlainObject(value) || value.schemaVersion !== RTK_NON_TEXT_RETURN_STATE_SCHEMA) {
+  if (!isPlainObject(value) || ![RTK_NON_TEXT_RETURN_STATE_SCHEMA, commentBody.STATE_V2].includes(value.schemaVersion)) {
     throw new Error('RTK_NON_TEXT_STATE_SCHEMA_INVALID');
   }
   if (normalizeString(value.projectId) !== projectId) throw new Error('RTK_NON_TEXT_STATE_PROJECT_MISMATCH');
   if (!Number.isSafeInteger(value.revision) || value.revision < 0) throw new Error('RTK_NON_TEXT_STATE_REVISION_INVALID');
   if (!Array.isArray(value.threads) || !Array.isArray(value.events)) throw new Error('RTK_NON_TEXT_STATE_COLLECTION_INVALID');
+  for (const thread of value.threads) for (const message of [...(thread.messages || []), ...(thread.deletedMessages || [])]) {
+    if (message.richBody !== undefined && value.schemaVersion !== commentBody.STATE_V2) throw Error('COMMENT_RICH_STATE_VERSION_REQUIRED');
+    commentBody.validateCommentMessageContent(message);
+  }
   return clone(value);
 }
 
@@ -337,7 +343,8 @@ function normalizeRootCommentInput(input) {
   const sceneId = normalizeString(input.sceneId);
   const threadId = normalizeString(input.threadId);
   const commentId = normalizeString(input.commentId) || `${threadId}:root`;
-  const body = typeof input.body === 'string' ? input.body : '';
+  const content = commentBody.validateCommentMessageContent(input);
+  const body = content.body;
   const selectedText = typeof input.selectedText === 'string' ? input.selectedText : '';
   const sceneText = typeof input.sceneText === 'string' ? input.sceneText : '';
   const anchor = isPlainObject(input.anchor)
@@ -360,7 +367,7 @@ function normalizeRootCommentInput(input) {
     anchor.canonicalRange = { sceneParagraphIndex: range.sceneParagraphIndex,
       blockTextSha256: range.blockTextSha256, startUtf16: range.startUtf16 };
   }
-  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, body, selectedText, sceneText, anchor, provenance };
+  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, ...content, selectedText, sceneText, anchor, provenance };
 }
 
 function countOccurrences(text, needle) {
@@ -558,7 +565,7 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
   }
   let normalized;
   try { normalized = normalizeRootCommentInput(input); }
-  catch (error) { return blocked(error.message, 'provenanceOrAnchor'); }
+  catch (error) { return blocked(error.message === 'COMMENT_BODY_INVALID' ? 'RTK_ROOT_COMMENT_BODY_INVALID' : error.message, 'provenanceOrAnchor'); }
   for (const field of ['projectId', 'projectRoot', 'operationId', 'sceneId', 'threadId', 'commentId']) {
     if (!normalized[field]) return blocked('RTK_ROOT_COMMENT_REQUIRED_FIELD_MISSING', field);
   }
@@ -582,6 +589,7 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
     threadId: normalized.threadId,
     commentId: normalized.commentId,
     body: normalized.body,
+    ...(normalized.richBody ? {richBody: normalized.richBody} : {}),
     selectedText: normalized.selectedText,
     ...(Object.keys(normalized.provenance).length ? { provenance: normalized.provenance } : {}),
     anchor: {
@@ -650,10 +658,15 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
       },
       rootCommentId: normalized.commentId,
       messages: [{ commentId: normalized.commentId, kind: 'root', body: normalized.body,
+    ...(normalized.richBody ? {richBody: normalized.richBody} : {}),
         ...(Object.keys(normalized.provenance).length ? { provenance: normalized.provenance } : {}) }],
     }],
     events: [...before.events, event],
   };
+  try {
+    commentBody.upgradeCommentState(after);
+    if (Buffer.byteLength(JSON.stringify(after, null, 2) + '\n', 'utf8') > 65536) throw Error('COMMENT_STATE_BUDGET');
+  } catch (error) { return blocked(error.message, 'state'); }
   let recovery;
   try {
     recovery = await port.writeRecovery({ ...normalized, state: before });
@@ -699,6 +712,7 @@ export function createRtkRootCommentReturnCommandHandler(options = {}) {
 
 function normalizeCommentLifecycleInput(input) {
   const provenance = normalizeCommentProvenance(input.provenance);
+  const content = input.action === 'reply' ? commentBody.validateCommentMessageContent({body: input.replyBody, richBody: input.richBody}) : null;
   return {
     projectId: normalizeString(input.projectId),
     projectRoot: normalizeString(input.projectRoot),
@@ -707,7 +721,8 @@ function normalizeCommentLifecycleInput(input) {
     threadId: normalizeString(input.threadId || input.parentThreadId),
     action: normalizeString(input.action),
     replyId: normalizeString(input.replyId),
-    replyBody: typeof input.replyBody === 'string' ? input.replyBody : '',
+    replyBody: content?.body || '',
+    ...(content?.richBody ? {richBody:content.richBody} : {}),
     ...(Object.keys(provenance).length ? { provenance } : {}),
   };
 }
@@ -724,6 +739,7 @@ function applyCommentLifecycleTransition(thread, input) {
       return blocked('RTK_COMMENT_REPLY_IDENTITY_COLLISION', 'replyId');
     }
     next.messages.push({ commentId: input.replyId, kind: 'reply', body: input.replyBody,
+      ...(input.richBody ? {richBody:input.richBody} : {}),
       ...(input.provenance ? { provenance: input.provenance } : {}) });
     return { ok: true, thread: next, eventKind: 'comment_reply_added', transitions: [next.status] };
   }
@@ -813,6 +829,10 @@ export async function applyCommentLifecycleReturnRuntime(input = {}, options = {
     threadId: normalized.threadId,
     transitions: transition.transitions,
   });
+  try {
+    commentBody.upgradeCommentState(after);
+    if (Buffer.byteLength(JSON.stringify(after, null, 2) + '\n', 'utf8') > 65536) throw Error('COMMENT_STATE_BUDGET');
+  } catch (error) { return blocked(error.message, 'state'); }
   let recovery;
   try {
     recovery = await port.writeRecovery({ ...normalized, state: before });
@@ -968,7 +988,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
       ? sourceAssociation.canonicalSelectedText
       : rawSelectedText;
     const rootIdentityDigest = sha256(stableJson({
-      returnArtifactId, threadId, sceneId, selectedText, rawSelectedText, rootBody,
+      returnArtifactId, threadId, sceneId, selectedText, rawSelectedText, rootBody, richBody: rootMessage.richBody || thread.richBody,
     }));
     const rootOperationId = `physical-root:${rootIdentityDigest}`;
     const canonicalThreadId = `physical-thread:${rootIdentityDigest}`;
@@ -1017,6 +1037,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
         threadId: canonicalThreadId,
         commentId: canonicalRootCommentId,
         body: rootBody,
+        ...((rootMessage.richBody || thread.richBody) ? {richBody:rootMessage.richBody || thread.richBody} : {}),
         provenance: rootProvenance,
         anchor: {
           sceneId,
@@ -1050,13 +1071,13 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
         family: 'reply',
         payload: {
           projectId, projectRoot, sceneId, threadId: canonicalThreadId, action: 'reply',
-          replyId: canonicalReplyId, replyBody,
+          replyId: canonicalReplyId, replyBody, ...(reply.richBody ? {richBody:reply.richBody} : {}),
           provenance: replyProvenance[replyIndex],
           returnArtifactId,
           sourceThreadId: threadId,
           sourceReplyId,
           operationId: `physical-reply:${sha256(stableJson({
-            returnArtifactId, threadId, replyId: sourceReplyId, replyBody,
+            returnArtifactId, threadId, replyId: sourceReplyId, replyBody, richBody: reply.richBody,
           }))}`,
         },
       });

@@ -258,7 +258,9 @@ function replyUiHarness(saved = apply(create(), 'reply', { body: 'Reply to remov
     source.indexOf('function reviewSurfaceNormalizeState(input'));
   const projection = { available: true, ...intent(saved.afterText, 'delete'), threads: saved.state.threads };
   const calls = []; let current = saved, focused = 0;
-  const sandbox = { wordCommentDraft: null, wordCommentBusy: false, wordCommentNotice: '',
+  const sandbox = { wordCommentDraft: null, wordCommentBusy: false, wordCommentNotice: '', wordCommentEditor: null,
+    renderCommentBodyHtml: message => message.body,
+    commentBodyDocumentForEditor: message => require('../../src/core/word-comment-body-v1.cjs').commentBodyDocument(message),
     reviewSurfaceState: { commentAuthoring: projection }, crypto,
     reviewSurfaceArray: v => Array.isArray(v) ? v : [],
     reviewSurfaceEscapeHtml: value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]),
@@ -347,4 +349,36 @@ test('comment snapshot equality admits only declared null defaults and preserves
   ]) { const changed = structuredClone(opened); mutate(changed); assert(!equal(original, changed)); assert(!equal(changed, original)); }
   assert(!equal('якорь', original)); assert(!equal({ type: 'unknown' }, { type: 'unknown', attrs: { textAlign: null } }));
   assert.equal(JSON.stringify(original), preserved);
+});
+
+test('actual full editor schema roundtrip preserves imported scene authority while only materializing declared root nulls', async () => {
+  const { getSchema } = await import('@tiptap/core');
+  const { default: StarterKit } = await import('@tiptap/starter-kit');
+  const { default: Color } = await import('@tiptap/extension-color');
+  const { default: Highlight } = await import('@tiptap/extension-highlight');
+  const { default: Underline } = await import('@tiptap/extension-underline');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const { commentSceneSnapshotsEqual: equal } = await runtimePromise;
+  const exports = {documentStories:['DocumentStories'],documentSections:['DocumentSections'],documentBreaks:['DocumentBreaks'],documentListNumbering:['DocumentListNumbering'],documentListItems:['DocumentListItems'],documentHeadings:['DocumentHeadings'],wordPendingRevisions:['WordPendingRevisions'],userBookmarks:['UserBookmarks','UserBookmarkLink'],documentTextStyle:['DocumentTextStyle'],documentParagraphAlignment:['DocumentParagraphAlignment'],documentTables:['DocumentTables'],documentMedia:['DocumentMedia'],manuscriptNotes:['ManuscriptNoteReferences']};
+  const extensions=[StarterKit.configure({trailingNode:false,heading:false,listItem:false,hardBreak:false,link:false,underline:false})];
+  for (const [file,names] of Object.entries(exports)) { const mod=await import(`../../src/renderer/tiptap/${file}.mjs`); for(const name of names)extensions.push(mod[name]); }
+  extensions.push(Color,Highlight.configure({multicolor:true}),Underline);
+  const doc={type:'doc',attrs:{wordDefaultTabStop:708},content:[{type:'paragraph',attrs:{wordParagraphMarkLanguage:{val:'en-US',eastAsia:'ru-RU',bidi:'ar-SA'},wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:'Rich comment anchor.',marks:[{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'ru-RU',bidi:'ar-SA'}}}]}]}]};
+  const bytes=envelope.composeObservablePayload({doc});
+  const before=envelope.parseObservablePayload(bytes).doc;
+  const opened=envelope.parseObservablePayload(envelope.composeObservablePayload({doc:getSchema(extensions).nodeFromJSON(before).toJSON()})).doc;
+  assert.equal(opened.attrs.wordPendingRevisions,null);assert.equal(opened.attrs.wordUserBookmarks,null);
+  assert(equal(before,opened));assert(equal(opened,before));
+  for(const mutate of [
+    d=>{d.attrs.wordPendingRevisions={schemaVersion:'yalken.word.pending-revisions.v1',revisions:[]};},
+    d=>{d.attrs.wordUserBookmarks={schemaVersion:'yalken.word.user-bookmarks.v1',bookmarks:[]};},
+    d=>{d.attrs.foreign=null;},d=>{d.attrs.wordDefaultTabStop=720;},
+    d=>{d.content[0].attrs.wordParagraphSpacing.after=161;},
+    d=>{d.content[0].attrs.wordParagraphIndent={left:0};},
+    d=>{d.content[0].attrs.wordParagraphTabs=[{pos:720,val:'left'}];},
+    d=>{d.content[0].attrs.wordParagraphMarkLanguage.val='ru-RU';},
+    d=>{d.content[0].content[0].marks[0].attrs.wordLanguage.val='ru-RU';},
+    d=>{d.content[0].content[0].marks.push({type:'underline'});},
+  ]) {const changed=structuredClone(opened);mutate(changed);assert(!equal(before,changed));assert(!equal(changed,before));}
+  assert.equal(envelope.composeObservablePayload({doc}),bytes);
 });

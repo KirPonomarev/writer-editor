@@ -10,6 +10,7 @@ import {
   focusTiptapSurface,
   getTiptapDocumentSnapshot,
   getTiptapFormattingState,
+  captureTiptapLinkTarget,
   getTiptapSelectionOffsets,
   getTiptapPlainText,
   initTiptap,
@@ -24,7 +25,7 @@ import {
   undoTiptap,
 } from './tiptap/index.js';
 import { storyInventory } from './tiptap/documentStories.mjs';
-import { createManuscriptBodyEditor } from './tiptap/manuscriptNotes.mjs';
+import { createManuscriptBodyEditor, commentBodyDocumentForEditor, renderCommentBodyHtml } from './tiptap/manuscriptNotes.mjs';
 import { tableParagraphs } from '../io/documentTables.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
@@ -1896,6 +1897,11 @@ function reviewSurfaceNormalizeProgress(rawProgress, transient = null) {
 let wordCommentDraft = null;
 let wordCommentBusy = false;
 let wordCommentNotice = '';
+let wordCommentEditor = null;
+let wordCommentEditorHost = null;
+let wordCommentEditorRequestId = null;
+let wordCommentComposing = false;
+let wordCommentRenderPending = false;
 function guardWordCommentDraftUnload(event) {
   if (!wordCommentDraft && !wordCommentBusy) return;
   event.preventDefault();
@@ -1984,12 +1990,54 @@ function renderWordCommentAuthoring(projection) {
   const button = (action, label, threadId = '', commentId = '') => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="${action}" data-thread-id="${escape(threadId)}" data-comment-id="${escape(commentId)}" ${wordCommentBusy || !p.available ? 'disabled' : ''}>${label}</button>`;
   const threads = reviewSurfaceArray(p.threads).map(thread => `<article class="right-rail-review-item right-rail-review-item--comments">
     <div class="right-rail-review-item-meta"><span>${thread.status === 'resolved' ? 'Завершено' : 'Открыто'}</span><span>${escape(thread.anchor?.selectedText || '')}</span></div>
-    ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><p class="right-rail-review-item-body">${escape(message.body)}</p>${button('edit', 'Править', thread.threadId, message.commentId)}${message.kind === 'reply' ? button('deleteReply', 'Удалить ответ', thread.threadId, message.commentId) : ''}</div>`).join('')}
+    ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><div class="right-rail-review-item-body">${renderCommentBodyHtml(message)}</div>${button('edit', 'Править', thread.threadId, message.commentId)}${message.kind === 'reply' ? button('deleteReply', 'Удалить ответ', thread.threadId, message.commentId) : ''}</div>`).join('')}
     <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить обсуждение', thread.threadId)}</div>
   </article>`).join('');
-  const sameContext = p.available && wordCommentDraft?.binding.subjectId === p.subjectId;
-  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><label for="word-comment-body">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</label><textarea id="word-comment-body" class="modal__textarea" rows="4" style="width:100%;box-sizing:border-box" ${wordCommentBusy ? 'readonly' : ''}>${escape(wordCommentDraft.body)}</textarea>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
+  const sameContext = p.available && wordCommentDraft && ['projectId', 'sceneId', 'subjectId', 'expectedStateSha256', 'expectedSceneSha256'].every(key => wordCommentDraft.binding[key] === p[key]);
+  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><div id="word-comment-label">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</div><div data-word-comment-editor-slot></div>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
   return `<section class="right-rail-surface"><div class="right-rail-section__label">Комментарии к сцене</div>${p.available ? button('create', 'Добавить к выделению') : '<p>Откройте и сохраните сцену для работы с комментариями.</p>'}${draft}<p role="status" aria-live="polite">${escape(wordCommentNotice)}</p>${threads || (p.available ? '<p>Комментариев пока нет.</p>' : '')}</section>`;
+}
+
+function focusWordCommentDraft() {
+  if (wordCommentEditor) wordCommentEditor.focus();
+  else document.getElementById('word-comment-body')?.focus();
+}
+
+// The editor is authoring working state, not a child of the replaceable projection.
+function mountWordCommentDraftEditor() {
+  if (wordCommentEditorRequestId !== wordCommentDraft?.requestId) {
+    wordCommentEditor?.destroy(); wordCommentEditor = null;
+    wordCommentEditorHost?.remove(); wordCommentEditorHost = null;
+    wordCommentEditorRequestId = null;
+  }
+  if (!wordCommentDraft) return;
+  const slot = reviewSurfaceHost.querySelector('[data-word-comment-editor-slot]');
+  if (!slot) return;
+  if (!wordCommentEditor) {
+    const draft = wordCommentDraft;
+    wordCommentEditorHost = document.createElement('div');
+    wordCommentEditorHost.className = 'manuscript-note-editor';
+    wordCommentEditorHost.id = 'word-comment-body';
+    wordCommentEditorRequestId = draft.requestId;
+    wordCommentEditorHost.addEventListener('compositionstart', () => { wordCommentComposing = true; });
+    wordCommentEditorHost.addEventListener('compositionend', () => {
+      wordCommentComposing = false;
+      if (wordCommentRenderPending) {
+        wordCommentRenderPending = false;
+        queueMicrotask(() => renderReviewSurface());
+      }
+    });
+    wordCommentEditor = createManuscriptBodyEditor(wordCommentEditorHost, {
+      profile: 'comment', bodyLabel: 'Текст комментария', toolbarLabel: 'Форматирование комментария', linkTitle: 'Ссылка в комментарии',
+      onChange: document => {
+        if (wordCommentDraft === draft && !wordCommentBusy) draft.richBody = { schemaVersion: 'yalken.word.comment-body.v1', document };
+      },
+      onSave: () => reviewSurfaceHost.querySelector('[data-word-comment-action="save"]')?.click(),
+    });
+    wordCommentEditor.setDocument(draft.richBody.document);
+  }
+  slot.append(wordCommentEditorHost);
+  wordCommentEditor.setEditable(!wordCommentBusy);
 }
 
 function wordCommentSelectionIntent() {
@@ -2041,7 +2089,7 @@ async function handleWordCommentAction(button) {
   try {
     if (action !== 'save' && wordCommentDraft) {
       wordCommentNotice = 'Сначала сохраните или отмените текущий черновик.'; renderReviewSurface();
-      document.getElementById('word-comment-body')?.focus(); return;
+      focusWordCommentDraft(); return;
     }
     const binding = { projectId: p.projectId, sceneId: p.sceneId, subjectId: p.subjectId,
       expectedStateSha256: p.expectedStateSha256, expectedSceneSha256: p.expectedSceneSha256 };
@@ -2052,15 +2100,23 @@ async function handleWordCommentAction(button) {
       const message = thread?.messages?.find(m => m.commentId === commentId);
       if ((action === 'edit' && !message) || (action === 'reply' && !thread)) throw new Error('Обновите список комментариев.');
       wordCommentDraft = { binding, action, requestId: 'comment-' + crypto.randomUUID(),
-        body: action === 'edit' ? message.body : '',
+        richBody: { schemaVersion: 'yalken.word.comment-body.v1', document: commentBodyDocumentForEditor(action === 'edit' ? message : null) },
         ...(action === 'create' ? { anchor: wordCommentSelectionIntent() } : { threadId }),
         ...(action === 'edit' ? { commentId } : {}) };
-      wordCommentNotice = ''; renderReviewSurface(); document.getElementById('word-comment-body')?.focus(); return;
+      wordCommentNotice = ''; renderReviewSurface(); focusWordCommentDraft(); return;
     }
     let payload;
     if (action === 'save') {
-      if (!wordCommentDraft || wordCommentDraft.binding.subjectId !== p.subjectId) throw new Error('Вернитесь к исходной сцене.');
-      const { binding: bound, ...intent } = wordCommentDraft; payload = { ...bound, ...intent };
+      if (!wordCommentDraft || !['projectId', 'sceneId', 'subjectId', 'expectedStateSha256', 'expectedSceneSha256'].every(key => wordCommentDraft.binding[key] === p[key])) throw new Error('Контекст изменился. Сохраните копию черновика перед отменой.');
+      // Read the live draft at Save. A failed update serializer must never
+      // publish the last successfully serialized, now stale body.
+      if (wordCommentEditor) wordCommentDraft.richBody = { schemaVersion: 'yalken.word.comment-body.v1', document: wordCommentEditor.getJSON() };
+      const { binding: bound, richBody, ...intent } = wordCommentDraft;
+      // Rich trees exceed the generic IPC nesting limit. Only this bounded
+      // wire representation is serialized; Core validates it before use.
+      const richBodyJson = JSON.stringify(richBody);
+      if (typeof richBodyJson !== 'string' || new TextEncoder().encode(richBodyJson).length > 65536) throw new Error('Комментарий слишком большой. Черновик сохранён.');
+      payload = { ...bound, ...intent, richBodyJson };
     } else {
       // A missing reply ID must never degrade into whole-thread deletion.
       if (action === 'deleteReply') {
@@ -19160,10 +19216,16 @@ function renderReviewSurface() {
   });
   reviewSurfaceHost.dataset.reviewSurfaceStatus = viewModel.status;
   reviewSurfaceHost.dataset.reviewSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
-  const activeDraft = document.activeElement?.id === 'word-comment-body' ? document.activeElement : null;
-  const draftSelection = activeDraft ? [activeDraft.selectionStart, activeDraft.selectionEnd] : null;
+  if (wordCommentComposing) { wordCommentRenderPending = true; return; }
+  const focused = wordCommentEditorHost?.contains(document.activeElement) ? document.activeElement : null;
+  // Moving the existing host preserves ProseMirror state/history; replacing it does not.
+  wordCommentEditorHost?.remove();
   reviewSurfaceHost.innerHTML = renderReviewSurfaceMarkup(viewModel);
-  if (draftSelection) { const textarea = document.getElementById('word-comment-body'); textarea?.focus(); textarea?.setSelectionRange(...draftSelection); }
+  mountWordCommentDraftEditor();
+  if (focused?.isConnected) {
+    if (focused.closest?.('.ProseMirror')) wordCommentEditor.focusPreservingSelection();
+    else focused.focus({ preventScroll: true });
+  }
 }
 
 function setReviewSurfaceState(nextState = {}, options = {}) {
@@ -19654,14 +19716,6 @@ function bindReviewSurfaceApplyActions() {
     return;
   }
   reviewSurfaceHost.addEventListener('click', handleReviewSurfaceExactTextApplyClick);
-  reviewSurfaceHost.addEventListener('input', event => {
-    if (event.target?.id === 'word-comment-body' && wordCommentDraft && !wordCommentBusy) wordCommentDraft.body = event.target.value;
-  });
-  reviewSurfaceHost.addEventListener('keydown', event => {
-    if (event.target?.id === 'word-comment-body' && (event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault(); reviewSurfaceHost.querySelector('[data-word-comment-action="save"]')?.click();
-    }
-  });
   reviewSurfaceApplyActionListenerBound = true;
 }
 
@@ -22524,7 +22578,9 @@ async function handleInsertLinkPrompt(payload = {}) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_MODE_UNSUPPORTED' };
   }
 
-  const state = normalizeToolbarFormattingState(getTiptapFormattingState());
+  const target = captureTiptapLinkTarget();
+  if (!target) return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_UNAVAILABLE' };
+  const state = normalizeToolbarFormattingState(target.formattingState);
   if (state.selectionEmpty && !state.link) {
     syncToolbarFormattingState(state);
     return { performed: false, action: 'insertLinkPrompt', reason: 'NO_SELECTION' };
@@ -22533,8 +22589,7 @@ async function handleInsertLinkPrompt(payload = {}) {
     projectId: currentProjectId, documentId: currentDocumentId,
     generation: localEditGeneration, content: composeDocumentContent(),
   };
-  const selection = getTiptapSelectionOffsets();
-  const inventory = typeof window.electronAPI?.invokeWorkspaceQueryBridge === 'function'
+  const inventory = !target.auxiliary && typeof window.electronAPI?.invokeWorkspaceQueryBridge === 'function'
     ? await invokeWorkspaceQueryBridge('query.project.userBookmarks') : null;
   const bookmarks = inventory?.ok && inventory.available ? inventory.bookmarks : [];
   const response = await openLinkDialog({
@@ -22557,13 +22612,12 @@ async function handleInsertLinkPrompt(payload = {}) {
     { defaultPlatformId: window.electronAPI ? 'node' : 'web' },
   );
   if (!capability.ok) return capability;
-  const restored = setTiptapSelectionOffsets(selection.start, selection.end);
-  if (restored.performed !== true) return restored;
 
   if (response && typeof response === 'object') {
+    if (target.auxiliary) return { performed: false, reason: 'BOOKMARK_TARGET_INVALID' };
     const record = bookmarks.find(item => item.id === response.bookmarkId && item.state === 'active');
     if (!record) return { performed: false, reason: 'BOOKMARK_TARGET_INVALID' };
-    return handleTiptapFormatCommand('setLink', { href: '#' + record.name,
+    return target.apply('setLink', { href: '#' + record.name,
       wordBookmarkId: record.id, wordBookmarkName: record.name });
   }
   const normalized = normalizeToolbarLinkPromptValue(response);
@@ -22576,10 +22630,10 @@ async function handleInsertLinkPrompt(payload = {}) {
       syncToolbarFormattingState(state);
       return { performed: false, action: 'insertLinkPrompt', reason: 'NO_OP' };
     }
-    return handleTiptapFormatCommand('unsetLink');
+    return target.apply('unsetLink');
   }
 
-  return handleTiptapFormatCommand('setLink', { href: normalized.href });
+  return target.apply('setLink', { href: normalized.href });
 }
 
 function dispatchListTypeAction(listAction) {

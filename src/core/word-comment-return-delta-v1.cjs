@@ -1,6 +1,7 @@
 'use strict';
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
+const { validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const { readState, exactAnchor } = require('./word-comment-authoring-v1.cjs');
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const clone = v => JSON.parse(JSON.stringify(v));
@@ -13,10 +14,9 @@ const durable = v => {
   demand(typeof v === 'string' && /^[0-9a-f]{8}$/iu.test(v), 'COMMENT_RETURN_DURABLE_ID_REQUIRED');
   return v.toUpperCase();
 };
-function body(v) {
-  demand(typeof v === 'string' && v.isWellFormed() && v.trim() && Buffer.byteLength(v) <= 16384
-    && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\r]/u.test(v), 'COMMENT_RETURN_BODY_INVALID');
-  return v;
+function returnContent(message) {
+  try { return validateCommentMessageContent(message); }
+  catch (error) { if (error.code === 'COMMENT_BODY_INVALID') fail('COMMENT_RETURN_BODY_INVALID'); throw error; }
 }
 function provenance(v) {
   const result = {};
@@ -135,7 +135,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const anchor = exactAnchor({ paragraphIndex: block.sceneParagraphIndex,
       startUtf16: a.startUtf16, selectedText: a.selectedText }, expected.sceneId, paragraphs);
     anchor.authoritySource = 'AUTHENTICATED_WORD_COMMENT_RETURN';
-    const messages = [{ durableId: actual.durableId, body: actual.body,
+    const messages = [{ durableId: actual.durableId, body: actual.body, richBody: actual.richBody,
       author: actual.authorPersonIdentity?.author, initials: actual.authorPersonIdentity?.initials,
       date: actual.date, dateUtc: actual.dateUtc }, ...actual.replies];
     const expectedById = new Map(expected.messages.map((m, index) => [durable(m.durableId), { m, index }]));
@@ -152,7 +152,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
         newReplySeen = true;
       }
       return { commentId: old?.canonicalCommentId || `word-${index === 0 ? 'root' : 'reply'}-${hash(projectId + '\n' + roundId + '\n' + id)}`,
-        kind: index === 0 ? 'root' : 'reply', body: body(m.body), provenance: retainedProvenance(m, old) };
+        kind: index === 0 ? 'root' : 'reply', ...returnContent(m), provenance: retainedProvenance(m, old) };
     });
     const deletedMessageIds = expected.messages.slice(1).filter(m => !seen.has(durable(m.durableId))).map(m => m.canonicalCommentId);
     projection.push({ threadId: expected.threadId, sceneId: expected.sceneId, ...(created ? { created: true } : {}),
@@ -192,7 +192,22 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       thread.status = 'deleted'; // Retain every original message, provenance and anchor.
       continue;
     }
-    candidate.messages = candidate.messages.map(m => ({ ...thread.messages.find(old => old.commentId === m.commentId), ...m }));
+    candidate.messages = candidate.messages.map(m => {
+      const old = thread.messages.find(old => old.commentId === m.commentId);
+      const merged = { ...old, ...m };
+      delete merged.richBody;
+      if (m.richBody) merged.richBody = m.richBody;
+      const exported = baseline.threads.find(t => t.threadId === candidate.threadId)?.messages.find(e => e.canonicalCommentId === m.commentId);
+      const transport = exported?.transportRichBody || (old && exportMap.exportTypography
+        ? commentBodyWithTypography(old, exportMap.exportTypography) : null);
+      const expected = transport ? {...old, richBody:transport} : old;
+      if (old && commentBodyEqual(expected, m)) {
+        merged.body = old.body;
+        if (old.richBody) merged.richBody = old.richBody;
+        else delete merged.richBody;
+      }
+      return merged;
+    });
     const removed = thread.messages.filter(m => candidate.deletedMessageIds?.includes(m.commentId));
     demand(removed.length === (candidate.deletedMessageIds?.length || 0) && removed.every(m => m.kind === 'reply'),
       'COMMENT_RETURN_TARGET_INVALID');
@@ -211,6 +226,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   }
   if (!changes.length) return { replay: false, unchanged: true, afterText: beforeText, operationId, changes };
   demand(before.revision < Number.MAX_SAFE_INTEGER && before.events.length < 512, 'COMMENT_RETURN_STATE_BUDGET');
+  upgradeCommentState(after);
   after.revision++;
   after.events.push({ type: 'WORD_COMMENT_RETURN_APPLIED', operationId, inputDigest,
     roundId, artifactSha256, resultingRevision: after.revision, threadDigest: hash(stable(after.threads)), changes });

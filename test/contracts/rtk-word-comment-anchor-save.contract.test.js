@@ -153,6 +153,24 @@ test('actual main Save atomically rebases under one real project lease; recovery
  await f.sandbox.recoverWriterProjectTransactionForFile(f.scenePath);
  assert.equal(f.counts().leases,2);
 });
+test('actual main unchanged Save binds canonical comments without changing their revision or bytes',async t=>{
+ const f=await mainHarness(t),before=fs.readFileSync(f.commentPath,'utf8');
+ const result=await f.save(f.beforeScene);assert.equal(result.success,true,JSON.stringify(result));
+ assert.equal(fs.readFileSync(f.commentPath,'utf8'),before);
+ const record=JSON.parse(fs.readFileSync(tx.commitPathFor(f.scenePath),'utf8'));
+ assert.equal(record.commentState.beforeDigest,sha(before));assert.equal(record.commentState.afterDigest,sha(before));
+ assert.deepEqual(f.counts(),{leases:1,publications:1});
+});
+test('unchanged anchor ownership is opt-in, validates active anchors and retains deleted state exactly',()=>{
+ const beforeText=graph(),args={beforeText,projectId,sceneId,beforeContent:content('Left anchor right'),afterContent:content('Left anchor right')};
+ assert.equal(planCommentAnchorSave(args),null);
+ assert.deepEqual(planCommentAnchorSave({...args,includeUnchanged:true}),{mode:require('../../src/core/word-comment-anchor-save-v1.cjs').MODE,beforeText,afterText:beforeText});
+ assert.throws(()=>planCommentAnchorSave({...args,includeUnchanged:true,projectId:'foreign'}));
+ assert.throws(()=>planCommentAnchorSave({...args,includeUnchanged:true,beforeContent:content('wrong')}),/ANCHOR_STALE/);
+ const deleted=JSON.parse(beforeText);deleted.threads[0].status='deleted';const text=JSON.stringify(deleted);
+ assert.equal(planCommentAnchorSave({...args,beforeText:text}),null);
+ assert.equal(planCommentAnchorSave({...args,beforeText:text,includeUnchanged:true}).afterText,text);
+});
 test('actual main Save rejects ambiguous anchor before writing, with actionable status and unchanged graph',async t=>{
  const f=await mainHarness(t),before=observed(f),r=await f.save(content('Left changed right'));
  assert.equal(r.success,false);assert.equal(r.code,'COMMENT_SAVE_RANGE_CONFLICT');assert.deepEqual(observed(f),before);

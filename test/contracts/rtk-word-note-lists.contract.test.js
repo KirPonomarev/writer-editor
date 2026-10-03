@@ -99,11 +99,14 @@ test('note source comparison admits only inert editor root defaults; authored an
   const source = doc(p('Text'));
   const live = getSchema([StarterKit, WordPendingRevisions, UserBookmarks]).nodeFromJSON(source).toJSON();
   const same = (a, b) => commentSceneSnapshotsEqual(model.noteSceneSchemaDefaults(a), model.noteSceneSchemaDefaults(b));
-  assert.equal(commentSceneSnapshotsEqual(source, live), false);
+  assert.equal(commentSceneSnapshotsEqual(source, live), true);
   assert.equal(same(source, live), true);
   for (const attrs of [{ wordUserBookmarks: { bookmarks: [] } }, { wordPendingRevisions: { revisions: [] } }, { unknown: null }]) {
+    assert.equal(commentSceneSnapshotsEqual(source, { ...live, attrs: { ...live.attrs, ...attrs } }), false);
     assert.equal(same(source, { ...live, attrs: { ...live.attrs, ...attrs } }), false);
   }
+  assert.equal(commentSceneSnapshotsEqual(source, doc(p('Changed'))), false);
+  assert.equal(commentSceneSnapshotsEqual(source, { ...source, attrs: null }), false);
   assert.equal(same(source, doc(p('Changed'))), false);
   assert.equal(same(source, { ...source, attrs: null }), false);
 });

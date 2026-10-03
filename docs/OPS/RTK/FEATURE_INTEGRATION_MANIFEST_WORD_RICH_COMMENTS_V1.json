@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_RICH_COMMENTS_MAC_20261003",
+  "objective": "Preserve and edit rich root and reply comment bodies through Mac Word generic import, canonical authoring, save/reopen, export and authenticated return",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "23d8a2cb2ebfe897dd3cb9de0eb76eb0e2899574",
+  "scopeIn": [
+    "src/core/word-comment-body-v1.cjs",
+    "src/core/word-comment-authoring-v1.cjs",
+    "src/core/word-comment-return-delta-v1.cjs",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "src/export/docx/docxReviewPacketComments.js",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/main.js",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/manuscriptNotes.mjs",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+    "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
+    "test/contracts/rtk-word-rich-comment-body.contract.test.js",
+    "test/contracts/rtk-word-generic-comments.contract.test.js",
+    "test/contracts/rtk-word-rich-comment-parser.contract.test.js",
+    "test/contracts/rtk-word-rich-comments-renderer.contract.test.js",
+    "docs/tasks/2026-10-03--word-rich-comments-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "src/core/project-transaction-v1.cjs",
+    "test/unit/r24-wp201-project-transaction.test.js",
+    "test/unit/docx-import-safe-create.test.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/renderer/tiptap/index.js",
+    "test/contracts/rtk-word-link-authoring.contract.test.js",
+    "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
+    "test/unit/sector-m-toolbar-expansion-wave-a2.test.js"
+  ],
+  "scopeOut": [
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/preload.js",
+    "package.json",
+    "package-lock.json",
+    ".github/workflows"
+  ],
+  "productAuthority": "Owner-authorized Mac Word plan P1-03; Core owns canonical comment content and lifecycle, existing atomic non-text transaction owns persistence.",
+  "commandAuthority": "Existing cmd.project.review.editComment and authenticated root/lifecycle Apply through Kernel and Main revalidation; no new IPC or writer.",
+  "designAuthority": "Existing Review rail comment draft using existing manuscript rich editor primitives; preserve shell, tokens, slots and typography. ui-craft and Lazyweb evidence read before UI work.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated generic comment -> safe-create -> canonical comment state",
+    "Authoring intent -> Kernel/Main -> Core validation -> existing non-text atomic transaction",
+    "Authenticated returned rich delta -> source/round/CAS revalidation -> existing atomic transaction"
+  ],
+  "readPaths": [
+    "Bounded comments XML with owned relationships and effective style data",
+    "Saved comment state and immutable revision-bound Review projection"
+  ],
+  "productPorts": [
+    "Existing DOCX intake/export and comment persistence adapters"
+  ],
+  "designOsPorts": [
+    "Existing Review immutable projection and intent dispatch"
+  ],
+  "readProjections": [
+    "Root/reply bodies with optional validated richBody and derived body text"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Project scene subject generation revision state SHA at dispatch and publication",
+    "Authenticated round/source and comment IDs; generic import cannot mint return authority",
+    "Draft session binding persists across projection refresh, no stale rebinding"
+  ],
+  "capabilityRevalidation": "Kernel and Main revalidate current capability, exact project/scene/subject, source and current comment state before mutation; preview is read-only.",
+  "fallbacks": [
+    "Reject unsupported nested content and malformed metadata before writes; never flatten rich content silently",
+    "Legacy body-only messages remain readable and unchanged until explicit edit",
+    "Failed save preserves copyable authoring draft and history"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Strict bounded own-data rich profile, unknown attrs and hostile URL rejection",
+    "Format-only delta, rich-to-plain clearing, exact author/time/IDs and literal body agreement",
+    "Stale project/source/state, replay mismatch, no preview writes and atomic recovery",
+    "Comment relationships owned only by comments.xml; final-paragraph modern identity exact",
+    "SOURCE/PACKAGED real edit and Word return plus unchanged legacy regression"
+  ],
+  "securityAndInputBoundary": "No runtime network or dependencies; 16KiB literal and64KiB state budgets retained; external XML and hyperlinks validated before semantics; no renderer persistence.",
+  "performanceAndAccessibility": "Reuse one draft editor per request, preserve selection/history/IME across projection updates; keyboard focus, button names and copyable failed drafts; bounded parse outside typing.",
+  "currentReality": [
+    "Clean23d8a2cb equals fetched origin/main; PR2073 fully delivered",
+    "Root/reply messages currently body-only, rich formatting rejected and format-only changes invisible"
+  ],
+  "targetOnly": [
+    "Paragraph-only rich comment body with inline marks, HTTP links, language, spacing and layout",
+    "No claim of complete Mac plan, arbitrary comment blocks or full family acceptance"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert one integrated PR; preserve original DOCX and existing atomic recovery snapshots. Legacy state compatibility and explicit unsupported-version rejection verified.",
+  "integrationMode": "EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS",
+  "featureId": "WORD_RICH_COMMENTS_V1",
+  "featureVersion": 1,
+  "domainOwner": "Product Core comments",
+  "authoritativeData": "Canonical comment state with validated versioned rich body",
+  "derivedData": "Review projection and DOCX XML",
+  "commandIds": [
+    "cmd.project.review.editComment",
+    "cmd.rtk.review.applyRootCommentReturn",
+    "cmd.rtk.review.applyCommentLifecycleReturn"
+  ],
+  "queryIds": [
+    "existing comment authoring context and review projection"
+  ],
+  "eventTypes": [
+    "WORD_COMMENT_AUTHORED",
+    "existing non-text transaction completion"
+  ],
+  "productProjectionIds": [
+    "Root/reply bodies with optional validated richBody and derived body text"
+  ],
+  "capabilityIds": [
+    "existing comment authoring and authenticated return"
+  ],
+  "authorityMap": {
+    "Core": "content and lifecycle",
+    "Kernel": "dispatch capability",
+    "Main": "revision and platform adapter",
+    "renderer": "draft and immutable projection"
+  },
+  "identityKeys": [
+    "projectId",
+    "sceneId",
+    "subjectId",
+    "stateSha256",
+    "sourceRevision",
+    "roundId",
+    "generation"
+  ],
+  "revisionPolicy": "Exact source and state CAS; stale drafts never rebind",
+  "writePath": [
+    "Validated generic comment -> safe-create -> canonical comment state",
+    "Authoring intent -> Kernel/Main -> Core validation -> existing non-text atomic transaction",
+    "Authenticated returned rich delta -> source/round/CAS revalidation -> existing atomic transaction"
+  ],
+  "readPath": [
+    "Bounded comments XML with owned relationships and effective style data",
+    "Saved comment state and immutable revision-bound Review projection"
+  ],
+  "requiredProductPorts": [
+    "Existing DOCX intake/export and comment persistence adapters"
+  ],
+  "requiredDesignOsPorts": [
+    "Existing Review immutable projection and intent dispatch"
+  ],
+  "adapterRequirements": "Existing local Word and atomic comment transaction adapters",
+  "surfaceManifests": [
+    {
+      "schemaVersion": "SURFACE_MANIFEST_V1",
+      "surfaceId": "existing Review comment draft",
+      "slot": "existing Review rail",
+      "states": [
+        "idle",
+        "editing",
+        "saving",
+        "failed",
+        "stale-copyable"
+      ],
+      "commands": [
+        "cmd.project.review.editComment"
+      ],
+      "projection": "immutable comment authoring context",
+      "fallback": "retain draft and disable stale save",
+      "accessibility": "keyboard editing, named controls, focus preserved",
+      "authority": "intent only"
+    }
+  ],
+  "slotRequirements": "Existing Review rail",
+  "supportedWorkspaces": [
+    "WRITE",
+    "REVIEW"
+  ],
+  "platformAvailability": [
+    "macOS SOURCE",
+    "macOS PACKAGED"
+  ],
+  "accessibilityRequirements": "Reuse one draft editor per request, preserve selection/history/IME across projection updates; keyboard focus, button names and copyable failed drafts; bounded parse outside typing.",
+  "persistenceClass": "PROJECT_STATE and AUTHORING_WORKING_STATE",
+  "migrations": "Outer state v2 on first rich write; keep filename and v1 legacy reads. Reject rich payload under v1; never downgrade v2. Old readers refuse v2. Generic append validates unchanged thread prefix and complete state.",
+  "recovery": "Existing non-text atomic journal and restart/replay guards",
+  "rollback": "Revert one integrated PR; preserve original DOCX and existing atomic recovery snapshots. Legacy state compatibility and explicit unsupported-version rejection verified.",
+  "performanceBudget": "Existing16KiB literal and64KiB state, bounded paragraph-only rich nodes",
+  "securityBoundary": "No runtime network or dependencies; 16KiB literal and64KiB state budgets retained; external XML and hyperlinks validated before semantics; no renderer persistence. Existing command carries exclusive bounded richBodyJson; Core validates before canonical use; global envelope limits unchanged.",
+  "lifecycle": "Validated preview, explicit intent, CAS, atomic commit, immutable publication",
+  "negativeBypassChecks": [
+    "Strict bounded own-data rich profile, unknown attrs and hostile URL rejection",
+    "Format-only delta, rich-to-plain clearing, exact author/time/IDs and literal body agreement",
+    "Stale project/source/state, replay mismatch, no preview writes and atomic recovery",
+    "Comment relationships owned only by comments.xml; final-paragraph modern identity exact",
+    "SOURCE/PACKAGED real edit and Word return plus unchanged legacy regression",
+    "Outer comment state v2 only on rich write; legacy v1 unchanged; old readers refuse v2; generic append v1-to-v2 validates exact old thread prefix and complete canonical message state.",
+    "Export baseline derives only actual emitted profile defaults; ordinary export default absence preserved, no unconditional12pt.",
+    "Focused auxiliary commands cannot change manuscript; read-only or unsupported auxiliary commands do not fall back to main editor.",
+    "Async link dialog captures editor/doc/selection; stale destroyed read-only or switched project refuses; main bookmarks remain main-only."
+  ],
+  "evidenceBindings": "TARGET_NOT_ACCEPTED until independent native proof and required delivery",
+  "designResearch": {
+    "provider": "Lazyweb",
+    "searchId": "41bcb2e9-cfeb-441b-817c-30861f4d5ece",
+    "selected": "screens:50cf28cde7f174de2787e564",
+    "decision": "Use existing Review rail and manuscript editor controls; no shell redesign",
+    "scope": "retrieved reference description, not a visual acceptance oracle"
+  }
+}

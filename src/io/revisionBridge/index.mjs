@@ -1,3 +1,4 @@
+import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
@@ -2438,7 +2439,7 @@ function docxHostileFileGateRelationshipAttributeValue(attributeText, name) {
 
 function docxHostileFileGateSafeExternalHyperlinkRelationship(entryId, attributeText) {
   const normalizedEntryId = docxHostileFileGateNormalizedEntryId(entryId);
-  if (!['word/_rels/document.xml.rels', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels'].includes(normalizedEntryId) && !/^word\/_rels\/(?:header|footer)[A-Za-z0-9_.-]*\.xml\.rels$/.test(normalizedEntryId)) return false;
+  if (!['word/_rels/document.xml.rels', 'word/_rels/footnotes.xml.rels', 'word/_rels/endnotes.xml.rels', 'word/_rels/comments.xml.rels'].includes(normalizedEntryId) && !/^word\/_rels\/(?:header|footer)[A-Za-z0-9_.-]*\.xml\.rels$/.test(normalizedEntryId)) return false;
   const type = docxHostileFileGateRelationshipAttributeValue(attributeText, 'Type');
   if (type !== 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink') {
     return false;
@@ -4215,6 +4216,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   };
   delete parserInput.bytes;
   const mediaCache = new Map(); let mediaBytes = 0;
+  const commentProjectionCache = {};
   const readDocumentMediaPart = name => {
     if (mediaCache.has(name)) return mediaCache.get(name);
     const bytes = extracted.binaryParts?.[name];
@@ -4226,6 +4228,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   };
   const result = {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
+      readCommentRichDocument: source => parseCommentRichDocument(input.bytes, source, commentProjectionCache),
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     // Private adapter attachment, never part of semantic ReviewIR. The worker
     // signs it in the evidence packet and bounds the complete emitted result.
@@ -9863,7 +9866,7 @@ function docxResolveBlockStyle(metadata, catalog) {
   if (role) Object.assign(metadata, role);
 }
 
-function docxInlineCanonicalContent(paragraphs) {
+function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = false, asDocument = false } = {}) {
   let runCount = 0;
   let needsRichContent = false;
   const counterGroups = [], currentCounters = new Map();
@@ -9941,7 +9944,8 @@ function docxInlineCanonicalContent(paragraphs) {
       parts.forEach((text, index) => {
         if (index) {
           const type = breakTypes.get(breakOffset);
-          nodes.push({ type: 'hardBreak', ...(type ? { attrs: { wordBreakType: type } } : {}) });
+          nodes.push({ type: 'hardBreak', ...(type ? { attrs: { wordBreakType: type } } : {}),
+            ...(preserveCommentBreakMarks && marks.length ? { marks } : {}) });
           breakOffset++;
         }
         if (text) nodes.push({ type: 'text', text, ...(marks.length ? { marks } : {}) });
@@ -10048,6 +10052,9 @@ function docxInlineCanonicalContent(paragraphs) {
     }
   }
 
+  // Comment bodies have their own Core validator. A manuscript envelope has
+  // stricter language placement and must not erase a comment break's marks.
+  if (asDocument) return { type: 'doc', content };
   return needsRichContent ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
 
@@ -10720,6 +10727,24 @@ function resolveNoteTableStyleLosses(bytes, parsed) {
   parsed.diagnostics = parsed.diagnostics.filter(item => !losses.includes(item));
 }
 
+// Comments use the same proven inline/style/theme projection as other stories,
+// but never inherit main-document relationship authority or admit block objects.
+function parseCommentRichDocument(bytes, source, cache = {}) {
+  cache.styles ||= docxInlineStyleCatalog(bytes);
+  cache.hyperlinks ||= docxHyperlinkCatalog(bytes,source.relationshipPart);
+  const styles = {...cache.styles, hyperlinks:cache.hyperlinks};
+  const body = docxContentPreviewParseMainDocumentXml(source.documentXml,styles,docxNumberingCatalog(bytes));
+  if(body.failure || body.diagnostics.some(item=>item.code!==DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC)
+    || body.contentPreview.paragraphs.some(p=>p.headingLevel!==undefined||p.blockKind||p.blockquoteDepth||p.table||p.list||p.media)) {
+    throw Error(body.failure?.code || body.diagnostics[0]?.sourceCode || body.diagnostics[0]?.tagName || 'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+  }
+  const text=body.contentPreview.paragraphs.map(p=>p.text).join('\n');
+  const document=docxInlineCanonicalContent(body.contentPreview.paragraphs, { preserveCommentBreakMarks: true, asDocument: true });
+  const validated=commentBodyModel.validateCommentRichBody({schemaVersion:'yalken.word.comment-body.v1',document});
+  if(validated.body!==text)throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+  return validated.richBody.document;
+}
+
 // Shared bounded body grammar for generic import and authenticated return.
 function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
   const inlineStyles = docxInlineStyleCatalog(bytes);
@@ -11144,11 +11169,11 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           byteLength: value => new TextEncoder().encode(value).length,
         } };
         const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
-        // The same bounded literal grammar applies to native-origin import and
-        // authenticated return. Presentation normalization never grants return
+        // The same bounded rich grammar applies to native-origin import and
+        // authenticated return. Formatting projection never grants return
         // authority: generic import still allocates entirely new local IDs.
         const grammar = analysis.reviewIr?.commentBodyGrammar;
-        if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar.status !== 'SUPPORTED') {
+        if (grammar?.profile !== 'RICH_INLINE_V1' || grammar.status !== 'SUPPORTED') {
           throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
         }
         parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true });
