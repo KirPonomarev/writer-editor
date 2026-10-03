@@ -1,3 +1,4 @@
+import { readWordMacDependencySecurityCandidate, readWordMacDependencySecurityAdmission, WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH, admitsWordMacSecurityProtectedBinding, admitsWordMacSecurityChecker } from './r24/package-content-trust-pk0.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -70,12 +71,16 @@ export function verifyTextOrderPostEvaluation({candidateSha='HEAD',git=gitAt(ROO
   requireThat(String(git(['rev-parse',SHARED_BASE+'^{tree}'])).trim()===SHARED_BASE_TREE,'SHARED_BASE_TREE');
   const changed=String(git(['diff','--name-only','--no-renames',SHARED_BASE,delivery,'--'])).trim().split('\n').filter(Boolean);
   requireThat(changed.every(p=>SHARED_ADMITTED_PATHS.includes(p)),'SHARED_UNADMITTED_DELTA');
-  for(const b of policy.protectedFiles)
-    requireThat(sharedHash(git(['show',resolved+':'+b.path]))===b.sha256,'SHARED_PROTECTED_FILE');
+  let securitySuccessor;
+  const security=()=>securitySuccessor===undefined?(securitySuccessor=readWordMacDependencySecurityCandidate({candidateSha:resolved,git})):securitySuccessor;
+  for(const b of policy.protectedFiles){
+    const actual=sharedHash(git(['show',resolved+':'+b.path]));
+    requireThat(actual===b.sha256||admitsWordMacSecurityProtectedBinding(b,actual,security()),'SHARED_PROTECTED_FILE');
+  }
   const drift=new Set(String(git(['diff','--name-only','--no-renames',delivery,resolved,'--',...SHARED_ADMITTED_PATHS])).trim().split('\n').filter(Boolean));
   const immutable=[SHARED_POLICY_PATH,TEXT_RAW_PATH,'scripts/ops/rtk-interop-text-order-c1.mjs',
     'docs/tasks/2026-09-16--interop-text-order-shared-c1.md'];
-  requireThat(immutable.every(p=>!drift.has(p)),'SHARED_IMPLEMENTATION_DRIFT');
+  requireThat(immutable.every(p=>!drift.has(p)||admitsWordMacSecurityChecker(p,sharedHash(git(['show',resolved+':'+p])),security())),'SHARED_IMPLEMENTATION_DRIFT');
   return {status:'PASS',deliverySha:delivery,admittedPaths:SHARED_ADMITTED_PATHS.filter(p=>!drift.has(p)),
     cellAcceptanceAuthority:false,programDone:false};
 }
@@ -110,8 +115,13 @@ export function validateTextRawResult(raw,common) {
 export function inspectTextOrderArtifacts({labRoot,runId,productHead,productTree}={}) {
   const started=performance.now();
   const policy=readSharedPolicy(readOrderFile(ROOT,SHARED_POLICY_PATH).bytes);
-  for(const b of policy.protectedFiles)
-    requireThat(sharedHash(readOrderFile(ROOT,b.path).bytes)===b.sha256,'SHARED_PROTECTED_FILE');
+  const admission=readWordMacDependencySecurityAdmission(ROOT);
+  const securityBytes=admission?readOrderFile(ROOT,WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH).bytes:null;
+  const security=securityBytes&&sharedHash(securityBytes)===admission.carrierSha256?JSON.parse(securityBytes):null;
+  for(const b of policy.protectedFiles){
+    const actual=sharedHash(readOrderFile(ROOT,b.path).bytes);
+    requireThat(actual===b.sha256||admitsWordMacSecurityProtectedBinding(b,actual,security),'SHARED_PROTECTED_FILE');
+  }
   requireThat(sharedHash(readOrderFile(ROOT,TEXT_RAW_PATH).bytes)===policy.textRawCheckerSha256,'SHARED_TEXT_CHECKER_PIN');
   const common=inspectOrderArtifacts({labRoot,runId,productHead,productTree});
   const result=spawnSync('python3',['-I','-B',path.join(ROOT,TEXT_RAW_PATH)],{

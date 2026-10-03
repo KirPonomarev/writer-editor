@@ -65,7 +65,10 @@
     "test/unit/r24-pk0-package-content-trust.test.js",
     "test/contracts/r24-post-audit-corrections.contract.test.mjs",
     "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
-    "test/contracts/rtk-release01-terminal-claims.contract.test.js"
+    "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+    "scripts/ops/rtk-interop-order-c1.mjs",
+    "scripts/ops/rtk-interop-text-order-c1.mjs",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -168,5 +171,10 @@
     "reason": "Preserve historical wording registry while current package surface follows validated exact security successor",
     "preflight": "61 paths PASS before writes",
     "acceptance": "Pending full committed-candidate checks"
+  },
+  "securityOrderAmendment": {
+    "baseSha": "e165c42971e927443a1bedaea7909e99d6714ddb",
+    "preflight": "64 paths PASS before writes",
+    "reason": "ORDER and TEXT_ORDER protect prior dependency bytes; exact candidate-aware successor must retain historical policies and all unrelated protected-file/drift rejections"
   }
 }

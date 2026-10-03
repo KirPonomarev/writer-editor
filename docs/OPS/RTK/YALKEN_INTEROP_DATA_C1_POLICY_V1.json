@@ -528,7 +528,9 @@
     "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
     "test/unit/r24-pk0-package-content-trust.test.js",
     "test/contracts/r24-post-audit-corrections.contract.test.mjs",
-    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json"
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
+    "scripts/ops/rtk-interop-order-c1.mjs",
+    "scripts/ops/rtk-interop-text-order-c1.mjs"
   ],
   "protectedFiles": [
     {
@@ -569,7 +571,7 @@
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1.mjs",
-      "sha256": "b5ec996585b18086b009312f9056be3caf697a9c75619fb1fd2ef8eaeb4556b5"
+      "sha256": "2d609ea9057920008504060e5a8717e4cdeaafa568d1d1f5bf67091ffefc9a9d"
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1-readback.py",
@@ -581,7 +583,7 @@
     },
     {
       "path": "scripts/ops/rtk-interop-text-order-c1.mjs",
-      "sha256": "15989f494ba74cc6da87ccb9198d3128f57a52467ea50ca04d7f022b40a435e9"
+      "sha256": "0a89e7208c95794229b7482f6629e30767fda172529f93a107a8fa11a225585c"
     },
     {
       "path": "scripts/ops/rtk-interop-text-c1-readback.py",
@@ -973,7 +975,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "f3be797493d03f40fff8452b40dd0ed284f7bd53efb05eae53f469695a83815c"
+        "sha256": "a5c4d186111b45d3c0800c45218017cc63a9c1358735580536cb108fb47db103"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -2233,11 +2235,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "982771b9e3371aaefcd019a113791839713587d610bf36ab370e16a67403ebde"
+        "sha256": "0f1f4639b6e1c9e164985a6332c7d5f27883e063e646fd536aeedd58ac4c1152"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "c67450fab333969b65dd70ee3508aff07d660188a996c5b4f57bf6af8eaee954"
+        "sha256": "09b4d007351749b7a582234392daf7c1e228b7c79037f6461a83e94cd3565fbd"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",
@@ -2257,7 +2259,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
-        "sha256": "b0696b67fff9b06b51aec93c5549ac6fdf41276a98ae83ebb93638c8dff5ac07"
+        "sha256": "b828a56cc30440ae70d6084784dec01ea390bfb8ed505806954c83f7daddd952"
       },
       {
         "path": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",

@@ -1,3 +1,4 @@
+import { readWordMacDependencySecurityCandidate, admitsWordMacSecurityProtectedBinding, admitsWordMacSecurityChecker } from './r24/package-content-trust-pk0.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -91,10 +92,15 @@ export function verifyOrderPostEvaluation({ candidateSha = 'HEAD', git = gitAt(R
   demand(String(git(['rev-parse', `${ORDER_BASE}^{tree}`])).trim() === ORDER_BASE_TREE, 'ORDER_BASE_TREE');
   const changed = String(git(['diff', '--name-only', '--no-renames', ORDER_BASE, delivery, '--'])).trim().split('\n').filter(Boolean);
   demand(changed.every(p => ORDER_ADMITTED_PATHS.includes(p)), 'ORDER_UNADMITTED_DELTA');
-  for (const b of policy.protectedFiles) demand(hash(git(['show', `${resolved}:${b.path}`])) === b.sha256, 'ORDER_PROTECTED_FILE');
+  let securitySuccessor;
+  const security = () => securitySuccessor === undefined ? (securitySuccessor = readWordMacDependencySecurityCandidate({ candidateSha: resolved, git })) : securitySuccessor;
+  for (const b of policy.protectedFiles) {
+    const actual = hash(git(['show', `${resolved}:${b.path}`]));
+    demand(actual === b.sha256 || admitsWordMacSecurityProtectedBinding(b, actual, security()), 'ORDER_PROTECTED_FILE');
+  }
   const immutable = [ORDER_POLICY_PATH, RAW_PATH, 'scripts/ops/rtk-interop-order-c1.mjs', 'docs/tasks/2026-09-16--interop-order-fast-cycle.md'];
   const drift = new Set(String(git(['diff', '--name-only', '--no-renames', delivery, resolved, '--', ...ORDER_ADMITTED_PATHS])).trim().split('\n').filter(Boolean));
-  demand(immutable.every(p => !drift.has(p)), 'ORDER_IMPLEMENTATION_DRIFT');
+  demand(immutable.every(p => !drift.has(p) || admitsWordMacSecurityChecker(p, hash(git(['show', `${resolved}:${p}`])), security())), 'ORDER_IMPLEMENTATION_DRIFT');
   return { status: 'PASS', deliverySha: delivery, admittedPaths: ORDER_ADMITTED_PATHS.filter(p => !drift.has(p)), cellAcceptanceAuthority: false, programDone: false };
 }
 

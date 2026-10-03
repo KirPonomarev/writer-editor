@@ -1443,7 +1443,7 @@ test('governance admission is bounded to the delivery and never grants cell cred
     if(args[0]==='log') return delivery;
     if(args[0]==='merge-base') return '';
     if(args[0]==='diff') return (args[3]===ORDER_BASE?changed:drift).join('\n');
-    if(args[0]==='show') return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    if(args[0]==='show') return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:') ? require('node:child_process').execFileSync('git',args,{cwd:root}) : fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
     throw Error('unexpected git');
   };
   const good=verifyOrderPostEvaluation({candidateSha:candidate,git});
@@ -1534,13 +1534,25 @@ function fieldFixture() {
   return {raw,common};
 }
 
-it('shared policy binds two exact fields and preserves the delivered single-field readers',()=>{
+it('shared policy binds two exact fields and preserves the delivered single-field readers',async()=>{
   const p=shared.readSharedPolicy(fs.readFileSync(path.join(root,shared.SHARED_POLICY_PATH)));
   assert.deepEqual(p.targetCellIds,shared.SHARED_CELLS);
   assert.equal(p.textControlIds.length,10);
   assert.equal(p.textRawCheckerSha256,shared.sharedHash(fs.readFileSync(path.join(root,'scripts/ops/rtk-interop-text-c1-readback.py'))));
-  for(const binding of p.protectedFiles)
-    assert.equal(shared.sharedHash(fs.readFileSync(path.join(root,binding.path))),binding.sha256,binding.path);
+  const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
+  const admission=security.readWordMacDependencySecurityAdmission(root);
+  assert.ok(admission,'current security successor must validate independently');
+  const carrierBytes=fs.readFileSync(path.join(root,security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
+  assert.equal(shared.sharedHash(carrierBytes),admission.carrierSha256);
+  const carrier=JSON.parse(carrierBytes);
+  for(const binding of p.protectedFiles) {
+    const actual=shared.sharedHash(fs.readFileSync(path.join(root,binding.path)));
+    if(actual===binding.sha256) continue;
+    assert.equal(security.admitsWordMacSecurityProtectedBinding(binding,actual,carrier),true,binding.path);
+    const previous=spawnSync('git',['show',`${admission.baseSha}:${binding.path}`],{cwd:root,maxBuffer:16*1024*1024});
+    assert.equal(previous.status,0,previous.stderr?.toString());
+    assert.equal(shared.sharedHash(previous.stdout),binding.sha256,`historical policy remains exact: ${binding.path}`);
+  }
   assert.throws(()=>shared.readSharedPolicy(Buffer.from(JSON.stringify({...p,targetCellIds:[p.sourceCellId]}))),/POLICY_PIN/);
 });
 
@@ -1623,7 +1635,7 @@ it('shared governance admits only the delivered successor scope and gives no run
     if(args[0]==='log')return delivery;
     if(args[0]==='merge-base')return '';
     if(args[0]==='diff')return (args[3]===shared.SHARED_BASE?changed:drift).join('\n');
-    if(args[0]==='show')return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    if(args[0]==='show')return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:')?require('node:child_process').execFileSync('git',args,{cwd:root}):fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
     throw Error('unexpected git');
   };
   const good=shared.verifyTextOrderPostEvaluation({git});
@@ -1757,3 +1769,39 @@ it('data C1 delivery survives 33 policy revisions while retaining original ident
 
 // Keep the bounded runtime repair in the required maintained RTK lane.
 require('./revision-bridge-docx-import-reference.contract.test.js');
+
+
+test('security successor admits exact candidate ORDER and TEXT checkers without weakening protected history',async()=>{
+ const root=path.resolve(__dirname,'../..'),cp=require('node:child_process');
+ const order=await import('../../scripts/ops/rtk-interop-order-c1.mjs'),shared=await import('../../scripts/ops/rtk-interop-text-order-c1.mjs');
+ const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
+ const base=security.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha,candidate='c'.repeat(40),delivery='b'.repeat(40);
+ for(const entry of [
+  {verify:order.verifyOrderPostEvaluation,policy:order.ORDER_POLICY_PATH,base:order.ORDER_BASE,tree:order.ORDER_BASE_TREE,paths:order.ORDER_ADMITTED_PATHS,checker:'scripts/ops/rtk-interop-order-c1.mjs',raw:'scripts/ops/rtk-interop-order-c1-readback.py'},
+  {verify:shared.verifyTextOrderPostEvaluation,policy:shared.SHARED_POLICY_PATH,base:shared.SHARED_BASE,tree:shared.SHARED_BASE_TREE,paths:shared.SHARED_ADMITTED_PATHS,checker:'scripts/ops/rtk-interop-text-order-c1.mjs',raw:'scripts/ops/rtk-interop-text-c1-readback.py'}]){
+  let tamper=null,missing=false,ancestry=true,drift=[entry.checker];
+  const git=args=>{
+   if(args[0]==='rev-parse')return args[1]===entry.base+'^{tree}'?entry.tree:candidate;
+   if(args[0]==='ls-tree')return entry.policy;
+   if(args[0]==='log')return delivery;
+   if(args[0]==='merge-base'){if(args[2]===base&&!ancestry)throw Error('NOT_ANCESTOR');return '';}
+   if(args[0]==='diff')return (args[3]===entry.base?entry.paths:drift).join('\n');
+   if(args[0]==='show'){
+    if(args[1].startsWith(base+':'))return cp.execFileSync('git',args,{cwd:root});
+    const relative=args[1].slice(args[1].indexOf(':')+1);
+    if(relative===security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH&&missing)throw Error('MISSING_CARRIER');
+    const bytes=fs.readFileSync(path.join(root,relative));return relative===tamper?Buffer.concat([bytes,Buffer.from(' ')]):bytes;
+   }
+   throw Error('UNEXPECTED_GIT');
+  };
+  const valid=entry.verify({candidateSha:candidate,git});assert.equal(valid.status,'PASS');assert.equal(valid.cellAcceptanceAuthority,false);
+  for(const changed of [security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH,'package.json','package-lock.json','scripts/electron-download-config.cjs',entry.checker]){tamper=changed;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE|IMPLEMENTATION_DRIFT/);}
+  tamper=null;missing=true;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE/);missing=false;
+  ancestry=false;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE/);ancestry=true;
+  drift=[entry.raw];assert.throws(()=>entry.verify({candidateSha:candidate,git}),/IMPLEMENTATION_DRIFT/);
+  const policy=JSON.parse(fs.readFileSync(path.join(root,entry.policy)));
+  const unrelated=policy.protectedFiles.find(binding=>!['package.json','package-lock.json','scripts/ops/rtk-interop-order-c1.mjs'].includes(binding.path));
+  assert.ok(unrelated);drift=[entry.checker];tamper=unrelated.path;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE/);
+ }
+ assert.equal(order.verifyOrderPostEvaluation({candidateSha:'8ddc4fca57a6f6f14afb81de83dd277f5750bfd2'}).status,'PASS','real historical candidate retains its original policy path');
+});

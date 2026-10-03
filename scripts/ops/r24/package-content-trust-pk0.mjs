@@ -105,7 +105,7 @@ export const WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION = Object.freeze({
   allowedChangedFiles: Object.freeze(['package-lock.json', 'package.json']),
   schemaVersion: 'WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION_V1',
   baseSha: '89d9991331013c26b724e3cbb17ea3faa7d058e9',
-  carrierSha256: 'b0696b67fff9b06b51aec93c5549ac6fdf41276a98ae83ebb93638c8dff5ac07',
+  carrierSha256: 'b828a56cc30440ae70d6084784dec01ea390bfb8ed505806954c83f7daddd952',
   previousPackageCanonicalSha256: '54feb0d18a67aa4fb1ad7fc9cd8e41d2406f436369f139527add81e8e8b27c0c',
   currentPackageCanonicalSha256: '2cddec908d680a9022b50cd61ecbd6063fa27081a698e0c54b57b59cccbf7190',
   targetElectronVersion: '41.10.6',
@@ -136,6 +136,35 @@ export function readWordMacDependencySecurityAdmission(root) {
     if (hashCanonicalValue(pkg) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.currentPackageCanonicalSha256) return null;
     return WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
   } catch { return null; }
+}
+
+export function readWordMacDependencySecurityCandidate({ candidateSha, git }) {
+  try {
+    const resolved = String(git(['rev-parse', candidateSha])).trim();
+    if (!/^[a-f0-9]{40}$/u.test(resolved)) return null;
+    git(['merge-base', '--is-ancestor', WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha, resolved]);
+    const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+    const bytes = git(['show', `${resolved}:${WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`]);
+    if (digest(bytes) !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.carrierSha256) return null;
+    const carrier = JSON.parse(String(bytes));
+    if (carrier.baseSha !== WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha) return null;
+    for (const [relative, expected] of Object.entries(carrier.currentFiles)) {
+      if (digest(git(['show', `${resolved}:${relative}`])) !== expected) return null;
+    }
+    for (const [relative, expected] of Object.entries(carrier.previousFiles)) {
+      if (digest(git(['show', `${carrier.baseSha}:${relative}`])) !== expected) return null;
+    }
+    return carrier;
+  } catch { return null; }
+}
+export function admitsWordMacSecurityProtectedBinding(binding, actualSha256, carrier) {
+  return Boolean(carrier && ['package.json', 'package-lock.json', 'scripts/ops/rtk-interop-order-c1.mjs'].includes(binding.path)
+    && carrier.previousFiles[binding.path] === binding.sha256
+    && carrier.currentFiles[binding.path] === actualSha256);
+}
+export function admitsWordMacSecurityChecker(relative, actualSha256, carrier) {
+  return Boolean(carrier && ['scripts/ops/rtk-interop-order-c1.mjs', 'scripts/ops/rtk-interop-text-order-c1.mjs'].includes(relative)
+    && carrier.currentFiles[relative] === actualSha256);
 }
 
 function stableJson(value) {
