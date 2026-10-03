@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "SURFACE_MANIFEST_V1",
+  "surfaceId": "surface.document.headerFooter",
+  "featureId": "WORD_HEADER_FOOTER_MAC_20261003",
+  "status": "TARGET_DECLARED_NOT_ACCEPTED",
+  "host": "Existing contextual editor host, existing rich-body editor controls",
+  "slotId": "Existing contextual editor contribution",
+  "newVisualLanguage": false,
+  "contributionKind": "Revision-bound story inventory and authoring intent",
+  "commands": [
+    "cmd.project.save"
+  ],
+  "projection": "Current checked scene document; story IDs, roles and resolved section references, no independent storage authority",
+  "activation": {
+    "explicitOpenRequired": true,
+    "backgroundRefresh": false,
+    "typingHotPath": false
+  },
+  "states": [
+    "ready",
+    "pending",
+    "unavailable",
+    "stale",
+    "recoveryConflict"
+  ],
+  "authority": {
+    "rendererIntentOnly": true,
+    "productMutation": false,
+    "storageMutation": false,
+    "pathAuthority": false,
+    "networkMutation": false
+  },
+  "accessibility": {
+    "nativeControls": true,
+    "labelledInputs": true,
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Escape"
+    ],
+    "initialFocus": true,
+    "restoreTriggerFocus": true,
+    "errorsInline": true,
+    "statusUsesText": true,
+    "textUndoUnchanged": true
+  },
+  "tokens": "Existing Yalken contextual panel controls and CSS variables; no global styles",
+  "fallback": "Retain unsaved story drafts on failed Save or stale revision; no silent content flattening",
+  "performance": "Resolve bounded inventory on open; no package parsing or full story traversal on manuscript keystrokes"
+}
