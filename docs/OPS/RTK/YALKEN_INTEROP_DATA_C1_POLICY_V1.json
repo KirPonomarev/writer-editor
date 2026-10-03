@@ -949,7 +949,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "88003a56a4171d5c65e7c7dd3d916e00d54ec05c2a0e4b064b7934647eadf43a"
+        "sha256": "6803437ebfb22387ba546a07e1be497ef966b224be06e3e6ac75ff67ce9f151b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -2233,11 +2233,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "472715311e5f7c4fd0011c78bb45a2496e1c516522c537d12524e3d287ec2e92"
+        "sha256": "982771b9e3371aaefcd019a113791839713587d610bf36ab370e16a67403ebde"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "3581757e261f05e676b20fea95253661b6ffc6693ebee114f1c2841b24f96a71"
+        "sha256": "c67450fab333969b65dd70ee3508aff07d660188a996c5b4f57bf6af8eaee954"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",

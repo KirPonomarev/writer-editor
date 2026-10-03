@@ -64,7 +64,8 @@
     "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
     "test/unit/r24-pk0-package-content-trust.test.js",
     "test/contracts/r24-post-audit-corrections.contract.test.mjs",
-    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json"
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
+    "test/contracts/rtk-release01-terminal-claims.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -161,5 +162,11 @@
     "reason": "Full npm audit at stable candidate failed on inherited dependency graph; exact same-family repair required before delivery",
     "proof": "Isolated trial full audit zero and unsigned Mac build completed; final repository candidate qualification still required",
     "historicalEvidence": "Historical C6D and WP702 bindings remain immutable; exact successor validates current dependency bytes"
+  },
+  "securityWordingAmendment": {
+    "baseSha": "f7e463b26c137234e31358a6a299b83441e8160e",
+    "reason": "Preserve historical wording registry while current package surface follows validated exact security successor",
+    "preflight": "61 paths PASS before writes",
+    "acceptance": "Pending full committed-candidate checks"
   }
 }
