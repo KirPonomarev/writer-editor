@@ -88,13 +88,15 @@ test('W6: unformatted hard breaks retain paragraph identity for five cycles and 
   assert.deepEqual(envelope.parseObservablePayload(fs.readFileSync(path.join(directory, files[0]), 'utf8')).doc, doc);
 });
 
-test('W6: page and column boundaries retain explicit loss while ordinary hard breaks do not', async () => {
+test('W6: line, page and column boundaries retain distinct document meaning', async () => {
   const { plan } = await planFrom(packageBytes('<w:p><w:r><w:t>a</w:t><w:br/><w:t>b</w:t><w:br w:type="page"/><w:t>c</w:t><w:br w:type="column"/><w:t>d</w:t></w:r></w:p>'));
   const [, envelope] = await modules;
-  assert.equal(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc.content.length, 1);
-  for (const code of ['PAGE_BREAK_TEXT_ONLY', 'COLUMN_BREAK_TEXT_ONLY']) assert(plan.lossReport.items.some(i => i.code === 'DOCX_IMPORT_PREVIEW_' + code));
-  assert.equal(plan.lossReport.items.some(i => i.code === 'DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY'), false);
-  assert.match(plan.lossReport.items.find(i => i.code === 'DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY').message, /line break/);
+  const doc = envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.equal(doc.content.length, 1);
+  assert.deepEqual(doc.content[0].content.filter(n => n.type === 'hardBreak').map(n => n.attrs?.wordBreakType || 'line'), ['line', 'page', 'column']);
+  assert.equal(envelope.deriveVisibleTextFromDocument(doc), 'a\nb\nc\nd');
+  for (const code of ['PAGE_BREAK_TEXT_ONLY', 'COLUMN_BREAK_TEXT_ONLY', 'LINE_BREAK_TEXT_ONLY'])
+    assert.equal(plan.lossReport.items.some(i => i.code === 'DOCX_IMPORT_PREVIEW_' + code), false);
 });
 
 test('W6 composite: table properties and owned PNG survive failed receipt write, recovery and replay', async t => {

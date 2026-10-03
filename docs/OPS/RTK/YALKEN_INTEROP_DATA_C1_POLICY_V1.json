@@ -1271,7 +1271,7 @@
       },
       {
         "path": "test/contracts/rtk-word-composite-fidelity.contract.test.js",
-        "sha256": "26c05b1c56e9aebed93e5a1f6a3727c7842557306ccc7bb1ed5a0f03820fde3b"
+        "sha256": "5fe1378c09489e08abad946492f9e31dac1f2597ea0d73aa3272d5e4394da11d"
       },
       {
         "path": "src/io/revisionBridge/exactTextApplyJournal.mjs",

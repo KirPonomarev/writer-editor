@@ -2384,7 +2384,7 @@ export const R24_INTEROP_WORD_TYPED_BREAKS_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "68402c1d19aabfccbac875c64fce026f11bbf20ce00695d082a23524872dcd2b"
+      "sha256": "97367d38f2720ebac524ec47df9185980194afb326362aafbe4a540cc4bdfb0d"
     }
   ]
 });
