@@ -334,7 +334,7 @@ function tabRuntimeParts(overrides={}) {
 test('paragraph tab rendering resolves later origins after previous widths, retains marked text and uses explicit bar origin',async()=>{
   const input={type:'doc',attrs:{wordDefaultTabStop:567},content:[{type:'paragraph',attrs:{wordParagraphIndent:{left:300,hanging:120},wordParagraphTabs:[{pos:1200,val:'left'},{pos:2400,val:'right',leader:'dot'},{pos:900,val:'bar'}]},content:[{type:'text',text:'A\t'},{type:'text',marks:[{type:'bold'}],text:'B\tC'}]}]};
   const setup=await editorState(input);let firstWidth=8,disposed=0,measurements=0;
-  const api=tabRuntimeParts({paragraphMeasurement(){measurements++;return {paragraph:{getBoundingClientRect:()=>({left:0,height:40})},dispose(){disposed++;},width:()=>10,range(from){const index=from===2?0:1;const parent={};Object.defineProperty(parent,'style',{value:{}});Object.defineProperty(parent.style,'cssText',{set(value){if(index===0)firstWidth=Number(/width:([\d.]+)px/.exec(value)[1]);}});return {startContainer:{nodeType:3,nodeValue:'\t',parentElement:parent},getBoundingClientRect:()=>({left:index===0?10:20+firstWidth})};}};}});
+  const api=tabRuntimeParts({paragraphMeasurement(){measurements++;return {paragraph:{getBoundingClientRect:()=>({left:0,height:40})},dispose(){disposed++;},width:()=>10,range(from){const index=from===2?0:1;const parent={getBoundingClientRect:()=>({left:index===0?10:20+firstWidth})};Object.defineProperty(parent,'style',{value:{}});Object.defineProperty(parent.style,'cssText',{set(value){if(index===0)firstWidth=Number(/width:([\d.]+)(?:px)?/.exec(value)[1]);}});return {startContainer:{nodeType:3,nodeValue:'\t',parentElement:parent},getBoundingClientRect:()=>({left:index===0?10:20+firstWidth})};}};}});
   const view={state:setup.state,nodeDOM:()=>({clientWidth:400,getBoundingClientRect:()=>({width:400})}),dom:{ownerDocument:{defaultView:{getComputedStyle:()=>({getPropertyValue:()=>''})},createElement:()=>({style:{},setAttribute(){}})}}};
   const original=JSON.stringify(view.state.doc.toJSON()),selection=view.state.selection.toJSON(),cache=new WeakMap();
   const result=api.wordTabDecorations(view,cache),all=result.decorations.find();
@@ -354,6 +354,8 @@ test('paragraph tab rendering resolves later origins after previous widths, reta
 test('paragraph tab projection handles center decimal cleared default and hanging stops without changing text',()=>{
   const {wordTabAdvance}=tabRuntimeParts();
   assert.equal(wordTabAdvance({position:20,stops:[{pos:1200,val:'center'}],segmentWidth:40}).width,40);
+  const crowded=wordTabAdvance({position:117.383,stops:[{pos:2268,val:'right',leader:'dot'},{pos:3402,val:'center',leader:'hyphen'}],segmentWidth:47.109});
+  assert.equal(crowded.width,0);assert.equal(crowded.leader,'dot','overcrowded right stop does not become next center stop');
   assert.equal(wordTabAdvance({position:20,stops:[{pos:1200,val:'decimal'}],segmentWidth:60,decimalWidth:25}).width,35);
   assert.equal(wordTabAdvance({position:1,stops:[{pos:720,val:'clear'}]}).width,95);
   assert.equal(wordTabAdvance({position:5,hangingPosition:300,defaultInterval:567}).width,15);
@@ -386,11 +388,11 @@ test('paragraph measurement unwraps rich following text and never clones image r
     remove(){if(this.parentElement)this.parentElement.childNodes=this.parentElement.childNodes.filter(x=>x!==this);}
     cloneNode(){const clone=new Element(this.tagName);Object.assign(clone.style,this.style);return clone;}
     querySelectorAll(){return this.childNodes.flatMap(c=>c.nodeType===1?[c,...c.querySelectorAll()]:[]);}
-    getBoundingClientRect(){rectReads++;if(this.style.width==='max-content'){assert.equal(this.style.whiteSpace,'pre');assert.equal(this.style.textIndent,'0');assert.equal(this.querySelectorAll().every(x=>x.style.whiteSpace==='pre'),true);return {width:120,height:20,left:0};}return {width:80,height:40,left:0};}
+    getBoundingClientRect(){rectReads++;if(this.style.width==='max-content'){assert.equal(this.style.whiteSpace,'pre');assert.equal(this.style.textIndent,'0');assert.equal(this.style['font-weight'],'700','probe retains common ancestor formatting');assert.equal(this.querySelectorAll().every(x=>x.style.whiteSpace==='pre'),true);return {width:120,height:20,left:0};}return {width:80,height:40,left:0};}
   }
   const body=new Element('body'),paragraph=new Element('p'),mark=new Element('strong'),image=new Element('img');
   const text={nodeType:3,nodeValue:'mixed wrapped text',parentElement:mark};mark.appendChild(text);paragraph.appendChild(mark);paragraph.appendChild(image);image.setAttribute('src','https://must-not-be-copied.invalid/image');
-  const document={body,defaultView:{getComputedStyle(node){return {fontSize:'16px',getPropertyValue(key){if(key==='white-space')return 'pre-wrap';if(key==='font-weight')return node.tagName==='STRONG'?'700':'400';return '';}}; }},createElement:tag=>new Element(tag),createTextNode:value=>({nodeType:3,nodeValue:value}),createRange(){return {setStart(node,offset){this.startContainer=node;this.startOffset=offset;},setEnd(node,offset){this.endContainer=node;this.endOffset=offset;},cloneContents(){const strong=new Element('strong');strong.style.fontWeight='700';strong.style.whiteSpace='pre-wrap';strong.appendChild({nodeType:3,nodeValue:'mixed wrapped text'});return strong;}};}};
+  const document={body,defaultView:{getComputedStyle(node){return {fontSize:'16px',getPropertyValue(key){if(key==='white-space')return 'pre-wrap';if(key==='font-weight')return node.tagName==='STRONG'?'700':'400';return '';}}; }},createElement:tag=>new Element(tag),createTextNode:value=>({nodeType:3,nodeValue:value}),createRange(){return {commonAncestorContainer:mark,setStart(node,offset){this.startContainer=node;this.startOffset=offset;},setEnd(node,offset){this.endContainer=node;this.endOffset=offset;},cloneContents(){const strong=new Element('strong');strong.style.fontWeight='700';strong.style.whiteSpace='pre-wrap';strong.appendChild({nodeType:3,nodeValue:'mixed wrapped text'});return strong;}};}};
   const view={dom:{ownerDocument:document},domAtPos(pos){return {node:text,offset:pos};}};
   const api=tabRuntimeParts(),measurement=api.paragraphMeasurement(view,paragraph);
   assert.equal(body.childNodes.length,1);assert.equal(measurement.host.inert,true);assert.equal(measurement.host.attributes['aria-hidden'],'true');

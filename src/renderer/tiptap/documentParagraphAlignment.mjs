@@ -39,7 +39,9 @@ export function wordTabAdvance({position,stops=[],defaultInterval=720,segmentWid
   for(const stop of candidates) {
     const offset=stop.val==='right'?segmentWidth:stop.val==='center'?segmentWidth/2:stop.val==='decimal'?decimalWidth:0;
     const width=stop.pos*TWIP_PX-position-offset;
-    if(width>=0)return {width,leader:stop.leader||'none'};
+    // Word keeps the next stop when aligned text cannot fit before it; the
+    // gap collapses instead of silently selecting a different alignment stop.
+    return {width:Math.max(0,width),leader:stop.leader||'none'};
   }
   let next=(Math.floor(Math.max(position,last)/interval)+1)*interval;
   const cleared=stops.filter(stop=>stop.val==='clear').map(stop=>stop.pos*TWIP_PX);
@@ -110,7 +112,13 @@ function paragraphMeasurement(view, element) {
     if (to<=from) return 0;
     const probe=paragraph.cloneNode(false);probe.style.width='max-content';probe.style.whiteSpace='pre';
     probe.style.textIndent='0';probe.style.textAlign='left';
-    probe.appendChild(range(from,to).cloneContents());
+    const selected=range(from,to),common=selected.commonAncestorContainer;
+    const inherited=window.getComputedStyle(common.nodeType===1?common:common.parentElement);
+    // cloneContents excludes its common ancestor, which can own the font and
+    // bold/italic of the entire fragment. Preserve that inherited typography.
+    for(const property of measurementProperties)probe.style.setProperty(property,inherited.getPropertyValue(property));
+    probe.style.width='max-content';probe.style.whiteSpace='pre';probe.style.textIndent='0';probe.style.textAlign='left';
+    probe.appendChild(selected.cloneContents());
     // Rich inline leaves can explicitly inherit white-space: pre-wrap.
     for (const child of probe.querySelectorAll('*')) child.style.whiteSpace='pre';
     host.appendChild(probe);
@@ -140,7 +148,12 @@ function wordTabDecorations(view, cache) {
           const segmentWidth=measure.width(tab.absolute+1,end);
           const decimalWidth=decimal<0?segmentWidth:measure.width(tab.absolute+1,tab.absolute+1+decimal);
           const range=measure.range(tab.absolute,tab.absolute+1);
-          const tabRect=range.getBoundingClientRect();
+          const tabText=range.startContainer;
+          if(tabText.nodeType!==3||tabText.nodeValue!=='\t')throw new Error('WORD_TAB_MEASUREMENT_TAB');
+          // The original native tab can already have wrapped. Collapse its
+          // clone before reading the origin; following widths are intrinsic.
+          tabText.parentElement.style.cssText='display:inline-block;white-space:pre;font-size:0;width:0;line-height:inherit;';
+          const tabRect=tabText.parentElement.getBoundingClientRect();
           const origin=measure.paragraph.getBoundingClientRect().left-(indent.left||0)*TWIP_PX;
           const advance=wordTabAdvance({position:tabRect.left-origin,stops,defaultInterval:rootDefault,segmentWidth,decimalWidth,
             ...(indent.hanging!==undefined?{hangingPosition:indent.left||0}:{})});
@@ -151,8 +164,6 @@ function wordTabDecorations(view, cache) {
           const style=`display:inline-block;white-space:pre;font-size:0;width:${Math.round(advance.width*100)/100}px;line-height:inherit;${leaderBox}${tabLeaderCss(advance.leader)}`;
           // The measuring tree has one dedicated span per literal tab. Updating
           // its style preserves every mapped text node and all model offsets.
-          const tabText=range.startContainer;
-          if(tabText.nodeType!==3||tabText.nodeValue!=='\t')throw new Error('WORD_TAB_MEASUREMENT_TAB');
           tabText.parentElement.style.cssText=style;
           widths.push({offset:tab.offset,style});
         }
