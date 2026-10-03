@@ -144,3 +144,29 @@ test('numbering root requires abstract definitions before concrete instances', a
   assert.equal(api.buildDocxContentPreviewFromZipBytes(fixture({numbering:abstract(4)+instance(7,4)+abstract(5)+instance(8,5)})).ok,false);
   assert.equal(api.buildDocxContentPreviewFromZipBytes(fixture({numbering:abstract(4)+abstract(5)+instance(7,4)+instance(8,5)})).ok,true);
 });
+test('standard markers retain typed reset, skipped-level, override and Word alphabetic semantics across export', async () => {
+  const api=await bridge,envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
+  const model=require('../../src/core/word-list-numbering-v1.cjs');
+  const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+  const {buildDocxMinBuffer}=require('../../src/export/docx/docxMinBuilder.js');
+  const lvl=(level,format='decimal',start=1,restart='')=>`<w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/>${restart}<w:lvlText w:val="%${level+1}."/></w:lvl>`;
+  const cases=[
+    {levels:lvl(0)+lvl(1,'decimal',1,'<w:lvlRestart w:val="0"/>'),sequence:[0,1,0,1],labels:['1.','1.','2.','2.'],check:doc=>assert.equal(doc.content[0].attrs.wordNumbering.levels[1].restartAfterLevel,null)},
+    {levels:lvl(0)+lvl(1)+lvl(2),sequence:[0,2,0,2],labels:['1.','1.','2.','1.'],check:doc=>assert.equal(doc.content[0].content[0].content[1].attrs.wordNumbering.level,2)},
+    {levels:lvl(0),override:'<w:lvlOverride w:ilvl="0"><w:startOverride w:val="8"/></w:lvlOverride>',sequence:[0,0],labels:['8.','9.'],check:doc=>assert.deepEqual(doc.content[0].attrs.wordNumbering.startOverrides,[{level:0,start:8}])},
+    {levels:lvl(0,'lowerLetter',26),sequence:[0,0,0,0],labels:['z.','aa.','bb.','cc.'],check:doc=>assert.equal(doc.content[0].attrs.wordNumbering.levels[0].format,'a')},
+  ];
+  for(const entry of cases){
+    const numbering=`<w:abstractNum w:abstractNumId="4">${entry.levels}</w:abstractNum><w:num w:numId="7"><w:abstractNumId w:val="4"/>${entry.override||''}</w:num>`;
+    const body=entry.sequence.map((level,i)=>`<w:p><w:pPr><w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="7"/></w:numPr></w:pPr><w:r><w:t>Item ${i}</w:t></w:r></w:p>`).join('');
+    let bytes=fixture({numbering,body});
+    for(let cycle=0;cycle<2;cycle++){
+      const report=api.buildDocxContentPreviewFromZipBytes(bytes),plan=api.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
+      assert.ok(!plan.lossReport.items.some(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
+      const doc=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc,markers=model.resolveMarkers(doc),labels=[];
+      entry.check(doc);
+      const visit=node=>{if(node.type==='orderedList')node.content.forEach((item,i)=>{labels.push(markers.get(node).items[i].label);for(const child of item.content)visit(child);});else for(const child of node.content||[])visit(child);};visit(doc);assert.deepEqual(labels,entry.labels);
+      bytes=buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+    }
+  }
+});

@@ -208,44 +208,69 @@ function nodeAt(doc, path) {
   return node;
 }
 function planNumberingEdit(doc, intent) {
+  intent = cloneData(intent);
   record(intent, ['listPath','action', ...['levels','instanceId'].filter(key => Object.hasOwn(intent, key))]);
-  const before = resolveMarkers(doc), next = cloneData(doc), path = own(intent, 'listPath'), action = own(intent,'action');
+  const base = cloneData(doc), before = resolveMarkers(base), next = cloneData(base);
+  const path = own(intent, 'listPath'), action = own(intent,'action');
   let target = nodeAt(next, path);
   if (!['configure','restart','continue'].includes(action)) fail();
+  const ancestors = []; let cursor = next;
+  for (const index of path) { if (['orderedList','bulletList'].includes(cursor.type)) ancestors.push(cursor); cursor = cursor.content[index]; }
+  const parentPattern = ancestors.at(-1)?.attrs?.wordNumbering;
+  const ownCurrent = target.attrs?.wordNumbering ? validateNumbering(target.attrs.wordNumbering) : null;
+  const current = ownCurrent || (action === 'configure' && parentPattern ? validateNumbering(parentPattern) : null);
+  const targetLevel = ownCurrent?.level ?? (parentPattern ? parentPattern.level + 1 : ancestors.length);
+  if (targetLevel > 8 || (action !== 'configure' && targetLevel !== 0)) fail();
   const used = new Set([...before.values()].map(item => item.instanceId));
   let fresh = 1; while (used.has(`numbering-${fresh}`)) fresh++;
-  const current = target.attrs?.wordNumbering ? validateNumbering(target.attrs.wordNumbering) : null;
   let levels = own(intent,'levels') === undefined ? current?.levels || defaultLevels() : validateLevels(own(intent,'levels'));
   let instanceId = current?.instanceId || `numbering-${fresh}`;
-  let prototype = { schemaVersion: 1, instanceId, level: 0, levels };
+  let prototype = { schemaVersion: 1, instanceId, level: targetLevel, levels };
   if (action === 'continue') {
-    const requested = own(intent, 'instanceId');
-    let found;
+    const requested = own(intent, 'instanceId'); let found;
     for (const [node, item] of before) {
       if (JSON.stringify(item.path) === JSON.stringify(path)) break;
       if (item.instanceId === requested) found = validateNumbering(node.attrs.wordNumbering);
     }
     if (found && !current && own(intent, 'levels') === undefined) levels = found.levels;
-    if (!found || current?.level > 0 || JSON.stringify(found.levels) !== JSON.stringify(levels)) fail();
+    if (!found || JSON.stringify(found.levels) !== JSON.stringify(levels)) fail();
+    if (current) {
+      const oldLineage = current.lineageId || current.instanceId, newLineage = found.lineageId || found.instanceId;
+      if (oldLineage === newLineage) return normalize(next);
+      for (const [node, item] of before) {
+        if (JSON.stringify(item.path) === JSON.stringify(path)) break;
+        const value = node.attrs.wordNumbering;
+        if ((value.lineageId || value.instanceId) === oldLineage) fail();
+      }
+      visitNodes(next, node => {
+        const value = node.attrs?.wordNumbering;
+        if (value && (value.lineageId || value.instanceId) === oldLineage) {
+          value.lineageId = newLineage;
+          if (value.instanceId === current.instanceId) delete value.startOverrides;
+        }
+      });
+      return normalize(next);
+    }
     prototype = { ...found, level: 0 }; instanceId = found.instanceId;
   } else if (action === 'restart') {
-    if (current?.level > 0) fail();
     instanceId = `numbering-${fresh}`;
     if (current) {
       if (JSON.stringify(levels.map((value,index)=>({...value,start:current.levels[index]?.start}))) !== JSON.stringify(current.levels)) fail();
       prototype = {...current, instanceId, lineageId:current.lineageId || current.instanceId, startOverrides:[{level:0,start:levels[0].start}]};
       levels = current.levels;
     } else prototype = { schemaVersion: 1, instanceId, level: 0, levels };
-  } else if (current) prototype = { ...current, levels };
+  } else if (current) prototype = { ...current, level:targetLevel, levels };
   if (['paragraph','heading'].includes(target.type)) {
-    if (action !== 'configure' || !path.length) fail();
-    const wrapper = { type:'orderedList', attrs:{start:levels[0].start,type:levels[0].format,wordNumbering:prototype}, content:[{type:'listItem',content:[target]}] };
+    if (action !== 'configure' || !path.length || ancestors.length) fail();
+    const wrapper = { type:'orderedList', attrs:{start:levels[targetLevel]?.start,type:levels[targetLevel]?.format,wordNumbering:prototype}, content:[{type:'listItem',content:[target]}] };
     nodeAt(next,path.slice(0,-1)).content[path.at(-1)] = wrapper; target = wrapper;
   }
   if (target.type !== 'orderedList') fail();
+  const convertedLegacyIds = new Set();
   const decorate = (node, level) => {
     if (node.type === 'orderedList') {
       if (level >= levels.length) fail();
+      if (node.attrs?.wordListId != null) convertedLegacyIds.add(node.attrs.wordListId);
       node.attrs = { ...(node.attrs || {}), type:levels[level].format, wordNumbering:{...cloneData(prototype),level} };
       delete node.attrs.wordListId; delete node.attrs.wordListStart;
       for (const child of node.content || []) for (const nested of child.content || []) if (nested.type === 'orderedList') decorate(nested, level + 1);
@@ -259,27 +284,31 @@ function planNumberingEdit(doc, intent) {
         node.attrs.wordNumbering.levels = cloneData(levels); node.attrs.type = levels[level].format;
       }
     });
-  } else decorate(target, current?.level || 0);
+    if (!ownCurrent) decorate(target, targetLevel);
+  } else if (action === 'configure' && target.attrs?.wordListId != null) {
+    const legacyId = target.attrs.wordListId;
+    visitNodes(next, node => { if (node.type === 'orderedList' && node.attrs?.wordListId === legacyId) decorate(node,targetLevel); });
+  } else decorate(target, targetLevel);
+  visitNodes(next, node => { if (convertedLegacyIds.has(node.attrs?.wordListId)) fail(); });
   return normalize(next);
 }
 function normalizeAuthoring(doc, oldDoc) {
   const next = cloneData(doc);
+  oldDoc = oldDoc ? cloneData(oldDoc) : null;
   const oldPatterns = oldDoc ? resolveMarkers(oldDoc) : null;
+  const priorContexts = new Set();
+  const contextKey = (pattern, parent) => JSON.stringify([pattern.instanceId,pattern.level,parent?.attrs?.wordNumbering?.instanceId || null,parent?.attrs?.wordNumbering?.level ?? null]);
+  if (oldDoc) visitNodes(oldDoc, (node, path, parents) => {
+    if (!node.attrs?.wordNumbering) return;
+    const parent = [...parents].reverse().find(value => value.type === 'orderedList' || value.type === 'bulletList');
+    priorContexts.add(contextKey(node.attrs.wordNumbering,parent));
+  });
   visitNodes(next, (node, path, parents) => {
     if (node.type !== 'orderedList') return;
     const parent = [...parents].reverse().find(value => value.type === 'orderedList' || value.type === 'bulletList');
     const inherited = parent?.attrs?.wordNumbering;
     let pattern = node.attrs?.wordNumbering;
-    let oldNode = null;
-    if (oldDoc) { try { oldNode = nodeAt(oldDoc, path); } catch {} }
-    const existingAtPath = oldNode?.type === 'orderedList' && oldNode.attrs?.wordNumbering?.instanceId === pattern?.instanceId && oldNode.attrs?.wordNumbering?.level === pattern?.level;
-    let sameAncestry = existingAtPath;
-    if (sameAncestry) {
-      const priorParents = []; let prior = oldDoc;
-      for (const index of path) { priorParents.push(prior); prior = prior.content[index]; }
-      const priorParent = [...priorParents].reverse().find(value => value.type === 'orderedList' || value.type === 'bulletList');
-      sameAncestry = (priorParent?.attrs?.wordNumbering?.instanceId || null) === (inherited?.instanceId || null) && (priorParent?.attrs?.wordNumbering?.level ?? null) === (inherited?.level ?? null);
-    }
+    const sameAncestry = pattern && priorContexts.has(contextKey(pattern, parent));
     if (!pattern && inherited && oldPatterns) {
       // A pre-existing plain nested list is not a newly authored level.
       const unchanged = [...oldPatterns.keys()].some(old => (old.content || []).some(item => (item.content || []).some(child => child.type === 'orderedList' && !child.attrs?.wordNumbering && JSON.stringify(child) === JSON.stringify(node))));

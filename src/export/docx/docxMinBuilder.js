@@ -190,7 +190,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   const blocks = [];
   const linkedIds = new Map();
   const numberId = attrs => {
-    const id = attrs?.wordNumbering?.instanceId || attrs?.wordListId;
+    const id = attrs?.wordNumbering ? `pattern:${attrs.wordNumbering.instanceId}` : attrs?.wordListId ? `legacy:${attrs.wordListId}` : null;
     if (!id) return nextListId++;
     if (!linkedIds.has(id)) linkedIds.set(id, nextListId++);
     return linkedIds.get(id);

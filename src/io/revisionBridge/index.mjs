@@ -9294,12 +9294,17 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
   // Unsupported numbering still consumes its Word ordinal. Do
   // not renumber a later supported paragraph when reporting that earlier loss.
   const effectiveLevels = docxEffectiveNumberingLevels(instance, abstract);
-  const customPattern = effectiveLevels && (effectiveLevels.some((entry, index) => entry.text !== `%${index + 1}.`)
-    || [...catalog.instances.values()].filter(value=>value.abstractId===instance.abstractId).length > 1);
   const startOverrides = [...instance.overrides.values()].filter(value=>value.start!==undefined).sort((a,b)=>a.level-b.level).map(value=>({level:value.level,start:value.start}));
+  // A standard literal label does not imply legacy semantics: ancestor resets,
+  // skipped logical levels, explicit starts and Word's repeated-letter alpha
+  // counters need the typed definition even before their first visible fork.
+  const customPattern = effectiveLevels && (effectiveLevels.length > 1 || startOverrides.length > 0
+    || effectiveLevels.some((entry, index) => entry.text !== `%${index + 1}.`
+      || entry.restartAfterLevel !== (index ? index - 1 : null) || ['A','a'].includes(entry.format))
+    || [...catalog.instances.values()].filter(value=>value.abstractId===instance.abstractId).length > 1);
   const lineageId = `word-numbering-lineage-${instance.abstractId}`;
   const hasFullOverride = [...instance.overrides.values()].some(value=>value.definition);
-  if (customPattern && hasFullOverride) { declareLoss(); return; }
+  if (customPattern && hasFullOverride && [...catalog.instances.values()].filter(value=>value.abstractId===instance.abstractId).length > 1) { declareLoss(); return; }
   if (definition.unsupported
     || !(definition.numFmt === 'bullet' || (effectiveLevels && level < effectiveLevels.length)
       || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {

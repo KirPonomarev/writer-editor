@@ -87,3 +87,37 @@ test('native Word alphabetic sequence repeats letters rather than spreadsheet co
  assert.equal(model.formatOrdinal(780,'A'),'Z'.repeat(30));
  assert.throws(()=>model.formatOrdinal(781,'A'),/WORD_LIST_NUMBERING_INVALID/);
 });
+test('normalization preserves declared skipped levels when unrelated edits shift every list path',()=>{
+ const levels=model.defaultLevels(3),root=pattern(levels),child={...root,level:2};
+ const before=document(list(root,item('root',list(child,item('child')))));
+ const shifted=document(paragraph('prepended'),...structuredClone(before.content));
+ const actual=model.normalizeAuthoring(shifted,before);assert.equal(actual.content[1].content[0].content[1].attrs.wordNumbering.level,2);
+});
+test('nested legacy configuration uses logical parent level and continues whole existing lineage',()=>{
+ const plain={type:'orderedList',attrs:{start:1},content:[item('nested')]};
+ const root=pattern(model.defaultLevels(3)),before=document(list(root,item('root',plain)));
+ const next=model.planNumberingEdit(before,{listPath:[0,0,1],action:'configure'});
+ assert.equal(next.content[0].content[0].content[1].attrs.wordNumbering.level,1);
+ assert.equal(next.content[0].content[0].content[1].attrs.wordNumbering.instanceId,root.instanceId);
+ const a={...root,instanceId:'prior'},b={...root,instanceId:'later'};
+ const separated=document(list(a,item('one')),paragraph('gap'),list(b,item('two')),paragraph('gap2'),list(b,item('three')));
+ const joined=model.planNumberingEdit(separated,{listPath:[2],action:'continue',instanceId:'prior'});
+ assert.deepEqual(labels(joined),['1.','2.','3.']);
+ const restarted=model.planNumberingEdit(joined,{listPath:[2],action:'restart'});assert.deepEqual(labels(restarted),['1.','1.','2.']);
+});
+test('authoring rejects path accessors and old-document serialization hooks without executing them',()=>{
+ let calls=0;const path=[];Object.defineProperty(path,0,{enumerable:true,get(){calls++;return 0;}});path.length=1;
+ assert.throws(()=>model.planNumberingEdit(document(paragraph('safe')),{listPath:path,action:'configure'}),/WORD_LIST_NUMBERING_INVALID/);
+ const old=document(paragraph('safe'));Object.defineProperty(old.content[0],'toJSON',{get(){calls++;return()=>({});}});
+ assert.throws(()=>model.normalizeAuthoring(document(paragraph('safe')),old),/WORD_LIST_NUMBERING_INVALID/);assert.equal(calls,0);
+});
+test('legacy and pattern identifiers occupy separate DOCX instance namespaces',async()=>{
+ const patternList=list({...pattern(model.defaultLevels(1)),instanceId:'same'},item('pattern'));
+ const legacy={type:'orderedList',attrs:{start:1,wordListId:'same',wordListStart:1},content:[item('legacy')]};
+ const doc=document(patternList,paragraph('gap'),legacy);
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+ assert.equal((storedPart(bytes,'word/numbering.xml').match(/<w:num w:numId=/g)||[]).length,2);
+ const blocks=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId:'scene',doc,text:'pattern\ngap\nlegacy'});
+ assert.notEqual(blocks[0].formatIr.paragraph.list.numId,blocks[2].formatIr.paragraph.list.numId);
+});
