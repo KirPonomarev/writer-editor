@@ -69,3 +69,29 @@ for(const mutation of ['missing','external','symbol','duplicate','wrong-role'])t
  if(mutation==='wrong-role')parts.find(p=>p.name==='word/document.xml').data=parts.find(p=>p.name==='word/document.xml').data.replace('r:id="h1"','r:id="f1"');
  const preview=bridge.buildDocxContentPreviewFromZipBytes(buildStoredZip(parts));assert.equal(preview.ok,false,JSON.stringify(preview));const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,false);assert.equal(plan.candidateCreatePlan,null);
 });
+
+test('image projection has no binary authority: strict Save and both exporters refuse forged byte identity',async()=>{
+ const {doc}=await importDoc(buildStoredZip(literalParts()));
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAYAAADwdn+XAAAAFklEQVR4nGP4z8DwHx8mAo4aMPQNAADNZv8BGUNAhgAAAABJRU5ErkJggg==','base64');
+ const attrs=require('../../src/io/documentMedia.js').createImageAttrs(png,{alt:'Header PNG',displayName:'header.png'});
+ const id=model.read(doc).stories[0].id;
+ const good=model.replaceBody(doc,id,{type:'doc',content:[{type:'paragraph',content:[{type:'image',attrs}]}]});
+ assert.doesNotThrow(()=>model.readProjection(good));assert.doesNotThrow(()=>model.validateSave(doc,good));
+ const bad=structuredClone(good),image=bad.attrs.wordStories.stories[0].body.content[0].content[0];
+ image.attrs.sha256='0'.repeat(64);image.attrs.assetId=`sha256-${image.attrs.sha256}`;image.attrs.assetPath=`assets/media/${image.attrs.sha256}.png`;
+ assert.doesNotThrow(()=>model.readProjection(bad));
+ assert.throws(()=>model.read(bad),/DOCUMENT_MEDIA_IDENTITY/);
+ assert.throws(()=>model.validateSave(doc,bad),/DOCUMENT_MEDIA_IDENTITY/);
+ for(const kind of ['ordinary','review'])await assert.rejects(exported(bad,kind),/DOCUMENT_MEDIA_IDENTITY/);
+ let calls=0;const body={type:'doc'};Object.defineProperty(body,'content',{get(){calls++;return[];},enumerable:true});
+ assert.throws(()=>model.replaceBodyProjection(doc,id,body),/WORD_STORIES_INVALID/);assert.equal(calls,0);
+});
+
+test('explicit empty self-closing header retains empty override through ordinary and Review exports',async()=>{
+ const parts=literalParts();parts.find(p=>p.name==='word/header4.xml').data=`<w:hdr xmlns:w="${W}"/>`;
+ const {doc}=await importDoc(buildStoredZip(parts));
+ for(const kind of ['ordinary','review']){
+ const next=await importDoc(await exported(doc,kind));
+ assert.deepEqual(resolvedBodies(next.doc),resolvedBodies(doc));
+ }
+});

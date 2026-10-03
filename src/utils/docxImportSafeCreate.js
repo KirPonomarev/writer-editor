@@ -1274,7 +1274,8 @@ async function prepareDocxMediaEntries(content, projectRoot, notes = []) {
   const { parseObservablePayload } = await import('../renderer/documentContentEnvelope.mjs');
   const parsed = parseObservablePayload(content);
   if (parsed.issue) throw Error('DOCX_MEDIA_DOCUMENT_INVALID');
-  const graph = documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...notes.flatMap(note => note.body.content)] }), entries = [];
+  const storyBlocks = require('../core/word-stories-v1.cjs').read(parsed.doc)?.stories.flatMap(story => story.body.content) || [];
+  const graph = documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...notes.flatMap(note => note.body.content), ...storyBlocks] }), entries = [];
   for (const asset of graph.assets) {
     const target = path.join(projectRoot, asset.attrs.assetPath);
     if (!isPathInsideBoundary(projectRoot, target, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');

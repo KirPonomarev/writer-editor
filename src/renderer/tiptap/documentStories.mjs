@@ -11,7 +11,7 @@ export const DocumentStories = Extension.create({
 });
 
 export function storyInventory(doc) {
-  const registry = stories.read(doc);
+  const registry = stories.readProjection(doc);
   if (!registry) return [];
   const resolved = stories.resolved(registry);
   const variants = { default: 'обычные страницы', first: 'первая страница', even: 'чётные страницы' };
@@ -30,8 +30,9 @@ export function storyInventory(doc) {
 export function applyStoryBody(editor, expectedDoc, storyId, body) {
   if (!editor || editor.isDestroyed || !editor.isEditable
     || JSON.stringify(canonicalizeDocumentJson(editor.getJSON())) !== JSON.stringify(canonicalizeDocumentJson(expectedDoc))) return false;
-  const next = stories.replaceBody(expectedDoc, storyId, body);
-  stories.validateSave(expectedDoc, next);
+  const next = stories.replaceBodyProjection(expectedDoc, storyId, body);
+  if (JSON.stringify(stories.topology(stories.readProjection(expectedDoc)))
+    !== JSON.stringify(stories.topology(stories.readProjection(next)))) return false;
   editor.view.dispatch(editor.state.tr.setDocAttribute('wordStories', next.attrs.wordStories));
   return JSON.stringify(editor.getJSON().attrs.wordStories) === JSON.stringify(next.attrs.wordStories);
 }

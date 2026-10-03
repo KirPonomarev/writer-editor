@@ -10660,7 +10660,7 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
     const type = attr('Type'), role = type === `${R}/header` ? 'header' : type === `${R}/footer` ? 'footer' : null;
     if (!role) return;
     const id = attr('Id'), target = attr('Target');
-    if (stack.length !== 1 || node.namespaceUri !== P || !id || relationships.has(id) || attr('TargetMode')
+    if (stack.length !== 1 || node.namespaceUri !== P || !id || relationships.has(id) || ![undefined,'Internal'].includes(attr('TargetMode'))
       || typeof target !== 'string' || !/^(?:\/word\/)?[A-Za-z0-9_.-]+\.xml$/.test(target) || target.includes('..')) throw Error('WORD_STORY_RELATIONSHIP_INVALID');
     relationships.set(id, { role, part: target.startsWith('/word/') ? target.slice(1) : `word/${target}` });
   });
@@ -10670,6 +10670,7 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
     if (node.localName === 'sectPr') { current = { titlePage: false, header: {}, footer: {} }; sections.push(current); return; }
     if (stack.at(-1)?.localName !== 'sectPr') return;
     if (node.localName === 'titlePg') {
+      for (const key of attributes.keys()) if (key !== `${W}\u0000val`) throw Error('WORD_STORY_FLAG_INVALID');
       const value = attr('val', W); if (value !== undefined && !['0','1','false','true','off','on'].includes(value)) throw Error('WORD_STORY_FLAG_INVALID');
       current.titlePage = !['0','false','off'].includes(value); return;
     }
@@ -10687,9 +10688,11 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
   if (!stories.length) { if (relationships.size) throw Error('WORD_STORY_ORPHAN'); return null; }
   if (new Set([...relationships.values()].map(rel => rel.part)).size !== byPart.size) throw Error('WORD_STORY_ORPHAN');
-  let evenAndOddHeaders = false;
-  if (auxiliary('word/settings.xml')) docxFontVisitPart(bytes, 'word/settings.xml', W, 'settings', (node, stack, attr) => {
+  let evenAndOddHeaders = false, evenFlagCount = 0;
+  if (auxiliary('word/settings.xml')) docxFontVisitPart(bytes, 'word/settings.xml', W, 'settings', (node, stack, attr, attributes) => {
     if (node.namespaceUri !== W || node.localName !== 'evenAndOddHeaders') return;
+    if (++evenFlagCount !== 1) throw Error('WORD_STORY_FLAG_INVALID');
+    for (const key of attributes.keys()) if (key !== `${W}\u0000val`) throw Error('WORD_STORY_FLAG_INVALID');
     const value = attr('val', W); if (stack.length !== 1 || value !== undefined && !['0','1','false','true','off','on'].includes(value)) throw Error('WORD_STORY_FLAG_INVALID');
     evenAndOddHeaders = !['0','false','off'].includes(value);
   });
@@ -10700,10 +10703,11 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   const validatedParts = [], storyMediaParts = [];
   const bodies = stories.map(({id,role,part}) => {
     if (types.get(`/${part}`) !== `application/vnd.openxmlformats-officedocument.wordprocessingml.${role}+xml`) throw Error('WORD_STORY_CONTENT_TYPE');
-    let root;
-    docxFontVisitPart(bytes, part, W, role === 'header' ? 'hdr' : 'ftr', (node, stack) => { if (!stack.length) root = node.rawTagName; });
+    let root, emptyRoot = false;
+    docxFontVisitPart(bytes, part, W, role === 'header' ? 'hdr' : 'ftr', (node, stack) => { if (!stack.length) { root = node.rawTagName; emptyRoot = node.selfClosing; } });
     const xml = docxZipDecodeUtf8Xml(auxiliary(part)), prefix = root.includes(':') ? root.split(':')[0] + ':' : '';
-    const documentXml = xml.replace(new RegExp(`<${root}(?=[\\s>])`), `<${prefix}document`)
+    const expandedXml = emptyRoot ? xml.replace(new RegExp(`(<${root}\\b[^>]*?)\\/\\s*>`), `$1><${prefix}p/></${root}>`) : xml;
+    const documentXml = expandedXml.replace(new RegExp(`<${root}(?=[\\s>])`), `<${prefix}document`)
       .replace(new RegExp(`(<${prefix}document\\b[^>]*>)`), `$1<${prefix}body>`)
       .replace(new RegExp(`</${root}\\s*>`), `</${prefix}body></${prefix}document>`);
     const relationshipPart = `word/_rels/${part.slice(5)}.rels`, hyperlinks = docxHyperlinkCatalog(bytes, relationshipPart);
@@ -11855,9 +11859,9 @@ function docxImportPreviewBuildLossReport(
     if (richCandidate && diagnostic.code === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC
       && Object.values(DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES).includes(diagnostic.sourceCode)) continue;
     if ((contentPreview.paragraphs.some(p => p.media?.length) || contentPreview.noteMediaParts?.length)
-      && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
-        || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
-          && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)))) continue;
+      && diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC') continue;
+    if (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
+      && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)) continue;
     const knownIgnoredPart = [
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,

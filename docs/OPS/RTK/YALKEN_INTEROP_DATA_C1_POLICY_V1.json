@@ -509,7 +509,8 @@
     "src/export/docx/docxReviewPacketStories.js",
     "test/contracts/rtk-word-header-footer.contract.test.js",
     "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
-    "test/contracts/rtk-word-header-footer-authoring.contract.test.js"
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -738,7 +739,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c8996a667cc5f57932e9e03421e792db8ffe2f57b0eafb52833c49aa12cee73c"
+        "sha256": "112decebe351db431ac9826e5f458cfe465d44b8dc0f4d33943d4f8f9d347f47"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -774,11 +775,11 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "6fd6fd2bd453adc380d5a12d9e63726028543e6997262225d3318b8272db5153"
+        "sha256": "0e4fdcdf77fc287fdbcef9a7488eda32d81b5b7e65bc2b9b02ba4ec6bb0b3bf2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "1fb7c87baa92303a00d390da4b931519f502624cca4df989aae8744e3cdb8636"
+        "sha256": "08406d889e1bf514927a38679232673694f60065cd195cc1e73a91b57d6d8855"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -878,7 +879,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "e99bf726948bcaac4961dea90903198db79876e0fb055b5140a4e5afd12b770b"
+        "sha256": "7841bf84279656b6f8a83703b77dce36b0fe4e6e5fdcc003a98a46dc9efe6380"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -914,7 +915,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "d8af118929b2f23734fb59e475234b934d5fa969d7ff005ab6d9f65b60c7121e"
+        "sha256": "d7d9a704b815a9e21908a8ae82b00d0e09653474282427210f53d182667210b1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1010,7 +1011,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "f7b4991cd14327d5a3ce6286829666b1fec1e1bbea1515e716777de43e602f8a"
+        "sha256": "a04fda7cef0138286e0ebbb0125ff48f1c3ddbd91f5545df58a073ab1b7c87ac"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1442,7 +1443,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "61b417b471c09d2fab781f5d3f8a0732792e3caabda6f120c392744864075898"
+        "sha256": "b92d3e9fc321b11f2d9b4db7932d9200882a9eecd1184d72efed7af005807354"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1554,11 +1555,11 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "83b04701015a3391e3b216a8e65f77270e869097564b1570d7a30ca2eb3b6638"
+        "sha256": "bb5b376b0818433693507acaa84c09940ee37c0d686a36a8263cf51913fef73d"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "45f7a5e4812be108a67b1258618a3d52dbb17e7635660b8c90c00c9e43bfdc5b"
+        "sha256": "b6236ac06f3927acb688876680815cb5fd49144dae93bd9006c35260132fa58a"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
@@ -1586,7 +1587,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "d3ccf53032a6ed9d2d550a08203479fb2280aaaf3edd997721033bbd7a5f7a28"
+        "sha256": "5c697809cf8ef53037f8e3fdb05e24aba63b3b0d92e5c8ae6495d0698010c8d5"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1918,7 +1919,7 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "d5f68c56b34bd189612c47aebc5e40c3d3c2c7b0bced9a1eb02a552d80e52109"
+        "sha256": "72a3ea9c168dd51cca96b0598a7d5711c275b8e3d3ef1ed0b8383f2b9f2e97d8"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -2146,11 +2147,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-header-footer-mac.md",
-        "sha256": "75f1b87b1edd9d0ff94ae5c6b587de09c8e5adc4cae0c91e613c81311aaa4049"
+        "sha256": "8e1b5982a72b448003d919cef5cef39293be7400d6dd4b027ce9536ecadd984c"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_HEADER_FOOTER_V1.json",
-        "sha256": "f82b4f7f770abb22b38a7c27c7fc927c8943dc535e6d57e48f5df8b1831c42c7"
+        "sha256": "de803e028b76709c22041db58a79d514138478f70b1589443a5861918427ce3c"
       },
       {
         "path": "docs/OPS/RTK/SURFACE_MANIFEST_WORD_HEADER_FOOTER_V1.json",
@@ -2158,7 +2159,7 @@
       },
       {
         "path": "src/core/word-stories-v1.cjs",
-        "sha256": "f18951ad6726700ceb3472bbecf58d25668b489cd9e49686f26fc49d786d82ed"
+        "sha256": "28eab02c53d1d0dd58491506c4bbe35c3fd5d6801a600f0f60e145300c7d6301"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
@@ -2166,7 +2167,7 @@
       },
       {
         "path": "src/renderer/tiptap/documentStories.mjs",
-        "sha256": "1db8083909fa95c11649fd03c8ff96aa49f28b6668bf8a85ff69335234f3f7aa"
+        "sha256": "eef52dbc274823bd9094129460c467c731e2cdb04fe72d4b0ffec9dd3d1163d8"
       },
       {
         "path": "src/export/docx/docxReviewPacketStories.js",
@@ -2174,15 +2175,19 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer.contract.test.js",
-        "sha256": "653d864f62c3fcfc33fa4cc33481355ddd4476d12f76ee6d8ae53d9d90eee14f"
+        "sha256": "db2ff668a448ea0a16f89d429561cc269ad7811a68308affec8479a17ac297cf"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
-        "sha256": "e740818fd1f489f72b9a7ea650c23757cfaaac722ee908f5517081bdf3138f4f"
+        "sha256": "0796a251a64cbd6ba3d0cf83ab427698f9288484f390bd0d962664d1c1475479"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
-        "sha256": "37628bd1feab2db092adcd42f334824656a0f7d9d0fb8c69f966477922b306c4"
+        "sha256": "28595500d330c0fa4f00eae1bf6c5660d360a8104df3b9e1c04112df4815ef91"
+      },
+      {
+        "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
+        "sha256": "524cd4ecfab61475bf8d440230cb9b14e92219edfdff42beb87740a776bea2ad"
       }
     ],
     "followupRepair": {

@@ -1,3 +1,4 @@
+import { canonicalizeDocumentJson } from '../documentContentEnvelope.mjs';
 import { DocumentListNumbering } from './documentListNumbering.mjs';
 import { Editor, Extension } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -55,17 +56,25 @@ export function getFocusedManuscriptBodyEditor(doc = globalThis.document) {
   return host ? bodyEditors.get(host) || null : null;
 }
 
+export function manuscriptBodyExtensions() {
+  return [StarterKit.configure({ heading: false,
+      blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
+    DocumentListNumbering, DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
+    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' }),
+    Highlight.configure({ multicolor: true }), Underline,
+    Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })];
+}
+
+export function readManuscriptBodyDocument(editor) {
+  return canonicalizeDocumentJson(editor.getJSON());
+}
+
 export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, bodyLabel = 'Текст сноски', toolbarLabel = 'Форматирование сноски', linkTitle = 'Ссылка в сноске' } = {}) {
   const controls = document.createElement('div'); controls.className = 'manuscript-note-toolbar';
   controls.setAttribute('role', 'toolbar'); controls.setAttribute('aria-label', toolbarLabel);
   const surface = document.createElement('div'); surface.className = 'manuscript-note-body'; host.append(controls, surface);
   const editor = new Editor({ element: surface,
-    extensions: [StarterKit.configure({ heading: false,
-      blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
-    DocumentListNumbering, DocumentTextStyle, DocumentParagraphAlignment, Color, DocumentMedia,
-    DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' }),
-    Highlight.configure({ multicolor: true }), Underline,
-    Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })],
+    extensions: manuscriptBodyExtensions(),
     content: { type: 'doc', content: [{ type: 'paragraph' }] },
     editorProps: { attributes: { role: 'textbox', 'aria-label': bodyLabel, 'aria-multiline': 'true' },
       handlePaste: (_view, event) => {
@@ -77,7 +86,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
         else editor.commands.insertContent(lines.map(line => ({ type: 'paragraph', content: line ? [{ type: 'text', text: line }] : [] })));
         return true;
       } },
-    onUpdate: () => onChange?.(editor.getJSON()),
+    onUpdate: () => onChange?.(readManuscriptBodyDocument(editor)),
   });
   bodyEditors.set(host, editor);
   for (const [label, command] of [['Полужирный', 'toggleBold'], ['Курсив', 'toggleItalic'], ['Подчёркивание', 'toggleUnderline'], ['Зачёркивание', 'toggleStrike']]) {
@@ -111,7 +120,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
       event.preventDefault(); onSave?.();
     }
   });
-  return { getJSON: () => editor.getJSON(), setDocument: doc => {
+  return { getJSON: () => readManuscriptBodyDocument(editor), setDocument: doc => {
     documentGeneration++; editor.commands.setContent(doc, { emitUpdate: false });
     // Replacing a note/project is not an authoring edit. Its history must never
     // expose the previous entity's body through Undo.

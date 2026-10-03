@@ -3,7 +3,7 @@
   "taskId": "WORD_HEADER_FOOTER_MAC_20261003",
   "objective": "Preserve and edit native header/footer stories with section references through Mac import, canonical Save, both DOCX exports and authenticated Word return",
   "taskType": "PRODUCT_UI",
-  "bindingBaseSha": "937b870c09519955bd1ee50c24bbb7e149022949",
+  "bindingBaseSha": "1baa4e0b0e5a8b994a5a9580cc010c7c411d62fa",
   "scopeIn": [
     "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -34,7 +34,12 @@
     "src/export/docx/docxReviewPacketStories.js",
     "test/contracts/rtk-word-header-footer.contract.test.js",
     "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
-    "test/contracts/rtk-word-header-footer-authoring.contract.test.js"
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/utils/docxImportSafeCreate.js",
+    "src/core/project-transaction-v1.cjs",
+    "src/core/project-tree-cohort-v1.mjs",
+    "test/contracts/rtk-word-header-footer-transaction.contract.test.js"
   ],
   "scopeOut": [
     "src/renderer/index.html",
@@ -56,10 +61,12 @@
   "writePaths": [
     "Untrusted DOCX part relationships and bounded XML -> typed Core story validation -> Main import admission -> existing atomic safe-create",
     "Rich-body authoring intent -> current scene working document -> existing Kernel Save -> Main validates protected story reference graph and bodies -> existing atomic scene persistence",
-    "Authenticated Word return -> original round capsule and protected topology -> Core body delta -> existing Apply atomic writer"
+    "Authenticated Word return -> original round capsule and protected topology -> Core body delta -> existing Apply atomic writer",
+    "Same header/footer outcome: extend existing recoverable project transaction with typed multi-scene story body cohort; existing scene/image safe-create collects story assets; no new writer"
   ],
   "readPaths": [
-    "Part-local header/footer relationships, default/first/even section refs and flags; canonical scene story projection"
+    "Part-local header/footer relationships, default/first/even section refs and flags; canonical scene story projection",
+    "Explicit browser-safe structural story projection carries validated image descriptors; Main/import/export perform independent full binary validation. Projection is never mutation authority."
   ],
   "productPorts": [
     "Existing local DOCX read, import safe-create, Save, Review export and Apply ports"
@@ -86,12 +93,15 @@
   "recoveryAndNegativeChecks": [
     "Part-local relationship collisions, missing/duplicate/hostile parts, shared/default/first/even inheritance and explicit-empty distinctions",
     "Forged renderer role/reference/identity, stale Save or Apply, preview/cancel no writes; atomic failure preserves prior state",
-    "Body split/Undo/Redo preserves ownership; unsaved story drafts survive failed Save; native SOURCE/PACKAGED alternating edit and new-process recovery"
+    "Body split/Undo/Redo preserves ownership; unsaved story drafts survive failed Save; native SOURCE/PACKAGED alternating edit and new-process recovery",
+    "Browser-bundled envelope and real checked editor load without Node Buffer/process; malformed image projection rejected; Main binary digest/signature guards remain mandatory",
+    "Multi-scene story transaction per-scene CAS and recoverable journal with interruption injection: all-before or all-after, no partial ACK"
   ],
   "securityAndInputBoundary": "Bounded namespace-aware package validation before relationship resolution; no external fetch, path authority, new writer or secret",
   "performanceAndAccessibility": "Reuse rich-body editor and tokens; labelled story/section controls, keyboard focus, errors, Save/Cancel. No full story traversal on ordinary keystrokes.",
   "currentReality": [
-    "Header/footer parts have no canonical editable story model; section references currently refuse import; earlier typed-section and rich-note components provide integration seams"
+    "Header/footer parts have no canonical editable story model; section references currently refuse import; earlier typed-section and rich-note components provide integration seams",
+    "DRAFT checkpoint 1baa4e0b: native editor blank due Node-only validator dependency; focused tests19pass1fail; full Main candidate has unchanged-body misclassification. Neither delivery nor acceptance."
   ],
   "targetOnly": [
     "Textbox, dynamic field evaluation and unsupported story grammars remain explicit unfinished requirements, not accepted through fallback"

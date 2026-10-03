@@ -102,6 +102,7 @@
     "rtk-word-generic-comments.contract.test.js",
     "rtk-word-header-footer-authoring.contract.test.js",
     "rtk-word-header-footer-runtime.contract.test.js",
+    "rtk-word-header-footer-transaction.contract.test.js",
     "rtk-word-header-footer.contract.test.js",
     "rtk-word-heading-outline.contract.test.js",
     "rtk-word-hostile.contract.test.js",

@@ -4,7 +4,10 @@ const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./document-content-envelope-v1.cjs');
 const { normalizeDocxHttpHref } = require('../io/docxHyperlinks.cjs');
 const { normalizeFontFamily, normalizeFontSize } = require('../io/inlineTypography.cjs');
-const { documentMedia, validateImageAttrs } = require('../io/documentMedia.js');
+// Binary admission is native-only. Loading the read-only body grammar in the
+// sandbox renderer must not initialize Buffer, crypto or zlib.
+const documentMedia = (...args) => require('../io/documentMedia.js').documentMedia(...args);
+const validateImageAttrs = (...args) => require('../io/documentMedia.js').validateImageAttrs(...args);
 const { tableParagraphs } = require('../io/documentTables.js');
 
 const MODE = 'MANUSCRIPT_POINT_REBASE_V1';
@@ -18,7 +21,24 @@ const keys = (value, allowed) => plain(value) && Object.keys(value).every(key =>
 const boundary = (text, offset) => Number.isSafeInteger(offset) && offset >= 0 && offset <= text.length
   && !(offset > 0 && offset < text.length && /[\uD800-\uDBFF]/u.test(text[offset - 1]) && /[\uDC00-\uDFFF]/u.test(text[offset]));
 
-function validateNoteBody(body) {
+function validateImageProjection(attrs) {
+  const required = ['assetId','assetPath','sha256','mimeType','width','height','alt','displayName','dataBase64'];
+  need(keys(attrs, [...required,'displayWidthEmu','displayHeightEmu','displayEffectExtent','wordUseLocalDpi'])
+    && required.every(key => Object.hasOwn(attrs,key)), 'NOTE_BODY_IMAGE_PROJECTION');
+  need(typeof attrs.sha256 === 'string' && /^[a-f0-9]{64}$/.test(attrs.sha256)
+    && attrs.assetId === `sha256-${attrs.sha256}` && ['image/png','image/jpeg'].includes(attrs.mimeType)
+    && attrs.assetPath === `assets/media/${attrs.sha256}.${attrs.mimeType === 'image/png' ? 'png' : 'jpg'}`
+    && ['width','height'].every(key => Number.isSafeInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 8192)
+    && attrs.width * attrs.height <= 16777216
+    && typeof attrs.dataBase64 === 'string' && attrs.dataBase64.length > 0 && attrs.dataBase64.length <= 5592408
+    && attrs.dataBase64.length % 4 === 0 && !/[^A-Za-z0-9+/=]/u.test(attrs.dataBase64)
+    && ['alt','displayName'].every(key => typeof attrs[key] === 'string' && attrs[key].length <= 1024), 'NOTE_BODY_IMAGE_PROJECTION');
+  if (attrs.displayWidthEmu !== undefined || attrs.displayHeightEmu !== undefined) need(['displayWidthEmu','displayHeightEmu'].every(key => Number.isSafeInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 78028800), 'NOTE_BODY_IMAGE_PROJECTION');
+  if (attrs.displayEffectExtent !== undefined) need(keys(attrs.displayEffectExtent,['l','r','t','b'])
+    && ['l','r','t','b'].every(key => Number.isSafeInteger(attrs.displayEffectExtent[key]) && attrs.displayEffectExtent[key] >= 0 && attrs.displayEffectExtent[key] <= 78028800), 'NOTE_BODY_IMAGE_PROJECTION');
+  if (attrs.wordUseLocalDpi !== undefined) need(typeof attrs.wordUseLocalDpi === 'boolean', 'NOTE_BODY_IMAGE_PROJECTION');
+}
+function validateNoteBodyInternal(body, projectionOnly) {
   const numbering = require('./word-list-numbering-v1.cjs');
   if (numbering.resolve(body).size) body = numbering.normalize(clone(body));
   const linkedIds = new Map();
@@ -96,7 +116,7 @@ function validateNoteBody(body) {
       }
       if (node?.type === 'image') {
         need(keys(node, ['type', 'attrs']), 'NOTE_BODY_IMAGE');
-        validateImageAttrs(node.attrs);
+        if (projectionOnly) validateImageProjection(node.attrs); else validateImageAttrs(node.attrs);
         return '';
       }
       need(keys(node, ['type', 'text', 'marks']) && node.type === 'text'
@@ -129,10 +149,15 @@ function validateNoteBody(body) {
       return node.text;
     }).join('');
   }).join('\n');
-  need(size <= LIMITS.text && Buffer.byteLength(JSON.stringify(body)) <= LIMITS.bytes, 'NOTE_BODY_BUDGET');
-  documentMedia(body);
+  need(size <= LIMITS.text && new TextEncoder().encode(JSON.stringify(body)).length <= LIMITS.bytes, 'NOTE_BODY_BUDGET');
+  if (!projectionOnly) documentMedia(body);
   return { body: clone(body), text, paragraphs };
 }
+
+function validateNoteBody(body) { return validateNoteBodyInternal(body, false); }
+// Projection never grants persistence, resource or export authority. Native
+// callers use validateNoteBody, which verifies actual image bytes and identity.
+function validateNoteBodyProjection(body) { return validateNoteBodyInternal(body, true); }
 
 // Read-only comparison projection for the pinned main editor schema. Never
 // erase non-null domain state or use this projection as a persistence writer.
@@ -361,6 +386,6 @@ function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId
   return { ...result, imported };
 }
 
-module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, sceneText, noteSceneSchemaDefaults,
+module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, validateNoteBodyProjection, sceneText, noteSceneSchemaDefaults,
   validateManuscriptPayload, bindManuscriptPayload, validateManuscriptDocument,
   mapPoint, planManuscriptNoteAnchorSave, validateNoteCohort, materializeImportedNotes };

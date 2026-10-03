@@ -261,7 +261,7 @@ function canonicalizeDocumentJson(doc) {
   // Optional domain state is validated raw before JSON normalization. Keep the
   // absent/null historical path dependency-identical for isolated sandboxes.
   const attrsDescriptor = Object.getOwnPropertyDescriptor(doc, 'attrs');
-  require('./word-stories-v1.cjs').read(doc);
+  require('./word-stories-v1.cjs').readProjection(doc);
   const sectionDescriptor = attrsDescriptor?.value && Object.getOwnPropertyDescriptor(attrsDescriptor.value, 'wordSections');
   if (sectionDescriptor && (!Object.hasOwn(sectionDescriptor, 'value') || sectionDescriptor.value != null)) require('./word-sections-v1.cjs').read(doc);
   const bookmarkDescriptor = attrsDescriptor?.value

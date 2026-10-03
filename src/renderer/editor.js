@@ -2228,11 +2228,13 @@ function reviewSurfaceBuildReviewItems(state) {
       && reviewSurfaceArray(exactPreview.plan?.applyOps).some((op) => reviewSurfaceText(op?.changeId) === changeId);
     const mediaOp = exactPreview.plan?.mediaReturn === true
       ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'mediaReturn' && op.changeId === changeId) : null;
-    const bookmarkOp = mediaOp || (exactPreview.plan?.userBookmarkReturn === true
+    const storyOp = exactPreview.plan?.documentStoriesReturn === true
+      ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'documentStories' && op.changeId === changeId) : null;
+    const bookmarkOp = storyOp || mediaOp || (exactPreview.plan?.userBookmarkReturn === true
       ? reviewSurfaceArray(exactPreview.plan?.applyOps).find(op => op.kind === 'userBookmarks' && op.changeId === changeId) : null);
     items.push({
       itemId: `text:${changeId}`,
-      title: mediaOp ? 'Изображения' : bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
+      title: storyOp ? 'Колонтитулы' : mediaOp ? 'Изображения' : bookmarkOp ? 'Закладки и внутренние ссылки' : `Текстовая правка ${changeId}`,
       body: bookmarkOp ? `${reviewSurfaceText(bookmarkOp.expectedText)} → ${reviewSurfaceText(bookmarkOp.replacementText)}` : expectedText || replacementText
         ? `"${expectedText}" -> "${replacementText}"`
         : 'Кандидат на точную текстовую замену',
@@ -2547,12 +2549,14 @@ function reviewSurfaceBuildExactTextPreview(state) {
       changeId,
       userBookmarkReturn: exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks',
       mediaReturn: exactPreview.plan?.mediaReturn === true && op?.kind === 'mediaReturn',
+      documentStoriesReturn: exactPreview.plan?.documentStoriesReturn === true && op?.kind === 'documentStories',
       from: Number.isFinite(op?.from) ? op.from : null,
       to: Number.isFinite(op?.to) ? op.to : null,
       expectedText: reviewSurfaceText(op?.expectedText),
       replacementText: reviewSurfaceText(op?.replacementText),
       displayDiff: (exactPreview.plan?.userBookmarkReturn === true && op?.kind === 'userBookmarks')
         || (exactPreview.plan?.mediaReturn === true && op?.kind === 'mediaReturn')
+        || (exactPreview.plan?.documentStoriesReturn === true && op?.kind === 'documentStories')
         ? [] : reviewSurfaceBuildBoundedDisplayDiff(op?.expectedText, op?.replacementText),
       applyState,
       applyLabel: applyState === 'ready' ? 'Применить' : reviewSurfacePresentExactApplyState(applyState),
@@ -3060,14 +3064,14 @@ function renderReviewSurfaceMarkup(viewModel) {
       ${reviewSurfaceRenderList(exactPreview.ops, (op) => `
         <article class="right-rail-review-item right-rail-review-item--preview">
           <div class="right-rail-review-item-head">
-            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.mediaReturn ? 'Изображения' : op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
+            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.documentStoriesReturn ? 'Колонтитулы' : op.mediaReturn ? 'Изображения' : op.userBookmarkReturn ? 'Закладки и внутренние ссылки' : op.changeId || op.itemId)}</div>
             <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
           </div>
           <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
-          ${(op.userBookmarkReturn || op.mediaReturn) ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
+          ${(op.userBookmarkReturn || op.mediaReturn || op.documentStoriesReturn) ? '' : reviewSurfaceRenderDisplayDiff(op.displayDiff)}
           <div class="right-rail-review-item-meta">
             <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
-            ${(op.userBookmarkReturn || op.mediaReturn) ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
+            ${(op.userBookmarkReturn || op.mediaReturn || op.documentStoriesReturn) ? '' : `<span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>`}
           </div>
           <div class="right-rail-review-actions">
             <button
@@ -12259,7 +12263,10 @@ function openDocumentStories() {
       storyDrafts.delete(capturedKey);
       baseline = getTiptapDocumentSnapshot().doc;
       status.textContent = 'Колонтитул сохранён';
-    } catch { status.textContent = 'Колонтитул не сохранён. Черновик оставлен; повторите сохранение.'; }
+    } catch (error) {
+      console.error('WORD_STORY_SAVE_FAILED', typeof error?.code === 'string' ? error.code : typeof error?.message === 'string' && /^[A-Z0-9_]+$/.test(error.message) ? error.message : 'UNEXPECTED_ERROR');
+      status.textContent = 'Колонтитул не сохранён. Черновик оставлен; повторите сохранение.';
+    }
     finally { storyMutationPending = false; select.disabled = false; editor.setEditable(current()); save.disabled = !current(); discard.disabled = !storyDrafts.has(capturedKey); }
   };
   select.addEventListener('change', load);
@@ -19534,7 +19541,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
 
   // A clean-link return uses the admitted Word roundtrip command. The main
   // process still resolves and revalidates the selected private candidate.
-  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-');
+  const cleanLinkReturn = changeId.startsWith('docx-clean-block-text-') || changeId.startsWith('docx-clean-link-label-') || changeId.startsWith('docx-user-bookmarks-') || changeId.startsWith('docx-media-return-') || changeId.startsWith('docx-story-return-');
   const commandId = cleanLinkReturn
     ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
     : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;

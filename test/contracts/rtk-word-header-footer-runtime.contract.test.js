@@ -120,7 +120,7 @@ test('Main private Apply routes story changes through checked scene transaction;
   assert.deepEqual(saved.doc.content, before.content);
 });
 
-test('Main prepares a zero-write story candidate from parsed Review DOCX and rejects artifact mismatch', async () => {
+for (const bodyKind of ['plain','table','image']) test(`Main prepares a zero-write story candidate alongside unchanged ${bodyKind} body and rejects artifact mismatch`, async () => {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { buildFullManuscriptDocxReviewPacketSource, validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
   const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder');
@@ -131,6 +131,8 @@ test('Main prepares a zero-write story candidate from parsed Review DOCX and rej
     hmacSha256Json: (value, secret) => `hmac-sha256:${crypto.createHmac('sha256', secret).update(stable(value)).digest('hex')}`,
     hmacSha256Text: (value, secret) => `hmac-sha256:${crypto.createHmac('sha256', secret).update(value).digest('hex')}` };
   const before = envelope.canonicalizeDocumentJson(scene());
+  if(bodyKind==='table')before.content=[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:before.content}]}]}];
+  if(bodyKind==='image')before.content[0].content.push({type:'image',attrs:require('../../src/io/documentMedia.js').createImageAttrs(require('../fixtures/document-jpeg-fixtures.cjs').rgb)});
   const raw = envelope.composeObservablePayload({ doc: before });
   const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: '/test', manifestPath: '/test/project.craftsman.json',
     scenes: [{ sceneId: 'a.txt', scenePath: '/test/a.txt', text: 'Main text', doc: before, observableContent: raw, order: 0 }] }, { revisionBridge: bridge, cryptoPort });
@@ -141,13 +143,15 @@ test('Main prepares a zero-write story candidate from parsed Review DOCX and rej
   assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
   const sectionBinding = validateFullManuscriptDocumentSectionsReturn({ expected: source.documentSections, returned: parsed.reviewIr.documentSections,
     signedDigest: source.documentSections.protectedDigest });
-  assert.equal(sectionBinding.ok, true); parsed.documentSectionsBinding = sectionBinding.proof;
+  assert.equal(sectionBinding.ok, true); parsed.documentSectionsBinding = { ...sectionBinding.proof, status: sectionBinding.status };
+  source.localAuthorityCapsule.exportMap = bridge.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap, buildDocxReviewPacketBuffer(source));
   const authority = { ...source.localAuthorityCapsule, scope: 'full-manuscript', documentStories: source.documentStories,
     baselineObservableContentBySceneId: { 'a.txt': raw }, scenePathBySceneId: { 'a.txt': '/test/a.txt' } };
   assert.equal(authority.exportMap.scenes[0].rawSha256, `sha256:${hash(raw)}`);
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const code = main.slice(main.indexOf('async function prepareCleanDocumentStoriesCapsule('), main.indexOf('async function prepareCleanUserBookmarksCapsule('));
   const c = vm.createContext({ JSON, Buffer, path, pathToFileURL, __dirname: path.resolve(__dirname, '../../src'),
+    require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), cloneJsonSafe: copy, stableRtkReviewTransportJson: stable,
     currentFilePath: '/test/a.txt', computeHash: hash, loadRevisionBridgeModule: async () => bridge,
     loadDocumentContentEnvelopeModule: async () => envelope,
     userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'), compareCommentExportReadback,
@@ -159,4 +163,11 @@ test('Main prepares a zero-write story candidate from parsed Review DOCX and rej
   assert.equal(result.fields.storyReturnCandidate.changes[0].afterBody.content[0].content[0].text, 'Actual DOCX header edit');
   const mismatch = await c.prepareCleanDocumentStoriesCapsule(authority, parsed, { ...context, returnedArtifactSha256: 'sha256:wrong' });
   assert.equal(mismatch.code, 'WORD_STORIES_RETURN_ARTIFACT');
+  const extracted = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes},{cryptoPort});
+  const parts = {...extracted.parts}; parts['word/document.xml'] = parts['word/document.xml'].replace('Main text','Forged!!!');
+  const corrupt = require('../../src/export/docx/docxMinBuilder').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const changedBody = bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:corrupt,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+  changedBody.documentSectionsBinding = parsed.documentSectionsBinding;
+  const rejected = await c.prepareCleanDocumentStoriesCapsule(authority,changedBody,{...context,docxBytes:corrupt,returnedArtifactSha256:`sha256:${hash(corrupt)}`});
+  assert.equal(rejected.ok,false,'A header edit must never conceal manuscript text changes');
 });

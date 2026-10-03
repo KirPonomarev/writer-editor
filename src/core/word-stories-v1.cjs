@@ -16,7 +16,7 @@ function data(value, depth = 0) {
   }
 }
 function keys(value, allowed) { if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !allowed.includes(k))) fail(); }
-function validate(value, sectionCount) {
+function validateInternal(value, sectionCount, projectionOnly) {
   data(value); keys(value, ['schemaVersion', 'evenAndOddHeaders', 'stories', 'sections']);
   if (value.schemaVersion !== 1 || typeof value.evenAndOddHeaders !== 'boolean' || !Array.isArray(value.stories) || !value.stories.length || value.stories.length > 128
     || !Array.isArray(value.sections) || value.sections.length !== sectionCount) fail();
@@ -24,8 +24,8 @@ function validate(value, sectionCount) {
   for (const story of value.stories) {
     keys(story, ['id', 'role', 'body']);
     if (typeof story.id !== 'string' || !/^[A-Za-z0-9_-]{1,96}$/.test(story.id) || ids.has(story.id) || !ROLES.includes(story.role)) fail();
-    require('./word-manuscript-notes-v1.cjs').validateNoteBody(story.body);
-    bytes += JSON.stringify(story.body).length;
+    require('./word-manuscript-notes-v1.cjs')[projectionOnly ? 'validateNoteBodyProjection' : 'validateNoteBody'](story.body);
+    bytes += new TextEncoder().encode(JSON.stringify(story.body)).length;
     if (bytes > 1024 * 1024) fail('WORD_STORIES_BUDGET');
     ids.set(story.id, story.role);
   }
@@ -41,7 +41,7 @@ function validate(value, sectionCount) {
   if (used.size !== ids.size) fail('WORD_STORIES_ORPHAN');
   return copy(value);
 }
-function read(doc) {
+function readInternal(doc, projectionOnly) {
   const ad = Object.getOwnPropertyDescriptor(doc || {}, 'attrs');
   if (ad && !Object.hasOwn(ad, 'value')) fail();
   const field = ad?.value && Object.getOwnPropertyDescriptor(ad.value, KEY);
@@ -49,8 +49,14 @@ function read(doc) {
   if (field?.value == null) return null;
   const sections = require('./word-sections-v1.cjs').read(doc);
   if (!sections) fail('WORD_STORIES_SECTIONS_REQUIRED');
-  return validate(field.value, sections.boundaries.length + 1);
+  return validateInternal(field.value, sections.boundaries.length + 1, projectionOnly);
 }
+function validate(value, sectionCount) { return validateInternal(value, sectionCount, false); }
+function read(doc) { return readInternal(doc, false); }
+function readProjection(doc) { return readInternal(doc, true); }
+function bindProjection(doc, value) { const result=copy(doc);result.attrs={...result.attrs,[KEY]:copy(value)};readProjection(result);return result; }
+function replaceBodyProjection(doc,id,body) { data(body); const value=readProjection(doc),story=value?.stories.find(s=>s.id===id);if(!story)fail('WORD_STORY_MISSING');story.body=require('./word-manuscript-notes-v1.cjs').validateNoteBodyProjection(body).body;return bindProjection(doc,value); }
+function validateSaveProjection(before,after) { if(JSON.stringify(topology(readProjection(before)))!==JSON.stringify(topology(readProjection(after))))fail('WORD_STORIES_SAVE_AUTHORITY'); }
 function bind(doc, value) { const result = copy(doc); result.attrs = { ...result.attrs, [KEY]: copy(value) }; read(result); return result; }
 function topology(value) { return value && { schemaVersion: value.schemaVersion, evenAndOddHeaders: value.evenAndOddHeaders, sections: value.sections, stories: value.stories.map(({id, role}) => ({id, role})) }; }
 function validateSave(before, after) {
@@ -58,6 +64,7 @@ function validateSave(before, after) {
   if (JSON.stringify(topology(a)) !== JSON.stringify(topology(b))) fail('WORD_STORIES_SAVE_AUTHORITY');
 }
 function replaceBody(doc, id, body) {
+  data(body);
   const value = read(doc), story = value?.stories.find(s => s.id === id);
   if (!story) fail('WORD_STORY_MISSING');
   story.body = require('./word-manuscript-notes-v1.cjs').validateNoteBody(body).body;
@@ -70,4 +77,4 @@ function resolved(value) {
     return copy(previous);
   });
 }
-module.exports = { KEY, ROLES, VARIANTS, validate, read, bind, topology, validateSave, replaceBody, resolved };
+module.exports = { readProjection, bindProjection, replaceBodyProjection, validateSaveProjection, KEY, ROLES, VARIANTS, validate, read, bind, topology, validateSave, replaceBody, resolved };

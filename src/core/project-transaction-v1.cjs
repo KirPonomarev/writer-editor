@@ -322,7 +322,8 @@ function validateMediaUpdateResources(resources, { scenePath, manifestPath, befo
   // noteState has already passed the cohort validator; paths still derive only
   // from validated canonical bytes. Journal recovery repeats the same binding.
   const noteBlocks = noteState ? JSON.parse(noteState.afterText).notes.flatMap(note => note.manuscript?.body.content || []) : [];
-  const assets = media.documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...noteBlocks] }).assets;
+  const storyBlocks = require('./word-stories-v1.cjs').read(parsed.doc)?.stories.flatMap(story => story.body.content) || [];
+  const assets = media.documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...noteBlocks, ...storyBlocks] }).assets;
   for (const resource of resources) {
     const matches = assets.filter(asset => path.join(path.dirname(manifestPath), asset.attrs.assetPath) === resource.path);
     if (matches.length !== 1 || !matches[0].bytes.equals(resource.content)) {
