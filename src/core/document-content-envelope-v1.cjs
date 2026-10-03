@@ -325,6 +325,7 @@ function canonicalizeDocumentJson(doc) {
     if (node?.type === 'orderedList' && node.attrs?.type === null) delete node.attrs.type;
     if (node?.attrs?.wordListId === null) delete node.attrs.wordListId;
     if (node?.attrs?.wordListStart === null) delete node.attrs.wordListStart;
+    if (node?.attrs?.wordNumbering === null) delete node.attrs.wordNumbering;
     if (node?.type === 'hardBreak' && node.attrs?.wordBreakType === null) {
       delete node.attrs.wordBreakType;
       if (!Object.keys(node.attrs).length) delete node.attrs;
@@ -359,6 +360,7 @@ function requiredSceneFeatures(doc) {
     ...(documentHasParagraphSpacing(doc) ? ['word-paragraph-spacing.v1'] : []),
     ...(require('./word-list-format-v1.cjs').inspectDocument(doc) ? ['word-list-format.v1'] : []),
     ...(require('./word-list-numbering-v1.cjs').resolve(doc).size ? ['word-list-numbering.v1'] : []),
+    ...(require('./word-list-numbering-v1.cjs').resolveMarkers(doc).size ? ['word-list-pattern.v1'] : []),
     ...(documentHasTypedBreaks(doc) ? ['word-typed-breaks.v1'] : [])];
 }
 function encodeSceneDocument(doc) {
@@ -393,8 +395,8 @@ function decodeSceneDocument(serializedDoc) {
   if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
-    || declaration.requiredFeatures.length > 9 || declaration.requiredFeatures.some(feature =>
-      !['word-stories.v1', 'word-sections.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+    || declaration.requiredFeatures.length > 11 || declaration.requiredFeatures.some(feature =>
+      !['word-stories.v1', 'word-sections.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-list-pattern.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

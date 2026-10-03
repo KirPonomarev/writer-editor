@@ -1,3 +1,4 @@
+import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import core from '../../core/word-user-bookmarks-v1.cjs';
@@ -372,4 +373,60 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     core.planReturn({beforeDoc:baselineDoc,candidateDoc:doc});
     return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
   }catch(error){return reject(error.code||error.message);}
+}
+
+// Read-only numbering proof comparison. Canonical group identity and revision
+// come exclusively from the authenticated private export map, never OOXML IDs.
+export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBlock } = {}) {
+  const fail = detail => ({ ok:false, code:'RTK_LIST_NUMBERING_RETURN_CONFLICT', detail, operations:[] });
+  try {
+    const scenes = exportMap?.scenes;
+    if (!Array.isArray(scenes)) return fail('private-map');
+    const rows = scenes.flatMap(scene => (scene.blocks || []).map(block => ({scene,block})));
+    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering);
+    if (!hasPatterns) return {ok:true,hasPatterns:false,operations:[]};
+    const proof = reviewIr.listNumbering, observed = reviewIr.formattingParagraphs;
+    if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)
+      || !Array.isArray(observed) || proof.paragraphs.length !== rows.length || observed.length !== rows.length
+      || typeof resolveBlock !== 'function') return fail('same-byte-proof-required');
+    const groups = new Map(), forward = new Map(), reverse = new Map();
+    for (let i=0;i<rows.length;i++) {
+      const {scene,block} = rows[i], p = observed[i], actual = proof.paragraphs[i];
+      const authority = resolveBlock({...p,paragraphIndex:i});
+      if (!authority?.ok || authority.authority.sceneId !== scene.sceneId || authority.authority.blockId !== block.blockId
+        || block.documentParagraphIndex !== i || actual?.textSha256 !== sha256Hex(p.paragraphText)
+        || block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`
+        || block.canonicalMarksSha256 !== `sha256:${hashCanonicalValue(block.formatIr)}`
+        || p.trackedRevision) return fail('source-owner-text-or-revision');
+      const expected = block.formatIr?.paragraph?.list, returned = actual.list;
+      if (!expected) { if (returned !== null) return fail('list-added'); continue; }
+      if (!returned || typeof returned.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(returned.numId)
+        || returned.level !== expected.level || returned.kind !== (expected.kind === 'ordered' ? 'orderedList':'bulletList')) return fail('list-membership-or-level');
+      const identity = `${scene.sceneId}:${expected.numId}`;
+      if (forward.has(identity) && forward.get(identity)!==returned.numId || reverse.has(returned.numId) && reverse.get(returned.numId)!==identity) return fail('list-instance-bijection');
+      forward.set(identity,returned.numId); reverse.set(returned.numId,identity);
+      if (!expected.wordNumbering) {
+        if (returned.wordNumbering || (returned.type || '1') !== (expected.type || '1')
+          || expected.kind==='ordered' && returned.ordinal !== expected.start + expected.itemOrdinal) return fail('legacy-list-change');
+        continue;
+      }
+      const canonical = listNumbering.validateNumbering(expected.wordNumbering);
+      const levels = listNumbering.validateLevels(returned.numberingLevels);
+      if (canonical.level !== returned.level || (returned.type || '1') !== levels[returned.level]?.format) return fail('effective-definition');
+      const groupKey = `${scene.sceneId}:${canonical.instanceId}`;
+      const prior = groups.get(groupKey);
+      if (prior && (!same(prior.expectedLevels,canonical.levels) || !same(prior.levels,levels) || prior.numId!==returned.numId)) return fail('group-definition-consistency');
+      groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels,numId:returned.numId});
+    }
+    const operations = [];
+    for (const group of groups.values()) {
+      if (same(group.expectedLevels,group.levels)) continue;
+      if (!/^sha256:[a-f0-9]{64}$/u.test(group.scene.sceneRevision) || !/^sha256:[a-f0-9]{64}$/u.test(group.scene.rawSha256)) return fail('source-revision');
+      const operation={kind:'list-numbering',sceneId:group.scene.sceneId,
+        sourceAuthority:'authenticated-full-manuscript-export-map-list-numbering-v1',sourceSceneRevision:group.scene.sceneRevision,
+        sourceRawSha256:group.scene.rawSha256,numbering:{instanceId:group.instanceId,expectedLevels:group.expectedLevels,levels:group.levels}};
+      operation.operationId=`rtk-list-numbering-${hashCanonicalValue(operation)}`;operations.push(operation);
+    }
+    return {ok:true,hasPatterns:true,operations};
+  } catch { return fail('numbering-proof-invalid'); }
 }

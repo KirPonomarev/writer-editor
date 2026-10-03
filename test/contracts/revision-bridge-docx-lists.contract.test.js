@@ -17,7 +17,7 @@ const ul = (...content) => ({ type: 'bulletList', content });
 const ol = (start, ...content) => ({ type: 'orderedList', attrs: { start }, content });
 const doc = (...content) => ({ type: 'doc', content });
 const paragraph = (text, id = 1, level = 0, extra = '') => `<w:p><w:pPr>${extra}${id === null ? '' : `<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${id}"/></w:numPr>`}</w:pPr><w:r><w:t>${text}</w:t></w:r></w:p>`;
-const levelXml = (level, format = 'decimal', start = 1, extra = '') => `<w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${format === 'bullet' ? '•' : '%'+(level+1)+'.'}"/>${extra}</w:lvl>`;
+const levelXml = (level, format = 'decimal', start = 1, extra = '') => `<w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/>${extra}<w:lvlText w:val="${format === 'bullet' ? '•' : '%'+(level+1)+'.'}"/></w:lvl>`;
 const definition = (levels = levelXml(0), override = '', extra = '') => `<w:abstractNum w:abstractNumId="0">${extra}${levels}</w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/>${override}</w:num>`;
 function packageBytes(body, numbering = definition(), styles = '') {
  const parts = [

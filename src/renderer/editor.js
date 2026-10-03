@@ -11,6 +11,7 @@ import {
   getTiptapDocumentSnapshot,
   getTiptapFormattingState,
   captureTiptapLinkTarget,
+  captureTiptapNumberingTarget,
   getTiptapSelectionOffsets,
   getTiptapPlainText,
   initTiptap,
@@ -7772,6 +7773,7 @@ registerProjectCommands(commandRegistry, {
     formatAlignJustify: () => handleFormatAlign('align-justify'),
     listToggleBullet: () => handleTiptapFormatCommand('toggleBulletList'),
     listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
+    listConfigureNumbering: () => handleNumberingSettings(),
     listClear: () => handleTiptapFormatCommand('clearList'),
     insertLinkPrompt: (payload = {}) => handleInsertLinkPrompt(payload),
     reviewImportLocalPacket: () => handleReviewImportLocalPacket(),
@@ -22388,6 +22390,7 @@ function syncToolbarFormattingState(nextState = null) {
 
   listActionButtons.forEach((button) => {
     const action = button.dataset.listAction || '';
+    if (action === 'configure-numbering') return;
     const active = (action === 'bullet' && state.bulletList)
       || (action === 'ordered' && state.orderedList)
       || (action === 'no-list' && !state.bulletList && !state.orderedList);
@@ -22636,6 +22639,103 @@ async function handleInsertLinkPrompt(payload = {}) {
   return target.apply('setLink', { href: normalized.href });
 }
 
+let activeNumberingDialog = null;
+async function handleNumberingSettings() {
+  if (!isTiptapMode || activeNumberingDialog || isLinkDialogOpen()) return { performed: false, reason: 'EDITOR_UNAVAILABLE' };
+  const target = captureTiptapNumberingTarget();
+  if (!target) { updateStatusText('Выберите абзац или нумерованный список в рукописи.', { visible: true }); return { performed: false, reason: 'NUMBERING_TARGET_REQUIRED' }; }
+  const identity = { projectId: currentProjectId, documentId: currentDocumentId, generation: localEditGeneration };
+  const current = () => isTiptapMode && currentProjectId === identity.projectId
+    && currentDocumentId === identity.documentId && localEditGeneration === identity.generation;
+  return new Promise(resolve => {
+    const previousFocus = document.activeElement;
+    const dialog = document.createElement('dialog'); dialog.className = 'modal__content';
+    dialog.style.width = 'min(440px, calc(100vw - 48px))';
+    dialog.style.maxHeight = 'calc(100vh - 48px)'; dialog.style.overflow = 'auto';
+    dialog.style.border = '1px solid var(--toolbar-control-border)';
+    dialog.setAttribute('aria-labelledby', 'numbering-dialog-title');
+    const title = document.createElement('h2'); title.id = 'numbering-dialog-title'; title.className = 'modal__title'; title.textContent = 'Нумерация списка';
+    dialog.append(title);
+    const controls = {};
+    const field = (name, labelText, options = null) => {
+      const label = document.createElement('label'); label.className = 'modal__label'; label.htmlFor = `numbering-${name}`; label.textContent = labelText;
+      const input = document.createElement(options ? 'select' : 'input'); input.className = 'modal__input'; input.id = label.htmlFor; input.name = name;
+      if (options) for (const [value, text] of options) { const option = document.createElement('option'); option.value = String(value); option.textContent = text; input.append(option); }
+      else { input.type = 'text'; input.autocomplete = 'off'; }
+      input.setAttribute('aria-describedby', 'numbering-error'); dialog.append(label, input); controls[name] = input; return input;
+    };
+    const levels = structuredClone(target.levels); let selectedLevel = target.level;
+    const mode = field('action', 'Применить к списку', [['configure', 'Изменить оформление'], ['restart', 'Начать новый список'], ['continue', 'Продолжить предыдущий']]);
+    const previous = field('previous', 'Предыдущий список', target.candidates.map(item => [item.instanceId, item.label]));
+    const level = field('level', 'Настроить уровень', levels.map((_, i) => [i, String(i + 1)]));
+    const format = field('format', 'Формат числа', [['1','1, 2, 3'], ['I','I, II, III'], ['i','i, ii, iii'], ['A','A, B, C'], ['a','a, b, c']]);
+    const template = field('template', 'Шаблон номера'); template.maxLength = 256;
+    const hint = document.createElement('p'); hint.className = 'modal__label'; hint.id = 'numbering-template-hint';
+    hint.textContent = 'Например: (%1), Article %1 или %1.%2. Цифра после % обозначает уровень.';
+    template.setAttribute('aria-describedby', 'numbering-template-hint numbering-error'); template.after(hint);
+    const start = field('start', 'Начать с'); start.inputMode = 'numeric';
+    const restart = field('restart', 'Начинать заново после уровня', [['', 'Не начинать заново']]);
+    const preview = document.createElement('p'); preview.className = 'modal__label'; preview.setAttribute('aria-live','polite');
+    const error = document.createElement('p'); error.id = 'numbering-error'; error.className = 'modal__label'; error.setAttribute('role','alert');
+    dialog.append(preview, error);
+    const actions = document.createElement('div'); actions.className = 'modal__actions'; dialog.append(actions);
+    let settled = false;
+    const finish = result => { if (settled) return; settled = true; activeNumberingDialog = null;
+      if (dialog.open) dialog.close(); dialog.remove(); if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); resolve(result); };
+    const button = (text, action, primary = false) => { const node = document.createElement('button'); node.type = 'button'; node.className = `modal__button${primary ? ' modal__button--primary' : ''}`; node.textContent = text; node.addEventListener('click', action); actions.append(node); return node; };
+    const readLevel = () => {
+      const number = /^\d+$/u.test(start.value) ? Number(start.value) : NaN;
+      levels[selectedLevel] = { ...levels[selectedLevel], format: format.value, start: number, text: template.value, restartAfterLevel: restart.value === '' ? null : Number(restart.value) };
+    };
+    const loadLevel = () => {
+      const value = levels[selectedLevel]; level.value = String(selectedLevel); format.value = value.format; start.value = String(value.start); template.value = value.text;
+      restart.replaceChildren();
+      for (const [value, text] of [['','Не начинать заново'], ...Array.from({length:selectedLevel}, (_,i)=>[String(i),String(i+1)])]) {
+        const option = document.createElement('option'); option.value = value; option.textContent = text; restart.append(option);
+      }
+      restart.value = value.restartAfterLevel == null ? '' : String(value.restartAfterLevel);
+    };
+    const intent = () => {
+      readLevel();
+      if (!current()) throw Error('STALE_DOCUMENT');
+      return mode.value === 'continue' ? { action: 'continue', instanceId: previous.value }
+        : { action: mode.value, levels: structuredClone(levels) };
+    };
+    const refresh = () => {
+      previous.disabled = mode.value !== 'continue';
+      for (const input of [level,format,template,start,restart]) input.disabled = mode.value === 'continue';
+      try { const labels = target.preview(intent()); preview.textContent = `Пример: ${labels.slice(0,3).join('  ')}`; }
+      catch { preview.textContent = 'Проверьте шаблон и начальное число.'; }
+    };
+    const submit = () => {
+      error.textContent = ''; template.removeAttribute('aria-invalid'); start.removeAttribute('aria-invalid');
+      try {
+        const input = intent();
+        const capability = enforceCapabilityForCommand(EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING, withEditorModeCommandPayload(),
+          { defaultPlatformId: window.electronAPI ? 'node' : 'web' });
+        if (!capability.ok) throw Error('NUMBERING_CAPABILITY_UNAVAILABLE');
+        const result = target.apply(input);
+        if (result?.performed !== true) throw Error(result?.reason || 'NUMBERING_NOT_APPLIED');
+        finish(result);
+      } catch (cause) {
+        error.textContent = /STALE/u.test(cause.message)
+          ? 'Документ изменился. Скопируйте нужный шаблон и откройте настройки заново.'
+          : 'Проверьте шаблон, начальное число и выбранный предыдущий список. Настройки сохранены в этом окне.';
+        template.setAttribute('aria-invalid','true'); template.focus({ preventScroll: true });
+      }
+    };
+    button('Отмена', () => finish({performed:false,reason:'USER_CANCELLED'})); button('Применить', submit, true);
+    level.addEventListener('change', () => { readLevel(); selectedLevel = Number(level.value); loadLevel(); refresh(); });
+    for (const input of [mode,previous,format,template,start,restart]) input.addEventListener('input', refresh);
+    dialog.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.isComposing && event.target.tagName === 'INPUT') { event.preventDefault(); submit(); } });
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish({performed:false,reason:'USER_CANCELLED'}); });
+    dialog.addEventListener('close', () => finish({performed:false,reason:'USER_CANCELLED'}));
+    dialog.addEventListener('click', event => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) finish({performed:false,reason:'USER_CANCELLED'}); } });
+    activeNumberingDialog = dialog; document.body.append(dialog); loadLevel(); refresh();
+    try { dialog.showModal(); template.focus({ preventScroll: true }); } catch (cause) { finish({performed:false,reason:cause.message}); }
+  });
+}
+
 function dispatchListTypeAction(listAction) {
   switch (listAction) {
     case 'no-list':
@@ -22644,6 +22744,8 @@ function dispatchListTypeAction(listAction) {
       return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
     case 'ordered':
       return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED);
+    case 'configure-numbering':
+      return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING);
     default:
       return Promise.resolve({ ok: false, error: { reason: 'LIST_ACTION_UNKNOWN' } });
   }

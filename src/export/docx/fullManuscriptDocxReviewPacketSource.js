@@ -209,9 +209,10 @@ function buildFormatIrParagraphs(scene) {
   let nextListNumId = 1;
   const linkedIds = new Map();
   const numberId = attrs => {
-    if (!attrs?.wordListId) return nextListNumId++;
-    if (!linkedIds.has(attrs.wordListId)) linkedIds.set(attrs.wordListId, nextListNumId++);
-    return linkedIds.get(attrs.wordListId);
+    const id = attrs?.wordNumbering?.instanceId || attrs?.wordListId;
+    if (!id) return nextListNumId++;
+    if (!linkedIds.has(id)) linkedIds.set(id, nextListNumId++);
+    return linkedIds.get(id);
   };
   let nextTableId = 0;
   const appendTextBlock = (node, context) => {
@@ -262,7 +263,8 @@ function buildFormatIrParagraphs(scene) {
     if (activeList) {
       paragraphFormat.list = {
         kind: activeList.kind,
-        level: context.listStack.length - 1,
+        level: activeList.wordNumbering?.level ?? context.listStack.length - 1,
+        ...(activeList.wordNumbering ? {wordNumbering:activeList.wordNumbering} : {}),
         itemOrdinal: activeList.itemOrdinal,
         start: activeList.start,
         numId: activeList.numId,
@@ -330,9 +332,9 @@ function buildFormatIrParagraphs(scene) {
       const listIds = new Map();
       for (const entry of tableParagraphs(node, `${scene.sceneId}:table-${nextTableId++}`)) {
         const listStack = entry.listStack.map(list => {
-          if (list.start < 1 || list.start > 32767) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
+          if (!list.wordNumbering && (list.start < 1 || list.start > 32767)) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
           if (!listIds.has(list.listId)) listIds.set(list.listId, numberId(list));
-          return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
+          return { ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
             itemOrdinal: list.itemOrdinal + (list.wordListStart == null ? 0 : list.start - list.wordListStart), numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
         });
         appendTextBlock(entry.node, { ...context, listStack });
@@ -369,9 +371,9 @@ function buildFormatIrParagraphs(scene) {
     }
     if (node.type === 'bulletList' || node.type === 'orderedList') {
       const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
-      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type', 'wordListId', 'wordListStart'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
+      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type', 'wordListId', 'wordListStart', 'wordNumbering'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
       const start = node.type === 'orderedList' ? Number(attrs.start ?? 1) : 1;
-      if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || start < 1 || start > 32767) {
+      if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || (attrs.wordNumbering ? start < 0 || start > 2147483647 : start < 1 || start > 32767)) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED', { sceneId: scene.sceneId, unknownAttrs });
       }
       const items = Array.isArray(node.content) ? node.content : [];
@@ -382,6 +384,7 @@ function buildFormatIrParagraphs(scene) {
         }
         const listStack = [...context.listStack, {
           kind: node.type === 'orderedList' ? 'ordered' : 'bullet',
+          ...(attrs.wordNumbering ? {wordNumbering:require('../../core/word-list-numbering-v1.cjs').validateNumbering(attrs.wordNumbering)} : {}),
           start: attrs.wordListStart ?? start,
           ...(attrs.type ? { type: attrs.type } : {}),
           itemOrdinal: itemOrdinal + (attrs.wordListStart == null ? 0 : start - attrs.wordListStart),

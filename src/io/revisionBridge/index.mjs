@@ -1,3 +1,4 @@
+import { analyzeListNumberingReturn } from './reviewTransportUserBookmarksV1.mjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
@@ -6,6 +7,7 @@ import wordStories from '../../core/word-stories-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import wordTypedBreaks from '../../core/word-typed-breaks-v1.cjs';
 import listFormat from '../../core/word-list-format-v1.cjs';
+import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import manuscriptNoteModel from '../../core/word-manuscript-notes-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
@@ -7624,10 +7626,24 @@ export function buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, op
       candidateCount: 0,
     };
   }
-  return buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
-    projection.formattingParagraphs,
-    {...options,documentProperties:projection.documentProperties},
+  const numbering = analyzeListNumberingReturn({exportMap:options.fullManuscriptExportMap,reviewIr:projection,
+    resolveBlock:docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap)});
+  if (!numbering.ok && projection.formattingParagraphs.some(p=>p.unsupportedParagraphNames?.includes('numPr'))) return {
+    ok:false,status:'blocked',code:numbering.code,reason:numbering.detail,candidates:[],diagnostics:[{code:numbering.code,detail:numbering.detail}],candidateCount:0,
+  };
+  const paragraphs = numbering.hasPatterns ? projection.formattingParagraphs.map(p=>({...p,
+    unsupportedParagraphNames:(p.unsupportedParagraphNames||[]).filter(name=>name!=='numPr')})) : projection.formattingParagraphs;
+  const result = buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
+    paragraphs, {...options,documentProperties:projection.documentProperties},
   );
+  // A whole-group definition change cannot pass through a partially classified
+  // formatting route. Preserve the ordinary diagnostics without authorizing it.
+  if (numbering.hasPatterns && numbering.operations.length && !result.diagnostics.length) {
+    result.candidates.push(...numbering.operations);
+    result.status='ready';result.code='RTK_FORMATTING_RETURN_CANDIDATES_READY';result.reason=result.code;
+    result.summary.candidateCount=result.candidates.length;
+  }
+  return result;
 }
 
 // EVID-01 (V6): build structural-return candidates from the packet projection.
@@ -9077,10 +9093,27 @@ function docxReadNumberingProperty(target, tag, token, namespaces) {
 }
 
 function docxNumberingCatalog(bytes) {
-  const catalog = { abstracts: new Map(), instances: new Map(), counters: new Map() };
+  const catalog = { abstracts: new Map(), instances: new Map(), counters: new Map(), instanceLevelsUsed: new Map() };
   const inventory = docxHostileFileGateCentralEntries(bytes);
   if (inventory.failure) throw new Error('DOCX_LIST_INVENTORY_INVALID');
   if (!inventory.entries.some((entry) => entry.entryId === 'word/numbering.xml')) return catalog;
+  // Only the main document's own internal numbering relationship can select
+  // this part. A similarly named orphan must never supply numbering truth.
+  if (!inventory.entries.some(entry => entry.entryId === 'word/_rels/document.xml.rels')) throw Error('DOCX_LIST_RELATIONSHIP_INVALID');
+  let numberingOwner = false;
+  const relationIds = new Set();
+  docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, ancestors, attribute) => {
+    if (!ancestors.length) return;
+    if (ancestors.length !== 1 || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') throw Error('DOCX_LIST_RELATIONSHIP_INVALID');
+    const id = attribute('Id');
+    if (!id || relationIds.has(id)) throw Error('DOCX_LIST_RELATIONSHIP_INVALID');
+    relationIds.add(id);
+    if (attribute('Type') !== `${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}/numbering`) return;
+    const resolved = docxHostileFileGateNormalizeInternalRelationshipTarget('word', attribute('Target'));
+    if (numberingOwner || ![undefined, 'Internal'].includes(attribute('TargetMode')) || resolved.normalizedTarget !== 'word/numbering.xml' || resolved.escapedPackage || resolved.externalUri || resolved.unsafeAbsolute || String(attribute('Target')).includes('#')) throw Error('DOCX_LIST_RELATIONSHIP_INVALID');
+    numberingOwner = true;
+  }, { rejectNonWhitespaceText: true });
+  if (!numberingOwner) throw Error('DOCX_LIST_RELATIONSHIP_INVALID');
   const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/numbering.xml', 1024 * 1024);
   if (!part) throw new Error('DOCX_LIST_PART_LIMIT_OR_INVALID');
   const xml = docxZipDecodeUtf8Xml(part);
@@ -9092,13 +9125,15 @@ function docxNumberingCatalog(bytes) {
   const stack = [];
   let cursor = 0;
   let root = '';
+  const scalarNumbering = new Set(['abstractNumId','startOverride','start','numFmt','lvlText','lvlRestart','pStyle','numStyleLink','styleLink','isLgl','lvlPicBulletId','nsid','multiLevelType','tmpl','name','suff','lvlJc','numIdMacAtCleanup']);
   const guarded = new Set(['numbering', 'abstractNum', 'num', 'abstractNumId', 'lvlOverride', 'startOverride', 'lvl', 'start', 'numFmt', 'lvlText', 'lvlRestart', 'pStyle', 'numStyleLink', 'styleLink', 'isLgl', 'lvlPicBulletId']);
   while (cursor < text.length) {
     const next = docxContentPreviewNextXmlToken(text, cursor);
     if (!next || next.failure) throw new Error('DOCX_LIST_XML_INVALID');
     cursor = next.nextCursor;
     const token = next.token;
-    if (!token.startsWith('<') || token.startsWith('<?') || token.startsWith('<!--')) continue;
+    if (!token.startsWith('<')) { if (token.trim()) throw Error('DOCX_LIST_XML_SCALAR'); continue; }
+    if (token.startsWith('<?') || token.startsWith('<!--')) continue;
     if (token.startsWith('</')) {
       if (stack.pop()?.raw !== docxContentPreviewTagName(token)) throw new Error('DOCX_LIST_XML_INVALID');
       continue;
@@ -9108,6 +9143,18 @@ function docxNumberingCatalog(bytes) {
     const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? parsed.localName : '';
     if (!tag && guarded.has(parsed.localName)) throw new Error('DOCX_LIST_NAMESPACE');
     const parent = stack.at(-1);
+    if (scalarNumbering.has(parent?.tag)) throw Error('DOCX_LIST_XML_SCALAR');
+    const parents = { abstractNum:['numbering'],num:['numbering'],abstractNumId:['num'],lvlOverride:['num'],startOverride:['lvlOverride'],lvl:['abstractNum','lvlOverride'],start:['lvl'],numFmt:['lvl'],lvlText:['lvl'],lvlRestart:['lvl'],pStyle:['lvl'],numStyleLink:['abstractNum'],styleLink:['abstractNum'],isLgl:['lvl'],lvlPicBulletId:['lvl'] };
+    if (parents[tag] && !parents[tag].includes(parent?.tag)) throw Error('DOCX_LIST_XML_STRUCTURE');
+    if (parent?.tag === 'lvl') {
+      const position = ['start','numFmt','lvlRestart','pStyle','isLgl','suff','lvlText','lvlPicBulletId','legacy','lvlJc','pPr','rPr'].indexOf(tag);
+      if (position >= 0) {
+        if (parent.lastChildOrder !== undefined && position <= parent.lastChildOrder) throw Error('DOCX_LIST_LEVEL_PROPERTY_ORDER');
+        parent.lastChildOrder = position;
+      }
+    }
+
+
     const value = (name = 'val') => docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, name).trim();
     const frame = { raw: parsed.rawTagName, tag, ns: parsed.namespaceMap };
     if (!stack.length) {
@@ -9146,6 +9193,13 @@ function docxNumberingCatalog(bytes) {
       const raw = value();
       if (raw.length > 256) throw new Error('DOCX_LIST_PROPERTY_LIMIT');
       parent.data[tag] = ['start', 'lvlRestart'].includes(tag) ? docxListInteger(raw, tag === 'lvlRestart' ? 9 : 2147483647) : raw;
+    } else if (parent?.tag === 'lvl' && ['suff','lvlJc'].includes(tag)) {
+      if (Object.hasOwn(parent.data, tag)) throw Error('DOCX_LIST_DUPLICATE_PROPERTY');
+      parent.data[tag] = value();
+    } else if (parent?.tag === 'rPr' && stack.some(frame => frame.tag === 'lvl')) {
+      // Marker-specific font/size/theme/decoration is not body text formatting.
+      // The bounded model cannot silently discard it.
+      stack.findLast(frame => frame.tag === 'lvl').data.markerUnsupported = true;
     } else if ((parent?.tag === 'abstractNum' && ['numStyleLink', 'styleLink'].includes(tag))
       || (parent?.tag === 'lvl' && ['isLgl', 'lvlPicBulletId'].includes(tag))) {
       parent.data.unsupported = true;
@@ -9155,6 +9209,28 @@ function docxNumberingCatalog(bytes) {
   }
   if (stack.length || root !== 'numbering') throw new Error('DOCX_LIST_XML_INVALID');
   return catalog;
+}
+
+function docxEffectiveNumberingLevels(instance, abstract) {
+  if (!instance || !abstract || abstract.unsupported) return null;
+  const at = level => instance.overrides.get(level)?.definition || abstract.levels.get(level);
+  // Word pads an edited two-level definition with empty unused levels. They
+  // cannot participate in this bounded counter/template model.
+  let last = 8;
+  while (last >= 0 && (!at(last) || at(last).lvlText === '')) last -= 1;
+  if (last < 0) return null;
+  const levels = [];
+  for (let level = 0; level <= last; level += 1) {
+    const definition = at(level), format = definition && listFormat.fromWordFormat(definition.numFmt ?? 'decimal');
+    if (!definition || !format || definition.unsupported || definition.markerUnsupported
+      || (definition.suff !== undefined && definition.suff !== 'tab')
+      || (definition.lvlJc !== undefined && definition.lvlJc !== 'left')) return null;
+    const restart = definition.lvlRestart === undefined ? level : definition.lvlRestart;
+    if (restart > level) return null;
+    levels.push({ format, start: definition.start ?? 0,
+      text: definition.lvlText, restartAfterLevel: restart === 0 ? null : restart - 1 });
+  }
+  try { return listNumbering.validateLevels(levels); } catch { return null; }
 }
 
 function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragraphIndex) {
@@ -9188,24 +9264,42 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
     declareLoss();
     return;
   }
-  let counters = catalog.counters.get(reference.numId);
-  if (!counters) { counters = []; catalog.counters.set(reference.numId, counters); }
-  const ordinal = counters[level] === undefined ? (instance.overrides.get(level)?.start ?? definition.start ?? 0) : counters[level] + 1;
+  // Word shares the running lineage across instances of the same abstract.
+  // Explicit instance starts fire only on the first use of that instance/level.
+  let counters = catalog.counters.get(instance.abstractId);
+  if (!counters) { counters = []; catalog.counters.set(instance.abstractId, counters); }
+  let used = catalog.instanceLevelsUsed.get(reference.numId);
+  if (!used) { used = new Set(); catalog.instanceLevelsUsed.set(reference.numId, used); }
+  const overrideStart = instance.overrides.get(level)?.start;
+  const ordinal = overrideStart !== undefined && !used.has(level) ? overrideStart
+    : counters[level] === undefined ? (definition.start ?? 0) : counters[level] + 1;
+  used.add(level);
   if (ordinal > 2147483647) throw new Error('DOCX_LIST_COUNTER_LIMIT');
   counters[level] = ordinal;
   for (let deeper = level + 1; deeper <= 8; deeper += 1) {
     const restart = definitionAt(deeper)?.lvlRestart ?? deeper;
-    if ((restart > deeper ? deeper : restart) === level + 1) counters[deeper] = undefined;
+    if (restart !== 0 && level < (restart > deeper ? deeper : restart)) counters[deeper] = undefined;
   }
   // Unsupported numbering still consumes its Word ordinal. Do
   // not renumber a later supported paragraph when reporting that earlier loss.
+  const effectiveLevels = docxEffectiveNumberingLevels(instance, abstract);
+  const customPattern = effectiveLevels && (effectiveLevels.some((entry, index) => entry.text !== `%${index + 1}.`)
+    || [...catalog.instances.values()].filter(value=>value.abstractId===instance.abstractId).length > 1);
+  const startOverrides = [...instance.overrides.values()].filter(value=>value.start!==undefined).sort((a,b)=>a.level-b.level).map(value=>({level:value.level,start:value.start}));
+  const lineageId = `word-numbering-lineage-${instance.abstractId}`;
+  const hasFullOverride = [...instance.overrides.values()].some(value=>value.definition);
+  if (customPattern && hasFullOverride) { declareLoss(); return; }
   if (definition.unsupported
-    || !(definition.numFmt === 'bullet' || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {
+    || !(definition.numFmt === 'bullet' || (effectiveLevels && level < effectiveLevels.length)
+      || (listFormat.fromWordFormat(definition.numFmt ?? 'decimal') !== null && definition.lvlText === `%${level + 1}.`))) {
     declareLoss();
     return;
   }
   const type = listFormat.fromWordFormat(definition.numFmt ?? 'decimal');
-  metadata.list = { numId: reference.numId, level, kind, ordinal, ...(kind === 'orderedList' && type !== '1' ? { type } : {}) };
+  metadata.list = { numId: reference.numId, level, kind, ordinal, ...(kind === 'orderedList' && type !== '1' ? { type } : {}),
+    ...(kind === 'orderedList' && effectiveLevels ? { numberingLevels: effectiveLevels, numberingLineageId:lineageId, numberingStartOverrides:startOverrides } : {}),
+    ...(kind === 'orderedList' && customPattern ? { wordNumbering: listNumbering.validateNumbering({ schemaVersion:1,
+      instanceId:`word-numbering-${reference.numId}`, lineageId, ...(startOverrides.length?{startOverrides}:{}), level, levels:effectiveLevels }) } : {}) };
 }
 
 const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
@@ -9226,7 +9320,7 @@ function docxFontAttributes(token, namespaceMap) {
   }));
 }
 
-function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false, maxBytes = 1024 * 1024 } = {}) {
+function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false, maxBytes = 1024 * 1024, rejectNonWhitespaceText = false } = {}) {
   const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, maxBytes);
   const xml = part && docxZipDecodeUtf8Xml(part);
   if (typeof xml !== 'string' || docxContentPreviewUnsupportedEncoding(xml)
@@ -9240,7 +9334,8 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
     if (!next || next.failure) throw new Error('DOCX_FONT_PART_INVALID');
     cursor = next.nextCursor;
     const token = next.token;
-    if (!token.startsWith('<') || token.startsWith('<?') || token.startsWith('<!--')) continue;
+    if (!token.startsWith('<')) { if (rejectNonWhitespaceText && token.trim()) throw Error('DOCX_LIST_RELATIONSHIP_INVALID'); continue; }
+    if (token.startsWith('<?') || token.startsWith('<!--')) continue;
     if (token.startsWith('</')) {
       if (stack.pop()?.rawTagName !== docxContentPreviewTagName(token)) throw new Error('DOCX_FONT_PART_INVALID');
       continue;
@@ -9997,19 +10092,25 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
       return;
     }
     if (!isPlainObject(list) || !['numId', 'level', 'kind', 'ordinal'].every(key => Object.hasOwn(list, key))
-      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal', 'type'].includes(key))
+      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal', 'type', 'wordNumbering', 'numberingLevels', 'numberingLineageId', 'numberingStartOverrides'].includes(key))
       || (Object.hasOwn(list, 'type') && (list.kind !== 'orderedList' || typeof list.type !== 'string' || !['I', 'i', 'A', 'a'].includes(list.type)))
       || !/^[1-9]\d{0,9}$/u.test(list.numId) || typeof list.numId !== 'string' || Number(list.numId) > 2147483647
       || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
       || !['bulletList', 'orderedList'].includes(list.kind)
       || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
       || !['paragraph', 'heading'].includes(block.type) || list.level > listStack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
+        if (list.numberingLevels !== undefined) listNumbering.validateNumbering({schemaVersion:1,instanceId:`word-numbering-${list.numId}`,
+      level:list.level,levels:list.numberingLevels,lineageId:list.numberingLineageId,...(list.numberingStartOverrides?.length?{startOverrides:list.numberingStartOverrides}:{})});
+    const pattern = list.wordNumbering === undefined ? null : listNumbering.validateNumbering(list.wordNumbering);
+    if (pattern && (list.kind !== 'orderedList' || pattern.level !== list.level
+      || pattern.instanceId !== `word-numbering-${list.numId}` || pattern.lineageId !== list.numberingLineageId
+      || hashCanonicalValue(pattern.startOverrides||[]) !== hashCanonicalValue(list.numberingStartOverrides||[]) || hashCanonicalValue(pattern.levels) !== hashCanonicalValue(list.numberingLevels))) throw Error('DOCX_LIST_PROJECTION_INVALID');
     needsRichContent = true;
     listStack.length = Math.min(listStack.length, list.level + 1);
     let active = listStack[list.level];
     if (!active || active.numId !== list.numId || active.node.type !== list.kind || active.node.attrs?.type !== list.type
       || (list.kind === 'orderedList' && active.nextOrdinal !== list.ordinal)) {
-      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal, ...(list.type ? { type: list.type } : {}) } } : {}), content: [] };
+      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal, ...(list.type ? { type: list.type } : {}), ...(pattern ? { wordNumbering: pattern } : {}) } } : {}), content: [] };
       if (list.level === 0) target.push(node);
       else {
         const parentItem = listStack[list.level - 1]?.node.content.at(-1);
@@ -10017,7 +10118,7 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
         parentItem.content.push(node);
       }
       active = { numId: list.numId, node };
-      if (list.kind === 'orderedList') {
+      if (list.kind === 'orderedList' && !pattern) {
         const key = `${list.numId}:${list.level}`;
         let group = currentCounters.get(key);
         if (!group || group.next !== list.ordinal || group.type !== list.type) {

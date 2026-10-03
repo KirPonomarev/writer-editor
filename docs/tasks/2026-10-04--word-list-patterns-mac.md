@@ -1,0 +1,82 @@
+# WORD_LIST_PATTERNS_MAC_20261004
+
+STATUS: TARGET_NOT_ACCEPTED
+TYPE: CORE_AND_PRODUCT_UI
+BASE_SHA: 2c83167326282dd06517ed4a9c69713688f93a8a
+AUTHORITY: Owner-authorized full Mac Word plan P3d and section8; bounded numbering capability, not whole-plan acceptance.
+
+## MAP
+O: Literal and parent-dependent numbering survives G import, Y0 authoring, edits, Save/new-process reopen, ordinary and review export, actual Word changed-template return and explicit Apply.
+T: Bounded owned OOXML -> Core wordNumbering -> existing Kernel/scene Save/formatting transaction -> immutable editor/marker projection and saved-snapshot export.
+H: Current admission accepts only own-level dot templates and exporters emit one-level definitions. Typed group definitions and shared Core counters preserve live numbering and admit explicit changed-group deltas.
+B: Preserve text/anchors/revisions/private notes, legacy formats and existing transaction recovery. No new dependencies/network, alternate writer, raw OOXML truth, shell redesign or artificial rendered labels in document text.
+P: Independent handwritten input and literal labels; early genuine Mac Word route before heavy gates; SOURCE/PACKAGED changed cycles, focused negatives, baseline/RTK/OSS/audit/CI, independent review, merge/exact-head proof.
+I: Clean merged base above, verified encrypted mounted writable T7, fresh bootstrap and37path preflight PASS before first edit. Prior PR2074 delivery closed.
+
+## Model and boundaries
+Optional orderedList attrs.wordNumbering: schemaVersion1, canonical instanceId, zero-based level, complete contiguous1..9 levels with format/start/text/restartAfterLevel. Restart is zero-based ancestor, null means never. Legacy wordListId/wordListStart mutually exclusive. attrs.start and displayed labels derived by Core; no persisted label strings. New required feature word-list-pattern.v1 refuses old readers.
+Decimal starts0..2147483647; alpha1..2147483647; Roman1..3999. Overflow and outside-profile semantics refuse explicitly, never clamp. Templates bounded256UTF16, valid scalar text, placeholders reference defined levels no deeper than current. Native boundary proof required.
+Main scene and supported table cells are positive scope. New patterns in notes/stories remain explicit compatibility gaps; existing supported legacy lists must not regress. Unknown number formats, marker-specific semantics not represented by the model, picture bullets, style links and isLgl receive explicit outcomes.
+Word-side template changes must produce one source-bound group operation through existing formatting Apply. Baseline/actual identity bijection, expected levels, scene revision/raw SHA and replay/conflict behavior remain mandatory. Import/export-only proof cannot close this contour.
+
+## Native counter calibration
+Native Word screenshots of independent handwritten fixtures establish shared counters for distinct num instances referencing the same abstract definition: 3,4,9,10,11,12 with a first-use override; 3,4,5,6,7,8 without it. Distinct abstract identities with equal definitions remain independent: 3,4,9,5,10,6. Evidence and input hashes are in external native-counter-calibration.json. Initial per-instance-only counter hypothesis is disproved. Preserve canonical lineageId separately from instanceId and explicit first-use startOverrides; do not infer identity from definition equality. Child-level reset calibration remains unresolved until corrected fixture is observed. This is external Word behavior evidence, not product acceptance.
+
+## UI
+One existing list-menu entry opens current dialog primitives: level/format/template/start/restart/continue and Core-computed preview. Preserve tokens/font/shell. Capture exact editor/document/selection; stale/read-only or auxiliary context cannot redirect mutation. One undoable command transaction, existing Save only.
+Lazyweb search619b1c31-cef5-439f-96cc-a957d88f2bfa provides weak toolbar/modal context only, not numbering semantics. Existing project design is binding. ui-craft, Design OS guide, matrix and brain refs used; no new visual direction.
+
+## CHECKS
+CHECK_01 before edits: bootstrap, exact clean base, mount identity, independent RED fixtures, declaration preflight.
+CHECK_02+: focused Core/parser/renderer/return positives and hostile/stale/overflow/refusal cases; actual source/packaged authoring and changed Word returns; required baseline/RTK/OSS/audit/CI; independent review, clean delivery, exact merged verification.
+Independent RED fixtures and frozen labels reside externally in word-list-patterns-mac-2c831673, with original SHA and hashes. Malformed nested numbering scalar and unowned numbering part admitted at base; must reject after repair.
+
+## Ownership
+Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Parser agent: intake/proof/return parser and parser tests. UI agent: seven declared renderer/control/test paths. Parent: task/OPS, generated bundle, native controller, validation and delivery. No overlapping writers.
+
+## ALLOWLIST
+- `src/core/word-list-numbering-v1.cjs`
+- `src/core/document-content-envelope-v1.cjs`
+- `src/core/word-pending-text-revisions-v1.cjs`
+- `src/core/word-manuscript-notes-v1.cjs`
+- `src/io/documentTables.js`
+- `src/export/docx/docxMinBuilder.js`
+- `src/export/docx/docxReviewPacketBuilder.js`
+- `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
+- `src/io/revisionBridge/index.mjs`
+- `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
+- `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
+- `src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs`
+- `src/main.js`
+- `src/renderer/editor.js`
+- `src/renderer/editor.bundle.js`
+- `src/renderer/index.html`
+- `src/renderer/styles.css`
+- `src/renderer/tiptap/documentListNumbering.mjs`
+- `src/renderer/tiptap/index.js`
+- `src/renderer/commands/projectCommands.mjs`
+- `test/contracts/rtk-word-list-pattern.contract.test.js`
+- `test/contracts/rtk-word-list-pattern-return.contract.test.js`
+- `test/contracts/rtk-word-list-pattern-parser.contract.test.js`
+- `test/contracts/rtk-word-list-pattern-renderer.contract.test.js`
+- `test/contracts/rtk-word-list-format.contract.test.js`
+- `test/contracts/rtk-word-table-editor.contract.test.js`
+- `test/contracts/revision-bridge-docx-lists.contract.test.js`
+- `docs/tasks/2026-10-04--word-list-patterns-mac.md`
+- `docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
+
+## Delivery
+COMMIT_REQUIRED: true
+PUSH_REQUIRED: true
+PR_REQUIRED: true
+MERGE_REQUIRED: true
+POST_MERGE_EXACT_HEAD_REQUIRED: true
+Rollback: revert integrated PR; preserve failed native inputs and recovery artifacts. No claim of full family/whole Mac readiness before all its promised operations are independently proved.

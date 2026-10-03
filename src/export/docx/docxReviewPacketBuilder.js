@@ -3,7 +3,7 @@ const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 
-const { buildStoredZip } = require('./docxMinBuilder');
+const { buildStoredZip, buildDocxPatternNumberingParts } = require('./docxMinBuilder');
 const {
   buildDocxRunContentXml,
   escapeXml,
@@ -629,7 +629,7 @@ function collectNumberingDefinitions(blocks) {
     if (!isPlainObjectValue(list)) continue;
     const numId = Number(list.numId);
     const start = Number(list.start);
-    const definition = {
+    const definition = list.wordNumbering ? { numId, wordNumbering: { ...require('../../core/word-list-numbering-v1.cjs').validateNumbering(list.wordNumbering), level:0 } } : {
       numId,
       kind: normalizeString(list.kind),
       type: require('../../core/word-list-format-v1.cjs').normalizeType(list.type),
@@ -645,7 +645,8 @@ function collectNumberingDefinitions(blocks) {
 }
 
 function buildNumberingXml(definitions) {
-  const abstract = definitions.map((definition) => {
+  const patterns = buildDocxPatternNumberingParts(definitions.filter(value => value.wordNumbering));
+  const abstract = patterns.abstract + definitions.filter(value => !value.wordNumbering).map((definition) => {
     const levels = Array.from({ length: 9 }, (_, level) => {
       const ordered = definition.kind === 'ordered';
       const levelText = ordered ? `%${level + 1}.` : ['•', '◦', '▪'][level % 3];
@@ -653,7 +654,7 @@ function buildNumberingXml(definitions) {
     }).join('');
     return `<w:abstractNum w:abstractNumId="${definition.numId}"><w:multiLevelType w:val="hybridMultilevel"/>${levels}</w:abstractNum>`;
   }).join('');
-  const instances = definitions.map((definition) => (
+  const instances = patterns.instances + definitions.filter(value => !value.wordNumbering).map((definition) => (
     `<w:num w:numId="${definition.numId}"><w:abstractNumId w:val="${definition.numId}"/></w:num>`
   )).join('');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

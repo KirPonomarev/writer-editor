@@ -2,6 +2,7 @@ import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs'
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
+import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 const { normalizeDocxHttpHref } = docxHyperlinks;
 import fs from 'node:fs/promises';
@@ -24,7 +25,7 @@ const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguag
 const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
 const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs']);
 const OPERATION_KEYS = new Set([
-  'kind','document','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
+  'kind','document','numbering','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
   'inline', 'paragraph', 'targetScope', 'sceneOrdinal', 'paragraphId', 'sourceAuthority', 'expectedOutcome',
   'sourceSceneRevision', 'sourceRawSha256',
 ]);
@@ -130,6 +131,18 @@ function normalizeOperation(operation, index) {
   if (unknownKeys.length > 0) {
     return result(false, 'RTK_FORMATTING_OPERATION_UNKNOWN_KEY', { operationIndex: index, unknownKeys });
   }
+  if (operation.kind === 'list-numbering') {
+    const keys = ['kind','numbering','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
+    const value = operation.numbering;
+    if (Object.keys(operation).some(key => !keys.includes(key)) || !normalizedString(operation.operationId) || !normalizedString(operation.sceneId)
+      || operation.sourceAuthority !== 'authenticated-full-manuscript-export-map-list-numbering-v1'
+      || !SHA256_RE.test(operation.sourceSceneRevision) || !SHA256_RE.test(operation.sourceRawSha256)
+      || !isPlainObject(value) || Object.keys(value).sort().join(',') !== 'expectedLevels,instanceId,levels'
+      || typeof value.instanceId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(value.instanceId)) return result(false, 'RTK_FORMATTING_NUMBERING_AUTHORITY_INVALID');
+    try { listNumbering.validateLevels(value.expectedLevels); listNumbering.validateLevels(value.levels); }
+    catch { return result(false, 'RTK_FORMATTING_NUMBERING_DEFINITION_INVALID'); }
+    return { ok: true, operation: cloneJson(operation) };
+  }
   if(operation.kind==='document-properties') {
     const keys=['kind','document','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
     const action=operation.document?.wordDefaultTabStop;
@@ -141,7 +154,7 @@ function normalizeOperation(operation, index) {
     try{paragraphLayout.normalizeWordDefaultTabStop(action.value);}catch{return result(false,'RTK_FORMATTING_DOCUMENT_ACTION_INVALID');}
     return {ok:true,operation:cloneJson(operation)};
   }
-  if(operation.kind!==undefined||operation.document!==undefined)return result(false,'RTK_FORMATTING_OPERATION_UNKNOWN_KIND');
+  if(operation.kind!==undefined||operation.document!==undefined||operation.numbering!==undefined)return result(false,'RTK_FORMATTING_OPERATION_UNKNOWN_KIND');
   const operationId = normalizedString(operation.operationId);
   const sceneId = normalizedString(operation.sceneId);
   const blockId = normalizedString(operation.blockId);
@@ -383,7 +396,15 @@ export function applyFormattingOperationsToObservableContent(baseContent, operat
   const rootOperations=normalized.filter(operation=>operation.kind==='document-properties');
   if(rootOperations.length>1)return result(false,'RTK_FORMATTING_DOCUMENT_DUPLICATE_OPERATION');
   if(rootOperations.length)doc=pendingTextRevisions.setDefaultTabStop(doc,rootOperations[0].document.wordDefaultTabStop.value);
-  const ordered = normalized.filter(operation=>operation.kind!=='document-properties').sort((left, right) => (
+  const numberingOperations = normalized.filter(operation => operation.kind === 'list-numbering');
+  const numberingGroups = new Set();
+  for (const operation of numberingOperations) {
+    if (numberingGroups.has(operation.numbering.instanceId)) return result(false, 'RTK_FORMATTING_NUMBERING_DUPLICATE_OPERATION');
+    numberingGroups.add(operation.numbering.instanceId);
+    try { doc = listNumbering.applyDefinitionChange(doc, operation.numbering); }
+    catch (error) { return result(false, 'RTK_FORMATTING_NUMBERING_CONFLICT', { detail: error.message }); }
+  }
+  const ordered = normalized.filter(operation=>operation.kind!=='document-properties' && operation.kind!=='list-numbering').sort((left, right) => (
     left.paragraphOrdinal - right.paragraphOrdinal || left.from - right.from || left.operationId.localeCompare(right.operationId)
   ));
   for (const operation of ordered) {

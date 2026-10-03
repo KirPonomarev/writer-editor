@@ -3,7 +3,7 @@ import { DocumentStories, applyStoryBody } from './documentStories.mjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import { DocumentSections } from './documentSections.mjs';
 import { DocumentBreaks } from './documentBreaks.mjs';
-import { DocumentListNumbering } from './documentListNumbering.mjs';
+import { DocumentListNumbering, captureNumberingTarget } from './documentListNumbering.mjs';
 import { DocumentListItems } from './documentListItems.mjs';
 import { DocumentHeadings } from './documentHeadings.mjs';
 import { applyLocalImagePublication } from './localImage.mjs'
@@ -772,6 +772,12 @@ export function setTiptapDocumentSnapshot(snapshot = {}) {
 
 // A dialog owns only this captured editor selection. It may never fall back
 // to another editor when focus changes while awaiting user input.
+export function captureTiptapNumberingTarget() {
+  if (getFocusedManuscriptBodyEditor()) return null;
+  const editor = currentEditorInstance;
+  return captureNumberingTarget(editor, () => currentEditorInstance === editor);
+}
+
 export function captureTiptapLinkTarget() {
   const auxiliary = getFocusedManuscriptBodyEditor();
   const editor = auxiliary || currentEditorInstance;

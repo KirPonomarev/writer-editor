@@ -66,7 +66,7 @@ function paragraphs(doc) {
     assert(['bulletList', 'orderedList'].includes(node.type), 'PENDING_REVISIONS_BLOCK_UNSUPPORTED');
     assert(depth <= 8 && ++lists <= 2048, 'PENDING_REVISIONS_BUDGET');
     assert(Array.isArray(node.content) && node.content.length > 0);
-    assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []));
+    assert(!node.attrs || exact(node.attrs, node.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart', 'wordNumbering'] : []));
     const start = node.attrs?.start ?? 1;
     assert(Number.isSafeInteger(start) && start >= 0 && start + node.content.length - 1 <= 2147483647
       && (node.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(node.attrs.type)));
