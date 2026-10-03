@@ -760,7 +760,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "6031a2bae25fb4354cf3349e5a669082b263534d13292aa8c7db6957666f9534"
+        "sha256": "0e628356dd47f0f1eecfc33e07eddab351884e99151effabc2fc4f23c306be0b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -864,7 +864,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "ad2a0b3c346472c17f248986481dc262b49b37571c3a7013f2323a6f15f8a078"
+        "sha256": "08bb24c121efc9f2a2d625edec5f7b21e1f38c359a59196d20515c5975ae119e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -928,7 +928,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-        "sha256": "08f998b57545d2bdc868d4d19cd3bfca79eed6e0721f51c205e046aeb6742f20"
+        "sha256": "b2bc8373984f793d3e2906b6d7b48fe99b14fb14becec3c7321907d1f0391d4c"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
@@ -1324,7 +1324,7 @@
       },
       {
         "path": "test/contracts/rtk-word-visibility-ruby.contract.test.js",
-        "sha256": "bc3961981518ba5500ed49b7b839b890ef8cecb4e15d17c3d2ca02a6f8ba1974"
+        "sha256": "042c5f17c5a30f6edbb279054a835c0a8a1201bf4cc268587d92f2cf5e8f9f1c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
@@ -1332,7 +1332,7 @@
       },
       {
         "path": "test/contracts/rtk-word-http-links.contract.test.js",
-        "sha256": "122878bf2bf2da9e847166aa7a9b7907e8a4e1a69a8dcca189edbaab99c82542"
+        "sha256": "25a639bffcffb90208737f13b5bc48307dcddfb16d9b5d2595a9f42d47505c2b"
       },
       {
         "path": "test/contracts/rtk-word-link-authoring.contract.test.js",
@@ -1616,11 +1616,11 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "cd68a4bcf960caebd4ec90eae05d86dffa6e49ec3262282c4d7cd673355c5d5f"
+        "sha256": "b69f078267599f108117dc63555499dc5211bfae821428247c1e68bee61d07ba"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
-        "sha256": "070c699db662209f9ccefcadc51e258c47cec40f931bb5038b1fbef9efc096b3"
+        "sha256": "a7639e599894f6fda10264b35c9560fe7907b3604b90338616a44c5c22a17f67"
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
@@ -1676,7 +1676,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-        "sha256": "f6fd4bb6ba140530068db743469de4b3cf050b6720b035424a3a6ab67deb68e7"
+        "sha256": "716df6abb48dd10e37640dbf0fac3b50f54c4ddf1d0c55faba117fb8401bc1bc"
       },
       {
         "path": "test/contracts/rtk-word-move-recording.contract.test.js",
@@ -1692,7 +1692,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-cell-shift.contract.test.js",
-        "sha256": "f1608cec671855cfdc2a7dae212cd336078788ea8c09d8893ef2445f42ccbd35"
+        "sha256": "dd1b502ada9383a2e66225ff7786abe076017b793eb10cf84aa6dafee526adc8"
       },
       {
         "path": "test/fixtures/word-table-cell-shift-native-v1.json",
@@ -1740,7 +1740,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "8acc75b9bfb821bd765958e90d3ce6ccf58aaeecaccabab369242dca1d21d6cb"
+        "sha256": "3d02317982b9f10ee8b80b8dabd5dc4689cec13a88f7f2782a1ff56603d4ac58"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1752,7 +1752,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "7aec9d5177e185215dcfc72f197e75c5a1c1d6dd8104fe242e2baa089a77629c"
+        "sha256": "8b75ca1ac7eb8267194766062777aeebab94a299a36a17bb7fbf8a4348806a9b"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2192,7 +2192,7 @@
       },
       {
         "path": "test/contracts/rtk-word-header-footer-authoring.contract.test.js",
-        "sha256": "e57cc017217b8de64169e3f1b3ae060967bb4c32a71a6e7462eab0e3a31201ab"
+        "sha256": "5c654613fd97f5fc039ed742c2669d82483d50570a1d8c36f215696da5a86924"
       },
       {
         "path": "test/contracts/rtk-word-header-footer-transaction.contract.test.js",
@@ -2224,11 +2224,11 @@
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
-        "sha256": "3cd35f7472b8ff0e91bb85ebd8a16e22ee3ce9ca332c71e28fbaaa857abf353f"
+        "sha256": "1d7da59f7fdb348d208f597488f5649b346cc3bbb3fb83cf0bc7a32cf9a2e458"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_EFFECTIVE_STYLE_RETURN_V1.json",
-        "sha256": "529b41401b93a819ed32f4fefb1ed752acdb420d48029f7a660a4268e8658aef"
+        "sha256": "9afa2904edbc6127dd74de5ae3b66b1276f4faabb1f4acd3204718c008a80a38"
       },
       {
         "path": "src/core/word-paragraph-spacing-v1.cjs",

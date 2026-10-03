@@ -260,11 +260,51 @@ test('header and note paragraph spacing and paragraph-mark language serialize wi
  for(const xml of [header,note]){assert.match(xml,/<w:spacing w:before="0" w:after="160" w:line="278" w:lineRule="auto"\/>/);assert.match(xml,/<w:rPr><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"\/><\/w:rPr>/);}
 });
 
-test('pending paragraph formatting refuses spacing/language without an expressible old-state snapshot',()=>{
+test('pending paragraph formatting serializes old spacing and language only from its before snapshot',()=>{
  const {buildPendingParagraphPropertiesXml}=require('../../src/export/docx/docxPendingRevisions.js');
  const revision={state:'pending',operation:'format',author:'A',format:{kind:'paragraph',before:{type:'paragraph',attrs:{textAlign:'left'}}}};
- for(const properties of ['<w:spacing w:after="160"/>','<w:rPr><w:lang w:val="ru-FI"/></w:rPr>'])assert.throws(()=>buildPendingParagraphPropertiesXml(`<w:pPr>${properties}</w:pPr>`,revision,{next:1}),/PENDING_FORMAT_PARAGRAPH_SPACING_LANGUAGE_UNSUPPORTED/);
- assert.match(buildPendingParagraphPropertiesXml('<w:pPr><w:jc w:val="right"/></w:pPr>',revision,{next:1}),/<w:pPrChange[^>]*><w:pPr><w:pStyle w:val="Normal"\/><w:jc w:val="left"\/>/);
+ const current='<w:pPr><w:jc w:val="right"/><w:spacing w:after="160"/><w:rPr><w:lang w:val="ru-FI"/></w:rPr></w:pPr>';
+ for(const oldAttrs of [{textAlign:'left'},{textAlign:'left',wordParagraphSpacing:{before:0,after:80,line:240,lineRule:'exact'},wordParagraphMarkLanguage:{val:'en-US',eastAsia:'ja-JP',bidi:'he-IL'}}]){
+  revision.format.before.attrs=oldAttrs;
+  const xml=buildPendingParagraphPropertiesXml(current,revision,{next:1});
+  const [now,previous]=xml.split(/<w:pPrChange[^>]*>/u);
+  assert.equal(now,current.slice(0,-8));
+  assert.match(previous,/<w:jc w:val="left"\/>/);
+  assert.doesNotMatch(previous,/after="160"|ru-FI/);
+  if(oldAttrs.wordParagraphSpacing){assert.match(previous,/<w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="exact"\/>/);assert.match(previous,/<w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="he-IL"\/>/);}
+  else assert.doesNotMatch(previous,/<w:spacing|<w:lang/);
+ }
+});
+
+test('both exporters keep independent pending current and old paragraph and run languages',async()=>{
+ const recording=require('../../src/core/word-pending-recording-v1.cjs');
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const builder=require('../../src/export/docx/docxReviewPacketBuilder.js');
+ const oldLanguage={val:'en-US',eastAsia:'ja-JP',bidi:'he-IL'},newLanguage={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ for(const absent of [false,true]){
+  const base=document([paragraph('Paragraph'),paragraph('Run')]);
+  if(!absent)base.content[0].attrs={textAlign:'left',wordParagraphSpacing:{before:0,after:80},wordParagraphMarkLanguage:oldLanguage};
+  for(const item of base.content)item.content[0].marks=[{type:'textStyle',attrs:{fontSize:'12pt',...(!absent?{wordLanguage:oldLanguage}:{})}}];
+  const current=structuredClone(base);
+  current.content[0].attrs={textAlign:'right',wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:newLanguage};
+  current.content[1].content[0].marks[0].attrs.wordLanguage=newLanguage;
+  const doc=recording.derive(base,current,{author:'Owner',date:'2026-10-03T10:00:00.000Z'}).doc;
+  const full=builder.buildDocxReviewPacketBuffer(source.buildFullManuscriptDocxReviewPacketSource({projectId:'pending-language',projectRoot:'/synthetic',scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:'Paragraph\nRun',order:0}]}));
+  for(const bytes of [await exportDoc(doc),full]){
+   const returned=(await preview(bytes)).doc;
+   const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+   for(const mode of ['original','current'])assert.deepEqual(pending.normalizeNode(pending.materialize(pending.readLedger(returned),mode)),pending.normalizeNode(pending.materialize(pending.readLedger(doc),mode)),`pending ${mode} survives reimport`);
+   const xml=bytes.toString('utf8');
+   const oldParagraph=xml.match(/<w:pPrChange[^>]*><w:pPr>([\s\S]*?)<\/w:pPr><\/w:pPrChange>/u)?.[1];
+   const oldRun=xml.match(/<w:rPrChange[^>]*><w:rPr>([\s\S]*?)<\/w:rPr><\/w:rPrChange>/u)?.[1];
+   assert.equal(typeof oldParagraph,'string');assert.equal(typeof oldRun,'string');
+   assert.match(xml,/<w:spacing w:after="160" w:line="278" w:lineRule="auto"\/>/);
+   assert.match(xml,/<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"\/>/);
+   assert.doesNotMatch(oldParagraph,/ru-FI|after="160"/);assert.doesNotMatch(oldRun,/ru-FI/);
+   if(absent){assert.doesNotMatch(oldParagraph,/<w:spacing|<w:lang/);assert.doesNotMatch(oldRun,/<w:lang/);}
+   else {assert.match(oldParagraph,/<w:spacing w:before="0" w:after="80"\/>/);for(const old of [oldParagraph,oldRun])assert.match(old,/<w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="he-IL"\/>/);}
+  }
+ }
 });
 
 test('both export entrypoints reject raw spacing accessors before cloning or reading authored values',async()=>{

@@ -64,9 +64,12 @@ for (const property of ['vanish', 'webHidden']) {
   });
 }
 
-test('P0a style cascade distinguishes vanish toggling from webHidden replacement', async () => {
+test('P0a Word paragraph style assignment preserves hidden refusal and explicit false clears it', async () => {
   const body = `<w:p><w:pPr><w:pStyle w:val="Child"/></w:pPr>${run()}</w:p>`;
-  assert.equal((await inspect(pack(body, style('Base','<w:vanish/>')+style('Child','<w:vanish/>','<w:basedOn w:val="Base"/>')))).plan.ok, true);
+  // Word paragraph style booleans assign (MS-OE376 2.1.260), unlike
+  // applying the resolved character style as one paragraph-relative toggle.
+  await blocked(pack(body, style('Base','<w:vanish/>')+style('Child','<w:vanish/>','<w:basedOn w:val="Base"/>')), 'DOCX_HIDDEN_TEXT_UNSUPPORTED');
+  assert.equal((await inspect(pack(body, style('Base','<w:vanish/>')+style('Child','<w:vanish w:val="0"/>','<w:basedOn w:val="Base"/>')))).plan.ok, true);
   await blocked(pack(body, style('Base','<w:webHidden/>')+style('Child','<w:webHidden/>','<w:basedOn w:val="Base"/>')), 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED');
 });
 

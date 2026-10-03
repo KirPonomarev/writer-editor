@@ -141,3 +141,24 @@ Repair evidence: retained native DOCX SHA6ae730fb489be11cce95d86bd20f02736ac4a55
 
 ## First stable native result and runner membership repair
 At clean eb91a487, actual SOURCE03 native Apply succeeded for all12 changes in the retained Word artifact. Independent V3 raw-XML and saved-scene checker matched all six paragraphs; ordinary and Review reexports matched too. Subsequent native style changes are being exercised on identical runtime bytes. Baseline passed2130 tests with59 pre-existing skips and20 OPS checks; release-lock warnings remain inherited and do not establish release readiness. RTK did not execute because the companion generator accidentally inserted two non-rtk bridge contracts into its prefix-only catalog. Restoring the documented prefix rule fixes membership without removing any RTK test; bridge contracts remain required by baseline/focused runners. The initial RTK exit is retained, not counted as passed.
+
+## Existing-route regression repair at 8221abe1
+
+CHECK_01 bootstrap and 48-path preflight passed on clean8221 before edits. CHECK_02+ follow implementation. Previous status-only turn made no implementation progress.
+
+O: retain native Word spacing/language while preserving existing cell revisions, bookmarks and auxiliary stories. T: existing Core typed document and pending snapshots through existing transaction/export ports; no new writer. H: old snapshot allowlists and presence-only bookmark guard cause reproduced refusals; preserving validated tuples and exact comparison should restore the original positive cases. B: no discarded properties, no weakened identity guards, no current properties substituted for absent prior properties; same single-PR rollback. P: focused existing-chain normal, changed-language, malformed/accessor, history/undo/redo and both exporter checks before new native candidate and mandatory gates. I: exact preflight base8221abe1e7b2c14ba201e600d19e05ad6ac32665; original delivery basee4be0d8d unchanged.
+
+Additional admitted paths:
+- `src/core/word-pending-text-revisions-v1.cjs`
+- `test/contracts/rtk-word-table-cell-shift.contract.test.js`
+- `test/contracts/rtk-word-pending-formatting.contract.test.js`
+- `test/contracts/rtk-word-http-links.contract.test.js`
+- `test/contracts/rtk-word-visibility-ruby.contract.test.js`
+- `test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js`
+- `test/contracts/rtk-word-header-footer-authoring.contract.test.js`
+
+Full RTK diagnostic run had2914pass19fail0skip; focused reproduction had267pass14fail0skip. Neither is acceptance. Five SOURCE native cycles are bounded evidence only; packaged acceptance remains outstanding.
+
+Regression repair outcome: pending Core now preserves typed spacing/run language/paragraph-mark language through source, before/after snapshots and undo/redo; raw descriptor scan precedes serialization and rejects accessors, inherited serialization hooks, cycles and oversized collections. Exported old properties come solely from before; pending parser validates each snapshot independently. The earlier tracked-format spacing/language refusal recorded above is superseded by this bounded positive implementation, not by dropping old values. Bookmark language presence no longer blocks an otherwise exact return; label-offset style comparisons preserve language and reject mutations.
+
+Executed focused evidence: independent pending/cell-shift35 passed; auxiliary authoring/alignment/spacing42 passed; affected return and actual Main chain462 passed; zero skips in these sets. Counts overlap and are not added into a feature percentage. Earlier failing logs remain preserved. Parser ownership adversarial case was found and repaired before final35. Renderer rebuilt from updated Core. Mandatory stable-candidate baseline/RTK, packaged native and delivery remain pending.

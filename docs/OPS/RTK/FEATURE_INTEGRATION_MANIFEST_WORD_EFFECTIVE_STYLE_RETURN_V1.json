@@ -26,20 +26,45 @@
     "test/contracts/rtk-word-heading-outline.contract.test.js",
     "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
     "test/contracts/rtk-word-review-default-typography.contract.test.js",
-    "test/contracts/rtk-word-scene-identity-main.contract.test.js"
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "src/core/word-paragraph-spacing-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/renderer/tiptap/documentParagraphAlignment.mjs",
+    "src/renderer/editor.bundle.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/export/docx/docxReviewPacketStories.js",
+    "src/export/docx/docxPendingRevisions.js",
+    "src/utils/docxImportLocalFilePreview.js",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+    "test/contracts/rtk-word-paragraph-spacing.contract.test.js",
+    "test/contracts/revision-bridge-docx-alignment.contract.test.js",
+    "test/contracts/rtk-word-header-footer-runtime.contract.test.js",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/contracts/rtk-word-pending-formatting.contract.test.js",
+    "test/contracts/rtk-word-http-links.contract.test.js",
+    "test/contracts/rtk-word-visibility-ruby.contract.test.js",
+    "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+    "test/contracts/rtk-word-header-footer-authoring.contract.test.js"
   ],
   "scopeOut": [
-    "src/renderer",
-    "src/core",
-    "src/export",
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
     "src/preload.js",
     "package.json",
     "package-lock.json",
     ".github/workflows"
   ],
-  "productAuthority": "Original Mac plan P3-08 effective values and semantic roles. Existing Core formatting representation only; no named-style identity claim or new schema.",
+  "productAuthority": "Original Mac plan P3-08 effective styles and paragraph formatting plus existing typed proofing language; owner-authorized full implementation. Same vertical slice and PR: native Word style creation adds spacing/lang that cannot be silently ignored.",
   "commandAuthority": "Existing authenticated formatting return; source round/project/scene/revision/raw CAS and Main dispatch revalidation remain mandatory.",
-  "designAuthority": "NOT_APPLICABLE: existing editor formatting and review UI unchanged; no new visual contract.",
+  "designAuthority": "Mechanical existing paragraph/heading document representation only. Core supplies immutable typed properties; existing Tiptap extension renders them. No new controls, composition, tokens, shell state or Design OS surface.",
   "operationKinds": [
     "QUERY",
     "COMMAND",
@@ -77,18 +102,23 @@
   "recoveryAndNegativeChecks": [
     "Style basedOn/default/direct precedence, explicit reset and Boolean toggle semantics",
     "Cycle, duplicate IDs, malformed namespace, missing active style, unsupported properties, default ambiguity and resource bounds",
-    "Wrong project/stale revision/forged operation/no preview writes/replay rejection; recovery unchanged"
+    "Wrong project/stale revision/forged operation/no preview writes/replay rejection; recovery unchanged",
+    "Strict bounded tuple/accessor/unknown-key validation before clone, independently inherited spacing fields and language slots, zero reset, stale revision and unsaved authoring",
+    "Existing rich-body and auxiliary return allowlists must explicitly preserve/compare new typed attrs; no silent discard",
+    "Reject hostile getters before serialization; preserve original/current accepted/rejected/undo/redo snapshots and both exporters; exact old absence versus new spacing/language."
   ],
   "securityAndInputBoundary": "External XML bounded and validated before style resolution; no new dependencies, paths, writers, network or evaluation.",
   "performanceAndAccessibility": "Cache bounded style catalog per parse; linear traversal; existing UI and keyboard semantics unchanged.",
   "currentReality": [
-    "e4be read-only literal probe: Derived basedOn Base with jc right yields paragraphState empty and unsupported pStyle on return",
-    "Generic import already resolves inherited supported styles; authenticated formatting return does not",
-    "Inherited paragraph tabs/spacing and custom numbering remain separate original-plan gaps"
+    "Clean8221: focused existing-chain suite281 tests267pass14fail. Pending Core rejects preserved spacing/language; bookmarks reject unchanged language; header and visibility tests contain superseded expectations.",
+    "Five native SOURCE style cycles observed; packaged and complete regression acceptance remain pending."
   ],
   "targetOnly": [
-    "Positive authenticated return of existing supported effective properties after full native and test proof",
-    "No full Mac-plan or arbitrary style-system acceptance"
+    "Typed wordParagraphSpacing={before?,after?,line?,lineRule?}; absent distinct from zero; before/after twips, auto line in240ths and exact/atLeast line in twips; unsupported attributes remain explicit refusal",
+    "Existing run and paragraph-mark language scopes resolved independently through per-attribute inheritance",
+    "Exact values survive editor load/edit/undo/save/restart and both exports in main text and admitted rich bodies; no pixel-identical page-layout claim",
+    "Existing pending source/history/before-after snapshots preserve strictly validated spacing and language; tracked export old formatting derives solely from before snapshot.",
+    "Bookmark comparison permits exactly unchanged language, still rejects changed language or unsupported composites; invalid default formatting and hidden text remain no-write refusals."
   ],
   "designToolRouter": "NOT_APPLICABLE",
   "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
@@ -107,5 +137,11 @@
     "ports": "Existing envelope, import, formatting transaction and DOCX export adapters",
     "ui": "Existing paragraph/heading representation only; no new controls or surface",
     "proof": "Retained native failing artifact must positively apply with exact supported properties before broad gates"
+  },
+  "regressionRepairAmendment": {
+    "baseSha": "8221abe1e7b2c14ba201e600d19e05ad6ac32665",
+    "preflight": "PASS before edits",
+    "reason": "Preserve existing table pending revisions and bookmark routes under newly retained Word spacing and language",
+    "claim": "Implementation repair pending proofs; no acceptance"
   }
 }

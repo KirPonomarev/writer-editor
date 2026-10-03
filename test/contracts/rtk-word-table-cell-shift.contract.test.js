@@ -34,6 +34,14 @@ for (const fixture of fixtures.cases) {
     const doc = await parse(pack(fixture.parts)), projection = model.projection(doc), ledger = model.readLedger(doc);
     assert.equal(projection.original, original.join('\n'));
     assert.equal(projection.current, expected[fixture.operation].join('\n'));
+    // These are literal properties from the retained native Word fixture, not
+    // optional parser decorations: they must survive either revision decision.
+    for (const mode of ['original', 'current']) for (const paragraph of model.paragraphs(model.materialize(ledger, mode))) {
+      assert.deepEqual(paragraph.attrs.wordParagraphSpacing, { after: 160, line: 278, lineRule: 'auto' });
+      assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage, { val: 'ru-FI', eastAsia: 'ru-RU', bidi: 'ar-SA' });
+      for (const node of paragraph.content) if (node.type === 'text') assert.deepEqual(node.marks.find(m => m.type === 'textStyle').attrs.wordLanguage,
+        { val: 'ru-FI', eastAsia: 'ru-RU', bidi: 'ar-SA' });
+    }
     assert.equal(ledger.revisions.filter(model.isTableRow).length, fixture.operation === 'insert' ? 1 : 0);
     assert.ok(ledger.revisions.every(r => r.author === 'Yalken C5V2 Canary' && r.dateUtc));
     for (const profile of ['minimum', 'full']) {

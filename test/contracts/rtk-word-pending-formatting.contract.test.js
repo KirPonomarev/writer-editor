@@ -209,3 +209,85 @@ test('An independent Word text edit does not replace the identity of an unchange
   assert.equal(model.projection(returned).current, 'original text changed');
   assert.deepEqual(materialized(returned, 'original'), canonical(base));
 });
+
+test('Typed spacing and language preserve pending snapshots, decisions and history without current-to-old leakage', async () => {
+  const ledger = structuredClone(model.readLedger(await parse(pack())));
+  const oldSpacing = { before: 0, after: 160, line: 278, lineRule: 'auto' };
+  const newSpacing = { before: 120, after: 0, line: 480, lineRule: 'auto' };
+  const oldLanguage = { val: 'en-US', eastAsia: 'ja-JP', bidi: 'ar-SA' };
+  const newLanguage = { val: 'ru-FI', eastAsia: 'ru-RU', bidi: 'he-IL' };
+  const setLanguage = (marks, value) => {
+    let style = marks.find(m => m.type === 'textStyle');
+    if (!style) { style = { type: 'textStyle', attrs: {} }; marks.push(style); }
+    style.attrs.wordLanguage = structuredClone(value);
+    return marks;
+  };
+  for (const paragraph of ledger.source.content) {
+    paragraph.attrs = { ...paragraph.attrs, wordParagraphSpacing: oldSpacing, wordParagraphMarkLanguage: oldLanguage };
+    for (const node of paragraph.content) node.marks = setLanguage(node.marks || [], oldLanguage);
+  }
+  const runRevision = ledger.revisions[0], paragraphRevision = ledger.revisions[1];
+  runRevision.format.before = setLanguage(runRevision.format.before, oldLanguage);
+  runRevision.format.after = setLanguage(runRevision.format.after, newLanguage);
+  ledger.source.content[0].content[1].marks = structuredClone(runRevision.format.after);
+  paragraphRevision.format.before.attrs = { wordParagraphSpacing: oldSpacing, wordParagraphMarkLanguage: oldLanguage };
+  paragraphRevision.format.after.attrs = { ...paragraphRevision.format.after.attrs, wordParagraphSpacing: newSpacing, wordParagraphMarkLanguage: newLanguage };
+  ledger.source.content[1].attrs = structuredClone(paragraphRevision.format.after.attrs);
+  const doc = model.bindLedger(ledger), original = materialized(doc, 'original'), current = materialized(doc, 'current');
+  assert.deepEqual(original.content[1].attrs.wordParagraphSpacing, oldSpacing);
+  assert.deepEqual(current.content[1].attrs.wordParagraphSpacing, newSpacing);
+  assert.deepEqual(original.content[0].content[0].marks.find(m => m.type === 'textStyle').attrs.wordLanguage, oldLanguage);
+  assert.deepEqual(current.content[0].content[1].marks.find(m => m.type === 'textStyle').attrs.wordLanguage, newLanguage);
+  for (const action of ['acceptAll', 'rejectAll']) {
+    const decided = model.decide(doc, { action }).doc;
+    const reopened = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc: decided })).doc;
+    assert.deepEqual(canonical(reopened), action === 'acceptAll' ? current : original);
+    const undone = model.decide(reopened, { action: 'undo' }).doc;
+    assert.deepEqual(model.readLedger(undone).revisions, model.readLedger(doc).revisions);
+    assert.deepEqual(model.decide(undone, { action: 'redo' }).doc, reopened);
+  }
+  for (const profile of ['minimum', 'full']) {
+    const returned = await parse(await exportDoc(doc, profile));
+    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode));
+  }
+});
+
+test('Pending typed source, old snapshots and history reject accessors before budget serialization', async () => {
+  const base = structuredClone(model.readLedger(await parse(pack()))); let calls = 0;
+  const getter = object => Object.defineProperty(object, 'wordParagraphSpacing', { enumerable: true, get() { calls++; return { after: 160 }; } });
+  for (const mutate of [
+    l => { l.source.content[0].attrs ||= {}; getter(l.source.content[0].attrs); },
+    l => { l.revisions[1].format.before.attrs = {}; getter(l.revisions[1].format.before.attrs); },
+    l => { l.schemaVersion = 2; l.roundUndo = [structuredClone(base)]; l.roundRedo = []; l.returnReceipts = []; l.roundUndo[0].source.content[0].attrs = {}; getter(l.roundUndo[0].source.content[0].attrs); },
+    l => { const proto = Object.create(Array.prototype); proto.toJSON = function() { calls++; return []; }; Object.setPrototypeOf(l.revisions, proto); },
+    l => { const proto = []; Object.setPrototypeOf(proto, Object.prototype); proto.constructor = Array; Object.defineProperty(proto, 'toJSON', { get() { calls++; return () => []; } }); Object.setPrototypeOf(l.revisions, proto); },
+    l => { l.undo = new Array(1000001); },
+    l => { Object.defineProperty(l, 'toJSON', { enumerable: false, value() { calls++; return {}; } }); },
+  ]) {
+    const hostile = structuredClone(base); mutate(hostile);
+    assert.throws(() => model.bindLedger(hostile), /PENDING_REVISIONS_DATA_INVALID/);
+  }
+  assert.equal(calls, 0);
+  for (const attrs of [{ wordParagraphSpacing: { after: -1 } }, { wordParagraphMarkLanguage: { val: 'not a language' } }]) {
+    const bad = structuredClone(base); bad.revisions[1].format.before.attrs = attrs;
+    assert.throws(() => model.bindLedger(bad), /WORD_(?:PARAGRAPH_SPACING|LANGUAGE)_INVALID/);
+  }
+});
+
+test('Pending spacing/language old and current XML properties reject malformed shape and ownership', async () => {
+  const [bridge] = await modules;
+  const bad = [
+    '<w:spacing w:after="160" w:beforeLines="20"/>',
+    '<w:spacing w:after="160"><w:jc w:val="left"/></w:spacing>',
+    '<w:spacing xmlns:x="urn:foreign" x:after="160"/>',
+    '<w:spacing w:after="-1"/>',
+    '<w:rPr><w:lang w:val="not a language"/></w:rPr>',
+    '<w:lang w:val="en-US"/>',
+    '<w:rPr><w:spacing w:after="160"/></w:rPr>',
+    '<w:rPr>unowned text<w:lang w:val="en-US"/></w:rPr>',
+  ];
+  for (const property of bad) for (const old of [false, true]) {
+    const xml = `<w:p><w:pPr>${old ? '<w:jc w:val="center"/>' : property}${change('pPr', 1, old ? property : '<w:jc w:val="left"/>')}</w:pPr>${run('protected')}</w:p>`;
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(xml)).ok, false, `${old ? 'previous' : 'current'} ${property}`);
+  }
+});

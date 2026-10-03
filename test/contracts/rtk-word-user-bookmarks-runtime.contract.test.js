@@ -432,10 +432,38 @@ test('full product export retained transport self-return and clean target/delete
   const original = buildDocxReviewPacketBuffer(product);
   const privateMap = w.io.bindUserBookmarkExportTransportPartsV1(product.localAuthorityCapsule.exportMap, original);
   const parts = w.io.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: original }).parts;
-  for (const kind of ['unchanged', 'retarget', 'delete', 'label', 'rename', 'alter-technical', 'foreign-part', 'alter-relationship', 'old-baseline']) {
+  for (const kind of ['unchanged', 'retarget', 'delete', 'label', 'rename', 'alter-technical', 'foreign-part', 'alter-relationship', 'old-baseline', 'run-language', 'label-language', 'paragraph-language']) {
     const changed = { ...parts }; let xml = changed['word/document.xml'];
     if (kind === 'retarget') xml = xml.replace('w:anchor="UserTwinA"', 'w:anchor="UserTwinB"');
     if (kind === 'label') xml = xml.replace('Link One', 'Edited One');
+    if (kind === 'label-language') xml = xml.replace('Link One', 'Edited One');
+    if (kind==='run-language') {
+      const prior=xml;
+      xml=xml.replace(/(<w:r><w:rPr>[\s\S]*?<w:lang\b[^>]*w:val=")[^"]+/u,'$1de-DE');
+      assert.notEqual(xml,prior,'native imported language must be present in actual exported run');
+    }
+    if(kind==='label-language') {
+      let targets=0;
+      xml=xml.replace(/<w:hyperlink\b[^>]*>[\s\S]*?<\/w:hyperlink>/gu,hyperlink=>{
+        if(!hyperlink.includes('Edited One'))return hyperlink;
+        return hyperlink.replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>{
+          if(!/<w:t(?:\s[^>]*)?>Edited One<\/w:t>/u.test(run))return run;
+          targets++;
+          const previousLanguage=run.match(/<w:lang\b[^>]*w:val="([^"]+)"/u)?.[1];
+          assert.ok(previousLanguage);assert.notEqual(previousLanguage,'de-DE');
+          const updated=run.replace(/(<w:lang\b[^>]*w:val=")[^"]+/u,'$1de-DE');
+          assert.match(updated,/<w:t(?:\s[^>]*)?>Edited One<\/w:t>/u);
+          assert.match(updated,/<w:lang\b[^>]*w:val="de-DE"/u);
+          return updated;
+        });
+      });
+      assert.equal(targets,1,'language mutation targets only the edited hyperlink label run');
+    }
+    if(kind==='paragraph-language') {
+      const prior=xml;
+      xml=xml.replace(/(<w:pPr>[\s\S]*?<w:lang\b[^>]*w:val=")[^"]+/u,'$1de-DE');
+      assert.notEqual(xml,prior,'native imported paragraph-mark language must be present');
+    }
     if (kind === 'rename') xml = xml.replace('w:name="UserTwinA"', 'w:name="NewName"').replace('w:anchor="UserTwinA"', 'w:anchor="NewName"');
     if (kind === 'delete') { const start = xml.match(/<w:bookmarkStart w:id="(\d+)" w:name="UserTwinA"\/>/);
       assert.ok(start); xml = xml.replace(start[0], '').replace(`<w:bookmarkEnd w:id="${start[1]}"/>`, ''); }
@@ -451,6 +479,14 @@ test('full product export retained transport self-return and clean target/delete
     if (expected) {
       const plan = core.planReturn({ beforeDoc: baselineDoc, candidateDoc: result.doc });
       assert.equal(plan.changed, kind !== 'unchanged');
+      if(kind==='label') {
+        const nodes=doc=>core.paragraphs(doc).flatMap(p=>p.content||[]);
+        const original=nodes(baselineDoc).find(n=>n.text==='Link One');
+        const edited=nodes(result.doc).find(n=>n.text==='Edited One');
+        assert.ok(original&&edited);
+        const language=node=>node.marks?.find(m=>m.type==='textStyle')?.attrs?.wordLanguage;
+        assert.ok(language(original));assert.deepEqual(language(edited),language(original));
+      }
       if (kind === 'delete') {
         const deleted = plan.registry.bookmarks.find(record => record.name === 'UserTwinA');
         assert.equal(deleted.state, 'deleted');

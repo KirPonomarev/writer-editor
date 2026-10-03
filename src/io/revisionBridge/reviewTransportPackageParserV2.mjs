@@ -5787,7 +5787,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   const propertyReplacements = [], propertyRemovals = [];
   const runProperties = new Set(['rPr', 'rPrChange', 'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight',
     'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
-  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId']);
+  const paragraphProperties = new Set(['pPr', 'pPrChange', 'jc', 'pStyle', 'outlineLvl', 'numPr', 'ilvl', 'numId', 'spacing', 'rPr', 'lang']);
   for (const token of propertyTokens) {
     const kind = token.localName === 'rPrChange' ? 'run' : 'paragraph';
     const propertyName = kind === 'run' ? 'rPr' : 'pPr';
@@ -5807,6 +5807,29 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     if (children.some(t => t.namespaceUri !== W_NS || !admitted.has(t.localName))
       || children.filter(t => t.localName === token.localName).length !== 1)
       throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+    // New typed properties are admitted in both current and previous snapshots
+    // only with their exact owners, namespaces, leaf shape and value grammar.
+    for(const child of children.filter(t=>['spacing','lang'].includes(t.localName))) {
+      const allowed=child.localName==='spacing'?['before','after','line','lineRule']:wordLanguage.KEYS;
+      const ownerName=child.localName==='spacing'?'pPr':'rPr';
+      const propertyOwner=scan.tokens.find(t=>t.depth===child.depth-1&&t.openEnd<=child.openStart&&t.closeStart>=child.closeEnd);
+      if(!isWordToken(propertyOwner,ownerName)
+        || child.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'&&(a.namespaceUri!==W_NS||!allowed.includes(a.localName)))
+        || scan.tokens.some(t=>t.openStart>=child.openEnd&&t.closeEnd<=child.closeStart)
+        || (!child.selfClosing&&documentXml.slice(child.openEnd,child.closeStart).trim()))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      readEffectiveTuple(child,child.localName);
+    }
+    if(kind==='paragraph')for(const mark of children.filter(t=>isWordToken(t,'rPr'))) {
+      const owner=scan.tokens.find(t=>t.depth===mark.depth-1&&t.openEnd<=mark.openStart&&t.closeStart>=mark.closeEnd);
+      if(!isWordToken(owner,'pPr')||mark.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns')
+        ||children.some(t=>t.depth===mark.depth+1&&t.openStart>=mark.openEnd&&t.closeEnd<=mark.closeStart&&!isWordToken(t,'lang')))throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      let cursor=mark.openEnd;
+      for(const child of children.filter(t=>t.depth===mark.depth+1&&t.openStart>=mark.openEnd&&t.closeEnd<=mark.closeStart).sort((a,b)=>a.openStart-b.openStart)) {
+        if(documentXml.slice(cursor,child.openStart).trim())throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+        cursor=child.closeEnd;
+      }
+      if(!mark.selfClosing&&documentXml.slice(cursor,mark.closeStart).trim())throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+    }
     const nativeId = attr(token, 'id', W_NS);
     if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
     const from = kind === 'paragraph' ? 0

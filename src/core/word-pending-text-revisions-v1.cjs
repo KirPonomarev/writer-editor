@@ -4,6 +4,8 @@
 // projection, never a second source of truth for a pending change.
 const KEY = 'wordPendingRevisions';
 const { inspectTable } = require('../io/documentTables.js');
+const spacing = require('./word-paragraph-spacing-v1.cjs');
+const language = require('./word-language-v1.cjs');
 const MAX_BYTES = 4 * 1024 * 1024;
 const stable = value => Array.isArray(value) ? '[' + value.map(stable).join(',') + ']' : object(value) ? '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}' : JSON.stringify(value);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -158,9 +160,11 @@ function exportDocument(ledger) {
   return { doc, paragraphs: paragraphs(doc).map(p => records.get(p) || { segments: [], paragraphRevision: null, boundaryRevision: null, rowRevision: null }) };
 }
 function validateSource(doc) {
+  spacing.inspectDocumentParagraphSpacing(doc);
+  language.inspectDocumentLanguage(doc);
   for (const p of paragraphs(doc)) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
-    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level'])
+    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage'])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
       && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)));
     assert(Array.isArray(p.content));
@@ -174,8 +178,9 @@ function validateSource(doc) {
         assert(exact(mark, ['type', 'attrs']) && !seen.has(mark.type)); seen.add(mark.type);
         if (['bold', 'italic', 'underline', 'strike'].includes(mark.type)) assert(!mark.attrs || !Object.keys(mark.attrs).length);
         else if (mark.type === 'textStyle') {
-          assert(exact(mark.attrs, ['fontFamily', 'fontSize', 'color']));
+          assert(exact(mark.attrs, ['fontFamily', 'fontSize', 'color', 'wordLanguage']));
           for (const [key, value] of Object.entries(mark.attrs)) {
+            if (key === 'wordLanguage') { language.normalizeWordLanguage(value); continue; }
             assert(typeof value === 'string' && value.length <= 128 && !/[\x00-\x1f<>]/u.test(value));
             if (key === 'color') assert(/^#[a-f0-9]{6}$/u.test(value));
             if (key === 'fontSize') assert(/^\d+(?:\.5)?pt$/u.test(value) && parseFloat(value) > 0 && parseFloat(value) <= 1638);
@@ -186,7 +191,45 @@ function validateSource(doc) {
     }
   }
 }
+// Check data descriptors before the byte-budget JSON serialization, including
+// dormant before/after and history frames. Never invoke payload getters/toJSON.
+function inspectLedgerData(input) {
+  const pending = [{ value: input, depth: 0 }], ancestors = new Set(); let count = 0;
+  while (pending.length) {
+    const { value, depth, exit } = pending.pop();
+    if (exit) { ancestors.delete(value); continue; }
+    assert(++count <= 1000000, 'PENDING_REVISIONS_DATA_INVALID');
+    if (value === null || ['string', 'number', 'boolean', 'undefined'].includes(typeof value)) continue;
+    assert(typeof value === 'object' && depth <= 256 && !ancestors.has(value), 'PENDING_REVISIONS_DATA_INVALID');
+    const prototype = Object.getPrototypeOf(value);
+    const constructor = prototype && Object.getOwnPropertyDescriptor(prototype, 'constructor');
+    const array = Array.isArray(value);
+    assert(!array || value.length <= 1000000, 'PENDING_REVISIONS_DATA_INVALID');
+    const nativeArrayPrototype = array && (prototype === Array.prototype
+      || (Array.isArray(prototype) && typeof constructor?.value === 'function'
+        && constructor.value.prototype === prototype
+        && Function.prototype.toString.call(constructor.value) === Function.prototype.toString.call(Array)
+        && Object.getPrototypeOf(Object.getPrototypeOf(prototype)) === null));
+    assert(array ? nativeArrayPrototype : prototype === null || prototype === Object.prototype
+      || (Object.getPrototypeOf(prototype) === null && typeof constructor?.value === 'function'
+        && constructor.value.prototype === prototype
+        && Function.prototype.toString.call(constructor.value) === Function.prototype.toString.call(Object)), 'PENDING_REVISIONS_DATA_INVALID');
+    for (let parent = prototype; parent; parent = Object.getPrototypeOf(parent)) {
+      assert(!Object.getOwnPropertyDescriptor(parent, 'toJSON'), 'PENDING_REVISIONS_DATA_INVALID');
+    }
+    ancestors.add(value); pending.push({ value, exit: true });
+    const keys = Reflect.ownKeys(value);
+    assert(keys.length + pending.length + count <= 1000000, 'PENDING_REVISIONS_DATA_INVALID');
+    for (const key of keys) {
+      if (Array.isArray(value) && key === 'length') continue;
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      assert(typeof key === 'string' && descriptor.enumerable && Object.hasOwn(descriptor, 'value'), 'PENDING_REVISIONS_DATA_INVALID');
+      pending.push({ value: descriptor.value, depth: depth + 1 });
+    }
+  }
+}
 function validateState(input, frame = false) {
+  if (!frame) inspectLedgerData(input);
   assert(object(input) && new TextEncoder().encode(JSON.stringify(input)).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
   const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(input.schemaVersion === 3 ? ['noteSourcePoints'] : [])];
   assert([1, 2, 3].includes(input.schemaVersion));

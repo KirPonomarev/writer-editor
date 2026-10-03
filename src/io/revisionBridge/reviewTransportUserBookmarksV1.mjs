@@ -308,7 +308,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         || !same(languages(before.map(run=>({from:run.from,to:run.to,language:run.inline?.wordLanguage||null}))),languages(languageChange.runs));
       const hasLanguage=languageChange.paragraphMark!==null || languageChange.runs.some(run=>run.language!==null)
         || baseP.wordParagraphMarkLanguage!=null || before.some(run=>run.inline?.wordLanguage!=null);
-      if(!ordinaryTextMode && hasLanguage) return reject('language-composite-unsupported');
+      // Bookmark-only returns preserve language through exact style signatures
+      // (including offset-adjusted label comparisons) and the paragraph-mark
+      // equality guard above. Presence alone is not a language mutation.
       let from=0,to=block.text.length,afterTo=p.paragraphText.length;
       if(block.text!==p.paragraphText || (ordinaryTextMode && hasLanguage && languageChanged)){
         const groups=[];
@@ -332,7 +334,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
           continue;
         }
-        if(hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
+        if(ordinaryTextMode && hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);

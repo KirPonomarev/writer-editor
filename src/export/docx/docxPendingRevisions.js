@@ -1,5 +1,6 @@
 'use strict';
 const { escapeXml } = require('./docxTextXml.js');
+const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 const { normalizeWordParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
 function buildDocxWordParagraphSpacingXml(value) {
   if (value == null) return '';
@@ -16,11 +17,15 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
-  if (/<w:(?:spacing|lang)\b/u.test(body)) throw Error('PENDING_FORMAT_PARAGRAPH_SPACING_LANGUAGE_UNSUPPORTED');
-  const protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl)\b[^>]*\/>/gu, '');
+  let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang)\b[^>]*\/>/gu, '');
+  const oldLanguage = buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
+  if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
+  else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
+  protectedProperties = protectedProperties.replace(/<w:rPr><\/w:rPr>/gu, '');
   const old = `<w:pStyle w:val="${before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal'}"/>`
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
     + (before.attrs?.textAlign ? `<w:jc w:val="${escapeXml(before.attrs.textAlign === 'justify' ? 'both' : before.attrs.textAlign)}"/>` : '')
+    + buildDocxWordParagraphSpacingXml(before.attrs?.wordParagraphSpacing)
     + protectedProperties;
   return `<w:pPr>${body}<w:pPrChange${revisionAttributes(revision, counter)}><w:pPr>${old}</w:pPr></w:pPrChange></w:pPr>`;
 }
