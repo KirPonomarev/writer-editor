@@ -2108,6 +2108,9 @@ async function handleWordCommentAction(button) {
     let payload;
     if (action === 'save') {
       if (!wordCommentDraft || !['projectId', 'sceneId', 'subjectId', 'expectedStateSha256', 'expectedSceneSha256'].every(key => wordCommentDraft.binding[key] === p[key])) throw new Error('Контекст изменился. Сохраните копию черновика перед отменой.');
+      // Read the live draft at Save. A failed update serializer must never
+      // publish the last successfully serialized, now stale body.
+      if (wordCommentEditor) wordCommentDraft.richBody = { schemaVersion: 'yalken.word.comment-body.v1', document: wordCommentEditor.getJSON() };
       const { binding: bound, richBody, ...intent } = wordCommentDraft;
       // Rich trees exceed the generic IPC nesting limit. Only this bounded
       // wire representation is serialized; Core validates it before use.

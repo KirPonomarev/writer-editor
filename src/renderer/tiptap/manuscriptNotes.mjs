@@ -78,8 +78,31 @@ export function renderCommentBodyHtml(message) {
   return generateHTML(commentBodyDocumentForEditor(message), manuscriptBodyExtensions({ profile: 'comment' }));
 }
 
-export function readManuscriptBodyDocument(editor) {
-  const doc = canonicalizeDocumentJson(editor.getJSON());
+export function readManuscriptBodyDocument(editor, profile = 'manuscript') {
+  const raw = editor.getJSON();
+  // The comment profile admits formatted line breaks. The shared envelope
+  // validates language only on text runs, so validate each break's exact marks
+  // on a temporary newline run and restore its structural node afterwards.
+  const breaks = [];
+  if (profile === 'comment') {
+    for (let p = 0; p < (raw.content || []).length; p++) {
+      const paragraph = raw.content[p];
+      for (let i = 0; i < (paragraph.content || []).length; i++) {
+        const node = paragraph.content[i];
+        if (node.type === 'hardBreak' && node.marks !== undefined) {
+          if (Object.keys(node).some(key => !['type', 'marks'].includes(key))) throw Error('COMMENT_RICH_BODY_PROFILE');
+          paragraph.content[i] = { type: 'text', text: '\n', marks: node.marks };
+          breaks.push([p, i]);
+        }
+      }
+    }
+  }
+  const doc = canonicalizeDocumentJson(raw);
+  for (const [p, i] of breaks) {
+    const node = doc.content[p].content[i];
+    if (node.type !== 'text' || node.text !== '\n') throw Error('COMMENT_BREAK_PROJECTION_INVALID');
+    doc.content[p].content[i] = { type: 'hardBreak', ...(node.marks ? { marks: node.marks } : {}) };
+  }
   // Shared editor extensions emit null document defaults. Once canonicalized,
   // an empty attribute container is not part of the auxiliary rich-body model.
   if (doc.attrs && Object.keys(doc.attrs).length === 0) delete doc.attrs;
@@ -103,7 +126,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
         else editor.commands.insertContent(lines.map(line => ({ type: 'paragraph', content: line ? [{ type: 'text', text: line }] : [] })));
         return true;
       } },
-    onUpdate: () => onChange?.(readManuscriptBodyDocument(editor)),
+    onUpdate: () => onChange?.(readManuscriptBodyDocument(editor, profile)),
   });
   bodyEditors.set(host, editor);
   for (const [label, command] of [['Полужирный', 'toggleBold'], ['Курсив', 'toggleItalic'], ['Подчёркивание', 'toggleUnderline'], ['Зачёркивание', 'toggleStrike']]) {
@@ -169,7 +192,7 @@ export function createManuscriptBodyEditor(host, { onChange, onSave, onEscape, b
       event.preventDefault(); onSave?.();
     }
   });
-  return { getJSON: () => readManuscriptBodyDocument(editor), setDocument: doc => {
+  return { getJSON: () => readManuscriptBodyDocument(editor, profile), setDocument: doc => {
     documentGeneration++; editor.commands.setContent(doc, { emitUpdate: false });
     // Replacing a note/project is not an authoring edit. Its history must never
     // expose the previous entity's body through Undo.

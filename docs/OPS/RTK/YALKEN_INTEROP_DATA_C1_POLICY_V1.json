@@ -785,7 +785,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "8c5a2d22f5484978f10c05ff7002b9d88d4ff04bdaf3ba418ae88b5c62103797"
+        "sha256": "99a336fc790258c07c24c4464afbaef87982328a76cc13cc8ee13e6dca4ad97f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -949,7 +949,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "f6474d0ba4a5e31db76f5eddce89f5805f02d4faaeaf069bfdf49a314e687bab"
+        "sha256": "b7d0f572a7a66f3e25331f5beeb464d84e909dfbaaba5f2bd13931ac0671c209"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1085,7 +1085,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "ca88fa618e730d03f0759cd6417361728f13d4cdbdd433c9ba8357cdc4fe73e1"
+        "sha256": "a72370cb30c668d7f65a389b43bb8718487dd2ee41f85cf321d6a10983190213"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1485,7 +1485,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "69e8a87744585f2581ed900eae18a7aebf99abf7524b87eec957f858c414b7a7"
+        "sha256": "24477caa82da6bcc731361cb1b670f7a468b26dc6ccfea048a1789ea6c516217"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1593,7 +1593,7 @@
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
-        "sha256": "8259f1ef439e1eb30b762e6a22de3c6770601e1a5199292e5c457fd8642fc271"
+        "sha256": "a5aca19363e2f5cae43d7f212bbe182a6cf6d286d85322da5bf0388e7996fdd1"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
@@ -2333,11 +2333,11 @@
       },
       {
         "path": "test/contracts/rtk-word-rich-comments-renderer.contract.test.js",
-        "sha256": "19610b9c5cc8689c59a105a82b8c1f9f8afd79b1fae840d32cd57c41e582c1f0"
+        "sha256": "ec54c9938c46d0b10535bebbc3956eba39aa33ed1e4e8b69890a9772f0f1df8a"
       },
       {
         "path": "docs/tasks/2026-10-03--word-rich-comments-mac.md",
-        "sha256": "bc85e0dc1bce7c42fc0f1f7f499377bbe6d6a2b314bd4639a6fddaf1e486f089"
+        "sha256": "f47a9842b3c1951aac9f429b239a50569b2461543384a27bca0f9664b7768229"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RICH_COMMENTS_V1.json",

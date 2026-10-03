@@ -132,10 +132,10 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
         && message.kind === (index === 0 ? 'root' : 'reply')
         && typeof message.body === 'string' && message.body.trim()
         && Buffer.byteLength(message.body, 'utf8') <= 16384, 'DOCX_COMMENT_MESSAGE_INVALID');
+      segmentDocxTextForSerialization(message.body);
       const content = commentBody.validateCommentMessageContent(message);
       demand(!content.richBody || state.schemaVersion === commentBody.STATE_V2, 'COMMENT_RICH_STATE_VERSION_REQUIRED');
       reserve(ids, message.commentId);
-      segmentDocxTextForSerialization(message.body);
       demand(!message.body.includes('\r'), 'DOCX_COMMENT_BODY_NON_CANONICAL_NEWLINE');
       const transportRichBody = exportTypography ? commentBody.commentBodyWithTypography(content, exportTypography) : null;
       const provenance = normalizeCommentProvenance(message.provenance);

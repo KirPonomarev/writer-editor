@@ -93,7 +93,7 @@ test('opening legacy text preserves hard-break semantics and rich bodies preserv
 
 test('rich Save uses original command binding, retains failed draft and rejects stale projection without dispatch', async () => {
   const calls = [], draft = { binding, requestId: 'op1', action: 'edit', threadId: 't', commentId: 'c', richBody: rich(body()) };
-  const ctx = vm.createContext({ TextEncoder, wordCommentDraft: draft, wordCommentBusy: false, wordCommentNotice: '',
+  const ctx = vm.createContext({ TextEncoder, wordCommentEditor: null, wordCommentDraft: draft, wordCommentBusy: false, wordCommentNotice: '',
     reviewSurfaceState: { commentAuthoring: { available: true, ...binding } }, renderReviewSurface() {},
     reviewSurfaceUnwrapCommandResult: x => x, invokePreloadUiCommandBridge: async (id, payload) => { calls.push({ id, payload }); return { ok: false, reason: 'COMMENT_STATE_CONFLICT' }; },
     loadReviewSurfaceFromQuery: async () => {},
@@ -233,4 +233,69 @@ test('link dialog cancellation, stale document, destroyed/read-only target and c
     h.respond(mutation === 'cancel' ? null : mutation === 'bookmark' ? { bookmarkId: 'main-only' } : 'https://example.org');
     assert.equal((await pending).performed, false, mutation); assert.deepEqual(h.mutations, [], mutation);
   }
+});
+
+test('whole-comment underline serializes Word language on soft breaks without discarding formatting or relaxing language validation', async () => {
+  const [{ Editor }, ui] = await Promise.all([import('@tiptap/core'), import('../../src/renderer/tiptap/manuscriptNotes.mjs')]);
+  const language = { bidi: 'ar-SA', eastAsia: 'ru-RU', val: 'en-US' };
+  const style = { type: 'textStyle', attrs: { wordLanguage: language, fontFamily: 'Times New Roman', fontSize: '12pt' } };
+  const document = { type: 'doc', content: [
+    { type: 'paragraph', attrs: { wordParagraphMarkLanguage: language, wordParagraphSpacing: { after: 160, line: 278, lineRule: 'auto' } }, content: [{ type: 'text', text: 'ROOT_BOLD', marks: [style, { type: 'bold' }] }] },
+    { type: 'paragraph', content: [{ type: 'text', text: 'Second\tparagraph', marks: [style] }, { type: 'hardBreak', marks: [style] }, { type: 'text', text: 'soft break ', marks: [style] }, { type: 'text', text: 'reference', marks: [style, { type: 'underline' }, { type: 'link', attrs: { href: 'https://example.org' } }] }] },
+  ] };
+  const editor = new Editor({ element: null, extensions: ui.manuscriptBodyExtensions({ profile: 'comment' }), content: document });
+  try {
+    editor.commands.selectAll(); editor.commands.toggleUnderline();
+    const raw = editor.getJSON(), snapshot = JSON.stringify(raw);
+    assert(raw.content[1].content.find(node => node.type === 'hardBreak').marks.some(mark => mark.attrs?.wordLanguage));
+    const actual = ui.readManuscriptBodyDocument(editor, 'comment');
+    const core = require('../../src/core/word-comment-body-v1.cjs');
+    const checked = core.validateCommentRichBody(rich(actual));
+    for (const paragraph of checked.richBody.document.content) for (const node of paragraph.content || []) {
+      assert(node.marks.some(mark => mark.type === 'underline'), node.type);
+      assert.deepEqual(node.marks.find(mark => mark.type === 'textStyle').attrs.wordLanguage, language);
+    }
+    assert.equal(JSON.stringify(editor.getJSON()), snapshot);
+    const malformed = structuredClone(raw);
+    malformed.content[1].content.find(node => node.type === 'hardBreak').marks.find(mark => mark.type === 'textStyle').attrs.wordLanguage.val = '../../invalid';
+    assert.throws(() => ui.readManuscriptBodyDocument({ getJSON: () => malformed }, 'comment'), /WORD_LANGUAGE_INVALID/);
+  } finally { editor.destroy(); }
+});
+
+test('Save serializes the live rich editor and refuses update errors instead of publishing a stale prior draft', async () => {
+  const calls = [], prior = rich(body());
+  const ctx = vm.createContext({ TextEncoder, wordCommentDraft: { binding, action: 'edit', requestId: 'savedraft', threadId: 't', commentId: 'c', richBody: prior },
+    wordCommentEditor: { getJSON() { throw Error('WORD_LANGUAGE_INVALID'); } }, wordCommentBusy: false, wordCommentNotice: '',
+    reviewSurfaceState: { commentAuthoring: { available: true, ...binding } }, renderReviewSurface() {}, reviewSurfaceUnwrapCommandResult: x => x,
+    invokePreloadUiCommandBridge: async (_id, payload) => { calls.push(payload); return { ok: false, reason: 'TEST_RETAIN' }; }, loadReviewSurfaceFromQuery: async () => {},
+  });
+  const start = source.indexOf('async function handleWordCommentAction(');
+  vm.runInContext(source.slice(start, source.indexOf('function reviewSurfaceNormalizeState(', start)), ctx);
+  const button = { disabled: false, dataset: { wordCommentAction: 'save' } };
+  await ctx.handleWordCommentAction(button); assert.equal(calls.length, 0); assert.equal(ctx.wordCommentDraft.richBody, prior); assert.match(ctx.wordCommentNotice, /WORD_LANGUAGE_INVALID/);
+  const live = body(); live.content[0].content[0].marks.push({ type: 'underline' }); ctx.wordCommentEditor.getJSON = () => live;
+  await ctx.handleWordCommentAction(button); assert.equal(calls.length, 1); assert.deepEqual(JSON.parse(calls[0].richBodyJson).document, live);
+});
+
+test('comment break projection retains adjacent marks and rejects unknown fields without relaxing manuscript language checks', async () => {
+  const ui = await import('../../src/renderer/tiptap/manuscriptNotes.mjs');
+  const core = require('../../src/core/word-comment-body-v1.cjs');
+  const languageMark = { type: 'textStyle', attrs: { wordLanguage: { val: 'en-US' } } };
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [
+    { type: 'text', text: 'before' },
+    { type: 'hardBreak', marks: [languageMark, { type: 'bold' }] },
+    { type: 'hardBreak', marks: [languageMark, { type: 'italic' }] },
+    { type: 'text', text: 'after' },
+  ] }] };
+  const read = input => ui.readManuscriptBodyDocument({ getJSON: () => structuredClone(input) }, 'comment');
+  const actual = read(doc);
+  assert.deepEqual(actual.content[0].content, doc.content[0].content);
+  assert.equal(core.validateCommentRichBody(rich(actual)).body, 'before\n\nafter');
+  const unknownField = structuredClone(doc); unknownField.content[0].content[1].payload = 'must not disappear';
+  assert.throws(() => read(unknownField), /COMMENT_RICH_BODY_PROFILE/);
+  for (const mark of [{ type: 'unsupported' }, { type: 'bold', attrs: { unsupported: 'value' } }]) {
+    const bad = structuredClone(doc); bad.content[0].content[1].marks.push(mark);
+    assert.throws(() => core.validateCommentRichBody(rich(read(bad))));
+  }
+  assert.throws(() => ui.readManuscriptBodyDocument({ getJSON: () => structuredClone(doc) }), /WORD_LANGUAGE_INVALID/);
 });

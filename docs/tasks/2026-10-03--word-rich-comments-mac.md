@@ -33,6 +33,7 @@ One complete rich comment authoring and exchange capability, with independent na
 - `src/renderer/tiptap/manuscriptNotes.mjs`
 - `src/renderer/tiptap/index.js`
 - `test/unit/sector-m-toolbar-expansion-wave-a2.test.js`
+- `test/unit/r24-wp204-lifecycle-recovery-mutants.test.js`
 - `test/contracts/rtk-word-link-authoring.contract.test.js`
 - `test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js`
 - `test/contracts/rtk-word-comment-authoring.contract.test.js`
@@ -120,3 +121,9 @@ Runtime early04 does not include the latest digest repair. Source bindings/OPS h
 ONE_NEXT_STEP: inspect saved rich-root-semantic-digest-fixed.log and resolve the digest regression without losing assertions, then continue existing package acceptance. Do not resume until new direct owner authorization.
 
 RESUMED after owner instruction in auditor chat following reboot. Verified encrypted mount UUID, linked worktree and all39 saved file hashes. Root semantic digest regression repaired without runtime delta: compare complete semantic reply and separately verify exact XML offsets in each input;22of22 focused parser checks PASS0skip. This supersedes the checkpoint's active pause and failing-test status only; package acceptance remains incomplete.
+
+
+Baseline repair amendment:38-path clean preflight PASS at candidate80fdb2ff before repairs; original integrated delivery base remains23d8a2cb. Baseline candidate run completed2141pass5fail59skip. Preserve legacy DOCX malformed-surrogate diagnostic before rich-body validation; include the new body module in the isolated lifecycle mutation sandbox. Existing negative assertions and all seven mutants unchanged;43focusedchecksPASS0skip. Three timing failures independently rerun sequentially:11of11PASS0skip; this does not turn the failed baseline green.
+SOURCE01 candidate evidence: actual Word root italic formatting Apply revision3->4; independent XML/state oracle19assertionsPASS, reply/anchor/identity/literal/main scene preserved. Repeating the same DOCX Apply leaves state bytes and revision4 unchanged. Later root Cmd-U and local underline button both advanced revision without retaining intended underline. These authoring observations are FAIL, not acceptance; UI serialization investigation active. SOURCE/PACKAGED full qualification and delivery remain incomplete.
+
+Native authoring root cause and repair: shared document language validation rejects formatted hardBreak language admitted by comment grammar. The comment editor now validates a marked break through an exact temporary newline text node and restores its structural position; manuscript language grammar is unchanged. Save reads the live editor and refuses serialization errors before dispatch, preserving the draft instead of publishing its prior value. Actual-schema underline, invalid-language, and failed-save checks cover this path. Runtime01 is superseded for final authoring acceptance; its independent Word Apply/replay observations retain only their original80fdb2ff scope.
