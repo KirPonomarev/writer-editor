@@ -2,6 +2,16 @@
 
 _Updated: 2026-08-04_
 
+## Owner checkpoint — 2026-10-05 01:14:43 EEST
+
+Приоритет Mac Yalken ↔ Word: полный редакторский цикл романа и большого текста.
+Решение, границы и порядок записаны в начале `docs/CONTEXT.md`, раздел
+«Приоритет владельца: роман и редактура через Word на macOS».
+Runtime остаётся на паузе. PR 2078 ещё требует полной проверки и поставки;
+после его closure следующая цель — смешанный книжный сценарий из этой записи.
+Прежняя подготовка отдельного custom-note-marker fixture не определяет очередь.
+Исходный полный план и его незакрытые требования сохраняются.
+
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
 - Active canonical execution document: `docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md`

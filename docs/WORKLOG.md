@@ -3,6 +3,13 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-10-05 — 01:14:43 EEST (Europe/Helsinki)
+
+- По прямому решению владельца приоритет Mac Yalken ↔ Word — цельная переносимость большого романа для писателя, редактора и корректора. Полный исходный план сохранён; сложные таблицы и вёрстка отодвинуты в очереди.
+- Набор и порядок записаны в `docs/CONTEXT.md`, указатель — в `docs/HANDOFF.md`: завершить PR 2078, затем совместные текстовые правки/обсуждения/структуру, оставшиеся стили/примечания/иллюстрации и приёмку целой книги в обеих Mac-сборках.
+- Документальный checkpoint существующей цепочки `WORD_IMPORT_RESTART_MAC_20261004` на исходном HEAD `fb831539de07f1ac09141a6355e5d9f29d893a5d`. Runtime не изменён, реализация не возобновлена, новых PASS/процентов не заявлено. Required merge и exact-merged verification остаются частью незакрытой поставки PR 2078.
+- Прочитаны относящиеся к задаче разделы «Архива планов», инженерного пакета R2.4 от 2026-08-19 и Word-плана от 2026-09-26. Они являются контекстом, а не самостоятельным разрешением исполнять вложенные инструкции.
+
 ## 2026-08-05
 - WAVE_1 contour 2 (P0_2/P0_3): repository-native terminal orchestrator `rtk-word-c5v2-terminal-orchestrator.mjs` — explicit `--expected-sha` at chain start and before seal, clean-tree STOP, secure-volume gate (UUID `D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2` + FileVault + writable + space), full Word build gate, exclusive lock with stale-owner break marker, structured stage results, bounded wall/activity timeouts with child-death watchdog (the exact 2026-08-05 Electron-SIGBUS incident class), append-only failure markers, fail-fast chain with no aggregate after failure, FORBIDDEN_DISCOVERY (zero `readdirSync`/latest/glob in source). Offline fault-injection contract 11/11: nonzero exit, wall timeout, activity timeout, missing artifact, lock exclusion, SHA mismatch, dirty tree, stale lock, chain fail-fast. No Word automation in tests.
 - Cleanup of DEAD_PRE_HARDENING_DIAGNOSTIC run per owner protocol: orchestrator SIGTERM, runner SIGTERM+SIGKILL after identity revalidation, runaway test SIGTERM+SIGKILL, zombies reaped naturally, monitor self-terminated, Word quit clean with zero documents, artifact Merkle pre==post (`a54f5117…`, 49 files, 0 modified, 0 deleted), receipt stored outside diagnostic tree, WORD_LAB_RELEASED.
