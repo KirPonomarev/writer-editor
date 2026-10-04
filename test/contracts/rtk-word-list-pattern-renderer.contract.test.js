@@ -74,14 +74,14 @@ test('actual sink, split, lift and Undo recompute parent-dependent markers witho
   const labels=()=>{const json=editor.getJSON(),projections=core.resolveMarkers(json),out=[];const walk=node=>{const projection=projections.get(node);(node.content||[]).forEach((child,index)=>{if(projection)out.push(projection.items[index].label);walk(child);});};walk(json);return out;};
   try {
     const before=editor.getJSON();editor.commands.setTextSelection(position('Beta'));
-    assert.equal(editor.commands.sinkListItem('listItem'),true);assert.deepEqual(labels(),['(1)','1.1.']);
+    assert.equal(editor.commands.sinkListItem('listItem'),true);assert.deepEqual(labels(),['(1)','1.1.']);assert.deepEqual(cachedNumberingLabels(editor),['(1)','1.1.']);
     const nested=editor.getJSON();assert.equal(nested.content[0].content[0].content[1].attrs.wordNumbering.level,1);
     assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
-    assert.equal(editor.commands.redo(),true);assert.deepEqual(labels(),['(1)','1.1.']);
+    assert.equal(editor.commands.redo(),true);assert.deepEqual(labels(),['(1)','1.1.']);assert.deepEqual(cachedNumberingLabels(editor),['(1)','1.1.']);
     editor.commands.setTextSelection(position('Beta')+2);assert.equal(editor.commands.splitListItem('listItem'),true);
-    assert.deepEqual(labels(),['(1)','1.1.','1.2.']);
+    assert.deepEqual(labels(),['(1)','1.1.','1.2.']);assert.deepEqual(cachedNumberingLabels(editor),['(1)','1.1.','1.2.']);
     assert.equal(editor.commands.liftListItem('listItem'),true);
-    assert.deepEqual(labels(),['(1)','1.1.','(2)']);
+    assert.deepEqual(labels(),['(1)','1.1.','(2)']);assert.deepEqual(cachedNumberingLabels(editor),['(1)','1.1.','(2)']);
     assert.equal(editor.state.doc.textContent,'AlphaBeta');
   }finally{editor.destroy();}
 });
@@ -562,6 +562,15 @@ test('actual active-scene caller publishes before identity commit including same
   }
 });
 
+function cachedNumberingLabels(editor) {
+  const labels=[];
+  for(const plugin of editor.state.plugins) {
+    const decorations=plugin.props.decorations?.call(plugin,editor.state);
+    if(decorations?.find)labels.push(...decorations.find().filter(value=>value.type.attrs?.['data-word-marker']));
+  }
+  return labels.sort((a,b)=>a.from-b.from).map(value=>value.type.attrs['data-word-marker']);
+}
+
 function ancestryCollisionDocument() {
   const levels=core.defaultLevels(3);levels[0].start=3;levels[1].format='a';levels[1].text='%1.%2.';levels[2].text='%3';levels[2].restartAfterLevel=0;
   const item=(n,...nested)=>({type:'listItem',content:[p('Item '+n),...nested]});
@@ -579,12 +588,17 @@ test('per-occurrence transaction provenance lifts item two without changing unre
   input.content.push({type:'paragraph',content:[{type:'image',attrs:{assetId:'owned',mimeType:'image/png',width:1,height:1,dataBase64:'AAAA'}}]});
   const {editor}=await harness(input,[DocumentTables,DocumentMedia]);
   try {
-    const before=editor.getJSON();editor.commands.setTextSelection(editorTextPosition(editor,'Item 2'));
+    const before=editor.getJSON();
+    const initialLabels=['3.','3.a.','1','2','3.b.','3','4.','1'];
+    const liftedLabels=['3.','4.','4.a.','4.b.','4.c.','1','5.','1'];
+    assert.deepEqual(cachedNumberingLabels(editor),initialLabels);
+    editor.commands.setTextSelection(editorTextPosition(editor,'Item 2'));
     assert.equal(editor.commands.liftListItem('listItem'),true);
     assert.deepEqual(orderedItemLevels(editor),[0,0,1,1,1,2,0,2]);
+    assert.deepEqual(cachedNumberingLabels(editor),liftedLabels);
     const after=editor.getJSON();assert.deepEqual(after.content.slice(1),before.content.slice(1));
-    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
-    assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);assert.deepEqual(cachedNumberingLabels(editor),initialLabels);
+    assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);assert.deepEqual(cachedNumberingLabels(editor),liftedLabels);
   }finally{editor.destroy();}
 });
 

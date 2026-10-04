@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core';
-import { Plugin } from '@tiptap/pm/state';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Slice, Fragment } from '@tiptap/pm/model';
 import { Mapping } from '@tiptap/pm/transform';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
@@ -35,6 +35,8 @@ export function numberingDocumentJSON(node) {
   return json;
 }
 
+const numberingNormalization = new PluginKey('numberingNormalization');
+
 // The Core counter owns semantics. This adapter only applies its projection to
 // the current authoring transaction; persistence still uses canonical Save.
 export const DocumentListNumbering = Extension.create({
@@ -52,7 +54,7 @@ export const DocumentListNumbering = Extension.create({
       state: {
         init: (_config, state) => numberingDecorations(state.doc),
         apply: (tr, decorations, oldState) => !tr.docChanged ? decorations
-          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, (tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr)) ? null : oldState.doc, tr.mapping),
+          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, (tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr) || tr.getMeta(numberingNormalization) === true) ? null : oldState.doc, tr.mapping),
       },
       props: { ...createNumberingClipboardHandlers(this.options?.onClipboardStatus), decorations(state) { return this.getState(state); } },
       appendTransaction(transactions, _old, state) {
@@ -73,7 +75,7 @@ export const DocumentListNumbering = Extension.create({
         const attrs = { ...node.attrs, ...planned.attrs, start };
         if (JSON.stringify(node.attrs) !== JSON.stringify(attrs)) tr.setNodeMarkup(pos, undefined, attrs);
       });
-      return tr.docChanged ? tr : null;
+      return tr.docChanged ? tr.setMeta(numberingNormalization,true) : null;
     } })];
   },
 });
