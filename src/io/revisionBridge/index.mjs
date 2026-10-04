@@ -1,4 +1,4 @@
-import { analyzeListNumberingReturn, createLegacyNumberingProofComparator } from './reviewTransportUserBookmarksV1.mjs';
+import { analyzeListNumberingReturn, createLegacyNumberingProofComparator, documentPropertyReturnOperation, cleanFormattingConsumptionDigest } from './reviewTransportUserBookmarksV1.mjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
@@ -5255,19 +5255,9 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     }
   }
   if(options.documentProperties) {
-    const value=paragraphLayout.normalizeWordDefaultTabStop(options.documentProperties.effective);
     for(const scene of options.fullManuscriptExportMap.scenes||[]) {
-      const baseline=scene.documentFormatIr;
-      if(!baseline)continue; // Legacy capsule did not declare document-property authority.
-      if(!isPlainObject(baseline)||!Number.isSafeInteger(baseline.wordDefaultTabStop)||typeof baseline.explicit!=='boolean'
-        ||!/^sha256:[a-f0-9]{64}$/u.test(scene.rawSha256)||!/^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision)) {
-        diagnostics.push({code:'RTK_FORMATTING_DOCUMENT_SOURCE_INVALID',sceneId:scene.sceneId});continue;
-      }
-      paragraphLayout.normalizeWordDefaultTabStop(baseline.wordDefaultTabStop);
-      if(value===baseline.wordDefaultTabStop)continue;
-      const operation={kind:'document-properties',sceneId:scene.sceneId,sourceAuthority:'authenticated-full-manuscript-export-map-document-properties-v1',
-        sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,document:{wordDefaultTabStop:{action:'set',value}}};
-      operation.operationId='rtk-document-format-'+hashCanonicalValue(operation);candidates.push(operation);
+      try {const operation=documentPropertyReturnOperation(scene,options.documentProperties);if(operation)candidates.push(operation);}
+      catch {diagnostics.push({code:'RTK_FORMATTING_DOCUMENT_SOURCE_INVALID',sceneId:scene.sceneId});}
     }
   }
   // MATCH-01: unclassified topology invariant. A returned paragraph with
@@ -7626,21 +7616,49 @@ export function buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, op
       candidateCount: 0,
     };
   }
+  const consumed=options.consumedCleanFormattingBySceneId;
+  const consumedIds=new Set(isPlainObject(consumed)?Object.keys(consumed):[]);
+  const resolveBlock=docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap);
   const numbering = analyzeListNumberingReturn({exportMap:options.fullManuscriptExportMap,reviewIr:projection,
-    resolveBlock:docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap)});
+    resolveBlock,allowTextChanges:consumedIds.size>0});
+  const blocked=detail=>({ok:false,status:'blocked',code:'RTK_LIST_NUMBERING_RETURN_CONFLICT',reason:detail,
+    candidates:[],diagnostics:[{code:'RTK_LIST_NUMBERING_RETURN_CONFLICT',detail}],candidateCount:0});
   if (!numbering.ok && (options.fullManuscriptExportMap?.scenes?.some(scene=>scene.blocks?.some(block=>block.formatIr?.paragraph?.list?.wordNumbering))
-    || projection.formattingParagraphs.some(p=>p.unsupportedParagraphNames?.includes('numPr')))) return {
-    ok:false,status:'blocked',code:numbering.code,reason:numbering.detail,candidates:[],diagnostics:[{code:numbering.code,detail:numbering.detail}],candidateCount:0,
-  };
-  const paragraphs = numbering.hasPatterns ? projection.formattingParagraphs.map(p=>({...p,
-    unsupportedParagraphNames:(p.unsupportedParagraphNames||[]).filter(name=>name!=='numPr')})) : projection.formattingParagraphs;
+    || projection.formattingParagraphs.some(p=>p.unsupportedParagraphNames?.includes('numPr')))) return blocked(numbering.detail);
+  if(consumed!==undefined && !isPlainObject(consumed))return blocked('consumed-formatting-proof-invalid');
+  for(const sceneId of consumedIds){
+    const scene=options.fullManuscriptExportMap?.scenes?.find(item=>item.sceneId===sceneId),entry=consumed[sceneId];
+    if(!scene || !isPlainObject(entry) || !Array.isArray(entry.operations)
+      || entry.paragraphsDigest!==cleanFormattingConsumptionDigest(scene,projection))
+      return blocked('consumed-formatting-proof-invalid');
+    const expected=(numbering.operations || []).filter(operation=>operation.sceneId===sceneId);
+    let rootOperation;try {rootOperation=documentPropertyReturnOperation(scene,projection.documentProperties);}
+    catch {return blocked('consumed-document-source-invalid');}
+    if(rootOperation)expected.push(rootOperation);
+    const actual=entry.operations.filter(operation=>['list-numbering','document-properties'].includes(operation.kind));
+    if(hashCanonicalValue(expected)!==hashCanonicalValue(actual))return blocked('consumed-numbering-plan-mismatch');
+  }
+  if((numbering.changedTextSceneIds || []).some(sceneId=>!consumedIds.has(sceneId)))return blocked('source-owner-text-or-revision');
+  const remainingNumbering=(numbering.operations || []).filter(operation=>!consumedIds.has(operation.sceneId));
+  const paragraphs=[];
+  for(const p of projection.formattingParagraphs){
+    const resolved=resolveBlock(p);
+    if(resolved?.ok && consumedIds.has(resolved.authority.sceneId))continue;
+    paragraphs.push(numbering.hasPatterns?{...p,
+      unsupportedParagraphNames:(p.unsupportedParagraphNames||[]).filter(name=>name!=='numPr')}:p);
+  }
   const result = buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     paragraphs, {...options,documentProperties:projection.documentProperties},
   );
+  result.candidates=result.candidates.filter(operation=>!(operation.kind==='document-properties' && consumedIds.has(operation.sceneId)));
+  result.summary.candidateCount=result.candidates.length;
+  if(!result.candidates.length && result.code==='RTK_FORMATTING_RETURN_CANDIDATES_READY'){
+    result.status='diagnostics';result.code='RTK_FORMATTING_RETURN_NO_SAFE_CANDIDATES';result.reason=result.code;
+  }
   // A whole-group definition change cannot pass through a partially classified
   // formatting route. Preserve the ordinary diagnostics without authorizing it.
-  if (numbering.hasPatterns && numbering.operations.length && !result.diagnostics.length) {
-    result.candidates.push(...numbering.operations);
+  if (numbering.hasPatterns && remainingNumbering.length && !result.diagnostics.length) {
+    result.candidates.push(...remainingNumbering);
     result.status='ready';result.code='RTK_FORMATTING_RETURN_CANDIDATES_READY';result.reason=result.code;
     result.summary.candidateCount=result.candidates.length;
   }

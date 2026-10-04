@@ -200,7 +200,7 @@ test('new list continues the explicitly selected custom definition and restart i
 test('actual formatting preview preserves detached numbering projection and renders escaped before/after settings',()=>{
   const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
   const start=source.indexOf('function reviewSurfaceNumberingProjection('),end=source.indexOf('function reviewSurfaceNormalizeExactTextApplyState(',start);
-  const ctx=vm.createContext({wordListNumbering:core,
+  const ctx=vm.createContext({wordListNumbering:core,wordParagraphLayout:require('../../src/core/word-paragraph-layout-v1.cjs'),
     reviewSurfaceIsPlainObject:v=>v&&typeof v==='object'&&!Array.isArray(v),
     reviewSurfaceText:v=>typeof v==='string'?v.trim():'',reviewSurfaceArray:v=>Array.isArray(v)?v:[],
     reviewSurfaceEscapeHtml:v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))});
@@ -227,6 +227,22 @@ test('actual formatting preview preserves detached numbering projection and rend
   overrideOperation.numbering.instanceOverrides[0].expectedStartOverrides[0].start=99;
   assert.equal(overridePreview.operations[0].numbering.instanceOverrides[0].expectedStartOverrides[0].start,4);
   assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{...operation.numbering,instanceOverrides:[{instanceId:'list',expectedStartOverrides:[],startOverrides:[{level:9,start:1}]}]}}),null);
+  const compositeMarkup=ctx.reviewSurfaceRenderCompositeNumberingChanges(overridePreview.operations);
+  assert.match(compositeMarkup,/Все показанные текстовые изменения и параметры применяются вместе/);
+  assert.match(compositeMarkup,/начало 4 → по настройке уровня/);
+  assert.equal(ctx.reviewSurfaceRenderCompositeNumberingChanges([]),'');
+  assert.match(ctx.reviewSurfaceRenderCompositeNumberingChanges([],[{kind:'document-properties',document:{wordDefaultTabStop:{action:'set',value:708}}}]),/Шаг табуляции: по умолчанию → 35.4 пт/);
+  assert.match(source,/reviewSurfaceRenderCompositeNumberingChanges\(exactPreview.numberingChanges, exactPreview.documentChanges\)/);
+  const viewStart=source.indexOf('function reviewSurfaceBuildExactTextPreview('),viewEnd=source.indexOf('function buildReviewSurfaceViewModel(',viewStart);
+  const viewSource=source.slice(viewStart,viewEnd);
+  for(const name of new Set(viewSource.match(/REVIEW_SURFACE_[A-Z_]+/g)))ctx[name]=name.endsWith('MAX_CHANGE_IDS')?64:name;
+  Object.assign(ctx,{reviewSurfaceNormalizeExactTextApplyState:()=>null,reviewSurfaceBuildBoundedDisplayDiff:()=>[],reviewSurfacePresentExactApplyState:state=>state});
+  vm.runInContext(viewSource,ctx);
+  for(const count of [1,2]){
+    const model=ctx.reviewSurfaceBuildExactTextPreview({exactTextPlanPreview:{status:'ready',plan:{numberingChanges:overridePreview.operations,applyOps:Array.from({length:count},(_,i)=>({changeId:'change-'+i,sceneId:'scene',expectedText:'before',replacementText:'after'}))}}});
+    assert.equal(model.numberingChanges.length,1);assert.equal(model.ops[0].applyDisabled,count>1);
+    if(count>1)assert.equal(model.batchAction.applyDisabled,false);
+  }
   const gridPreview=ctx.reviewSurfaceNormalizeFormattingReturn({status:'ready',operations:[{operationId:'grid',sceneId:'scene<grid>',kind:'section-doc-grid'}]},{});
   assert.equal(gridPreview.ready,true);
   const gridMarkup=ctx.reviewSurfaceRenderNumberingChanges(gridPreview.operations);

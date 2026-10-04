@@ -281,7 +281,7 @@ test('literal note alpha stays legacy only inside proven common range; custom an
   }
 });
 
-async function continuationReturnFixture({nativeStyled=false,initialOverride=false}={}) {
+async function continuationReturnFixture({nativeStyled=false,initialOverride=false,twoScenes=false}={}) {
   const io=await bridge, analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
   const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
@@ -301,7 +301,7 @@ async function continuationReturnFixture({nativeStyled=false,initialOverride=fal
     {type:'text',text:'Authored',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:null}}]},
     {type:'text',text:' first',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:''}}]},
   ];
-  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:(twoScenes?['a.txt','b.txt']:['a.txt']).map((sceneId,order)=>({sceneId,scenePath:'/synthetic/'+sceneId,order,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}))},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
   const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
   const parse=(xml,overrides={})=>{const result=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,...overrides,'word/document.xml':xml}).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(result.ok,true,JSON.stringify(result));return result.reviewIr;};
@@ -430,4 +430,75 @@ test('Word start edit preserves canonical instance authority while atomically ch
     rows=>{rows[1].list.numId='2147483647';},
   ]){const changed=structuredClone(ir);mutate(changed.listNumbering.paragraphs);
     assert.equal(f.analyzer.analyzeListNumberingReturn({exportMap:f.exportMap,reviewIr:changed,resolveBlock}).ok,false);}
+});
+
+test('authenticated text and numbering composition retains original source authority and classifies its exact consumed plan',async()=>{
+  const f=await continuationReturnFixture({initialOverride:true}),io=await bridge;
+  const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-composite14</w:t></w:r>');
+  const numbering=f.parts['word/numbering.xml'].replace('<w:start w:val="4"/>','<w:start w:val="7"/>')
+    .replace('<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"/></w:lvlOverride>','');
+  const original=structuredClone(f.exportMap),baseline=structuredClone(f.baselineDoc);
+  for(const changed of [false,true]){
+    const ir=f.parse(xml,{...(changed?{'word/numbering.xml':numbering}:{}),
+      'word/settings.xml':f.parts['word/settings.xml'].replace(/<w:defaultTabStop[^>]*\/>/u,'').replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>')});
+    const analysis=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(analysis.ok,true,JSON.stringify(analysis));
+    assert.equal(analysis.ordinaryTextChanges.length,1);
+    const operations=analysis.ordinaryFormattingOperations;
+    assert.equal(operations.filter(op=>op.kind==='list-numbering').length,changed?1:0);
+    let doc=analysis.doc;
+    if(operations.length){const applied=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc}),operations);
+      assert.equal(applied.ok,true,JSON.stringify(applied));doc=applied.doc;}
+    assert.equal(doc.content[0].attrs.start,changed?7:4);
+    assert.equal(doc.attrs.wordDefaultTabStop,708);
+    assert.equal(operations.filter(op=>op.kind==='document-properties').length,1);
+    assert.equal(doc.content[0].content[2].content.at(-1).content[0].text,'After child native-composite14');
+    const consumed={'a.txt':{operations,paragraphsDigest:analysis.ordinaryFormattingConsumption.paragraphsDigest}};
+    const classify=value=>io.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:ir},
+      {fullManuscriptExportMap:f.exportMap,cryptoPort:f.cryptoPort,consumedCleanFormattingBySceneId:value});
+    const classified=classify(consumed);assert.equal(classified.ok,true,JSON.stringify(classified));
+    assert.deepEqual(classified.diagnostics,[]);assert.deepEqual(classified.candidates,[]);
+    assert.equal(classified.code,'RTK_FORMATTING_RETURN_NO_SAFE_CANDIDATES');assert.equal(classified.summary.candidateCount,0);
+    const map=structuredClone(f.exportMap);map.scenes[0].documentFormatIr=[];
+    const invalid=io.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:ir},{fullManuscriptExportMap:map,cryptoPort:f.cryptoPort,consumedCleanFormattingBySceneId:consumed});
+    assert.equal(invalid.ok,false);assert.equal(invalid.reason,'consumed-document-source-invalid');
+    assert.equal(classify({'a.txt':{...consumed['a.txt'],paragraphsDigest:'sha256:'+'0'.repeat(64)}}).ok,false);
+    assert.equal(classify({foreign:consumed['a.txt']}).ok,false);
+    if(changed)assert.equal(classify({'a.txt':{...consumed['a.txt'],operations:[]}}).ok,false);
+    for(const mutate of [r=>r.listNumbering.paragraphs[0].list=null,
+      r=>r.listNumbering.paragraphs[1].list.numId='2147483647',
+      r=>{[r.formattingParagraphs[0],r.formattingParagraphs[1]]=[r.formattingParagraphs[1],r.formattingParagraphs[0]];},
+      r=>r.listNumbering.paragraphs[0].list.ordinal=99]){
+      const hostile=structuredClone(ir);mutate(hostile);assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(hostile)).ok,false);
+    }
+  }
+  assert.deepEqual(f.exportMap,original);assert.deepEqual(f.baselineDoc,baseline);
+});
+
+test('composite numbering proofs remain scene-local and leave other scene formatting independently available',async()=>{
+  const f=await continuationReturnFixture({twoScenes:true}),io=await bridge;
+  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> composite</w:t></w:r>');
+  const numbering=f.parts['word/numbering.xml'].replaceAll('<w:numFmt w:val="decimal"/>','<w:numFmt w:val="upperRoman"/>');
+  const ir=f.parse(xml,{'word/numbering.xml':numbering});
+  const a=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(a.ok,true,JSON.stringify(a));
+  const b=f.analyzer.analyzeUserBookmarksReturn({...f.input(ir),sceneId:'b.txt'});assert.equal(b.ok,true,JSON.stringify(b));
+  assert.equal(a.ordinaryFormattingOperations.filter(op=>op.kind==='list-numbering').length,1);
+  assert.equal(b.ordinaryTextChanges,undefined);
+  const result=io.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:ir},{fullManuscriptExportMap:f.exportMap,cryptoPort:f.cryptoPort,
+    consumedCleanFormattingBySceneId:{'a.txt':{operations:a.ordinaryFormattingOperations,paragraphsDigest:a.ordinaryFormattingConsumption.paragraphsDigest}}});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result.diagnostics,[]);
+  assert.deepEqual(result.candidates.filter(op=>op.kind==='list-numbering').map(op=>op.sceneId),['b.txt']);
+  const wrong=structuredClone(ir);wrong.listNumbering.paragraphs[6].list.ordinal=999;
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn({...f.input(wrong),sceneId:'b.txt'}).ok,false);
+  const swapped=structuredClone(ir);swapped.formattingParagraphs[0].bookmarkNames=ir.formattingParagraphs[6].bookmarkNames;
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(swapped)).ok,false);
+});
+
+test('document-property comparison keeps private source plain-record boundary',async()=>{
+  const {documentPropertyReturnOperation}=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const scene={sceneId:'s',rawSha256:'sha256:'+'a'.repeat(64),sceneRevision:'sha256:'+'b'.repeat(64)};
+  const properties={wordDefaultTabStop:720,explicit:false};
+  for(const value of [Object.assign([],properties),Object.assign(Object.create({foreign:true}),properties)])
+    assert.throws(()=>documentPropertyReturnOperation({...scene,documentFormatIr:value},{effective:708}),/SOURCE_INVALID/);
 });

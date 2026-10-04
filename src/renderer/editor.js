@@ -1,4 +1,5 @@
 import wordListNumbering from '../core/word-list-numbering-v1.cjs';
+import wordParagraphLayout from '../core/word-paragraph-layout-v1.cjs';
 import {
   applyTiptapStoryBody,
   applyTiptapUserBookmarkPublication,
@@ -1518,6 +1519,19 @@ function reviewSurfaceRenderNumberingChanges(operations) {
   }).join('');
 }
 
+function reviewSurfaceRenderCompositeNumberingChanges(operations, documentChanges = []) {
+  const checked=reviewSurfaceArray(operations).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering);
+  const documentMarkup=reviewSurfaceArray(documentChanges).map(operation=>{
+    try {
+      if(operation?.kind!=='document-properties' || operation.document?.wordDefaultTabStop?.action!=='set')return '';
+      const value=wordParagraphLayout.normalizeWordDefaultTabStop(operation.document.wordDefaultTabStop.value);
+      const before=operation.expectedWordDefaultTabStop==null?'по умолчанию':`${wordParagraphLayout.normalizeWordDefaultTabStop(operation.expectedWordDefaultTabStop) / 20} пт`;
+      return `<p>${reviewSurfaceEscapeHtml(`Шаг табуляции: ${before} → ${value / 20} пт`)}</p>`;
+    }catch{return '';}
+  }).join('');
+  return checked.length || documentMarkup ? `<p class="right-rail-review-item-body">Применение текста также изменит параметры ниже. Все показанные текстовые изменения и параметры применяются вместе.</p>${reviewSurfaceRenderNumberingChanges(checked)}${documentMarkup}` : '';
+}
+
 function reviewSurfaceNormalizeFormattingReturn(previewValue, resultValue) {
   const preview = reviewSurfaceIsPlainObject(previewValue) ? previewValue : {};
   const result = reviewSurfaceIsPlainObject(resultValue) ? resultValue : {};
@@ -2664,6 +2678,8 @@ function reviewSurfaceBuildExactTextPreview(state) {
   if (exactPreview.status === 'ready' && applyOps.length > 0) {
     return {
       state: 'ready',
+      documentChanges:reviewSurfaceArray(exactPreview.plan?.documentChanges),
+      numberingChanges:reviewSurfaceArray(exactPreview.plan?.numberingChanges).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering),
       ops: applyOps,
       batchAction: batchCandidate
         ? {
@@ -3130,6 +3146,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   const exactPreview = viewModel.exactTextPreview;
   const exactPreviewMarkup = exactPreview.state === 'ready'
     ? `
+      ${reviewSurfaceRenderCompositeNumberingChanges(exactPreview.numberingChanges, exactPreview.documentChanges)}
       ${exactPreview.fullManuscriptAction
         ? `
           <div class="right-rail-review-actions right-rail-review-actions--batch">

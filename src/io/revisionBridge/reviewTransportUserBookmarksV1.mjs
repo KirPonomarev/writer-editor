@@ -1,3 +1,4 @@
+import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import listNumbering from '../../core/word-list-numbering-v1.cjs';
@@ -189,6 +190,27 @@ function continuationOwnerIsBound(rows, index) {
   return false;
 }
 
+export function cleanFormattingConsumptionDigest(scene,reviewIr) {
+  return `sha256:${hashCanonicalValue({paragraphs:scene.blocks.map(block=>reviewIr.formattingParagraphs[block.documentParagraphIndex]),
+    numbering:scene.blocks.map(block=>reviewIr.listNumbering?.paragraphs?.[block.documentParagraphIndex] ?? null),
+    documentProperties:reviewIr.documentProperties ?? null})}`;
+}
+
+export function documentPropertyReturnOperation(scene,documentProperties) {
+  if(!documentProperties || !scene.documentFormatIr)return null;
+  const baseline=scene.documentFormatIr;
+  if(!baseline || typeof baseline!=='object' || Array.isArray(baseline)
+    || ![Object.prototype,null].includes(Object.getPrototypeOf(baseline)) || !Number.isSafeInteger(baseline.wordDefaultTabStop)
+    || typeof baseline.explicit!=='boolean' || !/^sha256:[a-f0-9]{64}$/u.test(scene.rawSha256)
+    || !/^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision))throw Error('RTK_FORMATTING_DOCUMENT_SOURCE_INVALID');
+  const value=paragraphLayout.normalizeWordDefaultTabStop(documentProperties.effective);
+  paragraphLayout.normalizeWordDefaultTabStop(baseline.wordDefaultTabStop);
+  if(value===baseline.wordDefaultTabStop)return null;
+  const operation={kind:'document-properties',sceneId:scene.sceneId,sourceAuthority:'authenticated-full-manuscript-export-map-document-properties-v1',
+    sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,document:{wordDefaultTabStop:{action:'set',value}}};
+  operation.operationId='rtk-document-format-'+hashCanonicalValue(operation);return operation;
+}
+
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
 export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
@@ -249,6 +271,14 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       seen.add(names[0]);
       if(observed.filter(item=>(item.bookmarkNames||[]).includes(names[0])).length!==1)return reject('transport-owner-duplicate');
     }
+    const numberingAnalysis=ordinaryTextMode ? analyzeListNumberingReturn({exportMap,reviewIr,allowTextChanges:true,
+      resolveBlock:p=>{const row=exportMap.scenes.flatMap(owner=>owner.blocks.map(block=>({owner,block})))[p.paragraphIndex];
+        return row?{ok:true,authority:{sceneId:row.owner.sceneId,blockId:row.block.blockId}}:{ok:false};}}) : {ok:true,operations:[]};
+    if(!numberingAnalysis.ok)return reject(numberingAnalysis.detail);
+    const numberingOperations=numberingAnalysis.operations.filter(operation=>operation.sceneId===sceneId);
+    let numberingDoc=baselineDoc;
+    for(const operation of numberingOperations)numberingDoc=listNumbering.applyDefinitionChange(numberingDoc,operation.numbering);
+    const numberingFormats=source.buildFormatIrParagraphs({sceneId,doc:numberingDoc,text:envelope.deriveVisibleTextFromDocument(numberingDoc)});
     const hasLists = allBlocks.some(block => block.formatIr?.paragraph?.list)
       || observed.some(p => p.unsupportedParagraphNames?.includes('numPr'));
     if (hasLists) {
@@ -260,7 +290,23 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
       const ownerRows = exportMap.scenes.flatMap(scene => scene.blocks.map(block => ({scene,block})));
       for (let j = 0; j < allBlocks.length; j++) {
-        const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
+        const originalExpected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
+        const localIndex=scene.blocks.findIndex(block=>block.documentParagraphIndex===j);
+        let expected=localIndex>=0?numberingFormats[localIndex]?.formatIr?.paragraph?.list:originalExpected;
+        // Other scenes are counter-checked against their own private baseline by
+        // their analyzer invocation; here retain global membership and bijections.
+        const foreignChange=localIndex<0 && numberingAnalysis.operations.find(operation=>{
+          if(operation.sceneId!==owners[j] || !originalExpected?.wordNumbering)return false;
+          const owner=exportMap.scenes.find(item=>item.sceneId===owners[j]);
+          const representative=owner.blocks.map(block=>block.formatIr?.paragraph?.list?.wordNumbering)
+            .find(pattern=>pattern?.instanceId===operation.numbering.instanceId);
+          return representative && (representative.lineageId || representative.instanceId)
+            ===(originalExpected.wordNumbering.lineageId || originalExpected.wordNumbering.instanceId);
+        });
+        if(foreignChange){const change=foreignChange.numbering,old=originalExpected.wordNumbering;
+          expected={...originalExpected,type:change.levels[old.level].format,wordNumbering:{...old,levels:change.levels,
+            startOverrides:change.instanceOverrides?.find(item=>item.instanceId===old.instanceId)?.startOverrides || old.startOverrides || []}};}
+
         if (actual?.textSha256 !== sha256Hex(observed[j].paragraphText)) return reject('list-text-binding');
         const list = actual.list;
         if (!expected) { if (list !== null) return reject('list-added'); continue; }
@@ -270,7 +316,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         }
         if (!list || list.kind !== (expected.kind === 'ordered' ? 'orderedList' : 'bulletList')
           || list.level !== expected.level || (list.type || '1') !== (expected.type || '1')
-          || (expected.kind === 'ordered' && list.ordinal !== expected.start + expected.itemOrdinal)
+          || (expected.kind === 'ordered' && !foreignChange && list.ordinal !== expected.start + expected.itemOrdinal)
           || typeof list.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(list.numId)) return reject('list-semantics-change');
         const identity = `${owners[j]}:${expected.numId}`;
         if ((forward.has(identity) && forward.get(identity) !== list.numId)
@@ -358,7 +404,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     for(const old of resultRegistry.bookmarks)if(old.state==='active'&&!retained.has(old.id)){effects.push({kind:'delete',id:old.id});old.state='deleted';delete old.start;delete old.end;}
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='deleted'))if(!resultRegistry.bookmarks.some(item=>key(item.name)===key(record.name)))return reject('unknown-broken-target');
-    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[], ordinaryFormattingOperations=[];
+    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[], ordinaryFormattingOperations=[...numberingOperations];
+    const documentOperation=ordinaryTextMode?documentPropertyReturnOperation(scene,reviewIr.documentProperties):null;
+    if(documentOperation)ordinaryFormattingOperations.push(documentOperation);
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
@@ -491,7 +539,8 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         return covered!==operation.to-operation.from;
       });
       return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
-        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations:effectiveFormattingOperations,changed:true};
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations:effectiveFormattingOperations,
+        ordinaryFormattingConsumption:{sceneId,paragraphsDigest:cleanFormattingConsumptionDigest(scene,reviewIr)},changed:true};
     }
     if(ordinaryFormattingOperations.length && effects.length)return reject('paragraph-format-bookmark-composite');
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
@@ -504,7 +553,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
 
 // Read-only numbering proof comparison. Canonical group identity and revision
 // come exclusively from the authenticated private export map, never OOXML IDs.
-export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBlock } = {}) {
+export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBlock, allowTextChanges = false } = {}) {
   const fail = detail => ({ ok:false, code:'RTK_LIST_NUMBERING_RETURN_CONFLICT', detail, operations:[] });
   try {
     const scenes = exportMap?.scenes;
@@ -516,16 +565,17 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
     if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)
       || !Array.isArray(observed) || proof.paragraphs.length !== rows.length || observed.length !== rows.length
       || typeof resolveBlock !== 'function') return fail('same-byte-proof-required');
-    const groups = new Map(), forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
+    const groups = new Map(), forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map(), changedTextScenes = new Set();
     const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
     for (let i=0;i<rows.length;i++) {
       const {scene,block} = rows[i], p = observed[i], actual = proof.paragraphs[i];
       const authority = resolveBlock({...p,paragraphIndex:i});
       if (!authority?.ok || authority.authority.sceneId !== scene.sceneId || authority.authority.blockId !== block.blockId
         || block.documentParagraphIndex !== i || actual?.textSha256 !== sha256Hex(p.paragraphText)
-        || block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`
+        || (!allowTextChanges && block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`)
         || block.canonicalMarksSha256 !== `sha256:${hashCanonicalValue(block.formatIr)}`
         || p.trackedRevision) return fail('source-owner-text-or-revision');
+      if(block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`)changedTextScenes.add(scene.sceneId);
       const expected = block.formatIr?.paragraph?.list, returned = actual.list;
       if (!expected) { if (returned !== null) return fail('list-added'); continue; }
       if (Object.hasOwn(expected,'continuation')) {
@@ -575,6 +625,6 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
           ...(instanceOverrides.length?{instanceOverrides}:{})}};
       operation.operationId=`rtk-list-numbering-${hashCanonicalValue(operation)}`;operations.push(operation);
     }
-    return {ok:true,hasPatterns:true,operations};
+    return {ok:true,hasPatterns:true,operations,changedTextSceneIds:[...changedTextScenes]};
   } catch { return fail('numbering-proof-invalid'); }
 }
