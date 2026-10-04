@@ -1,6 +1,6 @@
 # WORD_LIST_PATTERNS_MAC_20261004
 
-STATUS: TARGET_NOT_ACCEPTED
+STATUS: NATIVE_QUALIFIED_DELIVERY_PENDING
 TYPE: CORE_AND_PRODUCT_UI
 BASE_SHA: 2c83167326282dd06517ed4a9c69713688f93a8a
 AUTHORITY: Owner-authorized full Mac Word plan P3d and section8; bounded numbering capability, not whole-plan acceptance.
@@ -204,3 +204,20 @@ The actual table import preview exposes legacy INFO prose claiming marker/fonts/
 Clean same50path preflight passed before the one-line parser edit. CI Semgrep1.175 stopped with zero findings and one discarded non-timeout error. Existing local1.136 reproduced a whole-file syntax diagnostic isolated to the new docGrid comment-stripping regular expression. Writing the identical exclamation character as hexadecimal escape fixes scanner parsing without changing the regex language or flags; independent8219-input comparison found zero differences. Existing actual docGrid positive and hostile cases pass on the external candidate. No scanner exclusion, rule suppression, dependency or input-validation relaxation. CI on the committed successor remains mandatory.
 
 The full2a baseline finished unit TAP2159pass,0fail,59skip; ops3pass and separateAtlas20pass. Existing release-lock warnings remain disclosed; exact process exit is collected by its retained orchestration process after this commit. This is predecessor evidence, not automatic successor acceptance. Native table Undo removed exactly the later extra blank row and no other canonical content, but initial safe-create bytes differ from the post-Undo schema serialization. Retain both observations and qualify a fresh one-row Word-saved table without a post-import Tab.
+
+
+## Frozen native qualification and delivery candidate
+
+Runtime f77c30731a514d69bb967157be75eea94fe6df75 passes full RTK3132 of3132 with zero failures/skips/todo and all19 remote checks, including inventory-baseline, actual renderer gates and static security. This qualification is bounded to this numbering contour; full Mac plan acceptance remains unknown. Required merge and exact merged-head checks remain pending.
+
+SOURCE16 and PACKAGED16 each completed five fresh actual Word changed-text exchanges on this runtime after process restart. Independent raw OOXML/canonical/journal oracles each pass65 round checks and4 journal links, plus6 SOURCE and9 PACKAGED aggregate checks. SOURCE copied/continued six items retain labels3 through8 and five sibling scenes. PACKAGED retains three items10 through12 with an unnumbered continuation paragraph and six sibling scenes; final ordinary export was opened in Word and independently compared. Actual Word proofing-language changes are compared against input, not treated as invariant. The second SOURCE input actually contains suffix ` 16-2`; the oracle binds observed bytes rather than the intended keystrokes. Post-round PACKAGED Save materializes only absent color/fontSize fields as null; its transaction digest is checked separately from the preceding Apply journal.
+
+Final SOURCE16 fresh Word-saved table import and ordinary export pass18 independent checks, including one row/cell, labelsTable3/3.a/3.b, formatting, receipt hashes and five unchanged siblings. The separately reopened table passes13 checks. The earlier extra-row observation and distinct post-Undo serialization remain retained; no initial-import byte-equivalence is retroactively claimed.
+
+Final PACKAGED16 Word-saved ancestor import, Save, clean process exit, new-process reopen and ordinary Word export pass25 checks: labels3.,3.a.,1,2,3.b.,3,4.,1; levels0,1,2,2,1,2,0,2; inactive grid360, text, effective formatting and geometry. Never-restart/shared-lineage route passes17 checks through the same native path: labels3.,3.a.,3.b.,4.,4.c.,9.,10. Saved/reopened/clean-exit canonical bytes match exactly for both routes. Each new import attempt is independently bound to its own safe-create receipt.
+
+Final PACKAGED16 native authoring adds18 independent checks: copied list receives fresh instance and lineage identities; six items/eight paragraphs preserve both continuation paragraphs; paste Undo/Redo restores exact captured bytes. Continue changes only copied lineage, removes its reset and derives start13, producing10 through15. Continue Undo/Redo and new-process reopen restore exact captured bytes; eight sibling scenes remain unchanged. Clipboard color null becoming empty string is disclosed as a representation difference, not exact mark equality.
+
+External independent scripts and JSON receipts retain all input/output hashes under SOURCE-16-five-rounds-independent-oracle, PACKAGED-16-five-rounds-independent-oracle, SOURCE-16-fresh-table-independent-oracle, PACKAGED-16-ancestor-independent-oracle, PACKAGED-16-never-independent-oracle and PACKAGED-16-clipboard-continue-independent-oracle. Failed oracle assumptions are retained separately. Prior15 changed-start-plus-text native observations remain predecessor executions and require an explicit unchanged-runtime dependency binding; they are not described as native reruns on f77. No runtime, assertions or gate policy are relaxed by this documentation update.
+
+Residual full-plan scope includes unsupported numbering formats and marker layout, custom patterns in auxiliary stories, named style identity, broader comment/note/structural composites and final whole-profile acceptance. Positive table import/export does not certify changed-numbering return inside tables. No full numbering-family, whole-plan percentage, pixel-layout parity or release readiness is asserted.
