@@ -2,7 +2,7 @@
 
 TASK_ID: WORD_IMPORT_ATTEMPTS_MAC_20261004
 BASE: 7a8955610860dd9110a2e6bb5813fdcdb5d0e198
-STATUS: IMPLEMENTATION_AND_ACCEPTANCE_PENDING
+STATUS: NATIVE_OBSERVED_FINAL_GATES_AND_DELIVERY_PENDING
 
 The original Mac plan P1-08 distinguishes an intentional new import from retry
 of an uncertain prior attempt. After editing an imported scene, importing the
@@ -77,9 +77,17 @@ Pre-existing baseline skips are unexecuted coverage and never acceptance.
 
 PR2076 is delivered at the base above: 19 successful CI checks; postmerge
 446 affected tests plus 18 supervisor tests and guardrails, clean exact tree.
-This task has no runtime acceptance yet. A Core same-request replay after process
-restart is not proof that an unsaved UI preview survives restart. Remaining
-original Mac-plan families stay open.
+Frozen SOURCE and PACKAGED candidate `4ddae6f1c96fc1df28b730763a0b4a0d63e5bd29`
+completed native new import after scene edit, real EACCES followed by same-nonce
+Retry, chooser/preview cancellation, Word-resaved same-filename input, and
+persisted project reopen. Independent raw DOCX XML and saved-state observations
+verify prior scene bytes and discussions and exact new comment anchors. SOURCE
+finished with seven imported scenes, 42 threads and 50 messages; PACKAGED with
+five scenes, 30 threads and 35 messages. SOURCE additionally saved a reply on
+the compact graph and reopened it. These are bounded observations, not a whole
+Mac-plan acceptance claim. A Core same-request replay after process restart is
+not proof that an unsaved UI preview survives restart. Remaining families stay
+open.
 
 ## Early native finding and bounded correction
 
@@ -111,6 +119,22 @@ the repair requires a new frozen candidate and native observation. Larger graph
 capacity and a UI action to resume a prior attempt after process restart remain
 separate open requirements of the original Mac plan.
 
+The repaired native import fits the existing budget without graph loss:
+PACKAGED's 30-thread saved graph is 45245 bytes, compared with 83580 bytes when
+pretty-printed. The five focused comment contracts pass 132 tests with zero
+failures, skips or todos. Byte and count limits remain enforced.
+
+The first complete CI run exposed three integration omissions: a historical
+surface test expected the no-argument preview dispatch; the list-publication
+test's sliced VM omitted the real new attempt invalidator; and the wording
+registry lacked three new import action/status labels. Repair the test harness
+and current pinned qualification without changing runtime bytes or historical
+registry/successor bytes. New wording records are DECLARED_ONLY, with no support,
+compatibility or saturation promotion. Native evidence remains bound to the
+candidate's exact runtime hashes; a later non-runtime commit requires an explicit
+byte-equality observation and fresh final gates. Failed CI and the interrupted
+duplicate local RTK are not passing evidence.
+
 Rollback: revert this integrated PR; preserve all existing project and receipt
-bytes. Next step: focused serialization regression and native recheck of the
-preserved failing profile, then PACKAGED route and required final gates.
+bytes. Next step: finish the focused CI integration correction, complete all
+required final gates, merge and verify the exact merged SHA.

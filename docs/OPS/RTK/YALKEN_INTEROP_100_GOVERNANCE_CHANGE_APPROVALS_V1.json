@@ -214,7 +214,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
@@ -223,7 +223,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-product-flow-command.test.js",
@@ -259,15 +259,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-03T14:24:41.398923Z",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
+      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
       ],
       "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Owner-authorized supported effective Word style cascade, typed paragraph spacing and existing language preservation on authenticated Mac return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
-      "sha256": "6803437ebfb22387ba546a07e1be497ef966b224be06e3e6ac75ff67ce9f151b"
+      "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "72eb19876286a2d4fe46c2a4c08429ebea79a87fec5b715118cd9461d2690d1d"
     },
     {
       "approved": true,
@@ -1003,7 +1003,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "f9815da0fbb14136a60690b514803904f7b6a17936e4092c396ae117e0cfd2cf",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "2505336a601eab3c617716b82eb7b333687025283dae500bfd16df3087f6bdd2",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f365f32669e8a6658d4326dd5005817b86f5d2e07d0a2b974504a55a60e5bf52",
+      "sha256": "89606aef8b2551d10b34595cd6cbe3e0af45478c128c1d301208419e519e1093",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "020d468d0880aa1d9d3007d06f5b20db3e19adccad0e021d2b2965825e89f2d7",
+      "sha256": "c4bdeb1e2a110ab8e4745ebe00cd0c13edbd352fcc9bdcd44f79ea53e5991055",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "8497b5ee1e1c492797341cc19452cc226ad14eeff4459dcf1e9edbef66f53443",
+      "sha256": "2a5b77fb60999869160c7862fed35445294190541251b74f69f9025bac0970fa",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1851,7 +1851,7 @@
       "filePath": "test/contracts/word-import-transaction-remediation.contract.test.js",
       "sha256": "9b794d9923c1aa7998de394fd27711ad4d65534451e998de9075c6d1869f395c",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -2345,7 +2345,7 @@
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
       "sha256": "51763544f5245697d35721fb2303a5db162bfba594ef1bd8af6490ee648ca77c",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2354,7 +2354,7 @@
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
       "sha256": "7369f72d90b232f1c329062ec691e007c76aa2396456a48cccddff9259c6bd70",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2381,7 +2381,7 @@
     {
       "filePath": "src/core/word-comment-authoring-v1.cjs",
       "sha256": "77419269ee546c5cd2fa6ece0b24e7b8c531bb44d011c15dea0c4539f1074340",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2453,7 +2453,7 @@
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
       "sha256": "99131b5a9ad9b2ca18e390a8962ef45169c635052c7573976305cb69aeffef58",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2498,7 +2498,7 @@
     {
       "filePath": "src/core/word-comment-return-delta-v1.cjs",
       "sha256": "9f80ac0e6ba00fc7499012e74b2ce1ce29b77f2eaf4f9357b5d7cf62541f2afb",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "72b73a9cdac7053bcf056287fe8baef81994f4ee1937a25aa3e35f6aa8412cb1",
+      "sha256": "d027207914efd6a29fc260726d9126e1840444dd935b76d30dc87f8a5fa9fed6",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "e20a44bb27ab575fd5a4dd21b857ee7da8341fc2e4a5c00f8ef50c94a2a2023b",
+      "sha256": "af82ada73ffcdb5cdd817c1fb126b2d5d870ec1ca24d06a1f844d06ca6b549c0",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5dcc0eeabcc8f1a3c55b688906782f8e42224a5ab5d79183b6bf623b76f9edeb",
+      "sha256": "da7d401a9d707ff373a3b8e37a08140e791d020df701eb9f79feecbe66d6bc6b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -4559,7 +4559,7 @@
     {
       "filePath": "src/core/word-comment-body-v1.cjs",
       "sha256": "32071ff6e0ea1a89df9a3197a1b48b2ed75578716cd904d471c432bde74e2abc",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4666,10 +4666,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-      "sha256": "215ab9e0ecc14d703fe687fba10c11f1da09f819a361a9554a6b33763f07007a",
-      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
-      "approvedBy": "owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
-      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "sha256": "cfd570875a13727b43e070e000eccb47ef51f7f155afa55bfe5acf8f3746f0ab",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
+      "approvedBy": "owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
+      "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -4765,8 +4765,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-04--word-import-attempts-mac.md",
-      "sha256": "4a44af6e8e568084a39d9b69ded0660ad7a9e989ebb02973852a0757c685c4c2",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "sha256": "a1e0c2ab8582e4f0c5f378fc6688a28edf1cee88ef7c846f507de87a503e0d22",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4775,7 +4775,16 @@
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json",
       "sha256": "f93d6d5d2bdfba9e43d5c19f3ef4768fc9978d36e9a5e37ba4f8fffdfec20083",
-      "approvedAtUtc": "2026-10-04T15:44:43.036553Z",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
+      "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/sector-m-s29-import-surface-existing.test.js",
+      "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -28477,6 +28486,18 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-10-03T14:24:41.398923Z",
+      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+      ],
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-authorized supported effective Word style cascade, typed paragraph spacing and existing language preservation on authenticated Mac return. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "sha256": "6803437ebfb22387ba546a07e1be497ef966b224be06e3e6ac75ff67ce9f151b"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-10-04T14:31:26.280367Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
@@ -28616,6 +28637,15 @@
       "approvedAtUtc": "2026-10-04T14:31:26.280367Z",
       "approvedBy": "owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "sha256": "215ab9e0ecc14d703fe687fba10c11f1da09f819a361a9554a6b33763f07007a",
+      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
+      "approvedBy": "owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
+      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

@@ -2627,7 +2627,7 @@ export const R24_INTEROP_WORD_IMPORT_ATTEMPTS_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f365f32669e8a6658d4326dd5005817b86f5d2e07d0a2b974504a55a60e5bf52"
+      "sha256": "89606aef8b2551d10b34595cd6cbe3e0af45478c128c1d301208419e519e1093"
     }
   ]
 });

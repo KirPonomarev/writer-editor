@@ -565,7 +565,8 @@
     "test/unit/docx-import-preview-ui-flow.test.js",
     "test/unit/docx-import-product-flow-command.test.js",
     "docs/tasks/2026-10-04--word-import-attempts-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json",
+    "test/unit/sector-m-s29-import-surface-existing.test.js"
   ],
   "protectedFiles": [
     {
@@ -986,7 +987,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "6803437ebfb22387ba546a07e1be497ef966b224be06e3e6ac75ff67ce9f151b"
+        "sha256": "72eb19876286a2d4fe46c2a4c08429ebea79a87fec5b715118cd9461d2690d1d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -2390,7 +2391,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "215ab9e0ecc14d703fe687fba10c11f1da09f819a361a9554a6b33763f07007a"
+        "sha256": "cfd570875a13727b43e070e000eccb47ef51f7f155afa55bfe5acf8f3746f0ab"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2438,7 +2439,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-attempts-mac.md",
-        "sha256": "4a44af6e8e568084a39d9b69ded0660ad7a9e989ebb02973852a0757c685c4c2"
+        "sha256": "a1e0c2ab8582e4f0c5f378fc6688a28edf1cee88ef7c846f507de87a503e0d22"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json",
@@ -2451,6 +2452,10 @@
       {
         "path": "test/unit/docx-import-product-flow-command.test.js",
         "sha256": "f6d9854cbca8734f056d3a46eecd458b23bc773953076d1ed2d7e911fe19765e"
+      },
+      {
+        "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
+        "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073"
       }
     ],
     "followupRepair": {
@@ -2560,6 +2565,50 @@
       "taskId": "WORD_COMMENT_SHADOW_REPLAY_20260927",
       "bindingBaseSha": "ca5278966fc65170f0210056305810288e06f052",
       "scope": "Stable derived comment shadow identity excludes only candidate intake-clock metadata, binds full IR, preserves all legacy records and canonical state. No new cell credit."
+    },
+    "wordImportAttemptWording": {
+      "schemaVersion": 1,
+      "taskId": "WORD_IMPORT_ATTEMPTS_MAC_20261004",
+      "bindingBaseSha": "4ddae6f1c96fc1df28b730763a0b4a0d63e5bd29",
+      "scope": "Local import action/status wording only; no support, compatibility, saturation, denominator or whole-plan promotion.",
+      "claims": [
+        {
+          "claimId": "claim-editor-docx-import-cancelled",
+          "claimClass": "DECLARED_ONLY",
+          "surfaceId": "surface-editor-js",
+          "wording": "DOCX import cancelled",
+          "evidenceBinding": {
+            "profileId": "word-mac-16.111.2-d1"
+          },
+          "blockedRowRef": null,
+          "evidenceScope": "BUILD_INDEPENDENT_PRODUCT_FUNCTION",
+          "claimDigest": "sha256:0b01f0cb80372829ab0dd26fde4befdb225243f64d9d5c3214ede59a9105ac9f"
+        },
+        {
+          "claimId": "claim-editor-docx-import-completing",
+          "claimClass": "DECLARED_ONLY",
+          "surfaceId": "surface-editor-js",
+          "wording": "DOCX import is completing; closing the preview cannot undo it",
+          "evidenceBinding": {
+            "profileId": "word-mac-16.111.2-d1"
+          },
+          "blockedRowRef": null,
+          "evidenceScope": "BUILD_INDEPENDENT_PRODUCT_FUNCTION",
+          "claimDigest": "sha256:d2b2e726f7a7c904f519fcfdd965dad7fa242449e40a7730c5d951d8253b4d98"
+        },
+        {
+          "claimId": "claim-editor-docx-import-action",
+          "claimClass": "DECLARED_ONLY",
+          "surfaceId": "surface-editor-js",
+          "wording": "Import DOCX",
+          "evidenceBinding": {
+            "profileId": "word-mac-16.111.2-d1"
+          },
+          "blockedRowRef": null,
+          "evidenceScope": "BUILD_INDEPENDENT_PRODUCT_FUNCTION",
+          "claimDigest": "sha256:2fd4d3d8ad01ff3ac88c6ababe7e17fb5c6043a47aa7fc9a2b70abdb393cc4e1"
+        }
+      ]
     }
   },
   "wordTextOrderBatch": {
