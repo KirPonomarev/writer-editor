@@ -33,11 +33,14 @@ function cellParagraphs(content, budget, depth) {
     const listId = budget.lists;
     list.content.forEach((item, itemOrdinal) => {
       if (item?.type !== 'listItem' || !Array.isArray(item.content) || !['paragraph', 'heading'].includes(item.content[0]?.type)
-        || item.content.slice(1).some(n => !['bulletList', 'orderedList'].includes(n?.type))) fail('LIST_ITEM_UNSUPPORTED');
+        || item.content.slice(1).some(n => !['paragraph','heading','bulletList', 'orderedList'].includes(n?.type))) fail('LIST_ITEM_UNSUPPORTED');
       attrsOnly(item, []);
       const listStack = [...ancestors, { listId, kind: list.type, start, itemOrdinal, ...(wordNumbering ? { wordNumbering } : {}), ...(identity ? { wordListId: identity.id, wordListStart: identity.start } : {}), ...(list.attrs?.type ? { type: list.attrs.type } : {}) }];
       append(item.content[0], listStack);
-      for (const nested of item.content.slice(1)) visitList(nested, listStack);
+      for (const nested of item.content.slice(1)) {
+        if (['paragraph','heading'].includes(nested.type)) append(nested,[...listStack.slice(0,-1),{...listStack.at(-1),continuation:true}]);
+        else visitList(nested, listStack);
+      }
     });
   };
   for (const node of content) {

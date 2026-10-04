@@ -8185,7 +8185,7 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
         targetScope:cloneJsonSafe(item.targetScope),match:{kind:'exact',quote:item.match.quote},replacementText:item.replacementText}));
       activeRtkCleanLinkLabelApplyStore = {input:cloneJsonSafe(command.input.writerInput),keyAuthority:cloneJsonSafe(capsule),
         cleanTextCandidateDoc:capsule.cleanTextMergedDocsBySceneId?.[command.sceneId] || capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
-        cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,
+        cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,cleanTextCommentPlan:capsule.cleanTextCommentPlan || null,
         cleanTextGridPlan:capsule.cleanTextGridPlansBySceneId?.[command.sceneId] || null,
         cleanTextFormattingOperations:capsule.cleanTextFormattingBySceneId?.[command.sceneId] || [],
         cleanTextAuthoringBinding:{subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,
@@ -8201,6 +8201,7 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
         commandId:REVIEW_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID,fullManuscript:true,sessionId:token.sessionId,
         sceneCount:1,sceneIds:[command.sceneId],canApply:false,noDisk:true,
         numberingChanges:(capsule.cleanTextFormattingBySceneId?.[command.sceneId] || []).filter(operation=>operation.kind==='list-numbering').map(operation=>({kind:'list-numbering',sceneId:operation.sceneId,numbering:cloneJsonSafe(operation.numbering)})),
+        ...(capsule.cleanTextCommentPlan ? {commentChanges:{count:JSON.parse(capsule.cleanTextCommentPlan.afterText).threads.filter(thread=>JSON.stringify(thread)!==JSON.stringify(JSON.parse(capsule.cleanTextCommentPlan.beforeText).threads.find(old=>old.threadId===thread.threadId))).length}}:{}),
         documentChanges:(capsule.cleanTextFormattingBySceneId?.[command.sceneId] || []).filter(operation=>operation.kind==='document-properties').map(operation=>({kind:'document-properties',sceneId:operation.sceneId,document:cloneJsonSafe(operation.document),expectedWordDefaultTabStop:require('./core/document-content-envelope-v1.cjs').parseObservablePayload(command.input.writerInput.projectSnapshot.scenes.find(scene=>scene.sceneId===command.sceneId).text).doc?.attrs?.wordDefaultTabStop ?? null})),
         applyOps:publicItems.map(item=>{
           const range=ranges.find(range=>range.operationId===item.changeId);
@@ -9990,7 +9991,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     const commentGrammar=parserResult.reviewIr.commentBodyGrammar,commentInventory=parserResult.reviewIr.commentReturnInventory;
     let cleanTextCommentUnchanged = !authority.commentExport && returnedComments.length === 0
       && commentGrammar?.status==='ABSENT' && commentInventory?.status==='COMPLETE' && commentInventory?.packageState==='ABSENT',
-      cleanTextCommentSourceText = null, cleanTextNoteSourceText = null;
+      cleanTextCommentSourceText = null, cleanTextNoteSourceText = null, cleanTextCommentPlan = null;
     const optionalSource = async relative => {
       try { return await fs.readFile(path.join(authority.projectRoot,relative),'utf8'); }
       catch (error) { if (error.code === 'ENOENT') return null; throw error; }
@@ -10008,26 +10009,26 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     if (authority.commentExport) {
       try {
         const beforeText = cleanTextCommentSourceText;
-        if(returnedComments.some(thread=>changedOrdinals.has(thread.paragraphIndex))
-          || authority.commentExport.threads.some(thread=>changedOrdinals.has(thread.anchor.documentParagraphIndex))) {
-          return {ok:false,code:'RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED'};
+        const textChanges=cleanTextChanges.map(change=>({sceneId:change.sceneId,paragraphIndex:change.sceneParagraphIndex,
+          oldText:change.expectedText,newText:change.replacementText}));
+        const proof={projectId:context.projectId,roundId:authority.roundId,artifactSha256:context.returnedArtifactSha256,
+          baseline:authority.commentExport,exportMap:authority.exportMap,returnedThreads:returnedComments,
+          returnedParagraphs:parserResult.reviewIr.formattingParagraphs,commentReturnInventory:parserResult.reviewIr.commentReturnInventory,textChanges};
+        const delta=require('./core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText});
+        cleanTextCommentUnchanged=delta.unchanged===true && delta.afterText===beforeText;
+        if(!cleanTextCommentUnchanged) {
+          const scenes=[...new Set(textChanges.map(change=>change.sceneId))];
+          if(scenes.length!==1 || context.comparisonBindings?.some(binding=>binding.changedSinceExport)) throw Error('COMMENT_TEXT_RETURN_CONCURRENT_UNSUPPORTED');
+          const sceneId=scenes[0],raw=authority.baselineObservableContentBySceneId?.[sceneId] ?? authority.baselineFinalTextBySceneId?.[sceneId];
+          const parsed=envelope.parseObservablePayload(raw);
+          const afterContent=envelope.composeObservablePayload({doc:cleanTextDocsBySceneId[sceneId],metaEnabled:parsed.hasMetaBlock,meta:parsed.meta,cards:parsed.cards});
+          cleanTextCommentPlan=require('./core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({beforeText,projectId:context.projectId,sceneId,
+            beforeContent:raw,afterContent,returnProofJson:JSON.stringify(proof)});
         }
-        // These blocks were independently admitted by the literal clean text
-        // analyzer and carry no comment. The comment-only validator receives
-        // their authenticated baseline text; all comment-bearing rows remain
-        // the actual returned paragraph and graph.
-        const delta = require('./core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({
-          beforeText,projectId:context.projectId,roundId:authority.roundId,
-          artifactSha256:context.returnedArtifactSha256,
-          baseline:authority.commentExport,exportMap:authority.exportMap,
-          returnedThreads:returnedComments,returnedParagraphs:annotationParagraphs,
-          commentReturnInventory:parserResult.reviewIr.commentReturnInventory,
-        });
-        cleanTextCommentUnchanged = delta.unchanged === true && delta.afterText === beforeText;
         cleanTextCommentSourceText = beforeText;
       } catch (error) { return {ok:false,code:'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT',detail:error.code || error.message}; }
     }
-    if (!cleanTextCommentUnchanged) return {ok:false,code:'RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED'};
+    if (!cleanTextCommentUnchanged && !cleanTextCommentPlan) return {ok:false,code:'RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED'};
     try {
       if (!Buffer.isBuffer(context.docxBytes)
         || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256) throw Error('RTK_CLEAN_TEXT_ARTIFACT_MISMATCH');
@@ -10067,7 +10068,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       return {ok:false,code:'RTK_CLEAN_TEXT_NOTE_BINDING_CONFLICT',detail:error.code || error.message};
     }
     return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,cleanTextGridPlansBySceneId,cleanTextFormattingBySceneId,cleanTextFormattingConsumptionBySceneId,
-      cleanTextComparisonBindings:context.comparisonBindings || null,cleanTextCommentUnchanged,
+      cleanTextComparisonBindings:context.comparisonBindings || null,cleanTextCommentUnchanged,cleanTextCommentPlan,
       cleanTextNotesUnchanged:true,cleanTextCommentSourceText,cleanTextNoteSourceText}};
   }
   if (!candidates.length) return { ok: true, changed: false };
@@ -11140,7 +11141,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
   if (!isCurrent()) return superseded();
   const explicitCanonicalApplyConfirmed = payload?.explicitCanonicalApplyConfirmed === true;
   const cleanCommentsUnchanged = returnIntake.localAuthorityCapsule?.cleanTextCommentUnchanged === true;
-  const existingCommentDelta = !cleanCommentsUnchanged && activeContext.reviewTransportAuthorityCapsule?.commentExport
+  const mixedComments = !!returnIntake.localAuthorityCapsule?.cleanTextCommentPlan;
+  const existingCommentDelta = !mixedComments && !cleanCommentsUnchanged && activeContext.reviewTransportAuthorityCapsule?.commentExport
     && !compareCommentExportReadback(activeContext.reviewTransportAuthorityCapsule.commentExport,
       commentShadowPayload?.reviewIr?.commentThreads || []).ok;
   let preCommentExactTextApplyResult = null;
@@ -11180,7 +11182,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
   const reviewSurfaceForComments = isPlainObjectValue(preCommentExactTextApplyResult?.reviewSurface)
     ? preCommentExactTextApplyResult.reviewSurface
     : nonOverlapTrackedReplacementProductPath?.reviewSurface;
-  const commentProductPath = cleanCommentsUnchanged ? {ok:true,status:'unchanged',writerCalled:false,
+  const commentProductPath = mixedComments ? {ok:true,status:'composite-preview',writerCalled:false,code:'RTK_COMMENT_TEXT_ATOMIC_APPLY'} : cleanCommentsUnchanged ? {ok:true,status:'unchanged',writerCalled:false,
     code:'RTK_CLEAN_TEXT_AUTHENTICATED_COMMENTS_UNCHANGED'} : commentShadowPayload
     ? await applyAuthenticatedDocxCommentProductPath({
       context: activeContext,
@@ -22998,7 +23000,21 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             }
             manifestContent = JSON.stringify(invalidation.manifest, null, 2);
           }
-          let commentState = null;
+          let commentState = null, admittedCommentLedger = null;
+          if (options.commentEditIntentsJson != null) {
+            const model=require('./core/word-comment-edit-intents-v1.cjs');
+            const ledger=model.validateEditIntents(options.commentEditIntentsJson);
+            admittedCommentLedger=ledger;
+            const digest=model.textDigest(commentSceneParagraphs(expectedSceneContent).map(p=>p.text));
+            if (ledger.baselineTextSha256!==digest) {
+              const prior=commitWriterProjectSnapshot.commentEditContinuation;
+              if (!prior || prior.filePath!==filePath || prior.sessionId!==commentAuthoringSessionId
+                || prior.subjectId!==currentLifecycleSubjectId() || prior.savedContent!==expectedSceneContent
+                || prior.ledger.baselineTextSha256!==ledger.baselineTextSha256
+                || JSON.stringify(ledger.edits.slice(0,prior.ledger.edits.length))!==JSON.stringify(prior.ledger.edits)) throw Error('COMMENT_EDIT_BASELINE_STALE');
+              options={...options,commentEditIntentsJson:JSON.stringify({...ledger,baselineTextSha256:digest,edits:ledger.edits.slice(prior.ledger.edits.length)})};
+            }
+          }
           let noteState = null;
           if ((lease || options.authenticatedCleanBlockText === true) && typeof expectedSceneContent === 'string'
             && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
@@ -23019,6 +23035,15 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               beforeText: notes.sourceExists ? notes.sourceText : null, projectId: prepared.projectId,
               sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
               beforeContent: expectedSceneContent, afterContent: content });
+          }
+          if(options.commentTextReturnPlan) {
+            if(options.authenticatedCleanBlockText!==true) throw Error('COMMENT_TEXT_RETURN_AUTHORITY_REQUIRED');
+            const incoming=options.commentTextReturnPlan;
+            const expected=require('./core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({
+              beforeText:incoming.beforeText,projectId:prepared.projectId,sceneId:getProjectRelativeFilePath(filePath,prepared.manifestPath),
+              beforeContent:expectedSceneContent,afterContent:content,returnProofJson:incoming.returnProofJson});
+            if(incoming.mode!==expected.mode || incoming.afterText!==expected.afterText) throw Error('COMMENT_TEXT_RETURN_PLAN_STALE');
+            commentState=expected;
           }
           if (recordingAdmission) await recordingPort.revalidate(recordingAdmission);
           if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
@@ -23079,7 +23104,10 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
                 savedContent: content, aliases: cloneJsonSafe(nextBookmarkAliases) } : null;
           }
           if (receipt.success === true && bookmarkPublication) userBookmarkSaveContinuation = bookmarkPublication;
+          if(receipt.success===true && admittedCommentLedger) commitWriterProjectSnapshot.commentEditContinuation={
+            filePath,sessionId:commentAuthoringSessionId,subjectId:currentLifecycleSubjectId(),savedContent:content,ledger:admittedCommentLedger};
           return Object.freeze({ ...receipt, projectTransaction: true,
+            ...(receipt.success===true && admittedCommentLedger ? {commentEditIntentsSha256:computeHash(JSON.stringify(admittedCommentLedger))}:{}),
             ...(receipt.success === true && mediaReturnPublication ? { mediaReturnPublication } : {}),
             ...(receipt.success === true && userBookmarkHistorySnapshot ? { userBookmarkHistorySnapshot } : {}),
             ...(receipt.success === true && bookmarkPublication ? { bookmarkPublication } : {}) });
@@ -25613,6 +25641,7 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
     'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL',
       ...(options.userBookmarkPlan ? {userBookmarkPlan:options.userBookmarkPlan,userBookmarkCapturedContent:options.userBookmarkCapturedContent}: {}),
       ...(options.authenticatedCleanBlockText === true ? {authenticatedCleanBlockText:true}: {}),
+      ...(options.commentTextReturnPlan ? {commentTextReturnPlan:options.commentTextReturnPlan}: {}),
       ...(options.inactiveGridPlan ? {inactiveGridPlan:options.inactiveGridPlan,...(options.inactiveGridRollback===true?{inactiveGridRollback:true}:{})}: {}) },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
@@ -26016,7 +26045,7 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
   if (!store.cleanTextCandidateDoc || input.reviewItems.some(item=>!String(item.changeId).startsWith('docx-clean-block-text-'))) {
     return blocked('RTK_CLEAN_BLOCK_TEXT_PRIVATE_CANDIDATE_REQUIRED');
   }
-  if(store.cleanTextFormattingOperations?.some(operation=>['list-numbering','document-properties'].includes(operation.kind))) {
+  if(store.cleanTextCommentPlan || store.cleanTextFormattingOperations?.some(operation=>['list-numbering','document-properties'].includes(operation.kind))) {
     const required=store.input.reviewItems.map(item=>item.changeId).sort(), selected=input.reviewItems.map(item=>item.changeId).sort();
     if(JSON.stringify(required)!==JSON.stringify(selected))return blocked('RTK_CLEAN_TEXT_NUMBERING_ATOMIC_GROUP_REQUIRED');
   }
@@ -26062,6 +26091,7 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
     await beforeRename();
     const result=await publishReviewSceneWithProjectTransaction(filePath,content,{...publishOptions,beforeRename,
       userBookmarkPlan:plan,userBookmarkCapturedContent:snapshot.content,authenticatedCleanBlockText:true,
+      ...(store.cleanTextCommentPlan?{commentTextReturnPlan:store.cleanTextCommentPlan}:{}),
       ...(store.cleanTextGridPlan?{inactiveGridPlan:store.cleanTextGridPlan}:{})});
     publication={filePath,savedContent:content,capturedContent:snapshot.content,generation:snapshot.generation,subjectId,sessionId};
     return result;
@@ -31747,7 +31777,8 @@ function acknowledgeMainOwnedSave(saveReceipt, capturedContent, capturedGenerati
     latestEditGeneration: observedLatestGeneration,
   });
   lastSignaledEditGeneration = observedLatestGeneration;
-  const ack = binding.ack;
+  const ack = binding.ack.kind===SAVE_ACK_KINDS.SAVED && typeof saveReceipt?.commentEditIntentsSha256==='string'
+    ? {...binding.ack,commentEditIntentsSha256:saveReceipt.commentEditIntentsSha256} : binding.ack;
   if (ack.kind === SAVE_ACK_KINDS.SAVED) setDirtyState(false, ack);
   else setDirtyState(true);
   return ack;

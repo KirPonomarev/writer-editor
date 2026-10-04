@@ -28,12 +28,12 @@ function validateEditIntents(input) {
   const ids = new Set();
   for (const e of value.edits) {
     if (!keys(e,['id','historyId','direction','paragraphIndex','fromUtf16','toUtf16','removedText','insertText'])
-      || !ID.test(e.id) || !ID.test(e.historyId) || ids.has(e.id) || !['forward','undo','redo'].includes(e.direction)
+      || typeof e.id !== 'string' || typeof e.historyId !== 'string' || !ID.test(e.id) || !ID.test(e.historyId) || ids.has(e.id) || !['forward','undo','redo'].includes(e.direction)
       || !Number.isSafeInteger(e.paragraphIndex) || e.paragraphIndex < 0 || e.paragraphIndex >= 10000
       || !Number.isSafeInteger(e.fromUtf16) || e.fromUtf16 < 0 || !Number.isSafeInteger(e.toUtf16) || e.toUtf16 < e.fromUtf16
       || typeof e.removedText !== 'string' || typeof e.insertText !== 'string'
       || e.removedText.length !== e.toUtf16-e.fromUtf16 || e.removedText === e.insertText
-      || /[\r\n]/u.test(e.removedText + e.insertText)) fail('COMMENT_EDIT_INTENT_INVALID');
+      || !e.removedText.isWellFormed() || !e.insertText.isWellFormed() || /\r/u.test(e.removedText + e.insertText)) fail('COMMENT_EDIT_INTENT_INVALID');
     ids.add(e.id);
   }
   const json = JSON.stringify(value);
@@ -65,6 +65,7 @@ function mapAnchorSplice(anchor, edit, afterText) {
   const start = anchor.startUtf16, end = start+anchor.selectedText.length;
   const from = edit.fromUtf16, to = edit.toUtf16, added = edit.insertText.length, delta = added-(to-from);
   const endpoint = (position,right) => position < from ? position : position > to ? position+delta : from+(right?added:0);
+  if (anchor.kind === 'point' && from < start && to > start) return {anchor:{...anchor,blockTextSha256:sha(afterText)},deleted:true};
   if (anchor.kind === 'point' && !boundaries(afterText).has(endpoint(start,true))) fail('COMMENT_EDIT_GRAPHEME');
   if (anchor.kind === 'point') return {anchor:{...anchor,startUtf16:endpoint(start,true),blockTextSha256:sha(afterText)},deleted:false};
   if (from <= start && to >= end && to > from) return {anchor:{...anchor,blockTextSha256:sha(afterText)},deleted:true};

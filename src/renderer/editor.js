@@ -1522,6 +1522,12 @@ function reviewSurfaceRenderNumberingChanges(operations) {
   }).join('');
 }
 
+function reviewSurfaceRenderCommentAnchorChanges(commentChanges) {
+  const count = commentChanges?.count;
+  return Number.isSafeInteger(count) && count > 0 && count <= 128
+    ? `<p class="right-rail-review-item-body">Текст и привязки комментариев применяются вместе. Комментариев: ${count}.</p>` : '';
+}
+
 function reviewSurfaceRenderCompositeNumberingChanges(operations, documentChanges = []) {
   const checked=reviewSurfaceArray(operations).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering);
   const documentMarkup=reviewSurfaceArray(documentChanges).map(operation=>{
@@ -2683,6 +2689,7 @@ function reviewSurfaceBuildExactTextPreview(state) {
   if (exactPreview.status === 'ready' && applyOps.length > 0) {
     return {
       state: 'ready',
+      commentChanges:exactPreview.plan?.commentChanges,
       documentChanges:reviewSurfaceArray(exactPreview.plan?.documentChanges),
       numberingChanges:reviewSurfaceArray(exactPreview.plan?.numberingChanges).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering),
       ops: applyOps,
@@ -3151,6 +3158,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   const exactPreview = viewModel.exactTextPreview;
   const exactPreviewMarkup = exactPreview.state === 'ready'
     ? `
+      ${reviewSurfaceRenderCommentAnchorChanges(exactPreview.commentChanges)}
       ${reviewSurfaceRenderCompositeNumberingChanges(exactPreview.numberingChanges, exactPreview.documentChanges)}
       ${exactPreview.fullManuscriptAction
         ? `
@@ -21332,9 +21340,9 @@ function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
         // the exact current generation advances the admission coordinate;
         // PROTECTED and AT_RISK keep newer work marked and never regress it.
         const ack = result && typeof result === 'object' ? result.ack : null;
-        if (ack && ack.kind === 'SAVED' && ack.savedGeneration === localEditGeneration) {
-          lastAckedGeneration = ack.savedGeneration;
-          if (isTiptapMode) checkpointTiptapCommentEditIntents();
+        if (ack && ack.kind === 'SAVED') {
+          if (isTiptapMode) checkpointTiptapCommentEditIntents(ack.commentEditIntentsSha256);
+          if (ack.savedGeneration === localEditGeneration) lastAckedGeneration = ack.savedGeneration;
         }
       })
       .catch(() => {})
@@ -24871,9 +24879,9 @@ if (window.electronAPI) {
     if (message && typeof message === 'object') {
       const ack = message.ack;
       if (ack && ack.kind === 'SAVED') {
+        if (isTiptapMode) checkpointTiptapCommentEditIntents(ack.commentEditIntentsSha256);
         if (ack.savedGeneration === localEditGeneration) {
           lastAckedGeneration = ack.savedGeneration;
-          if (isTiptapMode) checkpointTiptapCommentEditIntents();
           localDirty = false;
         }
       } else {

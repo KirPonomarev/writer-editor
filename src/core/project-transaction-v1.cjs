@@ -7,7 +7,7 @@ const fsp = require('node:fs/promises');
 const path = require('node:path');
 
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
-const { MODE: COMMENT_REBASE_MODE, planCommentAnchorSave } = require('./word-comment-anchor-save-v1.cjs');
+const { MODE: COMMENT_REBASE_MODE, RETURN_MODE: COMMENT_TEXT_RETURN_MODE, planCommentAnchorSave, planCommentTextReturn } = require('./word-comment-anchor-save-v1.cjs');
 const { validateNoteCohort, validateManuscriptDocument } = require('./word-manuscript-notes-v1.cjs');
 const { readState: readCanonicalCommentState } = require('./word-comment-authoring-v1.cjs');
 const MEDIA_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v6';
@@ -27,8 +27,8 @@ const COMMENT_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v3';
 const COMMENT_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v3';
 const ANCHOR_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v4';
 const ANCHOR_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v4';
-const commentJournalSchema = value => value?.mode === COMMENT_REBASE_MODE ? ANCHOR_JOURNAL_SCHEMA_VERSION : COMMENT_JOURNAL_SCHEMA_VERSION;
-const commentCommitSchema = value => value?.mode === COMMENT_REBASE_MODE ? ANCHOR_COMMIT_SCHEMA_VERSION : COMMENT_COMMIT_SCHEMA_VERSION;
+const commentJournalSchema = value => [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(value?.mode) ? ANCHOR_JOURNAL_SCHEMA_VERSION : COMMENT_JOURNAL_SCHEMA_VERSION;
+const commentCommitSchema = value => [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(value?.mode) ? ANCHOR_COMMIT_SCHEMA_VERSION : COMMENT_COMMIT_SCHEMA_VERSION;
 const MAX_RESOURCE_BYTES = 20 * 1024 * 1024; // existing 16 MiB media budget plus bounded receipt
 const MAX_RESOURCES = 129;
 const RECOVERY_PACKET_SCHEMA_VERSION = 'yalken.project-transaction.recovery-packet.v1';
@@ -183,6 +183,18 @@ const commentBinding = value => value ? { beforeDigest: sha256hex(value.beforeTe
 function normalizeCommentState(value, scenePath, manifestPath, scenePair = null) {
   if (value === undefined || value === null) return null;
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
+  if(value?.mode===COMMENT_TEXT_RETURN_MODE) {
+    if(!scenePair || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
+      || !['beforeText','afterText'].every(k=>typeof value[k]==='string' && Buffer.byteLength(value[k])<=65536)) fail();
+    try {
+      const projectId=JSON.parse(scenePair.before.manifest).projectId;
+      const expected=planCommentTextReturn({beforeText:value.beforeText,projectId,
+        sceneId:path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/'),
+        beforeContent:scenePair.before.scene,afterContent:scenePair.after.scene,returnProofJson:value.returnProofJson});
+      if(expected.afterText!==value.afterText) fail();
+      return expected;
+    } catch {fail();}
+  }
   if (value?.mode === COMMENT_REBASE_MODE) {
     if (!scenePair || Object.keys(value).sort().join(',') !== (value.editIntents !== undefined ? 'afterText,beforeText,editIntents,mode,sessionId' : 'afterText,beforeText,mode')
       || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
@@ -558,9 +570,9 @@ async function readCommitRecordState({
   if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || ([NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) && record.commentState !== undefined)) {
     if (!record.commentState || !isDigest(record.commentState.beforeDigest) || !isDigest(record.commentState.afterDigest)
-      || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? record.commentState.mode !== COMMENT_REBASE_MODE
-        : record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE, 'PROJECT_TREE_COHORT_V1'].includes(record.commentState.mode)
-        : [NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) ? ![undefined, COMMENT_REBASE_MODE].includes(record.commentState.mode) : record.commentState.mode !== undefined)) {
+      || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? ![COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode)
+        : record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE, 'PROJECT_TREE_COHORT_V1'].includes(record.commentState.mode)
+        : [NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode) : record.commentState.mode !== undefined)) {
       return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
     }
   } else if (record.commentState !== undefined) return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
@@ -956,13 +968,13 @@ async function commitProjectTransaction({
   if (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.ADMIT);
   }
-  if (commentState && (commentState.mode === COMMENT_REBASE_MODE
+  if (commentState && ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState.mode)
     ? (!mediaUpdate && resources.length !== 0)
     : !resources.length || resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT);
   }
   if (resources.length && !mediaUpdate && expectedSceneContent !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.ADMIT);
-  if (resources.length || commentState?.mode === COMMENT_REBASE_MODE || noteState) {
+  if (resources.length || [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState?.mode) || noteState) {
     await assertResourceBoundary(scenePath, manifestPath, fsAdapter);
     await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
     await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
@@ -984,7 +996,7 @@ async function commitProjectTransaction({
   let retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
     && retainedCommit.record.resources?.length ? normalizeRetainedResources(retainedCommit.record.resources, scenePath, manifestPath) : [];
   retainedResources = await consumeRestoredTreeAnnotationResources(retainedResources, scenePath, manifestPath, before, fsAdapter);
-  if (commentState?.mode === COMMENT_REBASE_MODE) {
+  if ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState?.mode)) {
     // The independently recomputed anchor plan takes ownership of this one
     // mutable canonical file. Its current bytes remain bound by the existing
     // comment CAS, journal and recovery protocol; other import pins stay exact.
@@ -1268,7 +1280,7 @@ async function repairCorruptProjectCommit({
     const mediaUpdate = packet.resourceMode === 'MEDIA_UPDATE_V1' || continuation;
     if (packet.resourceMode !== undefined && !mediaUpdate) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.RECOVER);
     if (mediaUpdate && resources.length) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: before.scene, after: after.scene, noteState });
-    if (!mediaUpdate && commentState?.mode === COMMENT_REBASE_MODE && packet.companionResources !== undefined) {
+    if (!mediaUpdate && [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState?.mode) && packet.companionResources !== undefined) {
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
     }
     if (before.manifest === null || after.scene === null || after.manifest === null) {

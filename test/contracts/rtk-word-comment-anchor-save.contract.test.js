@@ -127,7 +127,7 @@ async function mainHarness(t,options={}) {
   publications++;return real.commitManifestText(args);
  }};
  const gateway=require('../../src/core/legacy-strangler-v1.cjs');
- const sandbox={commentAuthoringSessionId:"main-session-1",fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
+ const sandbox={require:require('node:module').createRequire(require.resolve('../../src/main.js')),computeHash:sha,currentLifecycleSubjectId:()=> 'scene-subject',commentSceneParagraphs:require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,commentAuthoringSessionId:"main-session-1",fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   loadDocumentContentEnvelopeModule:()=>import('../../src/renderer/documentContentEnvelope.mjs'),
   pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs'),
   commitProjectTransaction:tx.commitProjectTransaction,recoverProjectTransaction:tx.recoverProjectTransaction,

@@ -913,12 +913,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
-      "sha256": "b8a20850af8357ae1d11d95071bf80eabc10c9a5c6428ef5fcb181fe5f91777f"
+      "sha256": "50bba2c251191e1848c2eb830aaa4708ab2813f575acc9f5aa1e79fef0b3eb96"
     },
     {
       "approved": true,
@@ -1003,7 +1003,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1021,7 +1021,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/export/docx/docxReviewPacketComments.js",
@@ -1381,10 +1381,10 @@
     },
     {
       "filePath": "src/io/documentTables.js",
-      "sha256": "43aa2d4e80161e7e833a05c34ef1eed2dc93805bfe688806934e85b7612e5adc",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
-      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "sha256": "c5a344b767a5bb7a9247633dcca125fc8b07371987492e7a66bb3c66265a38fa",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
+      "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1444,10 +1444,10 @@
     },
     {
       "filePath": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
-      "sha256": "60e5150823b99b62f77214baca655c03dd82c92a24adc552f436eb12ebf78f8b",
-      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
-      "approvedAtUtc": "2026-09-25T03:25:54Z",
-      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "981d77c5df0d96ecfc57a97ddcc8b032a3498bc481cc0f13379cb27ce13be632",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
+      "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "74647c890cade0631f36bd45335336dceb00079fb0b68260e55d97fb99e35060",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1588,12 +1588,12 @@
     },
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
-      "sha256": "6562fafe4fb04ae78bb9ea1c71e2cefb1f28497e040a244e50a69a441402930b",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
+      "sha256": "860e879b8ee022522225f3e1dbc012f0b2eb2aa811a4d323a4854fcfc66eb1e0",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
+      "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
@@ -1644,34 +1644,34 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "35d08bba9a440db48d03bdff07e83daa632e2b3e0b2184e8ae74c676022de2ba",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "8e7ae7478f59ee89ddc57a86b939fba1cf0f5183553f9681eb3b2d9fcf2c33b9",
+      "sha256": "c4aca19ac4cd05952a0ca13458121fd529506725bac274a72fc43e11c8e88913",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "d4a9816a7842bea0f1711c6530b5cfe8afd90d0327ee82b10aba14d4e549f1b5",
+      "sha256": "92a8831f4a103c01bf69771638c395d5c8559952712c34e1ca1518894e7ca5f7",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "1195890c5570244ac033f03606df3c13f15631579ebfe734e23586b18bf0a018",
+      "sha256": "f43ce7de8c9e30650a72bbb39704102389ced362de46374c2cf353637625c1ff",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1687,9 +1687,9 @@
     },
     {
       "filePath": "src/renderer/tiptap/index.js",
-      "sha256": "07811af301f210df30e8db54833fe141e1df0f8e8f944edc2c3f08204036f647",
+      "sha256": "c6c1c13690a7a7bc0e7eef4a70acfef42cc9ddf69d3681287fc13d98307b0fec",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7988b01c74ba91e94d250165ecea4630871de5f212046a869b616b4d7356d009",
+      "sha256": "78882d62d7808b802b6169c5b2316e0e288ed4506a8cbb69d6216c4e6780e912",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "433a7405b2c5500c255e087fd41b1988c05c31d5d97397c69fb1af6701517c52",
+      "sha256": "4eee22b2525e710ed9a1d738ec278a051ba4d61db45c41310ad9825e9f64f643",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3237e71ddf087d95e415d36f3c817bf6cc0fef106c08c7b8a3caa81d8c8c434d",
+      "sha256": "24edb4488cc9493a8c7964b50afe7db883d2d642ac3e59155289cd9c55c4941b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -2354,7 +2354,7 @@
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
       "sha256": "5fec24aefebeb8596c54ca274d61c8b728256064857210a6351139aa98770d03",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2372,7 +2372,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
       "sha256": "760dbb3d7843aa0c3fc325a98dd3fcf6ff0815b711cd068b0ed7f8279e3ee394",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2380,8 +2380,8 @@
     },
     {
       "filePath": "src/core/word-comment-authoring-v1.cjs",
-      "sha256": "1fc0420dddfad9c1be2b140490d9dc3ddf65e90bd8c46e1b492c16e85e801eb8",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "3d154eef8ec4e9ea26f380217ca1c577baea0f821d4d616ae8696a25e127b590",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2443,8 +2443,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-      "sha256": "30895ac3779ca14425bd9a0fd71e376637b5b9204deeaecb3eaa63827496190a",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "669a002a5a8cd3b8ab898adad27351feac5f7e7d82facced07e4bf356080f192",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2452,8 +2452,8 @@
     },
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
-      "sha256": "45331bb2231352a8d1338de0451e519764c67b3cf38849924ff7be2c9a5c1bdd",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "d93a76836c51f0b97f2f6ab114fc49f8c8cf9c0d7dc163748ce0bc1f3135c65f",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2498,7 +2498,7 @@
     {
       "filePath": "src/core/word-comment-return-delta-v1.cjs",
       "sha256": "f093a42bce06669a600b699e088aa2e7f040e0bf5744de320605489cbd8787dc",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2507,7 +2507,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
       "sha256": "f90cae59bac8cef65d1aa73d4587790856eb10cbef952c6b3aedda03ba982168",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "00daf41d8697425e8d802c4fb47f65970f23eaffb240e90f125f9354b7d0fb60",
+      "sha256": "412287a26bf560f86b30d0d42c86d18819154ca771a143376156e0a636aa5a7f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b5757f0de16fbd85575a388f3ae4ce450f16585630969a8a75e82c197f01bba2",
+      "sha256": "966ed43a7f5059acef04aa55e2c41f94d224b3a7b61d71fc6d606824523ef608",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "d1f3d26e49b562bb7e6aca3ea46e7b3949e582851f441a1a6374db4639e80cf4",
+      "sha256": "470b77ace7f13f3344fc3814239cfa542482c21bb915226323fe3346e9694154",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
@@ -3721,10 +3721,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "54d2f55c658f25af7edf7c00b02c53cb6c752ab76aed29310954e33de9fae739",
-      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
-      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
-      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "sha256": "2649779206e437d3dfd987b14481a40fbf68972bdad411fb03ade2aa7ba20e92",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
+      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
+      "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -4559,7 +4559,7 @@
     {
       "filePath": "src/core/word-comment-body-v1.cjs",
       "sha256": "79eec5939a9d43dad9b32cde5cf2763401322c27b9d23fafb5398310d7870c03",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4702,8 +4702,8 @@
     },
     {
       "filePath": "src/renderer/tiptap/documentCommentEditIntents.mjs",
-      "sha256": "18e07509fba30d72f480661e5ebd0449352c7d5a620883166cc97a749ceac033",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "92b127ba18cfd1113f01a071687a6389843be15c5928452b1d39b9b8e1260c9e",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4711,8 +4711,8 @@
     },
     {
       "filePath": "src/core/word-comment-edit-intents-v1.cjs",
-      "sha256": "be28465b94fc1135260d50689adb591248559185783f4783fa1dbd36e719b3bd",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "ef792f6cd3cf8576604b7c61b7ae7f1d510bc92969e84d7a74e4949a1a04cc1b",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4720,8 +4720,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-      "sha256": "8040f8fc3575ddfeefe83c26ad7905cc6adbcf9181f05973f47c6714bfc530f6",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "1485bbb8062d750063fb9811da174679aab0868a5a8ce1785f243babf3ebece3",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4730,7 +4730,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-points.contract.test.js",
       "sha256": "758a67f5b13e8d9ead5767bc0fb0cba2255b61c959fd66da5ef72afd4f3f7d79",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4738,8 +4738,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-      "sha256": "8f8e4fbdfd1655698fa4084fbbf284537f4ed00568454f3e984a278d0a6a5f91",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "6b1e2443914c811f5049b92521b2589232e5b7b32f8cb10f0446208ea6d77e77",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -4747,8 +4747,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-      "sha256": "21064c3061b56e5b06c714c6cd2a33c6c09d5087ac4c44b7d438c21046e95d10",
-      "approvedAtUtc": "2026-10-04T07:02:42.557410Z",
+      "sha256": "37dd561990c3106574452bb0a118a1d64750b09d04833352d7405c08e4868873",
+      "approvedAtUtc": "2026-10-04T07:19:48.853144Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004",
       "rationale": "Owner-authorized point comments and edits inside anchored text on Mac import, authoring, export and authenticated return; versioned anchors, bounded edit replay, existing command routing and atomic scene/comment transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
@@ -28044,9 +28044,36 @@
       "sha256": "a72370cb30c668d7f65a389b43bb8718487dd2ee41f85cf321d6a10983190213"
     },
     {
+      "filePath": "src/io/documentTables.js",
+      "sha256": "43aa2d4e80161e7e833a05c34ef1eed2dc93805bfe688806934e85b7612e5adc",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
+      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
+      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
+      "sha256": "60e5150823b99b62f77214baca655c03dd82c92a24adc552f436eb12ebf78f8b",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T03:25:54Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "da5807f7db6a7f6ea2dbe20685468d6b9c67a46148ebc0f5f54a5cfb5f19acac",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
+      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
+    },
+    {
+      "filePath": "src/export/docx/docxMinBuilder.js",
+      "sha256": "6562fafe4fb04ae78bb9ea1c71e2cefb1f28497e040a244e50a69a441402930b",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
       "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
@@ -28213,6 +28240,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "54d2f55c658f25af7edf7c00b02c53cb6c752ab76aed29310954e33de9fae739",
+      "approvedAtUtc": "2026-10-04T06:19:25.102291Z",
+      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004",
+      "rationale": "Owner-authorized custom and multilevel numbering on Mac import, authoring, export and authenticated return; validated numbering lineage, strict input grammar, existing command routing and scene transactions. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "src/core/word-comment-body-v1.cjs",

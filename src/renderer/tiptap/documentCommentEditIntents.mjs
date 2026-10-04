@@ -6,21 +6,29 @@ import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 const ledgerKey = new PluginKey('commentEditIntents');
 const checkpointKey = new PluginKey('commentEditCheckpoint');
 const leafCounts = new WeakMap();
+const leafPrefixes = new WeakMap();
+const capturedSnapshots = new WeakMap();
 const paragraphTypes = new Set(['paragraph', 'heading', 'codeBlock']);
 const countLeaves = node => {
   if (leafCounts.has(node)) return leafCounts.get(node);
   let count = paragraphTypes.has(node.type.name) ? 1 : 0;
-  if (!count) node.forEach(child => { count += countLeaves(child); });
+  if (!count) {
+    const prefixes = [0];
+    node.forEach(child => { count += countLeaves(child); prefixes.push(count); });
+    leafPrefixes.set(node, prefixes);
+  }
   leafCounts.set(node, count);
   return count;
 };
-function paragraphAt(doc, position) {
+function paragraphAt(doc, position, structure = doc) {
   const at = doc.resolve(position);
   if (!paragraphTypes.has(at.parent.type.name)) throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
-  let paragraphIndex = 0;
+  countLeaves(structure);
+  let paragraphIndex = 0, owner = structure;
   for (let depth = 0; depth < at.depth; depth++) {
-    const parent = at.node(depth);
-    for (let index = 0; index < at.index(depth); index++) paragraphIndex += countLeaves(parent.child(index));
+    const index = at.index(depth);
+    paragraphIndex += leafPrefixes.get(owner)[index];
+    owner = owner.child(index);
   }
   return { paragraphIndex, node: at.parent, offset: at.parentOffset };
 }
@@ -59,7 +67,14 @@ function initial(doc) {
 }
 function capture(tr, previous, oldState, newState) {
   if (tr.getMeta('wordPendingRevisionsExternal') === true) return initial(tr.doc);
-  if (tr.getMeta(checkpointKey) === true) return { ...previous, baseline: tr.doc, edits: [], invalid: false };
+  const checkpoint = tr.getMeta(checkpointKey);
+  if (checkpoint) {
+    const count = checkpoint.nextEdit - (previous.nextEdit - previous.edits.length);
+    if (previous.invalid || checkpoint.incarnation !== previous.incarnation || count < 0 || count > previous.edits.length || count > checkpoint.edits.length
+      || JSON.stringify(previous.edits.slice(0, count)) !== JSON.stringify(checkpoint.edits.slice(checkpoint.edits.length - count))) return previous;
+    countLeaves(checkpoint.doc);
+    return { ...previous, baseline: checkpoint.doc, edits: previous.edits.slice(count) };
+  }
   if (!tr.docChanged || previous.invalid) return previous;
   try {
     const edits = [];
@@ -68,7 +83,7 @@ function capture(tr, previous, oldState, newState) {
       if (['addMark', 'removeMark', 'attr', 'docAttr'].includes(kind)) continue;
       if (kind !== 'replace' || step.slice.openStart || step.slice.openEnd)
         throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
-      const before = tr.docs[index], from = paragraphAt(before, step.from), to = paragraphAt(before, step.to);
+      const before = tr.docs[index], from = paragraphAt(before, step.from, previous.baseline), to = paragraphAt(before, step.to, previous.baseline);
       if (from.node !== to.node) throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
       const text = inlineText(from.node), insertText = inlineText(step.slice.content);
       const removedText = text.slice(from.offset, to.offset);
@@ -127,13 +142,24 @@ export function getCommentEditIntentsJson(editor) {
   try {
     const wire = JSON.stringify({ schemaVersion: 1,
       baselineTextSha256: sha256Hex(JSON.stringify(paragraphs(ledger.baseline))), edits: ledger.edits });
-    return new TextEncoder().encode(wire).length <= 65536 ? wire : null;
+    if (new TextEncoder().encode(wire).length > 65536) return null;
+    let snapshots = capturedSnapshots.get(editor);
+    if (!snapshots || snapshots.incarnation !== ledger.incarnation) {
+      snapshots = { incarnation: ledger.incarnation, receipts: new Map() }; capturedSnapshots.set(editor, snapshots);
+    }
+    snapshots.receipts.set(sha256Hex(wire), { incarnation: ledger.incarnation, doc: editor.state.doc,
+      edits: ledger.edits, nextEdit: ledger.nextEdit });
+    if (snapshots.receipts.size > 8) snapshots.receipts.delete(snapshots.receipts.keys().next().value);
+    return wire;
   } catch { return null; }
 }
-export function checkpointCommentEditIntents(editor) {
-  if (!editor || editor.isDestroyed) return false;
-  editor.view.dispatch(editor.state.tr.setMeta(checkpointKey, true).setMeta('addToHistory', false));
-  return true;
+export function checkpointCommentEditIntents(editor, wireSha256) {
+  if (!editor || editor.isDestroyed || typeof wireSha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(wireSha256)) return false;
+  const captured = capturedSnapshots.get(editor)?.receipts.get(wireSha256);
+  const current = ledgerKey.getState(editor.state);
+  if (!captured || !current || current.incarnation !== captured.incarnation) return false;
+  editor.view.dispatch(editor.state.tr.setMeta(checkpointKey, captured).setMeta('addToHistory', false));
+  return ledgerKey.getState(editor.state) !== current;
 }
 export function commentSelectionIntent(editor) {
   if (!editor || editor.isDestroyed) throw new Error('COMMENT_EDIT_EDITOR_UNAVAILABLE');

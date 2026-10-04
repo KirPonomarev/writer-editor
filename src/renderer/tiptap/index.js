@@ -763,8 +763,8 @@ export function applyTiptapStoryBody(expectedDoc, storyId, body) {
 export function getTiptapCommentEditIntentsJson() {
   return getCommentEditIntentsJson(currentEditorInstance);
 }
-export function checkpointTiptapCommentEditIntents() {
-  return checkpointCommentEditIntents(currentEditorInstance);
+export function checkpointTiptapCommentEditIntents(wireSha256) {
+  return checkpointCommentEditIntents(currentEditorInstance, wireSha256);
 }
 export function getTiptapCommentSelectionIntent() {
   return commentSelectionIntent(currentEditorInstance);

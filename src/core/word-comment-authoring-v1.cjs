@@ -26,6 +26,24 @@ function readState(text, projectId) {
       || !Array.isArray(thread.messages) || thread.messages.length < 1 || thread.messages.length > 129
       || !['open', 'resolved', 'deleted'].includes(thread.status)) fail('COMMENT_STATE_INVALID');
     if ((thread.anchor?.kind === 'point' || thread.anchorEditHistory !== undefined) && state.schemaVersion !== STATE_V3) fail('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+    if (thread.anchorEditHistory !== undefined) {
+      if (!Array.isArray(thread.anchorEditHistory) || thread.anchorEditHistory.length > 32) fail('COMMENT_HISTORY_INVALID');
+      const histories = new Set();
+      for (const h of thread.anchorEditHistory) {
+        if (!plain(h) || Object.keys(h).sort().join(',') !== 'after,afterTextSha256,before,beforeTextSha256,historyId,sessionId,undone'
+          || !id(h.historyId) || !id(h.sessionId) || typeof h.undone !== 'boolean' || histories.has(h.sessionId+'|'+h.historyId)) fail('COMMENT_HISTORY_INVALID');
+        histories.add(h.sessionId+'|'+h.historyId);
+        for (const [key,digestKey] of [['before','beforeTextSha256'],['after','afterTextSha256']]) {
+          const p=h[key], point=p?.kind==='point';
+          if (!plain(p) || Object.keys(p).sort().join(',') !== (point ? 'affinity,blockTextSha256,kind,length,sceneParagraphIndex,startUtf16,status' : 'blockTextSha256,length,sceneParagraphIndex,startUtf16,status')
+            || !Number.isSafeInteger(p.sceneParagraphIndex) || p.sceneParagraphIndex<0 || p.sceneParagraphIndex!==thread.anchor?.sceneParagraphIndex
+            || !Number.isSafeInteger(p.startUtf16) || p.startUtf16<0 || !Number.isSafeInteger(p.length) || p.length<0
+            || (point ? p.length!==0 || p.affinity!=='right' : p.length===0)
+            || !['open','resolved','deleted'].includes(p.status) || !/^[a-f0-9]{64}$/u.test(p.blockTextSha256)
+            || p.blockTextSha256!==h[digestKey]) fail('COMMENT_HISTORY_INVALID');
+        }
+      }
+    }
     ids.add(thread.threadId);
     if (thread.deletedMessages !== undefined && (!Array.isArray(thread.deletedMessages)
       || thread.messages.length + thread.deletedMessages.length > 129)) fail('COMMENT_STATE_INVALID');
@@ -114,6 +132,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
     delete message.richBody;
     Object.assign(message, content); // Original Word provenance is retained, not re-authenticated.
   } else if (input.action === 'reanchor') {
+    delete thread.anchorEditHistory;
     thread.anchor = exactAnchor(input.anchor, sceneId, paragraphs);
   } else if (input.action === 'delete' && input.commentId !== undefined) {
     const index = thread.messages.findIndex(m => m.commentId === input.commentId);
@@ -123,6 +142,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
   } else {
     const desired = { resolve: 'resolved', reopen: 'open', delete: 'deleted' }[input.action];
     if (thread.status === desired) fail('COMMENT_STATUS_UNCHANGED');
+    delete thread.anchorEditHistory;
     thread.status = desired;
   }
   upgradeCommentState(after);

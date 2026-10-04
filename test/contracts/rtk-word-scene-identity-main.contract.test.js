@@ -1218,7 +1218,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1265,6 +1265,13 @@ async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBre
       if(commentPlan)fs.writeFileSync(commentPath,commentPlan.afterText);
       beforeContent=afterContent;
     }
+  }
+  if(anchoredComment) {
+    const raw=read(f.alpha),ps=require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(raw).map(p=>p.text);
+    const model=require('../../src/core/word-comment-authoring-v1.cjs'),sceneId='roman/Imported/01_Alpha.txt';
+    const planned=model.planCommentAuthoring({beforeText:null,projectId:f.query.projectId,sceneId,sceneSha256:sha(raw),paragraphs:ps,now:'2026-10-04T00:00:00Z',
+      input:{action:'create',requestId:'anchor-composite',projectId:f.query.projectId,sceneId,expectedStateSha256:'',expectedSceneSha256:sha(raw),body:'Anchor body',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}});
+    const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,planned.afterText);
   }
   f.source=read(f.alpha); let observed=f.source;
   if(schemaDefaults){
@@ -1351,7 +1358,7 @@ for (const languageOnly of [false,true]) test(`actual whole Main clean Word lang
   assert.ok(xml.includes('<w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart+'</w:t></w:r>'));
 });
 
-for(const variant of ['comment-body','note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
+for(const variant of ['note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
   const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
     if(variant==='comment-body'){
       assert.ok(parts['word/comments.xml'].includes('Mixed comment'));
@@ -2053,4 +2060,31 @@ for(const composite of ['none','single','multi'])for(const stale of (composite==
  const reexport=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(reexport.publicationGate.publishAllowed,true);const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:reexport.documentBuffer}).parts;
  if(composite!=='none')assert.match(output['word/settings.xml'],/<w:defaultTabStop w:val="708"\/>/);
  assert.match(output['word/numbering.xml'],/<w:start w:val="7"\/>/);assert.doesNotMatch(output['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);assert.equal((output['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);assert.match(output['word/document.xml'],/Continuation native-round5/);assert.notEqual(read(f.alpha),before);
+});
+
+test('actual whole Main atomically applies authenticated text and comment body together',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    parts['word/comments.xml']=parts['word/comments.xml'].replace('Mixed comment','Changed comment');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const result=await f.probe.fullApply({requestId:'mixed-comment-text-apply'});
+  assert.equal(result.ok,true,JSON.stringify(result));
+  const state=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.ok(state.threads.some(thread=>thread.messages.some(message=>message.body==='Changed comment')),JSON.stringify({result,state,activated}));
+  assert.ok(envelope.parseObservablePayload(read(f.alpha)).text.includes('Unannotated target CLEAN_EDIT'));
+  assert.equal(read(f.beta),Buffer.from(beforeActivation.files['roman/Imported/02_Beta.txt'],'base64').toString());
+});
+test('actual whole Main moves range with authenticated inside-anchor Word text and preserves identities',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    assert.ok(parts['word/document.xml'].includes('>Alpha<'));
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlINSIDEpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const before=JSON.parse(Buffer.from(beforeActivation.files['.yalken/word-review/non-text-return-state.v1.json'],'base64'));
+  const result=await f.probe.fullApply({requestId:'inside-comment-text-apply'});
+  assert.equal(result.totals?.applied,1,JSON.stringify(result));assert.equal(result.totals.blocked,0);assert.equal(result.totals.failed,0);
+  const after=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(after.threads[0].anchor.selectedText,'AlINSIDEpha');
+  assert.equal(after.threads[0].threadId,before.threads[0].threadId);assert.deepEqual(after.threads[0].messages,before.threads[0].messages);
+  assert.ok(envelope.parseObservablePayload(read(f.alpha)).text.startsWith('AlINSIDEpha'));
 });

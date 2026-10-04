@@ -388,9 +388,9 @@ test('PARSER01-P8-comment-anchor-violations-typed', async () => {
     'RED: lone anchor (rangeStart without end) is reported as exact/ANCHORED instead of typed RTK_COMMENT_ANCHOR_*',
   );
 
-  // (b) commentReference without commentRangeStart.
-  // RED REASON: commentReference is treated as an anchor start (line ~1731), so a
-  // dangling reference looks exact.
+  // (b) Word accepts a unique reference-only point and serializes adjacent
+  // zero-length markers. Neither missing half-ranges nor foreign references
+  // acquire that meaning.
   const refDoc = documentXml('<w:p><w:r><w:t>x</w:t></w:r><w:r><w:commentReference w:id="8"/></w:r></w:p>');
   const refComments = commentsXml('<w:comment w:id="8" w:author="A"><w:p><w:r><w:t>body8</w:t></w:r></w:p></w:comment>');
   const ref = parser.parseReviewTransportPackageV2(
@@ -399,11 +399,22 @@ test('PARSER01-P8-comment-anchor-violations-typed', async () => {
   );
   assert.equal(ref.ok, true);
   const refThread = ref.reviewIr.commentThreads[0];
-  assert.equal(
-    refThread.status === 'ANCHORED' && refThread.placement.anchored === true,
-    false,
-    'RED: commentReference without rangeStart is reported as exact/ANCHORED instead of typed RTK_COMMENT_ANCHOR_*',
-  );
+  assert.equal(refThread.status, 'ANCHORED');
+  assert.equal(refThread.placement.anchored, true);
+  assert.equal(refThread.body, 'body8');
+  assert.deepEqual(refThread.anchorRange, {startUtf16:1,endUtf16:1,selectedText:'',
+    blockTextSha256:cryptoPort.sha256Text('x')});
+  for (const inner of [
+    '<w:p><w:commentRangeEnd w:id="8"/><w:r><w:commentReference w:id="8"/></w:r></w:p>',
+    '<w:p><w:commentRangeStart w:id="8"/><w:r><w:commentReference w:id="8"/></w:r></w:p>',
+    '<w:p><w:r><w:commentReference w:id="8"/><w:commentReference w:id="8"/></w:r></w:p>',
+    '<w:p><w:r><foreign:commentReference xmlns:foreign="urn:foreign" w:id="8"/></w:r></w:p>',
+    '<w:p><w:r><w:t>x</w:t></w:r></w:p><w:r><w:commentReference w:id="8"/></w:r>',
+  ]) {
+    const malformed = parser.parseReviewTransportPackageV2(
+      {parts:baseParts(documentXml(inner), {'word/comments.xml':refComments})}, {cryptoPort});
+    assert.equal(malformed.reviewIr?.commentThreads?.some(t=>t.status==='ANCHORED'),false);
+  }
 
   // (c) crossing intervals of two comments.
   // RED REASON: no non-crossing/acyclic check exists, so both crossing ranges look exact.

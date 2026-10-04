@@ -1,5 +1,7 @@
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict');
+const wireHash = wire => require('node:crypto').createHash('sha256').update(wire).digest('hex');
+const checkpoint = (ui,editor) => ui.checkpointCommentEditIntents(editor,wireHash(ui.getCommentEditIntentsJson(editor)));
 const p = text => ({type:'paragraph',...(text ? {content:[{type:'text',text}]} : {})});
 async function harness(content, extraExtensions = []) {
   const [{Editor},{default:StarterKit},ui] = await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentCommentEditIntents.mjs')]);
@@ -19,7 +21,7 @@ test('real typing captures exact splices and actual merged history group across 
     assert.equal(editor.commands.undo(),true);
     const undo=wire().edits.at(-1);assert.equal(undo.direction,'undo');assert.equal(undo.historyId,forward.edits[0].historyId);
     assert.equal(undo.removedText,'XY');assert.equal(undo.insertText,'');
-    ui.checkpointCommentEditIntents(editor);assert.equal(wire().edits.length,0);
+    checkpoint(ui,editor);assert.equal(wire().edits.length,0);
     assert.equal(editor.commands.redo(),true);
     assert.equal(wire().edits[0].direction,'redo');assert.equal(wire().edits[0].historyId,undo.historyId);
     assert.equal(editor.getText(),'AlXYpha Alpha');
@@ -84,7 +86,7 @@ test('oversized real paste leaves author text intact but never emits a truncated
     assert.equal(editor.commands.undo(),true);assert.equal(editor.state.doc.textContent,'Alpha');
   } finally {editor.destroy();}
 });
-test('snapshot bridge carries the live bounded ledger and exact-generation save acknowledgement checkpoints it',()=>{
+test('snapshot bridge carries the live bounded ledger and forwards only SAVED receipts without clearing newer dirty text',()=>{
   const fs=require('node:fs'),vm=require('node:vm');
   const source=fs.readFileSync(require('node:path').join(__dirname,'../../src/renderer/editor.js'),'utf8');
   const start=source.indexOf('function composeEditorSnapshot()'),end=source.indexOf('\n}',start)+2;
@@ -94,11 +96,89 @@ test('snapshot bridge carries the live bounded ledger and exact-generation save 
     wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false,storyDrafts:new Map(),storyMutationPending:false,pendingStoryRequestId:null,
     composeDocumentContent:()=>'',getPlainText:()=>'',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),
     getTiptapImageInsertionPosition:()=>null,getTiptapRootSplitBoundary:()=>null,getTiptapCommentEditIntentsJson:()=>'{"proof":"live"}',
-    checkpointTiptapCommentEditIntents:()=>{checkpoints++;},updateSaveStateText(){},refreshManuscriptNoteReferences(){},refreshVisibleCommentProjection(){},updateInspectorSnapshot(){},
+    checkpointTiptapCommentEditIntents:receipt=>{if(receipt==='a'.repeat(64))checkpoints++;},updateSaveStateText(){},refreshManuscriptNoteReferences(){},refreshVisibleCommentProjection(){},updateInspectorSnapshot(){},
     window:{electronAPI:{onSetDirty(fn){callback=fn;}}}};
   vm.createContext(context);vm.runInContext(source.slice(start,end)+'\n'+source.slice(ackStart,ackEnd),context);
   assert.equal(vm.runInContext('composeEditorSnapshot().commentEditIntentsJson',context),'{"proof":"live"}');
-  callback({state:false,ack:{kind:'SAVED',savedGeneration:3}});assert.equal(checkpoints,0);
-  callback({state:false,ack:{kind:'PROTECTED',savedGeneration:4}});assert.equal(checkpoints,0);
-  callback({state:false,ack:{kind:'SAVED',savedGeneration:4}});assert.equal(checkpoints,1);
+  callback({state:false,ack:{kind:'SAVED',savedGeneration:3,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,1);assert.equal(context.localDirty,true);
+  callback({state:false,ack:{kind:'PROTECTED',savedGeneration:4,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,1);
+  callback({state:false,ack:{kind:'SAVED',savedGeneration:4,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,2);
+});
+test('renderer-generated whole-anchor deletion, Save checkpoint and real Undo restore Core comment identity',async()=>{
+  const author=require('../../src/core/word-comment-authoring-v1.cjs');
+  const save=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const sha=text=>require('node:crypto').createHash('sha256').update(text).digest('hex');
+  const {editor,ui}=await harness([p('Alpha suffix')]);
+  const projectId='renderer-save',sceneId='roman/s.txt',sessionId='actual-editor-session';
+  const content=()=>envelope.composeObservablePayload({doc:editor.getJSON()});
+  try {
+    const before=content();
+    const state=author.planCommentAuthoring({beforeText:null,projectId,sceneId,sceneSha256:sha(before),paragraphs:['Alpha suffix'],now:'2026-10-04T00:00:00Z',input:{requestId:'create-one',action:'create',projectId,sceneId,subjectId:'scene',expectedStateSha256:'',expectedSceneSha256:sha(before),body:'Retain root',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}}).afterText;
+    editor.commands.setTextSelection({from:1,to:6});editor.commands.deleteSelection();
+    const deleted=content(),forward=ui.getCommentEditIntentsJson(editor);
+    const first=save.planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:before,afterContent:deleted,editIntents:forward,sessionId});
+    assert.equal(JSON.parse(first.afterText).threads[0].status,'deleted');
+    checkpoint(ui,editor);assert.equal(editor.commands.undo(),true);
+    const restored=save.planCommentAnchorSave({beforeText:first.afterText,projectId,sceneId,beforeContent:deleted,afterContent:content(),editIntents:ui.getCommentEditIntentsJson(editor),sessionId});
+    const original=JSON.parse(state).threads[0],actual=JSON.parse(restored.afterText).threads[0];
+    assert.equal(actual.threadId,original.threadId);assert.equal(actual.status,'open');
+    assert.deepEqual(actual.anchor,original.anchor);assert.deepEqual(actual.messages,original.messages);
+  } finally {editor.destroy();}
+});
+test('delayed saved-prefix receipt retains newer real input and next Save replays suffix, then Undo crosses both saves',async()=>{
+  const core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const {editor,ui,wire}=await harness([p('Alpha')]);
+  try {
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'B'});
+    const first=ui.getCommentEditIntentsJson(editor),firstHash=wireHash(first);
+    editor.commands.insertContent({type:'text',text:'C'});
+    const secondHash=wireHash(ui.getCommentEditIntentsJson(editor));
+    assert.equal(ui.checkpointCommentEditIntents(editor,firstHash),true);
+    assert.equal(editor.state.doc.textContent,'AlBCpha');assert.equal(wire().edits.length,1);
+    assert.equal(wire().edits[0].insertText,'C');
+    core.replayEditIntents(['AlBpha'],['AlBCpha'],ui.getCommentEditIntentsJson(editor));
+    // A second save captured before the first acknowledgement still admits only
+    // its remaining suffix, never clears later edits or reverts the baseline.
+    assert.equal(ui.checkpointCommentEditIntents(editor,secondHash),true);assert.equal(wire().edits.length,0);
+    assert.equal(ui.checkpointCommentEditIntents(editor,firstHash),false);
+    assert.equal(editor.commands.undo(),true);assert.equal(editor.state.doc.textContent,'Alpha');
+    core.replayEditIntents(['AlBCpha'],['Alpha'],ui.getCommentEditIntentsJson(editor));
+    assert.equal(wire().edits[0].direction,'undo');
+  } finally {editor.destroy();}
+});
+test('saved receipt from a replaced scene or unknown wire cannot checkpoint current authoring',async()=>{
+  const {editor,ui,wire}=await harness([p('Alpha')]);
+  try {
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'B'});
+    const foreign=wireHash(ui.getCommentEditIntentsJson(editor));
+    editor.view.dispatch(editor.state.tr.replaceWith(0,editor.state.doc.content.size,editor.schema.nodeFromJSON(p('Beta')))
+      .setMeta('wordPendingRevisionsExternal',true).setMeta('addToHistory',false));
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'C'});
+    const before=wire();
+    assert.equal(ui.checkpointCommentEditIntents(editor,foreign),false);
+    assert.equal(ui.checkpointCommentEditIntents(editor,'0'.repeat(64)),false);
+    assert.equal(ui.checkpointCommentEditIntents(editor),false);
+    assert.deepEqual(wire(),before);assert.equal(editor.state.doc.textContent,'BeCta');
+  } finally {editor.destroy();}
+});
+test('soft-break insertion remains one paragraph intent and exact leading/trailing break baseline matches Core',async()=>{
+  const core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const {editor,ui,wire}=await harness([{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha'},{type:'hardBreak'}]}]);
+  try {
+    editor.commands.setTextSelection(4);assert.equal(editor.commands.setHardBreak(),true);
+    assert.equal(wire().edits.length,1);assert.equal(wire().edits[0].insertText,'\n');
+    assert.equal(wire().edits[0].paragraphIndex,0);assert.equal(wire().edits[0].fromUtf16,3);
+    core.replayEditIntents(['\nAlpha\n'],['\nAl\npha\n'],ui.getCommentEditIntentsJson(editor));
+    assert.equal(editor.commands.undo(),true);core.replayEditIntents(['\nAlpha\n'],['\nAlpha\n'],ui.getCommentEditIntentsJson(editor));
+  } finally {editor.destroy();}
+});
+test('existing text preview explicitly discloses bounded comment-anchor changes without rendering untrusted labels',()=>{
+  const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+  const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const start=source.indexOf('function reviewSurfaceRenderCommentAnchorChanges('),end=source.indexOf('\n}',start)+2;
+  const context=vm.createContext({});vm.runInContext(source.slice(start,end),context);
+  assert.match(context.reviewSurfaceRenderCommentAnchorChanges({count:2}),/Текст и привязки комментариев применяются вместе/);
+  assert.match(context.reviewSurfaceRenderCommentAnchorChanges({count:2}),/Комментариев: 2/);
+  for(const count of [undefined,0,-1,129,Infinity,'<img src=x>'])assert.equal(context.reviewSurfaceRenderCommentAnchorChanges({count}),'');
 });
