@@ -224,3 +224,29 @@ test('mapped lift joins an existing destination level and shifts only its own de
  assert.deepEqual(result.content[0].content[2].content[1].attrs.wordNumbering,before.content[0].content[1].content[1].attrs.wordNumbering);
  assert.deepEqual(labels(result),['1.','2.','3.','1.','1.']);
 });
+test('ordinary and review exports number each list item once while preserving continuation paragraphs and nested order',async()=>{
+ const levels=model.defaultLevels(2);levels[0].start=4;levels[0].text='Item %1)';
+ const root=pattern(levels),nested={...root,level:1};
+ const doc=document(list(root,item('first'),item('second'),item('third',paragraph('continuation'),list(nested,item('child',paragraph('child continuation'))),{...paragraph('after child'),attrs:{wordParagraphIndent:{left:1234,right:99,firstLine:80}}})));
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const min=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+ const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const texts=['first','second','third','continuation','child','child continuation','after child'];
+ const blocks=source.buildFormatIrParagraphs({sceneId:'scene',doc,text:texts.join('\n')}).map((block,i)=>({...block,sceneId:'scene',blockId:'b'+i,paragraphId:'p'+i}));
+ assert.deepEqual(blocks.map(block=>block.formatIr.paragraph.list.itemOrdinal),[0,1,2,2,0,0,2]);
+ assert.deepEqual(blocks.map(block=>block.formatIr.paragraph.list.continuation===true),[false,false,false,true,false,true,true]);
+ const review=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({blocks,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]});
+ for(const bytes of [min,review]){
+  const xml=storedPart(bytes,'word/document.xml'),paras=[...xml.matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/g)].map(match=>match[0]);
+  assert.equal(paras.length,7);
+  assert.deepEqual(paras.map(p=>[...p.matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g)].map(m=>m[1]).join('')),texts);
+  assert.deepEqual(paras.map(p=>p.includes('<w:numPr>')),[true,true,true,false,true,false,false]);
+  assert.match(paras[3],/<w:ind w:left="720"\/>/);
+  assert.match(paras[5],/<w:ind w:left="1440"\/>/);
+  assert.match(paras[6],/<w:ind w:left="1234" w:right="99" w:firstLine="80"\/>/);
+  assert.equal((storedPart(bytes,'word/numbering.xml').match(/<w:num w:numId=/g)||[]).length,1);
+ }
+ const invalid=structuredClone(blocks);invalid[3].formatIr.paragraph.list.continuation='true';
+ assert.throws(()=>require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({blocks:invalid,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]}),/FORMAT_IR_LIST_UNSUPPORTED/);
+ assert.deepEqual(labels(doc),['Item 4)','Item 5)','Item 6)','1.']);
+});

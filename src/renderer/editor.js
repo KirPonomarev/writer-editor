@@ -24817,7 +24817,12 @@ if (window.electronAPI) {
     }
     const exportFailure = typeof status === 'string' && status.length <= 320
       && /^Не удалось экспортировать DOCX \(E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}(?:: (?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+)?\)\.$/u.test(status);
-    updateStatusText(status, { visible: exportFailure });
+    const returnCodes = typeof status === 'string' && status.length <= 704
+      ? /^Не удалось открыть возврат Word \(([^\r\n]+)\)\.$/u.exec(status)?.[1].split(': ') : null;
+    const returnFailure = Array.isArray(returnCodes) && returnCodes.length >= 1 && returnCodes.length <= 4
+      && returnCodes.every(code => code.length <= 160
+        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING_RETURN)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(code));
+    updateStatusText(status, { visible: exportFailure || returnFailure });
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
       updateWarningStateText('recovery');

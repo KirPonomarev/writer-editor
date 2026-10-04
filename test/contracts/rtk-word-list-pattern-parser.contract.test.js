@@ -267,3 +267,70 @@ test('literal note alpha stays legacy only inside proven common range; custom an
     const unsupported=api.buildDocxContentPreviewFromZipBytes(bytes(...values));assert.equal(unsupported.ok,false,JSON.stringify(unsupported));
   }
 });
+
+async function continuationReturnFixture() {
+  const io=await bridge, analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const p=text=>({type:'paragraph',content:[{type:'text',text}]});
+  const levels=[{format:'1',start:4,text:'Item %1)',restartAfterLevel:null},{format:'1',start:1,text:'%2.',restartAfterLevel:0}];
+  const numbering=level=>({schemaVersion:1,instanceId:'items',level,levels});
+  const baselineDoc={type:'doc',content:[{type:'orderedList',attrs:{start:4,wordNumbering:numbering(0)},content:[
+    {type:'listItem',content:[p('Authored first')]},{type:'listItem',content:[p('Authored second')]},
+    {type:'listItem',content:[p('Authored third'),p(' Structural fourth'),
+      {type:'orderedList',attrs:{start:1,wordNumbering:numbering(1)},content:[{type:'listItem',content:[p('Nested child')]}]},p('After child')]},
+  ]}]};
+  const {stableJson}=await import('../../src/io/revisionBridge/reviewTransportCore.mjs');
+  const hash=s=>require('node:crypto').createHash('sha256').update(String(s)).digest('hex');
+  const cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(stableJson(v)),byteLength:s=>Buffer.byteLength(String(s)),hmacSha256Json:(v,key)=>'hmac-sha256:'+require('node:crypto').createHmac('sha256',key).update(stableJson(v)).digest('hex'),hmacSha256Text:(v,key)=>'hmac-sha256:'+require('node:crypto').createHmac('sha256',key).update(String(v)).digest('hex')};
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
+  const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  const parse=xml=>{const result=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(result.ok,true,JSON.stringify(result));return result.reviewIr;};
+  const input=reviewIr=>({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,ordinaryTextMode:true,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  return {analyzer,baselineDoc,exportMap,parts,parse,input};
+}
+test('authenticated list continuation accepts a Word paragraph-tail edit after its transport bookmark without creating an item',async()=>{
+  const f=await continuationReturnFixture();
+  const rows=f.exportMap.scenes[0].blocks;
+  assert.deepEqual(rows.map(b=>b.formatIr.paragraph.list.continuation===true),[false,false,false,true,false,true]);
+  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-grid-09</w:t></w:r>');
+  assert.notEqual(xml,f.parts['word/document.xml']);
+  const reviewIr=f.parse(xml);
+  assert.deepEqual(reviewIr.listNumbering.paragraphs.map(p=>p.list?.ordinal??null),[4,5,6,null,1,null]);
+  const result=f.analyzer.analyzeUserBookmarksReturn(f.input(reviewIr));
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.canWriteManuscript,false);
+  assert.equal(result.ordinaryTextChanges.length,1);assert.equal(result.ordinaryTextChanges[0].sceneParagraphIndex,5);
+  assert.equal(result.ordinaryTextChanges[0].replacementText,'After child native-grid-09');
+  assert.equal(result.doc.content[0].content.length,3);
+  assert.equal(result.doc.content[0].content[2].content[3].content[0].text,'After child native-grid-09');
+  assert.deepEqual(result.doc.content[0].content[2].content[2],f.baselineDoc.content[0].content[2].content[2]);
+});
+test('authenticated continuation rejects ordinary marker removal new marker foreign ownership and forged private flags',async()=>{
+  const f=await continuationReturnFixture(),original=f.parts['word/document.xml'];
+  const removed=original.replace(/<w:numPr>[\s\S]*?<\/w:numPr>/u,'');
+  assert.notEqual(removed,original);
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(f.parse(removed))).ok,false);
+  const ir=f.parse(original), list=ir.listNumbering.paragraphs[2].list;
+  for(const mutate of [
+    value=>{value.reviewIr.listNumbering.paragraphs[3].list=structuredClone(list);},
+    value=>{value.exportMap.scenes[0].blocks[0].formatIr.paragraph.list.continuation=true;},
+    value=>{value.exportMap.scenes[0].blocks[3].formatIr.paragraph.list.itemOrdinal=0;},
+    value=>{value.exportMap.scenes[0].blocks[3].formatIr.paragraph.list.continuation=false;},
+    value=>{value.reviewIr.formattingParagraphs[3].bookmarkNames=[];},
+  ]) {const value=structuredClone(f.input(ir));mutate(value);assert.equal(f.analyzer.analyzeUserBookmarksReturn(value).ok,false);}
+});
+test('authenticated numbering-definition route preserves continuation ownership and never treats it as marker removal permission',async()=>{
+  const f=await continuationReturnFixture(),reviewIr=f.parse(f.parts['word/document.xml']);
+  const input={exportMap:f.exportMap,reviewIr,resolveBlock:p=>({ok:true,authority:{sceneId:'a.txt',blockId:f.exportMap.scenes[0].blocks[p.paragraphIndex].blockId}})};
+  const unchanged=f.analyzer.analyzeListNumberingReturn(input);assert.equal(unchanged.ok,true,JSON.stringify(unchanged));assert.deepEqual(unchanged.operations,[]);
+  const clone=()=>({...input,exportMap:structuredClone(input.exportMap),reviewIr:structuredClone(input.reviewIr)});
+  for(const mutate of [
+    v=>{v.reviewIr.listNumbering.paragraphs[0].list=null;},
+    v=>{v.reviewIr.listNumbering.paragraphs[3].list=structuredClone(v.reviewIr.listNumbering.paragraphs[2].list);},
+    v=>{v.exportMap.scenes[0].blocks[3].formatIr.paragraph.list.itemOrdinal=0;},
+  ]) {const value=clone();mutate(value);assert.equal(f.analyzer.analyzeListNumberingReturn(value).ok,false);}
+  const changed=clone();for(const p of changed.reviewIr.listNumbering.paragraphs)if(p.list)p.list.numberingLevels[0].text='Chapter %1';
+  const result=f.analyzer.analyzeListNumberingReturn(changed);assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.operations.length,1);
+});

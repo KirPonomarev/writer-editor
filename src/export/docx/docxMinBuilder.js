@@ -155,9 +155,14 @@ function readDocumentInlineRuns(node) {
   return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);
 }
 
+function docxListTextIndent(level, reviewLegacy = false) {
+  if (!Number.isSafeInteger(level) || level < 0 || level > 8) throw Error('DOCX_LIST_LEVEL_INVALID');
+  return reviewLegacy ? 720 + level * 360 : (level + 1) * 720;
+}
+
 function buildDocxPatternLevelsXml(levels) {
   return require('../../core/word-list-numbering-v1.cjs').validateLevels(levels).map((entry, level) =>
-    `<w:lvl w:ilvl="${level}"><w:start w:val="${entry.start}"/><w:numFmt w:val="${require('../../core/word-list-format-v1.cjs').wordFormat(entry.format)}"/>${entry.restartAfterLevel === level - 1 ? '' : `<w:lvlRestart w:val="${entry.restartAfterLevel === null ? 0 : entry.restartAfterLevel + 1}"/>`}<w:lvlText w:val="${escapeXml(entry.text)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${(level + 1) * 720}"/></w:tabs><w:ind w:left="${(level + 1) * 720}" w:hanging="360"/></w:pPr></w:lvl>`
+    `<w:lvl w:ilvl="${level}"><w:start w:val="${entry.start}"/><w:numFmt w:val="${require('../../core/word-list-format-v1.cjs').wordFormat(entry.format)}"/>${entry.restartAfterLevel === level - 1 ? '' : `<w:lvlRestart w:val="${entry.restartAfterLevel === null ? 0 : entry.restartAfterLevel + 1}"/>`}<w:lvlText w:val="${escapeXml(entry.text)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${docxListTextIndent(level)}"/></w:tabs><w:ind w:left="${docxListTextIndent(level)}" w:hanging="360"/></w:pPr></w:lvl>`
   ).join('');
 }
 
@@ -207,19 +212,20 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
     const pattern = list.attrs?.wordNumbering == null ? null : counters.validateNumbering(list.attrs.wordNumbering);
     const numbering = { numId: numberId(list.attrs), level: pattern?.level ?? level, ...(pattern ? {wordNumbering:pattern} : {}), kind: list.type, start: list.attrs?.wordListStart ?? start, ...(list.attrs?.type ? { type: list.attrs.type } : {}) };
     for (const item of list.content) {
-      // One paragraph per item is unambiguous in ordinary OOXML. Unnumbered
-      // continuation paragraphs cannot be recovered as item ownership here.
       if (item?.type !== 'listItem' || !Array.isArray(item.content)
         || !['paragraph', 'heading'].includes(item.content[0]?.type)
-        || item.content.slice(1).some((node) => !['bulletList', 'orderedList'].includes(node?.type))) {
+        || item.content.some(node => !['paragraph', 'heading', 'bulletList', 'orderedList'].includes(node?.type))) {
         throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
       }
-      const paragraph = item.content[0];
-      if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
-      const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
-      if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
-      blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent, wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
-      for (const nested of item.content.slice(1)) visitList(nested, level + 1);
+      let firstParagraph = true;
+      for (const paragraph of item.content) {
+        if (['bulletList', 'orderedList'].includes(paragraph.type)) { visitList(paragraph, level + 1); continue; }
+        if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
+        const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
+        if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
+        blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), ...(firstParagraph ? {numbering} : {}), textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent ?? (firstParagraph ? undefined : {left:docxListTextIndent(numbering.level)}), wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
+        firstParagraph = false;
+      }
     }
   };
 
@@ -534,7 +540,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     const definitions = patterns.abstract + [...numberings.values()].filter(value => !value.wordNumbering).map(({ numId, level, kind, start, type }) => {
       const format = kind === 'orderedList' ? require('../../core/word-list-format-v1.cjs').wordFormat(type) : 'bullet';
       const marker = kind === 'orderedList' ? `%${level + 1}.` : '•';
-      return `<w:abstractNum w:abstractNumId="${numId}"><w:multiLevelType w:val="multilevel"/><w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${marker}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${(level + 1) * 720}"/></w:tabs><w:ind w:left="${(level + 1) * 720}" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>`;
+      return `<w:abstractNum w:abstractNumId="${numId}"><w:multiLevelType w:val="multilevel"/><w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${marker}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${docxListTextIndent(level)}"/></w:tabs><w:ind w:left="${docxListTextIndent(level)}" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>`;
     }).join('');
     const instances = patterns.instances + [...numberings.values()].filter(value => !value.wordNumbering).map(({numId}) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
     styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
@@ -560,6 +566,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
 }
 
 module.exports = {
+  docxListTextIndent,
   buildDocxPatternLevelsXml,
   buildDocxPatternNumberingParts,
   buildDocxMarkedRunXml,

@@ -170,6 +170,24 @@ export function createLegacyNumberingProofComparator(lists) {
   };
 }
 
+// A continuation is private canonical ownership, never an inference from an
+// unnumbered Word paragraph. Nested children may intervene, but neither a scene
+// boundary nor a different item at this level may supply its owner.
+function continuationOwnerIsBound(rows, index) {
+  const {scene,block} = rows[index], expected = block.formatIr?.paragraph?.list;
+  if (expected?.continuation !== true) return false;
+  const withoutFlag = value => { const result={...value}; delete result.continuation; return result; };
+  for (let i=index-1;i>=0;i--) {
+    if (rows[i].scene.sceneId !== scene.sceneId) return false;
+    const previous=rows[i].block.formatIr?.paragraph?.list;
+    if (!previous) return false;
+    if (previous.level > expected.level) continue;
+    if (previous.level !== expected.level || !same(withoutFlag(previous),withoutFlag(expected))) return false;
+    if (previous.continuation !== true) return previous.continuation === undefined;
+  }
+  return false;
+}
+
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
 export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
@@ -239,11 +257,16 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
       const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
       const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
+      const ownerRows = exportMap.scenes.flatMap(scene => scene.blocks.map(block => ({scene,block})));
       for (let j = 0; j < allBlocks.length; j++) {
         const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
         if (actual?.textSha256 !== sha256Hex(observed[j].paragraphText)) return reject('list-text-binding');
         const list = actual.list;
         if (!expected) { if (list !== null) return reject('list-added'); continue; }
+        if (Object.hasOwn(expected,'continuation')) {
+          if (!continuationOwnerIsBound(ownerRows,j) || list !== null) return reject('list-continuation-owner');
+          continue;
+        }
         if (!list || list.kind !== (expected.kind === 'ordered' ? 'orderedList' : 'bulletList')
           || list.level !== expected.level || (list.type || '1') !== (expected.type || '1')
           || (expected.kind === 'ordered' && list.ordinal !== expected.start + expected.itemOrdinal)
@@ -452,6 +475,10 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
         || p.trackedRevision) return fail('source-owner-text-or-revision');
       const expected = block.formatIr?.paragraph?.list, returned = actual.list;
       if (!expected) { if (returned !== null) return fail('list-added'); continue; }
+      if (Object.hasOwn(expected,'continuation')) {
+        if (!continuationOwnerIsBound(rows,i) || returned !== null) return fail('list-continuation-owner');
+        continue;
+      }
       if (!returned || typeof returned.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(returned.numId)
         || returned.level !== expected.level || returned.kind !== (expected.kind === 'ordered' ? 'orderedList':'bulletList')) return fail('list-membership-or-level');
       const identity = `${scene.sceneId}:${expected.numId}`;

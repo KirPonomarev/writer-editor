@@ -1923,3 +1923,35 @@ test('actual Main formatting publication rolls back inactive grid to exact plain
  assert.equal(observedWritten,true);assert.equal(result.code,'RTK_FORMATTING_WRITE_FAILED_ROLLED_BACK',JSON.stringify(result));assert.equal(read(f.alpha),before);assert.equal(read(f.beta),sibling);
  const retry=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene:f.probe.publishReview});assert.equal(retry.status,'applied',JSON.stringify(retry));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(envelope.parseObservablePayload(read(f.alpha)).doc).final.docGrid,{type:'default',linePitch:360});assert.equal(read(f.beta),sibling);
 });
+
+for(const variant of ['unchanged','suffix','removed-list'])test(`actual Main signed list continuation preserves three item ownership: ${variant}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs');
+ const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),levels=numbering.defaultLevels(1);levels[0].start=4;levels[0].text='Item %1';
+ const original={type:'doc',content:[{type:'orderedList',attrs:{start:4,wordNumbering:{schemaVersion:1,instanceId:'continuation-main',level:0,levels}},content:[
+  {type:'listItem',content:[paragraph('First item')]},{type:'listItem',content:[paragraph('Second item')]},
+  {type:'listItem',content:[paragraph('Third item'),paragraph('Tail continuation')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.equal((parts['word/document.xml'].match(/<w:numPr>/g)||[]).length,3,'continuation paragraph must not start a fourth numbered item');
+ assert.equal(read(f.alpha),before,'unchanged export is read-only');assert.equal(read(f.beta),sibling);
+ if(variant==='unchanged')return;
+ await f.probe.activate(source.pendingAuthorityStore);
+ const xml=parts['word/document.xml'];
+ parts['word/document.xml']=xml.replace(/Tail continuation(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'Tail continuation$1<w:r><w:t xml:space="preserve"> WORD_SUFFIX</w:t></w:r>');
+ assert.notEqual(parts['word/document.xml'],xml,'Word suffix must be outside the signed bookmark but in the same paragraph');
+ if(variant==='removed-list')parts['word/document.xml']=parts['word/document.xml'].replace(/<w:numPr>[\s\S]*?<\/w:numPr>/u,'');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activation=await f.probe.reviewActivate({requestId:'continuation-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.deepEqual(f.capture(),capture,'intake never writes');
+ if(variant==='removed-list'){assert.notEqual(activation.ok,true,JSON.stringify(activation));assert.equal(read(f.alpha),before);return;}
+ assert.equal(activation.ok,true,JSON.stringify(activation));assert.equal(activation.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activation));
+ const applied=await f.probe.fullApply({requestId:'continuation-apply'});assert.equal(applied.applied,true,JSON.stringify(applied));
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,expected=structuredClone(original);expected.content[0].content[2].content[1].content[0].text+=' WORD_SUFFIX';
+ assert.deepEqual(saved,expected);assert.equal(saved.content[0].content.length,3);assert.equal(saved.content[0].content[2].content.length,2);assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ const journalRoot=path.join(f.root,'backups','revision-bridge-apply-journal'),journals=fs.readdirSync(journalRoot).filter(name=>name.endsWith('.json')).map(name=>JSON.parse(read(path.join(journalRoot,name))));
+ assert.ok(journals.some(entry=>entry.beforeHash===sha(before)&&entry.afterHash===sha(read(f.alpha))),'recovery journal binds exact original and final list documents');
+ const exported=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(exported.publicationGate.publishAllowed,true);
+ assert.equal((bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported.documentBuffer}).parts['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);
+});

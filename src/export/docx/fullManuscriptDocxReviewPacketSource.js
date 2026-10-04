@@ -268,10 +268,15 @@ function buildFormatIrParagraphs(scene) {
         level: activeList.wordNumbering?.level ?? context.listStack.length - 1,
         ...(activeList.wordNumbering ? {wordNumbering:activeList.wordNumbering} : {}),
         itemOrdinal: activeList.itemOrdinal,
+        ...(activeList.continuation === true ? { continuation: true } : {}),
         start: activeList.start,
         numId: activeList.numId,
         ...(activeList.type ? { type: activeList.type } : {}),
       };
+      if (activeList.continuation === true && attrs.wordParagraphIndent == null) {
+        paragraphFormat.wordParagraphIndent = {left:require('./docxMinBuilder.js').docxListTextIndent(
+          paragraphFormat.list.level, !activeList.wordNumbering)};
+      }
     }
     if (attrs.textAlign !== null && attrs.textAlign !== undefined && attrs.textAlign !== '') {
       const textAlign = normalizeString(attrs.textAlign).toLowerCase();
@@ -392,8 +397,13 @@ function buildFormatIrParagraphs(scene) {
           itemOrdinal: itemOrdinal + (attrs.wordListStart == null ? 0 : start - attrs.wordListStart),
           numId,
         }];
+        let paragraphSeen = false;
         for (const child of Array.isArray(item.content) ? item.content : []) {
-          visit(child, { ...context, listStack });
+          const directParagraph = ['paragraph', 'heading'].includes(child?.type);
+          const childListStack = directParagraph && paragraphSeen
+            ? [...listStack.slice(0, -1), { ...listStack.at(-1), continuation: true }] : listStack;
+          visit(child, { ...context, listStack: childListStack });
+          if (directParagraph) paragraphSeen = true;
         }
       }
       return;

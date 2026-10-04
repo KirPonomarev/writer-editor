@@ -794,7 +794,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "332f5f59dd37cbb4c2807065c91d96b38b9714576a93572ad58f0b701f06cca3"
+        "sha256": "588fe6dbfc3a780899bd8878837d19bb2531be88d81c1d6f9b11dad9dced52f4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -814,7 +814,7 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "309413598c0486ab1fae781d3451a385261ed4633d0550da4fd7eeb54aa7d998"
+        "sha256": "6562fafe4fb04ae78bb9ea1c71e2cefb1f28497e040a244e50a69a441402930b"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
@@ -894,7 +894,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "c72cc639c45fb972dab767b788d4537136be7bdbcf958993d22b85ecd6c880f0"
+        "sha256": "181f455ef72f91d06d49bb4b64b29ddc7db2b3f821a82c7c65c4cab8053658cd"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -918,7 +918,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "90c2810740ad3b9b4c891b4b4e7803125165b4c49846db008508cf7497d9b124"
+        "sha256": "b6c1693cf6a25e22eb703011c22e8ba4a55f25bb808b870c002c0afed753b5c4"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -958,7 +958,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "e496c6e0956afcf569f5f4bb2d9d609f21212cb90772caee05cdac3b66976875"
+        "sha256": "6091118fa73c079729c491a3db07062095f2145fd20199c7b2a5b0e64f1022d4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1774,7 +1774,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "3371840aecbdec6c76cd80fd3f1f1329ff2591308fb6a0328e637c388d56f15a"
+        "sha256": "3c3a9734cefdd2f2a804e478f2c3fb7771f8dc5d5f70d14cf88964fb754c196b"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1970,7 +1970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "5e8ae7de4b667a106f14c595c87ae393a382979f6b64af93829117bac1a7ef6e"
+        "sha256": "b65be77c95a555fcc0b98a525630bfe59e55d31ea2565328ed1446845c2b4bf9"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2366,7 +2366,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
-        "sha256": "fc18af50e1f61a2b9629501a13d1a43cdb96fb0364d6a1e1665c6d6655245e74"
+        "sha256": "a8f29312483c2a8eb4afcd1f7dde317cb1299ef9bf69133a98745e915e9ab713"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
@@ -2374,15 +2374,15 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "d1f81df71e00f8d2753d037bb7453251da6aefa5596c9018cab9117cadd51a39"
+        "sha256": "99be7db525b12e6a14f10b64a4b0781ac39273de2bc8945df2cd8b479d6e25a9"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "b406a73018db9a21129abbacaf72870b17efe7c3a68baf9bb45bdcb084f2afbc"
+        "sha256": "c10de6789a1fcbe2b177f7c363cbc0b56b4b26785f3476b38b27e5a0a8698a06"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "f2e005d4ba8831f5e5cceb8643965513c2ed8bd6db0b917f7351450c23a7426c"
+        "sha256": "bd2c7fa29482e95338450622e6084e147d9f3c85ef50f91e0fd48e8e17b77bbb"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",

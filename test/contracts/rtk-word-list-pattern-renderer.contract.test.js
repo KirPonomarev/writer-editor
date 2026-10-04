@@ -639,3 +639,31 @@ test('mapped authoring preserves unrelated skipped occurrences on prefix inserti
     assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
   }finally{editor.destroy();}
 });
+
+test('actual status callback reveals bounded Word return codes and keeps hostile or unrelated statuses hidden',()=>{
+ const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
+ const start=source.indexOf('  window.electronAPI.onStatusUpdate((status) => {'),end=source.indexOf('  window.electronAPI.onSetDirty(',start);
+ assert.ok(start>=0&&end>start);let callback;const updates=[],warnings=[];let notes=0;
+ const context=vm.createContext({window:{electronAPI:{onStatusUpdate:fn=>{callback=fn;}}},currentProjectId:'project',
+  refreshManuscriptNoteReferences:()=>{notes++;},refreshNotesWorkspace:()=>{notes++;},
+  updateStatusText:(text,options)=>updates.push({text,visible:options?.visible}),updateWarningStateText:value=>warnings.push(value),updatePerfHintText(){},updateInspectorSnapshot(){}});
+ vm.runInContext(source.slice(start,end),context);assert.equal(typeof callback,'function');
+ const visible=[
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_FAILED).',
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED: RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH).',
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED: RTK_WORD_LIST_NUMBERING_INVALID: PENDING_RETURN_INVALID: FULL_MANUSCRIPT_INVALID).',
+  'Не удалось экспортировать DOCX (E_REVIEW_DOCX_EXPORT_FAILED: RTK_WORD_LIST_INVALID).'];
+ for(const status of visible){callback(status);assert.deepEqual(updates.at(-1),{text:status,visible:true});}
+ const hidden=['Готово','error','Сохранено',{},null,
+  'Не удалось открыть возврат Word (Error: /Users/private/file.docx).',
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_FAILED: https://example.com/secret).',
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_FAILED\nRTK_WORD_SECRET).',
+  'Не удалось открыть возврат Word (E_DOCX_REVIEW_PREVIEW_SESSION_FAILED). private detail',
+  'Не удалось открыть возврат Word (RTK_WORD_<script>).',
+  'Не удалось открыть возврат Word (RTK_WORD_'+ 'A'.repeat(160)+').',
+  'Не удалось открыть возврат Word ('+Array(5).fill('RTK_WORD_FAILED').join(': ')+').',
+  'Не удалось открыть возврат Word (UNRELATED_ERROR).'];
+ for(const status of hidden){callback(status);assert.deepEqual(updates.at(-1),{text:status,visible:false});}
+ const count=updates.length;callback({type:'manuscript-notes-published',projectId:'foreign'});assert.equal(updates.length,count);assert.equal(notes,0);
+ callback({type:'manuscript-notes-published',projectId:'project'});assert.equal(notes,2);assert.equal(updates.at(-1).text,'Сноски обновлены');
+});
