@@ -53,7 +53,8 @@
     "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
     "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
     "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-    "test/contracts/rtk-word-comment-authoring.contract.test.js"
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/unit/project-tree-pathless-contract.test.js"
   ],
   "scopeOut": [
     "package.json",

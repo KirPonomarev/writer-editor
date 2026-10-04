@@ -586,7 +586,7 @@ test('actual replacement listener preserves late drafts or stale generation and 
   const start = source.indexOf('window.electronAPI.onEditorSetText((payload) => {');
   const end = source.indexOf('  window.electronAPI.onEditorTextRequest(', start);
   for (const [route, state] of [
-    ...['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy'].map(state => ['normal', state]),
+    ...['stale-generation', 'idle', 'snapshot-refused', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy'].map(state => ['normal', state]),
     ...['stale-generation', 'idle', 'comment-draft', 'comment-busy', 'note-draft', 'note-busy',
       'wrong-project', 'wrong-origin', 'stale-content', 'missing-recovery-flag', 'missing-private-origin'].map(state => ['detached', state]),
   ]) {
@@ -607,7 +607,11 @@ test('actual replacement listener preserves late drafts or stale generation and 
       isProjectTreeDocumentId: id => Boolean(id), normalizeProjectId: id => id,
       parseDocumentContent: content => ({ doc: { type: 'doc', content: [] }, text: content, meta: {}, cards: [] }),
       shouldUseCentralSheetLargePayloadFastPath: () => false,
-      setTiptapDocumentSnapshot: snapshot => { working = snapshot.text; events.push(['replace', snapshot.text]); },
+      setTiptapDocumentSnapshot: snapshot => {
+        assert.equal(snapshot.resetHistory, true, 'replacement crosses document identity');
+        if (state === 'snapshot-refused') return false;
+        working = snapshot.text; events.push(['replace', snapshot.text]); return true;
+      },
       reviewSurfaceResolveIncomingPayload: () => ({}), revealActiveDocumentAncestors: () => ({ found: true }),
       editorPanel: null, mainContent: null, emptyState: null,
       localStorage: { setItem: (key, value) => events.push(['stored-title', value]) },
@@ -639,7 +643,17 @@ test('actual replacement listener preserves late drafts or stale generation and 
       expectedDocumentId: state === 'wrong-origin' ? 'other' : 'copy', documentId: 'source',
       kind: 'scene', metaEnabled: true, title: 'Alpha', expectedGeneration,
       expectedContent: state === 'stale-content' ? 'stale' : 'copied live content', content: 'original source content' });
-    if (state !== 'idle') {
+    if (state === 'snapshot-refused') {
+      assert.equal(working, 'copied live content');
+      assert.equal(c.currentDocumentId, 'copy');
+      assert.equal(c.currentDocumentTitle, 'Beta');
+      assert.equal(c.localEditGeneration, 9);
+      assert.equal(c.localDirty, false);
+      assert.equal(events.some(event => event[0] === 'replace' || event[0] === 'review-replaced' || event[0] === 'stored-title'), false);
+      assert.equal(events.at(-1)[2], true);
+      assert.match(events.at(-1)[1], /Сцена не открыта/);
+      assert.equal(warnings.length, 0);
+    } else if (state !== 'idle') {
       assert.equal(working, 'copied live content');
       assert.equal(c.currentDocumentId, detached ? '' : 'copy');
       assert.equal(c.currentDocumentTitle, detached ? 'Recovery' : 'Beta');

@@ -818,7 +818,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "e2bd5c36232b773ff387ef98e9b4f9e7e73900917802cb9eb1a152d791875cfa"
+        "sha256": "89a5cf74a12770230642487043473b53ffb74146c54c408acdc3838810286593"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1422,7 +1422,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "2f3d912a6d2ed86191e749ca1a56b4f8b81b439103315dd3ba129b9b3a23e131"
+        "sha256": "1e1de2608b273e559c154787e74ac0d8ef902eed7dcb3f73f3dbe721192277b6"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -2374,7 +2374,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "ce4a00e54f7e92547633bf4e9866b19ab4299ac20cde2b8481e38f52ae3f2bcb"
+        "sha256": "abfeca79394a2d72096a6b826f8bb36cc8a6b2db657257783c42220d9a8fd88b"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
@@ -2382,11 +2382,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "c6d06d4e5405e1c1b45d82716945aca768d8035a5ce19150f4f248cd05b9eb0d"
+        "sha256": "bdb9b4beff466f1807a4735fb0fa2ee3781776dbd6c66a7b6c68e0167e21691b"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "ee1e24f5aca13936f0b320123444ab69877395b332938ae7799d8cda72063ea3"
+        "sha256": "510ea1fc3237b6ed1617e2f20edb963097190d82d9f980483fba0731cde91c0d"
       },
       {
         "path": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",

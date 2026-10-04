@@ -183,6 +183,11 @@ test('Word-authored nondefault ancestor restart survives with explicit marker-la
   const report=api.buildDocxContentPreviewFromZipBytes(fixture({numbering,body}));assert.equal(report.ok,true,JSON.stringify(report));
   const plan=api.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
   assert.ok(plan.lossReport.items.some(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_MARKER_LAYOUT_NORMALIZED'));
+  const formatting=plan.lossReport.items.find(item=>item.code==='DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS');
+  assert.match(formatting.message,/Supported list numbering, start values, nesting/);
+  assert.match(formatting.message,/Unsupported properties and import limitations are listed separately/);
+  assert.doesNotMatch(formatting.message,/List marker appearance.*not imported|fonts, colors and other formatting are not imported/);
+  assert.equal(plan.lossReport.items.find(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_MARKER_LAYOUT_NORMALIZED').severity,'warning');
   assert.ok(!plan.lossReport.items.some(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
   const doc=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc,markers=model.resolveMarkers(doc),labels=[];
   const visit=node=>{if(node.type==='orderedList')node.content.forEach((item,i)=>{labels.push(markers.get(node).items[i].label);for(const child of item.content)visit(child);});else for(const child of node.content||[])visit(child);};visit(doc);

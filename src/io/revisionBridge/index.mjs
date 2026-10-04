@@ -12430,10 +12430,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
     formatting.code = hasLists ? 'DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS' : hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
     formatting.message = hasLists
-      ? 'Supported bullet and decimal lists, start numbers, nesting, heading levels 1 to 9 and inline marks are preserved. List marker appearance, paragraph appearance, fonts, colors and other formatting are not imported; unsupported numbering is listed separately.'
+      ? 'Supported list numbering, start values, nesting, heading levels 1 to 9 and inline marks are preserved. Unsupported properties and import limitations are listed separately.'
       : hasHeadings
-      ? 'Heading levels 1 to 9, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
-      : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+      ? 'Heading levels 1 to 9, bold, italic, single underline and strike are preserved. Unsupported properties and import limitations are listed separately.'
+      : 'Bold, italic, single underline and strike are preserved. Unsupported properties and import limitations are listed separately.';
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.href))) {
       formatting.message = 'Supported external HTTP(S) link labels and targets are preserved as inert link marks. ' + formatting.message;
     }
