@@ -112,6 +112,7 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   const context=vm.createContext({composeDocumentContent:()=> 'text',getPlainText:()=> 'text',getActiveBookProfile:()=>null,
     getSelectionOffsets:()=>({start:1,end:1}),isTiptapMode:true,getTiptapImageInsertionPosition:()=>7,
     currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,
+    getTiptapCommentEditIntentsJson:()=>null,
     localEditGeneration:2,wordCommentDraft:null,wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(section,context);
   const main=f.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
@@ -121,6 +122,7 @@ test('actual renderer snapshot and Main normalization carry the cursor end-to-en
   assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).imageInsertionPosition,7);
   assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).treeContentPublicationId,'');
   assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).rootSplitBoundary,null);
+  assert.equal(context.normalizeEditorSnapshotPayload(context.composeEditorSnapshot()).commentEditIntentsJson,null);
   assert.throws(()=>context.normalizeEditorSnapshotPayload({content:'x',treeContentPublicationId:{id:'forged'}}),/SNAPSHOT_DOCUMENT_IDENTITY_INVALID/);
   assert.throws(()=>context.normalizeEditorSnapshotPayload({content:'x',rootSplitBoundary:{boundaryRootIndex:1,position:2,path:'foreign'}}),/SNAPSHOT_ROOT_BOUNDARY_INVALID/);
   assert.equal(context.normalizeEditorSnapshotPayload({content:'x',imageInsertionPosition:-1}).imageInsertionPosition,null);

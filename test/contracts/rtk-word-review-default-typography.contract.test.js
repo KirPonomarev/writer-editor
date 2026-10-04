@@ -176,7 +176,7 @@ test('literal document font defaults are separate digest-bound evidence, never f
  assert.equal(other.reviewIr.formattingParagraphs[0].formattedRuns[0].resolvedFontFamily,'Arial');
  assert.notEqual(result.supportedSemanticDigest,other.supportedSemanticDigest);
 });
-for(const fault of ['theme','duplicate-font','mixed-font','missing-script-font','duplicate-defaults','based-on','character-override','duplicate-style','paragraph-style','run-style','explicit-font','table'])test('font defaults evidence refuses '+fault,async()=>{
+for(const fault of ['theme','duplicate-font','mixed-font','missing-script-font','duplicate-defaults','based-on','character-override','duplicate-style','paragraph-style','run-style','explicit-font'])test('font defaults evidence refuses '+fault,async()=>{
  const [,b]=await modules,options={};
  const fonts='<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>';
  if(fault==='theme')options.fonts=fonts.replace('/>',' w:asciiTheme="minorHAnsi"/>');
@@ -190,8 +190,19 @@ for(const fault of ['theme','duplicate-font','mixed-font','missing-script-font',
  if(fault==='paragraph-style')options.paragraphProperties='<w:pPr><w:pStyle w:val="Normal"/></w:pPr>';
  if(fault==='run-style')options.runProperties='<w:rPr><w:rStyle w:val="Default"/></w:rPr>';
  if(fault==='explicit-font')options.runProperties='<w:rPr>'+fonts+'</w:rPr>';
- if(fault==='table')options.table=true;
  const result=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:fontDefaultsPackage(options)},{cryptoPort});
  const run=result.reviewIr?.formattingParagraphs[0]?.formattedRuns[0];
  assert.ok(run,JSON.stringify(result));assert.equal(Object.hasOwn(run,'resolvedFontFamily'),false);
+});
+
+test('table font defaults remain digest-bound inheritance and competing table text styles refuse',async()=>{
+ const [,b]=await modules;
+ const parse=options=>b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:fontDefaultsPackage({table:true,...options})},{cryptoPort});
+ const normal=parse(),paragraph=normal.reviewIr.formattingParagraphs[0],run=paragraph.formattedRuns[0];
+ assert.ok(paragraph.table);assert.equal(run.resolvedFontFamily,'Times New Roman');assert.equal(Object.hasOwn(run.inlineState,'fontFamily'),false);
+ const arial=parse({fonts:'<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>'});
+ assert.equal(arial.reviewIr.formattingParagraphs[0].formattedRuns[0].resolvedFontFamily,'Arial');assert.notEqual(normal.supportedSemanticDigest,arial.supportedSemanticDigest);
+ const competing=parse({styles:'<w:style w:type="table" w:default="1" w:styleId="Table"><w:rPr><w:b/></w:rPr></w:style>'});
+ assert.ok(competing.reviewIr.formattingParagraphs[0].unsupportedParagraphNames.includes('styleResolution'));
+ assert.equal(Object.hasOwn(competing.reviewIr.formattingParagraphs[0].formattedRuns[0],'resolvedFontFamily'),false);
 });

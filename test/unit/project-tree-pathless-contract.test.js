@@ -708,10 +708,12 @@ test('existing editor snapshot response observes the current project and documen
   assert.equal(responses[0].snapshot.rootSplitBoundary, null);
   c.isTiptapMode = true;
   c.getTiptapImageInsertionPosition = () => 7;
+  c.getTiptapCommentEditIntentsJson = () => 'captured-comment-ledger';
   c.getTiptapRootSplitBoundary = () => ({ boundaryRootIndex: 1, position: 7 });
   c.currentDocumentId = 'source';
   c.respond({ requestId: 'capture-source' });
   assert.equal(responses[1].snapshot.documentId, 'source');
+  assert.equal(responses[1].snapshot.commentEditIntentsJson, 'captured-comment-ledger');
   assert.deepEqual(JSON.parse(JSON.stringify(responses[1].snapshot.rootSplitBoundary)), { boundaryRootIndex: 1, position: 7 });
   c.currentProjectId = null; c.currentDocumentId = null;
   c.respond({ requestId: 'capture-unbound' });

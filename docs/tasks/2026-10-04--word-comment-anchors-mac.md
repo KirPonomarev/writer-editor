@@ -87,10 +87,31 @@ Exact admitted paths:
 - `test/contracts/rtk-word-nested-tables.contract.test.js`
 - `test/contracts/rtk-word-table-cell-lists.contract.test.js`
 
+- `test/contracts/rtk-interop-100-denominator.contract.test.js`
+- `test/contracts/rtk-word-local-image.contract.test.js`
+- `test/contracts/rtk-word-pending-rich-blocks.contract.test.js`
+- `test/contracts/rtk-word-review-default-typography.contract.test.js`
+- `test/contracts/rtk-word-table-cell-shift.contract.test.js`
+- `test/unit/project-tree-pathless-contract.test.js`
+- `test/unit/r24-wp204-lifecycle-recovery-mutants.test.js`
+
 ## Required proof and delivery
 
 Check point bounds, graphemes, shared-offset marker ordering, duplicate text, overlapping anchors, insertion at boundaries/interior, whole-anchor deletion/history, list continuations and cell ownership. Check stale session/scene/generation, incomplete replay, forged after-state, failed persistence and restart. Prove native creation, ordinary import/export, changed authenticated return and five alternating exchanges per build for the admitted route. Do not claim all P1-04 topology or whole-plan acceptance from this slice.
 No new dependency or runtime network. No test skip, assertion weakening or generic acceptance fallback. Before broad gates freeze a native-working candidate. Repeated failure signature three times requires a recorded counterexample and a new hypothesis. Commit, push, PR, CI, merge and exact merged verification are mandatory.
+
+## Current packet acceptance mapped to the original plan
+
+Implementation, delivery and native acceptance are separate observations. This packet is implemented locally and PR2076 is unmerged; historical receipts below do not certify the final candidate.
+
+| Original row | Promised operation and observable result | Required evidence and remaining qualification |
+| --- | --- | --- |
+| P1-02 | Insert/delete before, inside and after a single-paragraph range or point; preserve exact occurrence, affinity and foreign text/discussions after Save/reopen and Word return. Include table list continuation with literal edge hard breaks. | Actual renderer, Core and whole-Main tests cover the bounded operations; SOURCE07 proves retained table return and inside-range Save/reboot. Final SOURCE/PACKAGED changed cycles remain required. Cross-block and cross-scene edits remain outside this packet. |
+| P1-03 | Create a point/range through the editor; ordinary import/export preserves root/reply bodies, IDs and coincident/overlapping supported anchors. | Point/export/generic/authoring tests and historical SOURCE authoring exist. Final both-build creation, ordinary export and Word readback remain required. Arbitrary range topology is not claimed. |
+| P1-04 | Apply combined text and existing discussion changes atomically; whole-anchor deletion tombstones the discussion and Undo/Redo restores the same identity through Save/reopen. | Actual Main combined Apply, stale/forged/failed-publication recovery and actual-editor history cases are required with native deletion/Undo/Redo. Existing root/reply lifecycle delivery is preserved; this packet does not recertify every prior lifecycle combination. |
+| P5-05, bounded dependency only | Near-limit comment graph survives the existing journal and restart without a second writer. | Executed 1000-paragraph/four15500-byte-message cases prove only that volume and the stated journal bounds. Full-book performance, cancellation and all resource boundaries remain open. Mutable CONTINUATION.json is a resume pointer, not immutable acceptance evidence. |
+
+Five changed Word exchanges per build must bind each input/output artifact, actual runtime SHA/profile, operation and persisted result. Full mandatory gates then run on that frozen runtime. General full-plan acceptance and the separate P1-01 PACKAGED qualification tail remain open until their own evidence closes them.
 
 ## Native range-affinity calibration
 
@@ -193,3 +214,12 @@ SOURCE06 at0f9d2433 reached native Preview with the retained actual Word file, t
 Complete actual Main Apply in a temporary fixture reproduces the failure using the native document and baseline with fresh authenticated technical identities. Canonical diff isolates an absent-content versus empty-array mismatch in the unchanged trailing paragraph. The analyzer must preserve the original property presence; final candidate equality stays strict. Independent runtime reproduction also finds an admitted inherited font action on a hardBreak returning success without changing its marks, and the private preparation lacks reconstruction of the supported empty-paragraph language operation. These proven defects must be corrected and checked through full Apply/re-export before another native freeze. The native observer additionally requires the two Word-resolved Times New Roman break fonts at literal offsets0and24.
 
 The producer repair preserves absent versus present paragraph content without loosening equality. Formatting applies admitted marks to covered typed breaks and private preparation reconstructs only admitted font, spacing and paragraph-mark language families. Both existing exporters now pass break marks through their existing validation/serialization path; no new mark semantics are admitted. The focused six-case run passes full native-shaped Main Apply/re-export/reactivation, explicit nondefault Georgia break font, nonempty candidate tamper with zero writes, empty-paragraph language set/remove, and typed-break font removal/invalid-range checks. Parser/export suite10 passes, including six ordinary/review exports of line/page/column breaks with nondefault font/size/color/bold; unformatted break serialization stays unchanged. Final native SOURCE07 and PACKAGED, mandatory broad gates and delivery remain pending.
+
+
+## SOURCE07 native success and required CI remediation
+
+At7b0e1b7c, the retained real Word document passed native explicit Apply:1applied,0blocked,0failed. Independent persisted readback retains all8threads10messages, exact range/point coordinates, table/list/paragraph properties, inherited TNR break fonts and the foreign scene. Native collapsed-cursor authoring created a ninth thread at continuation offset12; insertion I inside the existing range then saved the range contIQinued and moved both points to13. These9threads11messages and exact scene bytes survived the owner-requested reboot. This is bounded native proof, not whole-plan or final both-build acceptance.
+
+Clean59path preflight at7b0e1b7c admits the seven existing CI test files added above. PR2076 initial CI reports3186of3195RTK tests passed and9failed, with0skips, plus2broad-baseline failures. Several isolated code-evaluation/shadow-copy harnesses lack newly used dependencies; the delivery negative still calls the now-admitted preload path unadmitted; the table typography expectation predates bounded inheritance admission. Four shifted-cell tests expose a real inherited-language source-proof compatibility regression and must be repaired without weakening explicit formatting or donor/receiver identity checks. Final acceptance is blocked until corrected mandatory checks pass.
+
+The shifted-cell repair normalizes only comparison-local inherited language under the already validated default profile when every signed source run omitted language and the donor has no direct language or character style. Explicit paragraph/table styles still refuse. Returned IR and the subsequent full rich Original check remain unchanged; coordinated direct-language injection, signed language mismatch and changed document-default language still fail the required proof. Three focused suites79passed with0skips. Five harness suites71passed with0skips after supplying real Core dependencies and the new snapshot provider; runtime bytes were unchanged by these harness repairs. Independent scoped review found no blocker in the parser delta. The delivery negative now checks the newly admitted preload source hash and retains unadmitted-delta refusal using the unchanged external flags module. Broad final checks remain pending.

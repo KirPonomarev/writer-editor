@@ -1751,13 +1751,14 @@ it('data C1 delivery binds immutable code and preserves Buffer and text Git adap
     throw new Error(args.join(' '));
   };
   const result=data.verifyDataC1PostEvaluation({git});assert.equal(result.status,'PASS');assert.equal(result.cellAcceptanceAuthority,false);
-  for(const tableModule of ['src/io/documentTables.js','src/renderer/tiptap/documentTables.mjs']){
-    assert.equal(result.admittedPaths.includes(tableModule),true);
-    const alteredTable=a=>a[0]==='show'&&a[1].endsWith(':'+tableModule)?git(a)+'\n':git(a);
-    assert.throws(()=>data.verifyDataC1PostEvaluation({git:alteredTable}),/RUNTIME_REPAIR_PIN/);
+  for(const runtimeModule of ['src/io/documentTables.js','src/renderer/tiptap/documentTables.mjs','src/preload.js']){
+    assert.equal(result.admittedPaths.includes(runtimeModule),true);
+    const alteredRuntime=a=>a[0]==='show'&&a[1].endsWith(':'+runtimeModule)?git(a)+'\n':git(a);
+    assert.throws(()=>data.verifyDataC1PostEvaluation({git:alteredRuntime}),/RUNTIME_REPAIR_PIN/);
   }
   assert.deepEqual(data.verifyDataC1PostEvaluation({git:a=>Buffer.from(git(a))}),result);
-  changed.push('src/preload.js');assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/UNADMITTED/);changed.pop();
+  const unadmittedRuntime='src/renderer/flags.js';assert.equal(policy.admittedPaths.includes(unadmittedRuntime),false);
+  changed.push(unadmittedRuntime);assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/UNADMITTED/);changed.pop();
   const altered=a=>a[0]==='show'&&a[1].endsWith(':src/utils/docxImportPreviewReferences.js')?git(a)+'\n':git(a);
   assert.throws(()=>data.verifyDataC1PostEvaluation({git:altered}),/RUNTIME_REPAIR_PIN/);
   drift=['scripts/ops/rtk-interop-data-c1-readback.py'];assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/IMPLEMENTATION_DRIFT/);

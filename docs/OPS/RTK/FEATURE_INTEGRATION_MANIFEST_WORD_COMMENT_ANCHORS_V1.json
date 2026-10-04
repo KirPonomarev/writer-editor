@@ -56,7 +56,14 @@
     "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
     "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
     "test/contracts/rtk-word-nested-tables.contract.test.js",
-    "test/contracts/rtk-word-table-cell-lists.contract.test.js"
+    "test/contracts/rtk-word-table-cell-lists.contract.test.js",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
+    "test/contracts/rtk-word-review-default-typography.contract.test.js",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/unit/project-tree-pathless-contract.test.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -129,7 +136,10 @@
     "SOURCE06 at0f9d2433 reached native Preview but explicit Apply refused canonical preparation; both scenes and8threads10messages stayed unchanged. Exit0 and36-file snapshot independently verified.",
     "Full actual Main native-shaped Apply isolated an unchanged empty paragraph content-key mismatch. Independent runtime also proved a hardBreak font no-op and an omitted empty-paragraph language preparation path; correction and final native acceptance remain required.",
     "Affected table suites121pass and prior Main focused5pass are historical to0f9; final corrected Main, mandatory baseline/RTK, both native builds and delivery are still pending.",
-    "Producer, formatting preparation and both exporters repaired. Focused Main/runtime6 and parser/export10 pass; strict whole-candidate equality, typed-break attributes and foreign-scene protection retained. Final native SOURCE07/PACKAGED and broad gates are pending."
+    "Producer, formatting preparation and both exporters repaired. Focused Main/runtime6 and parser/export10 pass; strict whole-candidate equality, typed-break attributes and foreign-scene protection retained. Final native SOURCE07/PACKAGED and broad gates are pending.",
+    "SOURCE07 at7b0e1b7c: actual native retained table return Apply1/0/0; independent8threads10messages exact anchor, spacing, font and foreign-state proof. Native table point creation and inside-range save persisted9threads11messages through owner reboot. Final five changed cycles per build remain pending.",
+    "PR2076 is draft at7b0e1b7c. First full CI RTK3186pass/9fail, no skips; baseline has2 failures. Restore shifted-cell inherited-language compatibility and update isolated harness dependencies/obsolete scope expectation before final acceptance.",
+    "CI remediation focused results: harness71/71, parser/style79/79, governance2/2; zero skips. Parser change is comparison-local bounded legacy inherited language; full rich Original check and returned IR preserved. Final full mandatory runs are pending."
   ],
   "targetOnly": [
     "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"

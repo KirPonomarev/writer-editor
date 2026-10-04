@@ -6152,12 +6152,13 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
     && !(isWordToken(root, 'style') && attr(root, 'type', W_NS) === 'table'
       && styles.tokens.some(t => inside(root, t) && ['rPr', 'basedOn'].some(n => isWordToken(t, n)))));
   if (styles.tokens.length && !defaultSizeOnly) fail();
-  const semanticRuns = (runs, observed, allowInheritedSize = false) => {
+  const semanticRuns = (runs, observed, allowInheritedSize = false, allowInheritedLanguage = false) => {
     const result = [];
     for (const r of runs || []) {
       if (observed ? r.invalidSupportedValue || r.unsupportedNames?.length : r.preservedMarks?.length) fail();
       const inline = { ...(observed ? r.inlineState || {} : r.inline || {}) };
       if (observed && allowInheritedSize && !Object.hasOwn(inline, 'fontSize')) inline.fontSize = defaultSize;
+      if(observed && allowInheritedLanguage)delete inline.wordLanguage;
       const previous = result.at(-1);
       if (previous && stableJson(previous.inline) === stableJson(inline)) previous.text += r.text;
       else result.push({ text: r.text, inline });
@@ -6200,8 +6201,15 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
     const table = scan.tokens.find(t => isWordToken(t, 'tbl') && inside(t, donor));
     const explicitStyle = scan.tokens.some(t => (inside(donor, t) && isWordToken(t, 'pStyle'))
       || table && inside(table, t) && isWordToken(t, 'tblStyle'));
+    // Legacy signed maps predate inherited table-language materialization.
+    // Only the already-admitted default-style profile may supply that absence;
+    // direct language or a character-style reference still changes Original.
+    // Keep effective language in returned IR; this is ownership proof only.
+    const inheritedLanguageOnly=defaultSizeOnly && styles.tokens.length>0
+      && (origin.formatIr?.runs||[]).every(run=>!Object.hasOwn(run.inline||{},'wordLanguage'))
+      && !scan.tokens.some(token=>inside(donor,token) && ['lang','rStyle'].some(name=>isWordToken(token,name)));
     if (explicitStyle || originalIndex < 0 || semanticRuns(originalFormatting.paragraphs[originalIndex].formattedRuns, true,
-      Boolean(defaultSize && defaultSizeOnly)) !== semanticRuns(origin.formatIr?.runs, false)) fail();
+      Boolean(defaultSize && defaultSizeOnly),inheritedLanguageOnly) !== semanticRuns(origin.formatIr?.runs, false)) fail();
     usedDonors.add(originIndex);
     const deletion = donorDeletes[0];
     edits.push({ from: range.start.openStart, to: range.start.closeEnd, text: '' },

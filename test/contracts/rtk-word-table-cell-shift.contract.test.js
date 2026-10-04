@@ -363,3 +363,25 @@ test('Canonical same-artifact receipt replay after acceptance or undo preserves 
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   assert.match(main, /if \(!replay && mapped\.cellShiftBookmarkRestored === true\)/u);
 });
+
+test('shifted ownership ignores only inherited legacy-language absence while canonical Original retains language',async()=>{
+ const [bridge]=await modules,{documentXml,exportMap,stylesXml}=fixtures.returnedShift;
+ const bound=bridge.visibleSceneTextsFromWordDocumentXml(documentXml,exportMap,{allowPendingTableRows:true,stylesXml});assert.equal(bound.ok,true,JSON.stringify(bound));
+ const incoming=await parse(pack({...fixtures.cases[0].parts,'word/document.xml':documentXml,'word/styles.xml':stylesXml}));
+ const original=model.materialize(model.readLedger(incoming),'original'),textNodes=[];
+ const visit=node=>{if(node.type==='text')textNodes.push(node);for(const child of node.content||[])visit(child);};visit(original);
+ const donor=textNodes.find(node=>node.text==='Last C');assert.ok(donor);
+ assert.deepEqual(donor.marks.find(mark=>mark.type==='textStyle').attrs.wordLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+ let tampered=documentXml;
+ for(const [kind,id] of [['ins','11'],['del','17']]){
+  const wrapper=new RegExp(`<w:${kind} w:id="${id}"[\\s\\S]*?<\\/w:${kind}>`,'u');
+  assert.ok(wrapper.test(tampered));tampered=tampered.replace(wrapper,value=>value.replace('<w:rPr>','<w:rPr><w:lang w:val="fr-FR"/>'));
+ }
+ const rejected=bridge.visibleSceneTextsFromWordDocumentXml(tampered,exportMap,{allowPendingTableRows:true,stylesXml});
+ assert.equal(rejected.ok,false);assert.equal(rejected.code,'PENDING_CELL_SHIFT_BOOKMARK_BINDING');
+ const explicitBaseline=structuredClone(exportMap);explicitBaseline.scenes[0].blocks[9].formatIr.runs[0].inline.wordLanguage={val:'fr-FR'};
+ assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(documentXml,explicitBaseline,{allowPendingTableRows:true,stylesXml}).ok,false,'explicit signed language is never erased');
+ const changedDefaults=stylesXml.replaceAll('w:val="ru-FI"','w:val="fr-FR"');assert.notEqual(changedDefaults,stylesXml);
+ const changed=await parse(pack({...fixtures.cases[0].parts,'word/document.xml':documentXml,'word/styles.xml':changedDefaults}));
+ assert.deepEqual(bridge.validateShiftedCellReturnOriginalV1(original,changed),{ok:false,code:'PENDING_CELL_SHIFT_ORIGINAL_RICH_MISMATCH'},'ownership compatibility never waives complete Original language proof');
+});

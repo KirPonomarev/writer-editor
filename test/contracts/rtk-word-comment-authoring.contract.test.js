@@ -140,6 +140,7 @@ for (const nativeDefaults of [false, true]) test(`actual main handler captures c
     isAllowedFilePath: p => p === scenePath, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot, projectId: 'p1' }),
     loadDocumentContentEnvelopeModule: async () => envelope,
+    userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
     computeHash: hash, canonicalizeComparableValue: value => value, normalizeRtkNonTextReturnThreadProjection: value => value,
     loadRtkNonTextReturnModule: async () => runtime, queueDiskOperation: operation => operation(),
     getMainProjectManifestAuthority: async () => ({ withProjectLease: (_id, operation) => operation({ assertOwned: async () => {}, publish: op => op() }) }),
