@@ -177,6 +177,9 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
         thread.status=target.status; entry.undone=undo;
         continue;
       }
+      if(direction!=='forward' && !entry && history.some(h=>h.sessionId===sessionId)
+        && (thread.status==='deleted' || selected.some(step=>step.edit.fromUtf16<=thread.anchor.startUtf16+thread.anchor.selectedText.length
+          && step.edit.toUtf16>=thread.anchor.startUtf16))) fail('COMMENT_EDIT_HISTORY_EXPIRED');
       if (thread.status==='deleted') continue;
       const prior=JSON.parse(current()),priorQuote=thread.anchor.selectedText;
       for (const step of selected) {
@@ -208,10 +211,11 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
   const changed=JSON.stringify(after)!==JSON.stringify(before);
   if (changed) { if (before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW'); after.revision++; upgradeCommentState(after); }
   let afterText=changed?JSON.stringify(after,null,2)+'\n':beforeText;
+  if(Buffer.byteLength(afterText)>65536) afterText=JSON.stringify(after)+'\n';
   while(Buffer.byteLength(afterText)>65536) {
     const candidate=after.threads.filter(t=>t.anchorEditHistory?.length>1).sort((a,b)=>b.anchorEditHistory.length-a.anchorEditHistory.length)[0];
     if(!candidate) fail('COMMENT_SAVE_STATE_BUDGET');
-    candidate.anchorEditHistory.shift();afterText=JSON.stringify(after,null,2)+'\n';
+    candidate.anchorEditHistory.shift();afterText=JSON.stringify(after)+'\n';
   }
   return changed || includeUnchanged ? {mode:MODE,beforeText,afterText,editIntents:plan,sessionId} : null;
 }
@@ -236,7 +240,9 @@ function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,after
   const result=require('./word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText});
   const before=readState(beforeText,projectId),after=readState(result.afterText,projectId);
   if(JSON.stringify(before.threads.filter(t=>t.sceneId!==sceneId))!==JSON.stringify(after.threads.filter(t=>t.sceneId!==sceneId))) fail('COMMENT_TEXT_RETURN_FOREIGN_SCENE');
-  return {mode:RETURN_MODE,beforeText,afterText:result.afterText,returnProofJson};
+  const plan={mode:RETURN_MODE,beforeText,afterText:result.afterText,returnProofJson};
+  if(Buffer.byteLength(JSON.stringify(plan))>128*1024) fail('COMMENT_TEXT_RETURN_PROOF_BUDGET');
+  return plan;
 }
 
 module.exports = { MODE, RETURN_MODE, paragraphs, planCommentAnchorSave, planCommentTextReturn };

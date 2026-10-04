@@ -23011,7 +23011,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               if (!prior || prior.filePath!==filePath || prior.sessionId!==commentAuthoringSessionId
                 || prior.subjectId!==currentLifecycleSubjectId() || prior.savedContent!==expectedSceneContent
                 || prior.ledger.baselineTextSha256!==ledger.baselineTextSha256
-                || JSON.stringify(ledger.edits.slice(0,prior.ledger.edits.length))!==JSON.stringify(prior.ledger.edits)) throw Error('COMMENT_EDIT_BASELINE_STALE');
+                || JSON.stringify(ledger.edits.slice(0,prior.ledger.edits.length))!==JSON.stringify(prior.ledger.edits)) throw Object.assign(Error('COMMENT_EDIT_BASELINE_STALE'),{code:'COMMENT_EDIT_BASELINE_STALE'});
               options={...options,commentEditIntentsJson:JSON.stringify({...ledger,baselineTextSha256:digest,edits:ledger.edits.slice(prior.ledger.edits.length)})};
             }
           }
@@ -26170,6 +26170,7 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
       return envelope.composeObservablePayload({doc,metaEnabled:after.hasMetaBlock,meta:after.meta,cards:after.cards});
     } : undefined;
     const result=await writer(input,{...options,publishScene,prepareCanonicalContent,
+      ...(store.cleanTextCommentPlan?{commentTextReturnPlan:store.cleanTextCommentPlan}:{}),
       trustedAuthenticatedBlockDigests:input.reviewItems.map(item=>computeHash(JSON.stringify(item)))});
     if(result.ok && publication)result.receipt={...result.receipt,bookmarkPublication:publication};
     return result;

@@ -207,6 +207,8 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
         statusBefore: thread.status, statusAfter: 'deleted',
         deletionDecision: 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION' });
       thread.status = 'deleted'; // Retain every original message, provenance and anchor.
+      // Remote deletion is not an undoable local text edit.
+      delete thread.anchorEditHistory;
       continue;
     }
     candidate.messages = candidate.messages.map(m => {
@@ -237,6 +239,10 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
           deletionDecision: 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION' } : {}),
         anchorChanged, statusBefore: thread.status, statusAfter: candidate.status });
       if (removed.length) thread.deletedMessages = [...(thread.deletedMessages || []), ...removed];
+      // A remote anchor/status decision supersedes local text-history restore
+      // coordinates. Keeping them could revive a remotely deleted/resolved
+      // thread or make a moved anchor's persisted graph unreadable.
+      if (anchorChanged || thread.status !== candidate.status) delete thread.anchorEditHistory;
       thread.messages = candidate.messages; thread.status = candidate.status;
       if (anchorChanged) thread.anchor = candidate.anchor;
     }
@@ -249,6 +255,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     roundId, artifactSha256, resultingRevision: after.revision, threadDigest: hash(stable(after.threads)), changes });
   const afterText = JSON.stringify(after, null, 2) + '\n';
   demand(Buffer.byteLength(afterText) <= 65536, 'COMMENT_RETURN_STATE_BUDGET');
+  readState(afterText, projectId);
   return { replay: false, afterText, operationId, changes, revision: after.revision };
 }
 

@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c4aca19ac4cd05952a0ca13458121fd529506725bac274a72fc43e11c8e88913"
+        "sha256": "acb501e3fc7139bf39e46772b6976cad655cdce1d9382cbb402320aac2e32448"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1053,7 +1053,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-        "sha256": "083296ca45bbce6f9faa331646f937fd11c4cb7a24d6cf60031f4d5d2b063869"
+        "sha256": "8e85e617ce8c73bd517e6358dcaf36c112964314b7cd333a8b61ae66cec3b4d7"
       },
       {
         "path": "src/io/markdown/index.mjs",
@@ -1341,7 +1341,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextApplyJournal.mjs",
-        "sha256": "ca1d735c97590bf584800b5b24e90c7aa9915ebba270eb0f5a62909a006bb0ef"
+        "sha256": "4f66b69e5621779382ccf9ce5ada5776687486b567bf46e5f0bc7d82a9ad5e10"
       },
       {
         "path": "docs/tasks/2026-09-25--word-table-autofit-review.md",
@@ -1485,11 +1485,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "669a002a5a8cd3b8ab898adad27351feac5f7e7d82facced07e4bf356080f192"
+        "sha256": "b274337a7b7c0a94b24a6f09d3feb9f9f877e8ab6f0c78193a89b3486b22f01b"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "d93a76836c51f0b97f2f6ab114fc49f8c8cf9c0d7dc163748ce0bc1f3135c65f"
+        "sha256": "9c7b59a76eac0f210ec81dc36dbab6ab3d48d111e8c4b7b66a759d1785fab56d"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1513,11 +1513,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "f093a42bce06669a600b699e088aa2e7f040e0bf5744de320605489cbd8787dc"
+        "sha256": "f64ccbc1cc8d1ec292d9129dd09db0c5199e4de0952ea009c10f8840d923ee05"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "f90cae59bac8cef65d1aa73d4587790856eb10cbef952c6b3aedda03ba982168"
+        "sha256": "abbaf2ec353ae4e227b92ec911373a1226f6a6fa11c3bd2f49f67a240273b317"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "2649779206e437d3dfd987b14481a40fbf68972bdad411fb03ade2aa7ba20e92"
+        "sha256": "3fef39a70bb9086cfbef2118f9c772e45b9f0461ed583450d6bfb179d024f3db"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2417,11 +2417,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "6b1e2443914c811f5049b92521b2589232e5b7b32f8cb10f0446208ea6d77e77"
+        "sha256": "339efe12bac4742f2a74c649c26106f21bec787161c0c996651754533767f6de"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "37dd561990c3106574452bb0a118a1d64750b09d04833352d7405c08e4868873"
+        "sha256": "f8d974a610793e197e3b0f5890e82519db8cb087b9fab3605547939a7802b64b"
       },
       {
         "path": "src/preload.js",

@@ -1,7 +1,9 @@
+import commentAnchorModel from '../../core/word-comment-anchor-save-v1.cjs';
+import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { prepareExactTextCommentRebase, validateExactTextCommentRebase, publishExactTextCommentRebase, computeExactTextCommentRebase } from './reviewTransportNonTextReturnRuntime.mjs';
+import { readCommentAuthoringState, prepareExactTextCommentRebase, validateExactTextCommentRebase, publishExactTextCommentRebase, computeExactTextCommentRebase } from './reviewTransportNonTextReturnRuntime.mjs';
 
 import {
   atomicWriteFile,
@@ -213,6 +215,12 @@ function validateJournalEntry(entry, expectedOperationId = '') {
   normalizePortableRelativePath(entry.sceneRelativePath, 'sceneRelativePath');
   assertHash(entry.beforeHash, 'beforeHash');
   assertHash(entry.afterHash, 'afterHash');
+  if (entry.commentTextReturn) {
+    const value=entry.commentTextReturn;
+    if(entry.commentRebase || !isPlainObject(value) || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
+      || value.mode!==commentAnchorModel.RETURN_MODE || typeof value.returnProofJson!=='string' || Buffer.byteLength(value.returnProofJson)>2*1024*1024) throw journalError('E_COMMENT_TEXT_RETURN_JOURNAL_INVALID','invalid mixed comment proof');
+    commentAuthoring.readState(value.beforeText,entry.projectId);commentAuthoring.readState(value.afterText,entry.projectId);
+  }
   if (entry.commentRebase) validateExactTextCommentRebase(entry.commentRebase, entry.projectId);
   return entry;
 }
@@ -405,7 +413,15 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
     || (typeof input.afterContent === 'string' && sha256Text(input.afterContent) !== afterHash)) {
     throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_CONTENT_HASH', 'comment transition must use exact scene bytes');
   }
-  const commentRebase = typeof input.beforeContent === 'string' && typeof input.afterContent === 'string'
+  let commentTextReturn=null;
+  if(input.commentTextReturnPlan) {
+    const offered=input.commentTextReturnPlan;
+    commentTextReturn=commentAnchorModel.planCommentTextReturn({beforeText:offered.beforeText,projectId:input.projectId,sceneId:input.sceneId,
+      beforeContent:input.beforeContent,afterContent:input.afterContent,returnProofJson:offered.returnProofJson});
+    if(JSON.stringify(commentTextReturn)!==JSON.stringify(offered)
+      || (await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:input.projectId})).text!==offered.beforeText) throw journalError('E_COMMENT_TEXT_RETURN_SOURCE_STALE','mixed comment source changed');
+  }
+  const commentRebase = !commentTextReturn && typeof input.beforeContent === 'string' && typeof input.afterContent === 'string'
     ? await prepareExactTextCommentRebase(input) : null;
 
   const entry = {
@@ -424,6 +440,7 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
     mutationEpoch,
     expectedSlices,
     ...(commentRebase ? { commentRebase } : {}),
+    ...(commentTextReturn ? {commentTextReturn} : {}),
     preparedAt,
     updatedAt: preparedAt,
     transactionId: '',
@@ -463,6 +480,19 @@ export async function recordExactTextApplyJournalSnapshot(projectRoot, operation
   }, options);
 }
 
+async function verifyJournalCommentTextReturn(context,entry) {
+  const value=entry.commentTextReturn;
+  if(!value)return;
+  const scenePath=await resolveStoredProjectFile(context,entry.sceneRelativePath,'sceneRelativePath');
+  const snapshotPath=await resolveStoredProjectFile(context,entry.recovery.snapshotRelativePath,'snapshotRelativePath');
+  const beforeContent=await fs.readFile(snapshotPath,'utf8'),afterContent=await fs.readFile(scenePath,'utf8');
+  if(sha256Text(beforeContent)!==entry.beforeHash || sha256Text(afterContent)!==entry.afterHash) throw journalError('E_COMMENT_TEXT_RETURN_SCENE_STALE','mixed scene hashes changed');
+  const expected=commentAnchorModel.planCommentTextReturn({beforeText:value.beforeText,projectId:entry.projectId,sceneId:entry.sceneId,
+    beforeContent,afterContent,returnProofJson:value.returnProofJson});
+  if(expected.afterText!==value.afterText || (await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:entry.projectId})).text!==expected.afterText)
+    throw journalError('E_COMMENT_TEXT_RETURN_COMMIT_INCOMPLETE','project transaction must publish the complete scene/comment pair');
+}
+
 async function publishJournalCommentRebase(context, entry) {
   if (!entry.commentRebase) return;
   const scenePath = await resolveStoredProjectFile(context, entry.sceneRelativePath, 'sceneRelativePath');
@@ -490,6 +520,7 @@ export async function recordExactTextApplyJournalApplied(projectRoot, operationI
       throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_AFTER_HASH_MISMATCH', 'target does not match afterHash');
     }
     if (entry.commentRebase) await publishJournalCommentRebase(context, entry);
+    if (entry.commentTextReturn) await verifyJournalCommentTextReturn(context,entry);
     const next = appendStatus(entry, 'applied', options.now);
     next.transactionId = normalizeString(details.transactionId) || entry.transactionId;
     return next;
@@ -608,6 +639,14 @@ export async function reconcileExactTextApplyJournal(projectRoot, operationId, o
       || (normalizeString(pendingIntent.nextTextHash) && pendingIntent.nextTextHash !== entry.afterHash)
     )
   );
+  if(observedHash===entry.beforeHash && entry.commentTextReturn) {
+    const current=await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:entry.projectId});
+    if(current.text!==entry.commentTextReturn.beforeText) throw journalError('E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT','scene/comment rollback pair is incomplete');
+  }
+  if(observedHash===entry.afterHash && entry.commentTextReturn) {
+    if(intentConflicts || !recoveryVerified) throw journalError("E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT","verified project transaction required");
+    await verifyJournalCommentTextReturn(context,entry);
+  }
   if (observedHash === entry.afterHash && entry.commentRebase) {
     if (intentConflicts || !recoveryVerified) throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_RECOVERY_CONFLICT', 'verified scene recovery and nonconflicting intent required');
     await publishJournalCommentRebase(context, entry);

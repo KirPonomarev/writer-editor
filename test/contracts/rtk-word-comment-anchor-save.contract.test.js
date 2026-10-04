@@ -375,3 +375,38 @@ test('many harmless outside-anchor groups never exhaust canonical comment histor
   assert.equal(JSON.parse(state).threads[0].anchorEditHistory,undefined);
   assert.equal(JSON.parse(state).threads[0].anchor.selectedText,'Alpha');
 });
+test('covered point deletion tombstones and exact saved Undo reconstructs point; legacy fallback refuses ambiguous point move',()=>{
+  const old='Alpha anchor omega',state=JSON.parse(graph(old,0,'Alpha'));
+  Object.assign(state.threads[0].anchor,{kind:'point',affinity:'right',startUtf16:5,selectedText:'',selectedTextSha256:sha('')});state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+  const raw=JSON.stringify(state),next=' omega';
+  const deleted=intentSave(old,next,raw,intent(old,0,12,''));assert.equal(JSON.parse(deleted.afterText).threads[0].status,'deleted');
+  const restored=intentSave(next,old,deleted.afterText,intent(next,0,0,'Alpha anchor',{id:'e2',direction:'undo'}));
+  assert.deepEqual(JSON.parse(restored.afterText).threads[0].anchor,state.threads[0].anchor);
+  assert.throws(()=>plan(old,'AlphaX anchor omega',raw),/COMMENT_SAVE_POINT_INTENT_REQUIRED/);
+});
+test('actual Main verifies admitted prefix when newer typing overlaps save acknowledgment',async t=>{
+  const f=await mainHarness(t),old='Left anchor right',middle='Left anXchor right',next='Left anXYchor right';
+  const first=intent(old,7,7,'X');
+  const a=await f.save(content(middle),{commentEditIntentsJson:JSON.stringify(first)});assert.equal(a.success,true,JSON.stringify(a));
+  assert.equal(a.commentEditIntentsSha256,sha(JSON.stringify(first)));
+  const cumulative={...first,edits:[...first.edits,...intent(middle,8,8,'Y',{id:'e2',historyId:'h2'}).edits]};
+  const b=await f.save(content(next),{commentEditIntentsJson:JSON.stringify(cumulative)});assert.equal(b.success,true,JSON.stringify(b));
+  assert.equal(JSON.parse(readFile(f.commentPath)).threads[0].anchor.selectedText,'anXYchor');
+  const forged=structuredClone(cumulative);forged.edits[0].id='different';const before=observed(f);
+  const result=await f.save(content(next+'Z'),{commentEditIntentsJson:JSON.stringify(forged)});
+  assert.equal(result.success,false);assert.equal(result.code,'COMMENT_EDIT_BASELINE_STALE');assert.deepEqual(observed(f),before);
+});
+function readFile(file){return fs.readFileSync(file,'utf8');}
+test('bounded history is compact, remains valid after many groups and expired destructive Undo fails without revival',()=>{
+  let text='Alpha anchor omega',state=graph(text,0,'Alpha');
+  for(let n=0;n<40;n++) {
+    const next=text.slice(0,2)+'x'+text.slice(2);
+    state=intentSave(text,next,state,intent(text,2,2,'x',{id:`e${n}`,historyId:`h${n}`})).afterText;text=next;
+  }
+  const after=JSON.parse(state);assert.equal(after.threads[0].anchorEditHistory.length,32);
+  assert.ok(after.threads[0].anchorEditHistory.every(h=>h.before.length>=5 && !Object.hasOwn(h.before,'anchor')));
+  require('../../src/core/word-comment-authoring-v1.cjs').readState(state,projectId);
+  assert.throws(()=>intentSave(text,text.slice(0,2)+text.slice(3),state,intent(text,2,3,'',{id:'expired',historyId:'h0',direction:'undo'})),/COMMENT_EDIT_HISTORY_EXPIRED/);
+  const corrupt=structuredClone(after);corrupt.threads[0].anchorEditHistory[0].before.foreign=true;
+  assert.throws(()=>require('../../src/core/word-comment-authoring-v1.cjs').readState(JSON.stringify(corrupt),projectId),/COMMENT_HISTORY_INVALID/);
+});

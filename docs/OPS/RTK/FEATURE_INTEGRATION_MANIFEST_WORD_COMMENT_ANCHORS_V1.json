@@ -47,7 +47,9 @@
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
     "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
     "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
-    "src/export/docx/docxMinBuilder.js"
+    "src/export/docx/docxMinBuilder.js",
+    "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+    "src/io/revisionBridge/exactTextApplyJournal.mjs"
   ],
   "scopeOut": [
     "package.json",

@@ -798,3 +798,39 @@ test('actual whole-anchor text plus Word comment removal retains explicit tombst
  assert.throws(()=>plan({...f.input,textChanges,commentReturnInventory:undefined}),/PACKAGE_INCOMPLETE/);
  assert.throws(()=>plan(f.input),/MANUSCRIPT_CHANGED/);
 });
+async function localAnchorHistoryFixture() {
+  const authoring=require('../../src/core/word-comment-authoring-v1.cjs');
+  const {planCommentAnchorSave}=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const projectId='history-return',sceneId='roman/a.md',beforeContent='Alpha\nOther',afterContent='AlXpha\nOther';
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'history-thread',rootCommentId:'history-root',sceneId,status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Alpha'},sceneId,['Alpha','Other']),messages:[{commentId:'history-root',kind:'root',body:'Keep body',provenance:{author:'Alice'}}]}]};
+  const forward={id:'forward',historyId:'history-edit',direction:'forward',paragraphIndex:0,fromUtf16:2,toUtf16:2,removedText:'',insertText:'X'};
+  const saved=planCommentAnchorSave({beforeText:JSON.stringify(state),projectId,sceneId,beforeContent,afterContent,sessionId:'local-session',editIntents:{schemaVersion:1,baselineTextSha256:textDigest(['Alpha','Other']),edits:[forward]}});
+  const current=authoring.readState(saved.afterText,projectId);assert.equal(current.threads[0].anchorEditHistory.length,1);
+  const source=makeSource({projectId,projectRoot:'/project',nonTextReturnState:current,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:afterContent,doc:{type:'doc',content:['AlXpha','Other'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))}}]});
+  const bytes=buildDocxReviewPacketBuffer(source),bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:hash,sha256Json:v=>'sha256:'+hash(stable(v)),byteLength:v=>Buffer.byteLength(v)}});
+  assert.equal(analysis.ok,true);
+  return {projectId,sceneId,beforeContent,afterContent,current,authoring,planCommentAnchorSave,textDigest,input:{beforeText:saved.afterText,projectId,roundId:'history-round',artifactSha256:hash(bytes),baseline:source.commentExport,exportMap:source.localAuthorityCapsule.exportMap,returnedThreads:analysis.reviewIr.commentThreads,returnedParagraphs:analysis.reviewIr.formattingParagraphs}};
+}
+test('remote reanchor after actual local interior edit clears obsolete history and remains readable',async()=>{
+ const f=await localAnchorHistoryFixture();
+ const unchanged=plan(f.input);assert.equal(unchanged.unchanged,true);assert.equal(unchanged.afterText,f.input.beforeText);
+ const moved=structuredClone(f.input),t=moved.returnedThreads[0];t.paragraphIndex=1;t.quotedAnchorText='Other';t.anchorRange=t.finalTextAnchorRange={startUtf16:0,endUtf16:5,selectedText:'Other',blockTextSha256:hash('Other')};
+ const result=plan(moved),state=f.authoring.readState(result.afterText,f.projectId);
+ assert.equal(state.threads[0].anchor.sceneParagraphIndex,1);assert.equal(state.threads[0].anchor.selectedText,'Other');assert.equal(state.threads[0].anchorEditHistory,undefined);assert.deepEqual(state.threads[0].messages,f.current.threads[0].messages);
+ const undo=f.planCommentAnchorSave({beforeText:result.afterText,projectId:f.projectId,sceneId:f.sceneId,beforeContent:f.afterContent,afterContent:f.beforeContent,sessionId:'local-session',includeUnchanged:true,editIntents:{schemaVersion:1,baselineTextSha256:f.textDigest(['AlXpha','Other']),edits:[{id:'undo',historyId:'history-edit',direction:'undo',paragraphIndex:0,fromUtf16:2,toUtf16:3,removedText:'X',insertText:''}]}});
+ assert.equal(JSON.parse(undo.afterText).threads[0].anchor.sceneParagraphIndex,1);assert.equal(JSON.parse(undo.afterText).threads[0].anchor.selectedText,'Other');
+});
+test('remote resolution clears local anchor restore history so local Undo cannot reopen it',async()=>{
+ const f=await localAnchorHistoryFixture(),input=structuredClone(f.input);input.returnedThreads[0].status='RESOLVED';
+ const result=plan(input),state=f.authoring.readState(result.afterText,f.projectId);assert.equal(state.threads[0].status,'resolved');assert.equal(state.threads[0].anchorEditHistory,undefined);
+ const undo=f.planCommentAnchorSave({beforeText:result.afterText,projectId:f.projectId,sceneId:f.sceneId,beforeContent:f.afterContent,afterContent:f.beforeContent,sessionId:'local-session',editIntents:{schemaVersion:1,baselineTextSha256:f.textDigest(['AlXpha','Other']),edits:[{id:'undo',historyId:'history-edit',direction:'undo',paragraphIndex:0,fromUtf16:2,toUtf16:3,removedText:'X',insertText:''}]}});
+ assert.equal(JSON.parse(undo.afterText).threads[0].status,'resolved');
+});
+test('remote complete deletion clears local restore history and later local Undo preserves tombstone',async()=>{
+ const f=await localAnchorHistoryFixture(),input={...f.input,returnedThreads:[],commentReturnInventory:{schemaVersion:'yalken.rtk.comment-return-inventory.v1',status:'COMPLETE',deletionAuthority:false,packageState:'ABSENT',rootDurableIds:[],messageDurableIds:[]}};
+ const result=plan(input),state=f.authoring.readState(result.afterText,f.projectId);assert.equal(state.threads[0].status,'deleted');assert.equal(state.threads[0].anchorEditHistory,undefined);assert.deepEqual(state.threads[0].messages,f.current.threads[0].messages);
+ const undo=f.planCommentAnchorSave({beforeText:result.afterText,projectId:f.projectId,sceneId:f.sceneId,beforeContent:f.afterContent,afterContent:f.beforeContent,sessionId:'local-session',includeUnchanged:true,editIntents:{schemaVersion:1,baselineTextSha256:f.textDigest(['AlXpha','Other']),edits:[{id:'undo',historyId:'history-edit',direction:'undo',paragraphIndex:0,fromUtf16:2,toUtf16:3,removedText:'X',insertText:''}]}});
+ assert.equal(JSON.parse(undo.afterText).threads[0].status,'deleted');assert.deepEqual(JSON.parse(undo.afterText).threads[0].messages,f.current.threads[0].messages);
+});

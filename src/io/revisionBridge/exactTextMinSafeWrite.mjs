@@ -1484,6 +1484,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       afterContent: nextText,
       inputHash,
       operationKind: 'replaceExactTextBatch',
+      ...(options.commentTextReturnPlan ? {commentTextReturnPlan:options.commentTextReturnPlan}:{}),
       projectId,
       sessionId: rawString(input.revisionSession?.sessionId),
       sceneId,
@@ -1535,7 +1536,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
-        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentTextReturn || journalRef.entry.commentRebase);
       },
     });
 
@@ -1939,7 +1940,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
-        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentTextReturn || journalRef.entry.commentRebase);
       },
     });
 

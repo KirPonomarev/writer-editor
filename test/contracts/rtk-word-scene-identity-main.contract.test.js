@@ -66,6 +66,9 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     publishReview:publishReviewSceneWithProjectTransaction,
+    failAfterReviewPublication() { const original=publishReviewSceneWithProjectTransaction;let armed=true;
+      publishReviewSceneWithProjectTransaction=async(...args)=>{const result=await original(...args);if(armed){armed=false;throw Object.assign(Error('INJECT_AFTER_PROJECT_COMMIT'),{code:'INJECT_AFTER_PROJECT_COMMIT'});}return result;};
+    },
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
     formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
     setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
@@ -2087,4 +2090,41 @@ test('actual whole Main moves range with authenticated inside-anchor Word text a
   assert.equal(after.threads[0].anchor.selectedText,'AlINSIDEpha');
   assert.equal(after.threads[0].threadId,before.threads[0].threadId);assert.deepEqual(after.threads[0].messages,before.threads[0].messages);
   assert.ok(envelope.parseObservablePayload(read(f.alpha)).text.startsWith('AlINSIDEpha'));
+});
+test('mixed comment return fault after inner commit preserves coherent pair; outer recovery rejects torn pairs and mutated proof',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));f.probe.failAfterReviewPublication();
+  const result=await f.probe.fullApply({requestId:'fault-comment-text-apply'});
+  assert.equal(result.totals?.applied,0,JSON.stringify(result));
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),afterText=read(f.alpha),afterComments=read(commentPath);
+  assert.ok(envelope.parseObservablePayload(afterText).text.startsWith('AlXpha'));
+  assert.equal(JSON.parse(afterComments).threads[0].anchor.selectedText,'AlXpha');
+  const dir=path.join(f.root,'backups/revision-bridge-apply-journal');
+  const journalFile=fs.readdirSync(dir).filter(name=>name.endsWith('.json')).map(name=>path.join(dir,name)).find(file=>JSON.parse(read(file)).commentTextReturn);
+  assert.ok(journalFile);const original=read(journalFile),entry=JSON.parse(original);
+  const journals=await import('../../src/io/revisionBridge/exactTextApplyJournal.mjs');
+  const recovered=await journals.reconcileExactTextApplyJournal(f.root,entry.operationId);assert.ok(recovered);
+  assert.equal(read(f.alpha),afterText);assert.equal(read(commentPath),afterComments);
+  fs.writeFileSync(journalFile,JSON.stringify({...entry,status:'prepared'}));
+  fs.writeFileSync(f.alpha,Buffer.from(beforeActivation.files['roman/Imported/01_Alpha.txt'],'base64'));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT'});
+  fs.writeFileSync(f.alpha,afterText);fs.writeFileSync(commentPath,entry.commentTextReturn.beforeText);
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_COMMIT_INCOMPLETE'});
+  fs.writeFileSync(commentPath,afterComments);
+  const altered={...JSON.parse(original),status:'prepared'},proof=JSON.parse(altered.commentTextReturn.returnProofJson);proof.textChanges[0].newText='forged';altered.commentTextReturn.returnProofJson=JSON.stringify(proof);fs.writeFileSync(journalFile,JSON.stringify(altered));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId));
+  assert.equal(read(f.alpha),afterText);assert.equal(read(commentPath),afterComments);
+  altered.commentRebase={};fs.writeFileSync(journalFile,JSON.stringify(altered));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_JOURNAL_INVALID'});
+});
+test('mixed comment return stale comment state rejects without either canonical write',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const file=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),state=JSON.parse(read(file));state.revision++;fs.writeFileSync(file,JSON.stringify(state));
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'stale-comment-text-apply'});
+  assert.equal(result.totals?.applied||0,0);assert.deepEqual(f.capture(),before);
 });
