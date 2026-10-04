@@ -339,3 +339,23 @@ test('DOCX import product flow: unacceptable plan fails before safe-create bridg
   assert.equal(result.error.reason, 'DOCX_IMPORT_PREVIEW_NOT_ACCEPTABLE');
   assert.deepEqual(bridgeRequests.map((entry) => entry.commandId), ['cmd.project.docx.previewImportPlan']);
 });
+
+test('DOCX product command forwards one explicit attempt through preview, failed accept, retry and a separate new attempt',async()=>{
+ const {createCommandRegistry,createCommandRunner,registerProjectCommands,COMMAND_IDS}=await loadCommandModules();
+ const plan=previewPlan(),calls=[],registry=createCommandRegistry();let failAccept=true;
+ registerProjectCommands(registry,{electronAPI:{invokeUiCommandBridge:async request=>{
+  calls.push(cloneJsonSafe(request));
+  if(request.commandId==='cmd.project.docx.previewLocalFile')return {ok:true,value:localFilePreview(plan)};
+  if(request.commandId==='cmd.project.docx.previewImportPlan')return {ok:true,value:{ok:true,docxImportPreviewPlan:plan}};
+  if(request.commandId==='cmd.project.docx.importSafeCreate')return failAccept
+    ?{ok:true,value:{ok:false,error:{code:'DOCX_RETRY_TEST',reason:'DOCX_RETRY_TEST'}}}:{ok:true,value:safeCreateResult(plan)};
+  throw Error(request.commandId);
+ }}});
+ const run=createCommandRunner(registry,{capability:{platformId:'node'}}),id=COMMAND_IDS.PROJECT_IMPORT_DOCX_V1;
+ const preview=await run(id,{requestId:'attempt-a'});assert.equal(preview.ok,true);
+ const input={requestId:'attempt-a',accept:true,localFilePreview:preview.value.localFilePreview,docxImportPreviewPlan:plan};
+ assert.equal((await run(id,input)).ok,false);failAccept=false;assert.equal((await run(id,input)).ok,true);
+ assert.ok(calls.length>=3);assert.ok(calls.every(call=>call.payload.requestId==='attempt-a'));
+ const before=calls.length;assert.equal((await run(id,{requestId:'attempt-b'})).ok,true);
+ assert.equal(calls.length,before+1);assert.equal(calls.at(-1).payload.requestId,'attempt-b');
+});

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_IMPORT_ATTEMPTS_MAC_20261004",
+  "bindingBaseSha": "7a8955610860dd9110a2e6bb5813fdcdb5d0e198",
+  "productPlane": "Original owner-authorized Mac plan P1-08. Existing admitted preview and leased Core import transaction exclusively own canonical scene/comment/media/receipt truth. No overwrite or receipt-integrity rule changes.",
+  "interfacePlane": "Existing import preview modal and controls; retain source/loss context after recoverable error and present Retry import. No layout, typography, tokens, HTML or new surface. Lazyweb exact file-import/error-retry search and ui-craft consulted; external reference is advisory only.",
+  "commands": [
+    "cmd.project.importDocxV1",
+    "cmd.project.docx.previewLocalFile",
+    "cmd.project.docx.previewImportPlan",
+    "cmd.project.docx.importSafeCreate"
+  ],
+  "queries": [
+    "Existing project tree/public scene locator and command capability projections"
+  ],
+  "events": [
+    "Existing import transaction durable publication"
+  ],
+  "effects": [
+    "Existing native file chooser, bounded DOCX read and atomic scene/comment/media transaction"
+  ],
+  "productPorts": [
+    "Existing local file chooser, DOCX preview, import safe-create and project tree/open ports"
+  ],
+  "designOsPorts": [
+    "Existing import preview modal and command availability; no new Design OS registry"
+  ],
+  "readProjections": [
+    "Existing admitted content/plan preview, safe public scene locators, command error projection"
+  ],
+  "stateClasses": [
+    "TRANSIENT_STATE",
+    "DERIVED_STATE",
+    "PROJECT_STATE"
+  ],
+  "writePaths": [
+    "Renderer explicit import intent with per-attempt ID -> existing Kernel command -> Main admitted preview/reference/project revalidation -> leased Core atomic import transaction",
+    "Retry of one preview -> same operation ID through same route -> verified durable receipt replay or rollback/recovery"
+  ],
+  "identityGuards": [
+    "One requestId per explicit preview intent; identical ID across retries and new ID for deliberate new import",
+    "Current attempt object, phase, project identity and lifecycle invalidation guard async UI completion",
+    "Main retains opaque reference context/generation/TTL, lease and receipt exact-source integrity"
+  ],
+  "capabilityRevalidation": "Existing Kernel dispatch and Main preview/safe-create revalidation before atomic persistence. UI disabled state does not authorize writes.",
+  "fallbacks": [
+    "Cancellation clears only pending UI; no false claim that a transaction already dispatched was cancelled",
+    "Recoverable failure keeps same preview/request for retry; invalid/expired reference requires selecting source again",
+    "Completed import with failed scene navigation does not dispatch a second import"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Executed renderer lifecycle: distinct new attempts, same retry nonce, double accept, chooser cancellation, stale preview, project switch, failed navigation",
+    "Actual command forwarding and real leased Main/Core edited-old-scene refusal versus new-request import",
+    "Existing transaction fault/fresh-process replay and media/comment identity tests",
+    "Early native import/edit/new import plus cancellation and retry in both frozen Mac builds before broad gates",
+    "Same filename with changed Word bytes, exact persisted discussion/scene preservation and restart without automatic duplicate"
+  ],
+  "securityAndInputBoundary": "No new IPC, filesystem writer, dependency or runtime network. Existing untrusted DOCX validation and opaque handles unchanged. UUID is correlation only, never authority.",
+  "performanceAndAccessibility": "Constant-size transient attempt state; no scan on typing. Existing labelled modal, keyboard and focus behavior; errors rendered as text and pending confirmation disabled.",
+  "hotPathBoundary": "No work on typing; one constant-size attempt per explicit import preview.",
+  "migrationRollbackEvidence": "No schema migration. Single-PR revert; existing durable import receipts and project state remain unchanged by renderer lifecycle rollback.",
+  "currentReality": [
+    "PR2076 fully delivered at 7a895561 with clean tree, 446 affected tests plus18 supervisor tests and guardrails on merged SHA",
+    "Renderer omits requestId on both import preview and accept and drops failed preview context",
+    "Existing command/Main/Core already honor explicit nonce; same old request correctly refuses changed persisted scene; distinct nonce creates new scene/comments"
+  ],
+  "targetOnly": [
+    "This attempt lifecycle and native acceptance remain target until executed and delivered",
+    "Cross-restart Core replay is distinct from native UI restart recovery; do not claim preserved transient preview across process restart"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_MODAL_NO_NEW_VISUAL_ZONE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK"
+}

@@ -310,3 +310,17 @@ test('Word W1: second asset I/O failure and failed rollback retain recovery unti
   assert.equal(fs.existsSync(journal), false); assert.equal(f.scenes().length, 1);
   assert.equal((await f.call()).idempotent, true); assert.equal(f.scenes().length, 1);
 });
+
+test('Word import attempts: edited old scene refuses old nonce while explicit new nonce creates once without changing old bytes',async t=>{
+ const f=await fixture(t);assert.equal((await f.call('first-attempt')).ok,true);
+ const oldPath=path.join(f.romanRoot,f.scenes()[0]),edited=fs.readFileSync(oldPath,'utf8')+'\nUser edit after import';fs.writeFileSync(oldPath,edited);
+ const refused=await f.call('first-attempt');assert.equal(refused.ok,false);assert.match(JSON.stringify(refused),/DOCX_SAFE_CREATE_IDEMPOTENT_RECEIPT_INTEGRITY_FAILED/);
+ assert.equal(f.scenes().length,1);assert.equal(fs.readFileSync(oldPath,'utf8'),edited);
+ const fresh=await f.call('second-attempt');assert.equal(fresh.ok,true,JSON.stringify(fresh));assert.equal(f.scenes().length,2);
+ assert.equal(fs.readFileSync(oldPath,'utf8'),edited);const count=f.commits();
+ const replay=await f.call('second-attempt');assert.equal(replay.ok,true);assert.equal(replay.idempotent,true);assert.equal(f.commits(),count);assert.equal(f.scenes().length,2);
+ assert.equal(fs.readFileSync(oldPath,'utf8'),edited);
+ const newPath=f.scenes().map(name=>path.join(f.romanRoot,name)).find(name=>name!==oldPath);
+ assert.ok(newPath);assert.notEqual(fs.readFileSync(newPath,'utf8'),edited);
+ assert.equal(Object.keys(JSON.parse(fs.readFileSync(f.manifestPath,'utf8')).treeIdentity.nodes).length,2);
+});

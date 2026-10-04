@@ -561,7 +561,11 @@
     "test/contracts/rtk-word-comment-points.contract.test.js",
     "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-    "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs"
+    "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs",
+    "test/unit/docx-import-preview-ui-flow.test.js",
+    "test/unit/docx-import-product-flow-command.test.js",
+    "docs/tasks/2026-10-04--word-import-attempts-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json"
   ],
   "protectedFiles": [
     {
@@ -802,7 +806,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "92a8831f4a103c01bf69771638c395d5c8559952712c34e1ca1518894e7ca5f7"
+        "sha256": "8f0df20350a4be1392e79475733e349f28a3227e9392807f8ebf318b4bdbd088"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -966,7 +970,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "f43ce7de8c9e30650a72bbb39704102389ced362de46374c2cf353637625c1ff"
+        "sha256": "2505336a601eab3c617716b82eb7b333687025283dae500bfd16df3087f6bdd2"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1242,7 +1246,7 @@
       },
       {
         "path": "test/contracts/word-import-transaction-remediation.contract.test.js",
-        "sha256": "4e8635b92684b64cf8895172dba800423cfb426e53d0e49524029fb2cfb2b6cd"
+        "sha256": "9b794d9923c1aa7998de394fd27711ad4d65534451e998de9075c6d1869f395c"
       },
       {
         "path": "test/fixtures/docx-import-real-authority.cjs",
@@ -2431,6 +2435,22 @@
       {
         "path": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
         "sha256": "981d77c5df0d96ecfc57a97ddcc8b032a3498bc481cc0f13379cb27ce13be632"
+      },
+      {
+        "path": "docs/tasks/2026-10-04--word-import-attempts-mac.md",
+        "sha256": "d8bd73c0e644d5f18dfe562272cb9d444df84dbb2a99366bb6a5b68472005d1f"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_ATTEMPTS_V1.json",
+        "sha256": "8880adbc8c6ce5bdd6aacfaedc57984c2c6357dc6a10093c7301bb4b34cac369"
+      },
+      {
+        "path": "test/unit/docx-import-preview-ui-flow.test.js",
+        "sha256": "0bf9ab185dfa20c17bce41b3944dfac8892657d5b9934199fb36dd8f7527c8ed"
+      },
+      {
+        "path": "test/unit/docx-import-product-flow-command.test.js",
+        "sha256": "f6d9854cbca8734f056d3a46eecd458b23bc773953076d1ed2d7e911fe19765e"
       }
     ],
     "followupRepair": {
