@@ -1805,7 +1805,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "8b75ca1ac7eb8267194766062777aeebab94a299a36a17bb7fbf8a4348806a9b"
+        "sha256": "97c4f7f131d317870648c23078221c91e16bf26d7145151861d7693696322a2a"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2473,7 +2473,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-restart-mac.md",
-        "sha256": "09d92786b4710b9bac350cebeffcc58c8e6800b0f06bd3d873c1105bee3c2d3c"
+        "sha256": "dc3bf9e9079c8bf9425aebfbf2713ffbfb2f39beec512299c6d457c307b2948a"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",

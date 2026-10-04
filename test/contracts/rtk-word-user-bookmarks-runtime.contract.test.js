@@ -665,6 +665,7 @@ test('root paragraph Main save atomically preserves bookmarks, table/list owners
   fs.writeFileSync(commentPath, comments);
   const sibling = path.join(root, 'sibling.txt'); fs.writeFileSync(sibling, beforeRaw);
   Object.assign(h.c, {
+    captureDocxImportPreviewContext: () => JSON.stringify([root, h.subject || 'life', h.c.commentAuthoringSessionId]),
     currentProjectName: 'test', DEFAULT_PROJECT_NAME: 'test', normalizeStableProjectId: value => value,
     getMainProjectManifestAuthority: async () => authority,
     prepareBookProfileManifestForFile: async () => ({ manifestPath: h.manifestPath, projectId: 'p',
@@ -1103,6 +1104,12 @@ async function actualNativeImportHarness(t, bytes) {
   const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
   const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, '.test-authority'), useLeaseHeartbeatWorker: false });
   Object.assign(h.c, {
+    crypto, currentProjectName: 'project', DEFAULT_PROJECT_NAME: 'project',
+    ...require('../../src/core/io/path-boundary'),
+    ...require('../../src/product/projectIdDomain.cjs'),
+    readPendingProjectTransactionBinding: require('../../src/core/project-transaction-v1.cjs').readPendingProjectTransactionBinding,
+    recoverProjectTransaction: require('../../src/core/project-transaction-v1.cjs').recoverProjectTransaction,
+    treeCohortError: code => Object.assign(Error(code), { code }),
     ...local, ...safe, createDocxImportPreviewReferences: require('../../src/utils/docxImportPreviewReferences.js').createDocxImportPreviewReferences,
     dialog: { showOpenDialog: async () => ({ canceled: false, filePaths: [inputFile] }) },
     fileManager: { getDocumentsPath: () => root }, mainWindow: null,
@@ -1117,6 +1124,11 @@ async function actualNativeImportHarness(t, bytes) {
       assert.equal(file, roman); return { projectId: 'p', manifestPath: h.manifestPath, manifestRaw: fs.readFileSync(h.manifestPath, 'utf8') };
     },
   });
+  // Use actual Main recovery with the real project lease and Core journal reader.
+  const recovery = main.slice(main.indexOf('async function recoverWriterProjectTransactionForFile('), main.indexOf('\nfunction isFileUrl(', main.indexOf('async function recoverWriterProjectTransactionForFile(')));
+  const pathGuards = main.slice(main.indexOf('function isPathInside('), main.indexOf('\n// Проверка существования файла', main.indexOf('function isPathInside(')));
+  const projectIdGuard = main.slice(main.indexOf('function normalizeStableProjectId('), main.indexOf('\nfunction canonicalizeComparableValue(', main.indexOf('function normalizeStableProjectId(')));
+  vm.runInContext(recovery + pathGuards + projectIdGuard, h.c);
   for (const [start, end] of [
     ['// DOCX_IMPORT_PREVIEW_REFERENCES_START', '// DOCX_IMPORT_PREVIEW_REFERENCES_END'],
     ['// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_START', '// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END'],

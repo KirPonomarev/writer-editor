@@ -163,3 +163,8 @@ is counted as acceptance. Native-qualified application source is unchanged.
 The repaired real-Main harness and its embedded GENERIC01 route passed 94 tests,
 zero failures/skips/todo. Existing assertions were retained. Production runtime
 inputs remain unchanged from the native candidate.
+
+A systematic inventory of all five SafeCreate Main-section VM loaders found the
+remaining bookmark native-local harness closure gap before full RTK reached it.
+The broad run was stopped, and the complete affected harness set is required to
+pass together before restarting full gates. This does not change native runtime.
