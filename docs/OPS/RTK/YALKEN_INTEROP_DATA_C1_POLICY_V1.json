@@ -1273,7 +1273,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "bc4c1a2efc21067bc513eb2092c219f2efd399c366337529b3afb77b6a7e17fb"
+        "sha256": "bfdabf4c6cbdab04fb9c78b2cd253cde87402eb35abd705e8627b881bb6133fb"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -2473,7 +2473,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-restart-mac.md",
-        "sha256": "ad39bbb9bdf6fadec1b039d6dad95241aa050f62ebd6f721c44680e0fac31610"
+        "sha256": "09d92786b4710b9bac350cebeffcc58c8e6800b0f06bd3d873c1105bee3c2d3c"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",

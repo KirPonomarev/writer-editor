@@ -2644,7 +2644,7 @@ export const R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "bc4c1a2efc21067bc513eb2092c219f2efd399c366337529b3afb77b6a7e17fb"
+      "sha256": "bfdabf4c6cbdab04fb9c78b2cd253cde87402eb35abd705e8627b881bb6133fb"
     },
     {
       "path": "test/unit/r24-wp104-evidence-integrity.test.js",
@@ -2654,7 +2654,7 @@ export const R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "674de082ccd51e1ea6f5c0f2031791799c5cee00c73e2884bef64ac112a4ee28"
+      "sha256": "3f21a7baabb96059ee0893b09b90ed8646cc8f0bc60383305266bdd4b048f9ed"
     }
   ]
 });

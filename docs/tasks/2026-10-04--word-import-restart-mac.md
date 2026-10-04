@@ -155,6 +155,11 @@ absent, so healthy imports failed with an internal ReferenceError. The earlier
 An external one-test diagnostic exposed the missing dependency without changing
 production error handling. The repair must execute actual recovery/authority
 helpers, not bypass recovery. A second gate found a stale exact binding to the
-reviewed end-to-end test; its companion pin is updated to the inspected bytes.
+historical end-to-end test. The historical acceptance pin stays unchanged; the
+fixture must load its exact historical blob rather than today's revised test.
 The known-failing local run and its CI run were stopped before repair; neither
 is counted as acceptance. Native-qualified application source is unchanged.
+
+The repaired real-Main harness and its embedded GENERIC01 route passed 94 tests,
+zero failures/skips/todo. Existing assertions were retained. Production runtime
+inputs remain unchanged from the native candidate.
