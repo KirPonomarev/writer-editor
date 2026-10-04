@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { AllSelection, Plugin, PluginKey } from '@tiptap/pm/state';
 import { isHistoryTransaction } from '@tiptap/pm/history';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 
@@ -70,12 +70,19 @@ function capture(tr, previous, oldState, newState) {
   const checkpoint = tr.getMeta(checkpointKey);
   if (checkpoint) {
     const count = checkpoint.nextEdit - (previous.nextEdit - previous.edits.length);
-    if (previous.invalid || checkpoint.incarnation !== previous.incarnation || count < 0 || count > previous.edits.length || count > checkpoint.edits.length
+    if (checkpoint.incarnation !== previous.incarnation || count < 0 || count > previous.edits.length || count > checkpoint.edits.length
       || JSON.stringify(previous.edits.slice(0, count)) !== JSON.stringify(checkpoint.edits.slice(checkpoint.edits.length - count))) return previous;
     countLeaves(checkpoint.doc);
     return { ...previous, baseline: checkpoint.doc, edits: previous.edits.slice(count) };
   }
-  if (!tr.docChanged || previous.invalid) return previous;
+  if (!tr.docChanged) return previous;
+  if (previous.invalid) {
+    // Only real history restoring the exact last proven document can recover
+    // provenance. Keep its pending edits and any acknowledged save prefix.
+    if (!isHistoryTransaction(tr) || !previous.invalidBeforeDoc?.eq(newState.doc)) return previous;
+    const { invalidBeforeDoc, ...restored } = previous;
+    return { ...restored, invalid: false };
+  }
   try {
     const edits = [];
     for (let index = 0; index < tr.steps.length; index++) {
@@ -123,7 +130,7 @@ function capture(tr, previous, oldState, newState) {
     if (combined.length > 256 || new TextEncoder().encode(JSON.stringify(combined)).length > 64000)
       throw new Error('COMMENT_EDIT_BUDGET');
     return { ...previous, edits: combined, groups, nextGroup, nextEdit };
-  } catch { return { ...previous, invalid: true }; }
+  } catch { return { ...previous, invalid: true, invalidBeforeDoc: oldState.doc }; }
 }
 
 // Only actual transactions create edit intent. Core owns validation and anchors.
@@ -163,8 +170,21 @@ export function checkpointCommentEditIntents(editor, wireSha256) {
 }
 export function commentSelectionIntent(editor) {
   if (!editor || editor.isDestroyed) throw new Error('COMMENT_EDIT_EDITOR_UNAVAILABLE');
-  const { from, to } = editor.state.selection;
-  const doc = editor.state.doc, start = paragraphAt(doc, from), end = paragraphAt(doc, to);
+  const selection = editor.state.selection, doc = editor.state.doc;
+  let { from, to } = selection;
+  if (selection instanceof AllSelection) {
+    const leaves = [];
+    doc.descendants((node, position) => {
+      if (paragraphTypes.has(node.type.name)) { leaves.push({ node, position }); return false; }
+      if (!['bulletList', 'orderedList', 'listItem', 'table', 'tableRow', 'tableCell', 'tableHeader'].includes(node.type.name))
+        throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+      return true;
+    });
+    if (!leaves.length) throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+    from = leaves[0].position + 1;
+    to = leaves.at(-1).position + 1 + leaves.at(-1).node.content.size;
+  }
+  const start = paragraphAt(doc, from), end = paragraphAt(doc, to);
   const texts = [], owners = [];
   let index = 0;
   doc.descendants((node, position) => {

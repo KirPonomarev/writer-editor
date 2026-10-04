@@ -824,7 +824,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "456548174e11a19a558147d0a2191465e04156becd645ad9bf9a15e49838e1b5"
+        "sha256": "32fbf594bb4dbd3a95d312f6d72241c6351debc011ea6544a3a13277273e0d51"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -2424,7 +2424,7 @@
       },
       {
         "path": "src/renderer/tiptap/documentCommentEditIntents.mjs",
-        "sha256": "f954fb66fe2cbf07ff31a72831cf1c48032c53fae8a823bc9702af2352387d82"
+        "sha256": "298106b8df59c9e743e98512db6296bdc3c8054ce152b3a2e51f9afbd3dea1bb"
       },
       {
         "path": "src/core/word-comment-edit-intents-v1.cjs",
@@ -2432,7 +2432,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "e6d6aeabad18b106357a06b8a3873c035983404c425b6608150a14fd13d36758"
+        "sha256": "cfe840a01eda2a9234029de1a7ce1dd575cff5f4fd078dce13c7ccfabe55483b"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2528,7 +2528,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "b0ef1f53f8c9f23ed0d3df46dc37d67afe08afa4a9a1f865ced6719c11fec512"
+        "sha256": "93a77ba10928c445b48778dbba27c275b28657e1e41b108348529057623197d5"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",

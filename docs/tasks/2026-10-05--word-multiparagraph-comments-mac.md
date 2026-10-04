@@ -155,3 +155,36 @@ The 52-path consumer-closure declaration passed on that clean exact head.
 The C1 binding check now passes after exact source refresh. The isolated
 lifecycle recovery harness copies the new helper and again runs its unmodified
 control and seven original mutants. Neither result substitutes native delivery.
+
+## Native candidate findings and bounded recovery repair
+
+On candidate 9ac92248a4cd16162f704401f337fa8af3706fc6, actual SOURCE import
+of the Word-changed artifact preserved the three paragraphs and all three
+discussion messages. A single-character edit in the covered last paragraph,
+Save, Undo/Save and Redo/Save preserved the expected text, quote and saved
+history. Creating a second discussion through a normal text selection spanning
+all three paragraphs persisted the exact full range independently.
+
+Two early native failures prevent accepting this candidate. An unsupported
+paragraph join permanently invalidated the edit-intent collector even after
+actual Undo restored the exact pre-edit document. Later supported edits then
+refused with COMMENT_SAVE_RANGE_INTENT_REQUIRED; the working draft remained
+visible and canonical scene/comment bytes stayed coherent. Separately,
+Cmd+A followed by Add Comment refused COMMENT_EDIT_TOPOLOGY_UNSUPPORTED,
+although an equivalent ordinary text selection succeeded. Both failed
+observations are retained; they are not final SOURCE/PACKAGED acceptance.
+
+The same-contour native-repair declaration passed on clean 9ac92248a with the
+existing 52-path scope. Recovery must retain the prior intent ledger, pending
+edits, incarnation and saved history, and permit restoration only through an
+actual history transaction yielding the exact pre-invalid document. A valid
+delayed save acknowledgement may consume only its captured prefix while the
+collector remains invalid. Manual recreation, stale receipts, unsupported
+Redo and nonexact restoration must never establish provenance.
+
+The bounded repair also recognizes actual ProseMirror AllSelection and derives
+its first/last paragraph leaf offsets before the unchanged complete ownership
+and grapheme checks. Unsupported selected atoms and mixed cell ownership still
+refuse. The renderer contract first reproduced the failures, then passed all
+21 cases including actual history and Core save. Build and exact native
+rerun are required before calling the candidate accepted.
