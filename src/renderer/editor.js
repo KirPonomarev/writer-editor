@@ -24248,6 +24248,22 @@ if (window.electronAPI) {
       activeDocumentRevealRequested || documentId !== currentDocumentId
     );
 
+    // Publish before committing the active identity. Failed loads retain the
+    // previous manuscript, its metadata, and its Undo history.
+    const parsed = treeContentParsed || parseDocumentContent(content);
+    const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
+    if (useLargePayloadFastPath) parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
+    const nextDocumentId = hasDocumentId ? documentId || null : hasKind || hasProjectId ? null : currentDocumentId;
+    const nextProjectId = hasProjectId ? normalizeProjectId(projectId) : currentProjectId;
+    if (isTiptapMode && !treeContentParsed && !setTiptapDocumentSnapshot({
+      doc: parsed.doc,
+      text: parsed.text || '',
+      resetHistory: nextDocumentId !== currentDocumentId || nextProjectId !== currentProjectId,
+    })) {
+      updateStatusText('Сцена не открыта. Предыдущий документ сохранён в редакторе.', { visible: true });
+      return;
+    }
+
     clearFlowModeState();
     clearPendingMetadataUpdate();
     currentMetadataBaselineHash = '';
@@ -24278,26 +24294,17 @@ if (window.electronAPI) {
     }
     setReviewSurfaceState(reviewSurfaceResolveIncomingPayload(payload));
 
-    const parsed = treeContentParsed || parseDocumentContent(content);
     currentMeta = parsed.meta;
     currentCards = parsed.cards;
     plainTextBuffer = parsed.text || '';
-    const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
     if (useLargePayloadFastPath) {
       beginCentralSheetLargePayloadFastPath(parsed.text || '');
-      parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
     } else {
       clearCentralSheetLargePayloadFastPath();
     }
     if (isTiptapMode) {
       resetCentralSheetStripForIncomingPayload();
-      if (!treeContentParsed) {
-        setTiptapDocumentSnapshot({
-          doc: parsed.doc,
-          text: parsed.text || '',
-        });
-      }
-      resetCentralSheetStripForIncomingPayload();
+
       if (useLargePayloadFastPath) {
         applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
         scheduleCentralSheetStripProofRefresh({ scrollOnly: true });

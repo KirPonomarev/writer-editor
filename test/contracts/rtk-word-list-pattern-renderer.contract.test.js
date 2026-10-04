@@ -495,3 +495,69 @@ test('actual checked scene replacement preserves imported skipped levels despite
     }finally{editor.destroy();}
   }
 });
+
+async function scenePublicationHarness() {
+  const [pending,sections,stories,bookmarks,{history,closeHistory}]=await Promise.all([
+    import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),import('../../src/renderer/tiptap/documentSections.mjs'),
+    import('../../src/renderer/tiptap/documentStories.mjs'),import('../../src/renderer/tiptap/userBookmarks.mjs'),import('@tiptap/pm/history')]);
+  const {editor}=await harness(doc(p('Scene A')),[pending.WordPendingRevisions,sections.DocumentSections,stories.DocumentStories,bookmarks.UserBookmarks]);
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
+  const code=source.slice(source.indexOf('function setCheckedDocument(editor, doc) {'),source.indexOf('export function applyTiptapUserBookmarkPublication'))
+    +source.slice(source.indexOf('export function setTiptapDocumentSnapshot('),source.indexOf('// A dialog owns only')).replace('export ','');
+  const context=vm.createContext({currentEditorInstance:editor,history,setCheckedReviewDocument:pending.setCheckedDocument,wordListNumbering:core,numberingDocumentJSON:projectNumberingJSON,
+    wordSections:require('../../src/core/word-sections-v1.cjs'),wordStories:require('../../src/core/word-stories-projection-v1.cjs'),notifyFormattingStateChange(){}});
+  vm.runInContext(code,context);
+  return {editor,context,closeHistory};
+}
+
+test('actual scene publication resets foreign history only on identity switch and restores failed publication atomically',async()=>{
+  const {editor,context,closeHistory}=await scenePublicationHarness();
+  try {
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'edited'});
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Scene B')),resetHistory:true}),true);
+    assert.equal(editor.commands.undo(),false);assert.equal(editor.state.doc.textContent,'Scene B');
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'edited'});
+    assert.equal(editor.commands.undo(),true);assert.equal(editor.state.doc.textContent,'Scene B');
+    editor.view.dispatch(closeHistory(editor.state.tr));
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Scene B publication')),resetHistory:false}),true);
+    assert.equal(editor.commands.undo(),true);assert.equal(editor.state.doc.textContent,'Scene B');
+    const {Plugin}=await import('@tiptap/pm/state');
+    const originalPlugins=editor.state.plugins;
+    editor.view.updateState(editor.state.reconfigure({plugins:[...originalPlugins,new Plugin({filterTransaction:tr=>!tr.docChanged})]}));
+    const rejected=editor.state;
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Silently rejected')),resetHistory:true}),false);
+    assert.equal(editor.state,rejected);
+    editor.view.updateState(editor.state.reconfigure({plugins:originalPlugins}));
+    const state=editor.state;
+    assert.equal(context.setTiptapDocumentSnapshot({doc:{...doc(p('Invalid')),attrs:{wordSections:{bad:true}}},resetHistory:true}),false);
+    assert.equal(editor.state,state);
+    // A failure after the first setContent also restores the original history and document.
+    const real=context.setCheckedReviewDocument;
+    context.setCheckedReviewDocument=(...args)=>{real(...args);throw Error('post-content failure');};
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Partial')),resetHistory:true}),false);assert.equal(editor.state,state);
+  }finally{editor.destroy();}
+});
+
+test('actual active-scene caller publishes before identity commit including same-id project switch and failed load',async()=>{
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const start=source.indexOf('    // Publish before committing the active identity.'),end=source.indexOf('    if (hasBookProfile) {',start);
+  assert.ok(start>=0&&end>start);
+  const body=source.slice(start,end);
+  for(const scenario of ['scene','project','same','failure','tree']) {
+    const {editor,context}=await scenePublicationHarness();
+    try {
+      const calls=[],notices=[];
+      const ctx=vm.createContext({treeContentParsed:scenario==='tree'?{doc:doc(p('Tree already published'))}:null,
+        parseDocumentContent:()=>({doc:doc(p('Scene B'))}),content:'irrelevant',shouldUseCentralSheetLargePayloadFastPath:()=>false,
+        hasDocumentId:true,documentId:scenario==='scene'?'B':'A',hasKind:true,hasProjectId:true,
+        projectId:scenario==='project'?'other':'project',currentDocumentId:'A',currentProjectId:'project',normalizeProjectId:x=>x,
+        isTiptapMode:true,setTiptapDocumentSnapshot:input=>{calls.push(input);return scenario==='failure'?false:context.setTiptapDocumentSnapshot(input);},
+        updateStatusText:message=>notices.push(message),clearFlowModeState(){},clearPendingMetadataUpdate(){},
+        nextMetaEnabled:false,kind:'scene',createNavigatorSelectionState:()=>({}),restoreSpatialLayoutState(){},adoptToolbarConfiguratorState(){}});
+      const before=editor.state;vm.runInContext(`function incoming(){${body}};incoming();`,ctx);
+      if(scenario==='failure'){assert.equal(ctx.currentDocumentId,'A');assert.equal(ctx.currentProjectId,'project');assert.equal(editor.state,before);assert.equal(notices.length,1);}
+      else if(scenario==='tree'){assert.equal(calls.length,0);assert.equal(editor.state,before);}
+      else {assert.equal(calls[0].resetHistory,scenario!=='same');assert.equal(ctx.currentDocumentId,scenario==='scene'?'B':'A');assert.equal(ctx.currentProjectId,scenario==='project'?'other':'project');assert.equal(editor.state.doc.textContent,'Scene B');}
+    }finally{editor.destroy();}
+  }
+});
