@@ -85,3 +85,15 @@ test('grid formatting journal forwards private plans, rolls back exact plain byt
   assert.equal(fs.readFileSync(sibling,'utf8'),'Sibling');
  }
 });
+test('formatting return binds concrete start overrides and definition together without changing text',async()=>{
+ const {applyFormattingOperationsToObservableContent:apply}=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ const doc=document(),raw=envelope.composeObservablePayload({doc}),op=structuredClone(operation());
+ op.numbering.levels[0].start=7;
+ op.numbering.instanceOverrides=[{instanceId:'b',expectedStartOverrides:[{level:0,start:9}],startOverrides:[]}];
+ const result=apply(raw,[op]);assert.equal(result.ok,true,JSON.stringify(result));
+ assert.deepEqual([...model.resolveMarkers(result.doc).values()].flatMap(v=>v.items.map(i=>i.label)),['Article 7','Article 8','Article 9']);
+ assert.equal(envelope.parseObservablePayload(result.content).text,envelope.parseObservablePayload(raw).text);
+ assert.equal(result.doc.content[1].attrs.wordNumbering.startOverrides,undefined);
+ assert.equal(apply(result.content,[op]).code,'RTK_FORMATTING_NUMBERING_CONFLICT');
+ for(const mutate of [v=>v.numbering.instanceOverrides[0].expectedStartOverrides=[],v=>v.numbering.instanceOverrides[0].instanceId='foreign',v=>v.numbering.instanceChanges=v.numbering.instanceOverrides]){const bad=structuredClone(op);mutate(bad);assert.equal(apply(raw,[bad]).ok,false);}
+});

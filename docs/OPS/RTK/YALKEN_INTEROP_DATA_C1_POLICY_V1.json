@@ -794,7 +794,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "588fe6dbfc3a780899bd8878837d19bb2531be88d81c1d6f9b11dad9dced52f4"
+        "sha256": "6aa13b0bc428f1c8217169ae32e9de24865afd99fb50e0620ffc7cbe959159dd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -958,7 +958,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "6091118fa73c079729c491a3db07062095f2145fd20199c7b2a5b0e64f1022d4"
+        "sha256": "9ae2592ceb5353f890474dc777f66f470b7f8a9995eefba0598e4be010ec3c64"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1382,7 +1382,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "90ff6934413b357905535976921c1e584088f87e351264efda3e8ea35731d14f"
+        "sha256": "a28c4591bc59c53b004282c7a19b00d1a813fb2ee1fb350f67d4403c159ba688"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1774,7 +1774,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "6de126642b0ccab03704e4825c30c9672dd19a4ef4a410be3af7348e61eee9ea"
+        "sha256": "926c27bd2d1216ed30246de994de92febfed0065f2e793510931cc9db530b568"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1970,7 +1970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "c88b1f0513870f543843eb04427b70bfaf6e95bb9f48b5574e1a552130102603"
+        "sha256": "a1046cf1a9df3081b97a1bc09646fd90b6da60606394fb8b0f5de4f33b9a000c"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2110,7 +2110,7 @@
       },
       {
         "path": "src/core/word-list-numbering-v1.cjs",
-        "sha256": "99d691bb38c7ea5c68d1fc32005075fdec58b96273f29bb6642fa88f9ac4627c"
+        "sha256": "59d059dc81e4e639e6dffe302c32e3ae06b7d0a20e102102e9918650ef42848e"
       },
       {
         "path": "src/renderer/tiptap/documentListNumbering.mjs",
@@ -2366,27 +2366,27 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
-        "sha256": "a8f29312483c2a8eb4afcd1f7dde317cb1299ef9bf69133a98745e915e9ab713"
+        "sha256": "0c23763cec42b21cfe9078b75827cae6c46e2f50e41683ca5b94cc5a28358c59"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
-        "sha256": "b9ad782e612efdd476cb23ba9837d88781d29e7520043bf09908586d36da99d5"
+        "sha256": "6ae34f1949e0daaa6849b54edbc21f5d8f708571110ba9912370f469941f42cd"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "98a907ba2471f8832b2e0facb8cb06cdc9c8120f0a644721fdce20c2e407d3d7"
+        "sha256": "36000b09ac506dafc12e30666e373d27c8d13607b6be1372e2f94859d8840ff5"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "c10de6789a1fcbe2b177f7c363cbc0b56b4b26785f3476b38b27e5a0a8698a06"
+        "sha256": "f7a21377bf26553c52ec3f5eeb5c6e5ec4d951eb6d1a1c024f7fb650a4b5d91b"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "1cb4079b3bbdf611b56872db700aba6314f1f74267ed82ae0e6363206443670a"
+        "sha256": "595bfa96c75bcb63b73e473904657bd146ad1624644a237b546ec545496c808d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "3fbaaffd5dd25d1155191d4fcc0343132ab2c02ce347bef62e69f9174aaa7644"
+        "sha256": "af8e734392be0468a81c9ddf41365f5499a8261a037568f81f93354118c39e29"
       },
       {
         "path": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",

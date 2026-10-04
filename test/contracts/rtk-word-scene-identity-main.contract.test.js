@@ -2015,3 +2015,28 @@ for(const stale of [false,true])test(`actual Main native Word defaults plus cont
  }
 
 });
+
+for(const stale of [false,true])test(`actual Main Word start change removes concrete override and preserves styled continuation; stale ${stale}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs'),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ const paragraph=text=>({type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:language},content:[{type:'text',text,marks:[{type:'textStyle',attrs:{fontFamily:'Times New Roman',wordLanguage:language}}]}]});
+ const levels=numbering.defaultLevels(9);levels[0].start=4;levels[0].text='Item %1)';
+ const original={type:'doc',content:[{type:'orderedList',attrs:{start:4,type:'1',wordNumbering:{schemaVersion:1,instanceId:'numbering-2',lineageId:'numbering-lineage',level:0,levels,startOverrides:[{level:0,start:4}]}},content:[{type:'listItem',content:[paragraph('First')]},{type:'listItem',content:[paragraph('Second')]},{type:'listItem',content:[paragraph('Third'),paragraph(' Continuation native-round5')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.match(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
+ parts['word/numbering.xml']=parts['word/numbering.xml'].replace('<w:start w:val="4"/>','<w:start w:val="7"/>').replace(/<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"\/><\/w:lvlOverride>/u,'');
+ assert.doesNotMatch(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activated=await f.probe.reviewActivate({requestId:'word-start-change',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),capture,'preview cannot persist numbering');
+ const preview=f.probe.reviewState().reviewSurface.formattingReturnPreview;assert.equal(preview.status,'ready',JSON.stringify(preview));assert.deepEqual(preview.diagnostics,[]);
+ const operation=f.probe.formattingInput().operations.find(value=>value.kind==='list-numbering');assert.deepEqual(operation.numbering.instanceOverrides,[{instanceId:'numbering-2',expectedStartOverrides:[{level:0,start:4}],startOverrides:[]}]);
+ if(stale){const changed=structuredClone(original);changed.content[0].attrs.wordNumbering.startOverrides[0].start=6;changed.content[0].attrs.start=6;const foreign=envelope.composeObservablePayload({doc:changed});fs.writeFileSync(f.alpha,foreign);observed=foreign;
+  const result=await f.probe.formatApply({requestId:'word-start-stale'});assert.notEqual(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),foreign);assert.equal(read(f.beta),sibling);return;}
+ const settle=f.probe.observeDeferredEditorSync(),applied=await f.probe.formatApply({requestId:'word-start-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,expected=structuredClone(original);expected.content[0].attrs.start=7;expected.content[0].attrs.wordNumbering.levels[0].start=7;delete expected.content[0].attrs.wordNumbering.startOverrides;
+ assert.deepEqual(saved,expected);assert.deepEqual([...numbering.resolveMarkers(saved).values()].flatMap(value=>value.items.map(item=>item.label)),['Item 7)','Item 8)','Item 9)']);assert.equal(read(f.beta),sibling);
+ const reexport=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(reexport.publicationGate.publishAllowed,true);const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:reexport.documentBuffer}).parts;
+ assert.match(output['word/numbering.xml'],/<w:start w:val="7"\/>/);assert.doesNotMatch(output['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);assert.equal((output['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);assert.match(output['word/document.xml'],/Continuation native-round5/);assert.notEqual(read(f.alpha),before);
+});

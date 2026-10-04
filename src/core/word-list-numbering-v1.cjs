@@ -412,29 +412,64 @@ function normalizeAuthoring(doc, oldDoc, provenance) {
   });
   return normalize(next);
 }
-function applyDefinitionChange(doc, change) {
-  record(change, ['instanceId', 'expectedLevels', 'levels']);
-  const expected = validateLevels(own(change, 'expectedLevels')), levels = validateLevels(own(change, 'levels'));
-  const id = own(change, 'instanceId'), markers = resolveMarkers(doc);
-  if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(id)) fail();
+function validateDefinitionChange(value) {
+  const optional = value && typeof value === 'object' && Object.hasOwn(value, 'instanceOverrides');
+  record(value, ['instanceId', 'expectedLevels', 'levels', ...(optional ? ['instanceOverrides'] : [])]);
+  const instanceId = own(value, 'instanceId');
+  if (typeof instanceId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(instanceId)) fail();
+  const expectedLevels = validateLevels(own(value, 'expectedLevels')), levels = validateLevels(own(value, 'levels'));
+  const result = { instanceId, expectedLevels, levels };
+  if (optional) {
+    const entries = own(value, 'instanceOverrides');
+    if (!Array.isArray(entries) || Object.getPrototypeOf(entries) !== Array.prototype || !entries.length || entries.length > 2048
+      || Reflect.ownKeys(entries).length !== entries.length + 1) fail();
+    let previous = '';
+    result.instanceOverrides = Array.from({length: entries.length}, (_, index) => {
+      const entry = record(own(entries, String(index)), ['instanceId', 'expectedStartOverrides', 'startOverrides']);
+      const id = own(entry, 'instanceId');
+      if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(id) || id <= previous) fail();
+      previous = id;
+      const overrides = (key, definitions) => validateNumbering({schemaVersion:1,instanceId:id,level:0,levels:definitions,startOverrides:own(entry,key)}).startOverrides;
+      return {instanceId:id,expectedStartOverrides:overrides('expectedStartOverrides',expectedLevels),startOverrides:overrides('startOverrides',levels)};
+    });
+  }
+  return result;
+}
+function applyDefinitionChange(doc, input) {
+  const change = validateDefinitionChange(input);
+  const expected = change.expectedLevels, levels = change.levels;
+  const id = change.instanceId, markers = resolveMarkers(doc);
   const representative = [...markers.keys()].find(node => node.attrs.wordNumbering.instanceId === id);
   if (!representative) fail();
   const lineageId = representative.attrs.wordNumbering.lineageId || id;
-  let found = false;
-  for (const [node] of markers) if ((node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === lineageId) {
-    found = true;
-    if (JSON.stringify(validateNumbering(node.attrs.wordNumbering).levels) !== JSON.stringify(expected)) fail();
+  const updates = new Map((change.instanceOverrides || []).map(entry => [entry.instanceId, entry])), found = new Set();
+  for (const [node] of markers) {
+    const pattern = validateNumbering(node.attrs.wordNumbering), lineage = pattern.lineageId || pattern.instanceId;
+    const update = updates.get(pattern.instanceId);
+    if (update && lineage !== lineageId) fail();
+    if (lineage !== lineageId) continue;
+    if (JSON.stringify(pattern.levels) !== JSON.stringify(expected)) fail();
+    if (update) {
+      if (JSON.stringify(pattern.startOverrides || []) !== JSON.stringify(update.expectedStartOverrides)) fail();
+      found.add(pattern.instanceId);
+    }
   }
-  if (!found) fail();
+  if (found.size !== updates.size) fail();
   const next = cloneData(doc);
   visitNodes(next, node => {
     if (node.attrs?.wordNumbering && (node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === lineageId) {
       node.attrs.wordNumbering.levels = cloneData(levels);
+      const update = updates.get(node.attrs.wordNumbering.instanceId);
+      if (update) {
+        if (update.startOverrides.length) node.attrs.wordNumbering.startOverrides = cloneData(update.startOverrides);
+        else delete node.attrs.wordNumbering.startOverrides;
+      }
       node.attrs.type = levels[node.attrs.wordNumbering.level]?.format;
     }
   });
   return normalize(next);
 }
+
 function resolve(doc) {
   const starts = resolveLegacy(doc);
   for (const [node, value] of resolveMarkers(doc)) starts.set(node, value.start);
@@ -518,4 +553,4 @@ function prepareNumberingPaste(destinationDoc, intent) {
   return normalize(fragment);
 }
 
-module.exports = { createNumberingClipboard, prepareNumberingPaste, attributes, resolve, normalize, validateLevels, validateNumbering, normalizePattern: validateNumbering, defaultLevels, formatOrdinal, resolveMarkers, planNumberingEdit, normalizeAuthoring, applyDefinitionChange };
+module.exports = { createNumberingClipboard, prepareNumberingPaste, attributes, resolve, normalize, validateLevels, validateNumbering, normalizePattern: validateNumbering, defaultLevels, formatOrdinal, resolveMarkers, planNumberingEdit, normalizeAuthoring, validateDefinitionChange, applyDefinitionChange };

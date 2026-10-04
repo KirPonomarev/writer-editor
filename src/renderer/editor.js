@@ -1487,11 +1487,7 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
 function reviewSurfaceNumberingProjection(operation) {
   if (operation?.kind !== 'list-numbering' || !reviewSurfaceIsPlainObject(operation.numbering)) return null;
   try {
-    return {
-      instanceId: reviewSurfaceText(operation.numbering.instanceId),
-      expectedLevels: wordListNumbering.validateLevels(operation.numbering.expectedLevels),
-      levels: wordListNumbering.validateLevels(operation.numbering.levels),
-    };
+    return wordListNumbering.validateDefinitionChange(operation.numbering);
   } catch { return null; } // Invalid presentation data never supplies mutation authority.
 }
 
@@ -1509,7 +1505,16 @@ function reviewSurfaceRenderNumberingChanges(operations) {
       if (JSON.stringify(before) === JSON.stringify(after)) return '';
       return `<p>${reviewSurfaceEscapeHtml(`Уровень ${index + 1}: ${describe(before)} → ${describe(after)}`)}</p>`;
     }).join('');
-    return changes ? `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Нумерация списка</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div>${changes}</article>` : '';
+    const overrides = (operation.numbering.instanceOverrides || []).map((change, changeIndex) => {
+      const before = new Map(change.expectedStartOverrides.map(value => [value.level, value.start]));
+      const after = new Map(change.startOverrides.map(value => [value.level, value.start]));
+      return [...new Set([...before.keys(), ...after.keys()])].sort((a, b) => a - b).map(level => {
+        if (before.get(level) === after.get(level)) return '';
+        const describeStart = (values, definitions) => values.has(level) ? String(values.get(level)) : (definitions[level] ? `по настройке уровня (${definitions[level].start})` : 'уровень удалён');
+        return `<p>${reviewSurfaceEscapeHtml(`Список ${changeIndex + 1}, уровень ${level + 1}: начало ${describeStart(before, expectedLevels)} → ${describeStart(after, levels)}`)}</p>`;
+      }).join('');
+    }).join('');
+    return changes || overrides ? `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Нумерация списка</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div>${changes}${overrides}</article>` : '';
   }).join('');
 }
 

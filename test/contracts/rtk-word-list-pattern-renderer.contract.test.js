@@ -219,6 +219,14 @@ test('actual formatting preview preserves detached numbering projection and rend
   assert.match(markup,/scene&lt;1&gt;/);assert.doesNotMatch(markup,/<img|MUTATED/);
   assert.equal(ctx.reviewSurfaceRenderNumberingChanges([{sceneId:'x',numbering:{expectedLevels,levels:expectedLevels}}]),'');
   assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{expectedLevels,levels:[{evil:true}]}}),null);
+  const overrideOperation={...operation,numbering:{instanceId:'list',expectedLevels,levels:expectedLevels,instanceOverrides:[{instanceId:'list',expectedStartOverrides:[{level:0,start:4}],startOverrides:[]}]}};
+  const overridePreview=ctx.reviewSurfaceNormalizeFormattingReturn({status:'ready',operations:[overrideOperation]},{});
+  assert.deepEqual(overridePreview.operations[0].numbering.instanceOverrides,overrideOperation.numbering.instanceOverrides);
+  const overrideMarkup=ctx.reviewSurfaceRenderNumberingChanges(overridePreview.operations);
+  assert.match(overrideMarkup,/Список 1, уровень 1: начало 4 → по настройке уровня \(1\)/);
+  overrideOperation.numbering.instanceOverrides[0].expectedStartOverrides[0].start=99;
+  assert.equal(overridePreview.operations[0].numbering.instanceOverrides[0].expectedStartOverrides[0].start,4);
+  assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{...operation.numbering,instanceOverrides:[{instanceId:'list',expectedStartOverrides:[],startOverrides:[{level:9,start:1}]}]}}),null);
   const gridPreview=ctx.reviewSurfaceNormalizeFormattingReturn({status:'ready',operations:[{operationId:'grid',sceneId:'scene<grid>',kind:'section-doc-grid'}]},{});
   assert.equal(gridPreview.ready,true);
   const gridMarkup=ctx.reviewSurfaceRenderNumberingChanges(gridPreview.operations);

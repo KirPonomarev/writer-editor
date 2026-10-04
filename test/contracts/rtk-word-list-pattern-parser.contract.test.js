@@ -115,7 +115,7 @@ test('shared abstract counter lineage and first-use overrides match independent 
     assert.deepEqual([...model.resolveMarkers(doc).values()].flatMap(entry=>entry.items.map(item=>item.label)),labels);
   }
 });
-test('authenticated definition return groups lineage and refuses reset or lineage substitution', async () => {
+test('authenticated definition return groups lineage and binds reset removal while refusing lineage substitution', async () => {
   const {analyzeListNumberingReturn}=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const {sha256Hex,hashCanonicalValue}=await import('../../src/core/browser-safe-hash.mjs');
   const levels=[{format:'1',start:3,text:'%1)',restartAfterLevel:null}];
@@ -133,12 +133,25 @@ test('authenticated definition return groups lineage and refuses reset or lineag
   const result=analyzeListNumberingReturn(input);assert.equal(result.ok,true,JSON.stringify(result));
   assert.equal(result.operations.length,1);assert.deepEqual(result.operations[0].numbering,{instanceId:'instance-0',expectedLevels:levels,levels:changed});
   const original=structuredClone(paragraphs);
-  for(const mutate of [rows=>rows[1].list.numberingStartOverrides=[],rows=>rows[1].list.numberingLineageId='other',rows=>rows[1].list.numId='10',rows=>rows[1].list.numberingLevels=levels,rows=>rows[0].list=null]) {
+  input.reviewIr.listNumbering.paragraphs=structuredClone(original);input.reviewIr.listNumbering.paragraphs[1].list.numberingStartOverrides=[];
+  const resetRemoval=analyzeListNumberingReturn(input);assert.equal(resetRemoval.ok,true,JSON.stringify(resetRemoval));
+  assert.deepEqual(resetRemoval.operations[0].numbering.instanceOverrides,[{instanceId:'instance-1',expectedStartOverrides:[{level:0,start:9}],startOverrides:[]}]);
+  for(const mutate of [rows=>rows[1].list.numberingStartOverrides=[{level:0,start:-1}],rows=>rows[1].list.numberingLineageId='other',rows=>rows[1].list.numId='10',rows=>rows[1].list.numberingLevels=levels,rows=>rows[0].list=null]) {
     input.reviewIr.listNumbering.paragraphs=structuredClone(original);mutate(input.reviewIr.listNumbering.paragraphs);
     assert.equal(analyzeListNumberingReturn(input).ok,false);
   }
   input.reviewIr.listNumbering.paragraphs=structuredClone(original);for(const row of input.reviewIr.listNumbering.paragraphs)row.list.numberingLevels=levels;
   assert.deepEqual(analyzeListNumberingReturn(input).operations,[]);
+  // Canonical identities are case-sensitive; emitted ordering must match Core,
+  // independently of locale ordering of lower/uppercase identifiers.
+  for(let i=0;i<2;i++) {
+    const block=scene.blocks[i];block.formatIr.paragraph.list.wordNumbering.instanceId=i?'A':'a';
+    block.canonicalMarksSha256=`sha256:${hashCanonicalValue(block.formatIr)}`;
+    input.reviewIr.listNumbering.paragraphs[i].list.numberingStartOverrides=[{level:0,start:7+i}];
+  }
+  const multi=analyzeListNumberingReturn(input);assert.equal(multi.ok,true,JSON.stringify(multi));
+  assert.deepEqual(multi.operations[0].numbering.instanceOverrides.map(row=>row.instanceId),['A','a']);
+  assert.doesNotThrow(()=>require('../../src/core/word-list-numbering-v1.cjs').validateDefinitionChange(multi.operations[0].numbering));
 });
 test('multilevel default ancestor restart and never restart preserve native visible labels', async () => {
   const api=await bridge, envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
@@ -268,14 +281,14 @@ test('literal note alpha stays legacy only inside proven common range; custom an
   }
 });
 
-async function continuationReturnFixture({nativeStyled=false}={}) {
+async function continuationReturnFixture({nativeStyled=false,initialOverride=false}={}) {
   const io=await bridge, analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
   const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
   const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const p=text=>({type:'paragraph',content:[{type:'text',text}]});
   const levels=[{format:'1',start:4,text:'Item %1)',restartAfterLevel:null},{format:'1',start:1,text:'%2.',restartAfterLevel:0}];
-  const numbering=level=>({schemaVersion:1,instanceId:'items',level,levels});
+  const numbering=level=>({schemaVersion:1,instanceId:'items',level,levels,...(initialOverride?{startOverrides:[{level:0,start:4}]}:{})});
   const baselineDoc={type:'doc',content:[{type:'orderedList',attrs:{start:4,wordNumbering:numbering(0)},content:[
     {type:'listItem',content:[p('Authored first')]},{type:'listItem',content:[p('Authored second')]},
     {type:'listItem',content:[p('Authored third'),p(' Structural fourth'),
@@ -394,4 +407,27 @@ test('font no-op is proved on final replacement coverage without splitting prese
   assert.equal(result.ordinaryFormattingOperations.filter(op=>op.inline.fontFamily).length,0);
   const expected=structuredClone(f.baselineDoc);expected.content[0].content[0].content[0].content[1].text+=' CLEAN_EDIT';
   assert.deepEqual(result.doc,expected,'same font must not split distinct null/empty style leaves or coalesce them');
+});
+
+test('Word start edit preserves canonical instance authority while atomically changing level start and removing concrete override',async()=>{
+  const f=await continuationReturnFixture({initialOverride:true}),io=await bridge;
+  const original=f.parts['word/numbering.xml'];
+  const numbering=original.replace('<w:start w:val="4"/>','<w:start w:val="7"/>')
+    .replace('<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"/></w:lvlOverride>','');
+  assert.notEqual(numbering,original);assert(!numbering.includes('<w:startOverride'));
+  const ir=f.parse(f.parts['word/document.xml'],{'word/numbering.xml':numbering});
+  const result=io.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:ir},{fullManuscriptExportMap:f.exportMap,cryptoPort:f.cryptoPort});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.diagnostics.length,0);
+  const operation=result.candidates.find(op=>op.kind==='list-numbering');assert.ok(operation);
+  assert.equal(operation.numbering.expectedLevels[0].start,4);assert.equal(operation.numbering.levels[0].start,7);
+  assert.deepEqual(operation.numbering.instanceOverrides,[{instanceId:'items',expectedStartOverrides:[{level:0,start:4}],startOverrides:[]}]);
+  const resolveBlock=p=>({ok:true,authority:{sceneId:'a.txt',blockId:f.exportMap.scenes[0].blocks[p.paragraphIndex].blockId}});
+  for(const mutate of [
+    rows=>{rows[1].list.numberingStartOverrides=[{level:0,start:9}];},
+    rows=>{rows[1].list.numberingStartOverrides=[{level:0,start:7},{level:0,start:8}];},
+    rows=>{rows[1].list.numberingStartOverrides=[{level:2,start:7}];},
+    rows=>{rows[1].list.numberingLineageId='foreign';},
+    rows=>{rows[1].list.numId='2147483647';},
+  ]){const changed=structuredClone(ir);mutate(changed.listNumbering.paragraphs);
+    assert.equal(f.analyzer.analyzeListNumberingReturn({exportMap:f.exportMap,reviewIr:changed,resolveBlock}).ok,false);}
 });

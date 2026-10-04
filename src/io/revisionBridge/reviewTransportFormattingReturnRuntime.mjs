@@ -146,9 +146,9 @@ function normalizeOperation(operation, index) {
     if (Object.keys(operation).some(key => !keys.includes(key)) || !normalizedString(operation.operationId) || !normalizedString(operation.sceneId)
       || operation.sourceAuthority !== 'authenticated-full-manuscript-export-map-list-numbering-v1'
       || !SHA256_RE.test(operation.sourceSceneRevision) || !SHA256_RE.test(operation.sourceRawSha256)
-      || !isPlainObject(value) || Object.keys(value).sort().join(',') !== 'expectedLevels,instanceId,levels'
+      || !isPlainObject(value)
       || typeof value.instanceId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(value.instanceId)) return result(false, 'RTK_FORMATTING_NUMBERING_AUTHORITY_INVALID');
-    try { listNumbering.validateLevels(value.expectedLevels); listNumbering.validateLevels(value.levels); }
+    try { listNumbering.validateDefinitionChange(value); }
     catch { return result(false, 'RTK_FORMATTING_NUMBERING_DEFINITION_INVALID'); }
     return { ok: true, operation: cloneJson(operation) };
   }

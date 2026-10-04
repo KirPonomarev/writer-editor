@@ -547,23 +547,32 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
       if (canonical.level !== returned.level || (returned.type || '1') !== levels[returned.level]?.format) return fail('effective-definition');
       const lineage = `${scene.sceneId}:${canonical.lineageId || canonical.instanceId}`;
       const returnedLineage = returned.numberingLineageId;
-      if (typeof returnedLineage !== 'string' || !returnedLineage
-        || !same(canonical.startOverrides || [], returned.numberingStartOverrides || [])) return fail('lineage-or-start-override');
+      if (typeof returnedLineage !== 'string' || !returnedLineage) return fail('lineage-or-start-override');
+      const returnedPattern=listNumbering.validateNumbering({schemaVersion:1,instanceId:canonical.instanceId,
+        level:canonical.level,levels,startOverrides:returned.numberingStartOverrides ?? []});
+      const instanceOverride={instanceId:canonical.instanceId,expectedStartOverrides:canonical.startOverrides || [],
+        startOverrides:returnedPattern.startOverrides};
       if (lineageForward.has(lineage) && lineageForward.get(lineage) !== returnedLineage
         || lineageReverse.has(returnedLineage) && lineageReverse.get(returnedLineage) !== lineage) return fail('list-lineage-bijection');
       lineageForward.set(lineage, returnedLineage); lineageReverse.set(returnedLineage, lineage);
       const groupKey = lineage;
       const prior = groups.get(groupKey);
       if (prior && (!same(prior.expectedLevels,canonical.levels) || !same(prior.levels,levels))) return fail('group-definition-consistency');
-      if (!prior) groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels});
+      if (!prior) groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels,instances:new Map()});
+      const group=groups.get(groupKey),previousInstance=group.instances.get(canonical.instanceId);
+      if(previousInstance && !same(previousInstance,instanceOverride))return fail('instance-override-consistency');
+      group.instances.set(canonical.instanceId,instanceOverride);
     }
     const operations = [];
     for (const group of groups.values()) {
-      if (same(group.expectedLevels,group.levels)) continue;
+      const instanceOverrides=[...group.instances.values()].filter(item=>!same(item.expectedStartOverrides,item.startOverrides))
+        .sort((a,b)=>a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0);
+      if (same(group.expectedLevels,group.levels) && !instanceOverrides.length) continue;
       if (!/^sha256:[a-f0-9]{64}$/u.test(group.scene.sceneRevision) || !/^sha256:[a-f0-9]{64}$/u.test(group.scene.rawSha256)) return fail('source-revision');
       const operation={kind:'list-numbering',sceneId:group.scene.sceneId,
         sourceAuthority:'authenticated-full-manuscript-export-map-list-numbering-v1',sourceSceneRevision:group.scene.sceneRevision,
-        sourceRawSha256:group.scene.rawSha256,numbering:{instanceId:group.instanceId,expectedLevels:group.expectedLevels,levels:group.levels}};
+        sourceRawSha256:group.scene.rawSha256,numbering:{instanceId:group.instanceId,expectedLevels:group.expectedLevels,levels:group.levels,
+          ...(instanceOverrides.length?{instanceOverrides}:{})}};
       operation.operationId=`rtk-list-numbering-${hashCanonicalValue(operation)}`;operations.push(operation);
     }
     return {ok:true,hasPatterns:true,operations};

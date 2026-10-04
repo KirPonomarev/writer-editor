@@ -250,3 +250,24 @@ test('ordinary and review exports number each list item once while preserving co
  assert.throws(()=>require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({blocks:invalid,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]}),/FORMAT_IR_LIST_UNSUPPORTED/);
  assert.deepEqual(labels(doc),['Item 4)','Item 5)','Item 6)','1.']);
 });
+test('definition changes atomically remove or update only bound instance resets across a shared lineage',()=>{
+ const levels=model.defaultLevels(2);levels[0].start=4;
+ const first={...pattern(levels),instanceId:'a',lineageId:'shared',startOverrides:[{level:0,start:4}]};
+ const other={...first,instanceId:'b',startOverrides:[{level:0,start:20},{level:1,start:3}]};
+ const doc=document(list(first,item('a1')),list(other,item('b1')),list(first,item('a2')));
+ const bytes=JSON.stringify(doc),nextLevels=structuredClone(levels);nextLevels[0].start=7;
+ const change={instanceId:'a',expectedLevels:levels,levels:nextLevels,instanceOverrides:[{instanceId:'a',expectedStartOverrides:first.startOverrides,startOverrides:[]}]};
+ const next=model.applyDefinitionChange(doc,change);
+ assert.deepEqual(labels(next),['7.','20.','21.']);
+ assert.equal(next.content[0].attrs.wordNumbering.startOverrides,undefined);assert.equal(next.content[2].attrs.wordNumbering.startOverrides,undefined);
+ assert.deepEqual(next.content[1].attrs.wordNumbering.startOverrides,other.startOverrides);assert.equal(JSON.stringify(doc),bytes);
+ assert.throws(()=>model.applyDefinitionChange(next,change));
+ const overrideOnly={instanceId:'a',expectedLevels:levels,levels,instanceOverrides:[{instanceId:'a',expectedStartOverrides:first.startOverrides,startOverrides:[{level:0,start:9}]}]};
+ assert.equal(labels(model.applyDefinitionChange(doc,overrideOnly))[0],'9.');
+ for(const mutate of [v=>v.instanceOverrides[0].instanceId='missing',v=>v.instanceOverrides[0].expectedStartOverrides=[],v=>v.instanceOverrides.push(v.instanceOverrides[0]),v=>v.instanceChanges=[],v=>v.instanceOverrides[0].foreign=1,v=>v.instanceOverrides[0].startOverrides=[{level:2,start:1}]]){
+  const bad=structuredClone(change);mutate(bad);assert.throws(()=>model.applyDefinitionChange(doc,bad));assert.equal(JSON.stringify(doc),bytes);
+ }
+ const foreign=structuredClone(doc);foreign.content[1].attrs.wordNumbering.lineageId='other';
+ const bad=structuredClone(change);bad.instanceOverrides=[{instanceId:'b',expectedStartOverrides:other.startOverrides,startOverrides:[]}];assert.throws(()=>model.applyDefinitionChange(foreign,bad));
+ let calls=0;const hostile=structuredClone(change);Object.defineProperty(hostile.instanceOverrides[0],'startOverrides',{get(){calls++;return [];}});assert.throws(()=>model.validateDefinitionChange(hostile));assert.equal(calls,0);
+});
