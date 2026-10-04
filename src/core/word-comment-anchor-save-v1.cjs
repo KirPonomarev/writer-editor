@@ -5,7 +5,7 @@ const { parseObservablePayload, deriveVisibleTextFromDocument } = require('./doc
 const { textOf } = require('./word-user-bookmarks-v1.cjs');
 const { tableParagraphs } = require('../io/documentTables.js');
 const { replayEditIntents, mapAnchorSplice } = require('./word-comment-edit-intents-v1.cjs');
-const { upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { serializeCommentState, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
 const RETURN_MODE = 'WORD_COMMENT_TEXT_RETURN_V1';
@@ -128,7 +128,7 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   if (!changed) return unchanged();
   if (before.revision === Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');
   after.revision++;
-  const afterText = JSON.stringify(after, null, 2) + '\n';
+  const afterText = serializeCommentState(after, 'COMMENT_SAVE_STATE_BUDGET');
   if (Buffer.byteLength(afterText) > 65536) fail('COMMENT_SAVE_STATE_BUDGET');
   return { mode: MODE, beforeText, afterText };
 }

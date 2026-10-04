@@ -1,7 +1,7 @@
 'use strict';
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
-const { validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { serializeCommentState, validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const { readState, exactAnchor } = require('./word-comment-authoring-v1.cjs');
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const clone = v => JSON.parse(JSON.stringify(v));
@@ -253,7 +253,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   after.revision++;
   after.events.push({ type: 'WORD_COMMENT_RETURN_APPLIED', operationId, inputDigest,
     roundId, artifactSha256, resultingRevision: after.revision, threadDigest: hash(stable(after.threads)), changes });
-  const afterText = JSON.stringify(after, null, 2) + '\n';
+  const afterText = serializeCommentState(after, 'COMMENT_RETURN_STATE_BUDGET');
   demand(Buffer.byteLength(afterText) <= 65536, 'COMMENT_RETURN_STATE_BUDGET');
   readState(afterText, projectId);
   return { replay: false, afterText, operationId, changes, revision: after.revision };

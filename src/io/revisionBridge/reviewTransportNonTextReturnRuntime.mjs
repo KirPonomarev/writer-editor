@@ -89,7 +89,7 @@ export async function commitCommentAuthoring(input, { publish, revalidate, atomi
     await revalidate();
     if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
     const recoveryPath = await safeCommentFile(input.projectRoot, RECOVERY_RELATIVE_PATH);
-    await atomicWriter(recoveryPath, JSON.stringify(before.state, null, 2) + '\n', { safetyMode: 'strict' });
+    await atomicWriter(recoveryPath, commentBody.serializeCommentState(before.state), { safetyMode: 'strict' });
     const recovery = JSON.parse(await fs.promises.readFile(recoveryPath, 'utf8'));
     if (JSON.stringify(recovery) !== JSON.stringify(before.state)) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
     await revalidate();
@@ -121,7 +121,7 @@ export async function commitAuthenticatedCommentDelta(input, { publish, revalida
     await revalidate();
     if ((await readCommentAuthoringState(input)).text !== before.text) throw new Error('COMMENT_STATE_CONFLICT');
     const recoveryPath = await safeCommentFile(input.projectRoot, RECOVERY_RELATIVE_PATH);
-    const recoveryText = before.text ?? JSON.stringify(before.state, null, 2) + '\n';
+    const recoveryText = before.text ?? commentBody.serializeCommentState(before.state);
     await atomicWriter(recoveryPath, recoveryText, { safetyMode: 'strict' });
     if (await fs.promises.readFile(recoveryPath, 'utf8') !== recoveryText) throw new Error('COMMENT_RECOVERY_READBACK_FAILED');
     const statePath = await safeCommentFile(input.projectRoot, STATE_RELATIVE_PATH);
@@ -299,7 +299,7 @@ export function computeExactTextCommentRebase({ projectId, sceneId, beforeConten
   }
   if (!changed) return null;
   after.revision++;
-  const afterText = `${JSON.stringify(after, null, 2)}\n`;
+  const afterText = commentBody.serializeCommentState(after, 'RTK_COMMENT_REBASE_STATE_BUDGET');
   if (Buffer.byteLength(afterText) > COMMENT_REBASE_MAX_BYTES) throw rebaseError('RTK_COMMENT_REBASE_STATE_BUDGET');
   return { beforeText, afterText, beforeHash: sha256(beforeText), afterHash: sha256(afterText) };
 }
@@ -345,12 +345,12 @@ export function createRtkNonTextReturnFilePort(options = {}) {
     },
     async writeRecovery({ projectRoot, state }) {
       const recoveryPath = assertProjectPath(projectRoot, path.join(projectRoot, RECOVERY_RELATIVE_PATH));
-      await atomicWriter(recoveryPath, `${JSON.stringify(state, null, 2)}\n`, { safetyMode: 'strict' });
+      await atomicWriter(recoveryPath, commentBody.serializeCommentState(state), { safetyMode: 'strict' });
       return { recoveryPath, sha256: sha256(stableJson(state)) };
     },
     async writeCanonical({ projectRoot, state }) {
       const statePath = assertProjectPath(projectRoot, path.join(projectRoot, STATE_RELATIVE_PATH));
-      await atomicWriter(statePath, `${JSON.stringify(state, null, 2)}\n`, { safetyMode: 'strict' });
+      await atomicWriter(statePath, commentBody.serializeCommentState(state), { safetyMode: 'strict' });
       return { statePath, sha256: sha256(stableJson(state)) };
     },
   };
@@ -685,7 +685,7 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
   };
   try {
     commentBody.upgradeCommentState(after);
-    if (Buffer.byteLength(JSON.stringify(after, null, 2) + '\n', 'utf8') > 65536) throw Error('COMMENT_STATE_BUDGET');
+    commentBody.serializeCommentState(after);
   } catch (error) { return blocked(error.message, 'state'); }
   let recovery;
   try {
@@ -851,7 +851,7 @@ export async function applyCommentLifecycleReturnRuntime(input = {}, options = {
   });
   try {
     commentBody.upgradeCommentState(after);
-    if (Buffer.byteLength(JSON.stringify(after, null, 2) + '\n', 'utf8') > 65536) throw Error('COMMENT_STATE_BUDGET');
+    commentBody.serializeCommentState(after);
   } catch (error) { return blocked(error.message, 'state'); }
   let recovery;
   try {

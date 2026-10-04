@@ -113,9 +113,16 @@ test('S29 import surface: menu, palette, shortcut, and Tiptap runtime open the s
 test('S29 import surface: canonical format flows still own preview and accept contracts', () => {
   const editor = read('src/renderer/editor.js');
 
+  const preview = sectionBetween(editor, 'async function openDocxImportPreviewFlow()', 'async function confirmDocxImportPreviewAndRun()');
+  const accept = sectionBetween(editor, 'async function confirmDocxImportPreviewAndRun()', 'function summarizeTxtImportPreview');
+  assert.ok(preview.includes("requestId: 'docx-import-' + crypto.randomUUID()"));
+  assert.ok(preview.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId })'));
+  assert.equal(preview.includes('accept: true'), false);
+  assert.ok(accept.includes('requestId: attempt.requestId,'));
+  assert.ok(accept.includes('accept: true,'));
+
   for (const marker of [
     'async function openDocxImportPreviewFlow()',
-    'dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1);',
     'dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {',
     'docxImportPreviewPlan: plan,',
     'async function openTxtImportPreviewFlow()',

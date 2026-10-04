@@ -139,8 +139,9 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
         sourceChangeId: importOperationId }, messages };
   });
   const after = { ...clone(before), revision: before.revision + 1, threads: [...clone(before.threads), ...threads] };
+  demand(after.threads.length <= 128, 'STATE');
   commentBodyModel.upgradeCommentState(after);
-  const afterText = `${JSON.stringify(after, null, 2)}\n`;
+  const afterText = commentBodyModel.serializeCommentState(after, 'DOCX_GENERIC_COMMENT_STATE_BUDGET');
   demand(bytes(afterText) <= 65536, 'STATE_BUDGET');
   return { beforeText, afterText, threadIds: threads.map(thread => thread.threadId) };
 }

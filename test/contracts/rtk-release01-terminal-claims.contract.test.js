@@ -374,6 +374,37 @@ async function compileRelease01CurrentWordingRegistry({
     sha256: `sha256:${editorBindings[0].sha256}`,
   }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
 
+  const wording = repair.wordImportAttemptWording;
+  const exactKeys = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)
+    && Object.keys(value).sort().join(',') === [...keys].sort().join(',');
+  const expectedWordings = new Map([
+    ['claim-editor-docx-import-cancelled', 'DOCX import cancelled'],
+    ['claim-editor-docx-import-completing', 'DOCX import is completing; closing the preview cannot undo it'],
+    ['claim-editor-docx-import-action', 'Import DOCX'],
+  ]);
+  if (!exactKeys(wording, ['schemaVersion','taskId','bindingBaseSha','scope','claims'])
+    || wording.schemaVersion !== 1 || wording.taskId !== 'WORD_IMPORT_ATTEMPTS_MAC_20261004'
+    || wording.bindingBaseSha !== '4ddae6f1c96fc1df28b730763a0b4a0d63e5bd29'
+    || wording.scope !== 'Local import action/status wording only; no support, compatibility, saturation, denominator or whole-plan promotion.'
+    || !Array.isArray(wording.claims) || wording.claims.length !== expectedWordings.size
+    || editorBindings[0].sha256 !== sha256RawFile(path.join(REPO_ROOT,'src/renderer/editor.js'))) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'exact current import wording declaration required');
+  }
+  const claimsModule = await loadModule(), seen = new Set();
+  for (const claim of wording.claims) {
+    if (!exactKeys(claim,['claimId','claimClass','surfaceId','wording','evidenceBinding','blockedRowRef','evidenceScope','claimDigest'])
+      || seen.has(claim.claimId) || registry.claims.some(existing => existing.claimId === claim.claimId)
+      || expectedWordings.get(claim.claimId) !== claim.wording || claim.claimClass !== 'DECLARED_ONLY'
+      || claim.surfaceId !== 'surface-editor-js' || claim.blockedRowRef !== null
+      || claim.evidenceScope !== 'BUILD_INDEPENDENT_PRODUCT_FUNCTION'
+      || !exactKeys(claim.evidenceBinding,['profileId']) || claim.evidenceBinding.profileId !== 'word-mac-16.111.2-d1'
+      || claim.claimDigest !== claimsModule.computeClaimDigest(stripDigest(claim))) {
+      failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'invalid or promoted current import wording');
+    }
+    seen.add(claim.claimId);
+    registry.claims.push(clone(claim));
+  }
+
   // Only after the preserved wording chain is validated may the exact
   // security successor replace the current package surface binding.
   const security = await import(pathToFileURL(path.join(REPO_ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
@@ -872,7 +903,7 @@ test('RELEASE01-14-integration-real-registry-binds-all-wording-and-rolls-up', as
   for (const p of wordRegistryJson.profiles || []) profilesById.set(p.profileId, p);
   for (const p of googleRegistryJson.profiles || []) profilesById.set(p.profileId, p);
 
-  for (const claim of loaded.claims || registry.claims || []) {
+  for (const claim of registry.claims || []) {
     const profile = profilesById.get(claim.evidenceBinding && claim.evidenceBinding.profileId) || null;
     assert.ok(profile, `claim ${claim.claimId} profileId must resolve to a real profile: ${claim.evidenceBinding && claim.evidenceBinding.profileId}`);
     const binding = module.evaluateClaimEvidenceBinding({ claim, profile });
@@ -2064,4 +2095,47 @@ test('RELEASE01 security wording successor rejects missing changed and forged cu
  const current=await compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry});
  assert.equal(JSON.stringify(loaded.registry),historicalBefore,'security successor must preserve historical registry');
  assert.equal(current.wordingSurfaces.find(surface=>surface.path==='package.json').sha256,`sha256:${original.value.currentFiles['package.json']}`);
+});
+
+
+test('RELEASE01 current import wordings remain declared-only and do not mutate historical claims',async()=>{
+  const module=await loadModule(),loaded=module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const before=fs.readFileSync(REGISTRY_PATH),historical=JSON.stringify(loaded.registry);
+  const compiled=await compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry});
+  const claims=loadJsonWithBytes(C1_DATA_POLICY_PATH).value.qualifiedRuntimeRepair.wordImportAttemptWording.claims;
+  for(const claim of claims){assert.equal(claim.claimClass,'DECLARED_ONLY');assert.deepEqual(compiled.claims.find(c=>c.claimId===claim.claimId),claim);}
+  assert.equal(compiled.claims.length,loaded.registry.claims.length+3);
+  assert.equal(JSON.stringify(loaded.registry),historical);assert.deepEqual(fs.readFileSync(REGISTRY_PATH),before);
+});
+
+test('RELEASE01 current import wordings reject omission tampering duplicates and support promotion',async()=>{
+  const module=await loadModule(),loaded=module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  for(const [index,mutate] of [
+    repair=>{delete repair.wordImportAttemptWording;},
+    repair=>{repair.wordImportAttemptWording.claims.pop();},
+    repair=>{repair.wordImportAttemptWording.claims[1]=clone(repair.wordImportAttemptWording.claims[0]);},
+    repair=>{repair.wordImportAttemptWording.schemaVersion=2;},
+    repair=>{repair.wordImportAttemptWording.bindingBaseSha='0'.repeat(40);},
+    repair=>{repair.wordImportAttemptWording.extra=true;},
+    repair=>{repair.wordImportAttemptWording.claims[0].wording='DOCX import always succeeds';},
+    repair=>{repair.wordImportAttemptWording.claims[0].claimClass='USER_FACING_BOUNDED_SUPPORTED';},
+    repair=>{repair.wordImportAttemptWording.claims[0].surfaceId='surface-menu-config';},
+    repair=>{repair.wordImportAttemptWording.claims[0].evidenceScope='CURRENT_BUILD_COMPATIBILITY';},
+    repair=>{repair.wordImportAttemptWording.claims[0].evidenceBinding.profileId='unknown';},
+    repair=>{repair.wordImportAttemptWording.claims[0].claimDigest='sha256:'+'0'.repeat(64);},
+  ].entries()){
+    const value=loadJsonWithBytes(C1_DATA_POLICY_PATH).value;mutate(value.qualifiedRuntimeRepair);
+    // Semantic promotion must fail even when an attacker recomputes every
+    // inner digest and the outer policy pin; index 11 isolates digest damage.
+    if(index!==11)for(const claim of value.qualifiedRuntimeRepair.wordImportAttemptWording?.claims||[]){
+      claim.claimDigest=module.computeClaimDigest(stripDigest(claim));
+    }
+    const bytes=Buffer.from(JSON.stringify(value)),digest=sha256RawBytes(bytes);
+    await assert.rejects(()=>compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry,
+      currentQualificationLoad:{bytes,value,digest},currentQualificationPin:digest}),error=>error?.code===RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
+  const qualification=loadJsonWithBytes(C1_DATA_POLICY_PATH),value=clone(qualification.value);
+  value.qualifiedRuntimeRepair.wordImportAttemptWording.claims[0].wording='tampered';
+  await assert.rejects(()=>compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry,
+    currentQualificationLoad:{...qualification,value}}),error=>error?.code===RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
 });

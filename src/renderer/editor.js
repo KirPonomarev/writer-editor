@@ -781,6 +781,7 @@ let currentRightTab = 'inspector';
 let currentAtlasSurface = 'currentScene';
 let pendingDocxImportPreviewValue = null;
 let pendingDocxImportPreviewPlan = null;
+let pendingDocxImportAttempt = null;
 let toolbarColorPickerState = {
   open: false,
   mode: 'text',
@@ -11039,6 +11040,7 @@ async function loadTree() {
     if (typeof result.projectId === 'string' && result.projectId.trim()) {
       const nextProjectId = normalizeProjectId(result.projectId);
       if (nextProjectId !== currentProjectId) {
+        invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
@@ -21061,9 +21063,27 @@ function summarizeDocxImportLoss(value) {
 }
 
 function closeDocxImportPreviewModal() {
+  if (['accepting', 'opening'].includes(pendingDocxImportAttempt?.phase)) {
+    updateStatusText('DOCX import is completing; closing the preview cannot undo it');
+    return;
+  }
+  invalidateDocxImportAttempt();
+}
+
+function invalidateDocxImportAttempt() {
+  pendingDocxImportAttempt = null;
   pendingDocxImportPreviewValue = null;
   pendingDocxImportPreviewPlan = null;
   closeSimpleModal(docxImportPreviewModal);
+}
+
+function isCurrentDocxImportAttempt(attempt) {
+  if (pendingDocxImportAttempt !== attempt) return false;
+  if (currentProjectId !== attempt.projectId) {
+    invalidateDocxImportAttempt();
+    return false;
+  }
+  return true;
 }
 
 function openDocxImportPreviewModal(value) {
@@ -21078,51 +21098,101 @@ function openDocxImportPreviewModal(value) {
   }
   docxImportPreviewConfirmButtons.forEach((button) => {
     button.disabled = !(plan && plan.ok === true);
+    button.textContent = pendingDocxImportAttempt?.phase === 'reselect' ? 'Select file again'
+      : pendingDocxImportAttempt?.phase === 'retry' ? 'Retry import' : 'Import DOCX';
   });
   openSimpleModal(docxImportPreviewModal);
 }
 
 async function openDocxImportPreviewFlow() {
+  if (['previewing', 'accepting', 'opening'].includes(pendingDocxImportAttempt?.phase)) return;
+  invalidateDocxImportAttempt();
+  const attempt = { requestId: 'docx-import-' + crypto.randomUUID(), projectId: currentProjectId, phase: 'previewing' };
+  pendingDocxImportAttempt = attempt;
   updateStatusText('Preparing DOCX import preview');
-  const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1);
-  if (!result || result.ok !== true) return;
-  openDocxImportPreviewModal(result.value);
-  updateStatusText('DOCX import preview ready');
+  try {
+    const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId });
+    if (!isCurrentDocxImportAttempt(attempt)) return;
+    if (!result || result.ok !== true || result.value?.localFilePreview?.status === 'cancelled') {
+      invalidateDocxImportAttempt();
+      updateStatusText(result?.value?.localFilePreview?.status === 'cancelled' ? 'DOCX import cancelled' : 'DOCX import preview unavailable');
+      return;
+    }
+    attempt.phase = 'ready';
+    openDocxImportPreviewModal(result.value);
+    updateStatusText('DOCX import preview ready');
+  } catch {
+    if (!isCurrentDocxImportAttempt(attempt)) return;
+    invalidateDocxImportAttempt();
+    updateStatusText('DOCX import preview unavailable');
+  }
 }
 
 async function confirmDocxImportPreviewAndRun() {
+  const attempt = pendingDocxImportAttempt;
+  if (!attempt || !isCurrentDocxImportAttempt(attempt)) return;
+  if (attempt.phase === 'reselect') return openDocxImportPreviewFlow();
+  if (!['ready', 'retry'].includes(attempt.phase)) return;
   const plan = pendingDocxImportPreviewPlan;
   const previewValue = pendingDocxImportPreviewValue;
-  if (!plan || typeof plan !== 'object' || Array.isArray(plan)) {
+  if (!plan || typeof plan !== 'object' || Array.isArray(plan) || plan.ok !== true) {
     updateStatusText('DOCX import preview unavailable');
     closeDocxImportPreviewModal();
     return;
   }
+  attempt.phase = 'accepting';
   closeSimpleModal(docxImportPreviewModal);
   updateStatusText('Importing DOCX');
-  const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
-    accept: true,
-    localFilePreview: previewValue?.localFilePreview || null,
-    docxContentPreviewReport: previewValue?.docxContentPreviewReport
-      || previewValue?.localFilePreview?.docxContentPreviewReport
-      || null,
-    docxImportPreviewPlan: plan,
-  });
-  pendingDocxImportPreviewValue = null;
-  pendingDocxImportPreviewPlan = null;
-  if (!result || result.ok !== true) return;
+  let result;
+  try {
+    result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
+      requestId: attempt.requestId,
+      accept: true,
+      localFilePreview: previewValue?.localFilePreview || null,
+      docxContentPreviewReport: previewValue?.docxContentPreviewReport
+        || previewValue?.localFilePreview?.docxContentPreviewReport
+        || null,
+      docxImportPreviewPlan: plan,
+    });
+  } catch { result = null; }
+  if (!isCurrentDocxImportAttempt(attempt)) return;
+  if (!result || result.ok !== true) {
+    const staleReasons = new Set(['DOCX_IMPORT_PLAN_REFERENCE_EXPIRED', 'DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED',
+      'DOCX_IMPORT_CONTENT_REFERENCE_INVALID', 'DOCX_IMPORT_PLAN_REFERENCE_INVALID']);
+    const staleReference = result?.error?.code === 'E_DOCX_IMPORT_REFERENCE_INVALID'
+      || (result?.error?.code === 'E_DOCX_IMPORT_SAFE_CREATE_FAILED'
+        && [result.error.reason, result.error.details?.message].some(reason => staleReasons.has(reason)));
+    attempt.phase = staleReference ? 'reselect' : 'retry';
+    openDocxImportPreviewModal(previewValue);
+    const recoveryMessage = staleReference
+      ? 'The preview expired or its project changed. Select the source file again.'
+      : 'The import could not be confirmed. Retry to check or finish this attempt.';
+    if (docxImportPreviewMessage) docxImportPreviewMessage.textContent += `\n\n${recoveryMessage}`;
+    updateStatusText(recoveryMessage);
+    return;
+  }
+  // Publication succeeded. Navigation failure must never become another import.
+  attempt.phase = 'opening';
   const resultValue = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
     ? result.value
     : {};
   const createdSceneIds = Array.isArray(resultValue.visibleCreatedSceneIds)
     ? resultValue.visibleCreatedSceneIds
     : (Array.isArray(resultValue.createdSceneIds) ? resultValue.createdSceneIds : []);
-  await loadTree();
-  const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue);
-  const openSuffix = openResult.opened
-    ? '; opened imported scene'
-    : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
-  updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}${openSuffix}`);
+  try {
+    await loadTree();
+    if (!isCurrentDocxImportAttempt(attempt)) return;
+    const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue);
+    if (!isCurrentDocxImportAttempt(attempt)) return;
+    const openSuffix = openResult.opened
+      ? '; opened imported scene'
+      : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+    updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}${openSuffix}`);
+  } catch {
+    if (isCurrentDocxImportAttempt(attempt)) updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}; open the imported scene from the project tree`);
+  } finally {
+    if (isCurrentDocxImportAttempt(attempt)) invalidateDocxImportAttempt();
+  }
 }
 
 function summarizeTxtImportPreview(value) {
@@ -24318,6 +24388,7 @@ if (window.electronAPI) {
     if (hasProjectId) {
       const nextProjectId = normalizeProjectId(projectId);
       if (nextProjectId !== currentProjectId) {
+        invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);

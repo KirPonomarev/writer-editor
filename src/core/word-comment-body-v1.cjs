@@ -131,10 +131,18 @@ function commentBodyWithTypography(message, typography) {
 function commentBodyEqual(left, right) {
   return stable(canonical(commentBodyDocument(left))) === stable(canonical(commentBodyDocument(right)));
 }
+// Serialize already validated canonical state without spending its byte budget
+// on indentation. The graph and all history entries remain unchanged.
+function serializeCommentState(state, budgetCode = 'COMMENT_STATE_BUDGET') {
+  let text = JSON.stringify(state, null, 2) + '\n';
+  if (bytes(text) > 65536) text = JSON.stringify(state) + '\n';
+  if (bytes(text) > 65536) fail(budgetCode);
+  return text;
+}
 function upgradeCommentState(state) {
   if (![STATE_V1, STATE_V2, STATE_V3].includes(state.schemaVersion)) fail('COMMENT_STATE_INVALID');
   if (state.schemaVersion === STATE_V3 || state.threads.some(t => t.anchor?.kind === 'point' || t.anchorEditHistory !== undefined)) state.schemaVersion = STATE_V3;
   else if (state.threads.some(t => [...t.messages, ...(t.deletedMessages || [])].some(m => m.richBody !== undefined))) state.schemaVersion = STATE_V2;
   return state;
 }
-module.exports = { STATE_V1, STATE_V2, STATE_V3, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };
+module.exports = { serializeCommentState, STATE_V1, STATE_V2, STATE_V3, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };

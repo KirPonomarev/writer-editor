@@ -572,18 +572,25 @@ test('actual active-scene caller publishes before identity commit including same
   const start=source.indexOf('    // Publish before committing the active identity.'),end=source.indexOf('    if (hasBookProfile) {',start);
   assert.ok(start>=0&&end>start);
   const body=source.slice(start,end);
+  const invalidateStart=source.indexOf('function invalidateDocxImportAttempt()'),invalidateEnd=source.indexOf('function isCurrentDocxImportAttempt(',invalidateStart);
+  assert.ok(invalidateStart>=0&&invalidateEnd>invalidateStart);
+  const invalidator=source.slice(invalidateStart,invalidateEnd);
   for(const scenario of ['scene','project','same','failure','tree']) {
     const {editor,context}=await scenePublicationHarness();
     try {
-      const calls=[],notices=[];
-      const ctx=vm.createContext({treeContentParsed:scenario==='tree'?{doc:doc(p('Tree already published'))}:null,
+      const calls=[],notices=[],closed=[],attempt={requestId:'existing'},preview={source:'existing'},plan={ok:true},modal={};
+      const ctx=vm.createContext({pendingDocxImportAttempt:attempt,pendingDocxImportPreviewValue:preview,pendingDocxImportPreviewPlan:plan,
+        docxImportPreviewModal:modal,closeSimpleModal:value=>closed.push(value),treeContentParsed:scenario==='tree'?{doc:doc(p('Tree already published'))}:null,
         parseDocumentContent:()=>({doc:doc(p('Scene B'))}),content:'irrelevant',shouldUseCentralSheetLargePayloadFastPath:()=>false,
         hasDocumentId:true,documentId:scenario==='scene'?'B':'A',hasKind:true,hasProjectId:true,
         projectId:scenario==='project'?'other':'project',currentDocumentId:'A',currentProjectId:'project',normalizeProjectId:x=>x,
         isTiptapMode:true,setTiptapDocumentSnapshot:input=>{calls.push(input);return scenario==='failure'?false:context.setTiptapDocumentSnapshot(input);},
         updateStatusText:message=>notices.push(message),clearFlowModeState(){},clearPendingMetadataUpdate(){},
         nextMetaEnabled:false,kind:'scene',createNavigatorSelectionState:()=>({}),restoreSpatialLayoutState(){},adoptToolbarConfiguratorState(){}});
-      const before=editor.state;vm.runInContext(`function incoming(){${body}};incoming();`,ctx);
+      const before=editor.state;vm.runInContext(`${invalidator}
+function incoming(){${body}};incoming();`,ctx);
+      if(scenario==='project'){assert.equal(ctx.pendingDocxImportAttempt,null);assert.equal(ctx.pendingDocxImportPreviewValue,null);assert.equal(ctx.pendingDocxImportPreviewPlan,null);assert.deepEqual(closed,[modal]);}
+      else {assert.equal(ctx.pendingDocxImportAttempt,attempt);assert.equal(ctx.pendingDocxImportPreviewValue,preview);assert.equal(ctx.pendingDocxImportPreviewPlan,plan);assert.equal(closed.length,0);}
       if(scenario==='failure'){assert.equal(ctx.currentDocumentId,'A');assert.equal(ctx.currentProjectId,'project');assert.equal(editor.state,before);assert.equal(notices.length,1);}
       else if(scenario==='tree'){assert.equal(calls.length,0);assert.equal(editor.state,before);}
       else {assert.equal(calls[0].resetHistory,scenario!=='same');assert.equal(ctx.currentDocumentId,scenario==='scene'?'B':'A');assert.equal(ctx.currentProjectId,scenario==='project'?'other':'project');assert.equal(editor.state.doc.textContent,'Scene B');}

@@ -277,3 +277,88 @@ test('DOCX import preview UI flow: generated bundle carries the shipped DOCX acc
     assert.ok(bundle.includes(marker), marker);
   }
 });
+
+function attemptHarness() {
+  const editor=read('src/renderer/editor.js'), calls=[], statuses=[], pending=[];
+  const c={currentProjectId:'project-a',crypto:require('node:crypto'),COMMAND_IDS:{PROJECT_IMPORT_DOCX_V1:'import'},
+    pendingDocxImportPreviewValue:null,pendingDocxImportPreviewPlan:null,pendingDocxImportAttempt:null,
+    docxImportPreviewModal:{},docxImportPreviewMessage:{},docxImportPreviewLoss:{},docxImportPreviewConfirmButtons:[{}],
+    getDocxImportPreviewPlanFromValue:value=>value?.docxImportPreviewPlan||null,
+    summarizeDocxImportPreview:()=> 'source.docx',summarizeDocxImportLoss:()=> 'retained loss',
+    updateStatusText:value=>statuses.push(value),openSimpleModal:()=>{c.visible=true;},closeSimpleModal:()=>{c.visible=false;},
+    dispatchUiCommand:(_id,payload)=>{calls.push(payload);return new Promise((resolve,reject)=>pending.push({resolve,reject}));},
+    loadTree:async()=>{},openImportedDocxSceneAfterAccept:async()=>({opened:true})};
+  vm.createContext(c);vm.runInContext(editor.slice(editor.indexOf('function closeDocxImportPreviewModal()'),editor.indexOf('function summarizeTxtImportPreview(')),c);
+  const preview={ok:true,value:{docxImportPreviewPlan:{ok:true},localFilePreview:{status:'preview'}}};
+  return {c,calls,statuses,pending,preview};
+}
+
+test('actual DOCX UI keeps one attempt through failure and retry, then allocates a fresh explicit import',async()=>{
+ const h=attemptHarness(),{c}=h;
+ const opening=c.openDocxImportPreviewFlow();assert.equal(h.calls.length,1);assert.ok(h.calls[0]?.requestId);
+ h.pending.shift().resolve(h.preview);await opening;const id=h.calls[0].requestId;
+ const accept=c.confirmDocxImportPreviewAndRun();await c.confirmDocxImportPreviewAndRun();await c.openDocxImportPreviewFlow();assert.equal(h.calls.length,2);
+ h.pending.shift().resolve({ok:false});await accept;assert.equal(c.visible,true);assert.equal(c.docxImportPreviewConfirmButtons[0].textContent,'Retry import');
+ assert.equal(c.docxImportPreviewLoss.value,'retained loss');
+ assert.equal(c.docxImportPreviewMessage.textContent,'source.docx\n\nThe import could not be confirmed. Retry to check or finish this attempt.');
+ const retry=c.confirmDocxImportPreviewAndRun();assert.equal(h.calls[2].requestId,id);assert.equal(h.calls[1].requestId,id);
+ h.pending.shift().resolve({ok:true,value:{createdSceneIds:['scene']}});await retry;
+ assert.equal(c.pendingDocxImportAttempt,null);const next=c.openDocxImportPreviewFlow();assert.notEqual(h.calls[3].requestId,id);
+ h.pending.shift().resolve({ok:true,value:{localFilePreview:{status:'cancelled'}}});await next;assert.equal(c.visible,false);assert.equal(c.pendingDocxImportAttempt,null);
+});
+
+test('actual DOCX UI rejects cancelled, stale and throwing completions without duplicate import',async()=>{
+ const h=attemptHarness(),{c}=h;const opening=c.openDocxImportPreviewFlow();await c.openDocxImportPreviewFlow();assert.equal(h.calls.length,1);
+ c.closeDocxImportPreviewModal();h.pending.shift().resolve(h.preview);await opening;assert.equal(c.visible,false);
+ const again=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await again;
+ const accepting=c.confirmDocxImportPreviewAndRun();h.pending.shift().reject(Error('transport'));await accepting;assert.equal(c.visible,true);
+ c.closeDocxImportPreviewModal();assert.equal(c.pendingDocxImportAttempt,null);
+ const stale=c.openDocxImportPreviewFlow();c.currentProjectId='project-b';h.pending.shift().resolve(h.preview);await stale;assert.equal(c.visible,false);
+});
+
+test('actual DOCX UI never repeats committed import when navigation fails or project changes during reload',async()=>{
+ for(const failure of ['open','reload','project']){
+  const h=attemptHarness(),{c}=h;const opening=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await opening;
+  let opens=0;c.openImportedDocxSceneAfterAccept=async()=>{opens++;throw Error('navigation');};
+  if(failure==='reload')c.loadTree=async()=>{throw Error('reload');};
+  if(failure==='project')c.loadTree=async()=>{c.currentProjectId='project-b';};
+  const accept=c.confirmDocxImportPreviewAndRun();h.pending.shift().resolve({ok:true,value:{createdSceneIds:['scene']}});await accept;
+  await c.confirmDocxImportPreviewAndRun();assert.equal(h.calls.length,2);assert.equal(c.pendingDocxImportAttempt,null);assert.equal(opens,failure==='open'?1:0);
+ }
+});
+
+test('actual DOCX UI invalidates project ABA at both real assignment sites and does not cancel a dispatched write',async()=>{
+ const editor=read('src/renderer/editor.js');
+ const assignments=[...editor.matchAll(/invalidateDocxImportAttempt\(\);\s*currentProjectId = nextProjectId;/gu)];assert.equal(assignments.length,2);
+ const h=attemptHarness(),{c}=h;const old=c.openDocxImportPreviewFlow();
+ for(const nextProjectId of ['project-b','project-a']){c.nextProjectId=nextProjectId;vm.runInContext(assignments[0][0],c);}
+ const fresh=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await old;assert.equal(c.visible,false);
+ h.pending.shift().resolve(h.preview);await fresh;const accepting=c.confirmDocxImportPreviewAndRun();
+ c.closeDocxImportPreviewModal();assert.equal(c.pendingDocxImportAttempt.phase,'accepting');
+ h.pending.shift().resolve({ok:true,value:{createdSceneIds:['scene']}});await accepting;assert.equal(h.calls.length,3);assert.equal(c.pendingDocxImportAttempt,null);
+});
+
+test('actual DOCX UI treats expired reference as fresh selection and handles chooser exceptions',async()=>{
+ const h=attemptHarness(),{c}=h;const opening=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await opening;
+ const firstId=h.calls[0].requestId,accept=c.confirmDocxImportPreviewAndRun();h.pending.shift().resolve({ok:false,error:{code:'E_DOCX_IMPORT_REFERENCE_INVALID'}});await accept;
+ assert.equal(c.docxImportPreviewConfirmButtons[0].textContent,'Select file again');assert.equal(c.visible,true);
+ const selecting=c.confirmDocxImportPreviewAndRun();assert.notEqual(h.calls[2].requestId,firstId);assert.equal(h.calls[2].accept,undefined);
+ h.pending.shift().reject(Error('chooser failed'));await selecting;assert.equal(c.pendingDocxImportAttempt,null);assert.equal(c.visible,false);
+});
+
+for(const reason of ['DOCX_IMPORT_PLAN_REFERENCE_EXPIRED','DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED','DOCX_IMPORT_CONTENT_REFERENCE_INVALID','DOCX_IMPORT_PLAN_REFERENCE_INVALID'])
+ for(const field of ['reason','message'])test(`actual DOCX UI explains known stale ${field} ${reason} in its retained dialog`,async()=>{
+  const h=attemptHarness(),{c}=h,opening=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await opening;
+  const accept=c.confirmDocxImportPreviewAndRun();const error={code:'E_DOCX_IMPORT_SAFE_CREATE_FAILED',...(field==='reason'?{reason}:{details:{message:reason}})};
+  h.pending.shift().resolve({ok:false,error});await accept;
+  assert.equal(c.docxImportPreviewConfirmButtons[0].textContent,'Select file again');
+  assert.equal(c.docxImportPreviewMessage.textContent,'source.docx\n\nThe preview expired or its project changed. Select the source file again.');
+  assert.equal(c.docxImportPreviewLoss.value,'retained loss');
+ });
+
+test('actual DOCX UI never classifies arbitrary failure text as a stale reference or exposes it',async()=>{
+ const h=attemptHarness(),{c}=h,opening=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await opening;
+ const accept=c.confirmDocxImportPreviewAndRun();h.pending.shift().resolve({ok:false,error:{code:'E_DOCX_IMPORT_SAFE_CREATE_FAILED',details:{message:'/private/path DOCX_IMPORT_PLAN_REFERENCE_EXPIRED suffix'}}});await accept;
+ assert.equal(c.docxImportPreviewConfirmButtons[0].textContent,'Retry import');
+ assert.equal(c.docxImportPreviewMessage.textContent,'source.docx\n\nThe import could not be confirmed. Retry to check or finish this attempt.');
+});
