@@ -376,3 +376,35 @@ test('DOCX acknowledgement uses the existing safe-create port without parsing or
   assert.equal(calls[0].commandId, 'cmd.project.docx.importSafeCreate');
   assert.deepEqual(calls[0].payload, input);
 });
+
+test('actual editor dispatch metadata crosses the command bus but never enters the closed Main ACK payload', async () => {
+  const fs = require('node:fs'), vm = require('node:vm');
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/commandBusGuard.mjs')).href);
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const actualDispatch = source.slice(source.indexOf('function withEditorModeCommandPayload('), source.indexOf('async function invokePreloadUiCommandBridge('));
+  const calls = [], registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(cloneJsonSafe(request));
+    assert.deepEqual(Object.keys(request.payload).sort(), ['action', 'nodeId', 'projectId', 'requestId']);
+    return { ok: true, value: { ok: true, acknowledged: true, cleared: true } };
+  } } });
+  const runCommand = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const context = { isTiptapMode: true, runCommand, COMMAND_BUS_ROUTE, runCommandThroughBus,
+    updateStatusText: () => {}, mapCommandErrorToUi: error => ({ ...error, severity: 'ERROR', userMessage: 'failed' }),
+    console: { error: () => {} } };
+  vm.runInNewContext(actualDispatch, context);
+  const input = { action: 'acknowledge-open', requestId: 'real-dispatch-attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  for (const tiptap of [true, false]) {
+    context.isTiptapMode = tiptap;
+    const result = await context.dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, input);
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.deepEqual(calls.at(-1).payload, input);
+  }
+  assert.equal(calls.length, 2);
+  for (const extra of [{ editorMode: 'forged' }, { editorMode: {} }, { editorMode: null }, { path: '/forged' }, { accepted: true }, { docxImportPreviewPlan: {} }]) {
+    const result = await runCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { ...input, ...extra });
+    assert.equal(result.ok, false); assert.equal(result.error.code, 'E_DOCX_IMPORT_ACK_INVALID');
+    assert.equal(calls.length, 2, 'invalid metadata must not reach Main');
+  }
+});

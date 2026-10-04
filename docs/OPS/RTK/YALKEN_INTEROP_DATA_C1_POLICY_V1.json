@@ -809,11 +809,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "3c18592a2618b4c243bc0d0afcedbcc855c4d7c2e25bc4ed61ee23ef55ec32ed"
+        "sha256": "82172184687e2bbff2fc76c43f8bda2dc926614ffe2a60b9dfc4c469aee195e6"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "01c0cd28d30e02d1719773b8b5c1d48eae6c341defbd0429acf122bcce27b95e"
+        "sha256": "85fa6dcbcd455993cdd2815139bec651256bb22ca4f3bc3fe51edca020a35db4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -2457,7 +2457,7 @@
       },
       {
         "path": "test/unit/docx-import-product-flow-command.test.js",
-        "sha256": "56279954ab6902a49f8684359e7a6ae6c9369786ff11cf4acac98d85c1a14f21"
+        "sha256": "9c1831d2f4856c8e0b0728776d9d8851e4e04d92839ebc5a50c4802ad9200665"
       },
       {
         "path": "test/unit/sector-m-s29-import-surface-existing.test.js",

@@ -526,14 +526,16 @@ async function runDocxImportLocalFilePreviewBridge(electronAPI, input = {}) {
 
 async function runDocxImportOpenAcknowledgementBridge(electronAPI, input) {
   const keys = ['action', 'requestId', 'projectId', 'nodeId'];
-  if (!input || Object.keys(input).some(key => !keys.includes(key))
+  if (!input || Object.keys(input).some(key => !keys.includes(key) && key !== 'editorMode')
+    || Object.prototype.hasOwnProperty.call(input, 'editorMode') && !['tiptap', 'legacy'].includes(input.editorMode)
     || input.action !== 'acknowledge-open'
     || keys.slice(1).some(key => typeof input[key] !== 'string' || !input[key].trim() || input[key].length > 160)) {
     return fail('E_DOCX_IMPORT_ACK_INVALID', EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE, 'DOCX_IMPORT_ACK_INVALID');
   }
   try {
     const response = unwrapBridgeResponseValue(await invokeBridgeOnlyCommand(
-      electronAPI, EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE, input,
+      electronAPI, EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      Object.fromEntries(keys.map(key => [key, input[key]])),
     ));
     if (response?.ok === true && response.acknowledged === true && typeof response.cleared === 'boolean') return ok(response);
     return fail('E_DOCX_IMPORT_ACK_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
