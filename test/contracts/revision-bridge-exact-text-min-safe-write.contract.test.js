@@ -935,7 +935,7 @@ test('C04 core stays isolated while the approved review apply command may call i
   assert.equal(mainText.includes('applyExactTextMinSafeWrite'), true);
   assert.equal(mainText.includes('requestEditorSnapshot'), true);
   const applyContextStart = mainText.indexOf('async function buildReviewExactTextApplyInputFromMainState');
-  const applyContextEnd = mainText.indexOf('function mapMarkdownErrorCode', applyContextStart);
+  const applyContextEnd = mainText.indexOf('async function buildReviewExactTextApplyBatchInputFromMainState', applyContextStart);
   assert.ok(applyContextStart > -1 && applyContextEnd > applyContextStart, 'approved main apply context must be bounded');
   const applyContext = mainText.slice(applyContextStart, applyContextEnd);
   assert.equal(applyContext.includes('requestEditorSnapshot'), false);
