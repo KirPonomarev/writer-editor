@@ -398,7 +398,7 @@ test('Note return hashes exact validated leaf projection including empty edges a
   }
 });
 
-test('Actual renderer comment intent uses recursive cell/list leaf ordinal and rejects cross-leaf or split grapheme selection', async () => {
+test('Actual renderer comment intent uses recursive cell/list leaf ordinal and rejects foreign-cell or split grapheme selection', async () => {
   const fs = require('node:fs'), vm = require('node:vm');
   const src = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
   const doc = fixture(), records = require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(envelope.composeObservablePayload({ doc }));
@@ -409,7 +409,12 @@ test('Actual renderer comment intent uses recursive cell/list leaf ordinal and r
   const index = records.findIndex(x => x.text === 'deep sentinel'), start = records.slice(0, index).reduce((n, x) => n + x.text.length + 1, 0);
   selection = { start, end: start + 4 }; assert.deepEqual(JSON.parse(JSON.stringify(sandbox.wordCommentSelectionIntent())),
     { paragraphIndex: index, startUtf16: 0, selectedText: 'deep' });
-  selection.end = start + records[index].text.length + 2; assert.throws(() => sandbox.wordCommentSelectionIntent(), /одного абзаца/);
+  selection.end = start + records[index].text.length + 1;
+  assert.deepEqual(JSON.parse(JSON.stringify(sandbox.wordCommentSelectionIntent())),
+    { kind: 'multi-paragraph-range', paragraphIndex: index, startUtf16: 0,
+      endParagraphIndex: index + 1, endUtf16: 0, selectedText: 'deep sentinel\n' });
+  selection.end = start + records[index].text.length + 2;
+  assert.throws(() => sandbox.wordCommentSelectionIntent(), /COMMENT_RANGE_OWNER_MISMATCH/);
   const [{ getSchema }, { default: StarterKit }, { DocumentTables }, { EditorState, TextSelection }, coordinates] = await Promise.all([
     import('@tiptap/core'), import('@tiptap/starter-kit'), import('../../src/renderer/tiptap/documentTables.mjs'),
     import('@tiptap/pm/state'), import('../../src/renderer/tiptap/textCoordinates.mjs'),

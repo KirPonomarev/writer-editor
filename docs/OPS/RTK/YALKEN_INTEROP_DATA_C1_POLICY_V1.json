@@ -1524,7 +1524,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "e1c9787f566d08c436faae7d7e9735077c1ea2b31c765e063800af2579da3d88"
+        "sha256": "b0487cac35e054354ac26a96430416bbb1c6b14c2c63867080709e6b6a98772a"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1960,7 +1960,7 @@
       },
       {
         "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
-        "sha256": "cc7e3a16488ad7c40d288216e2f38de504bd29dc72558301224fd8f46edf5659"
+        "sha256": "0c52e806dc9ef11ceccba0f7d1d9a17a6c017c63483f1ea4ab1832a18a98ce9b"
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
@@ -2528,7 +2528,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "c046bb6b94db926aed5e18c66fc76be67b71c77827196635b6344967faf4735b"
+        "sha256": "b0ef1f53f8c9f23ed0d3df46dc37d67afe08afa4a9a1f865ced6719c11fec512"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",

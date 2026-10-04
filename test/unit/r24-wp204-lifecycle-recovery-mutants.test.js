@@ -34,6 +34,7 @@ const DEPENDENCIES = [
   'word-comment-anchor-save-v1.cjs',
   'word-user-bookmarks-v1.cjs',
   'word-comment-edit-intents-v1.cjs',
+  'word-comment-ranges-v1.cjs',
   'word-comment-return-delta-v1.cjs',
   'word-comment-authoring-v1.cjs',
   'word-comment-body-v1.cjs',

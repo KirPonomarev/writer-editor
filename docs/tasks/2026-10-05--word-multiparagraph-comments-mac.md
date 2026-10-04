@@ -149,3 +149,9 @@ Independent review additionally requires the conservative full ambiguity
 envelope for repeated-text insertion and deletion during exact text return;
 a greedy placement must not grant anchor identity. Focused regressions precede
 any native candidate and final gate claim.
+
+The implementation checkpoint is d88a062859a6e60b3d6ea6d083dba4fe22e2c213.
+The 52-path consumer-closure declaration passed on that clean exact head.
+The C1 binding check now passes after exact source refresh. The isolated
+lifecycle recovery harness copies the new helper and again runs its unmodified
+control and seven original mutants. Neither result substitutes native delivery.
