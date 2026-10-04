@@ -2,7 +2,7 @@
   "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
   "taskId": "WORD_IMPORT_ATTEMPTS_MAC_20261004",
   "bindingBaseSha": "7a8955610860dd9110a2e6bb5813fdcdb5d0e198",
-  "productPlane": "Original owner-authorized Mac plan P1-08. Existing admitted preview and leased Core import transaction exclusively own canonical scene/comment/media/receipt truth. No overwrite or receipt-integrity rule changes.",
+  "productPlane": "Original owner-authorized Mac plan P1-08. Existing admitted preview and leased Core import transaction exclusively own canonical scene/comment/media/receipt truth. No overwrite or receipt-integrity rule changes. Observed repeated-import blocker within this same outcome: lossless compact serialization is already used by intent-based anchor save; extend that existing policy consistently, without increasing any byte/count budget or removing graph/history data.",
   "interfacePlane": "Existing import preview modal and controls; retain source/loss context after recoverable error and present Retry import. No layout, typography, tokens, HTML or new surface. Lazyweb exact file-import/error-retry search and ui-craft consulted; external reference is advisory only.",
   "commands": [
     "cmd.project.importDocxV1",
@@ -53,20 +53,23 @@
     "Actual command forwarding and real leased Main/Core edited-old-scene refusal versus new-request import",
     "Existing transaction fault/fresh-process replay and media/comment identity tests",
     "Early native import/edit/new import plus cancellation and retry in both frozen Mac builds before broad gates",
-    "Same filename with changed Word bytes, exact persisted discussion/scene preservation and restart without automatic duplicate"
+    "Same filename with changed Word bytes, exact persisted discussion/scene preservation and restart without automatic duplicate",
+    "Exact Word-after fixture and larger graph: pretty over64KiB but compact fits, semantic equality, editing/return/recovery remains readable; compact-overbudget rejects before all writes and count limits remain enforced."
   ],
-  "securityAndInputBoundary": "No new IPC, filesystem writer, dependency or runtime network. Existing untrusted DOCX validation and opaque handles unchanged. UUID is correlation only, never authority.",
+  "securityAndInputBoundary": "No new IPC, filesystem writer, dependency or runtime network. Existing untrusted DOCX validation and opaque handles unchanged. UUID is correlation only, never authority. Existing 64KiB graph and file bounds remain unchanged; serializer may remove only insignificant JSON whitespace and must not prune domain data.",
   "performanceAndAccessibility": "Constant-size transient attempt state; no scan on typing. Existing labelled modal, keyboard and focus behavior; errors rendered as text and pending confirmation disabled.",
   "hotPathBoundary": "No work on typing; one constant-size attempt per explicit import preview.",
-  "migrationRollbackEvidence": "No schema migration. Single-PR revert; existing durable import receipts and project state remain unchanged by renderer lifecycle rollback.",
+  "migrationRollbackEvidence": "No schema migration. Lossless JSON whitespace compaction is compatible with existing readers and bounds. Revert one integrated PR; preserve all canonical bytes and receipts.",
   "currentReality": [
     "PR2076 fully delivered at 7a895561 with clean tree, 446 affected tests plus18 supervisor tests and guardrails on merged SHA",
     "Renderer omits requestId on both import preview and accept and drops failed preview context",
-    "Existing command/Main/Core already honor explicit nonce; same old request correctly refuses changed persisted scene; distinct nonce creates new scene/comments"
+    "Existing command/Main/Core already honor explicit nonce; same old request correctly refuses changed persisted scene; distinct nonce creates new scene/comments",
+    "Native SOURCE2af: 24threads serialize to63813B; new Word-resaved input validates and imports into empty state but appending fails DOCX_GENERIC_COMMENT_STATE_BUDGET. Compact same graph fits. Preserve failed fixture and snapshot; no complete RTK/baseline started."
   ],
   "targetOnly": [
     "This attempt lifecycle and native acceptance remain target until executed and delivered",
-    "Cross-restart Core replay is distinct from native UI restart recovery; do not claim preserved transient preview across process restart"
+    "Cross-restart Core replay is distinct from native UI restart recovery; do not claim preserved transient preview across process restart",
+    "Larger project graph capacity and persisted UI attempt resume after process restart remain original-plan residuals; this packet keeps current limits."
   ],
   "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
   "surfaceManifest": "NOT_APPLICABLE_EXISTING_MODAL_NO_NEW_VISUAL_ZONE",

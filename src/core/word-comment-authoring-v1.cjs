@@ -1,7 +1,7 @@
 'use strict';
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
-const { validateCommentMessageContent, STATE_V2, STATE_V3, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { serializeCommentState, validateCommentMessageContent, STATE_V2, STATE_V3, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const SCHEMA = 'yalken.rtk.word.non-text-return-state.v1';
 const COMMAND_ID = 'cmd.project.review.editComment';
 const sha = value => sha256UpdateCompatible(value);
@@ -151,7 +151,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
   if (!Number.isSafeInteger(after.revision) || after.events.length >= 512) fail('COMMENT_STATE_BUDGET');
   after.events.push({ type: 'WORD_COMMENT_AUTHORED', operationId: input.requestId, action: input.action,
     threadId: thread.threadId, inputDigest: digest, resultingRevision: after.revision, at: now });
-  const afterText = JSON.stringify(after, null, 2) + '\n';
+  const afterText = serializeCommentState(after, 'COMMENT_STATE_BUDGET');
   if (bytes(afterText) > 65536) fail('COMMENT_STATE_BUDGET');
   return { replay: false, afterText, state: after, threadId: thread.threadId };
 }

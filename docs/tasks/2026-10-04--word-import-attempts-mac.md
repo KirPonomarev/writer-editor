@@ -20,8 +20,9 @@ different user intentions without weakening that check.
   state on failure. Give each explicit preview one transient ID retained for
   retry; real UI dispatch tests should fail before the fix.
 - B: preserve existing scenes, comments, assets, receipts, command capabilities,
-  opaque reference context and exact-source integrity. No schema, Main/Core,
-  HTML/CSS/layout, dependency or runtime network changes.
+  opaque reference context and exact-source integrity. No schema, Main/IPC,
+  HTML/CSS/layout, dependency or runtime network changes. The observed graph
+  serialization correction below keeps all existing byte and count limits.
 - P: actual UI lifecycle tests, command forwarding and real leased Main/Core
   transaction counterexamples; early SOURCE and PACKAGED native route before
   broad gates. Existing transaction crash/fault/media tests remain required.
@@ -80,6 +81,36 @@ This task has no runtime acceptance yet. A Core same-request replay after proces
 restart is not proof that an unsaved UI preview survives restart. Remaining
 original Mac-plan families stay open.
 
+## Early native finding and bounded correction
+
+On candidate `2af180d894c76aac540202523432195538e16282`, a native SOURCE
+profile completed import, scene edit/save, deliberate reimport, a real filesystem
+write failure followed by Retry, and chooser/preview cancellation. Retry retained
+the operation nonce, recovered the pending transaction and published one scene
+with six threads and seven messages. A failed transaction may retain its journal
+and publish a manifest before recovery; this is not a zero-write cancellation.
+Prior scene bytes and discussions remained intact.
+
+The next native import, after Word changed the file under the same filename,
+failed with `DOCX_SAFE_CREATE_COMMENTS_INVALID`. An exact-input diagnosis showed
+valid preview, anchors and candidates: the existing 24-thread project graph was
+63813 bytes, and the appended graph exceeded the 64 KiB limit solely because of
+pretty JSON whitespace. The same graph fits when serialized compactly. Both the
+unchanged and Word-edited input reproduce this project-capacity boundary.
+
+The amended architecture declaration passed on that clean candidate before this
+repair. Apply the already-existing lossless compact serialization policy
+consistently across import, comment authoring, anchor save, return and recovery.
+Keep the 64 KiB limit, identity validation, graph semantics, history and atomic
+publication authority intact. Compact graphs still over budget must fail before
+writing. No full RTK or CI baseline ran on the known failing candidate.
+
+Evidence is bound to preserved native profiles, source DOCX hashes, raw XML and
+saved-state snapshots. The failed fifth-import observation remains a failure;
+the repair requires a new frozen candidate and native observation. Larger graph
+capacity and a UI action to resume a prior attempt after process restart remain
+separate open requirements of the original Mac plan.
+
 Rollback: revert this integrated PR; preserve all existing project and receipt
-bytes. Next step: red UI-attempt regression, then bounded implementation and
-early native route.
+bytes. Next step: focused serialization regression and native recheck of the
+preserved failing profile, then PACKAGED route and required final gates.

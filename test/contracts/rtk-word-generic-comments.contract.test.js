@@ -513,3 +513,51 @@ test('real safe-create upgrades a valid legacy state once and retains previous t
  const bytes=fs.readFileSync(stateFile);
  const repeated=await safe.applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(repeated.ok,true,JSON.stringify(repeated));assert.equal(repeated.value.idempotent,true);assert.deepEqual(fs.readFileSync(stateFile),bytes);
 });
+
+test('generic graph serialization stays lossless below compact budget after pretty graph exceeds 64 KiB',async()=>{
+ const {materializeGenericComments}=await generic;
+ const candidates=Array.from({length:60},(_,i)=>({...candidate(),messages:[{...candidate().messages[0],sourceCommentId:String(i),body:'Literal '+i+' '+ 'x'.repeat(120)}]}));
+ const result=materializeGenericComments({candidates,paragraphs:[{text}],projectId:'p',sceneId:'roman/new.txt',importOperationId:'compact-op',beforeText:null});
+ const state=JSON.parse(result.afterText);
+ assert.ok(Buffer.byteLength(JSON.stringify(state,null,2))>65536);assert.ok(Buffer.byteLength(result.afterText)<=65536);
+ assert.equal(state.threads.length,60);state.threads.forEach((thread,i)=>assert.equal(thread.messages[0].body,candidates[i].messages[0].body));
+ assert.deepEqual(require('../../src/core/word-comment-authoring-v1.cjs').readState(result.afterText,'p'),state);
+});
+
+test('compact imported graph remains writable through authoring, anchor save, signed return and recovery with exact history',async t=>{
+ const {materializeGenericComments}=await generic;
+ const author=require('../../src/core/word-comment-authoring-v1.cjs'),body=require('../../src/core/word-comment-body-v1.cjs');
+ const candidates=Array.from({length:60},(_,i)=>({...candidate(),messages:[{...candidate().messages[0],sourceCommentId:String(i),body:'Literal '+i+' '+ 'x'.repeat(120)}]}));
+ const input={candidates,paragraphs:[{text}],projectId:'p',sceneId:'roman/new.txt',importOperationId:'compact-cycle',beforeText:null};
+ const imported=materializeGenericComments(input),original=JSON.parse(imported.afterText),threadId=original.threads[0].threadId;
+ const authorContext={now:'2026-10-04T12:00:00Z',projectId:'p',sceneId:input.sceneId,sceneSha256:sha(text),paragraphs:[text]};
+ const authored=author.planCommentAuthoring({...authorContext,beforeText:imported.afterText,input:{requestId:'compact-edit',action:'edit',projectId:'p',sceneId:input.sceneId,subjectId:'subject',expectedStateSha256:sha(imported.afterText),expectedSceneSha256:sha(text),threadId,commentId:original.threads[0].rootCommentId,body:'Changed root literal'}});
+ assert.equal(authored.state.threads[0].messages[0].body,'Changed root literal');assert.deepEqual(authored.state.threads.slice(1),original.threads.slice(1));
+ const anchor=require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave({beforeText:authored.afterText,projectId:'p',sceneId:input.sceneId,beforeContent:text,afterContent:'! '+text});
+ const shifted=author.readState(anchor.afterText,'p');assert.equal(shifted.threads.length,60);assert.deepEqual(shifted.events,authored.state.events);
+ shifted.threads.forEach((thread,i)=>{assert.equal(thread.anchor.startUtf16,original.threads[i].anchor.startUtf16+2);assert.deepEqual(thread.messages,authored.state.threads[i].messages);});
+ const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const source=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:'/project',nonTextReturnState:shifted,scenes:[{sceneId:input.sceneId,scenePath:'/project/'+input.sceneId,order:0,text:'! '+text,doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'! '+text}]}]}}]});
+ const bytes=buildDocxReviewPacketBuffer(source),parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(JSON.stringify(v)),byteLength:v=>Buffer.byteLength(v)}});assert.equal(parsed.ok,true);
+ const returned=structuredClone(parsed.reviewIr.commentThreads);returned[0].status='RESOLVED';returned[0].doneResolvedReopenedState='resolved';
+ const delta=require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({beforeText:anchor.afterText,projectId:'p',roundId:'compact-return',artifactSha256:sha(bytes),baseline:source.commentExport,exportMap:source.localAuthorityCapsule.exportMap,returnedThreads:returned,returnedParagraphs:parsed.reviewIr.formattingParagraphs});
+ const final=author.readState(delta.afterText,'p');assert.equal(final.threads[0].status,'resolved');assert.deepEqual(final.threads.slice(1),shifted.threads.slice(1));assert.deepEqual(final.events.slice(0,-1),shifted.events);assert.equal(final.events.length,shifted.events.length+1);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'compact-comment-port-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),port=runtime.createRtkNonTextReturnFilePort();
+ const recovery=await port.writeRecovery({projectRoot:root,state:final}),canonical=await port.writeCanonical({projectRoot:root,state:final});
+ for(const file of [recovery.recoveryPath,canonical.statePath]){const raw=fs.readFileSync(file,'utf8');assert.ok(Buffer.byteLength(raw)<=65536);assert.deepEqual(author.readState(raw,'p'),final);}
+ assert.deepEqual(await port.readCanonical({projectRoot:root,projectId:'p'}),final);
+ const call={...authorContext,paragraphs:['! '+text],sceneSha256:sha('! '+text),projectRoot:root,input:{requestId:'compact-reopen',action:'reopen',projectId:'p',sceneId:input.sceneId,subjectId:'subject',threadId,expectedStateSha256:sha(fs.readFileSync(canonical.statePath,'utf8')),expectedSceneSha256:sha('! '+text)}};
+ await runtime.commitCommentAuthoring(call,{publish:op=>op(),revalidate:async()=>{}});
+ assert.deepEqual(author.readState(fs.readFileSync(recovery.recoveryPath,'utf8'),'p'),final,'authoring recovery never expands the compact graph');
+ const oversized=structuredClone(final);oversized.threads[0].messages[0].body='x'.repeat(16384);oversized.threads[1].messages[0].body='y'.repeat(16384);
+ assert.ok(Buffer.byteLength(JSON.stringify(oversized))>65536);let writes=0;
+ const guarded=runtime.createRtkNonTextReturnFilePort({atomicWriteFile:async()=>{writes++;}});
+ await assert.rejects(guarded.writeRecovery({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);await assert.rejects(guarded.writeCanonical({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);assert.equal(writes,0);
+ assert.throws(()=>body.serializeCommentState(oversized,'CUSTOM_BUDGET'),error=>error.code==='CUSTOM_BUDGET');
+ const overCount={...original,threads:Array.from({length:128},(_,i)=>({threadId:'t'+i,sceneId:'s',status:'open',rootCommentId:'m'+i,anchor:{},messages:[{commentId:'m'+i,kind:'root',body:'x'}]}))};
+ const atLimit=materializeGenericComments({...input,candidates:[candidate()],beforeText:JSON.stringify({...overCount,threads:overCount.threads.slice(0,127)})});assert.equal(author.readState(atLimit.afterText,'p').threads.length,128);
+ const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);assert.throws(()=>materializeGenericComments({...input,candidates:[candidate()],beforeText:old}),/DOCX_GENERIC_COMMENT_STATE/);assert.equal(JSON.stringify(overCount),old);
+});
