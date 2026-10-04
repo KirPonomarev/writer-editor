@@ -1324,7 +1324,16 @@ async function readGenericCommentState(projectRoot) {
 async function prepareGenericCommentState({ entry, projectRoot, targetPath, projectId, importOperationId, empty = false }) {
   if (!entry.comments?.length) return null;
   const { materializeGenericComments } = await import('../io/revisionBridge/genericWordComments.mjs');
-  const paragraphs = require('../core/word-comment-anchor-save-v1.cjs').paragraphs(entry.content);
+  const { parseObservablePayload } = await import('../renderer/documentContentEnvelope.mjs');
+  const { textOf } = require('../core/word-user-bookmarks-v1.cjs');
+  const parsed = parseObservablePayload(entry.content);
+  if (parsed.issue) throw Error('DOCX_GENERIC_COMMENT_CONTENT');
+  const paragraphs = [];
+  const visit = node => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) paragraphs.push({ text: textOf(node) });
+    else for (const child of node.content || []) visit(child);
+  };
+  if (parsed.doc) visit(parsed.doc); else paragraphs.push(...parsed.text.split('\n').map(text => ({ text })));
   const saved = await readGenericCommentState(projectRoot);
   return { path: saved.path, ...materializeGenericComments({ candidates: entry.comments, paragraphs, projectId,
     sceneId: path.relative(projectRoot, targetPath).split(path.sep).join('/'), importOperationId,

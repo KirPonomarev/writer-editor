@@ -829,7 +829,7 @@
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "08406d889e1bf514927a38679232673694f60065cd195cc1e73a91b57d6d8855"
+        "sha256": "3e46913a697836e51bf35106792ca3a0a399414f8a2095fbbe907422553558d2"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -1233,7 +1233,7 @@
       },
       {
         "path": "test/unit/docx-import-safe-create.test.js",
-        "sha256": "e541432a404cad6fd163cbed3f7a5da8b59306de806c311b54593825c7455a57"
+        "sha256": "b61100bf03dd74f29ecb51258eee63d449f12818e16553037479c0e9c54aefbd"
       },
       {
         "path": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -2417,11 +2417,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "c8525c5aba6b9bef88691b464b9a427e341e690f5f380dd32049062c7958f822"
+        "sha256": "269c256db7f0ef86f39bb4c3c84d58b84c31b662fd0b4afb2f5cecbb6dcf7fe6"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "f8d974a610793e197e3b0f5890e82519db8cb087b9fab3605547939a7802b64b"
+        "sha256": "15f4c79fa4e01a693ff20683e3a605e16fc419ee7b1340bef6cc5bb9572c855d"
       },
       {
         "path": "src/preload.js",
