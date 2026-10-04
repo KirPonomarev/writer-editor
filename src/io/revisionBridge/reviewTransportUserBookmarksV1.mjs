@@ -1,3 +1,4 @@
+import { bindDocxReviewTableTopology } from './index.mjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
@@ -215,6 +216,10 @@ export function documentPropertyReturnOperation(scene,documentProperties) {
 // This module checks semantic bindings and produces no publication authority.
 export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
   try {
+    // Recompute against the locally authenticated map; a returned proof is not authority.
+    const tableBinding=bindDocxReviewTableTopology(reviewIr,exportMap);
+    if(!tableBinding.ok)return reject(tableBinding.code);
+    reviewIr=tableBinding.reviewIr;
     const registry=core.readRegistry(baselineDoc);
     const sectionVerified = Boolean(protectedSections && sectionProof?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
       && sectionProof.protectedDigest === protectedSections.protectedDigest
@@ -414,7 +419,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const expectedBreaks=wordBreaks.paragraphBreaks(basePs[i]);
       const returnedBreaks=wordBreaks.textBreaks(p.paragraphText,p.typedBreaks);
       if(!same(expectedBreaks.map(b=>b.type),returnedBreaks.map(b=>b.type)))return reject('typed-break-semantic-change');
-      if(p.trackedRevision||p.table||block.formatIr.table||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists) || (name==='sectPr' && sectionVerified)))))return reject('rich-paragraph-unsupported');
+      if(p.trackedRevision||((p.table||block.formatIr.table) && (!ordinaryTextMode || tableBinding.applicable!==true))||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists) || (name==='sectPr' && sectionVerified)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
@@ -435,15 +440,36 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       // Effective family is resolved by the same-byte parser's owned style and
       // theme catalog. Retain it as a real format effect, never waive equality
       // and discard inherited Word formatting during a text return.
+      const familyOf=run=>run.inlineState?.fontFamily || run.resolvedFontFamily;
+      const isFontlessBreak=run=>typeof run.text==='string' && /^\n+$/u.test(run.text)
+        && !familyOf(run) && Number.isSafeInteger(run.from) && run.from>=0
+        && run.to===run.from+run.text.length && p.paragraphText.slice(run.from,run.to)===run.text
+        && Array.from(run.text,(_,index)=>run.from+index).every(offset=>{
+          const ordinal=returnedBreaks.findIndex(item=>item.offset===offset);
+          if(ordinal<0)return false;
+          const oldOffset=expectedBreaks[ordinal]?.offset;
+          const oldRun=before.find(item=>item.from<=oldOffset && item.to>oldOffset);
+          let cursor=0,oldBreak;
+          for(const node of basePs[i].content||[]){
+            if(cursor===oldOffset && node.type==='hardBreak'){oldBreak=node;break;}
+            cursor+=node.type==='hardBreak'?1:node.type==='text'?node.text.length:0;
+          }
+          return oldRun && !oldRun.style.fontFamily && oldBreak
+            && !(oldBreak.marks||[]).some(mark=>mark.type==='textStyle' && mark.attrs?.fontFamily);
+        });
+      const fontlessBreaks=new Set(after.filter(isFontlessBreak));
+      const fontlessBreak=run=>fontlessBreaks.has(run);
       const completeFontProfile=ordinaryTextMode && after.length>0
-        && after.every(run=>typeof (run.inlineState?.fontFamily || run.resolvedFontFamily)==='string'
-          && (run.inlineState?.fontFamily || run.resolvedFontFamily).length>0);
+        && after.every(run=>fontlessBreak(run) || typeof familyOf(run)==='string' && familyOf(run).length>0);
       if(ordinaryTextMode && !completeFontProfile && after.some(run=>run.resolvedFontFamily || run.inlineState?.fontFamily))
         return reject('ordinary-text-font-profile-incomplete');
       let fontChanged=false;
       if(completeFontProfile){
         for(const run of after){
-          const family=run.inlineState?.fontFamily || run.resolvedFontFamily;
+          // A bare hardBreak has no font-bearing text. Keep its absence exact;
+          // explicitly formatted breaks still follow the normal font path.
+          if(fontlessBreak(run))continue;
+          const family=familyOf(run);
           const unchanged=block.text===p.paragraphText && before.filter(old=>old.from<run.to&&old.to>run.from)
             .every(old=>old.style.fontFamily===family);
           if(!unchanged){fontChanged=true;ordinaryFormattingOperations.push(formattingOperation(run.from,run.to,{fontFamily:{action:'set',value:family}},{}));}

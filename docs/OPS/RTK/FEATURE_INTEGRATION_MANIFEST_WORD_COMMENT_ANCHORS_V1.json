@@ -51,7 +51,8 @@
     "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
     "src/io/revisionBridge/exactTextApplyJournal.mjs",
     "src/utils/docxImportSafeCreate.js",
-    "test/unit/docx-import-safe-create.test.js"
+    "test/unit/docx-import-safe-create.test.js",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs"
   ],
   "scopeOut": [
     "package.json",
@@ -60,7 +61,7 @@
     "src/renderer/index.html",
     "src/renderer/styles.css"
   ],
-  "productAuthority": "Owner-authorized full Mac Word plan P1-02 P1-03 P1-04. Core owns versioned point/range anchor validation, splice replay and mutation plans. Existing project transaction owns atomic scene+comment persistence.",
+  "productAuthority": "Owner-authorized full Mac Word plan P1-02 P1-03 P1-04. Core owns versioned point/range anchor validation, splice replay and mutation plans. Existing project transaction owns atomic scene+comment persistence. Linked table repair reuses existing signed export-map topology and exact owner/property validation; only proven unchanged table text may reach the existing combined text+comment transaction.",
   "commandAuthority": "Existing cmd.project.review.editComment and Main Save/authenticated Apply; existing Kernel dispatch with fresh project scene session generation and source CAS; renderer submits bounded intent, never after-anchor authority. Existing cmd.project.docx.importSafeCreate remains the sole explicit ordinary-import path with admitted preview, project lease and source binding; the linked repair may correct canonical paragraph projection only after reproducing the actual rejection.",
   "designAuthority": "Reuse existing comment command and dialog/sidebar; permit collapsed selection with explicit point context. No new surface/layout/tokens. Lazyweb c5e4ce16-ebcb-475c-8448-def4d6b4a2e4 reference only; native Word bytes determine semantics.",
   "operationKinds": [
@@ -112,16 +113,16 @@
     "List continuation/table leaf ownership and stale scene switch",
     "Forged after-state, incomplete splice replay, mismatched generations, failed-write recovery",
     "Native early SOURCE/PACKAGED vertical route before broad tests; five changed Word exchanges per build for admitted route",
-    "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes."
+    "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes.",
+    "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof."
   ],
   "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
   "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
   "currentReality": [
-    "PR2075 remains delivered at f5dd73ea; current local packet checkpoint802667c5 is clean and unmerged.",
-    "SOURCE03 applied the retained signed Word point-boundary return with exact five threads and six messages preserved.",
-    "SOURCE03 ordinary table-list continuation import previews successfully but explicit safe-create fails DOCX_SAFE_CREATE_COMMENTS_INVALID before publication; exact inner cause is being diagnosed.",
-    "1000-paragraph four-message private proof Apply and fresh-process journal recovery passed in bounded tests; do not repeat without a relevant code change.",
-    "Supported blockquote regression in first safe-create proposal repaired before native freeze by retaining existing recursive traversal and using exact Core leaf text; focused actual-import11 passed and independent review completed. Native candidate qualification and full delivery remain pending."
+    "PR2075 is delivered at f5dd73ea; local comment packet clean b0ea8170 remains unmerged.",
+    "SOURCE04 imported real Word table continuation with exact leading/trailing hardBreaks, range/point/reply comments; native edit Save Undo Save Redo Save preserves all8threads10messages.",
+    "Authenticated return of Word-inserted R refuses before Preview with RTK_USER_BOOKMARK_RETURN_CONFLICT. Exact raw parser and existing table binder succeed; analyzer has inventory blanket refusal and table leaf blanket refusal.",
+    "1000paragraph private proof and crash journal regression already passed; do not repeat without dependency change or mandatory gate."
   ],
   "targetOnly": [
     "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"

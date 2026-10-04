@@ -1221,7 +1221,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1255,6 +1255,10 @@ async function cleanTextReturnFixture(t,{bookParagraphs=0,largeCommentGraph=fals
   // Repeated quote belongs to a different signed block, not this operation.
   parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(tableCommentContinuation) {
+    const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+    parsed.doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'contQinued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
+  }
   if(bookParagraphs)while(parsed.doc.content.length<bookParagraphs)parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'Book paragraph '+parsed.doc.content.length+' '+crypto.randomBytes(60).toString('hex')}]});
   if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
@@ -1276,7 +1280,12 @@ async function cleanTextReturnFixture(t,{bookParagraphs=0,largeCommentGraph=fals
     const planned=model.planCommentAuthoring({beforeText:null,projectId:f.query.projectId,sceneId,sceneSha256:sha(raw),paragraphs:ps,now:'2026-10-04T00:00:00Z',
       input:{action:'create',requestId:'anchor-composite',projectId:f.query.projectId,sceneId,expectedStateSha256:'',expectedSceneSha256:sha(raw),body:'Anchor body',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}});
     const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});
-    if(largeCommentGraph) {
+    if(tableCommentContinuation) {
+      const state=JSON.parse(planned.afterText),root=state.threads[0];state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+      for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?11:1,selectedText:point?'':'contQinued',...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
+      state.threads[1].messages.push({commentId:'continuation-reply',kind:'reply',body:'Reply body',provenance:{author:'Reply author'}});
+      model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
+    } else if(largeCommentGraph) {
       const state=JSON.parse(planned.afterText),root=state.threads[0].messages[0];
       root.body=crypto.randomBytes(15500).toString('base64').slice(0,15500);
       for(let i=1;i<4;i++)state.threads[0].messages.push({...root,commentId:'large-reply-'+i,kind:'reply',body:crypto.randomBytes(15500).toString('base64').slice(0,15500)});
@@ -2199,4 +2208,24 @@ for(const fault of [false,true])test('large random comment graph and 1000 paragr
     assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
   }
   fs.writeFileSync(file,original);
+});
+
+
+test('actual Main table list continuation Word edit atomically preserves range point reply and sibling scene',async t=>{
+  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+    const before=parts['word/document.xml'];parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');assert.notEqual(parts['word/document.xml'],before);
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));
+  const sibling=read(f.beta),beforeScene=read(f.alpha),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
+  const result=await f.probe.fullApply({requestId:'table-comments-apply'});assert.equal(result.totals?.applied,1,JSON.stringify(result));
+  assert.equal(read(f.beta),sibling);const after=JSON.parse(read(commentPath)),doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  assert.equal(doc.content[0].type,'table');assert.equal(doc.content[0].content.length,1);
+  assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item','\ncontQinuedR cell anchor\n','Second cell item W','']);
+  assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
+  assert.equal(after.threads.find(t=>t.threadId==='point').anchor.startUtf16,12);
+  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.selectedText,'contQinuedR');
+  const freshSource=await f.probe.fullSource(),fresh=await f.probe.reviewBuild(freshSource);assert.equal(fresh.publicationGate.publishAllowed,true);
+  const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fresh.documentBuffer}).parts['word/document.xml'];
+  assert.ok(xml.includes('contQinuedR'));assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2);
+  const journals=fs.readdirSync(path.join(f.root,'backups/revision-bridge-apply-journal')).filter(n=>n.endsWith('.json')).map(n=>JSON.parse(read(path.join(f.root,'backups/revision-bridge-apply-journal',n))));assert.ok(journals.some(j=>j.commentTextReturn));
 });

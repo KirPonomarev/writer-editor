@@ -9734,7 +9734,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
     context: options.context,
     localAuthority,
     parserResult,
-    returnContext: { returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes },
+    returnContext: { returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes, tableSourceReviewIr:options.tableSourceReviewIr },
   });
   if (sceneAuthority.ok === false) return sceneAuthority;
   // ROUND-01 (V3): the session-time capsule carries the vault-resolved hmacSecret
@@ -9767,7 +9767,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       || parserResult.reviewIr?.userBookmarkInventory?.bookmarks?.length
       || parserResult.reviewIr?.userBookmarkInventory?.links?.length) {
       const bookmarks = await prepareCleanUserBookmarksCapsule(localAuthority, parserResult,
-        { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes, comparisonBindings: options.comparisonBindings });
+        { ...options.context, returnedArtifactSha256: options.returnedArtifactSha256, docxBytes: options.docxBytes, comparisonBindings: options.comparisonBindings, tableSourceReviewIr:options.tableSourceReviewIr });
       if (!bookmarks.ok) return docxReviewReturnIntakeBlocked(bookmarks.code, { detail: bookmarks.detail });
       if (bookmarks.changed) Object.assign(sceneAuthorityFields, bookmarks.fields);
     }
@@ -9947,7 +9947,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     if (parsed.issue) return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_INVALID' };
     const beforeDoc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
     const analysis = module.analyzeUserBookmarksReturn({ baselineDoc: beforeDoc, exportMap: authority.exportMap,
-      sceneId: scene.sceneId, reviewIr: parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography,
+      sceneId: scene.sceneId, reviewIr: context.tableSourceReviewIr || parserResult.reviewIr, exportTypography: authority.exportMap.exportTypography,
       protectedSections: authority.documentSections, sectionProof: parserResult.documentSectionsBinding,
       ordinaryTextMode: true });
     if (!analysis.ok) return analysis;
@@ -10731,6 +10731,7 @@ async function inspectDocxReviewReturnIntakeV2({
   if (!localBinding.ok) return localBinding;
   // Only a verified return and the main-owned current export map can account
   // for unchanged tables. The immutable worker packet remains raw evidence.
+  const tableSourceReviewIr = verifiedParserResult.reviewIr;
   let tableBinding = revisionBridge.bindDocxReviewTableTopology(
     verifiedParserResult.reviewIr, localAuthority.exportMap,
   );
@@ -10848,7 +10849,8 @@ async function inspectDocxReviewReturnIntakeV2({
   const localAuthorityCapsule = await buildDocxReviewReturnIntakeLocalAuthorityCapsule(
     localAuthority,
     verifiedParserResult,
-    { hmacSecret, context, mediaReturnFields, returnedArtifactSha256, docxBytes, comparisonBindings: localBinding.comparisonBindings },
+    { hmacSecret, context, mediaReturnFields, returnedArtifactSha256, docxBytes, comparisonBindings: localBinding.comparisonBindings,
+      tableSourceReviewIr:tableBinding.applicable ? tableSourceReviewIr : undefined },
   );
   if (localAuthorityCapsule?.ok === false) return localAuthorityCapsule;
   try { assertFreshDocxReviewRoundAuthority(localAuthority); }

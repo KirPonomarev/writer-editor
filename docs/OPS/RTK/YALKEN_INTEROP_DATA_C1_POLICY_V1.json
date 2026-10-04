@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "1ca14f060bf985b629cd732e8f81af9d1f03cb6207823573f83c454f5c9f5882"
+        "sha256": "1b20599db062823172dfab06e7fb264d2d79808dd55eefda2249b2e8a9b9d0c6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1781,7 +1781,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "8533b045fd44b2fc3370625efd2f8a950e89690614ef9f144244771312dae6c0"
+        "sha256": "85ded007d0ef4637f71af038345547376661f910621b0c217e565a5c8e1c8415"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "206d536a80c1b02cca1c591ae62ba9aa673cae3e35d556514595648729e3c89a"
+        "sha256": "be2b8d4a61d3fc7eebab37a132ca5213444316fb19dd0670c754db5937aef604"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2417,11 +2417,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "269c256db7f0ef86f39bb4c3c84d58b84c31b662fd0b4afb2f5cecbb6dcf7fe6"
+        "sha256": "beec31eb45f90fcbb1b813dca2044fee7aabeddbb9a721564fd9bb7b2910370e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "15f4c79fa4e01a693ff20683e3a605e16fc419ee7b1340bef6cc5bb9572c855d"
+        "sha256": "51795c36bff4a36638439c8b3f493c7a5be2df1c37e300ce1340f3b96bcd8560"
       },
       {
         "path": "src/preload.js",
