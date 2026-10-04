@@ -773,3 +773,28 @@ test('formatting only a line break is a comment delta, while text and other mess
  const xml=commentPackageParts(projection).entries.find(e=>e.name==='word/comments.xml').data;
  assert.match(xml,/<w:r><w:rPr>[^]*?<w:u w:val="single"\/[^]*?<\/w:rPr><w:br\/><\/w:r>/);
 });
+test('authenticated text replacement inside a range retains exact changed quote and replies atomically',async()=>{
+ const f=await fixture(), bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+ assert.match(parts['word/document.xml'],/🧭 anchor/u);
+ parts['word/document.xml']=parts['word/document.xml'].replace('🧭 anchor','🧭 changed anchor');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:hash,sha256Json:v=>'sha256:'+hash(stable(v)),byteLength:v=>Buffer.byteLength(v)}});
+ assert.equal(analysis.ok,true);
+ const input={...f.input,artifactSha256:hash(bytes),returnedThreads:analysis.reviewIr.commentThreads,returnedParagraphs:analysis.reviewIr.formattingParagraphs,
+ textChanges:[{sceneId:'roman/a.md',paragraphIndex:0,oldText:'Before 🧭 anchor after',newText:'Before 🧭 changed anchor after'}]};
+ const result=plan(input),after=JSON.parse(result.afterText);
+ assert.equal(after.threads[0].anchor.selectedText,'🧭 changed anchor');assert.equal(after.threads[0].anchor.startUtf16,7);
+ assert.deepEqual(after.threads[0].messages,f.state.threads[0].messages);assert.equal(after.threads[0].threadId,f.state.threads[0].threadId);
+ assert.throws(()=>plan({...input,textChanges:[]}),/MANUSCRIPT_CHANGED/);
+});
+test('actual whole-anchor text plus Word comment removal retains explicit tombstone and original body',async()=>{
+ const f=await deletionFixture({mutate(parts){parts['word/document.xml']=parts['word/document.xml'].replace('🧭 anchor','');}});
+ assert.equal(f.parsed.ok,true);assert.equal(f.input.commentReturnInventory.status,'COMPLETE');
+ const textChanges=[{sceneId:'roman/a.md',paragraphIndex:0,oldText:'Before 🧭 anchor after',newText:'Before  after'}];
+ const result=plan({...f.input,textChanges}),after=JSON.parse(result.afterText);
+ assert.deepEqual(after.threads[0],{...f.state.threads[0],status:'deleted'});
+ assert.equal(result.changes[0].deletionDecision,'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION');
+ assert.throws(()=>plan({...f.input,textChanges,commentReturnInventory:undefined}),/PACKAGE_INCOMPLETE/);
+ assert.throws(()=>plan(f.input),/MANUSCRIPT_CHANGED/);
+});

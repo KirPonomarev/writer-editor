@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_COMMENT_ANCHORS_MAC_20261004",
+  "objective": "Preserve point and range comment identities through native authoring, edits inside a paragraph, atomic save/history/reopen and changed Word exchange",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "f5dd73ea86deeae90f563f517ac11ab5cfbaf4a5",
+  "scopeIn": [
+    "src/core/word-comment-authoring-v1.cjs",
+    "src/core/word-comment-anchor-save-v1.cjs",
+    "src/core/word-comment-body-v1.cjs",
+    "src/core/word-comment-return-delta-v1.cjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/io/documentTables.js",
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/export/docx/docxReviewPacketComments.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/main.js",
+    "src/preload.js",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/documentCommentEditIntents.mjs",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/core/word-comment-edit-intents-v1.cjs",
+    "src/renderer/tiptap/documentTables.mjs",
+    "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+    "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
+    "test/contracts/rtk-word-generic-comments.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+    "test/contracts/rtk-word-comment-points.contract.test.js",
+    "test/contracts/rtk-word-table-editor.contract.test.js",
+    "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "productAuthority": "Owner-authorized full Mac Word plan P1-02 P1-03 P1-04. Core owns versioned point/range anchor validation, splice replay and mutation plans. Existing project transaction owns atomic scene+comment persistence.",
+  "commandAuthority": "Existing cmd.project.review.editComment and Main Save/authenticated Apply; existing Kernel dispatch with fresh project scene session generation and source CAS; renderer submits bounded intent, never after-anchor authority.",
+  "designAuthority": "Reuse existing comment command and dialog/sidebar; permit collapsed selection with explicit point context. No new surface/layout/tokens. Lazyweb c5e4ce16-ebcb-475c-8448-def4d6b4a2e4 reference only; native Word bytes determine semantics.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated generic DOCX -> existing safe-create scene+comment transaction",
+    "Existing comment command -> Core typed anchor authoring -> existing comment persistence",
+    "Revision-bound editor splice intents -> Core replay and exact final-document comparison -> existing Main Save scene+comment transaction",
+    "Authenticated Word text and marker delta -> combined private Core candidate -> explicit Apply and existing atomic journal"
+  ],
+  "readPaths": [
+    "Canonical comment state, source document and existing identity-bound editor snapshots",
+    "Validated OOXML comment markers and authenticated export identity"
+  ],
+  "productPorts": [
+    "Existing scene Save, comment authoring, DOCX import/export, review Apply and project transaction ports"
+  ],
+  "designOsPorts": [
+    "Existing comment command/dialog/sidebar and keyboard routes"
+  ],
+  "readProjections": [
+    "Immutable point/range anchor context and existing review operation cards"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact project scene lifecycle session and generation; raw source SHA; comment-state SHA/revision",
+    "Closed bounded splice grammar, exact removed text, sequential replay and exact final text/topology; no quote-search identity",
+    "Authenticated Word root/reply identity, source proof and scene ownership; stale publication and CAS refusal"
+  ],
+  "capabilityRevalidation": "Kernel dispatch plus Main lease/session/source validation immediately before persistence; UI availability is not authority.",
+  "fallbacks": [
+    "Preserve unsaved author text on invalid or stale intent; fail explicitly without partial scene/comment writes",
+    "Legacy nonempty ranges unchanged; new typed point state uses versioned schema and old-reader fail-closed",
+    "Cross-paragraph/cross-scene structural anchors remain separate full-plan work, never silently flattened"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Point offset bounds/grapheme and duplicate-text anchors",
+    "Interior insertion/replacement/deletion; explicit whole-anchor tombstone and Undo recovery",
+    "Zero-width start/end/ref ordering and coexistence with ranges",
+    "List continuation/table leaf ownership and stale scene switch",
+    "Forged after-state, incomplete splice replay, mismatched generations, failed-write recovery",
+    "Native early SOURCE/PACKAGED vertical route before broad tests; five changed Word exchanges per build for admitted route"
+  ],
+  "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
+  "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
+  "currentReality": [
+    "PR2075 merged and exact merged324 checks passed; base clean",
+    "Native Word supports adjacent zero-width markers and moves point5to6 on boundary insertion; full range deletion deletes Word comment",
+    "Generic point import and Core/export reject empty ranges; local anchor Save rejects overlapping text changes; current Save has no bounded splice stream"
+  ],
+  "targetOnly": [
+    "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert integrated PR; retain immutable prior schema and atomic journal/recovery; never manually mutate native project truth.",
+  "featureIntegrationManifestVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core typed comment anchors and replayed authoring intents; existing Main and atomic project transaction",
+  "interfacePlane": "Existing comment command, dialog and sidebar; immutable anchor context and bounded editor intent capture",
+  "surfaceManifest": {
+    "schemaVersion": "SURFACE_MANIFEST_V1",
+    "surfaceId": "EXISTING_WORD_COMMENT_AUTHORING",
+    "host": "existing comment authoring dialog and comment sidebar",
+    "slots": [
+      "existing-comment-command",
+      "existing-comment-dialog"
+    ],
+    "commands": [
+      "cmd.project.review.editComment"
+    ],
+    "projection": "Validated range or point context; never UI-owned canonical anchor",
+    "fallback": "Preserve draft and report stale or unsupported context",
+    "accessibility": [
+      "existing keyboard flow",
+      "labelled context",
+      "focus return"
+    ]
+  }
+}

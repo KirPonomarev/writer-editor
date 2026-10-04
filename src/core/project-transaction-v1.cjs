@@ -184,7 +184,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   if (value === undefined || value === null) return null;
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
   if (value?.mode === COMMENT_REBASE_MODE) {
-    if (!scenePair || Object.keys(value).sort().join(',') !== 'afterText,beforeText,mode'
+    if (!scenePair || Object.keys(value).sort().join(',') !== (value.editIntents !== undefined ? 'afterText,beforeText,editIntents,mode,sessionId' : 'afterText,beforeText,mode')
       || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
     let projectId, expected;
     try {
@@ -192,7 +192,8 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       if (typeof projectId !== 'string' || !projectId) fail();
       expected = planCommentAnchorSave({ beforeText: value.beforeText, projectId,
         sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
-        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene, includeUnchanged: true });
+        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene, includeUnchanged: true,
+        ...(value.editIntents !== undefined ? {editIntents:value.editIntents,sessionId:value.sessionId} : {}) });
     } catch { fail(); }
     if (!expected || expected.afterText !== value.afterText) fail();
     return expected;
@@ -203,8 +204,8 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       && Buffer.byteLength(value[key]) <= 65536)) fail();
   let before, after;
   try { before = JSON.parse(value.beforeText); after = JSON.parse(value.afterText); } catch { fail(); }
-  if (!before || !after || !['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2'].includes(before.schemaVersion)
-    || ![before.schemaVersion, 'yalken.rtk.word.non-text-return-state.v2'].includes(after.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
+  if (!before || !after || !['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3'].includes(before.schemaVersion)
+    || ![before.schemaVersion, ...(before.schemaVersion === 'yalken.rtk.word.non-text-return-state.v3' ? [] : ['yalken.rtk.word.non-text-return-state.v2']), 'yalken.rtk.word.non-text-return-state.v3'].includes(after.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
     || after.projectId !== before.projectId || !Number.isSafeInteger(before.revision) || before.revision < 0
     || !Number.isSafeInteger(after.revision) || after.revision !== before.revision + 1
     || !Array.isArray(before.threads) || !Array.isArray(after.threads) || !Array.isArray(before.events)

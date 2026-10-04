@@ -22303,6 +22303,11 @@ function normalizeEditorSnapshotPayload(payload) {
     }
     identity[key] = source[key];
   }
+  let commentEditIntentsJson = null;
+  if (source.commentEditIntentsJson != null) {
+    if (typeof source.commentEditIntentsJson !== 'string' || Buffer.byteLength(source.commentEditIntentsJson, 'utf8') > 65536) throw Error('COMMENT_EDIT_INTENT_BUDGET');
+    commentEditIntentsJson = JSON.stringify(require('./core/word-comment-edit-intents-v1.cjs').validateEditIntents(source.commentEditIntentsJson));
+  }
   let rootSplitBoundary = null;
   if (source.rootSplitBoundary !== undefined && source.rootSplitBoundary !== null) {
     const cut = source.rootSplitBoundary;
@@ -22317,6 +22322,7 @@ function normalizeEditorSnapshotPayload(payload) {
   return {
     ...identity,
     rootSplitBoundary,
+    commentEditIntentsJson,
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
@@ -23003,7 +23009,8 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               });
               commentState = planCommentAnchorSave({ beforeText: current.text,
                 projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-                beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true });
+                beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true,
+                ...(options.commentEditIntentsJson != null ? {editIntents:options.commentEditIntentsJson,sessionId:commentAuthoringSessionId} : {}) });
             }
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
@@ -34134,7 +34141,7 @@ async function runAutoSave() {
             snapshot.generation,
             snapshot.bookProfile,
             'autosave project transaction',
-            { beforeScenePublish: guardAutoSaveTarget },
+            { beforeScenePublish: guardAutoSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
           )),
           'autosave project transaction'
         );
@@ -34160,7 +34167,7 @@ async function runAutoSave() {
             snapshot.generation,
             snapshot.bookProfile,
             'autosave exact project transaction',
-            { beforeScenePublish: guardAutoSaveTarget },
+            { beforeScenePublish: guardAutoSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
           )),
           'autosave exact project transaction',
         );
@@ -34442,7 +34449,7 @@ async function handleSave() {
         snapshot.generation,
         snapshot.bookProfile,
         'save existing project transaction',
-        { beforeScenePublish: guardSaveTarget },
+        { beforeScenePublish: guardSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
       ); },
       'save existing project transaction'
     );
@@ -34503,7 +34510,7 @@ async function handleSave() {
         snapshot.generation,
         snapshot.bookProfile,
         'save new project transaction',
-        { beforeScenePublish: guardSaveTarget },
+        { beforeScenePublish: guardSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
       ); },
       'save new project transaction'
     );

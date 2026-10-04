@@ -56,7 +56,7 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [] }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
@@ -76,11 +76,27 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       && typeof block.text === 'string', 'COMMENT_RETURN_EXPORT_MAP_INVALID');
     byParagraph.set(block.documentParagraphIndex, block);
   }
+  // Private clean-text admission is explicit and complete; returned marker data
+  // cannot itself grant permission to change manuscript text.
+  demand(Array.isArray(textChanges) && textChanges.length <= blocks.length, 'COMMENT_RETURN_TEXT_PROOF_INVALID');
+  const textProof = new Map();
+  for (const change of textChanges) {
+    demand(plain(change) && Object.keys(change).sort().join(',') === 'newText,oldText,paragraphIndex,sceneId'
+      && typeof change.sceneId === 'string' && Number.isSafeInteger(change.paragraphIndex)
+      && typeof change.oldText === 'string' && typeof change.newText === 'string'
+      && change.oldText !== change.newText, 'COMMENT_RETURN_TEXT_PROOF_INVALID');
+    const block = blocks.find(b => b.sceneId === change.sceneId && b.sceneParagraphIndex === change.paragraphIndex);
+    demand(block && block.text === change.oldText && !textProof.has(block.documentParagraphIndex), 'COMMENT_RETURN_TEXT_PROOF_INVALID');
+    textProof.set(block.documentParagraphIndex, change);
+  }
+  const returnedText = new Map();
   const seenParagraphs = new Set();
   for (const p of returnedParagraphs) {
     const block = byParagraph.get(p?.paragraphIndex);
-    demand(block && !seenParagraphs.has(p.paragraphIndex) && p.paragraphText === block.text
+    demand(block && !seenParagraphs.has(p.paragraphIndex)
+      && p.paragraphText === (textProof.get(p.paragraphIndex)?.newText ?? block.text)
       && p.trackedRevision === false, 'COMMENT_RETURN_MANUSCRIPT_CHANGED');
+    returnedText.set(p.paragraphIndex, p.paragraphText);
     seenParagraphs.add(p.paragraphIndex);
   }
   const known = new Set(), tombstones = new Set((baseline.tombstones || []).flatMap(t => t.messageDurableIds || []).map(durable));
@@ -129,11 +145,12 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const block = byParagraph.get(actual.paragraphIndex);
     demand(block?.sceneId === expected.sceneId, 'COMMENT_RETURN_SCENE_MISMATCH');
     const a = actual.finalTextAnchorRange;
-    demand(plain(a) && a.blockTextSha256 === hash(block.text) && a.selectedText === actual.quotedAnchorText
+    demand(plain(a) && a.blockTextSha256 === hash(returnedText.get(block.documentParagraphIndex)) && a.selectedText === actual.quotedAnchorText
       && a.endUtf16 === a.startUtf16 + a.selectedText.length, 'COMMENT_RETURN_ANCHOR_INVALID');
-    const paragraphs = blocks.filter(b => b.sceneId === expected.sceneId).map(b => b.text);
+    const paragraphs = blocks.filter(b => b.sceneId === expected.sceneId).map(b => returnedText.get(b.documentParagraphIndex));
     const anchor = exactAnchor({ paragraphIndex: block.sceneParagraphIndex,
-      startUtf16: a.startUtf16, selectedText: a.selectedText }, expected.sceneId, paragraphs);
+      startUtf16: a.startUtf16, selectedText: a.selectedText,
+      ...(a.startUtf16 === a.endUtf16 ? {kind: 'point', affinity: 'right'} : {}) }, expected.sceneId, paragraphs);
     anchor.authoritySource = 'AUTHENTICATED_WORD_COMMENT_RETURN';
     const messages = [{ durableId: actual.durableId, body: actual.body, richBody: actual.richBody,
       author: actual.authorPersonIdentity?.author, initials: actual.authorPersonIdentity?.initials,
@@ -159,7 +176,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       ...(deletedMessageIds.length ? { deletedMessageIds } : {}),
       status: actual.status === 'RESOLVED' ? 'resolved' : 'open', anchor, messages: mapped });
   }
-  const inputDigest = hash(stable({ projectId, roundId, artifactSha256, baselineDigest: baseline.stateDigest, projection }));
+  const inputDigest = hash(stable({ projectId, roundId, artifactSha256, baselineDigest: baseline.stateDigest, ...(textChanges.length ? {textChanges} : {}), projection }));
   const operationId = `word-comment-return-${hash(roundId + '\n' + artifactSha256)}`;
   const prior = before.events.find(e => e?.type === 'WORD_COMMENT_RETURN_APPLIED' && e.operationId === operationId);
   if (prior) {
@@ -213,7 +230,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       'COMMENT_RETURN_TARGET_INVALID');
     demand(candidate.messages.length + (thread.deletedMessages?.length || 0) + removed.length <= 129, 'COMMENT_RETURN_STATE_BUDGET');
     const changedMessages = candidate.messages.filter((m, i) => stable(m) !== stable(thread.messages[i]));
-    const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256'].some(k => candidate.anchor[k] !== thread.anchor?.[k]);
+    const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'kind', 'affinity'].some(k => candidate.anchor[k] !== thread.anchor?.[k]);
     if (changedMessages.length || removed.length || anchorChanged || thread.status !== candidate.status) {
       changes.push({ threadId: thread.threadId, messageIds: changedMessages.map(m => m.commentId),
         ...(removed.length ? { deletedMessageIds: removed.map(m => m.commentId),

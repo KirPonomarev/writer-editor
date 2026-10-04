@@ -66,7 +66,8 @@ function isUtf16Boundary(value, offset) {
 function exactCommentAnchor(thread, blocks) {
   const anchor = plain(thread.anchor) ? thread.anchor : {};
   const selectedText = text(anchor.selectedText);
-  demand(anchor.sceneId === thread.sceneId && selectedText
+  demand(anchor.sceneId === thread.sceneId && (anchor.kind === 'point'
+    ? anchor.affinity === 'right' && anchor.selectedText === '' && Number.isSafeInteger(anchor.startUtf16) : !!selectedText)
     && anchor.selectedTextSha256 === digest(selectedText), 'DOCX_COMMENT_ANCHOR_INVALID');
   const sceneBlocks = blocks.filter(block => block.sceneId === thread.sceneId);
   let block;
@@ -87,7 +88,7 @@ function exactCommentAnchor(thread, blocks) {
     demand(block.text.indexOf(selectedText, start + 1) < 0, 'DOCX_COMMENT_ANCHOR_AMBIGUOUS');
   }
   demand(isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_UTF16_BOUNDARY');
-  return { blockId: block.blockId, sceneId: block.sceneId, documentParagraphIndex: block.documentParagraphIndex,
+  return { ...(anchor.kind === 'point' ? {kind: 'point', affinity: 'right'} : {}), blockId: block.blockId, sceneId: block.sceneId, documentParagraphIndex: block.documentParagraphIndex,
     startUtf16: start, endUtf16: end, selectedText };
 }
 
@@ -102,7 +103,7 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
     && require('../../io/inlineTypography.cjs').normalizeFontSize(exportTypography.fontSize) === exportTypography.fontSize),
   'DOCX_COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   if (state === undefined) return null;
-  demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2].includes(state.schemaVersion) && state.projectId === projectId
+  demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3].includes(state.schemaVersion) && state.projectId === projectId
     && Number.isSafeInteger(state.revision) && state.revision >= 0
     && Array.isArray(state.threads) && Array.isArray(state.events), 'DOCX_COMMENT_STATE_INVALID');
   const ids = new Set();
@@ -134,7 +135,7 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
         && Buffer.byteLength(message.body, 'utf8') <= 16384, 'DOCX_COMMENT_MESSAGE_INVALID');
       segmentDocxTextForSerialization(message.body);
       const content = commentBody.validateCommentMessageContent(message);
-      demand(!content.richBody || state.schemaVersion === commentBody.STATE_V2, 'COMMENT_RICH_STATE_VERSION_REQUIRED');
+      demand(!content.richBody || [commentBody.STATE_V2, commentBody.STATE_V3].includes(state.schemaVersion), 'COMMENT_RICH_STATE_VERSION_REQUIRED');
       reserve(ids, message.commentId);
       demand(!message.body.includes('\r'), 'DOCX_COMMENT_BODY_NON_CANONICAL_NEWLINE');
       const transportRichBody = exportTypography ? commentBody.commentBodyWithTypography(content, exportTypography) : null;
@@ -155,7 +156,9 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
     if (thread.status !== 'deleted') {
       demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
       const anchor = plain(thread.anchor) ? thread.anchor : {};
-      demand(anchor.sceneId === thread.sceneId && text(anchor.selectedText)
+      demand(anchor.kind !== 'point' || state.schemaVersion === commentBody.STATE_V3, 'COMMENT_POINT_STATE_VERSION_REQUIRED');
+      demand(anchor.sceneId === thread.sceneId && (anchor.kind === 'point'
+        ? anchor.affinity === 'right' && anchor.selectedText === '' && Number.isSafeInteger(anchor.startUtf16) : !!text(anchor.selectedText))
         && anchor.selectedTextSha256 === digest(anchor.selectedText), 'DOCX_COMMENT_ANCHOR_INVALID');
       segmentDocxTextForSerialization(anchor.selectedText);
     }
@@ -241,7 +244,7 @@ function commentMarkersForBlock(projection, block) {
     if (thread.anchor.blockId !== block.blockId) continue;
     const { startUtf16: start, endUtf16: end, selectedText } = thread.anchor;
     demand(thread.sceneId === block.sceneId && block.text.slice(start, end) === selectedText
-      && start < end && isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_STALE');
+      && (thread.anchor.kind === 'point' ? start === end && thread.anchor.affinity === 'right' : start < end) && isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_STALE');
     // Every reply needs its own range/reference for Word to retain it on save.
     for (const message of thread.messages) {
       const event = { start, end, ordinal: ordinal++, id: message.commentId };
@@ -252,16 +255,19 @@ function commentMarkersForBlock(projection, block) {
   // identical root/reply ranges are nested too. This orders transport markers
   // only; canonical thread/message order and genuinely crossing ranges stay intact.
   return new Map([...markers].map(([offset, boundary]) => {
-    const ends = [...boundary.end].sort((a, b) => b.start - a.start || b.ordinal - a.ordinal)
+    const pointEvents = boundary.start.filter(event => event.start === event.end);
+    const ends = boundary.end.filter(event => event.start !== event.end).sort((a, b) => b.start - a.start || b.ordinal - a.ordinal)
       .map(event => `<w:commentRangeEnd w:id="${event.id}"/>`).join('');
     // Word uses reference order when materializing threads on save. Closing a
     // reply's nested range first must not place its reference before its root.
-    const references = [...boundary.end].sort((a, b) => a.ordinal - b.ordinal)
+    const references = boundary.end.filter(event => event.start !== event.end).sort((a, b) => a.ordinal - b.ordinal)
       .map(event => `<w:r><w:commentReference w:id="${event.id}"/></w:r>`).join('');
-    const starts = boundary.start.sort((a, b) => b.end - a.end || a.ordinal - b.ordinal)
+    const starts = boundary.start.filter(event => event.start !== event.end).sort((a, b) => b.end - a.end || a.ordinal - b.ordinal)
       .map(event => `<w:commentRangeStart w:id="${event.id}"/>`).join('');
     // Adjacent ranges close before another range opens at the same offset.
-    return [offset, ends + references + starts];
+    const points = pointEvents.sort((a, b) => a.ordinal - b.ordinal)
+      .map(event => `<w:commentRangeStart w:id="${event.id}"/><w:commentRangeEnd w:id="${event.id}"/><w:r><w:commentReference w:id="${event.id}"/></w:r>`).join('');
+    return [offset, ends + references + points + starts];
   }));
 }
 

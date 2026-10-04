@@ -3403,7 +3403,12 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
       const nested = (a.start <= b.start && a.end >= b.end) || (b.start <= a.start && b.end >= a.end);
       const sameTextRange = a.semantic && b.semantic && a.paragraphIndex === b.paragraphIndex
         && a.semantic.startUtf16 === b.semantic.startUtf16 && a.semantic.endUtf16 === b.semantic.endUtf16;
-      if (overlaps && !nested && !sameTextRange) {
+      // Word may open a point marker before closing a range at the same
+      // character boundary. Its XML interval has width, its text interval does
+      // not: a proved point inside this same paragraph cannot cross a range.
+      const sameParagraphPoint = a.semantic && b.semantic && a.paragraphIndex === b.paragraphIndex
+        && (a.semantic.startUtf16 === a.semantic.endUtf16 || b.semantic.startUtf16 === b.semantic.endUtf16);
+      if (overlaps && !nested && !sameTextRange && !sameParagraphPoint) {
         crossingIds.add(a.id); crossingIds.add(b.id);
         reasons.push(reason('RTK_COMMENT_ANCHOR_CROSSING', `comments.${a.id}.${b.id}`, 'Crossing comment anchor intervals are typed, not exact.', { commentIdA: a.id, commentIdB: b.id }));
       }
@@ -3475,23 +3480,33 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
       relatedReplacementGroup,
     });
   }
-  // Orphan reference: commentReference present but no commentRangeStart.
+  // Reference-only comments are points at that exact run position. A missing
+  // half of a declared range is never repaired into a point.
   for (const [id, refToken] of refsById) {
     if (startsById.has(id)) continue;
-    if (!map.has(id)) {
-      map.set(id, {
-        anchorStart: refToken.openStart,
-        anchorEnd: refToken.closeEnd,
-        quotedAnchorText: '',
-        anchored: false,
-        anchorDiagnostic: 'RTK_COMMENT_ANCHOR_ORPHAN_REFERENCE',
-        hasStart: false,
-        hasEnd: false,
-        hasRef: true,
-        relatedRevision: null,
-      });
-    }
-    reasons.push(reason('RTK_COMMENT_ANCHOR_ORPHAN_REFERENCE', `comments.${id}`, 'commentReference without commentRangeStart is typed, not exact.', { commentId: id }));
+    const paragraph = paragraphs.find(token => token.openEnd <= refToken.openStart
+      && token.closeStart >= refToken.closeEnd);
+    const point = !endsById.has(id) && !duplicateIds.has(id) && paragraph
+      && refToken.path.at(-2) === 'r' && refToken.path.at(-3) === 'p';
+    const atReference = finalText => {
+      if (!point) return null;
+      const atoms = extractSemanticAtoms(documentXml, documentScan, paragraph)
+        .filter(atom => !finalText || atom.kind !== 'DeletedText');
+      const startUtf16 = semanticAtomsToText(atoms.filter(atom => atom.order < refToken.openStart)).length;
+      return {startUtf16, endUtf16:startUtf16, selectedText:'',
+        blockTextSha256:cryptoPort.sha256Text(semanticAtomsToText(atoms))};
+    };
+    map.set(id, {
+      anchorStart:refToken.openStart, anchorEnd:refToken.closeEnd, quotedAnchorText:'',
+      anchorRange:atReference(false), finalTextAnchorRange:atReference(true),
+      anchored:Boolean(point), anchorDiagnostic:point ? null : 'RTK_COMMENT_ANCHOR_ORPHAN_REFERENCE',
+      hasStart:false, hasEnd:endsById.has(id), hasRef:true,
+      anchorLocator:anchorLocatorForOffset(documentScan, refToken.openStart),
+      relatedRevision:relatedRevisionForRange(documentScan, refToken.openStart, refToken.closeEnd),
+      relatedReplacementGroup:null,
+    });
+    if (!point) reasons.push(reason('RTK_COMMENT_ANCHOR_ORPHAN_REFERENCE', `comments.${id}`,
+      'A unique reference-only point in one supported paragraph or a complete range is required.', {commentId:id}));
   }
   return map;
 }

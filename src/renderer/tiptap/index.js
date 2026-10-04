@@ -1,3 +1,4 @@
+import { DocumentCommentEditIntents, getCommentEditIntentsJson, checkpointCommentEditIntents, commentSelectionIntent } from './documentCommentEditIntents.mjs';
 import wordStories from '../../core/word-stories-projection-v1.cjs';
 import { DocumentStories, applyStoryBody } from './documentStories.mjs';
 import wordSections from '../../core/word-sections-v1.cjs';
@@ -603,6 +604,7 @@ export function initTiptap(mountEl, options = {}) {
         const status = document.getElementById('status');
         if (status) status.textContent = message;
       } }),
+      DocumentCommentEditIntents,
       DocumentSections,
       DocumentStories,
       DocumentHeadings,
@@ -756,6 +758,16 @@ export function setTiptapPlainText(text = '') {
 
 export function applyTiptapStoryBody(expectedDoc, storyId, body) {
   return applyStoryBody(currentEditorInstance, expectedDoc, storyId, body);
+}
+
+export function getTiptapCommentEditIntentsJson() {
+  return getCommentEditIntentsJson(currentEditorInstance);
+}
+export function checkpointTiptapCommentEditIntents() {
+  return checkpointCommentEditIntents(currentEditorInstance);
+}
+export function getTiptapCommentSelectionIntent() {
+  return commentSelectionIntent(currentEditorInstance);
 }
 
 export function getTiptapDocumentSnapshot() {

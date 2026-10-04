@@ -127,7 +127,7 @@ async function mainHarness(t,options={}) {
   publications++;return real.commitManifestText(args);
  }};
  const gateway=require('../../src/core/legacy-strangler-v1.cjs');
- const sandbox={fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
+ const sandbox={commentAuthoringSessionId:"main-session-1",fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   loadDocumentContentEnvelopeModule:()=>import('../../src/renderer/documentContentEnvelope.mjs'),
   pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs'),
   commitProjectTransaction:tx.commitProjectTransaction,recoverProjectTransaction:tx.recoverProjectTransaction,
@@ -289,4 +289,89 @@ for(const boundary of ['SCENE','COMMENT','COMMIT'])test(`paragraph split SIGKILL
  assert.equal((await child(f,'crash',boundary)).signal,'SIGKILL');
  const r=await child(f,'recover');assert.equal(r.code,0,r.stderr);
  assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.commentState.afterText]:[f.beforeScene,f.beforeManifest,f.beforeText]);
+});
+
+const editModel = require('../../src/core/word-comment-edit-intents-v1.cjs');
+function intent(old,from,to,insertText,{id='ledger-e1',historyId='ledger-h1',direction='forward'}={}) {
+  return {schemaVersion:1,baselineTextSha256:editModel.textDigest([old]),edits:[{id,historyId,direction,paragraphIndex:0,fromUtf16:from,toUtf16:to,removedText:old.slice(from,to),insertText}]};
+}
+function intentSave(old,next,state,edits,sessionId='main-session-1') {
+  return planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:content(old),afterContent:content(next),editIntents:edits,sessionId,includeUnchanged:true});
+}
+test('actual splices preserve duplicate occurrence, calibrated affinities, interior text and exact Undo after saved deletion',()=>{
+  const old='Alpha anchor omega', before=graph(old,0,'Alpha');
+  const inserted='AlINSIDEpha anchor omega';
+  const first=intentSave(old,inserted,before,intent(old,2,2,'INSIDE'));
+  assert.equal(JSON.parse(first.afterText).threads[0].anchor.selectedText,'AlINSIDEpha');
+  const undo=intentSave(inserted,old,first.afterText,intent(inserted,2,8,'',{id:'ledger-e2',direction:'undo'}));
+  assert.deepEqual(JSON.parse(undo.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const deleted=' anchor omega';
+  const deletion=intentSave(old,deleted,before,intent(old,0,5,''));
+  const dead=JSON.parse(deletion.afterText).threads[0];assert.equal(dead.status,'deleted');
+  assert.deepEqual(dead.messages,JSON.parse(before).threads[0].messages);
+  const restored=intentSave(deleted,old,deletion.afterText,intent(deleted,0,0,'Alpha',{id:'ledger-e2',direction:'undo'}));
+  assert.equal(JSON.parse(restored.afterText).threads[0].status,'open');
+  assert.deepEqual(JSON.parse(restored.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const redo=intentSave(old,deleted,restored.afterText,intent(old,0,5,'',{id:'ledger-e3',direction:'redo'}));
+  assert.equal(JSON.parse(redo.afterText).threads[0].status,'deleted');
+  const replaced=intentSave(old,'Beta anchor omega',before,intent(old,0,5,'Beta'));
+  assert.equal(JSON.parse(replaced.afterText).threads[0].status,'deleted');
+  for(const [at,expectedStart,expectedQuote] of [[0,1,'Alpha'],[5,0,'Alpha'],[2,0,'AlXpha']]) {
+    const next=old.slice(0,at)+'X'+old.slice(at);
+    const a=JSON.parse(intentSave(old,next,before,intent(old,at,at,'X')).afterText).threads[0].anchor;
+    assert.equal(a.startUtf16,expectedStart);assert.equal(a.selectedText,expectedQuote);
+  }
+  const repeated=graph('aaaa',1,'a');
+  assert.equal(JSON.parse(intentSave('aaaa','aaaaa',repeated,intent('aaaa',1,1,'a')).afterText).threads[0].anchor.startUtf16,2);
+});
+test('intent proof rejects wrong replay, accessor, cycle, stale history/session and does not revive manual deletion',()=>{
+  const old='Alpha anchor omega',before=graph(old,0,'Alpha'),next=' anchor omega';
+  const deleted=intentSave(old,next,before,intent(old,0,5,''));
+  const forged=intent(next,0,0,'Alpha',{id:'ledger-e2',direction:'undo'});
+  assert.throws(()=>intentSave(next,'X'+old,deleted.afterText,forged),/COMMENT_EDIT_REPLAY_MISMATCH/);
+  const unrelated=JSON.parse(before);unrelated.threads[0].status='deleted';
+  const retained=intentSave(old,'X'+old,JSON.stringify(unrelated),intent(old,0,0,'X',{direction:'undo'}));
+  assert.equal(JSON.parse(retained.afterText).threads[0].status,'deleted');
+  const wrongSession=intentSave(next,old,deleted.afterText,forged,'different-session');
+  assert.equal(JSON.parse(wrongSession.afterText).threads[0].status,'deleted');
+  let invoked=false;const getter={get schemaVersion(){invoked=true;return 1;}};
+  assert.throws(()=>editModel.validateEditIntents(getter),/COMMENT_EDIT_INTENT_INVALID/);assert.equal(invoked,false);
+  const cycle={};cycle.self=cycle;assert.throws(()=>editModel.validateEditIntents(cycle),/COMMENT_EDIT_INTENT_INVALID/);
+  const invalid=intent(old,0,1,'X');invalid.edits[0].removedText='Z';
+  assert.throws(()=>intentSave(old,'X'+old.slice(1),before,invalid),/COMMENT_EDIT_SPLICE_STALE/);
+});
+test('point Save uses explicit version and right affinity; transaction recomputes splice and rejects forged after graph',async t=>{
+  const f=fixture(t),state=JSON.parse(f.beforeText),a=state.threads[0].anchor;
+  Object.assign(a,{kind:'point',affinity:'right',selectedText:'',selectedTextSha256:sha('')});state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+  const beforeText=JSON.stringify(state),old='Left anchor right',next='Left Xanchor right';
+  const delta=intentSave(old,next,beforeText,intent(old,5,5,'X'));
+  assert.equal(JSON.parse(delta.afterText).threads[0].anchor.startUtf16,6);
+  fs.writeFileSync(f.commentPath,beforeText);
+  const request={...f.request,sceneContent:content(next),commentState:delta};
+  const forged=JSON.parse(delta.afterText);forged.threads[0].messages[0].body='injected';
+  await assert.rejects(()=>tx.commitProjectTransaction({...request,commentState:{...delta,afterText:JSON.stringify(forged)},publishManifest}),/E_PROJECT_TRANSACTION_COMMENT_STATE/);
+  await tx.commitProjectTransaction({...request,publishManifest});
+  assert.equal(fs.readFileSync(f.commentPath,'utf8'),delta.afterText);assert.equal(fs.readFileSync(f.scenePath,'utf8'),content(next));
+});
+test('actual Main Save admits interior splice and historical Undo after saved whole replacement atomically',async t=>{
+  const f=await mainHarness(t),old='Left anchor right',next='Left Beta right';
+  const forward=intent(old,5,11,'Beta');
+  const saved=await f.save(content(next),{commentEditIntentsJson:JSON.stringify(forward)});
+  assert.equal(saved.success,true,JSON.stringify(saved));
+  const dead=JSON.parse(fs.readFileSync(f.commentPath,'utf8'));assert.equal(dead.threads[0].status,'deleted');
+  const undo=intent(next,5,9,'anchor',{id:'ledger-e2',direction:'undo'});
+  const restored=await f.save(content(old),{commentEditIntentsJson:JSON.stringify(undo)});
+  assert.equal(restored.success,true,JSON.stringify(restored));
+  const state=JSON.parse(fs.readFileSync(f.commentPath,'utf8'));assert.equal(state.threads[0].status,'open');
+  assert.deepEqual(state.threads[0].anchor,JSON.parse(f.beforeText).threads[0].anchor);
+  assert.deepEqual(state.threads[0].messages,JSON.parse(f.beforeText).threads[0].messages);
+  assert.equal(fs.readFileSync(f.scenePath,'utf8'),f.beforeScene);
+});
+test('many harmless outside-anchor groups never exhaust canonical comment history',()=>{
+  let text='Alpha anchor omega',state=graph(text,0,'Alpha');
+  for(let n=0;n<80;n++){
+    const next=text+'x';state=intentSave(text,next,state,intent(text,text.length,text.length,'x',{id:`e${n}`,historyId:`h${n}`})).afterText;text=next;
+  }
+  assert.equal(JSON.parse(state).threads[0].anchorEditHistory,undefined);
+  assert.equal(JSON.parse(state).threads[0].anchor.selectedText,'Alpha');
 });
