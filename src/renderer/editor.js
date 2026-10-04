@@ -22750,6 +22750,10 @@ async function handleNumberingSettings() {
         if (result?.performed !== true) throw Error(result?.reason || 'NUMBERING_NOT_APPLIED');
         finish(result);
       } catch (cause) {
+        if (cause.message === 'NO_OP') {
+          error.textContent = 'Уже используется выбранная нумерация.';
+          return;
+        }
         error.textContent = /STALE/u.test(cause.message)
           ? 'Документ изменился. Скопируйте нужный шаблон и откройте настройки заново.'
           : 'Проверьте шаблон, начальное число и выбранный предыдущий список. Настройки сохранены в этом окне.';

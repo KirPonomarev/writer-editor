@@ -793,7 +793,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "2d03dd9e894a2142f165d1977f1029d33f0c4f8818fdfbb2d4070c4e3aabe1c1"
+        "sha256": "da38b850a627b3eced8a64af8f54c3df95f69f47184e3b1e26e28da5890a5ae9"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -957,7 +957,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "729d1a7b5f9e1db1702369107732473e94f9c09823cfb0f03008e319cfd1c69e"
+        "sha256": "f99618ffec672e75707e0ffd04c9dc4e81e6367829bc651a2034b88c15eae0f4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2109,7 +2109,7 @@
       },
       {
         "path": "src/core/word-list-numbering-v1.cjs",
-        "sha256": "c7ea08a9a193bb31c420c1377c1012a5c90261897053e9621da3890b380f955b"
+        "sha256": "bb53bf03ee4dcbef544d74222ed1e80236fcfa8a0ecb7d3776145ab3cda651fc"
       },
       {
         "path": "src/renderer/tiptap/documentListNumbering.mjs",
@@ -2365,7 +2365,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
-        "sha256": "e9ff178bb9a3a27c2393bf6f63ff0c60d47c86d02d7b92fd8ad5d1ed58c8e9ef"
+        "sha256": "1271940fb6d9d7e3d43268b33f5828337cd0102273179e6d052b22fd4b26c6e6"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
@@ -2377,7 +2377,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "a27235743c960b5587da622c32f5d71060860b9e7ad16dee47cdc05e5fcb402f"
+        "sha256": "aa21ffeb28ee900b756eeb482d826f199dc3812e9cbbbb028976a4257b5f1f5b"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",

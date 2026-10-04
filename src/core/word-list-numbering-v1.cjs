@@ -239,7 +239,26 @@ function planNumberingEdit(doc, intent) {
     if (!found || JSON.stringify(found.levels) !== JSON.stringify(levels)) fail();
     if (current) {
       const oldLineage = current.lineageId || current.instanceId, newLineage = found.lineageId || found.instanceId;
-      if (oldLineage === newLineage) return normalize(next);
+      if (oldLineage === newLineage) {
+        // Continue cancels a reset at this instance's first root occurrence.
+        // A later representative already continues; removing its consumed
+        // reset would rewrite the earlier, unselected part of the manuscript.
+        let earlierRoot = false;
+        for (const [node, item] of before) {
+          if (JSON.stringify(item.path) === JSON.stringify(path)) break;
+          if (item.instanceId === current.instanceId && item.level === 0) earlierRoot = true;
+        }
+        if (!earlierRoot && current.startOverrides?.some(value => value.level === 0)) {
+          visitNodes(next, node => {
+            const value = node.attrs?.wordNumbering;
+            if (value?.instanceId !== current.instanceId) return;
+            const remaining = (value.startOverrides || []).filter(override => override.level !== 0);
+            if (remaining.length) value.startOverrides = remaining;
+            else delete value.startOverrides;
+          });
+        }
+        return normalize(next);
+      }
       for (const [node, item] of before) {
         if (JSON.stringify(item.path) === JSON.stringify(path)) break;
         const value = node.attrs.wordNumbering;

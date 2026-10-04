@@ -97,7 +97,7 @@ test('mixed legacy and patterned starts remain bound to their own list nodes',as
 
 test('actual settings dialog retains input after stale/capability refusal and cancellation never applies',async()=>{
   const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
-  for(const scenario of ['cancel','stale','capability','refused','apply']) {
+  for(const scenario of ['cancel','stale','capability','refused','noop','apply']) {
     const nodes=[],applied=[];let focused;
     class Element {
       constructor(tag){this.tagName=tag.toUpperCase();this.children=[];this.style={};this.events={};this.attrs={};this.isConnected=true;this.value='';nodes.push(this);}
@@ -113,7 +113,7 @@ test('actual settings dialog retains input after stale/capability refusal and ca
       isLinkDialogOpen:()=>false,updateStatusText(){},window:{},EXTRA_COMMAND_IDS:{LIST_CONFIGURE_NUMBERING:'configure'},withEditorModeCommandPayload:()=>({}),
       enforceCapabilityForCommand:()=>({ok:scenario!=='capability'}),
       captureTiptapNumberingTarget:()=>({levels:[{format:'1',start:1,text:'%1.',restartAfterLevel:null}],level:0,candidates:[],
-        preview:()=>['1.'],apply:input=>{if(scenario==='refused')return {performed:false,reason:'REFUSED'};applied.push(input);return {performed:true};}})});
+        preview:()=>['1.'],apply:input=>{if(scenario==='noop')return {performed:false,reason:'NO_OP'};if(scenario==='refused')return {performed:false,reason:'REFUSED'};applied.push(input);return {performed:true};}})});
     const start=source.indexOf('let activeNumberingDialog = null;'),end=source.indexOf('function dispatchListTypeAction(',start);
     vm.runInContext(source.slice(start,end),ctx);const pending=ctx.handleNumberingSettings();
     const dialog=nodes.find(node=>node.tagName==='DIALOG'),template=nodes.find(node=>node.id==='numbering-template');
@@ -122,6 +122,7 @@ test('actual settings dialog retains input after stale/capability refusal and ca
     if(scenario!=='cancel')nodes.find(node=>node.textContent==='Применить').events.click();
     if(scenario!=='apply'){
       assert.equal(applied.length,0);assert.equal(dialog.open,true);assert.equal(template.value,'Article %1');
+      if(scenario==='noop'){assert.equal(nodes.find(node=>node.id==='numbering-error').textContent,'Уже используется выбранная нумерация.');assert.notEqual(template.attrs['aria-invalid'],'true');}
       nodes.find(node=>node.textContent==='Отмена').events.click();
     }
     const result=await pending;assert.equal(result.performed,scenario==='apply');assert.equal(dialog.isConnected,false);
@@ -367,5 +368,26 @@ test('actual ProseMirror clipboard context cannot bypass numbering identity vali
     assert.equal(notices.length,4);
     const clean=new pmModel.Slice(pmModel.Fragment.from(editor.schema.nodeFromJSON(p('ordinary text'))),0,0);
     assert.equal(handlers.handlePaste({state:editor.state},{clipboardData:{getData:()=>''}},clean),false);
+  }finally{editor.destroy();}
+});
+
+test('captured settings Restart then Continue clears only selected reset and Undo/Redo restores 10 and 11',async()=>{
+  const levels=core.defaultLevels(1);levels[0].text='Clause %1';levels[0].start=9;
+  const pattern={schemaVersion:1,instanceId:'original',lineageId:'shared',level:0,levels};
+  const list=text=>({type:'orderedList',attrs:{start:9,wordNumbering:structuredClone(pattern)},content:[{type:'listItem',content:[p(text)]}]});
+  const {editor,ui}=await harness(doc(list('earlier'),p('gap'),list('selected'),p('gap2'),list('later')));
+  try {
+    assert.deepEqual(editorPatternLabels(editor),['Clause 9','Clause 10','Clause 11']);
+    editor.commands.setTextSelection(editorTextPosition(editor,'selected'));
+    const target=ui.captureNumberingTarget(editor),restartLevels=structuredClone(target.levels);restartLevels[0].start=3;
+    assert.equal(target.apply({action:'restart',levels:restartLevels}).performed,true);
+    assert.deepEqual(editorPatternLabels(editor),['Clause 9','Clause 3','Clause 4']);
+    const restarted=editor.getJSON(),next=ui.captureNumberingTarget(editor);
+    assert.deepEqual(next.preview({action:'continue',instanceId:'original'}),['Clause 10']);
+    assert.equal(next.apply({action:'continue',instanceId:'original'}).performed,true);
+    assert.deepEqual(editorPatternLabels(editor),['Clause 9','Clause 10','Clause 11']);
+    const continued=editor.getJSON();assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),restarted);
+    assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),continued);
+    assert.equal(editor.state.doc.textContent,'earliergapselectedgap2later');
   }finally{editor.destroy();}
 });

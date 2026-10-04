@@ -160,3 +160,24 @@ test('clipboard rejects forged shape, unknown keys, orphan dependent levels and 
  const orphan=model.normalize(document(list({...pattern(),level:1},item('orphan'))));assert.throws(()=>model.createNumberingClipboard(orphan));
  let calls=0;const hostile={};Object.defineProperty(hostile,'type',{get(){calls++;return 'doc';}});assert.throws(()=>model.createNumberingClipboard(hostile));assert.equal(calls,0);assert.deepEqual(destination,document());
 });
+test('same-lineage Continue cancels only selected first root reset, preserving child and other instance overrides',()=>{
+ const levels=model.defaultLevels(2);Object.assign(levels[0],{start:3,text:'Clause %1'});Object.assign(levels[1],{format:'a',text:'%1.%2.'});
+ const a={...pattern(levels),instanceId:'a',lineageId:'shared'},b={...a,instanceId:'b',startOverrides:[{level:0,start:9}]};
+ const restarted={...a,instanceId:'restart',startOverrides:[{level:0,start:3},{level:1,start:2}]};
+ const child=p=>({...p,level:1});
+ const source=model.normalize(document(list(a,item('first')),list(b,item('nine')),list(restarted,item('restart',list(child(restarted),item('child')))),list(b,item('next'))));
+ const before=structuredClone(source),result=model.planNumberingEdit(source,{listPath:[2],action:'continue',instanceId:'a'});
+ assert.deepEqual(labels(source),['Clause 3','Clause 9','Clause 3','3.b.','Clause 4']);
+ assert.deepEqual(labels(result),['Clause 3','Clause 9','Clause 10','10.b.','Clause 11']);
+ assert.deepEqual(result.content.slice(0,2),source.content.slice(0,2));assert.deepEqual(source,before);
+ assert.deepEqual(result.content[2].attrs.wordNumbering.startOverrides,[{level:1,start:2}]);
+ assert.deepEqual(result.content[2].content[0].content[1].attrs.wordNumbering.startOverrides,[{level:1,start:2}]);
+ assert.deepEqual(result.content[3].attrs.wordNumbering.startOverrides,[{level:0,start:9}]);
+ assert.deepEqual(model.planNumberingEdit(result,{listPath:[2],action:'continue',instanceId:'a'}),result);
+});
+test('Continue on a later same-instance representative does not rewrite an already consumed prefix reset',()=>{
+ const levels=model.defaultLevels(1),a={...pattern(levels),instanceId:'a',lineageId:'shared'},b={...a,instanceId:'b',startOverrides:[{level:0,start:9}]};
+ const source=model.normalize(document(list(a,item('first')),list(b,item('reset')),list(b,item('continued'))));
+ assert.deepEqual(labels(source),['1.','9.','10.']);
+ assert.deepEqual(model.planNumberingEdit(source,{listPath:[2],action:'continue',instanceId:'a'}),source);
+});
