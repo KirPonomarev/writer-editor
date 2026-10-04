@@ -216,8 +216,9 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       && Buffer.byteLength(value[key]) <= 65536)) fail();
   let before, after;
   try { before = JSON.parse(value.beforeText); after = JSON.parse(value.afterText); } catch { fail(); }
-  if (!before || !after || !['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3'].includes(before.schemaVersion)
-    || ![before.schemaVersion, ...(before.schemaVersion === 'yalken.rtk.word.non-text-return-state.v3' ? [] : ['yalken.rtk.word.non-text-return-state.v2']), 'yalken.rtk.word.non-text-return-state.v3'].includes(after.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
+  const commentVersions = ['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3', 'yalken.rtk.word.non-text-return-state.v4'];
+  if (!before || !after || !commentVersions.includes(before.schemaVersion)
+    || !commentVersions.includes(after.schemaVersion) || commentVersions.indexOf(after.schemaVersion) < commentVersions.indexOf(before.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
     || after.projectId !== before.projectId || !Number.isSafeInteger(before.revision) || before.revision < 0
     || !Number.isSafeInteger(after.revision) || after.revision !== before.revision + 1
     || !Array.isArray(before.threads) || !Array.isArray(after.threads) || !Array.isArray(before.events)

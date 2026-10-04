@@ -140,6 +140,7 @@ for (const nativeDefaults of [false, true]) test(`actual main handler captures c
     isAllowedFilePath: p => p === scenePath, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot, projectId: 'p1' }),
     loadDocumentContentEnvelopeModule: async () => envelope,
+    commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,
     userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
     computeHash: hash, canonicalizeComparableValue: value => value, normalizeRtkNonTextReturnThreadProjection: value => value,
     loadRtkNonTextReturnModule: async () => runtime, queueDiskOperation: operation => operation(),
@@ -432,4 +433,96 @@ test('snapshot run equivalence is confined to adjacent identical leaves in docum
   const a=structuredClone(joined),b=structuredClone(joined);
   a.content[0].attrs={foreign:[leaf('A'),leaf('B')]};b.content[0].attrs={foreign:[leaf('AB')]};
   assert.equal(equal(a,b),false);
+});
+
+test('actual Main multi-paragraph authoring preserves identities across lifecycle and independently refuses foreign cell ranges', async t => {
+  const {projectRoot,statePath,runtime}=await disk(t), envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]});
+  let doc={type:'doc',content:[paragraph('Left same'),paragraph('Middle same'),paragraph('Right same')]};
+  const scenePath=path.join(projectRoot,'roman/a.txt');fs.mkdirSync(path.dirname(scenePath),{recursive:true});
+  const saveDoc=()=>fs.writeFileSync(scenePath,envelope.composeObservablePayload({doc}));saveDoc();
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8'), vm=require('node:vm');
+  const sandbox={crypto,path,fs:fs.promises,isDirty:false,autoSaveInProgress:false,currentFilePath:scenePath,
+    lastSignaledEditGeneration:0,currentLifecycleSubjectId:()=> 'subject1',isAllowedFilePath:p=>p===scenePath,
+    getDocumentContextFromPath:()=>({kind:'scene'}),readReviewExactTextApplyProjectBinding:async()=>({ok:true,projectRoot,projectId:'p1'}),
+    loadDocumentContentEnvelopeModule:async()=>envelope,userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),
+    commentSceneParagraphs:require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,computeHash:hash,
+    docxReviewPreviewSessionDetailString:v=>typeof v==='string'?v:'',isPlainObjectValue:v=>v&&typeof v==='object'&&!Array.isArray(v),
+    normalizeCommentProvenance:require('../../src/export/docx/docxReviewPacketComments.js').normalizeCommentProvenance,
+    loadRtkNonTextReturnModule:async()=>runtime,queueDiskOperation:op=>op(),
+    getMainProjectManifestAuthority:async()=>({withProjectLease:(_id,op)=>op({assertOwned:async()=>{},publish:fn=>fn()})}),
+    requestEditorSnapshot:async()=>({content:fs.readFileSync(scenePath,'utf8'),generation:0})};
+  const ctx=vm.createContext(sandbox);
+  vm.runInContext(source.slice(source.indexOf('function normalizeRtkNonTextReturnThreadProjection('),source.indexOf('function buildRtkNonTextReturnReviewSurfaceProjection(')),ctx);
+  vm.runInContext(source.slice(source.indexOf('// Ordinary comment authoring uses committed scene truth'),source.indexOf('async function handleRtkRootCommentReturnCommandSurface')),ctx);
+  const kernel=require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({[model.COMMAND_ID]:ctx.handleCommentAuthoringCommand});
+  const dispatch=async(action,extra={})=>{
+    const p=await ctx.readCommentAuthoringProjection();assert.equal(p.available,true,JSON.stringify(p));
+    return kernel.dispatch(model.COMMAND_ID,{requestId:crypto.randomUUID(),action,projectId:p.projectId,sceneId:p.sceneId,subjectId:p.subjectId,
+      expectedStateSha256:p.expectedStateSha256,expectedSceneSha256:p.expectedSceneSha256,...extra});
+  };
+  const range={kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:5,endParagraphIndex:2,endUtf16:5,selectedText:'same\nMiddle same\nRight'};
+  const createResult=await dispatch('create',{body:'Root literal',anchor:range});assert.equal(createResult.ok,true,JSON.stringify(createResult));
+  const initial=JSON.parse(fs.readFileSync(statePath)),threadId=initial.threads[0].threadId,rootId=initial.threads[0].rootCommentId;
+  const p=await ctx.readCommentAuthoringProjection();assert.deepEqual(JSON.parse(JSON.stringify(p.threads[0].anchor)),{
+    sceneId:'roman/a.txt',blockId:'',paragraphIndex:0,kind:range.kind,startUtf16:5,endParagraphIndex:2,endUtf16:5,
+    selectedText:range.selectedText,selectedTextSha256:hash(range.selectedText),authoritySource:'CANONICAL_LOCAL_AUTHORING',sourceChangeId:''});
+  for(const [action,extra] of [['reply',{body:'Reply literal'}],['resolve',{}],['reopen',{}],
+    ['reanchor',{anchor:{paragraphIndex:1,startUtf16:0,selectedText:'Middle'}}],['reanchor',{anchor:range}]]) {
+    const result=await dispatch(action,{threadId,...extra});assert.equal(result.ok,true,JSON.stringify(result));
+  }
+  const current=JSON.parse(fs.readFileSync(statePath));assert.equal(current.threads[0].threadId,threadId);assert.equal(current.threads[0].rootCommentId,rootId);
+  assert.deepEqual(current.threads[0].messages.map(m=>m.body),['Root literal','Reply literal']);
+  const before=fs.readFileSync(statePath,'utf8');
+  for(const anchor of [{...range,endUtf16:500},{...range,selectedText:'forged'},{...range,endParagraphIndex:0}]) {
+    assert.equal((await dispatch('reanchor',{threadId,anchor})).ok,false);assert.equal(fs.readFileSync(statePath,'utf8'),before);
+  }
+  doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[paragraph('Left same')]},{type:'tableCell',content:[paragraph('Right same')]}]}]}]};saveDoc();
+  const raw=fs.readFileSync(scenePath,'utf8');
+  const denied=await dispatch('create',{body:'Foreign cell',anchor:{...range,endParagraphIndex:1,selectedText:'same\nRight'}});
+  assert.equal(denied.ok,false);assert.match(JSON.stringify(denied),/COMMENT_ANCHOR_OWNER/);
+  assert.equal(fs.readFileSync(statePath,'utf8'),before);assert.equal(fs.readFileSync(scenePath,'utf8'),raw);
+});
+
+test('legacy selection sends both endpoints through existing create/reanchor and preserves draft when context changes',async()=>{
+  const vm=require('node:vm'), envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Left same'}]},{type:'paragraph'},{type:'paragraph',content:[{type:'text',text:'Right same'}]}]};
+  const calls=[],projection={available:true,projectId:'p1',sceneId:'roman/a.txt',subjectId:'subject',expectedStateSha256:'state',expectedSceneSha256:'scene',threads:[]};
+  const sandbox={isTiptapMode:false,getSelectionOffsets:()=>({start:5,end:16}),parseObservablePayload:envelope.parseObservablePayload,
+    composeDocumentContent:()=>envelope.composeObservablePayload({doc}),deriveVisibleTextFromDocument:envelope.deriveVisibleTextFromDocument,
+    Intl,crypto,TextEncoder,wordCommentDraft:null,wordCommentBusy:false,wordCommentNotice:'',wordCommentEditor:null,
+    reviewSurfaceState:{commentAuthoring:projection},reviewSurfaceArray:x=>x||[],renderReviewSurface:()=>{},focusWordCommentDraft:()=>{},
+    commentBodyDocumentForEditor:()=>({type:'doc',content:[{type:'paragraph'}]}),reviewSurfaceUnwrapCommandResult:x=>x,
+    invokePreloadUiCommandBridge:async(id,input)=>{calls.push({id,input:JSON.parse(JSON.stringify(input))});return {ok:true};},loadReviewSurfaceFromQuery:async()=>{}};
+  const ctx=vm.createContext(sandbox);vm.runInContext(source.slice(source.indexOf('function wordCommentSelectionIntent()'),source.indexOf('function reviewSurfaceNormalizeState(input')),ctx);
+  const button=action=>({disabled:false,dataset:{wordCommentAction:action,threadId:'thread'}});
+  await ctx.handleWordCommentAction(button('create'));
+  assert.deepEqual(JSON.parse(JSON.stringify(ctx.wordCommentDraft.anchor)),{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:5,endParagraphIndex:2,endUtf16:5,selectedText:'same\n\nRight'});
+  projection.expectedStateSha256='changed';await ctx.handleWordCommentAction(button('save'));assert.equal(calls.length,0);assert.ok(ctx.wordCommentDraft);
+  projection.expectedStateSha256='state';await ctx.handleWordCommentAction(button('save'));assert.equal(calls.length,1);assert.equal(calls[0].id,model.COMMAND_ID);assert.equal(calls[0].input.anchor.endParagraphIndex,2);
+  await ctx.handleWordCommentAction(button('reanchor'));assert.equal(calls.length,2);assert.equal(calls[1].input.anchor.endUtf16,5);
+});
+
+test('actual Main private comment proof retains original signed table ancestry and Core rejects conflicting covered owners',()=>{
+  const vm=require('node:vm'),ranges=require('../../src/core/word-comment-ranges-v1.cjs');
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+  const start=source.indexOf('const commentExportMap={...proof.exportMap'),end=source.indexOf('if(commentExportMap.commentExport',start);
+  assert.ok(start>=0&&end>start);
+  const table={tableId:'outer',row:0,column:0,rowCount:1,columnCount:1,colspan:1,rowspan:1,header:false,paragraphIndex:0,paragraphCount:2,
+    nested:{tableId:'inner',row:0,column:0,rowCount:1,columnCount:2,colspan:1,rowspan:1,header:false,paragraphIndex:0,paragraphCount:2}};
+  const blocks=['First','Last'].map((text,index)=>({documentParagraphIndex:index,formatIr:{runs:[{text}],table:{...structuredClone(table),paragraphIndex:index}}}));
+  const proof={exportMap:{scenes:[{sceneId:'s',rawSha256:'a'.repeat(64),blocks}]},returnedThreads:[{table:{tableId:'forged',row:9,column:9}}]};
+  const ctx=vm.createContext({proof,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v))});
+  const compact=vm.runInContext(source.slice(start,end)+';commentExportMap',ctx);
+  const clean=JSON.parse(JSON.stringify(compact));
+  assert.deepEqual(clean.scenes[0].blocks.map(b=>b.formatIr.table),blocks.map(b=>b.formatIr.table));
+  assert.notEqual(compact.scenes[0].blocks[0].formatIr.table,table);
+  const rows=clean.scenes[0].blocks.map(b=>({text:b.formatIr.runs.map(r=>r.text).join(''),table:b.formatIr.table}));
+  const anchor=ranges.deriveCommentAnchor({sceneId:'s',paragraphs:rows,input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:0,endParagraphIndex:1,endUtf16:4,selectedText:'First\nLast'}});
+  for(const mutate of [r=>{r[1].table.nested.column=1;},r=>{delete r[1].table;},r=>{r[1].table.tableId='foreign';}]) {
+    const changed=structuredClone(rows);mutate(changed);
+    assert.throws(()=>ranges.validateCommentAnchor({sceneId:'s',paragraphs:changed,anchor}),/COMMENT_ANCHOR_OWNER/);
+  }
+  assert.deepEqual(proof.exportMap.scenes[0].blocks,blocks);
 });

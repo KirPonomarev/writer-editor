@@ -8023,6 +8023,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
  ]);
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 'PENDING_TABLE_ROW_EMPTY', 'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED', 'PENDING_TABLE_ROW_CHILD_OWNER', 'PENDING_TABLE_ROW_INVALID', 'PENDING_TABLE_ROW_OVERLAP', 'PENDING_TABLE_ROW_VERTICAL_MERGE_UNSUPPORTED', 'PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
+DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_PARAGRAPH_SPACING_UNSUPPORTED', 'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
   for(const code of bookmarkCodes) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
@@ -9828,7 +9829,29 @@ function docxInlineStyleCatalog(bytes) {
       if(target)target.wordParagraphTabs=paragraphLayout.normalizeWordParagraphTabs([...target.wordParagraphTabs,docxReadLayoutTuple(token,parsed.namespaceMap,'tab')]);
     } else if (tag === 'w:spacing' && parent === 'w:pPr') {
       const target=stack.at(-2)?.tag==='w:style'&&current?.type==='paragraph'?current:stack.at(-2)?.tag==='w:pPrDefault'?catalog:null;
-      if(target){if(target.wordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');target.wordParagraphSpacing=docxReadSpacingTuple(token,parsed.namespaceMap);}
+      if(target){
+        if(target.wordParagraphSpacing || target.unsupportedWordParagraphSpacing)throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+        const attrs = docxFontAttributes(token, parsed.namespaceMap);
+        const extended = [...attrs].filter(([name]) => ['beforeAutospacing','afterAutospacing','beforeLines','afterLines'].includes(name.split('\u0000')[1]));
+        if (extended.length && target === current) {
+          const supported = {};
+          for (const [name, raw] of attrs) {
+            const key = name.split('\u0000')[1];
+            if (!name.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')
+              || !['before','after','line','lineRule','beforeAutospacing','afterAutospacing','beforeLines','afterLines'].includes(key)) throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+            if (['beforeAutospacing','afterAutospacing'].includes(key)) {
+              if (!['true','false','1','0','on','off'].includes(raw)) throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+            } else if (['beforeLines','afterLines'].includes(key)) {
+              if (!/^\d{1,7}$/u.test(raw)) throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+            } else {
+              if (key !== 'lineRule' && !/^\d{1,7}$/u.test(raw)) throw Error('WORD_PARAGRAPH_SPACING_INVALID');
+              supported[key] = key === 'lineRule' ? raw : Number(raw);
+            }
+          }
+          if (Object.keys(supported).length) paragraphSpacing.normalizeWordParagraphSpacing(supported);
+          target.unsupportedWordParagraphSpacing = true;
+        } else target.wordParagraphSpacing=docxReadSpacingTuple(token,parsed.namespaceMap);
+      }
     } else if (tag === 'w:jc' && parent === 'w:pPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current?.type === 'paragraph') {
@@ -9972,7 +9995,7 @@ function docxResolveParagraphAlignment(metadata, catalog) {
   const layoutLayers=[metadata];
   const spacingLayers=[metadata.wordParagraphSpacing];
   let spacingId=metadata.paragraphStyleId||catalog.defaultParagraph;const spacingSeen=new Set();
-  while(spacingId){if(spacingSeen.has(spacingId)||spacingSeen.size>=64)throw Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');spacingSeen.add(spacingId);const style=catalog.styles.get(spacingId);if(!style||style.type!=='paragraph')break;spacingLayers.push(style.wordParagraphSpacing);layoutLayers.push(style);spacingId=style.basedOn;}
+  while(spacingId){if(spacingSeen.has(spacingId)||spacingSeen.size>=64)throw Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');spacingSeen.add(spacingId);const style=catalog.styles.get(spacingId);if(!style||style.type!=='paragraph')break;if(style.unsupportedWordParagraphSpacing)throw Error('DOCX_PARAGRAPH_SPACING_UNSUPPORTED');spacingLayers.push(style.wordParagraphSpacing);layoutLayers.push(style);spacingId=style.basedOn;}
   spacingLayers.push(catalog.wordParagraphSpacing);layoutLayers.push(catalog);
   let indent,tabs,tabsPresent=false;
   for(const layer of layoutLayers.reverse()){indent=paragraphLayout.mergeWordParagraphIndent(indent,layer.wordParagraphIndent);if(layer.wordParagraphTabs!==undefined){tabs=paragraphLayout.mergeWordParagraphTabs(tabs,layer.wordParagraphTabs);tabsPresent=true;}}

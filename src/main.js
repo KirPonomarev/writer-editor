@@ -10028,7 +10028,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
           // the original signed source and full formatting capsule remain intact.
           const commentExportMap={...proof.exportMap,scenes:proof.exportMap.scenes.map(scene=>({
             sceneId:scene.sceneId,rawSha256:scene.rawSha256,blocks:scene.blocks.map(block=>({
-              documentParagraphIndex:block.documentParagraphIndex,formatIr:{runs:block.formatIr.runs.map(run=>({text:run.text}))}
+              documentParagraphIndex:block.documentParagraphIndex,formatIr:{runs:block.formatIr.runs.map(run=>({text:run.text})),
+                ...(block.formatIr.table ? {table:cloneJsonSafe(block.formatIr.table)} : {})}
             }))
           }))};
           if(commentExportMap.commentExport!==undefined) {
@@ -15363,6 +15364,8 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
       sceneId: docxReviewPreviewSessionDetailString(anchor.sceneId || thread.sceneId),
       blockId: docxReviewPreviewSessionDetailString(anchor.blockId),
       paragraphIndex: Number.isSafeInteger(anchor.paragraphIndex) ? anchor.paragraphIndex : -1,
+      ...(anchor.kind === 'multi-paragraph-range' ? { kind: anchor.kind,
+        startUtf16: anchor.startUtf16, endParagraphIndex: anchor.endParagraphIndex, endUtf16: anchor.endUtf16 } : {}),
       selectedText: typeof anchor.selectedText === 'string' ? anchor.selectedText : '',
       selectedTextSha256: docxReviewPreviewSessionDetailString(anchor.selectedTextSha256),
       authoritySource: docxReviewPreviewSessionDetailString(anchor.authoritySource),
@@ -25384,7 +25387,7 @@ async function handleCommentAuthoringCommand(payload = {}) {
           if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw new Error('COMMENT_SCENE_CHANGED');
         };
         return module.commitCommentAuthoring({ projectRoot: context.projectRoot, projectId: context.projectId,
-          sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: context.paragraphs,
+          sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: commentSceneParagraphs(context.raw),
           input: payload, now: new Date().toISOString() }, { publish: operation => lease.publish(operation), revalidate });
       });
     }, 'canonical comment authoring');

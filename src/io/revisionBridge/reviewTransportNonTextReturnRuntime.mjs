@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
+import commentRanges from '../../core/word-comment-ranges-v1.cjs';
+import commentAnchorSave from '../../core/word-comment-anchor-save-v1.cjs';
 import commentBody from '../../core/word-comment-body-v1.cjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import commentReturnDelta from '../../core/word-comment-return-delta-v1.cjs';
@@ -203,17 +205,18 @@ function emptyState(projectId) {
 }
 
 function validateState(value, projectId) {
-  if (!isPlainObject(value) || ![RTK_NON_TEXT_RETURN_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3].includes(value.schemaVersion)) {
+  if (!isPlainObject(value) || ![RTK_NON_TEXT_RETURN_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) {
     throw new Error('RTK_NON_TEXT_STATE_SCHEMA_INVALID');
   }
   if (normalizeString(value.projectId) !== projectId) throw new Error('RTK_NON_TEXT_STATE_PROJECT_MISMATCH');
   if (!Number.isSafeInteger(value.revision) || value.revision < 0) throw new Error('RTK_NON_TEXT_STATE_REVISION_INVALID');
   if (!Array.isArray(value.threads) || !Array.isArray(value.events)) throw new Error('RTK_NON_TEXT_STATE_COLLECTION_INVALID');
   for (const thread of value.threads) {
-    if (thread.anchor?.kind === 'point' && value.schemaVersion !== commentBody.STATE_V3) throw Error('COMMENT_POINT_STATE_VERSION_REQUIRED');
+    if (thread.anchor?.kind === 'multi-paragraph-range' && value.schemaVersion !== commentBody.STATE_V4) throw Error('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+    if (thread.anchor?.kind === 'point' && ![commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) throw Error('COMMENT_POINT_STATE_VERSION_REQUIRED');
   }
   for (const thread of value.threads) for (const message of [...(thread.messages || []), ...(thread.deletedMessages || [])]) {
-    if (message.richBody !== undefined && ![commentBody.STATE_V2, commentBody.STATE_V3].includes(value.schemaVersion)) throw Error('COMMENT_RICH_STATE_VERSION_REQUIRED');
+    if (message.richBody !== undefined && ![commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) throw Error('COMMENT_RICH_STATE_VERSION_REQUIRED');
     commentBody.validateCommentMessageContent(message);
   }
   return clone(value);
@@ -267,6 +270,40 @@ export function computeExactTextCommentRebase({ projectId, sceneId, beforeConten
   const after = clone(before); let changed = false;
   for (const thread of after.threads) {
     if (thread.sceneId !== sceneId || thread.status === 'deleted') continue;
+    if (thread.anchor?.kind === 'multi-paragraph-range') {
+      const oldRows = commentAnchorSave.paragraphs(beforeContent), nextRows = commentAnchorSave.paragraphs(afterContent);
+      let current = clone(thread.anchor), rows = clone(oldRows);
+      commentRanges.validateCommentAnchor({sceneId,paragraphs:rows,anchor:current});
+      if (oldRows.length !== nextRows.length || JSON.stringify(oldRows.map(({text,...owner})=>owner)) !== JSON.stringify(nextRows.map(({text,...owner})=>owner))) throw rebaseError('RTK_COMMENT_REBASE_STRUCTURE_UNSUPPORTED');
+      for (let i = 0; i < rows.length; i++) {
+        const old = rows[i].text, next = nextRows[i].text;
+        if (old === next) continue;
+        const edges = value => new Set([value.length,...Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(value),x=>x.index)]);
+        const a=edges(old),b=edges(next);let from=0,suffix=0;
+        while(from<Math.min(old.length,next.length)&&old[from]===next[from])from++;
+        while(from>0&&(!a.has(from)||!b.has(from)))from--;
+        while(suffix<Math.min(old.length-from,next.length-from)&&old.at(-1-suffix)===next.at(-1-suffix))suffix++;
+        while(suffix>0&&(!a.has(old.length-suffix)||!b.has(next.length-suffix)))suffix--;
+        let independentSuffix=0;
+        while(independentSuffix<Math.min(old.length,next.length)&&old.at(-1-independentSuffix)===next.at(-1-independentSuffix))independentSuffix++;
+        while(independentSuffix>0&&(!a.has(old.length-independentSuffix)||!b.has(next.length-independentSuffix)))independentSuffix--;
+        const end=old.length-suffix, low=i===current.sceneParagraphIndex?current.startUtf16:0,
+          high=i===current.endSceneParagraphIndex?current.endUtf16:old.length;
+        // Overlapping equal prefix/suffix exposes multiple indistinguishable
+        // edit positions. Check their entire envelope, not one greedy splice.
+        const earliest=Math.min(from,Math.min(old.length,next.length)-independentSuffix),
+          latest=Math.max(old.length-independentSuffix,from+Math.max(0,old.length-next.length));
+        if(i>=current.sceneParagraphIndex&&i<=current.endSceneParagraphIndex
+          && !(latest<=low||earliest>=high)) throw rebaseError('RTK_COMMENT_REBASE_RANGE_CHANGED');
+        const afterRows=clone(rows);afterRows[i].text=next;
+        current=commentRanges.rebaseCommentAnchorSplice({anchor:current,beforeParagraphs:rows,afterParagraphs:afterRows,
+          edit:{paragraphIndex:i,fromUtf16:from,toUtf16:end,removedText:old.slice(from,end),insertText:next.slice(from,next.length-suffix)}}).anchor;
+        rows=afterRows;
+      }
+      if(current.selectedText!==thread.anchor.selectedText)throw rebaseError('RTK_COMMENT_REBASE_RANGE_CHANGED');
+      if(JSON.stringify(current)!==JSON.stringify(thread.anchor)){thread.anchor=current;delete thread.anchorEditHistory;changed=true;}
+      continue;
+    }
     const anchor = thread.anchor || {}, index = anchor.sceneParagraphIndex;
     const oldText = oldParagraphs[index], newText = newParagraphs[index];
     const start = anchor.startUtf16, end = start + (anchor.selectedText?.length || 0);
@@ -384,8 +421,21 @@ function normalizeRootCommentInput(input) {
       || !Number.isSafeInteger(range.startUtf16) || range.startUtf16 < 0) {
       throw new Error('RTK_COMMENT_CANONICAL_RANGE_INVALID');
     }
-    anchor.canonicalRange = { sceneParagraphIndex: range.sceneParagraphIndex,
-      blockTextSha256: range.blockTextSha256, startUtf16: range.startUtf16 };
+    if (range.kind === 'multi-paragraph-range') {
+      const keys = ['kind','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256',
+        'endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256'];
+      if (Object.keys(range).some(k => !keys.includes(k)) || range.sceneId !== sceneId
+        || range.paragraphIndex !== range.sceneParagraphIndex || range.endParagraphIndex !== range.endSceneParagraphIndex
+        || !Number.isSafeInteger(range.endSceneParagraphIndex) || range.endSceneParagraphIndex <= range.sceneParagraphIndex
+        || !Number.isSafeInteger(range.endUtf16) || range.endUtf16 < 0 || range.selectedText !== selectedText
+        || range.selectedTextSha256 !== sha256(selectedText)
+        || !/^[a-f0-9]{64}$/u.test(range.endBlockTextSha256) || !/^[a-f0-9]{64}$/u.test(range.coveredParagraphsSha256)) throw Error('RTK_COMMENT_CANONICAL_RANGE_INVALID');
+      anchor.canonicalRange = clone(range);
+    } else {
+      if (range.kind !== undefined) throw Error('RTK_COMMENT_CANONICAL_RANGE_INVALID');
+      anchor.canonicalRange = { sceneParagraphIndex: range.sceneParagraphIndex,
+        blockTextSha256: range.blockTextSha256, startUtf16: range.startUtf16 };
+    }
   }
   return { projectId, projectRoot, operationId, sceneId, threadId, commentId, ...content, selectedText, sceneText, anchor, provenance };
 }
@@ -666,7 +716,7 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
       status: 'open',
       anchor: {
         sceneId: normalized.sceneId,
-        blockId: normalized.anchor.blockId,
+        ...(normalized.anchor.canonicalRange?.kind === 'multi-paragraph-range' ? {} : {blockId: normalized.anchor.blockId}),
         paragraphIndex: normalized.anchor.paragraphIndex,
         selectedText: normalized.selectedText,
         selectedTextSha256: sha256(normalized.selectedText),
@@ -910,6 +960,21 @@ function authenticatedCanonicalCommentRange(authority, sceneId, blockId, paragra
       ...(change.match?.blockRange ? { blockRange: { ...change.match.blockRange, sceneStart: 0 } } : {}) } });
   }
   const range = thread.finalTextAnchorRange;
+  if (range?.kind === 'multi-paragraph-range') {
+    if (change) throw Error('RTK_COMMENT_MULTIPARAGRAPH_TRACKED_RETURN_UNSUPPORTED');
+    const end = blocks.findIndex(b => b.documentParagraphIndex === range.endParagraphIndex);
+    if (end <= sceneParagraphIndex) throw Error('RTK_COMMENT_CANONICAL_RANGE_MISMATCH');
+    const covered = blocks.slice(sceneParagraphIndex, end + 1);
+    if (covered.some((b, i) => b.sceneId !== sceneId || b.documentParagraphIndex !== paragraphIndex + i
+      || !Array.isArray(b.formatIr?.runs) || b.formatIr.runs.map(r => r.text).join('') !== b.text)) throw Error('RTK_COMMENT_CANONICAL_BLOCK_MISMATCH');
+    const anchor = commentRanges.deriveCommentAnchor({ sceneId,
+      paragraphs: blocks.map(b => ({text:b.text,...(b.formatIr?.table ? {table:b.formatIr.table} : {})})),
+      input:{kind:range.kind,paragraphIndex:sceneParagraphIndex,startUtf16:range.startUtf16,
+        endParagraphIndex:end,endUtf16:range.endUtf16,selectedText} });
+    if (anchor.blockTextSha256 !== range.blockTextSha256 || anchor.endBlockTextSha256 !== range.endBlockTextSha256
+      || anchor.coveredParagraphsSha256 !== range.coveredParagraphsSha256) throw Error('RTK_COMMENT_CANONICAL_RANGE_MISMATCH');
+    return anchor;
+  }
   if (!range || range.blockTextSha256 !== sha256(blockText) || range.selectedText !== selectedText
     || !Number.isSafeInteger(range.startUtf16) || !Number.isSafeInteger(range.endUtf16)
     || range.endUtf16 !== range.startUtf16 + selectedText.length

@@ -788,3 +788,60 @@ test('post-Undo mutable-resource consumption requires exact current annotation a
   await assert.rejects(tx.commitProjectTransaction({scenePath:r.source,manifestPath:f.manifestPath,revision:3,sceneContent:raw+' ',expectedSceneContent:raw,manifestContent:manifest,expectedManifestContent:manifest,publishManifest:f.publishManifest}),{code:'E_TREE_COHORT_ANNOTATION_CAS'});
   assert.equal(text(r.source),raw);assert.equal(text(f.manifestPath),manifest);assert.equal(text(f.commentPath),comments);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
 });
+
+function multiCommentFixture(t) {
+  const f=fixture(t),model=require('../../src/core/word-comment-authoring-v1.cjs');
+  const paragraphs=['Before','same first','middle','same last','After'];
+  f.raw=envelope.composeObservablePayload({doc:{type:'doc',content:paragraphs.map(value=>({type:'paragraph',content:[{type:'text',text:value}]}))}});
+  fs.writeFileSync(path.join(f.root,'roman/01 Alpha.txt'),f.raw);
+  const made=model.planCommentAuthoring({beforeText:null,projectId:'project-test',sceneId:'roman/01 Alpha.txt',sceneSha256:sha(f.raw),paragraphs,now,
+    input:{requestId:'multi-tree',action:'create',projectId:'project-test',sceneId:'roman/01 Alpha.txt',expectedStateSha256:'',expectedSceneSha256:sha(f.raw),body:'One discussion',
+      anchor:{kind:'multi-paragraph-range',paragraphIndex:1,startUtf16:5,endParagraphIndex:3,endUtf16:4,selectedText:'first\nmiddle\nsame'}}});
+  f.commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(f.commentPath),{recursive:true});fs.writeFileSync(f.commentPath,made.afterText);
+  const capture=f.capture;f.capture=extra=>capture({commentsText:text(f.commentPath),...extra});return f;
+}
+
+test('multi-range tree split and merge remap both endpoints, conserve graph identities, and exact Undo restores all bytes',async t=>{
+  const f=multiCommentFixture(t),m=await modelPromise,initial=text(f.commentPath);
+  const split=m.planProjectTreeCohort(f.capture({operation:'split',bindings:[],topology:{sourceNodeId:'tree-node-a',sourceRelativePath:'roman/01 Alpha.txt',newRelativePath:'roman/01a Right.txt',boundaryRootIndex:1}}));
+  const commit=(plan,revision)=>tx.commitProjectTransaction({manifestPath:f.manifestPath,revision,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  await commit(split,1);
+  const divided=JSON.parse(text(f.commentPath)),old=JSON.parse(initial).threads[0],a=divided.threads[0].anchor;
+  assert.equal(divided.threads[0].threadId,old.threadId);assert.deepEqual(divided.threads[0].messages,old.messages);
+  assert.deepEqual([a.sceneParagraphIndex,a.endSceneParagraphIndex,a.paragraphIndex,a.endParagraphIndex],[0,2,0,2]);
+  assert.equal(a.coveredParagraphsSha256,old.anchor.coveredParagraphsSha256);assert.equal(a.sceneId,'roman/01a Right.txt');
+  const splitScene=text(path.join(f.root,'roman/01a Right.txt')),splitGraph=text(f.commentPath);
+  const merge=m.planProjectTreeCohort(f.capture({operation:'merge',operationId:'multi-merge',expectedTreeRevision:1,bindings:[],topology:{leftNodeId:'tree-node-a',leftRelativePath:'roman/01 Alpha.txt',rightNodeId:split.createdNodeIds[0],rightRelativePath:'roman/01a Right.txt'}}));
+  await commit(merge,2);assert.deepEqual(JSON.parse(text(f.commentPath)).threads[0],old);
+  const proof=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});
+  const undo=m.planProjectTreeUndo({projectId:'project-test',operationId:'multi-undo',expectedTreeRevision:2,lastMutation:proof.lastMutation.id,receipt:proof.receipt,retainedPacket:proof.retainedPacket,currentManifestText:text(f.manifestPath),currentInventory:inventory(f.root)});
+  await commit(undo,3);assert.equal(text(f.commentPath),splitGraph);assert.equal(text(path.join(f.root,'roman/01a Right.txt')),splitScene);
+});
+
+for(const operation of ['move','copy'])test(`multi-range tree ${operation} retains whole interval and protected source graph`,async t=>{
+  const f=multiCommentFixture(t),m=await modelPromise,original=JSON.parse(text(f.commentPath)).threads[0];
+  const plan=m.planProjectTreeCohort(f.capture({operation}));
+  await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+  const threads=JSON.parse(text(f.commentPath)).threads,next=threads.at(-1);
+  assert.deepEqual({...next.anchor,sceneId:original.anchor.sceneId},original.anchor);
+  if(operation==='move')assert.deepEqual({...next,sceneId:original.sceneId,anchor:original.anchor},original);
+  else {
+    assert.deepEqual(threads[0],original);assert.equal(text(path.join(f.root,'roman/01 Alpha.txt')),f.raw);
+    assert.notEqual(next.threadId,original.threadId);assert.notEqual(next.rootCommentId,original.rootCommentId);
+    assert.deepEqual(next.messages.map(({commentId,...rest})=>rest),original.messages.map(({commentId,...rest})=>rest));
+  }
+});
+
+test('multi-range crossing a scene split or stale covered paragraph refuses without journal or protected byte changes',async t=>{
+  const f=multiCommentFixture(t),m=await modelPromise,before=f.capture();
+  const protectedBytes=()=>[text(f.manifestPath),text(f.commentPath),text(path.join(f.root,'roman/01 Alpha.txt')),text(path.join(f.root,'roman/02 Beta.txt'))];
+  const originals=protectedBytes();
+  assert.throws(()=>m.planProjectTreeCohort(f.capture({operation:'split',bindings:[],topology:{sourceNodeId:'tree-node-a',sourceRelativePath:'roman/01 Alpha.txt',newRelativePath:'roman/01a Right.txt',boundaryRootIndex:3}})),{code:'E_TREE_TOPOLOGY_COMMENT_RANGE_CROSSES_SCENES'});
+  for(const mutate of [a=>{a.coveredParagraphsSha256='0'.repeat(64);},a=>{a.endSceneParagraphIndex=4;}]) {
+    const state=JSON.parse(before.commentsText);mutate(state.threads[0].anchor);
+    assert.throws(()=>m.planProjectTreeCohort({...before,commentsText:JSON.stringify(state)}),/COMMENT_ANCHOR/);
+  }
+  const deleted=JSON.parse(before.commentsText);deleted.threads[0].status='deleted';
+  assert.throws(()=>m.planProjectTreeCohort({...before,commentsText:JSON.stringify(deleted)}),{code:'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED'});
+  assert.deepEqual(protectedBytes(),originals);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});

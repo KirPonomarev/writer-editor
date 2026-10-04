@@ -218,3 +218,34 @@ for (const scenario of [
     assert.deepEqual(deletedAgain.anchor,tombstone.anchor);assert.deepEqual(deletedAgain.messages,original.messages);
   } finally {editor.destroy();}
 });
+
+test('real multi-paragraph selection retains ordered endpoints, empty leaves, hardBreak and repeated occurrences', async () => {
+  const {editor,ui}=await harness([p('same'),p(''),{type:'paragraph',content:[{type:'text',text:'same'},{type:'hardBreak'},{type:'text',text:'👩‍💻 end'}]}]);
+  try {
+    const starts=[];editor.state.doc.descendants((node,pos)=>{if(node.type.name==='paragraph')starts.push(pos+1);});
+    editor.commands.setTextSelection({from:starts[0]+2,to:starts[2]+10});
+    const expected={kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:2,endUtf16:10,selectedText:'me\n\nsame\n👩‍💻'};
+    assert.deepEqual(ui.commentSelectionIntent(editor),expected);
+    editor.commands.setTextSelection({from:starts[2]+10,to:starts[0]+2});
+    assert.deepEqual(ui.commentSelectionIntent(editor),expected);
+    editor.commands.setTextSelection({from:starts[0]+2,to:starts[2]+6});
+    assert.throws(()=>ui.commentSelectionIntent(editor),/символ|GRAPHEME/);
+  } finally {editor.destroy();}
+});
+
+test('real multi-paragraph selection admits list continuation and same cell but refuses cross-cell or body-cell ownership', async () => {
+  const {DocumentTables}=await import('../../src/renderer/tiptap/documentTables.mjs');
+  const {editor,ui}=await harness([{type:'orderedList',content:[{type:'listItem',content:[p('same'),p('same')]}]},
+    {type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[p('same'),p('same')]},{type:'tableCell',content:[p('same')]}]}]}],[DocumentTables]);
+  try {
+    const starts=[];editor.state.doc.descendants((node,pos)=>{if(node.type.name==='paragraph')starts.push(pos+1);});
+    for(const [a,b] of [[0,1],[2,3]]) {
+      editor.commands.setTextSelection({from:starts[a]+1,to:starts[b]+3});
+      assert.deepEqual(ui.commentSelectionIntent(editor),{kind:'multi-paragraph-range',paragraphIndex:a,startUtf16:1,endParagraphIndex:b,endUtf16:3,selectedText:'ame\nsam'});
+    }
+    for(const [a,b] of [[1,2],[3,4]]) {
+      editor.commands.setTextSelection({from:starts[a]+1,to:starts[b]+3});
+      assert.throws(()=>ui.commentSelectionIntent(editor),/OWNER|ячейк/);
+    }
+  } finally {editor.destroy();}
+});
