@@ -717,7 +717,7 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
     protectedSections = [...ends].sort((a,b)=>a[0]-b[0]).map(([end, properties], ordinal, all) => {
       const section = { ordinal, startParagraphIndex: start, endParagraphIndex: end,
         breakPlacement: ordinal === all.length - 1 ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES',
-        carriers: {sectionProperties:true,pageSize:true,margins:true,columns:true}, properties };
+        carriers: {sectionProperties:true,pageSize:true,margins:true,columns:true,...(Object.hasOwn(properties,'docGrid')?{docGrid:true}:{})}, properties };
       start = end + 1; return section;
     });
   }

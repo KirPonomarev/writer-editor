@@ -297,6 +297,7 @@ function normalizeDocumentSections(input, blockCount) {
       breakPlacement: section.breakPlacement,
       properties: {
         type,
+        ...(Object.hasOwn(properties,'docGrid') ? {docGrid:require('../../core/word-sections-v1.cjs').validateDocGrid(properties.docGrid)} : {}),
         pageSize: {
           widthTwips: sectionInteger(pageSize.widthTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
           heightTwips: sectionInteger(pageSize.heightTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
@@ -332,6 +333,7 @@ function buildSectionPropertiesXml(section, options = {}) {
     `<w:pgSz w:w="${pageSize.widthTwips}" w:h="${pageSize.heightTwips}" w:orient="${escapeXml(pageSize.orientation)}"/>`,
     `<w:pgMar w:top="${margins.topTwips}" w:right="${margins.rightTwips}" w:bottom="${margins.bottomTwips}" w:left="${margins.leftTwips}" w:header="${margins.headerTwips}" w:footer="${margins.footerTwips}" w:gutter="${margins.gutterTwips}"/>`,
     `<w:cols w:num="${columns.count}" w:space="${columns.spaceTwips}"/>`,
+    ...(Object.hasOwn(properties,'docGrid') ? [require('../../core/word-sections-v1.cjs').docGridXml(properties.docGrid)] : []),
     '</w:sectPr>',
   ].join('');
 }

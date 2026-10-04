@@ -9357,6 +9357,7 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
   const nonNegativeInteger = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : null);
   const sanitizedSectionProperties = (value) => ({
     type: docxReviewPreviewSessionDetailString(value?.type),
+    ...(value && Object.hasOwn(value,'docGrid') ? {docGrid:require('./core/word-sections-v1.cjs').validateDocGrid(value.docGrid)} : {}),
     pageSize: {
       widthTwips: nonNegativeInteger(value?.pageSize?.widthTwips),
       heightTwips: nonNegativeInteger(value?.pageSize?.heightTwips),
@@ -9499,6 +9500,7 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
           pageSize: section?.carriers?.pageSize === true,
           margins: section?.carriers?.margins === true,
           columns: section?.carriers?.columns === true,
+          ...(section?.carriers && Object.hasOwn(section.carriers,'docGrid') ? {docGrid:section.carriers.docGrid === true} : {}),
         },
         properties: sanitizedSectionProperties(section?.properties),
       })),

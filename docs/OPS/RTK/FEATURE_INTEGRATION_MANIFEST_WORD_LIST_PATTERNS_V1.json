@@ -44,7 +44,9 @@
     "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
     "src/renderer/commands/capabilityPolicy.mjs",
     "src/core/entitlement-law-v1.cjs",
-    "src/renderer/tiptap/documentTables.mjs"
+    "src/renderer/tiptap/documentTables.mjs",
+    "src/core/word-sections-v1.cjs",
+    "test/contracts/rtk-word-sections.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -104,14 +106,16 @@
     "Enter/delete/nest/lift/copy/Undo/Redo and parent counter propagation; compatible continuation vs restart",
     "Word changed separator produces actual explicit Apply; stale/replay/forged expected group refusal",
     "SOURCE/PACKAGED G and Y0 create/update/reopen/Word changed returns and five changed exchanges",
-    "Supported table traversal preserved; notes/stories patterns fail explicitly before flattening"
+    "Supported table traversal preserved; notes/stories patterns fail explicitly before flattening",
+    "Inactive grid metadata survives Word save/import, canonical save/reopen and exports without discarding latent fields; existing protected section geometry and grid changes remain authenticated and guarded."
   ],
   "securityAndInputBoundary": "No new dependency or runtime network; external numbering identifiers never grant scene/path authority; validate before interpretation.",
   "performanceAndAccessibility": "Bounded Core traversal, no O(n) scan on inline-only typing; keyboard dialog labels/focus/error state; derived marker text never modifies author text or offsets.",
   "currentReality": [
     "Clean merged2c831673 and fullPR2074delivery closed; bootstrapREADY and T7UUID/encryption/unlocked/writable verified",
     "Independent rawDOCX demonstrates custom templates lose list metadata; malformed nested scalar and orphan numbering part currently accepted",
-    "Current menu only basic list toggles; no Y0 custom numbering settings"
+    "Current menu only basic list toggles; no Y0 custom numbering settings",
+    "Native candidate288344fa fixes mapped outdent and immediate cached labels; actual Word save additionally exposed disabled docGrid import refusal. This amendment preserves that metadata without claiming active grid layout support."
   ],
   "targetOnly": [
     "Nine-level typed numbering definitions with decimal/Roman/alpha and literal templates; native tested boundary corpus required before acceptance",
@@ -128,7 +132,7 @@
   },
   "rollbackPlan": "Revert integrated PR; retain raw inputs/evidence and existing atomic recovery; no manual edits to native test project truth.",
   "featureIntegrationManifestVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
-  "productPlane": "Core numbering definition and authoring/return plans; existing Kernel and persistence",
+  "productPlane": "Core numbering definition and authoring/return plans; existing Kernel and persistence; existing Core section metadata retains inactive Word document-grid values encountered on native numbering roundtrip",
   "interfacePlane": "Existing toolbar list menu and modal; Core-only computed marker projection",
   "surfaceManifest": {
     "schemaVersion": "SURFACE_MANIFEST_V1",

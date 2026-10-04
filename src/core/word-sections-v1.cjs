@@ -17,8 +17,25 @@ function integer(value, min = 0, max = 31680) {
   if (!Number.isSafeInteger(value) || value < min || value > max) fail();
   return value;
 }
+// Disabled grids retain latent Word values without enabling layout behavior.
+// ECMA uses signed xsd:integer; this profile admits exact JS safe integers.
+function validateDocGrid(value) {
+  object(value, ['type', 'linePitch', 'charSpace']);
+  if (value.type !== 'default') fail();
+  const out = { type: 'default' };
+  for (const key of ['linePitch', 'charSpace']) if (Object.hasOwn(value, key)) {
+    if (!Number.isSafeInteger(value[key])) fail();
+    out[key] = value[key];
+  }
+  return out;
+}
+function docGridXml(value) {
+  const grid = validateDocGrid(value);
+  return '<w:docGrid w:type="default"' + ['linePitch', 'charSpace']
+    .filter(key => Object.hasOwn(grid, key)).map(key => ` w:${key}="${grid[key]}"`).join('') + '/>';
+}
 function properties(value) {
-  object(value, ['type', 'pageSize', 'margins', 'columns']);
+  object(value, ['type', 'pageSize', 'margins', 'columns', 'docGrid']);
   if (!TYPES.includes(value.type)) fail();
   const out = { type: value.type };
   if (Object.hasOwn(value, 'pageSize')) {
@@ -34,6 +51,7 @@ function properties(value) {
     object(value.columns, ['count', 'spaceTwips']);
     out.columns = { count: integer(value.columns.count, 1, 16), spaceTwips: integer(value.columns.spaceTwips) };
   }
+  if (Object.hasOwn(value, 'docGrid')) out.docGrid = validateDocGrid(value.docGrid);
   return out;
 }
 function read(doc, { checkBounds = true } = {}) {
@@ -98,6 +116,6 @@ function xml(value) {
   return '<w:sectPr>' + `<w:type w:val="${p.type}"/>`
     + (p.pageSize ? `<w:pgSz w:w="${p.pageSize.widthTwips}" w:h="${p.pageSize.heightTwips}" w:orient="${p.pageSize.orientation}"/>` : '')
     + (p.margins ? `<w:pgMar w:top="${p.margins.topTwips}" w:right="${p.margins.rightTwips}" w:bottom="${p.margins.bottomTwips}" w:left="${p.margins.leftTwips}" w:header="${p.margins.headerTwips}" w:footer="${p.margins.footerTwips}" w:gutter="${p.margins.gutterTwips}"/>` : '')
-    + (p.columns ? `<w:cols w:num="${p.columns.count}" w:space="${p.columns.spaceTwips}"/>` : '') + '</w:sectPr>';
+    + (p.columns ? `<w:cols w:num="${p.columns.count}" w:space="${p.columns.spaceTwips}"/>` : '') + (p.docGrid ? docGridXml(p.docGrid) : '') + '</w:sectPr>';
 }
-module.exports = { KEY, TYPES, read, bind, project, validateSave, properties, withDefaults, xml };
+module.exports = { validateDocGrid, docGridXml, KEY, TYPES, read, bind, project, validateSave, properties, withDefaults, xml };

@@ -7,6 +7,7 @@ const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const CT = 'http://schemas.openxmlformats.org/package/2006/content-types';
 const bridge = import('../../src/io/revisionBridge/index.mjs');
+const gridBody = grid => `<w:p><w:r><w:t>Grid content</w:t></w:r></w:p><w:sectPr>${grid}</w:sectPr>`;
 function fixture({ numbering, relationship, body } = {}) {
   numbering ??= '<w:abstractNum w:abstractNumId="4"><w:lvl w:ilvl="0"><w:start w:val="3"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/></w:lvl></w:abstractNum><w:num w:numId="7"><w:abstractNumId w:val="4"/></w:num>';
   relationship ??= `<Relationship Id="num" Type="${R}/numbering" Target="numbering.xml"/>`;
@@ -19,6 +20,46 @@ function fixture({ numbering, relationship, body } = {}) {
     {name:'word/numbering.xml',data:`<w:numbering xmlns:w="${W}">${numbering}</w:numbering>`},
   ]);
 }
+test('inactive document grid preserves dormant signed values and presence instead of dropping the final default section', async () => {
+  const api=await bridge, envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  for (const [xml,expected] of [
+    ['<w:docGrid/>',{type:'default'}],
+    ['<w:docGrid w:linePitch="360"/>',{type:'default',linePitch:360}],
+    ['<w:docGrid w:type="default" w:linePitch="-1" w:charSpace="+0"/>',{type:'default',linePitch:-1,charSpace:0}],
+    ['<w:docGrid w:linePitch="9007199254740991" w:charSpace="-4096"></w:docGrid>',{type:'default',linePitch:Number.MAX_SAFE_INTEGER,charSpace:-4096}],
+  ]) {
+    const report=api.buildDocxContentPreviewFromZipBytes(fixture({body:gridBody(xml)}));assert.equal(report.ok,true,JSON.stringify(report));
+    const plan=api.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
+    const payload=plan.candidateCreatePlan.entries[0].content,parsed=envelope.parseObservablePayload(payload);
+    assert.equal(parsed.issue,null);assert.deepEqual(parsed.doc.attrs.wordSections.final.docGrid,expected);
+    assert.ok(payload.includes('word-section-doc-grid.v1'));
+  }
+});
+test('document grid never accepts active behavior malformed scalars foreign attributes or hidden content', async () => {
+  const api=await bridge;
+  for (const xml of [
+    '<w:docGrid w:type="lines"/>','<w:docGrid w:type="linesAndChars"/>','<w:docGrid w:type="snapToChars"/>',
+    '<w:docGrid w:type=""/>','<w:docGrid w:linePitch="1.5"/>','<w:docGrid w:charSpace="9007199254740992"/>',
+    '<w:docGrid linePitch="360"/>','<w:docGrid xmlns:x="urn:foreign" x:linePitch="360"/>',
+    '<w:docGrid><w:linePitch w:val="360"/></w:docGrid>','<w:docGrid>hidden</w:docGrid>',
+    '<w:docGrid/><w:docGrid/>','<x:docGrid xmlns:x="urn:foreign"/>',
+  ]) assert.equal(api.buildDocxContentPreviewFromZipBytes(fixture({body:gridBody(xml)})).ok,false,xml);
+});
+test('RTK inactive grid participates in protected section digest and malformed or active grids block', async () => {
+  const api=await bridge,{parseReviewTransportPackageV2}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const {stableJson}=await import('../../src/io/revisionBridge/reviewTransportCore.mjs'),crypto=require('node:crypto');
+  const cryptoPort={sha256Text:text=>crypto.createHash('sha256').update(String(text)).digest('hex'),sha256Json:value=>'sha256:'+crypto.createHash('sha256').update(stableJson(value)).digest('hex'),byteLength:text=>Buffer.byteLength(String(text))};
+  const parse=grid=>parseReviewTransportPackageV2({parts:api.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fixture({body:gridBody(grid)})}).parts},{cryptoPort});
+  const a=parse('<w:docGrid w:linePitch="360"/>'),b=parse('<w:docGrid w:type="default" w:linePitch="361"/>'),absent=parse('');
+  assert.equal(a.ok,true,JSON.stringify(a));assert.equal(b.ok,true,JSON.stringify(b));
+  assert.deepEqual(a.reviewIr.documentSections.protectedSections[0].properties.docGrid,{type:'default',linePitch:360});
+  assert.equal(a.reviewIr.documentSections.protectedSections[0].carriers.docGrid,true);
+  assert.notEqual(a.reviewIr.documentSections.protectedDigest,b.reviewIr.documentSections.protectedDigest);
+  assert.notEqual(a.reviewIr.documentSections.protectedDigest,absent.reviewIr.documentSections.protectedDigest);
+  for(const grid of ['<w:docGrid w:type="lines"/>','<w:docGrid w:linePitch="1.5"/>','<w:docGrid w:type=""/>','<w:docGrid>hidden</w:docGrid>','<w:docGrid><w:type/></w:docGrid>','<w:docGrid/><w:docGrid/>','<x:docGrid xmlns:x="urn:foreign"/>']) {
+    const report=parse(grid);assert.equal(report.ok,false,grid);assert.ok(report.reasons.some(reason=>reason.code==='RTK_WORD_SECTIONS_MALFORMED_BLOCKED'),JSON.stringify(report));
+  }
+});
 test('list pattern intake refuses numbering without owned main-document relationship', async () => {
   const api=await bridge;
   assert.equal(api.buildDocxContentPreviewFromZipBytes(fixture()).ok,true);

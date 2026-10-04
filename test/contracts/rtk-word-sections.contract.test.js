@@ -101,3 +101,42 @@ test('final-only nextPage custom geometry survives import and both exports while
  }
  const ordinaryPlain=ordinary({type:'doc',content:[p('Legacy')]},mods);const report=mods[0].buildDocxContentPreviewFromZipBytes(ordinaryPlain);assert.equal(report.ok,true);assert.equal(report.contentPreview.wordSections,undefined);
 });
+test('disabled document grid preserves optional signed latent values and requires explicit reader support',()=>{
+ for(const grid of [{type:'default'},{type:'default',linePitch:360},{type:'default',linePitch:0,charSpace:-4096},{type:'default',linePitch:Number.MIN_SAFE_INTEGER,charSpace:Number.MAX_SAFE_INTEGER}]){
+  const d=fixture();d.attrs.wordSections.final.docGrid=grid;
+  assert.deepEqual(sections.read(d).final.docGrid,grid);
+  const payload=envelope.composeObservablePayload({doc:d});assert.ok(payload.includes('word-section-doc-grid.v1'));
+  assert.deepEqual(sections.read(envelope.parseObservablePayload(payload).doc).final.docGrid,grid);
+  assert.ok(sections.xml(d.attrs.wordSections.final).includes('<w:docGrid w:type="default"'));
+ }
+ assert.equal(envelope.composeObservablePayload({doc:fixture()}).includes('word-section-doc-grid.v1'),false);
+ for(const grid of [{type:'lines',linePitch:360},{type:'linesAndChars'},{type:'snapToChars'},{type:'default',linePitch:1.5},{type:'default',linePitch:Number.MAX_SAFE_INTEGER+1},{type:'default',charSpace:'0'},{type:'default',extra:0}])assert.throws(()=>sections.validateDocGrid(grid),/WORD_SECTIONS_INVALID/);
+ let calls=0;const grid={type:'default'};Object.defineProperty(grid,'linePitch',{enumerable:true,get(){calls++;return 360;}});assert.throws(()=>sections.validateDocGrid(grid));assert.equal(calls,0);
+});
+test('disabled grids survive generic import, save and both DOCX exporters with exact latent values',async()=>{
+ const mods=await modules;const original=fixture();original.attrs.wordSections.boundaries[0].properties.docGrid={type:'default',charSpace:-4096};original.attrs.wordSections.final.docGrid={type:'default',linePitch:360,charSpace:0};
+ for(const exporter of ['ordinary','review']){
+  let d=original;for(let round=0;round<2;round++){
+   const bytes=exporter==='ordinary'?ordinary(d,mods):packet(d);
+   const report=mods[0].buildDocxContentPreviewFromZipBytes(bytes);assert.equal(report.ok,true,JSON.stringify(report));
+   const plan=mods[0].buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
+   d=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+   assert.deepEqual(sections.read(d),sections.read(original));
+  }
+ }
+});
+test('authenticated section proof binds existing disabled grid values and refuses mutation or removal',async()=>{
+ const mods=await modules,bridge=mods[0];const d=fixture();d.attrs.wordSections.final.docGrid={type:'default',linePitch:360,charSpace:-4096};
+ const scene={sceneId:'roman/test.txt',scenePath:'/synthetic/roman/test.txt',doc:d,text:envelope.deriveVisibleTextFromDocument(d),observableContent:envelope.composeObservablePayload({doc:d}),order:0};
+ const crypto=require('node:crypto'),stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+stable(value[key])).join(',')+'}':JSON.stringify(value);
+ const cryptoPort={sha256Text:value=>crypto.createHash('sha256').update(String(value)).digest('hex'),sha256Json(value){return 'sha256:'+this.sha256Text(stable(value));},hmacSha256Text:(value,secret)=>'hmac-sha256:'+crypto.createHmac('sha256',secret).update(String(value)).digest('hex'),hmacSha256Json(value,secret){return this.hmacSha256Text(stable(value),secret);},byteLength:value=>Buffer.byteLength(String(value))};
+ const input=source.buildFullManuscriptDocxReviewPacketSource({projectId:'doc-grid',projectRoot:'/synthetic',scenes:[scene]},{revisionBridge:bridge,cryptoPort,hmacSecret:'grid-test-secret',roundIdHex:'e'.repeat(32),keyIdHex:'f'.repeat(32)});
+ const bytes=review.buildDocxReviewPacketBuffer(input),parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:input.forbiddenSecret,expectedAuthority:input.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+ const returned=parsed.reviewIr?.documentSections;assert.ok(returned,JSON.stringify(parsed));
+ const signedDigest=parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest;
+ assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned,signedDigest}).ok,true);
+ for(const mutate of [value=>value.protectedSections.at(-1).properties.docGrid.linePitch++,value=>delete value.protectedSections.at(-1).properties.docGrid,value=>value.protectedSections.at(-1).properties.docGrid.charSpace=0]){
+  const changed=structuredClone(returned);mutate(changed);assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned:changed,signedDigest}).ok,false);
+ }
+ assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned,signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
+});

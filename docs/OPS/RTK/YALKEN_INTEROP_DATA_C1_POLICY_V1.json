@@ -781,7 +781,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f68eefd3db9f1c900cdb05088b0011e0d52be48aecf2f40c96a2ea12739c3f6f"
+        "sha256": "8dd0887233c674674b064bd8f269798b088d8f4936145ae8f8d3617d0231349d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -793,7 +793,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4d70c77b890cabf5f87e671d9ca8a43f56a963ee15372a81e0bdf6e25f42e5d9"
+        "sha256": "f3114dc737b96a4a7b034980c36bfb17db6c9147f5c1861ebf6254525cb77ac8"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -817,7 +817,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "4a562aadc0799db7b236b7830f08a859f42ff534082fad18c2bd40924f81814b"
+        "sha256": "129cc6b83b1f1b96dd5ae2a0727fedf53ac8db08bdeea1d4021c06f49d0510e6"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -893,11 +893,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "875a2a2d84b0c2aec360f94c9e1c8751c538fadd8d79cc880067f796adc70908"
+        "sha256": "c72cc639c45fb972dab767b788d4537136be7bdbcf958993d22b85ecd6c880f0"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "a2458d070c884c307908c91ee70e3c2395fd47359bc956b42cefeb3a9a01b170"
+        "sha256": "0d9ac0d83de0304be0a216f45dd2478a923789f8274d93847a3fe095ed471c6e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -917,7 +917,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "dd36ab00b20b8cbc76f9924649e94d507228168bdb2403dd8a35ed657090bedd"
+        "sha256": "3ad7974bf4b06fa079dfbc4e65dc22966a20dfbe19aa43ff161ba488541c99c0"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1485,7 +1485,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "59cb42620edccb8bbceb73fe5b3de6139eb6708da7264531cfbed9f9be6915fd"
+        "sha256": "94ae1c8cfe0c7b56db1cbc6b3af1f8921d925ff98a581e27eab67bb6823c46ec"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -2177,11 +2177,11 @@
       },
       {
         "path": "src/core/word-sections-v1.cjs",
-        "sha256": "647c058464717f854de6e963804b60fd9d7b2654d51754e6b31bde386df0d08b"
+        "sha256": "b90f94b7bdca87a444473701d1e18912d5269225940a432defb14bec301bd955"
       },
       {
         "path": "test/contracts/rtk-word-sections.contract.test.js",
-        "sha256": "f285cd275f945c8a7e779ec65d8b3fb0b5beec6d553c70993bae5bed4ec24775"
+        "sha256": "790964bada5d34b06c4ca2118ef9abd689d453427df1b3c92537a3507e2b6397"
       },
       {
         "path": "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
@@ -2369,11 +2369,11 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
-        "sha256": "382773a0d1797694bbed17d31668e52fc1d914ebe31df43854bd349b195f5860"
+        "sha256": "7fa5ebb30dcc9a8012c130f07d441d038afba02862289206dee289f2e63408a1"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "6799b887cb4db7a404a29bd6c6377f74b70e00301a2428b808864f616d7a187e"
+        "sha256": "d1f81df71e00f8d2753d037bb7453251da6aefa5596c9018cab9117cadd51a39"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
@@ -2381,11 +2381,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "41deea024d34fa4cc261d62c4ea69b67c8722787350f4b2705a94fc97e81e1ac"
+        "sha256": "55ca118641abadb87b6f853ef5f17f59545e129b73b35da0816960e495e1542e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "6a25d1a3c4859070d569eeddaf657d6ae6e93de3c2261ad55e1ba9215672ea95"
+        "sha256": "5327fc37d54c07fd4df746afdd1447d22ff65c9db2a13d33b6ec924d40d47250"
       }
     ],
     "followupRepair": {

@@ -9362,7 +9362,7 @@ function docxFontAttributes(token, namespaceMap) {
   }));
 }
 
-function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false, maxBytes = 1024 * 1024, rejectNonWhitespaceText = false } = {}) {
+function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false, maxBytes = 1024 * 1024, rejectNonWhitespaceText = false, textVisitor = null } = {}) {
   const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, maxBytes);
   const xml = part && docxZipDecodeUtf8Xml(part);
   if (typeof xml !== 'string' || docxContentPreviewUnsupportedEncoding(xml)
@@ -9376,7 +9376,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
     if (!next || next.failure) throw new Error('DOCX_FONT_PART_INVALID');
     cursor = next.nextCursor;
     const token = next.token;
-    if (!token.startsWith('<')) { if (rejectNonWhitespaceText && token.trim()) throw Error('DOCX_LIST_RELATIONSHIP_INVALID'); continue; }
+    if (!token.startsWith('<')) { if (rejectNonWhitespaceText && token.trim()) throw Error('DOCX_LIST_RELATIONSHIP_INVALID'); if (textVisitor) textVisitor(token, stack); continue; }
     if (token.startsWith('<?') || token.startsWith('<!--')) continue;
     if (token.startsWith('</')) {
       if (stack.pop()?.rawTagName !== docxContentPreviewTagName(token)) throw new Error('DOCX_FONT_PART_INVALID');
@@ -9421,8 +9421,22 @@ function docxSectionInventory(bytes, parsed, preserveDefault = false) {
     else if (node.localName === 'pgMar') { const keys=['top','right','bottom','left','header','footer','gutter']; only(keys); record.properties.margins=Object.fromEntries(keys.map(key=>[`${key}Twips`,number(key, key==='gutter'?0:undefined)])); }
     else if (['headerReference', 'footerReference', 'titlePg'].includes(node.localName)) { /* Validated with part-local story inventory below. */ }
     else if (node.localName === 'cols') { only(['num','space','equalWidth']); if (attr('equalWidth', W) && !['1','true','on'].includes(attr('equalWidth',W))) throw Error('WORD_SECTIONS_UNSUPPORTED'); record.properties.columns={count:number('num',1),spaceTwips:number('space',720)}; }
+    else if (node.localName === 'docGrid') {
+      only(['type','linePitch','charSpace']);
+      if (attr('type', W) !== undefined && attr('type', W) !== 'default') throw Error('WORD_SECTIONS_UNSUPPORTED');
+      const grid = { type: 'default' };
+      for (const key of ['linePitch','charSpace']) {
+        const raw = attr(key, W);
+        if (raw === undefined) continue;
+        if (!/^[+-]?\d+$/u.test(raw) || !Number.isSafeInteger(Number(raw))) throw Error('WORD_SECTIONS_INVALID');
+        grid[key] = Number(raw) || 0;
+      }
+      record.properties.docGrid = grid;
+    }
     else throw Error('WORD_SECTIONS_UNSUPPORTED');
-  }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes });
+  }, { maxBytes: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes, textVisitor(text, stack) {
+    if (text.trim() && stack.some(node => node.namespaceUri === W && node.localName === 'docGrid')) throw Error('WORD_SECTIONS_INVALID');
+  } });
   if (!records.length) return null;
   if (!finalSeen) throw Error('WORD_SECTIONS_INVALID');
   for (const record of records) wordSections.properties(record.properties);
@@ -9432,7 +9446,7 @@ function docxSectionInventory(bytes, parsed, preserveDefault = false) {
   const defaultColumns = !single?.columns || (single.columns.count === 1 && single.columns.spaceTwips === 720);
   // Only the exact historical default can remain on the plain-document path.
   // A final-only custom page geometry is still durable document meaning.
-  if (!preserveDefault && single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns && !records.some(record => ['headerReference','footerReference','titlePg'].some(key => record.seen.has(key)))) return null;
+  if (!preserveDefault && single?.type === 'nextPage' && defaultSize && defaultMargins && defaultColumns && !records.some(record => ['headerReference','footerReference','titlePg','docGrid'].some(key => record.seen.has(key)))) return null;
   for (const record of records.slice(0,-1)) {
     record.endParagraphIndex = parsed.paragraphSourceIndexes.indexOf(record.endParagraphIndex);
     if (record.endParagraphIndex < 0) throw Error('WORD_SECTIONS_INVALID');

@@ -43,3 +43,22 @@ test('actual Main public preview preserves exact numbering diff without private 
  assert.equal(context.activeRtkFormattingReturnApplyStore.input.operations[0].numbering.levels[0].text,'Article %1');
  assert.equal(op.numbering.levels[0].text,'Article %1');
 });
+
+test('actual Main section preview preserves disabled document grid values and absent legacy shape',()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const source=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+ const start=source.indexOf('function sanitizeDocxReviewReturnIntakeForResult('),end=source.indexOf('function findDocxReviewReturnIntakeRoundAuthority(',start);
+ const context=vm.createContext({require:id=>{assert.equal(id,'./core/word-sections-v1.cjs');return require('../../src/core/word-sections-v1.cjs');},
+   isPlainObjectValue:value=>value&&typeof value==='object'&&!Array.isArray(value),docxReviewPreviewSessionDetailString:value=>typeof value==='string'?value:''});
+ vm.runInContext(source.slice(start,end),context);
+ const clone=value=>JSON.parse(JSON.stringify(value));
+ for(const grid of [undefined,{type:'default'},{type:'default',linePitch:0,charSpace:-123},{type:'default',linePitch:360,charSpace:0}]) {
+   const section={ordinal:0,startParagraphIndex:0,endParagraphIndex:0,breakPlacement:'BODY_FINAL',carriers:{sectionProperties:true,pageSize:true,margins:true,columns:true,...(grid?{docGrid:true}:{})},properties:{type:'nextPage',...(grid?{docGrid:grid}:{})}};
+   const input={parserResult:{documentSectionsBinding:{protectedSections:[section]}}};
+   const result=clone(context.sanitizeDocxReviewReturnIntakeForResult(input));
+   const output=result.documentSections.protectedSections[0];
+   if(grid){assert.deepEqual(output.properties.docGrid,grid);assert.equal(output.carriers.docGrid,true);output.properties.docGrid.type='mutated';assert.equal(grid.type,'default');}
+   else {assert.equal(Object.hasOwn(output.properties,'docGrid'),false);assert.equal(Object.hasOwn(output.carriers,'docGrid'),false);}
+ }
+ assert.throws(()=>context.sanitizeDocxReviewReturnIntakeForResult({parserResult:{documentSectionsBinding:{protectedSections:[{properties:{type:'nextPage',docGrid:{type:'lines'}}}]}}}),/WORD_SECTIONS_INVALID/);
+});
