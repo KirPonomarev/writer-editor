@@ -4333,7 +4333,7 @@ function parseDocumentSections(documentScan, cryptoPort, documentXml) {
           attribute.qName !== 'xmlns' && attribute.prefix !== 'xmlns'
           && (attribute.namespaceUri !== W_NS || !['type','linePitch','charSpace'].includes(attribute.localName))
         )) || directChildTokensWithin(documentScan, grid).length
-          || elementBody(documentXml, grid).replace(/<!--[\s\S]*?-->|<\?[\s\S]*?\?>/gu, '').trim()) throw Error('DOC_GRID_SHAPE');
+          || elementBody(documentXml, grid).replace(/<\x21--[\s\S]*?-->|<\?[\s\S]*?\?>/gu, '').trim()) throw Error('DOC_GRID_SHAPE');
         const type = attr(grid, 'type', W_NS);
         if (type !== undefined && type !== '' && type !== 'default') throw Error('DOC_GRID_ACTIVE');
         if (grid.attributes.some(attribute => attribute.namespaceUri === W_NS && attribute.localName === 'type' && attribute.value === '')) throw Error('DOC_GRID_TYPE');

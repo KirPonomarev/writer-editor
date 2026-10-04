@@ -898,7 +898,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "0d9ac0d83de0304be0a216f45dd2478a923789f8274d93847a3fe095ed471c6e"
+        "sha256": "27203e9e0485186ed701dadbfb7ffb7a38575cfb2a163d39d112aa2bada76686"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -2382,7 +2382,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "bdb9b4beff466f1807a4735fb0fa2ee3781776dbd6c66a7b6c68e0167e21691b"
+        "sha256": "66cafb05052e0ded8a0de7b3564e68fe6a6f7854b949f2fdabcab5ede12eeb64"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
