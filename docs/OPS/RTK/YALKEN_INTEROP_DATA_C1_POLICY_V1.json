@@ -1248,7 +1248,7 @@
       },
       {
         "path": "test/unit/docx-import-safe-create.test.js",
-        "sha256": "b61100bf03dd74f29ecb51258eee63d449f12818e16553037479c0e9c54aefbd"
+        "sha256": "d64d42ff3166513d054a4890a36e5d455ff299b04f5ef7b27454b85955142e1c"
       },
       {
         "path": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -2476,7 +2476,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-restart-mac.md",
-        "sha256": "21e8e339079041602066c97c5ecc66bfa113951461c8a5d1fce244a924d362ff"
+        "sha256": "43320eb22d3ec988f163dec23f0c6873b78ef167a91bf5c9621f337cd1e479aa"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",

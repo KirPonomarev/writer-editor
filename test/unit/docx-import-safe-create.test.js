@@ -533,9 +533,14 @@ test('DOCX safe-create preserves exact table continuation hardBreak and blockquo
   assert.equal(after.threads.slice(1).reduce((n,x)=>n+x.messages.length,0),5);
   const snapshot=()=>Object.fromEntries(listFilesRecursive(projectRoot).filter(p=>!p.includes('.test-authority')).map(p=>[path.relative(projectRoot,p),fs.readFileSync(p).toString('base64')]));
   const beforeRepeat=snapshot(),again=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(again.ok,true,JSON.stringify(again));assert.deepEqual(snapshot(),beforeRepeat);
+  let malformedAttempt=0;
   for(const mutate of [c=>{c.startUtf16=0;},c=>{c.blockTextSha256='0'.repeat(64);}]){
     const forged=clone(plan);mutate(forged.candidateCreatePlan.entries[0].comments[1]);rehashPreviewPlan(forged);admitPreviewPlan(forged);
     assert.equal(validateDocxImportPreviewPlan(forged).ok,true);
-    const rejected=await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},options);assert.equal(rejected.ok,false);assert.equal(rejected.error.code,'DOCX_SAFE_CREATE_COMMENTS_INVALID');assert.equal(rejected.error.details.code,'DOCX_GENERIC_COMMENT_ANCHOR');assert.deepEqual(snapshot(),beforeRepeat);
+    const sameAttempt=await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},options);
+    assert.equal(sameAttempt.ok,false);assert.equal(sameAttempt.error.code,'DOCX_SAFE_CREATE_WRITE_FAIL');
+    assert.equal(sameAttempt.error.details.messageCode,'DOCX_IMPORT_ATTEMPT_MISMATCH');assert.deepEqual(snapshot(),beforeRepeat);
+    // A distinct accepted attempt reaches anchor validation instead of retry identity validation.
+    const rejected=await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},{...options,importRequestNonce:'malformed-anchor-'+(++malformedAttempt)});assert.equal(rejected.ok,false);assert.equal(rejected.error.code,'DOCX_SAFE_CREATE_COMMENTS_INVALID');assert.equal(rejected.error.details.code,'DOCX_GENERIC_COMMENT_ANCHOR');assert.deepEqual(snapshot(),beforeRepeat);
   }
 });

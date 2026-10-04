@@ -173,3 +173,21 @@ All eight import VM test files now pass together: 242 tests, zero failures/skips
 todo. The audit also covered direct recovery-function loaders beyond import
 markers and identified one missing context binding in the comment-anchor recovery
 fixture. No runtime or acceptance boundary is weakened to repair these fixtures.
+
+## Final baseline negative-fixture closure
+
+The exact-head broad baseline found one older malformed-comment test reusing
+the already accepted import nonce after changing its preview. Durable attempt
+identity correctly refuses that changed request before comment validation.
+The fixture now proves both boundaries: the old nonce rejects with an attempt
+mismatch and preserves exact project bytes; distinct new nonces then reach the
+original malformed-anchor checks and preserve the same bytes. Production code
+and the native-qualified input set remain unchanged.
+
+Local RTK attempts are not reported as successful gates: one executed all 3214
+tests successfully but returned a nonzero supervisor result without a diagnostic;
+an instrumented repeat exposed a separate process-inspection timeout in the
+existing orphan-cleanup test. The orphan itself was removed, while system ps
+and lsof probes timed out. Both full RTK jobs in CI passed on 51277942d. Final
+delivery still requires the new candidate's complete CI and merged verification;
+prior-head results and local nonzero executions do not substitute for that.
