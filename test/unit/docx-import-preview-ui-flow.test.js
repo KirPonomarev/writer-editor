@@ -279,18 +279,18 @@ test('DOCX import preview UI flow: generated bundle carries the shipped DOCX acc
 });
 
 function attemptHarness() {
-  const editor=read('src/renderer/editor.js'), calls=[], statuses=[], pending=[];
+  const editor=read('src/renderer/editor.js'), calls=[], statuses=[], pending=[], acknowledgements=[];
   const c={currentProjectId:'project-a',crypto:require('node:crypto'),COMMAND_IDS:{PROJECT_IMPORT_DOCX_V1:'import'},
     pendingDocxImportPreviewValue:null,pendingDocxImportPreviewPlan:null,pendingDocxImportAttempt:null,
     docxImportPreviewModal:{},docxImportPreviewMessage:{},docxImportPreviewLoss:{},docxImportPreviewConfirmButtons:[{}],
     getDocxImportPreviewPlanFromValue:value=>value?.docxImportPreviewPlan||null,
     summarizeDocxImportPreview:()=> 'source.docx',summarizeDocxImportLoss:()=> 'retained loss',
     updateStatusText:value=>statuses.push(value),openSimpleModal:()=>{c.visible=true;},closeSimpleModal:()=>{c.visible=false;},
-    dispatchUiCommand:(_id,payload)=>{calls.push(payload);return new Promise((resolve,reject)=>pending.push({resolve,reject}));},
-    loadTree:async()=>{},openImportedDocxSceneAfterAccept:async()=>({opened:true})};
+    dispatchUiCommand:(_id,payload)=>{if(payload.action === 'acknowledge-open'){acknowledgements.push(payload);return Promise.resolve(c.ackResult || {ok:true,value:{acknowledged:true}});}calls.push(payload);return new Promise((resolve,reject)=>pending.push({resolve,reject}));},
+    loadTree:async()=>{},openImportedDocxSceneAfterAccept:async()=>({opened:true,nodeId:'tree-node-'+ 'a'.repeat(32)})};
   vm.createContext(c);vm.runInContext(editor.slice(editor.indexOf('function closeDocxImportPreviewModal()'),editor.indexOf('function summarizeTxtImportPreview(')),c);
-  const preview={ok:true,value:{docxImportPreviewPlan:{ok:true},localFilePreview:{status:'preview'}}};
-  return {c,calls,statuses,pending,preview};
+  const preview={ok:true,value:{docxImportPreviewPlan:{ok:true},localFilePreview:{status:'preview',get requestId(){return calls.at(-1)?.requestId;}}}};
+  return {c,calls,statuses,pending,preview,acknowledgements};
 }
 
 test('actual DOCX UI keeps one attempt through failure and retry, then allocates a fresh explicit import',async()=>{
@@ -361,4 +361,35 @@ test('actual DOCX UI never classifies arbitrary failure text as a stale referenc
  const accept=c.confirmDocxImportPreviewAndRun();h.pending.shift().resolve({ok:false,error:{code:'E_DOCX_IMPORT_SAFE_CREATE_FAILED',details:{message:'/private/path DOCX_IMPORT_PLAN_REFERENCE_EXPIRED suffix'}}});await accept;
  assert.equal(c.docxImportPreviewConfirmButtons[0].textContent,'Retry import');
  assert.equal(c.docxImportPreviewMessage.textContent,'source.docx\n\nThe import could not be confirmed. Retry to check or finish this attempt.');
+});
+
+test('restart resume adopts only the fresh Main-selected nonce before accepting', async () => {
+  const h = attemptHarness();
+  const pending = h.c.openDocxImportPreviewFlow();
+  const allocated = h.calls[0].requestId;
+  h.pending.shift().resolve({ ...h.preview, value: { ...h.preview.value,
+    localFilePreview: { status: 'preview', requestId: 'docx-import-resumed-attempt' } } });
+  await pending;
+  assert.notEqual(allocated, 'docx-import-resumed-attempt');
+  assert.equal(h.c.pendingDocxImportAttempt.requestId, 'docx-import-resumed-attempt');
+  const accepted = h.c.confirmDocxImportPreviewAndRun();
+  assert.equal(h.calls[1].requestId, 'docx-import-resumed-attempt');
+  h.pending.shift().resolve({ ok: false }); await accepted;
+});
+
+test('acknowledgement follows governed opening; failure retains resumable status without another import', async () => {
+  for (const failed of [false, true]) {
+    const h = attemptHarness();
+    h.c.ackResult = failed ? { ok: false } : { ok: true, value: { acknowledged: true } };
+    const opening = h.c.openDocxImportPreviewFlow(); h.pending.shift().resolve(h.preview); await opening;
+    const nonce = h.c.pendingDocxImportAttempt.requestId;
+    const accepted = h.c.confirmDocxImportPreviewAndRun();
+    h.pending.shift().resolve({ ok: true, value: { createdSceneIds: ['scene'] } }); await accepted;
+    assert.equal(h.acknowledgements.length, 1);
+    assert.deepEqual(JSON.parse(JSON.stringify(h.acknowledgements[0])), { action: 'acknowledge-open',
+      requestId: nonce, projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) });
+    assert.equal(h.calls.length, 2);
+    assert.equal(h.c.pendingDocxImportAttempt, null);
+    assert.match(h.statuses.at(-1), failed ? /could not be confirmed.*resume/ : /opened imported scene/);
+  }
 });

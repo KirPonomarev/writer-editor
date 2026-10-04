@@ -1,3 +1,4 @@
+const importAttempt = require('../core/word-import-attempt-v1.cjs');
 const { documentMedia, MEDIA_LIMITS } = require('../io/documentMedia.js');
 const fs = require('node:fs').promises;
 const path = require('node:path');
@@ -701,6 +702,85 @@ async function readDurableReceiptRecord(projectRoot, importOperationId) {
 
 
 
+const IMPORT_ATTEMPT_RELATIVE = ['.yalken', 'docx-import', 'active-attempt.v1.json'];
+async function importAttemptPath(projectRoot) {
+  if (!path.isAbsolute(projectRoot || '') || path.normalize(projectRoot) !== projectRoot) throw Error('DOCX_IMPORT_ATTEMPT_PATH');
+  let target = projectRoot;
+  for (const part of ['', ...IMPORT_ATTEMPT_RELATIVE]) {
+    if (part) target = path.join(target, part);
+    try {
+      const stat = await fs.lstat(target);
+      if (stat.isSymbolicLink() || (target.endsWith('/active-attempt.v1.json')
+        ? !stat.isFile() || stat.nlink !== 1 || stat.size > importAttempt.MAX_BYTES : !stat.isDirectory())) throw Error('DOCX_IMPORT_ATTEMPT_PATH');
+    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
+  if (!isPathInsideBoundary(projectRoot, target, { resolveSymlinks: true })) throw Error('DOCX_IMPORT_ATTEMPT_PATH');
+  return target;
+}
+async function readDocxImportAttempt({ projectRoot, projectId }) {
+  const target = await importAttemptPath(projectRoot);
+  let text = null;
+  try { text = await fs.readFile(target, 'utf8'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  return { record: importAttempt.parseImportAttempt(text, { projectId }), text, sha256: text === null ? '' : hashExactBytes(text) };
+}
+function importAttemptFromPlan(validated, projectId, requestId) {
+  return importAttempt.createImportAttempt({ projectId, requestId,
+    importOperationId: buildImportOperationId({ projectId, operationNonce: requestId,
+      sourceArtifactSha256: validated.value.sourceArtifactSha256, candidateContentSha256: validated.value.entry.candidateContentSha256,
+      previewHash: validated.value.previewHash, sceneId: validated.value.entry.sceneId }),
+    sourceArtifactSha256: validated.value.sourceArtifactSha256, candidateContentSha256: validated.value.entry.candidateContentSha256,
+    previewHash: validated.value.previewHash, sourceSceneId: validated.value.entry.sceneId });
+}
+async function retainDocxImportAttempt(record, options) {
+  const current = await readDocxImportAttempt(options);
+  if (current.record?.requestId === record.requestId) {
+    const { schemaVersion, ...expected } = record;
+    importAttempt.assertImportAttemptMatches(current.record, expected);
+    return;
+  }
+  const target = await importAttemptPath(options.projectRoot);
+  const { atomicWriteFile } = await import('../io/markdown/atomicWriteFile.mjs');
+  await options.assertPublication();
+  await atomicWriteFile(target, importAttempt.serializeImportAttempt(record), { safetyMode: 'strict', beforeRename: async () => {
+    await options.assertPublication();
+    if ((await readDocxImportAttempt(options)).text !== current.text) throw Error('DOCX_IMPORT_ATTEMPT_CONFLICT');
+  } });
+}
+async function acknowledgeDocxImportAttempt(input, options = {}) {
+  const { projectRoot, projectId, requestId, expectedAttemptSha256 } = input;
+  const { transactionAuthority: authority, manifestPath, admittedPreviewPlan: plan, revalidateOpen } = options;
+  if (!authority || typeof authority.withProjectLease !== 'function' || typeof revalidateOpen !== 'function'
+    || !path.isAbsolute(manifestPath || '') || path.dirname(manifestPath) !== projectRoot
+    || typeof expectedAttemptSha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(expectedAttemptSha256)) throw Error('DOCX_IMPORT_ATTEMPT_ACK_INVALID');
+  const validated = validateDocxImportPreviewPlan(plan);
+  if (!validated.ok || !isDocxImportPreviewPlanAdmitted(plan)) throw Error('DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED');
+  return authority.withProjectLease(projectId, lease => lease.publish(async proof => {
+    await proof.assertOwned();
+    const current = await readDocxImportAttempt({ projectRoot, projectId });
+    if (!current.record) return { ok: true, cleared: false };
+    if (current.sha256 !== expectedAttemptSha256 || current.record.requestId !== requestId) throw Error('DOCX_IMPORT_ATTEMPT_CONFLICT');
+    const expected = importAttemptFromPlan(validated, projectId, normalizeDocxImportOperationNonce(requestId));
+    const { schemaVersion, ...binding } = expected; importAttempt.assertImportAttemptMatches(current.record, binding);
+    const stored = await readDurableReceiptRecord(projectRoot, expected.importOperationId);
+    if (stored.status !== 'ok') throw Error('DOCX_IMPORT_ATTEMPT_RECEIPT_INVALID');
+    const romanRoot = path.join(projectRoot, 'roman');
+    const targetPath = buildDocxImportScenePath(romanRoot, validated.value.entry, expected.importOperationId.replace(/^docx-import-op-/u, '').slice(0, 8));
+    const verified = await validateExistingDocxImportReceipt({ receipt: stored.receipt, plan, validated, projectRoot, romanRoot,
+      targetPath, importOperationId: expected.importOperationId, operationNonce: requestId, projectId, transactionAuthority: authority, manifestPath });
+    if (!verified.ok) throw Error('DOCX_IMPORT_ATTEMPT_RECEIPT_INVALID');
+    const assertOpen = await revalidateOpen({ record: current.record, receipt: verified.receipt });
+    if (typeof assertOpen !== 'function') throw Error('DOCX_IMPORT_ATTEMPT_ACK_INVALID');
+    await proof.assertOwned();
+    if ((await readDocxImportAttempt({ projectRoot, projectId })).text !== current.text) throw Error('DOCX_IMPORT_ATTEMPT_CONFLICT');
+    const { unlinkDurable } = await import('../io/markdown/atomicWriteFile.mjs');
+    const target = await importAttemptPath(projectRoot);
+    const openResult = assertOpen();
+    if (openResult && typeof openResult.then === 'function') throw Error('DOCX_IMPORT_ATTEMPT_ACK_INVALID');
+    await unlinkDurable(target);
+    return { ok: true, cleared: true };
+  }));
+}
+
 function normalizeDocxImportOperationNonce(value) {
   const raw = typeof value === 'string' ? value.trim() : '';
   if (!raw) return DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE;
@@ -1397,6 +1477,12 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
       'docx_import_safe_create_scene_path_forbidden',
     );
   }
+  const acceptedAttempt = importAttemptFromPlan(validated, projectId, operationNonce);
+  const previousAttempt = await readDocxImportAttempt({ projectRoot, projectId });
+  if (previousAttempt.record?.requestId === operationNonce) {
+    const { schemaVersion, ...expected } = acceptedAttempt;
+    importAttempt.assertImportAttemptMatches(previousAttempt.record, expected);
+  }
   let mediaEntries;
   try { mediaEntries = await prepareDocxMediaEntries(validated.value.entry.content, projectRoot, validated.value.entry.notes); }
   catch (error) { return buildError('DOCX_SAFE_CREATE_MEDIA_INVALID', 'docx_import_media_invalid', { code: error.message }); }
@@ -1426,6 +1512,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
       manifestPath: options.manifestPath,
     });
     if (!receiptValidation.ok) return receiptValidation;
+    await retainDocxImportAttempt(acceptedAttempt, options);
     return {
       ok: true,
       value: {
@@ -1565,6 +1652,7 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
   };
 
   const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
+  await retainDocxImportAttempt(acceptedAttempt, options);
   await commitProjectTransaction({ scenePath: targetPath, sceneContent: normalizedEntry.content,
     expectedSceneContent: null, manifestPath: options.manifestPath, manifestContent,
     expectedManifestContent: options.manifestRaw, revision: options.lease.fencingGeneration,
@@ -1668,6 +1756,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
 }
 
 module.exports = {
+  readDocxImportAttempt,
+  acknowledgeDocxImportAttempt,
   DOCX_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA,
   DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE,
   DOCX_IMPORT_SAFE_CREATE_READY_REASON,

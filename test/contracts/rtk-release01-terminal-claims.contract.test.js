@@ -405,6 +405,32 @@ async function compileRelease01CurrentWordingRegistry({
     registry.claims.push(clone(claim));
   }
 
+  const restart = repair.wordImportRestartWording;
+  const restartWordings = new Map([
+    ['claim-editor-docx-import-resume-opening', 'Import saved. Opening could not be confirmed; choose Import DOCX to resume.'],
+    ['claim-editor-docx-import-resume-opening-suffix', '; choose Import DOCX to resume opening'],
+  ]);
+  if (!exactKeys(restart, ['schemaVersion','taskId','bindingBaseSha','scope','claims'])
+    || restart.schemaVersion !== 1 || restart.taskId !== 'WORD_IMPORT_RESTART_MAC_20261004'
+    || restart.bindingBaseSha !== '0aaa14140e32e6e6981ed14dd0a71da89e1da959'
+    || restart.scope !== wording.scope
+    || !Array.isArray(restart.claims) || restart.claims.length !== restartWordings.size) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'exact current import restart wording declaration required');
+  }
+  for (const claim of restart.claims) {
+    if (!exactKeys(claim,['claimId','claimClass','surfaceId','wording','evidenceBinding','blockedRowRef','evidenceScope','claimDigest'])
+      || seen.has(claim.claimId) || registry.claims.some(existing => existing.claimId === claim.claimId)
+      || restartWordings.get(claim.claimId) !== claim.wording || claim.claimClass !== 'DECLARED_ONLY'
+      || claim.surfaceId !== 'surface-editor-js' || claim.blockedRowRef !== null
+      || claim.evidenceScope !== 'BUILD_INDEPENDENT_PRODUCT_FUNCTION'
+      || !exactKeys(claim.evidenceBinding,['profileId']) || claim.evidenceBinding.profileId !== 'word-mac-16.111.2-d1'
+      || claim.claimDigest !== claimsModule.computeClaimDigest(stripDigest(claim))) {
+      failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'invalid or promoted current import restart wording');
+    }
+    seen.add(claim.claimId);
+    registry.claims.push(clone(claim));
+  }
+
   // Only after the preserved wording chain is validated may the exact
   // security successor replace the current package surface binding.
   const security = await import(pathToFileURL(path.join(REPO_ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
@@ -2104,7 +2130,7 @@ test('RELEASE01 current import wordings remain declared-only and do not mutate h
   const compiled=await compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry});
   const claims=loadJsonWithBytes(C1_DATA_POLICY_PATH).value.qualifiedRuntimeRepair.wordImportAttemptWording.claims;
   for(const claim of claims){assert.equal(claim.claimClass,'DECLARED_ONLY');assert.deepEqual(compiled.claims.find(c=>c.claimId===claim.claimId),claim);}
-  assert.equal(compiled.claims.length,loaded.registry.claims.length+3);
+  assert.equal(compiled.claims.length,loaded.registry.claims.length+5);
   assert.equal(JSON.stringify(loaded.registry),historical);assert.deepEqual(fs.readFileSync(REGISTRY_PATH),before);
 });
 
@@ -2138,4 +2164,62 @@ test('RELEASE01 current import wordings reject omission tampering duplicates and
   value.qualifiedRuntimeRepair.wordImportAttemptWording.claims[0].wording='tampered';
   await assert.rejects(()=>compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry,
     currentQualificationLoad:{...qualification,value}}),error=>error?.code===RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+});
+
+
+test('RELEASE01 import restart wordings preserve historical and prior attempt declarations', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const historical = JSON.stringify(loaded.registry), bytes = fs.readFileSync(REGISTRY_PATH);
+  const repair = loadJsonWithBytes(C1_DATA_POLICY_PATH).value.qualifiedRuntimeRepair;
+  const compiled = await compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry });
+  for (const claim of [...repair.wordImportAttemptWording.claims, ...repair.wordImportRestartWording.claims]) {
+    assert.equal(claim.claimClass, 'DECLARED_ONLY');
+    assert.deepEqual(compiled.claims.find(value => value.claimId === claim.claimId), claim);
+  }
+  assert.equal(compiled.claims.length, loaded.registry.claims.length + 5);
+  assert.equal(JSON.stringify(loaded.registry), historical);
+  assert.deepEqual(fs.readFileSync(REGISTRY_PATH), bytes);
+});
+
+test('RELEASE01 import restart rejects forged qualification even with recomputed digests', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const cases = [
+    r => { delete r.wordImportRestartWording; },
+    r => { r.wordImportRestartWording.claims.pop(); },
+    r => { r.wordImportRestartWording.claims[1] = clone(r.wordImportRestartWording.claims[0]); },
+    r => { r.wordImportRestartWording.schemaVersion = 2; },
+    r => { r.wordImportRestartWording.taskId = 'WORD_IMPORT_ATTEMPTS_MAC_20261004'; },
+    r => { r.wordImportRestartWording.bindingBaseSha = '0'.repeat(40); },
+    r => { r.wordImportRestartWording.scope = 'Whole-plan support'; },
+    r => { r.wordImportRestartWording.extra = true; },
+    r => { r.wordImportRestartWording.claims[0].wording = 'DOCX import always recovers'; },
+    r => { r.wordImportRestartWording.claims[0].claimClass = 'USER_FACING_BOUNDED_SUPPORTED'; },
+    r => { r.wordImportRestartWording.claims[0].surfaceId = 'surface-menu-config'; },
+    r => { r.wordImportRestartWording.claims[0].evidenceScope = 'CURRENT_BUILD_COMPATIBILITY'; },
+    r => { r.wordImportRestartWording.claims[0].blockedRowRef = 'invented'; },
+    r => { r.wordImportRestartWording.claims[0].evidenceBinding.profileId = 'unknown'; },
+    r => { r.wordImportRestartWording.claims[0].claimId = r.wordImportAttemptWording.claims[0].claimId; },
+    r => { r.sourceBindings.find(v => v.path === 'src/renderer/editor.js').sha256 = '0'.repeat(64); },
+    r => { r.sourceBindings.push(clone(r.sourceBindings.find(v => v.path === 'src/renderer/editor.js'))); },
+  ];
+  for (const mutate of cases) {
+    const value = loadJsonWithBytes(C1_DATA_POLICY_PATH).value;
+    mutate(value.qualifiedRuntimeRepair);
+    for (const claim of value.qualifiedRuntimeRepair.wordImportRestartWording?.claims || []) {
+      claim.claimDigest = module.computeClaimDigest(stripDigest(claim));
+    }
+    const bytes = Buffer.from(JSON.stringify(value)), digest = sha256RawBytes(bytes);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
+    error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
+  for (const rawMismatch of [false, true]) {
+    const original = loadJsonWithBytes(C1_DATA_POLICY_PATH), value = clone(original.value);
+    value.qualifiedRuntimeRepair.wordImportRestartWording.claims[0].claimDigest = 'sha256:' + '0'.repeat(64);
+    const bytes = rawMismatch ? original.bytes : Buffer.from(JSON.stringify(value));
+    const digest = sha256RawBytes(bytes);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
+    error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
 });

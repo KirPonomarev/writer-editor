@@ -22,6 +22,8 @@ const {
 } = require('./utils/markdownImportSafeCreate');
 const {
   applyDocxImportSafeCreate,
+  readDocxImportAttempt,
+  acknowledgeDocxImportAttempt,
   isDocxImportPreviewPlanAdmitted,
   rememberDocxImportPreviewPlanAdmission,
   verifyDocxMediaAssetFiles,
@@ -11944,6 +11946,7 @@ function captureDocxImportPreviewContext() {
 function invalidateDocxImportPreviewReferences() {
   docxImportPreviewProjectGeneration += 1;
   docxImportPreviewReferences.clear();
+  docxImportOpenAcknowledgement = null;
 }
 
 function rememberDocxImportPreviewReference(kind, value, context) {
@@ -12827,6 +12830,7 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
 
 // DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_START
 const DOCX_IMPORT_SAFE_CREATE_COMMAND_ID = 'cmd.project.docx.importSafeCreate';
+let docxImportOpenAcknowledgement = null;
 const DOCX_IMPORT_SAFE_CREATE_MAX_PAYLOAD_CHARS = 4 * 1024 * 1024;
 const DOCX_IMPORT_SAFE_CREATE_MAX_OBJECT_DEPTH = 32;
 const DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS = 120;
@@ -13241,7 +13245,90 @@ function validateDocxImportSafeCreateCommandResult(result) {
   return { ok: true };
 }
 
+async function docxImportOpenedSnapshotMatches(raw, live) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const saved = envelope.parseObservablePayload(raw);
+  if (saved.issue) return false;
+  // The existing scene-open adapter enables metadata and the editor materializes
+  // a paragraph document for plain text. Derive precisely that initial buffer;
+  // receipt validation continues to compare the original canonical bytes.
+  const opened = envelope.composeObservablePayload({
+    doc: saved.doc || envelope.buildParagraphDocumentFromText(saved.text),
+    text: saved.text, metaEnabled: true, meta: saved.meta, cards: saved.cards,
+  });
+  return treeSceneSnapshotsEqual(opened, live);
+}
+
+async function handleDocxImportOpenAcknowledgement(payload) {
+  const keys = ['action', 'requestId', 'projectId', 'nodeId'];
+  if (!isPlainObjectValue(payload) || Object.keys(payload).length !== keys.length
+    || Object.keys(payload).some(key => !keys.includes(key)) || payload.action !== 'acknowledge-open'
+    || keys.slice(1).some(key => typeof payload[key] !== 'string' || !payload[key].trim() || payload[key].length > 160)
+    || payload.requestId.length > DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS
+    || !/^tree-node-[a-f0-9]{32}$/u.test(payload.nodeId)) {
+    return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_ACK_INVALID', 'DOCX_IMPORT_ACK_INVALID');
+  }
+  const admission = docxImportOpenAcknowledgement;
+  if (!admission || admission.requestId !== payload.requestId || admission.projectId !== payload.projectId) {
+    return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_ACK_STALE', 'DOCX_IMPORT_ACK_STALE');
+  }
+  const window = mainWindow, owner = activeStage10ApplicationBootstrap;
+  const session = commentAuthoringSessionId, subject = currentLifecycleSubjectId();
+  const generation = lastSignaledEditGeneration, filePath = currentFilePath;
+  const guard = () => {
+    userBookmarkCapability(DOCX_IMPORT_SAFE_CREATE_COMMAND_ID);
+    if (docxImportOpenAcknowledgement !== admission || mainWindow !== window || !window
+      || captureDocxImportPreviewContext() !== admission.referenceContext
+      || getProjectRootPath() !== admission.projectRoot || activeStage10ApplicationBootstrap !== owner
+      || commentAuthoringSessionId !== session || currentLifecycleSubjectId() !== subject
+      || currentFilePath !== filePath || !filePath || lastSignaledEditGeneration !== generation
+      || isDirty || activePendingRecording || autoSaveInProgress) throw new Error('DOCX_IMPORT_ACK_STALE');
+  };
+  try {
+    guard();
+    const authority = await getMainProjectManifestAuthority();
+    guard();
+    const result = await acknowledgeDocxImportAttempt({ projectRoot: admission.projectRoot,
+      projectId: admission.projectId, requestId: admission.requestId, expectedAttemptSha256: admission.attemptSha256 }, {
+      transactionAuthority: authority, manifestPath: admission.manifestPath,
+      admittedPreviewPlan: admission.plan,
+      revalidateOpen: async ({ receipt }) => {
+        guard();
+        const locator = receipt.publicSceneLocator;
+        if (!locator || locator.nodeId !== payload.nodeId || locator.kind !== 'scene') throw new Error('DOCX_IMPORT_ACK_LOCATOR_MISMATCH');
+        const resolved = await resolveProjectTreeNodeIdentity(locator.nodeId, admission.projectId);
+        guard();
+        if (getResolvedTreeDocumentTarget(resolved).filePath !== filePath) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_MISMATCH');
+        const raw = await fs.readFile(filePath, 'utf8');
+        guard();
+        const snapshot = await requestEditorSnapshot();
+        guard();
+        if (snapshot.projectId !== admission.projectId || snapshot.documentId !== locator.nodeId
+          || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation
+          || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+          || !await docxImportOpenedSnapshotMatches(raw, snapshot.content)) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_MISMATCH');
+        guard();
+        if (await fs.readFile(filePath, 'utf8') !== raw) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_CHANGED');
+        guard();
+        const saved = await saveLastFile({ selectionRange: snapshot.selectionRange, beforeWrite: guard });
+        guard();
+        if (saved?.ok !== true) throw new Error('DOCX_IMPORT_ACK_CONTINUITY_FAILED');
+        return guard;
+      },
+    });
+    guard();
+    if (result?.ok !== true) throw new Error('DOCX_IMPORT_ACK_FAILED');
+    docxImportOpenAcknowledgement = null;
+    return { ok: true, acknowledged: true, cleared: result.cleared === true, requestId: payload.requestId };
+  } catch {
+    return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_ACK_FAILED', 'DOCX_IMPORT_ACK_FAILED');
+  }
+}
+
 async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
+  if (isPlainObjectValue(payload) && Object.prototype.hasOwnProperty.call(payload, 'action')) {
+    return handleDocxImportOpenAcknowledgement(payload);
+  }
   const referenceContext = typeof captureDocxImportPreviewContext === 'function'
     ? captureDocxImportPreviewContext() : null;
   const assertCurrentReferenceContext = () => {
@@ -13263,9 +13350,12 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
   }
 
   let safeCreateResult = null;
+  let acceptedBinding = null;
   try {
     const requestId = normalizeDocxImportSafeCreateRequestId(payload?.requestId);
-    await ensureProjectStructure();
+    await recoverPendingWriterProjectTransaction();
+    assertCurrentReferenceContext();
+    await ensureProjectStructure(currentProjectName || DEFAULT_PROJECT_NAME);
     assertCurrentReferenceContext();
     const importProjectRoot = getProjectRootPath();
     const romanRoot = getProjectSectionPath('roman');
@@ -13273,6 +13363,7 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
     // Missing authority is a command failure before any import publication.
     const docxImportTransactionAuthority = await getMainProjectManifestAuthority();
     assertCurrentReferenceContext();
+    acceptedBinding = { projectRoot: importProjectRoot, projectId: projectBinding?.projectId, manifestPath: projectBinding?.manifestPath };
     safeCreateResult = await applyDocxImportSafeCreate(
       {
         docxImportPreviewPlan: validated.docxImportPreviewPlan,
@@ -13331,6 +13422,17 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
       resultShape.reason,
       resultShape.key ? { key: resultShape.key } : {},
     );
+  }
+  try {
+    assertCurrentReferenceContext();
+    const attempt = await readDocxImportAttempt(acceptedBinding);
+    assertCurrentReferenceContext();
+    if (!attempt?.record || attempt.record.requestId !== commandResult.requestId) throw new Error('DOCX_IMPORT_ATTEMPT_MISSING');
+    docxImportOpenAcknowledgement = { ...acceptedBinding, referenceContext,
+      requestId: commandResult.requestId, attemptSha256: attempt.sha256,
+      plan: cloneJsonSafe(validated.docxImportPreviewPlan) };
+  } catch {
+    return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_ACK_PREPARATION_FAILED', 'DOCX_IMPORT_ACK_PREPARATION_FAILED');
   }
   return commandResult;
 }
@@ -13588,13 +13690,60 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
     );
   }
 
+  // Validate before any dialog or project read; stored correlation never supplies a plan.
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'requestId')
+    || payload.requestId !== undefined && (typeof payload.requestId !== 'string' || payload.requestId.trim().length > 120)) {
+    return makeDocxImportLocalFilePreviewTypedError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID', 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID');
+  }
+  const assertCurrent = () => {
+    userBookmarkCapability(DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID);
+    if (referenceContext !== captureDocxImportPreviewContext()) throw new Error('DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+  };
+  let effectivePayload = payload;
   let previewResult = null;
   try {
-    previewResult = await createDocxImportLocalFilePreview(payload, {
-      pickLocalFile: pickDocxImportLocalFilePreviewFile,
-      readLocalFileBytes: readDocxImportLocalFilePreviewBytes,
+    assertCurrent();
+    const projectRoot = getProjectRootPath();
+    const manifest = JSON.parse(await fs.readFile(getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8'));
+    assertCurrent();
+    const pending = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
+    assertCurrent();
+    if (pending.record) {
+      const resumable = [pending.record.sourceArtifactSha256, pending.record.candidateContentSha256]
+        .every(value => typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value));
+      const choice = await dialog.showMessageBox(mainWindow, {
+        type: 'question', title: 'Незавершённый импорт DOCX', message: 'Продолжить предыдущий импорт?',
+        detail: resumable ? 'Повторно выберите исходный DOCX. Новый импорт создаст отдельную сцену.'
+          : 'Для этой попытки нельзя проверить исходный файл. Выберите «Новый импорт».',
+        buttons: resumable ? ['Продолжить', 'Новый импорт', 'Отмена'] : ['Новый импорт', 'Отмена'],
+        defaultId: 0, cancelId: resumable ? 2 : 1, noLink: true,
+      });
+      assertCurrent();
+      if (choice.response !== 0 && (!resumable || choice.response !== 1)) {
+        return { ok: true, requestId: normalizeDocxImportLocalFilePreviewRequestId(payload.requestId),
+          status: 'cancelled', writeEffects: false, contentPreviewOk: false, importPreviewOk: false };
+      }
+      const current = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
+      assertCurrent();
+      if (current.sha256 !== pending.sha256) throw new Error('DOCX_IMPORT_ATTEMPT_CHANGED');
+      effectivePayload = { requestId: resumable && choice.response === 0 ? pending.record.requestId : 'docx-import-' + crypto.randomUUID() };
+    }
+    previewResult = await createDocxImportLocalFilePreview(effectivePayload, {
+      pickLocalFile: async options => {
+        assertCurrent();
+        const selected = await pickDocxImportLocalFilePreviewFile(options);
+        assertCurrent();
+        return selected;
+      },
+      readLocalFileBytes: async selection => {
+        assertCurrent();
+        const bytes = await readDocxImportLocalFilePreviewBytes(selection);
+        assertCurrent();
+        return bytes;
+      },
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
     });
+    assertCurrent();
   } catch (error) {
     return makeDocxImportLocalFilePreviewTypedError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
@@ -15035,6 +15184,39 @@ async function resolveStartupStage10ProjectBinding() {
     manifest,
     sourceSchemaVersion: Number(manifest.schemaVersion),
   };
+}
+
+async function recoverSelectedProjectAtStartup() {
+  const settings = await loadSettings();
+  const continuity = readSessionContinuityV1(settings);
+  if (!continuity.ok && continuity.present) throw Object.assign(new Error('E_SESSION_CONTINUITY_INVALID'), { code: 'E_SESSION_CONTINUITY_INVALID' });
+  const selectedId = normalizeStableProjectId(continuity.record?.projectId || continuity.projectId);
+  if (!selectedId && typeof settings.lastExternalFilePath === 'string' && settings.lastExternalFilePath.trim()) return;
+  let manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
+  if (selectedId) {
+    const roots = await fs.readdir(fileManager.getDocumentsPath(), { withFileTypes: true });
+    const matches = [];
+    for (const entry of roots) {
+      if (!entry.isDirectory()) continue;
+      const candidate = path.join(fileManager.getDocumentsPath(), entry.name, PROJECT_MANIFEST_FILENAME);
+      let raw;
+      try { raw = await fs.readFile(candidate, 'utf8'); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+      let parsed;
+      try { parsed = JSON.parse(raw); } catch { continue; }
+      if (isPlainObjectValue(parsed) && parsed.projectId === selectedId) matches.push(candidate);
+    }
+    if (matches.length !== 1) throw Object.assign(new Error('E_STARTUP_PROJECT_BINDING'), { code: 'E_STARTUP_PROJECT_BINDING' });
+    manifestPath = matches[0];
+  }
+  let raw;
+  try { raw = await fs.readFile(manifestPath, 'utf8'); }
+  catch (error) { if (!selectedId && error.code === 'ENOENT') return; throw error; }
+  const manifest = JSON.parse(raw);
+  if (!isPlainObjectValue(manifest) || !normalizeStableProjectId(manifest.projectId)) throw new Error('E_STARTUP_PROJECT_MANIFEST');
+  if (Number(manifest.schemaVersion) > PROJECT_MANIFEST_SCHEMA_VERSION) throw Object.assign(new Error('PROJECT_READONLY_SCHEMA'), { code: 'PROJECT_READONLY_SCHEMA' });
+  setActiveProjectNameFromRoot(path.dirname(manifestPath));
+  await recoverPendingWriterProjectTransaction();
+  // Bootstrap resolves and reads the recovered manifest again; never reuse the before-image.
 }
 
 async function bootstrapStage10ApplicationAtStartup() {
@@ -23150,18 +23332,39 @@ async function recoverWriterProjectTransactionForFile(filePath) {
   const projectRoot = getProjectRootPath();
   if (!isPathInside(projectRoot, filePath)) return { recovered: false, outcome: 'NOT_PROJECT_BOUND' };
   const manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
+  const context = captureDocxImportPreviewContext();
+  const guard = () => {
+    if (context !== captureDocxImportPreviewContext() || projectRoot !== getProjectRootPath()) throw new Error('E_PROJECT_RECOVERY_CONTEXT_CHANGED');
+  };
   const authority = await getMainProjectManifestAuthority();
+  guard();
   const boundManifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+  guard();
   const boundProjectId = normalizeStableProjectId(boundManifest.projectId);
   if (!boundProjectId) throw Object.assign(new Error('PROJECT_TRANSACTION_PROJECT_ID_REQUIRED'), { code: 'E_PROJECT_TRANSACTION_PROJECT_ID_REQUIRED' });
-  return authority.withProjectLease(boundProjectId, lease => lease.publish(() => recoverProjectTransaction({
+  return authority.withProjectLease(boundProjectId, lease => lease.publish(proof => recoverProjectTransaction({
+    fsAdapter: new Proxy(fs, { get(target, key) {
+      if (typeof target[key] !== 'function') return target[key];
+      return async (...args) => {
+        if (['open', 'writeFile', 'rename', 'link', 'unlink', 'mkdir', 'rm', 'rmdir', 'copyFile', 'truncate'].includes(key)) {
+          guard();
+          await proof.assertOwned();
+          guard();
+        }
+        return target[key](...args);
+      };
+    } }),
     scenePath: filePath,
+    revalidate: guard,
     manifestPath,
     verifyManifestContinuation: async (request) => {
+      guard();
       const current = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+      guard();
       return authority.verifyManifestContinuation({ ...request, projectId: normalizeStableProjectId(current.projectId) });
     },
     publishManifest: async ({ manifestPath: targetPath, expectedText, nextText, reason }) => {
+      guard();
       if (targetPath !== manifestPath) {
         const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
         error.code = 'E_PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH';
@@ -37413,7 +37616,8 @@ async function initializeApp() {
   await fileManager.migrateDocumentsFolder();
   await fileManager.ensureDocumentsFolder();
   await ensureAutosaveDirectory();
-  await ensureProjectStructure();
+  await recoverSelectedProjectAtStartup();
+  await ensureProjectStructure(currentProjectName || DEFAULT_PROJECT_NAME);
   await buildProjectTreeRootsWithIdentities();
   await bootstrapStage10ApplicationAtStartup();
   await reconcileReviewFormattingReturnAtStartup();

@@ -524,6 +524,26 @@ async function runDocxImportLocalFilePreviewBridge(electronAPI, input = {}) {
   );
 }
 
+async function runDocxImportOpenAcknowledgementBridge(electronAPI, input) {
+  const keys = ['action', 'requestId', 'projectId', 'nodeId'];
+  if (!input || Object.keys(input).some(key => !keys.includes(key))
+    || input.action !== 'acknowledge-open'
+    || keys.slice(1).some(key => typeof input[key] !== 'string' || !input[key].trim() || input[key].length > 160)) {
+    return fail('E_DOCX_IMPORT_ACK_INVALID', EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE, 'DOCX_IMPORT_ACK_INVALID');
+  }
+  try {
+    const response = unwrapBridgeResponseValue(await invokeBridgeOnlyCommand(
+      electronAPI, EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE, input,
+    ));
+    if (response?.ok === true && response.acknowledged === true && typeof response.cleared === 'boolean') return ok(response);
+    return fail('E_DOCX_IMPORT_ACK_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      'DOCX_IMPORT_ACK_FAILED');
+  } catch {
+    return fail('E_DOCX_IMPORT_ACK_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      'DOCX_IMPORT_ACK_FAILED');
+  }
+}
+
 async function runDocxImportSafeCreateBridge(electronAPI, input = {}) {
   if (!electronAPI || typeof electronAPI !== 'object') {
     return fail(
@@ -3202,6 +3222,10 @@ export function registerProjectCommands(registry, options = {}) {
       );
     }
 
+    if (Object.prototype.hasOwnProperty.call(input, 'action')) {
+      return runDocxImportOpenAcknowledgementBridge(electronAPI, input);
+    }
+    let effectiveRequestId = normalizeDocxImportRequestId(input);
     const acceptRequested = input && typeof input === 'object' && input.accept === true;
     let localFilePreview = getObjectOrNull(input?.localFilePreview);
     let docxImportPreviewPlan = getObjectOrNull(input?.docxImportPreviewPlan);
@@ -3211,10 +3235,15 @@ export function registerProjectCommands(registry, options = {}) {
 
     if (!docxImportPreviewPlan) {
       const previewResult = await runDocxImportLocalFilePreviewBridge(electronAPI, {
-        requestId: normalizeDocxImportRequestId(input),
+        requestId: effectiveRequestId,
       });
       if (!previewResult.ok) return previewResult;
       localFilePreview = previewResult.value.localFilePreview;
+      if (typeof localFilePreview?.requestId !== 'string' || !localFilePreview.requestId.trim()
+        || localFilePreview.requestId.length > 120) {
+        return fail('E_DOCX_IMPORT_REFERENCE_INVALID', COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, 'DOCX_IMPORT_REQUEST_ID_INVALID');
+      }
+      effectiveRequestId = localFilePreview.requestId;
       docxImportPreviewPlan = getObjectOrNull(localFilePreview?.docxImportPreviewPlan);
       docxContentPreviewReport = getObjectOrNull(localFilePreview?.docxContentPreviewReport);
       docxContentPreviewRef = localFilePreview?.docxContentPreviewRef;
@@ -3225,7 +3254,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
 
     const importPreviewResult = await runDocxImportPreviewPlanBridge(electronAPI, {
-      requestId: normalizeDocxImportRequestId(input, 'docx-import-accept-preview'),
+      requestId: effectiveRequestId,
       docxContentPreviewReport,
       docxContentPreviewRef,
     });
@@ -3241,7 +3270,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
 
     return runDocxImportSafeCreateBridge(electronAPI, {
-      requestId: normalizeDocxImportRequestId(input),
+      requestId: effectiveRequestId,
       docxImportPreviewPlan,
       docxImportPreviewRef: importPreviewResult.value.docxImportPreviewRef,
       localFilePreview,

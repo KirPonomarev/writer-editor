@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_IMPORT_RESTART_MAC_20261004",
+  "bindingBaseSha": "0aaa14140e32e6e6981ed14dd0a71da89e1da959",
+  "productPlane": "Core owns strict bounded accepted-attempt correlation schema and canonical import transaction/receipt. Existing safe-create adapter and Main manifest authority own atomic persistence under project lease. The new private record supplies correlation only, never plan/path/capability authority. Owner original Mac plan P1-08 explicitly includes timeout/crash/restart.",
+  "interfacePlane": "Retain current import preview and existing native message-box convention with Resume/New/Cancel. No new HTML/CSS/tokens/layout. Existing ui-craft and Lazyweb import/recovery research consulted; exact recovery search had weak adjacent coverage, not a claimed validated flow.",
+  "commands": [
+    "cmd.project.importDocxV1",
+    "cmd.project.docx.previewLocalFile",
+    "cmd.project.docx.previewImportPlan",
+    "cmd.project.docx.importSafeCreate"
+  ],
+  "queries": [
+    "Existing capability, tree locator and bounded attempt/receipt read projections"
+  ],
+  "events": [
+    "Existing durable import commit; explicit confirmed scene-open acknowledgement"
+  ],
+  "effects": [
+    "Existing native chooser/message dialog, fresh DOCX parse/read, leased atomic correlation/import persistence and session continuity"
+  ],
+  "productPorts": [
+    "Existing native dialog, bounded file read, Main import command bridge, atomic persistence/manifest lease, scene open and session continuity ports"
+  ],
+  "designOsPorts": [
+    "Existing import preview and command availability; immutable recovery/error projection only"
+  ],
+  "readProjections": [
+    "Main-selected effective requestId correlation with fresh preview",
+    "Existing loss report and public scene locator",
+    "Typed recovery/ACK outcome bound to current attempt/project"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "SHELL_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "writePaths": [
+    "Explicit accepted fresh preview -> Kernel -> Main opaque admission -> existing leased safe-create adapter -> durable bounded correlation then existing atomic import transaction",
+    "Existing import command acknowledge-open -> Main verified receipt and actual live scene/context -> successful guarded continuity persistence -> leased exact correlation compare-and-clear",
+    "Startup -> resolve selected project binding -> existing manifest-bound recovery authority -> coherent project before identity reconciliation and editor/autosave publication"
+  ],
+  "identityGuards": [
+    "Strict record projectId/requestId/operationId/sourceSHA/candidateSHA/previewHash/sourceSceneId equality against freshly admitted input",
+    "Compare current project/lifecycle/source revision/generation before and after async chooser, open, snapshot, continuity write and acknowledgement",
+    "Stale ACK for A cannot clear B; malformed/symlink/oversize record cannot supply authority",
+    "Recover actual pending manifest journal before startup tree reconciliation, Stage10 and autosave/last-file UI restoration"
+  ],
+  "capabilityRevalidation": "Kernel and Main retain capability revalidation. All writes use existing lease/atomic gateways. Recovery query and visible Resume are not mutation authority.",
+  "fallbacks": [
+    "Cancel chooser/preview or choose New without accepting preserves prior accepted record",
+    "Committed import with failed open/continuity retains resumable record and never silently redispatches a new identity",
+    "Resume with changed source refuses mismatched binding and requires deliberate new import",
+    "Invalid correlation/receipt or stale context produces explicit failure without overwriting prior state"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Actual Core/adapter fresh-process before-commit and after-commit-before-ACK interruptions: coherent before/after, exact foreign scene/comment/media hashes, same nonce replay once",
+    "Actual command and renderer requestId adoption, no duplicate dispatch, fresh parser/ref admission after restart/TTL, cancellation and stale response rejection",
+    "Main ACK closed-schema, verified receipt locator, actual live snapshot/content, continuity persistence and stale A vs B CAS",
+    "Startup selected-project pending transaction recovery precedes all manifest reconciliation and editor/autosave publication",
+    "Early native SOURCE and PACKAGED real permission-failure restart resume plus committed-import continuity failure with immutable owned settings file restored in finally; same identities and no duplicate persisted graph",
+    "Focused negative and affected contracts then complete RTK, exact-head CI full baseline, oss policy and dependency audits, guardrails; commit/push/PR/merge and clean exact merged verification"
+  ],
+  "securityAndInputBoundary": "No dependencies, new IPC/preload, runtime network, automatic import or new generic writer. Pure Core bounded closed schema; fixed adapter path with strict path/symlink/budget checks. Correlation never restores parser admission or creates source/path authority. No clearing on untrusted opened/success booleans.",
+  "performanceAndAccessibility": "One bounded record and on-demand native dialog, no work on typing. Existing keyboard/focus/cancel behavior. No new visual zone. Preserve unsaved authoring state and explicit recovery messages.",
+  "hotPathBoundary": "One bounded record read per explicit import, no typing/background scan",
+  "migrationRollbackEvidence": "Revert one integrated PR. Preserve all existing project and receipt bytes; private correlation record is inert for prior readers. No destructive migration or automatic import.",
+  "currentReality": [
+    "PR2077 delivered at 0aaa1414, CI19 successful, RTK3205 and postmerge265 passed with clean identical merged tree",
+    "Renderer current-session retry is correct but transient nonce is lost on restart; existing Core durable receipts cannot by themselves provide user resume flow",
+    "initializeApp reconciles tree identity before selected-project pending transaction recovery; restoreAutosave can bypass openLastFile recovery",
+    "Native SOURCE/PACKAGED import/edit/reimport/retry/cancel/Word-save/reopen observations exist for prior runtime; they do not prove the new restart flow"
+  ],
+  "targetOnly": [
+    "Persisted accepted-attempt discovery, fresh resume and guarded ACK remain unimplemented target until new candidate is executed",
+    "Native filesystem-failure/restart is distinguished from automated controlled process-kill boundary proof",
+    "Whole original Mac plan and larger comment capacity remain outside this bounded acceptance"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_NATIVE_DIALOG_AND_PREVIEW_NO_NEW_VISUAL_ZONE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK"
+}

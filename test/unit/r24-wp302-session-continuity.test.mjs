@@ -422,3 +422,51 @@ test('WP302 active document path rebind preserves selection without adding UI or
   assert.equal(contractSource.includes('setInterval'), false);
   assert.equal(contractSource.includes('setTimeout'), false);
 });
+
+test('startup recovers the selected journal before tree reconciliation and Stage10, and stops on recovery error', async () => {
+  const vm = await import('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = source.indexOf('async function initializeApp()');
+  const end = source.indexOf('// ROUND-01', start);
+  const body = source.slice(start, end) + '}';
+  for (const fails of [false, true]) {
+    const calls = [];
+    const context = { currentProjectName: 'Alpha', DEFAULT_PROJECT_NAME: 'Default', fileManager: { migrateDocumentsFolder: async () => {}, ensureDocumentsFolder: async () => {} },
+      ensureAutosaveDirectory: async () => {}, ensureProjectStructure: async () => calls.push('ensure'),
+      recoverSelectedProjectAtStartup: async () => { calls.push('recover'); if (fails) throw Error('recovery'); },
+      buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
+      bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
+      reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {},
+      reconcileReviewExactTextApplyJournalsAtStartup: async () => {}, reconcileRoundRecordV3StoreAtStartup: async () => {} };
+    vm.runInNewContext(body, context);
+    if (fails) { await assert.rejects(context.initializeApp(), /recovery/); assert.deepEqual(calls, ['recover']); }
+    else { await context.initializeApp(); assert.deepEqual(calls, ['recover', 'ensure', 'tree', 'stage10']); }
+  }
+});
+
+test('scene recovery adapter revalidates lifecycle and lease before actual filesystem publication', async () => {
+  const vm = await import('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = source.indexOf('async function recoverWriterProjectTransactionForFile(');
+  const end = source.indexOf('async function recoverPendingWriterProjectTransaction()', start);
+  for (const fault of ['none', 'context', 'lease']) {
+    let context = 'A', mutations = 0, leaseChecks = 0;
+    const globals = { getProjectRootPath: () => '/project', isPathInside: () => true,
+      getProjectManifestPath: () => '/project/project.craftsman.json', currentProjectName: 'project', DEFAULT_PROJECT_NAME: 'project',
+      captureDocxImportPreviewContext: () => context, normalizeStableProjectId: value => value,
+      fs: { readFile: async () => '{"projectId":"project-a"}', rename: async () => { mutations++; } },
+      getMainProjectManifestAuthority: async () => ({ withProjectLease: async (_id, fn) => fn({ publish: async fn => fn({
+        assertOwned: async () => { leaseChecks++; if (fault === 'lease') throw Error('lease expired'); },
+      }) }) }),
+      recoverProjectTransaction: async ({ fsAdapter }) => {
+        await fsAdapter.readFile('/project/scene.txt');
+        if (fault === 'context') context = 'B';
+        await fsAdapter.rename('/project/temp', '/project/scene.txt');
+        return { recovered: true };
+      },
+    };
+    vm.runInNewContext(source.slice(start, end), globals);
+    if (fault === 'none') { assert.equal((await globals.recoverWriterProjectTransactionForFile('/project/scene.txt')).recovered, true); assert.equal(mutations, 1); assert.equal(leaseChecks, 1); }
+    else { await assert.rejects(globals.recoverWriterProjectTransactionForFile('/project/scene.txt')); assert.equal(mutations, 0); }
+  }
+});

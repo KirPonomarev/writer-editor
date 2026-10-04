@@ -56,7 +56,7 @@ async function fixture(t, fault = '', doc = null) {
   const src = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
   const section = src.slice(src.indexOf('// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_START'), src.indexOf('// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_END'));
   vm.runInNewContext(section + '\nmodule.exports = handleDocxImportSafeCreateCommandSurface;', sandbox);
-  const call = (requestId = 'owned-request') => sandbox.module.exports({ requestId, docxImportPreviewPlan: plan });
+  const call = (requestId = 'owned-request', admittedPlan = plan) => sandbox.module.exports({ requestId, docxImportPreviewPlan: admittedPlan });
   const scenes = () => fs.readdirSync(romanRoot, { recursive: true }).filter(p => p.endsWith('.txt'));
   return { root, projectRoot, romanRoot, manifestPath, originalManifest, plan, bytes, authority, call, scenes, recover: () => { enabled = false; }, commits: () => commitCalls };
 }
@@ -323,4 +323,56 @@ test('Word import attempts: edited old scene refuses old nonce while explicit ne
  const newPath=f.scenes().map(name=>path.join(f.romanRoot,name)).find(name=>name!==oldPath);
  assert.ok(newPath);assert.notEqual(fs.readFileSync(newPath,'utf8'),edited);
  assert.equal(Object.keys(JSON.parse(fs.readFileSync(f.manifestPath,'utf8')).treeIdentity.nodes).length,2);
+});
+
+test('accepted import correlation persists through failed publication and clears only after verified guarded open',async t=>{
+ const f=await fixture(t,'manifest');const first=await f.call('restart-attempt');assert.equal(first.ok,false);
+ const saved=await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'});assert.equal(saved.record.requestId,'restart-attempt');assert.equal(f.scenes().length,0);
+ f.recover();const completed=await f.call('restart-attempt');assert.equal(completed.ok,true,JSON.stringify(completed));assert.deepEqual(await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'}),saved);
+ const input={projectRoot:f.projectRoot,projectId:'word-import-tx',requestId:'restart-attempt',expectedAttemptSha256:saved.sha256};
+ const options={transactionAuthority:f.authority,manifestPath:f.manifestPath,admittedPreviewPlan:f.plan,revalidateOpen:async()=>()=>{}};
+ await assert.rejects(safe.acknowledgeDocxImportAttempt({...input,requestId:'foreign'},options),/CONFLICT/);
+ await assert.rejects(safe.acknowledgeDocxImportAttempt(input,{...options,revalidateOpen:async()=>{throw Error('CONTINUITY_WRITE_FAILED');}}),/CONTINUITY/);
+ await assert.rejects(safe.acknowledgeDocxImportAttempt(input,{...options,revalidateOpen:async()=>()=>{throw Error('PROJECT_CHANGED');}}),/PROJECT_CHANGED/);
+ assert.deepEqual(await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'}),saved);
+ const cleared=await safe.acknowledgeDocxImportAttempt(input,options);assert.equal(cleared.cleared,true);assert.equal((await safe.readDocxImportAttempt(input)).record,null);
+ assert.equal((await safe.acknowledgeDocxImportAttempt(input,options)).cleared,false);assert.equal(f.scenes().length,1);
+});
+
+test('correlation does not authorize receipt tampering, same-nonce source substitution, or clearing a newer accepted attempt',async t=>{
+ const f=await fixture(t);await f.call('a');const a=await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'});
+ const other=await fixture(t,'',{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Other actual admitted source'}]}]});
+ const mismatch=await f.call('a',other.plan);assert.equal(mismatch.ok,false);assert.match(JSON.stringify(mismatch),/DOCX_IMPORT_ATTEMPT_MISMATCH/);assert.equal(f.scenes().length,1);assert.deepEqual(await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'}),a);
+ const foreign=JSON.parse(JSON.stringify(f.plan));foreign.source.sourceArtifactSha256='f'.repeat(64);
+ // The real source admission remains mandatory; a copied plan is insufficient.
+ const result=await safe.applyDocxImportSafeCreate({docxImportPreviewPlan:foreign},{});assert.equal(result.ok,false);
+ await f.call('b');const b=await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'});assert.notEqual(a.sha256,b.sha256);
+ const deps={transactionAuthority:f.authority,manifestPath:f.manifestPath,admittedPreviewPlan:f.plan,revalidateOpen:async()=>()=>{}};
+ await assert.rejects(safe.acknowledgeDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx',requestId:'a',expectedAttemptSha256:a.sha256},deps),/CONFLICT/);
+ const receiptPath=path.join(f.projectRoot,'.yalken/docx-import/receipts',b.record.importOperationId+'.json');const raw=fs.readFileSync(receiptPath,'utf8');fs.writeFileSync(receiptPath,raw.replace('"projectId": "word-import-tx"','"projectId": "foreign"'));
+ await assert.rejects(safe.acknowledgeDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx',requestId:'b',expectedAttemptSha256:b.sha256},deps),/RECEIPT_INVALID/);
+ assert.deepEqual(await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'}),b);
+});
+
+for(const boundary of ['before-commit','after-commit'])test(`fresh process resumes accepted nonce after actual ${boundary} process death`,async t=>{
+ const {fork,spawnSync}=require('node:child_process');const f=await fixture(t);
+ const bytesPath=path.join(f.root,'restart-source.docx');fs.writeFileSync(bytesPath,f.bytes);
+ const prior=path.join(f.romanRoot,'untouched.txt');fs.writeFileSync(prior,'Prior user text');
+ const childPath=path.join(__dirname,'../fixtures/word-import-replay-child.cjs');
+ const child=fork(childPath,[f.root,bytesPath,boundary,'native-restart-id'],{execPath:process.execPath,stdio:['ignore','pipe','pipe','ipc']});
+ t.after(()=>{if(child.exitCode===null)child.kill('SIGKILL');});let stderr='';child.stderr.on('data',s=>stderr+=s);
+ await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('boundary timeout '+stderr)),10000);child.once('message',m=>{clearTimeout(timer);assert.equal(m.point,boundary);resolve();});child.once('exit',(code)=>{clearTimeout(timer);reject(Error('early exit '+code+' '+stderr));});});
+ const exited=new Promise(resolve=>child.once('exit',resolve));child.kill('SIGKILL');await exited;
+ const accepted=await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'});assert.equal(accepted.record.requestId,'native-restart-id');
+ const resumed=spawnSync(process.execPath,[childPath,f.root,bytesPath,'resume','native-restart-id'],{encoding:'utf8',timeout:15000});assert.equal(resumed.status,0,resumed.stderr);
+ const result=JSON.parse(resumed.stdout);assert.equal(result.ok,true,resumed.stdout);assert.equal(Boolean(result.idempotent),boundary==='after-commit');
+ assert.equal(f.scenes().length,2);assert.equal(fs.readFileSync(prior,'utf8'),'Prior user text');assert.deepEqual(await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'}),accepted);
+ const replay=spawnSync(process.execPath,[childPath,f.root,bytesPath,'replay','native-restart-id'],{encoding:'utf8',timeout:15000});assert.equal(replay.status,0,replay.stderr);assert.equal(JSON.parse(replay.stdout).idempotent,true);assert.equal(f.scenes().length,2);
+});
+
+test('guarded open ACK refuses racing correlation substitution without clearing it',async t=>{
+ const f=await fixture(t);await f.call('race');const before=await safe.readDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx'});
+ const target=path.join(f.projectRoot,'.yalken/docx-import/active-attempt.v1.json');const changed=before.text.replace('"requestId":"race"','"requestId":"foreign"');assert.notEqual(changed,before.text);
+ await assert.rejects(safe.acknowledgeDocxImportAttempt({projectRoot:f.projectRoot,projectId:'word-import-tx',requestId:'race',expectedAttemptSha256:before.sha256},{transactionAuthority:f.authority,manifestPath:f.manifestPath,admittedPreviewPlan:f.plan,revalidateOpen:async()=>{fs.writeFileSync(target,changed);return ()=>{};}}),/CONFLICT/);
+ assert.equal(fs.readFileSync(target,'utf8'),changed);assert.equal(f.scenes().length,1);
 });

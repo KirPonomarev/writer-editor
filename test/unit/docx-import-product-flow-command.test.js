@@ -215,12 +215,12 @@ test('DOCX import product flow: accept runs preview then safe-create through com
         }
         if (request.commandId === 'cmd.project.docx.previewImportPlan') {
           assert.equal(request.payload.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_READY');
-          assert.equal(request.payload.requestId, 'accept-now');
+          assert.equal(request.payload.requestId, 'docx-product-flow');
           return { ok: true, value: { ok: true, docxImportPreviewPlan: plan } };
         }
         if (request.commandId === 'cmd.project.docx.importSafeCreate') {
           assert.deepEqual(request.payload.docxImportPreviewPlan, plan);
-          assert.equal(request.payload.requestId, 'accept-now');
+          assert.equal(request.payload.requestId, 'docx-product-flow');
           return { ok: true, value: safeCreateResult(plan) };
         }
         throw new Error(`unexpected command: ${request.commandId}`);
@@ -358,4 +358,21 @@ test('DOCX product command forwards one explicit attempt through preview, failed
  assert.ok(calls.length>=3);assert.ok(calls.every(call=>call.payload.requestId==='attempt-a'));
  const before=calls.length;assert.equal((await run(id,{requestId:'attempt-b'})).ok,true);
  assert.equal(calls.length,before+1);assert.equal(calls.at(-1).payload.requestId,'attempt-b');
+});
+
+test('DOCX acknowledgement uses the existing safe-create port without parsing or creating', async () => {
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const calls = [], registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(cloneJsonSafe(request));
+    return { ok: true, value: { ok: true, acknowledged: true, cleared: true } };
+  } } });
+  const run = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const input = { action: 'acknowledge-open', requestId: 'accepted-attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  const result = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, input);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.acknowledged, true);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].commandId, 'cmd.project.docx.importSafeCreate');
+  assert.deepEqual(calls[0].payload, input);
 });
