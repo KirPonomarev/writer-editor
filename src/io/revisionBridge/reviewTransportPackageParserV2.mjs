@@ -2603,6 +2603,12 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
   // Sort separate views so shared parser evidence retains its original ordering.
   const orderedStyles = [...scan.tokens].sort((a,b)=>a.openStart-b.openStart);
   const orderedDocument = [...documentScan.tokens].sort((a,b)=>a.openStart-b.openStart);
+  const paragraphTables=new Map(), tableStack=[];
+  for(const token of orderedDocument){
+    while(tableStack.length && token.openStart>=tableStack.at(-1).closeEnd)tableStack.pop();
+    if(isWordToken(token,'tbl'))tableStack.push(token);
+    else if(isWordToken(token,'p') && tableStack.length)paragraphTables.set(token,tableStack.at(-1));
+  }
   const nonLeaf = new Set();
   for (const tokens of [orderedStyles,orderedDocument]) for(let i=0;i<tokens.length-1;i++) {
     const token=tokens[i],next=tokens[i+1];
@@ -2740,6 +2746,33 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
   };
   return {
     directParagraph(direct) { return merge([[direct,false]],false); },
+    tableParagraphIsUnstyled(paragraph) {
+      if(invalid)throw Error('style-catalog');
+      const table=paragraphTables.get(paragraph);if(!table)throw Error('table-style-owner');
+      const properties=children(table).filter(t=>isWordToken(t,'tblPr'));
+      if(properties.length>1)throw Error('table-style-properties');
+      const refs=properties.length?children(properties[0]).filter(t=>isWordToken(t,'tblStyle')):[];
+      if(refs.length>1 || refs.some(t=>!validRef(t)))throw Error('table-style-reference');
+      let id=refs.length?attr(refs[0],'val',W_NS):defaults.get('table');
+      if(refs.length&&!id)throw Error('table-style-reference');
+      const seen=new Set();
+      while(id){
+        if(seen.has(id)||seen.size>=64)throw Error('table-style-cycle-or-depth');seen.add(id);
+        const style=catalog.get(id);
+        if(!style||attr(style,'type',W_NS)!=='table')throw Error('table-style-reference');
+        const nodes=children(style),parents=nodes.filter(t=>isWordToken(t,'basedOn'));
+        if(parents.length>1||parents.some(t=>!validRef(t)||!attr(t,'val',W_NS)))throw Error('table-style-parent');
+        const allowed=new Set(['name','aliases','basedOn','next','link','autoRedefine','hidden','uiPriority','semiHidden','unhideWhenUsed','qFormat','locked','personal','personalCompose','personalReply','rsid','tblPr','trPr','tcPr']);
+        if(nodes.some(t=>t.namespaceUri!==W_NS||!allowed.has(t.localName)))throw Error('table-text-style-unsupported');
+        const pending=[...nodes];
+        while(pending.length){
+          const node=pending.pop();
+          if(['pPr','rPr','tblStylePr'].includes(node.localName))throw Error('table-text-style-unsupported');
+          pending.push(...children(node));
+        }
+        id=parents.length?attr(parents[0],'val',W_NS):null;
+      }
+    },
     paragraph(direct) {
       if (invalid) throw Error('style-catalog');
       const layers = ref(direct,'pStyle','paragraph');
@@ -2972,14 +3005,16 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     const directParagraphChildren = paragraphProperties
       ? childTokensWithin(paragraphScan, paragraphProperties).filter((token) => token.depth === paragraphProperties.depth + 1)
       : [];
-    let paragraphStyle = null;
-    try { if (!paragraphRecord.table) paragraphStyle = effectiveStyles.paragraph(directParagraphChildren); } catch {}
-    let directParagraphInvalid=false,directResolved=null;
-    if(paragraphRecord.table)try{directResolved=effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
-    const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directResolved || directParagraphChildren;
+    let paragraphStyle = null, directParagraphInvalid=false;
+    if(paragraphRecord.table)try{effectiveStyles.directParagraph(directParagraphChildren);}catch{directParagraphInvalid=true;}
+    try {
+      if(paragraphRecord.table)effectiveStyles.tableParagraphIsUnstyled(paragraph);
+      paragraphStyle=effectiveStyles.paragraph(directParagraphChildren);
+    } catch {}
+    const paragraphPropertyChildren = paragraphStyle ? paragraphStyle.values : directParagraphChildren;
     const paragraphSemanticNames = [...new Set(paragraphPropertyChildren.map((token) => token.localName))];
     const unsupportedParagraphNames = paragraphSemanticNames.filter((name) => !['jc', 'outlineLvl', 'spacing','ind','tabs'].includes(name));
-    if (!paragraphRecord.table && !paragraphStyle) unsupportedParagraphNames.push('styleResolution');
+    if (!paragraphStyle) unsupportedParagraphNames.push('styleResolution');
     if(directParagraphInvalid)unsupportedParagraphNames.push('propertyShape');
     const paragraphState = formattingParagraphState(paragraphPropertyChildren);
     const paragraphActions = formattingParagraphActions(paragraphPropertyChildren);
@@ -3079,11 +3114,11 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         inlineState: formattingInlineState(inline),
         ...(language.value ? { wordLanguage: language.value } : {}),
         ...(language.invalid ? { wordLanguageInvalid: true } : {}),
-        ...(defaultFontSize && !paragraphRecord.table
+        ...(defaultFontSize && paragraphStyle
           && !paragraphSemanticNames.includes('pStyle') && !semanticNames.includes('rStyle')
           && !semanticNames.includes('sz') && !semanticNames.includes('szCs')
           ? { inheritedFontSize: defaultFontSize } : {}),
-        ...(defaultFontFamily && !paragraphRecord.table
+        ...(defaultFontFamily && paragraphStyle
           && !paragraphSemanticNames.includes('pStyle')
           && !directChildren.some(token => isWordToken(token, 'rStyle') || isWordToken(token, 'rFonts'))
           ? { resolvedFontFamily: defaultFontFamily } : {}),
@@ -3103,7 +3138,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       textId: attr(paragraph, 'textId'),
       bookmarkNames: bookmarks,
       paragraphState,
-      ...(paragraphStyle && !paragraphRecord.table && unsupportedParagraphNames.length===0
+      ...(paragraphStyle && unsupportedParagraphNames.length===0
         && !paragraphFormattingInvalid && !paragraphStructureInvalid && !markLanguage.invalid
         && !Object.hasOwn(paragraphState,'textAlign') ? {resolvedTextAlign:'left'} : {}),
       ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),

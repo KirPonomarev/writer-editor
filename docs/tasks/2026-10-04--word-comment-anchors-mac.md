@@ -75,6 +75,15 @@ Exact admitted paths:
 - `scripts/ops/rtk-interop-data-c1.mjs`
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
+- `test/contracts/rtk-parser01-namespace-atoms.contract.test.js`
+- `src/export/docx/docxMinBuilder.js`
+- `src/io/revisionBridge/exactTextMinSafeWrite.mjs`
+- `src/io/revisionBridge/exactTextApplyJournal.mjs`
+- `src/utils/docxImportSafeCreate.js`
+- `test/unit/docx-import-safe-create.test.js`
+- `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
+- `src/export/docx/fullManuscriptDocxReviewReturnRouter.js`
+- `src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs`
 
 ## Required proof and delivery
 
@@ -154,3 +163,15 @@ The actual Main composite regression exposed the same trimmed-leaf coordinate er
 Exact authenticated leaf text now survives router ownership validation, concurrent candidate preparation and final rich text publication. Actual Main affected suite23 passed without skips, including table Apply, preserved foreign discussion, table geometry/property/owner refusal and stale-source zero writes. Two native-default continuation cases also exposed a pre-existing private proof defect, reproduced against immutable b0ea8170: language-only operations were incorrectly entered as literal text deltas. Main now passes only changed literal rows to that proof while retaining every formatting operation in the full candidate. Core continues to compare every returned paragraph against authenticated original or proved new text.
 
 The point/fontless-break suite8 passed with unresolved real-text font, forged break bounds and lost explicit break-font negatives. Writer/router25 functional checks passed; its historical dirty-file allowlist assertion must be rerun on the clean checkpoint. This is code-level evidence only. SOURCE05 must apply the retained original Word input, whose inserted R is outside the range end: range quote stays contQinued, point moves11to12. The synthetic Main positive inserts inside the range and therefore correctly expands its quote. Final native cycles, mandatory gates and delivery are still pending.
+
+
+## SOURCE05 native return and inherited table formatting
+
+Clean96d1a64a runtime copy matched all3456 tracked runtime files; clean writer/router suite26 passed. Retained native Word return still refused before Preview, with both scenes and comment bytes unchanged. Exact native nonsecret authority and raw Word input reproduce RTK_FORMATTING_EXPECTED_TEXT_MISMATCH: formatting runtime also used presentation-trimmed paragraph text at boundary hardBreaks. Clean50path preflight at96d1a64a admits reviewTransportFormattingReturnRuntime.mjs for the same literal Core paragraph law. Global visible-result equality remains intact. Bounded machine-code diagnostics now include the existing formatting and clean-text prefixes; raw messages remain excluded.
+
+Independent raw OOXML inspection found a second coupled defect before accepting the repaired admission: Word omitted direct paragraph spacing but retained docDefaults after160,line278,auto. Parser V2 explicitly skipped effective paragraph style resolution for tables, inventing spacing-removal operations. Acceptance must preserve inherited spacing, paragraph-mark language and text properties when no competing table text-style layer exists, and refuse unsupported competing layers instead of silently approximating. Actual Main must separately prove true spacing removal and inherited spacing preservation. Native success is still pending; external reconstructed admission alone is not acceptance. SOURCE05 subsequently exited0 with all34 Documents files matching its saved snapshot; SOURCE06 reuses the preserved native profile.
+
+
+The parser now reuses existing effective document/paragraph style resolution for table paragraphs only after proving there is no competing table text-style layer. Explicit/default table style references and same-type basedOn chains are bounded and cycle-checked; nested table ownership uses exclusive XML boundaries. Hidden paragraph/run/conditional properties in table style containers refuse. Empty paragraph-mark language uses the existing0..0 formatting operation instead of a fabricated text edit. Main comment authoring also uses literal Core leaf text for admitted flat paragraphs; actual range and point creation at edge hardBreaks now passes with exact canonical hashes.
+
+Focused parser/style/point suites42 passed, with malformed and nested-owner negatives. Broader table checks identified two existing renderer test harnesses missing the new mode predicate and an obsolete continuation-refusal expectation. These two test files require a clean scope amendment before editing; current checkpoint remains incomplete and unmerged. Existing native input private Main diagnosis preserves spacing160/278, language and explicit Aptos, but actual native Apply is still required.

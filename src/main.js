@@ -24527,7 +24527,7 @@ async function readCommentAuthoringContext({ pendingRichBlocks = false, userBook
       : parsed.doc.content.every(node => ['paragraph', 'heading', 'codeBlock'].includes(node.type)) ? parsed.doc.content : null);
   const paragraphs = nodes ? nodes.map(node => {
     if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('COMMENT_STORY_UNSUPPORTED');
-    return envelope.deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
+    return userBookmarkModel.textOf(node);
   }) : parsed.doc ? commentSceneParagraphs(raw).map(block => block.text) : parsed.text.split('\n');
   if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
     || isDirty || autoSaveInProgress) throw new Error('COMMENT_SCENE_CHANGED');
@@ -35508,7 +35508,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       // Only bounded machine codes enter the shell/log; the full private receipt
       // remains unchanged and never supplies authority through observation.
       const safeCode = value => typeof value === 'string' && value.length <= 160
-        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING_RETURN)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(value);
+        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|CLEAN_TEXT|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(value);
       const codes = { code: safeCode(result.error?.code) ? result.error.code : 'E_DOCX_REVIEW_PREVIEW_SESSION_FAILED' };
       for (const [key, value] of [['reason', result.error?.reason], ['nestedCode', result.error?.details?.nestedCode], ['nestedReason', result.error?.details?.nestedReason]]) {
         if (safeCode(value)) codes[key] = value;

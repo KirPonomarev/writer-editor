@@ -491,6 +491,13 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       // Bookmark-only returns preserve language through exact style signatures
       // (including offset-adjusted label comparisons) and the paragraph-mark
       // equality guard above. Presence alone is not a language mutation.
+      if(ordinaryTextMode && block.text==='' && p.paragraphText==='' && languageChanged){
+        if(before.length || after.length || (resultPs[i].content||[]).some(node=>node.type!=='text'||node.text!==''))
+          return reject('ordinary-empty-paragraph-language-footprint');
+        ordinaryFormattingOperations.push(formattingOperation(0,0,{},
+          {wordParagraphMarkLanguage:languageChange.paragraphMark===null?{action:'remove'}:{action:'set',value:languageChange.paragraphMark}}));
+        continue;
+      }
       let from=0,to=block.text.length,afterTo=p.paragraphText.length;
       if(block.text!==p.paragraphText || (ordinaryTextMode && hasLanguage && languageChanged)){
         const groups=[];

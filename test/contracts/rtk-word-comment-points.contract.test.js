@@ -112,7 +112,7 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const model=require('../../src/core/word-comment-authoring-v1.cjs');
  const sceneId='roman/breaks.txt',text='\nAlpha omega\n';
  const family=[{type:'textStyle',attrs:{fontFamily:'Aptos'}}];
- const doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha omega',marks:family},{type:'hardBreak'}]}]};
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha omega',marks:family},{type:'hardBreak'}]},{type:'paragraph',content:[]}]};
  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v3',projectId:'breaks',revision:0,events:[],threads:[{
   threadId:'point',rootCommentId:'point-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:6,selectedText:'',kind:'point',affinity:'right'},sceneId,[text]),
   messages:[{commentId:'point-root',kind:'root',body:'Point at Alpha end',provenance:{author:'A'}}],
@@ -132,6 +132,14 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const accepted=analyzer.analyzeUserBookmarksReturn(input);assert.equal(accepted.ok,true,JSON.stringify(accepted));
  assert.equal(require('../../src/core/word-user-bookmarks-v1.cjs').textOf(accepted.doc.content[0]),'\nAlphaX omega\n');
  assert.equal(accepted.doc.content[0].content[0].type,'hardBreak');assert.equal(accepted.doc.content[0].content.at(-1).type,'hardBreak');
+ const languageStyles=parts['word/styles.xml'].replace('<w:rPr>','<w:rPr><w:lang w:val="ru-FI"/>');
+ assert.notEqual(languageStyles,parts['word/styles.xml']);
+ const languageIR=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/styles.xml':languageStyles}).map(([name,data])=>({name,data})))},{cryptoPort}).reviewIr;
+ const languageReturn=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:languageIR});assert.equal(languageReturn.ok,true,JSON.stringify(languageReturn));
+ assert.ok(languageReturn.ordinaryTextChanges.every(change=>change.expectedText!==''));
+ const emptyLanguage=languageReturn.ordinaryFormattingOperations.find(op=>op.paragraphOrdinal===1 && op.paragraph.wordParagraphMarkLanguage);
+ assert.deepEqual({from:emptyLanguage.from,to:emptyLanguage.to,text:emptyLanguage.selectedText,inline:emptyLanguage.inline,paragraph:emptyLanguage.paragraph},
+  {from:0,to:0,text:'',inline:{},paragraph:{wordParagraphMarkLanguage:{action:'set',value:{val:'ru-FI'}}}});
  for(const mutate of [
   ir=>{const r=ir.formattingParagraphs[0].formattedRuns.find(r=>r.text.includes('AlphaX'));delete r.inlineState.fontFamily;delete r.resolvedFontFamily;},
   ir=>{const r=ir.formattingParagraphs[0].formattedRuns[0];r.from=1;r.to=2;},
@@ -140,4 +148,35 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const styledMap=structuredClone(map);const formats=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId,doc:styled,text:env.deriveVisibleTextFromDocument(styled)});
  styledMap.scenes[0].blocks[0].formatIr=formats[0].formatIr;
  const lost=analyzer.analyzeUserBookmarksReturn({...input,baselineDoc:styled,exportMap:styledMap});assert.equal(lost.ok,false);assert.equal(lost.detail,'ordinary-text-font-profile-incomplete');
+});
+
+test('table comment paragraphs resolve owned default and paragraph styles, refusing competing or malformed table style chains',async()=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const base=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:pointDocx(5)}).parts;
+ const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+ base['[Content_Types].xml']=base['[Content_Types].xml'].replace('</Types>','<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>');
+ base['word/_rels/document.xml.rels']=base['word/_rels/document.xml.rels'].replace('</Relationships>','<Relationship Id="style" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+ const originalParagraph=base['word/document.xml'].match(/<w:p>[\s\S]*?<\/w:p>/u)[0];
+ const styledParagraph=originalParagraph.replace('<w:p>','<w:p><w:pPr><w:pStyle w:val="Normal"/></w:pPr>');
+ base['word/document.xml']=base['word/document.xml'].replace(originalParagraph,`<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="7200"/></w:tblGrid><w:tr><w:tc><w:tcPr/>${styledParagraph}</w:tc></w:tr></w:tbl>`);
+ const defaults='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>';
+ const normal='<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>';
+ const table=body=>`<w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/>${body}</w:style>`;
+ const parse=(tableBody='',paragraphStyle=normal,documentXml=base['word/document.xml'],extraStyles='')=>bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...base,'word/document.xml':documentXml,'word/styles.xml':`<w:styles xmlns:w="${W}">${defaults}${paragraphStyle}${table(tableBody)}${extraStyles}</w:styles>`}).map(([name,data])=>({name,data})))},ports);
+ const result=parse('<w:tblPr><w:tblInd w:w="0" w:type="dxa"/></w:tblPr>');assert.equal(result.ok,true,JSON.stringify(result.reasons));
+ const paragraph=result.reviewIr.formattingParagraphs[0];assert.ok(paragraph.table);assert.equal(paragraph.paragraphText,'Alpha anchor omega.');
+ assert.deepEqual(paragraph.paragraphState.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+ assert.equal(paragraph.wordParagraphMarkLanguage.val,'ru-FI');assert.ok(paragraph.formattedRuns.every(run=>run.inlineState.fontFamily==='Times New Roman'||run.resolvedFontFamily==='Times New Roman'));
+ assert.equal(result.reviewIr.commentThreads[0].anchorRange.startUtf16,5);
+ for(const body of ['<w:tblPr><w:pPr><w:spacing w:after="0"/></w:pPr></w:tblPr>','<w:tcPr><w:rPr><w:b/></w:rPr></w:tcPr>','<w:trPr><w:tblStylePr w:type="firstRow"/></w:trPr>','<w:pPr><w:spacing w:after="0"/></w:pPr>','<w:rPr><w:b/></w:rPr>','<w:tblStylePr w:type="firstRow"><w:rPr><w:b/></w:rPr></w:tblStylePr>','<w:basedOn w:val="TableNormal"/>','<w:basedOn w:val="Missing"/>','<w:basedOn w:val="Normal"/>','<w:basedOn w:val="Missing"><w:b/></w:basedOn>']){
+  const refused=parse(body);assert.ok(refused.ok===false || refused.reviewIr.formattingParagraphs[0]?.unsupportedParagraphNames.includes('styleResolution'),body+' '+JSON.stringify(refused.reasons));
+ }
+ const inner=base['word/document.xml'].match(/<w:tbl>[\s\S]*?<\/w:tbl>/u)[0];
+ const nested=base['word/document.xml'].replace(inner,`<w:tbl><w:tblPr><w:tblStyle w:val="Outer"/></w:tblPr><w:tblGrid><w:gridCol w:w="7200"/></w:tblGrid><w:tr><w:tc><w:tcPr/>${inner}<w:p><w:r><w:t>Outer tail</w:t></w:r></w:p></w:tc></w:tr></w:tbl>`);
+ const nestedResult=parse('',normal,nested,'<w:style w:type="table" w:styleId="Outer"><w:rPr><w:b/></w:rPr></w:style>');
+ assert.equal(nestedResult.reviewIr.formattingParagraphs[0].unsupportedParagraphNames.includes('styleResolution'),false);
+ assert.equal(nestedResult.reviewIr.formattingParagraphs[1].paragraphText,'Outer tail');
+ assert.ok(nestedResult.reviewIr.formattingParagraphs[1].unsupportedParagraphNames.includes('styleResolution'));
+ const cycle=parse('',normal.replace('<w:name w:val="Normal"/>','<w:name w:val="Normal"/><w:basedOn w:val="Normal"/>'));
+ assert.ok(cycle.ok===false || cycle.reviewIr.formattingParagraphs[0]?.unsupportedParagraphNames.includes('styleResolution'));
 });

@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fe3616ecc723d3e72b5d88e84a318879037bc43900968fca97064339ac7b1240"
+        "sha256": "25a1d5fda690c4c5f859f600e885fb11cf8e7655bf0e3ea88326a3950c846ef7"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -905,7 +905,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "35d08bba9a440db48d03bdff07e83daa632e2b3e0b2184e8ae74c676022de2ba"
+        "sha256": "390640904aa36f80a78cc995d52f840823774cdf4aef36c5b78fac637ece1be7"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1389,7 +1389,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "a28c4591bc59c53b004282c7a19b00d1a813fb2ee1fb350f67d4403c159ba688"
+        "sha256": "3ddf150003d5c037552ce6b883dff5004cacf263a6db14ba09f0e514d278b58b"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1781,7 +1781,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "85ded007d0ef4637f71af038345547376661f910621b0c217e565a5c8e1c8415"
+        "sha256": "63bce95c24b372239b71a1d6029c840cbd578ee4e05579ff5a53657bfe6f87b8"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "f6ad0dee31f837d4f6c8842c7ad4091eec2c31f4ef68fb81bb1ca87b3652a42f"
+        "sha256": "f53281d7fb87ead7d6ea14f922eac3a50ecf72c1a9b07ff47f86a9daac5bd1ad"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2413,15 +2413,15 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
-        "sha256": "17499c20f0cec1aa8854f6db9816b965eabcda6bd60943565f7c329ba6708579"
+        "sha256": "d23e6f272b9e8f7f1ef820827b4b085e786282c1e71d2da749e2e07c651a278d"
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "a9f4c337c22cff5c742d7d3f8a9e4f3b4080412f575dffbeae4c732a23eca8d5"
+        "sha256": "28cf5a54b777068f0ab93fa8bd86224ff5960c55a95ed58d7e4001593f35e646"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "3dcf245f050dd85482415c3a36f5dcddfc5aeea86c0bc136f7afcb8466c07666"
+        "sha256": "e42ee11340efe0d6f6bf85c0a6cc5c19383a05e4072b97470f08cfdee5970d18"
       },
       {
         "path": "src/preload.js",

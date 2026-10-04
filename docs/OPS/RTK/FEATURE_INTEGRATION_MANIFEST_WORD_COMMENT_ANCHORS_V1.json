@@ -53,7 +53,8 @@
     "src/utils/docxImportSafeCreate.js",
     "test/unit/docx-import-safe-create.test.js",
     "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js"
+    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs"
   ],
   "scopeOut": [
     "package.json",
@@ -116,7 +117,8 @@
     "Native early SOURCE/PACKAGED vertical route before broad tests; five changed Word exchanges per build for admitted route",
     "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes.",
     "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof.",
-    "Signed block literal leaf text/hash may not be normalized away. Preserve exact owner plus global visible-coordinate proof; reject forged block, mismatched leaf bounds and ambiguous normalized placement. Actual Main table LF regression must pass without changing source protection."
+    "Signed block literal leaf text/hash may not be normalized away. Preserve exact owner plus global visible-coordinate proof; reject forged block, mismatched leaf bounds and ambiguous normalized placement. Actual Main table LF regression must pass without changing source protection.",
+    "Exact Word table input preserves effective docDefaults and paragraph style properties when no competing table text-style layer exists; unsupported competing table formatting and invalid style graphs refuse before writes. Literal hardBreak coordinates also hold through existing formatting runtime."
   ],
   "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
   "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
@@ -126,8 +128,11 @@
     "The retained actual Word R return has not yet been applied natively. Its former analyzer and exact-leaf routing failures are repaired in the candidate; native SOURCE05 is pending.",
     "Actual Main affected suite23 and point/fontless-break suite8 pass without skips. Table geometry/property/owner/stale-source negatives reject without canonical writes; foreign discussions remain unchanged.",
     "Unchanged literal rows from language-only formatting operations no longer enter the strict private comment text-delta proof; full formatting candidate and final checks remain intact.",
-    "Writer/router25 functional checks pass; historical dirty-file scope assertion requires clean-checkpoint rerun.",
-    "1000paragraph private proof and crash journal regression already passed; final mandatory and native build evidence still pending."
+    "1000paragraph private proof and crash journal regression already passed; final mandatory and native build evidence still pending.",
+    "Clean96d1a64a writer/router26 passes. SOURCE05 native return still refused at formatting text guard; unchanged source/comment bytes independently verified.",
+    "Formatting hardBreak repair passes affected Main29 cases and exact native private admission. Native formatting preservation remains blocked until table effective-style parsing is repaired; direct spacing omission alone is not a semantic removal.",
+    "Existing table paragraph parser now resolves effective defaults and paragraph styles under bounded no-competing-table-text-style proof; focused42 tests pass. Two renderer harness failures and obsolete continuation expectation remain pending test-only scope amendment.",
+    "Actual Main plain paragraph range/point authoring with boundary hardBreaks now preserves exact offsets and source hashes. Exact native private admission verifies effective spacing, language and direct Aptos; actual native Apply remains pending."
   ],
   "targetOnly": [
     "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"

@@ -1,3 +1,4 @@
+import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
@@ -292,7 +293,7 @@ function textNode(text, marks) {
 }
 
 function applyInlineRange(paragraph, operation) {
-  const paragraphText = deriveVisibleTextFromDocument({ type: 'doc', content: [paragraph] });
+  const paragraphText = userBookmarks.textOf(paragraph);
   if ((operation.from===operation.to && (paragraphText!==''||Object.keys(operation.inline).length>0))
     || operation.to > paragraphText.length || paragraphText.slice(operation.from, operation.to) !== operation.selectedText) {
     return result(false, 'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH', {

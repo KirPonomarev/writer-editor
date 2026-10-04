@@ -84,6 +84,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
       try { return {result:await MENU_COMMAND_HANDLERS['cmd.project.review.openDocxReviewPreviewSession']({requestId:'observation'}),statuses,opened}; }
       finally {handleDocxReviewPreviewSessionLocalFileCommandSurface=previousHandler;updateStatus=previousStatus;sendCanonicalRuntimeCommand=previousSender;}
     },
+    commentProjection: readCommentAuthoringProjection, authorComment: handleCommentAuthoringCommand,
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -1197,16 +1198,17 @@ test('structural backup dedupe preserves foreign history bytes and exact Undo re
   assert.equal(result.ok,false); assert.deepEqual(f.capture(),before); assert.equal(read(foreign),'foreign history');
 });
 
-for(const variant of ['typed-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
+for(const variant of ['typed-failure','formatting-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
   const f=await fixture(t), logger=f.probe.captureExportLogs();t.after(()=>logger.restore());
   const receipt=variant==='typed-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_RETURN_INTAKE_PARSER_V2_BLOCKED',details:{nestedCode:'RTK_WORD_UNSUPPORTED',nestedReason:'RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH',message:'private manuscript /private/source'}}}
+    :variant==='formatting-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH',details:{nestedCode:'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT',nestedReason:'RTK_FORMATTING_RETURN_BLOCKED'}}}
     :variant==='secret-filter'?{ok:false,error:{code:'private secret /private/source',reason:'private manuscript text',details:{nestedCode:'RTK_WORD_'+'A'.repeat(170),nestedReason:'/private/source'}}}
     :variant==='cancel'?{ok:true,activated:false,cancelled:true}
     :variant==='pending'?{ok:true,activated:false,pendingProductPath:{ok:true,status:'preview-ready'}}
     :{ok:true,activated:true,requestId:'actual-success'};
   const before=structuredClone(receipt), out=await f.probe.observeLocalReviewReceipt(receipt);
   assert.strictEqual(out.result,receipt);assert.deepEqual(receipt,before);
-  if(variant==='typed-failure'){
+  if(variant==='typed-failure'||variant==='formatting-failure'){
     for(const code of [receipt.error.code,receipt.error.reason,receipt.error.details.nestedCode,receipt.error.details.nestedReason])assert.ok(out.statuses[0].includes(code));
     assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:receipt.error.code,reason:receipt.error.reason,nestedCode:receipt.error.details.nestedCode,nestedReason:receipt.error.details.nestedReason}}]);
     assert.deepEqual(out.opened,[]);assert.equal(out.statuses.length,1);
@@ -1259,6 +1261,7 @@ async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookPara
     const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
     parsed.doc={type:'doc',content:[{type:'table',attrs:{wordTable:{version:1,grid:[7200],layout:'fixed',widthDxa:7200,shading:null,borders:{}}},content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'contQinued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
   }
+  if(tableCommentContinuation)for(const paragraph of bookmarks.paragraphs(parsed.doc).slice(0,3))paragraph.attrs={...paragraph.attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}};
   if(bookParagraphs)while(parsed.doc.content.length<bookParagraphs)parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'Book paragraph '+parsed.doc.content.length+' '+crypto.randomBytes(60).toString('hex')}]});
   if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
@@ -2212,15 +2215,32 @@ for(const fault of [false,true])test('large random comment graph and 1000 paragr
 });
 
 
-test('actual Main table list continuation Word edit atomically preserves range point reply and sibling scene',async t=>{
+for(const inheritedDefaults of [false,true])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; inherited defaults ${inheritedDefaults}`,async t=>{
   const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
     const before=parts['word/document.xml'];parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');assert.notEqual(parts['word/document.xml'],before);
+    assert.match(parts['word/document.xml'],/<w:spacing\b/u);parts['word/document.xml']=parts['word/document.xml'].replace(/<w:spacing\b[^>]*\/>/gu,'');assert.doesNotMatch(parts['word/document.xml'],/<w:spacing\b/u);
+    if(inheritedDefaults){
+      assert.doesNotMatch(parts['word/styles.xml'],/<w:pPrDefault>/u);
+      parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>').replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+    }
+
   }});
   assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));
   const sibling=read(f.beta),beforeScene=read(f.alpha),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
   const result=await f.probe.fullApply({requestId:'table-comments-apply'});assert.equal(result.totals?.applied,1,JSON.stringify(result));
   assert.equal(read(f.beta),sibling);const after=JSON.parse(read(commentPath)),doc=envelope.parseObservablePayload(read(f.alpha)).doc;
   assert.equal(doc.content[0].type,'table');assert.equal(doc.content[0].content.length,1);
+  for(const paragraph of bookmarks.paragraphs(doc).slice(0,3)){
+    assert.deepEqual(paragraph.attrs?.wordParagraphSpacing,inheritedDefaults?{after:160,line:278,lineRule:'auto'}:undefined,'effective inherited spacing differs from genuine removal');
+    if(inheritedDefaults){
+      assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+      for(const node of paragraph.content)if(node.type==='text'){
+        const style=node.marks?.find(mark=>mark.type==='textStyle')?.attrs;
+        assert.equal(style?.fontFamily,'Times New Roman');
+        assert.deepEqual(style?.wordLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+      }
+    }
+  }
   assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item','\ncontQinuedR cell anchor\n','Second cell item W','']);
   assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
   assert.deepEqual(after.threads.find(t=>t.threadId==='foreign'),before.threads.find(t=>t.threadId==='foreign'));
@@ -2246,4 +2266,17 @@ for(const failure of ['grid','property','owner','stale'])test('actual Main table
     const original=read(f.alpha),parsed=envelope.parseObservablePayload(original);require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(parsed.doc)[0].content[0].text+=' LOCAL';fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true}));
     const before=f.capture(),result=await f.probe.fullApply({requestId:'table-stale-apply'});assert.equal(result.totals?.applied,0,JSON.stringify(result));assert.ok((result.totals?.blocked||0)+(result.totals?.failed||0)>0,JSON.stringify(result));assert.deepEqual(f.capture(),before);
   } else {assert.equal(activated.ok,false,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);}
+});
+
+for(const point of [false,true])test(`actual Main comment authoring retains plain paragraph boundary breaks; point ${point}`,async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha'},{type:'hardBreak'}]}]};
+ const raw=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,raw);
+ mountRenderer(f,()=>raw,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const projection=await f.probe.commentProjection();assert.equal(projection.available,true,JSON.stringify(projection));
+ const anchor={paragraphIndex:0,startUtf16:point?6:1,selectedText:point?'':'Alpha',...(point?{kind:'point',affinity:'right'}:{})};
+ const result=await f.probe.authorComment({action:'create',requestId:'edge-break-'+point,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedStateSha256:projection.expectedStateSha256,expectedSceneSha256:projection.expectedSceneSha256,anchor,body:'Boundary comment'});
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),raw);
+ const state=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+ assert.equal(state.threads[0].anchor.startUtf16,anchor.startUtf16);assert.equal(state.threads[0].anchor.selectedText,anchor.selectedText);
+ assert.equal(state.threads[0].anchor.blockTextSha256,sha('\nAlpha\n'));
 });
