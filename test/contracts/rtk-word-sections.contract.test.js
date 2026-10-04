@@ -189,3 +189,18 @@ test('end-owner inactive grid plan reexports multiple scenes without adding sect
  }
  assert.deepEqual(after.protectedSections,before.protectedSections);
 });
+
+test('inactive grid rollback verifies exact inverse section effect and unchanged paragraph text',()=>{
+ const before=fixture(),count=require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(before).length;
+ const plan={expectedRegistry:sections.read(before),additions:[{endParagraphIndex:count-1,docGrid:{type:'default',linePitch:360}}]};
+ const after=sections.applyInactiveGridAdditions(before,plan);
+ sections.validateGridRollback(after,before,plan);
+ const beforeBytes=JSON.stringify(before),afterBytes=JSON.stringify(after);
+ sections.validateGridRollback(after,before,plan);assert.equal(JSON.stringify(before),beforeBytes);assert.equal(JSON.stringify(after),afterBytes);
+ for(const mutate of [doc=>doc.attrs.wordSections.final.docGrid.linePitch++,doc=>doc.attrs.wordSections.final.type='oddPage',doc=>doc.content[0].content[0].text+=' stale',doc=>doc.content.push(p('extra'))]){
+  const stale=structuredClone(after);mutate(stale);assert.throws(()=>sections.validateGridRollback(stale,before,plan));
+ }
+ const forged=structuredClone(plan);forged.expectedRegistry.final.type='oddPage';assert.throws(()=>sections.validateGridRollback(after,before,forged));
+ const badTarget=structuredClone(before);badTarget.attrs.wordSections.final.margins.leftTwips++;assert.throws(()=>sections.validateGridRollback(after,badTarget,plan));
+ assert.throws(()=>sections.validateGridRollback(before,after,plan));
+});

@@ -145,12 +145,21 @@ test('Full manuscript Word sections retain inactive grid additions and block mis
   const {source,context,parse,validate,repack}=await sectionFixture();
   const extended=parse(repack(xml=>xml.replaceAll('</w:sectPr>','<w:docGrid w:linePitch="360"/></w:sectPr>')));
   assert.equal(extended.ok,true,JSON.stringify(extended));
-  const binding=validate(extended,{allowOfficeDefaultOmissions:true});
+  const binding=validate(extended,{allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true});
   assert.equal(binding.ok,true,JSON.stringify(binding));
   assert.deepEqual(binding.proof.inactiveGridAdditions,source.documentSections.protectedSections.map((_,ordinal)=>({ordinal,docGrid:{type:'default',linePitch:360}})));
   assert.deepEqual(binding.proof.protectedSections,source.documentSections.protectedSections);
   assert.equal(binding.proof.protectedDigest,source.documentSections.protectedDigest);
   assert.equal(validate(extended).ok,false,'strict mode does not treat a new retained property as unchanged');
+  for (const options of [{allowOfficeDefaultOmissions:true}, {allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:false}]) {
+    const rejected=validate(extended,options);
+    assert.equal(rejected.ok,false,'Office default omissions never authorize retained grid additions: '+JSON.stringify(options));
+    assert.ok(rejected.mismatches.includes('protectedSections'));
+    assert.equal(rejected.proof,undefined);
+  }
+  const gridOnly=validate(extended,{allowInactiveGridAdditions:true});
+  assert.equal(gridOnly.ok,true,JSON.stringify(gridOnly));
+  assert.deepEqual(gridOnly.proof.inactiveGridAdditions,binding.proof.inactiveGridAdditions);
   assert.ok(extended.reviewIr.documentSections.protectedSections.length>0);
   for(const section of extended.reviewIr.documentSections.protectedSections){
     assert.deepEqual(section.properties.docGrid,{type:'default',linePitch:360});
@@ -166,9 +175,9 @@ test('Full manuscript Word sections retain inactive grid additions and block mis
   ]){
     const changed=clone(extended);mutate(changed.reviewIr.documentSections);
     if(rehash)changed.reviewIr.documentSections.protectedDigest=context.createRtkReviewTransportCryptoPort().sha256Json({schemaVersion:changed.reviewIr.documentSections.schemaVersion,protectedSections:changed.reviewIr.documentSections.protectedSections});
-    assert.equal(validate(changed,{allowOfficeDefaultOmissions:true}).ok,false,name);
+    assert.equal(validate(changed,{allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true}).ok,false,name);
   }
-  assert.equal(validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:extended.reviewIr.documentSections,signedDigest:'sha256:'+'0'.repeat(64),allowOfficeDefaultOmissions:true}).ok,false);
+  assert.equal(validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:extended.reviewIr.documentSections,signedDigest:'sha256:'+'0'.repeat(64),allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true}).ok,false);
   const missing=parse(repack(xml=>xml.replace(/<w:sectPr>[\s\S]*?<\/w:sectPr>/u,'')));
   assert.equal(missing.ok,true,JSON.stringify(missing));
   assert.equal(validate(missing).ok,false);

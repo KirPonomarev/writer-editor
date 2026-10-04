@@ -65,6 +65,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
+    publishReview:publishReviewSceneWithProjectTransaction,
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
     formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
     setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
@@ -1872,4 +1873,53 @@ for(const textEdit of [false,true])test(`actual Main inactive grid addition ${te
  assert.equal(read(f.beta),sibling);if(textEdit)assert.match(after.text,/CLEAN_EDIT/);else assert.equal(after.text,before.text);
  const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/<w:docGrid w:type="default" w:linePitch="-12" w:charSpace="0"\/>/);
+});
+
+test('actual Main keeps later-scene grid operation when earlier scene has ordinary text return',async t=>{
+ const {f,activated,bridge}=await cleanTextReturnFixture(t,{bookmarked:false,mutateReturn:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<\/w:sectPr>(?=[\s\S]*<\/w:body>)/g,'<w:docGrid w:type="default" w:linePitch="360"/></w:sectPr>');
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+ const ops=f.probe.formattingInput().operations.filter(op=>op.kind==='section-doc-grid');assert.equal(ops.length,1);assert.notEqual(ops[0].sceneId,'roman/Imported/01_Alpha.txt');
+ const text=await f.probe.fullApply({requestId:'grid-other-text'});assert.equal(text.applied,true,JSON.stringify(text));
+ const alpha=read(f.alpha),settle=f.probe.observeDeferredEditorSync();const grid=await f.probe.formatApply({requestId:'grid-other-owner'});await settle();assert.equal(grid.ok,true,JSON.stringify(grid));assert.equal(read(f.alpha),alpha);
+ const beta=envelope.parseObservablePayload(read(f.beta));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(beta.doc).final.docGrid,{type:'default',linePitch:360});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true);
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/<w:docGrid w:type="default" w:linePitch="360"\/>/);
+});
+
+test('actual Main bookmark-only Word return preserves accompanying inactive grid in one guarded Apply',async t=>{
+ const {f,activated,beforeActivation,bridge}=await cleanTextReturnFixture(t,{bookmarked:true,sectionType:'continuous',omitTextEdit:true,mutateReturn:parts=>{
+  assert.match(parts['word/document.xml'],/UserTwinA/);parts['word/document.xml']=parts['word/document.xml'].replaceAll('UserTwinA','usertwina').replace('</w:sectPr>','<w:docGrid w:type="default" w:linePitch="240"/></w:sectPr>');
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);await f.probe.refreshReview();
+ const changes=f.probe.reviewState().reviewSurface.revisionSession.reviewGraph.textChanges;assert.equal(changes.length,1);
+ const sibling=read(f.beta);
+ const result=await f.probe.reviewBatchApply({requestId:'bookmark-grid-apply',changeIds:[changes[0].changeId]});assert.equal(result.applied,true,JSON.stringify(result));
+ const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.ok(bookmarks.readRegistry(doc).bookmarks.some(item=>item.name==='usertwina'));
+ assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(doc).boundaries[0].properties.docGrid,{type:'default',linePitch:240});
+ assert.equal(read(f.beta),sibling);const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true);
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/usertwina/);assert.match(xml,/<w:docGrid w:type="default" w:linePitch="240"\/>/);
+});
+
+test('actual Main ordinary Save cannot acquire private inactive-grid authority from payload',async t=>{
+ const f=await fixture(t),sections=require('../../src/core/word-sections-v1.cjs');
+ const beforeDoc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]},before=envelope.composeObservablePayload({doc:beforeDoc});fs.writeFileSync(f.alpha,before);
+ const plan={expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:{type:'default',linePitch:360}}]};
+ const forged=sections.applyInactiveGridAdditions(beforeDoc,plan),working=envelope.composeObservablePayload({doc:forged});
+ mountRenderer(f,()=>working,1,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation:1});
+ const result=await f.probe.save({inactiveGridPlan:plan,inactiveGridRollback:false,authenticatedCleanBlockText:true});assert.notEqual(result,true);assert.equal(read(f.alpha),before);
+});
+
+test('actual Main formatting publication rolls back inactive grid to exact plain scene bytes after write fault',async t=>{
+ const f=await fixture(t),runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ const before='Alpha plain grid source';fs.writeFileSync(f.alpha,before);const sibling=read(f.beta);
+ mountRenderer(f,()=>before,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const hash=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),stable=v=>JSON.stringify(v,(_,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.entries(x).sort(([a],[b])=>a.localeCompare(b))):x);
+ const cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(stable(v))},commandId=runtime.RTK_FORMATTING_RETURN_COMMAND_ID,revision='sha256:'+hash(before);
+ const input={commandId,callerRole:'main',commandAuthority:{issuer:'main',intent:'rtk.formattingApply',commandId},projectId:f.query.projectId,projectRoot:f.root,requestId:'actual-main-grid-rollback',returnArtifactSha256:'sha256:'+'c'.repeat(64),previewConfirmed:true,scenePathBySceneId:{alpha:f.alpha},operations:[{kind:'section-doc-grid',operationId:'main-grid-op',sceneId:'alpha',sourceAuthority:'authenticated-full-manuscript-section-doc-grid-v1',sourceRawSha256:revision,sourceSceneRevision:revision,sectionGrid:{expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:{type:'default',linePitch:360}}]}}]};
+ let observedWritten=false;
+ const result=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene:f.probe.publishReview,afterSceneWrite:()=>{observedWritten=true;assert.notEqual(read(f.alpha),before);throw Error('after actual Main publication');}});
+ assert.equal(observedWritten,true);assert.equal(result.code,'RTK_FORMATTING_WRITE_FAILED_ROLLED_BACK',JSON.stringify(result));assert.equal(read(f.alpha),before);assert.equal(read(f.beta),sibling);
+ const retry=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene:f.probe.publishReview});assert.equal(retry.status,'applied',JSON.stringify(retry));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(envelope.parseObservablePayload(read(f.alpha)).doc).final.docGrid,{type:'default',linePitch:360});assert.equal(read(f.beta),sibling);
 });

@@ -1445,7 +1445,24 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
     ));
   }
 
-  const inputHash = buildBatchInputHash(input, operations);
+  // Main may prepare a private, fully verified canonical metadata transition.
+  // Final bytes must be fixed before the recovery journal hashes them.
+  if (typeof options.prepareCanonicalContent === 'function') {
+    try {
+      const prepared = await options.prepareCanonicalContent({ beforeContent: currentText, afterContent: nextText });
+      if (typeof prepared !== 'string') throw Error('REVISION_BRIDGE_CANONICAL_PREPARATION_INVALID');
+      const projected = parseObservablePayload(prepared);
+      if (projected.issue || projected.text !== nextExactText) throw Error('REVISION_BRIDGE_CANONICAL_PREPARATION_INVALID');
+      nextText = prepared;
+    } catch (error) {
+      return block(buildReason('REVISION_BRIDGE_CANONICAL_PREPARATION_INVALID', 'canonicalContent',
+        'private canonical preparation failed before journal publication', {preparationCode:error.code || error.message}));
+    }
+  }
+
+  const ordinaryInputHash = buildBatchInputHash(input, operations);
+  const inputHash = typeof options.prepareCanonicalContent === 'function'
+    ? sha256Text(JSON.stringify({ordinaryInputHash,canonicalContentHash:sha256Text(nextText)})) : ordinaryInputHash;
   const outputHash = sha256Text(nextText);
   const writtenAt = toIsoStringFromNow(options.now);
   const capturedRecoveryEvidence = {};

@@ -778,7 +778,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   if ((input.allowOfficeDefaultOmissions === true || input.allowInactiveGridAdditions === true) && returnedSections.length === expectedSections.length) {
     for (const [index, section] of normalizedSections.entries()) {
       const expectedSection = expectedSections[index];
-      if (!Object.hasOwn(expectedSection?.properties || {}, 'docGrid')
+      if (input.allowInactiveGridAdditions === true && !Object.hasOwn(expectedSection?.properties || {}, 'docGrid')
         && !Object.hasOwn(expectedSection?.carriers || {}, 'docGrid')
         && Object.hasOwn(section?.properties || {}, 'docGrid')
         && section?.carriers?.docGrid === true) {

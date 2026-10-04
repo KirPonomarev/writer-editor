@@ -197,6 +197,14 @@ function validateSaveWithGridAddition(beforeDoc, workingDoc, value) {
   const added = applyInactiveGridAdditions(beforeDoc, plan);
   if (!same(project(added, workingDoc), read(workingDoc))) throw Error('WORD_SECTIONS_SAVE_AUTHORITY');
 }
+function validateGridRollback(currentAfterDoc, targetBeforeDoc, value) {
+  const expectedAfter = applyInactiveGridAdditions(targetBeforeDoc, value);
+  const currentParagraphs = bookmarks().paragraphs(currentAfterDoc);
+  const targetParagraphs = bookmarks().paragraphs(targetBeforeDoc);
+  if (currentParagraphs.length !== targetParagraphs.length
+    || currentParagraphs.some((paragraph, index) => bookmarks().textOf(paragraph) !== bookmarks().textOf(targetParagraphs[index]))
+    || !same(read(expectedAfter), read(currentAfterDoc))) throw Error('WORD_SECTIONS_SAVE_AUTHORITY');
+}
 function withDefaults(value, defaults) { return { ...copy(defaults), ...properties(value) }; }
 function xml(value) {
   const p = properties(value);
@@ -205,4 +213,4 @@ function xml(value) {
     + (p.margins ? `<w:pgMar w:top="${p.margins.topTwips}" w:right="${p.margins.rightTwips}" w:bottom="${p.margins.bottomTwips}" w:left="${p.margins.leftTwips}" w:header="${p.margins.headerTwips}" w:footer="${p.margins.footerTwips}" w:gutter="${p.margins.gutterTwips}"/>` : '')
     + (p.columns ? `<w:cols w:num="${p.columns.count}" w:space="${p.columns.spaceTwips}"/>` : '') + (p.docGrid ? docGridXml(p.docGrid) : '') + '</w:sectPr>';
 }
-module.exports = { validateInactiveGridPlan, planInactiveGridAdditions, applyInactiveGridAdditions, validateSaveWithGridAddition, validateDocGrid, docGridXml, KEY, TYPES, read, bind, project, validateSave, properties, withDefaults, xml };
+module.exports = { validateGridRollback, validateInactiveGridPlan, planInactiveGridAdditions, applyInactiveGridAdditions, validateSaveWithGridAddition, validateDocGrid, docGridXml, KEY, TYPES, read, bind, project, validateSave, properties, withDefaults, xml };

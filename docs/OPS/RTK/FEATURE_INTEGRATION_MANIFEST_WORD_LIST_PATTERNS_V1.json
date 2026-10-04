@@ -49,7 +49,9 @@
     "test/contracts/rtk-word-sections.contract.test.js",
     "test/unit/toolbar-configurator-foundation.integration.test.js",
     "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-    "test/contracts/rtk-word-scene-identity-main.contract.test.js"
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+    "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -70,7 +72,8 @@
     "Validated DOCX numbering -> existing generic safe-create -> canonical document envelope",
     "Governed list settings intent -> Core plan -> one captured editor transaction -> existing Main Save",
     "Authenticated changed numbering proof -> Core group plan -> existing formatting transaction/recovery",
-    "Authenticated inactive grid addition -> Core endpoint-owned plan -> existing explicit formatting or clean-text Apply -> guarded atomic scene publication"
+    "Authenticated inactive grid addition -> Core endpoint-owned plan -> existing explicit formatting or clean-text Apply -> guarded atomic scene publication",
+    "Private authenticated section-grid plan prepares final canonical bytes before exact-text output hash and journal; formatting rollback validates the strict inverse of the same endpoint-owned plan."
   ],
   "readPaths": [
     "Bounded owned numbering XML and scene-local canonical list definition",
@@ -112,7 +115,8 @@
     "Word changed separator produces actual explicit Apply; stale/replay/forged expected group refusal",
     "SOURCE/PACKAGED G and Y0 create/update/reopen/Word changed returns and five changed exchanges",
     "Supported table traversal preserved; notes/stories patterns fail explicitly before flattening",
-    "Inactive grid metadata survives Word save/import, canonical save/reopen and exports without discarding latent fields; existing protected section geometry and grid changes remain authenticated and guarded."
+    "Inactive grid metadata survives Word save/import, canonical save/reopen and exports without discarding latent fields; existing protected section geometry and grid changes remain authenticated and guarded.",
+    "Actual Main metadata-only and combined text-grid Apply, cross-scene endpoint owner, rejected public plan injection, journal final-byte equality and validated rollback."
   ],
   "securityAndInputBoundary": "No new dependency or runtime network; external numbering identifiers never grant scene/path authority; validate before interpretation.",
   "performanceAndAccessibility": "Bounded Core traversal, no O(n) scan on inline-only typing; keyboard dialog labels/focus/error state; derived marker text never modifies author text or offsets.",

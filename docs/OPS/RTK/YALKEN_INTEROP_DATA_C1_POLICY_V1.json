@@ -552,7 +552,8 @@
     "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
     "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
     "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
+    "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -781,7 +782,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ee43c24260697630c317a20992e4ae04d104c41e6dab088a82303a5006eadf50"
+        "sha256": "cc4789e5dfda1e1cc463eaf2700d7dfbda8f23b18736eac426b5ea32ee713152"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -793,7 +794,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "e31d1452e2430545883fddd8ae06a43c43373b75c2d38179c34923808c8454f1"
+        "sha256": "332f5f59dd37cbb4c2807065c91d96b38b9714576a93572ad58f0b701f06cca3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -917,7 +918,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "98926b543109eb613621b489de4e9f7c30f0dab46d585a96213a4713d45dcee8"
+        "sha256": "90c2810740ad3b9b4c891b4b4e7803125165b4c49846db008508cf7497d9b124"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1017,7 +1018,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "f1f9c64e641973dbd7da1e2a8233b7e7e42d34865d9178f2a3b068ebb48ce99d"
+        "sha256": "b15fab1463ff853b886b03e064903d4f0fb23d9ac180ffcf9c5f539de4c3ca16"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -1045,7 +1046,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-        "sha256": "ab0a349844176e10536b2b6ac11f8ea603534e34f8dc72839d059cf4fbb694a7"
+        "sha256": "083296ca45bbce6f9faa331646f937fd11c4cb7a24d6cf60031f4d5d2b063869"
       },
       {
         "path": "src/io/markdown/index.mjs",
@@ -1381,7 +1382,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "5dea2b61f9c44880ddace472ce6a6a459b53397bd7fc981fb0e940bbb8a7d798"
+        "sha256": "90ff6934413b357905535976921c1e584088f87e351264efda3e8ea35731d14f"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1969,7 +1970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "60329b5e0ec5adfe390a485e3ca9448abd845bb67443445a84afeae779aba54c"
+        "sha256": "5e8ae7de4b667a106f14c595c87ae393a382979f6b64af93829117bac1a7ef6e"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2177,11 +2178,11 @@
       },
       {
         "path": "src/core/word-sections-v1.cjs",
-        "sha256": "18db2345a79646c529b58efda4b158679504431aa134e32ed916f7f9c8d9fcb5"
+        "sha256": "38450099dfca8bd645b7838172fd5e7a504d661412ea309534979bdd9e05fb83"
       },
       {
         "path": "test/contracts/rtk-word-sections.contract.test.js",
-        "sha256": "786e7fe24922f0e42a5a5777b41d530088270e6d2ff50c406f6a9fd9a8132ff7"
+        "sha256": "ea699294819333c0d7dd556b84c5ed9d2f64a8d161096400fc5252070735ddb5"
       },
       {
         "path": "docs/tasks/2026-10-03--word-import-fidelity-mac.md",
@@ -2369,7 +2370,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
-        "sha256": "7fa5ebb30dcc9a8012c130f07d441d038afba02862289206dee289f2e63408a1"
+        "sha256": "b9ad782e612efdd476cb23ba9837d88781d29e7520043bf09908586d36da99d5"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
@@ -2381,11 +2382,15 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "a952ccb47763f0eafa231153d354fc9bd0dfa513d75b0913409439ac2347ae6a"
+        "sha256": "0153a6bcd0f8b9f9433196a9c214b8d24689d251ee72384b67ef133143bc10b7"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "228e4dc91f22ea8d5d0ae1a02803468d6087d933815a1f46a1f5d263e35dd03a"
+        "sha256": "edeaf373e8bf3776eb4d637654ef07a9ed4218c9a30460cfa5ba8eeb6f0eb964"
+      },
+      {
+        "path": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
+        "sha256": "1624cadc0f48d4fcafe3a59b17e2c2f7d23c86324bd0d65ec00dd98faff89637"
       }
     ],
     "followupRepair": {

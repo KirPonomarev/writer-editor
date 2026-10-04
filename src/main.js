@@ -8455,7 +8455,7 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
   if(gridAdditions.length) {
     const sectionModel=require('./core/word-sections-v1.cjs'), envelope=require('./core/document-content-envelope-v1.cjs');
     for(const scene of fullManuscriptExportMap.scenes || []) {
-      if(capsule.cleanTextGridPlansBySceneId?.[scene.sceneId])continue;
+      if(capsule.cleanTextGridPlansBySceneId?.[scene.sceneId] || capsule.userBookmarksCandidate?.sceneId===scene.sceneId && capsule.userBookmarksCandidate.inactiveGridPlan)continue;
       const raw=capsule.baselineObservableContentBySceneId?.[scene.sceneId] ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId]
         ?? (capsule.scope==='scene'?capsule.baselineFinalText:undefined);
       if(typeof raw!=='string' || scene.rawSha256!==`sha256:${computeHash(raw)}`) throw Error('WORD_SECTIONS_GRID_BASELINE');
@@ -9966,7 +9966,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       continue;
     }
     const plan = userBookmarkModel.planReturn({ beforeDoc, candidateDoc: analysis.doc });
-    if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects });
+    if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects,
+      ...(analysis.inactiveGridPlan?{inactiveGridPlan:analysis.inactiveGridPlan}:{}) });
   }
   if (cleanTextChanges.length) {
     if (candidates.length) return {ok:false,code:'RTK_USER_BOOKMARK_RETURN_CONFLICT',detail:'ordinary-text-bookmark-composite'};
@@ -10059,7 +10060,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
   const candidate = candidates[0], scenePath = authority.scenePathBySceneId?.[candidate.sceneId];
   if (typeof scenePath !== 'string' || scenePath !== currentFilePath) return { ok: false, code: 'RTK_USER_BOOKMARK_OPEN_SCENE_REQUIRED' };
   const changeId = 'docx-user-bookmarks-' + computeHash(JSON.stringify({ roundId: authority.roundId,
-    sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc })).slice(0, 24);
+    sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc,
+    ...(candidate.inactiveGridPlan?{inactiveGridPlan:candidate.inactiveGridPlan}:{}) })).slice(0, 24);
   const change = { changeId, targetScope: { type: 'scene', id: candidate.sceneId },
     match: { kind: 'exact', quote: candidate.parsed.text, prefix: '', suffix: '' },
     replacementText: envelope.deriveVisibleTextFromDocument(candidate.plan.doc),
@@ -11029,6 +11031,16 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       canAutoApply:false,canImportMutate:false,canWriteStorage:false,canOpenReviewSession:true,
       reviewPacket:{...buildCleanLinkLabelPreviewPacket(changes[0]),textChanges:changes},
       sourceViewState:{packetHash:returnIntake.returnedArtifactSha256,mode:'docx-clean-block-text-preview'}};
+  }
+
+  if (returnIntake.authenticated === true && authenticatedFormattingExportMap
+    && returnIntake.parserResult?.documentSectionsBinding?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
+    && returnIntake.parserResult.documentSectionsBinding.inactiveGridAdditions?.length
+    && candidate?.reason === 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS') {
+    candidate={...candidate,ok:true,status:'ready',reason:'RTK_SECTION_GRID_PREVIEW_READY',
+      canAutoApply:false,canImportMutate:false,canWriteStorage:false,canOpenReviewSession:true,
+      reviewPacket:{commentThreads:[],commentPlacements:[],textChanges:[],structuralChanges:[],diagnosticItems:[],decisionStates:[]},
+      sourceViewState:{packetHash:returnIntake.returnedArtifactSha256,mode:'docx-section-grid-preview'}};
   }
 
   const isReadyPreviewCandidate = isPlainObjectValue(candidate)
@@ -22866,7 +22878,10 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             }
             if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) {
               const sections=require('./core/word-sections-v1.cjs');
-              if(options.inactiveGridPlan)sections.validateSaveWithGridAddition(beforeDoc,workingDoc,options.inactiveGridPlan);
+              if(options.inactiveGridPlan) {
+                if(options.inactiveGridRollback===true)sections.validateGridRollback(beforeDoc,workingDoc,options.inactiveGridPlan);
+                else sections.validateSaveWithGridAddition(beforeDoc,workingDoc,options.inactiveGridPlan);
+              }
               else sections.validateSave(beforeDoc,workingDoc);
             }
             if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordStories != null || workingDoc.attrs?.wordStories != null)) require('./core/word-stories-v1.cjs').validateSave(beforeDoc, workingDoc);
@@ -25576,7 +25591,7 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
     'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL',
       ...(options.userBookmarkPlan ? {userBookmarkPlan:options.userBookmarkPlan,userBookmarkCapturedContent:options.userBookmarkCapturedContent}: {}),
       ...(options.authenticatedCleanBlockText === true ? {authenticatedCleanBlockText:true}: {}),
-      ...(options.inactiveGridPlan ? {inactiveGridPlan:options.inactiveGridPlan}: {}) },
+      ...(options.inactiveGridPlan ? {inactiveGridPlan:options.inactiveGridPlan,...(options.inactiveGridRollback===true?{inactiveGridRollback:true}:{})}: {}) },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
     throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
@@ -26027,7 +26042,16 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
   };
   try {
     guard();
-    const result=await writer(input,{...options,publishScene,
+    const prepareCanonicalContent=store.cleanTextGridPlan ? ({beforeContent,afterContent})=>{
+      guard();
+      if(beforeContent!==before)throw Error('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+      const after=envelope.parseObservablePayload(afterContent);
+      if(after.issue || !userBookmarkEnvelopeMetadataEqual(after,parsed))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+      const doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(after.doc,store.cleanTextGridPlan);
+      if(JSON.stringify(envelope.canonicalizeDocumentJson(doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(store.cleanTextCandidateDoc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+      return envelope.composeObservablePayload({doc,metaEnabled:after.hasMetaBlock,meta:after.meta,cards:after.cards});
+    } : undefined;
+    const result=await writer(input,{...options,publishScene,prepareCanonicalContent,
       trustedAuthenticatedBlockDigests:input.reviewItems.map(item=>computeHash(JSON.stringify(item)))});
     if(result.ok && publication)result.receipt={...result.receipt,bookmarkPublication:publication};
     return result;
@@ -26074,6 +26098,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
   // Schema materialization follows semantic admission; it cannot create an
   // effect or revision, and preserves every explicitly stored link attribute.
+  if(candidate.inactiveGridPlan)plan.doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(plan.doc,candidate.inactiveGridPlan);
   plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
   const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
@@ -26099,6 +26124,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_SOURCE_STALE'); }
   const receipt = await commitWriterProjectSnapshot(scenePath, content, snapshot.generation, snapshot.bookProfile,
     isStory ? 'authenticated document story return' : isMedia ? 'authenticated media return' : 'authenticated user bookmark return', { expectedSceneContent: candidate.raw, beforeScenePublish,
+      ...(candidate.inactiveGridPlan?{inactiveGridPlan:candidate.inactiveGridPlan}:{}),
       ...(isStory ? { storyReturnPlan: plan, storyReturnCapturedContent: snapshot.content }
         : isMedia ? { mediaReturnPlan: plan, mediaReturnCapturedContent: snapshot.content }
         : { userBookmarkPlan: plan, userBookmarkCapturedContent: snapshot.content }) });

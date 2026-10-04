@@ -562,6 +562,16 @@ function stateIndexIsValid(value) {
   ));
 }
 
+function stateSceneGridIsValid(scene) {
+  if(!Object.hasOwn(scene,'inactiveGridPlan'))return true;
+  try {
+    const before=parseObservablePayload(scene.beforeContent),after=parseObservablePayload(scene.afterContent);
+    if(before.issue || after.issue)return false;
+    wordSections.validateGridRollback(after.doc || buildParagraphDocumentFromText(after.text),before.doc || buildParagraphDocumentFromText(before.text),scene.inactiveGridPlan);
+    return true;
+  } catch { return false; }
+}
+
 function stateSceneIsValid(scene, cryptoPort) {
   return isPlainObject(scene)
     && normalizedString(scene.sceneId)
@@ -572,6 +582,7 @@ function stateSceneIsValid(scene, cryptoPort) {
     && SHA256_RE.test(normalizedString(scene.afterSha256))
     && normalizedString(scene.beforeSha256) === sha256Text(cryptoPort, scene.beforeContent)
     && normalizedString(scene.afterSha256) === sha256Text(cryptoPort, scene.afterContent)
+    && stateSceneGridIsValid(scene)
     && Array.isArray(scene.operationIds)
     && scene.operationIds.length > 0
     && scene.operationIds.every((operationId) => normalizedString(operationId) === operationId);
@@ -865,9 +876,10 @@ function sceneCommitGuard(projectRoot, authority, expectedSha256, cryptoPort, op
   };
 }
 
-async function publishFormattingScene(scenePath, content, expectedText, beforeRename, options) {
+async function publishFormattingScene(scenePath, content, expectedText, beforeRename, options, inactiveGridPlan = null, rollback = false) {
   if (typeof options.publishScene === 'function') {
-    const receipt = await options.publishScene(scenePath, content, { expectedText, beforeRename });
+    const receipt = await options.publishScene(scenePath, content, { expectedText, beforeRename,
+      ...(inactiveGridPlan?{inactiveGridPlan:wordSections.validateInactiveGridPlan(inactiveGridPlan),...(rollback?{inactiveGridRollback:true}:{})}:{}) });
     if (receipt?.ok !== 1) throw new Error('RTK_FORMATTING_PROJECT_PUBLICATION_FAILED');
     return receipt;
   }
@@ -909,7 +921,7 @@ async function restoreTransaction(projectRoot, transaction, sceneAuthorityByScen
           cryptoPort,
           options,
           { phase: 'rollback', sceneId: scene.sceneId },
-        ), options,
+        ), options, scene.inactiveGridPlan, true,
       );
     } catch (error) {
       const current = await fs.readFile(scene.scenePath, 'utf8').catch(() => null);
@@ -1350,6 +1362,7 @@ export async function applyMultiSceneFormattingReturnRuntime(input = {}, options
           sceneRelativePath: scene.sceneRelativePath,
           beforeContent,
           afterContent: transformed.content,
+          ...(scene.operations.find(operation=>operation.kind==='section-doc-grid') ? {inactiveGridPlan:cloneJson(scene.operations.find(operation=>operation.kind==='section-doc-grid').sectionGrid)}:{}),
           beforeSha256,
           afterSha256: sha256Text(cryptoPort, transformed.content),
           operationIds: scene.operations.map((operation) => operation.operationId),
@@ -1384,7 +1397,7 @@ export async function applyMultiSceneFormattingReturnRuntime(input = {}, options
               cryptoPort,
               options,
               { phase: 'commit', index, sceneId: scene.sceneId },
-            ), options,
+            ), options, scene.inactiveGridPlan, false,
           );
           writerCalled = true;
           if (!await revalidateSceneAuthority(normalized.projectRoot, authority)) {

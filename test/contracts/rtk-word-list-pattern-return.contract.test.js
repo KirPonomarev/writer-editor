@@ -62,3 +62,26 @@ test('actual Main section preview preserves disabled document grid values and ab
  }
  assert.throws(()=>context.sanitizeDocxReviewReturnIntakeForResult({parserResult:{documentSectionsBinding:{protectedSections:[{properties:{type:'nextPage',docGrid:{type:'lines'}}}]}}}),/WORD_SECTIONS_INVALID/);
 });
+
+test('grid formatting journal forwards private plans, rolls back exact plain bytes and recovers interrupted publication',async t=>{
+ const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs'),sections=require('../../src/core/word-sections-v1.cjs');
+ const stable=v=>JSON.stringify(v,(_,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b))):value);
+ const cryptoPort={sha256Text:v=>crypto.createHash('sha256').update(String(v)).digest('hex'),sha256Json:v=>'sha256:'+crypto.createHash('sha256').update(stable(v)).digest('hex')};
+ for(const abrupt of [false,true]){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'grid-journal-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'roman'));
+  const scenePath=path.join(root,'roman','a.txt'),sibling=path.join(root,'roman','b.txt');fs.writeFileSync(scenePath,'Alpha');fs.writeFileSync(sibling,'Sibling');
+  const revision='sha256:'+cryptoPort.sha256Text('Alpha'),plan={expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:{type:'default',linePitch:-12}}]};
+  const commandId=runtime.RTK_FORMATTING_RETURN_COMMAND_ID,input={commandId,callerRole:'main',commandAuthority:{issuer:'main',intent:'rtk.formattingApply',commandId},projectId:'grid-project',projectRoot:root,requestId:'grid-request',returnArtifactSha256:'sha256:'+'a'.repeat(64),previewConfirmed:true,scenePathBySceneId:{a:scenePath},operations:[{kind:'section-doc-grid',operationId:'grid-op',sceneId:'a',sectionGrid:plan,sourceAuthority:'authenticated-full-manuscript-section-doc-grid-v1',sourceRawSha256:revision,sourceSceneRevision:revision}]};
+  const calls=[];const publishScene=async(file,content,options)=>{
+   assert.equal(fs.readFileSync(file,'utf8'),options.expectedText);await options.beforeRename();assert.deepEqual(options.inactiveGridPlan,plan);
+   const before=envelope.parseObservablePayload(options.expectedText),after=envelope.parseObservablePayload(content),doc=p=>p.doc||envelope.buildParagraphDocumentFromText(p.text);
+   if(options.inactiveGridRollback)sections.validateGridRollback(doc(before),doc(after),options.inactiveGridPlan);else sections.validateSaveWithGridAddition(doc(before),doc(after),options.inactiveGridPlan);
+   calls.push(options.inactiveGridRollback?'rollback':'forward');fs.writeFileSync(file,content);return {ok:1};
+  };
+  if(abrupt){await assert.rejects(runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene,simulateAbruptFailureAtSceneIndex:0}),/ABRUPT/);
+   const recovered=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene});assert.equal(recovered.status,'replay',JSON.stringify(recovered));assert.equal(recovered.receipt.status,'applied-after-recovery-readback');assert.deepEqual(calls,['forward']);assert.deepEqual(sections.read(envelope.parseObservablePayload(fs.readFileSync(scenePath,'utf8')).doc).final.docGrid,plan.additions[0].docGrid);
+  }else{const result=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene,simulateFailureAtSceneIndex:0});assert.equal(result.code,'RTK_FORMATTING_WRITE_FAILED_ROLLED_BACK',JSON.stringify(result));assert.equal(fs.readFileSync(scenePath,'utf8'),'Alpha');assert.deepEqual(calls,['forward','rollback']);}
+  assert.equal(fs.readFileSync(sibling,'utf8'),'Sibling');
+ }
+});

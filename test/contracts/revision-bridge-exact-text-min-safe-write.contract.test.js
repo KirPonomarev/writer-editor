@@ -932,3 +932,34 @@ test('C04 changed files stay inside the task allowlist', () => {
 
   assert.deepEqual(changedFilesOutsideAllowlist(changedFiles), []);
 });
+
+test('private canonical preparation precedes journal hashing and binds final bytes into effect identity',async()=>{
+ const c04=await loadC04(),envelope=await loadEnvelope(),hashes=[];
+ const {dir,scenePath}=tmpScene('Alpha beta gamma omega.'),input=readyBatchInput({scenePath});
+ const originalInput=JSON.stringify(input);
+ for(const linePitch of [0,-12]){
+  fs.writeFileSync(scenePath,'Alpha beta gamma omega.');let prepared;
+  assert.equal(JSON.stringify(input),originalInput);
+  const result=await c04.applyExactTextBatchMinSafeWrite(input,{prepareCanonicalContent:({beforeContent,afterContent})=>{
+   assert.equal(beforeContent,'Alpha beta gamma omega.');assert.equal(afterContent,'Alpha delta gamma sigma.');
+   prepared=envelope.composeObservablePayload({doc:{type:'doc',attrs:{wordSections:{schemaVersion:1,boundaries:[],final:{type:'nextPage',docGrid:{type:'default',linePitch}}}},content:[{type:'paragraph',content:[{type:'text',text:afterContent}]}]}});return prepared;
+  }});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(readText(scenePath),prepared);assert.equal(result.receipt.outputHash,sha256Text(prepared));
+  const journalFiles=[];const visit=folder=>{for(const item of fs.readdirSync(folder,{withFileTypes:true})){const file=path.join(folder,item.name);if(item.isDirectory())visit(file);else if(item.name.endsWith('.json'))journalFiles.push(file);}};visit(dir);
+  const journal=journalFiles.map(file=>{try{return JSON.parse(readText(file));}catch{return null;}}).find(value=>value?.operationId===result.receipt.operationId && value?.afterHash);
+  assert.ok(journal,'persisted journal for operation must exist');assert.equal(journal.afterHash,sha256Text(readText(scenePath)));
+  hashes.push(result.receipt.inputHash);
+ }
+ assert.notEqual(hashes[0],hashes[1]);
+});
+test('private canonical preparation failures do not create journal or scene writes; payload cannot inject callback',async()=>{
+ const c04=await loadC04();
+ for(const prepareCanonicalContent of [()=>{throw Error('refuse');},()=>undefined,()=>42,()=> 'unexpected text']){
+  const {dir,scenePath}=tmpScene('Alpha beta gamma omega.'),before=fs.readdirSync(dir).sort();
+  const result=await c04.applyExactTextBatchMinSafeWrite(readyBatchInput({scenePath}),{prepareCanonicalContent});
+  assert.equal(result.ok,false);assert.equal(result.reason,'REVISION_BRIDGE_CANONICAL_PREPARATION_INVALID');assert.equal(readText(scenePath),'Alpha beta gamma omega.');assert.deepEqual(fs.readdirSync(dir).sort(),before);
+ }
+ const {scenePath}=tmpScene('Alpha beta gamma omega.');let calls=0;
+ const input={...readyBatchInput({scenePath}),prepareCanonicalContent:()=>{calls++;return 'evil';}};
+ await c04.applyExactTextBatchMinSafeWrite(input);assert.equal(calls,0);assert.notEqual(readText(scenePath),'evil');
+});
