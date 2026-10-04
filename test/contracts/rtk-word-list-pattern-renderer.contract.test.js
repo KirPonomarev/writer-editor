@@ -462,3 +462,36 @@ test('trusted schema projection handles ordinary and numbered images but never w
     assert.throws(()=>core.normalizeAuthoring({type:'doc',content:[projected]}),/WORD_LIST_NUMBERING_INVALID/);assert.equal(reads,0);
   }finally{editor.destroy();}
 });
+
+test('actual checked scene replacement preserves imported skipped levels despite blank or colliding previous scene identities',async()=>{
+  const {WordPendingRevisions,setCheckedDocument}=await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
+  const {closeHistory}=await import('@tiptap/pm/history');
+  const levels=core.defaultLevels(3);levels[0].start=3;levels[1].format='a';levels[1].text='%1.%2';levels[2].text='%3';levels[2].restartAfterLevel=0;
+  const pattern=level=>({schemaVersion:1,instanceId:'shared-import-id',lineageId:'shared-import-lineage',level,levels});
+  const child=level=>({type:'orderedList',attrs:{start:1,type:levels[level].format,wordNumbering:pattern(level)},content:[{type:'listItem',content:[p('child')]}]});
+  const make=level=>doc({type:'orderedList',attrs:{start:3,type:'1',wordNumbering:pattern(0)},content:[{type:'listItem',content:[p('parent'),child(level)]}]});
+  for(const before of [doc(p('blank')),make(1)]) {
+    const {editor,ui}=await harness(before,[WordPendingRevisions]);
+    try {
+      let updates=0;editor.on('update',()=>updates++);
+      const incoming=make(2),snapshot=JSON.stringify(incoming);
+      assert.equal(setCheckedDocument(editor,incoming),true);
+      assert.equal(JSON.stringify(incoming),snapshot);assert.equal(updates,0);
+      const json=ui.numberingDocumentJSON(editor.state.doc);
+      assert.equal(json.content[0].content[0].content[1].attrs.wordNumbering.level,2);
+      assert.deepEqual(editorPatternLabels(editor),['3.','1']);
+      const loaded=editor.getJSON();
+      // The same live editor still performs genuine authoring reparenting.
+      // Separate the user action from the synchronously loaded fixture's history event.
+      editor.view.dispatch(closeHistory(editor.state.tr));
+      editor.commands.setTextSelection(editorTextPosition(editor,'child'));
+      assert.equal(editor.commands.liftListItem('listItem'),true);
+      assert.deepEqual(editorPatternLabels(editor),['3.','4.']);
+      assert.equal(editor.commands.undo(),true);
+      assert.equal(ui.numberingDocumentJSON(editor.state.doc).content[0].content[0].content[1].attrs.wordNumbering.level,2);
+      assert.deepEqual(editorPatternLabels(editor),['3.','1']);
+      assert.deepEqual(editor.getJSON(),loaded);
+      assert.equal(editor.commands.redo(),true);assert.deepEqual(editorPatternLabels(editor),['3.','4.']);
+    }finally{editor.destroy();}
+  }
+});

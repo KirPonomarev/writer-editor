@@ -793,7 +793,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4c8e6ae1c5a97917e0e3f42a72d0661435a6db328b76131cc8e2b1b76dfdae0d"
+        "sha256": "d48e25830a20130b8634e01d067642a686bc4155ce2c5749d1b014d95b640ace"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -2109,11 +2109,11 @@
       },
       {
         "path": "src/core/word-list-numbering-v1.cjs",
-        "sha256": "bb53bf03ee4dcbef544d74222ed1e80236fcfa8a0ecb7d3776145ab3cda651fc"
+        "sha256": "f6b8744b64344915119205b230a12099bea44447c49e940f508f8c2adb6b137a"
       },
       {
         "path": "src/renderer/tiptap/documentListNumbering.mjs",
-        "sha256": "7956fe89615c890c9c6f945d0a03316a9c5a5a21f89b7ae1cc8e674d833426de"
+        "sha256": "c5dd2696877d9a458c53cb527f364c373212d3517a39df2b45dc5f8bd9e2ebdc"
       },
       {
         "path": "test/contracts/rtk-word-list-continuation.contract.test.js",
@@ -2365,7 +2365,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
-        "sha256": "1271940fb6d9d7e3d43268b33f5828337cd0102273179e6d052b22fd4b26c6e6"
+        "sha256": "7f627ff2f13e5b62aca8c5c98423f96085545f1024d9d52664d0cfac40cfb58a"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
@@ -2377,11 +2377,11 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "669e70d7178203b5a16c4bf3ab054c095c8de59807143fbe4ea4ea2d1010b773"
+        "sha256": "c740230cef4a4a55a703343d7049aa7418dcd819cf5900d87fb2cb7c4cd4aade"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "3139a0627d203d35f72886254bd33e83b308b786e69e8bd663f8c251858d9889"
+        "sha256": "f67b6016fff49dba8faa6f6290c3d8c1535578932aa92e922bd637c0fc01af89"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",

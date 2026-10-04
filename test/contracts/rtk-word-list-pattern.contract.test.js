@@ -181,3 +181,16 @@ test('Continue on a later same-instance representative does not rewrite an alrea
  assert.deepEqual(labels(source),['1.','9.','10.']);
  assert.deepEqual(model.planNumberingEdit(source,{listPath:[2],action:'continue',instanceId:'a'}),source);
 });
+test('newly loaded identities retain skipped logical levels and existing plain nested lists',()=>{
+ const levels=model.defaultLevels(3);levels[0].start=3;levels[1].format='a';levels[1].text='%1.%2.';levels[2].text='%3';levels[2].restartAfterLevel=0;
+ const root=pattern(levels),deep={...root,level:2};
+ const plain={type:'orderedList',attrs:{start:7},content:[item('legacy peer')]};
+ const source=model.normalize(document(list(root,item('first',list(deep,item('logical third')),plain))));
+ for(const previous of [document(paragraph('old scene')),model.normalize(document(list({...root,instanceId:'unrelated'},item('other identity'))))]){
+  const result=model.normalizeAuthoring(source,previous);
+  assert.deepEqual(result,source);
+  assert.equal(result.content[0].content[0].content[1].attrs.wordNumbering.level,2);
+  assert.equal(result.content[0].content[0].content[2].attrs.wordNumbering,undefined);
+  assert.deepEqual(labels(result),['3.','1']);
+ }
+});

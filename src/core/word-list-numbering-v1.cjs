@@ -318,6 +318,9 @@ function normalizeAuthoring(doc, oldDoc) {
   const next = cloneData(doc);
   oldDoc = oldDoc ? cloneData(oldDoc) : null;
   const oldPatterns = oldDoc ? resolveMarkers(oldDoc) : null;
+  // Newly loaded/pasted groups carry their own logical levels. Only an
+  // identity already present in the prior document can be reparented here.
+  const priorInstances = new Set(oldPatterns ? [...oldPatterns.values()].map(value => value.instanceId) : []);
   const priorContexts = new Set();
   const contextKey = (pattern, parent) => JSON.stringify([pattern.instanceId,pattern.level,parent?.attrs?.wordNumbering?.instanceId || null,parent?.attrs?.wordNumbering?.level ?? null]);
   if (oldDoc) visitNodes(oldDoc, (node, path, parents) => {
@@ -331,14 +334,14 @@ function normalizeAuthoring(doc, oldDoc) {
     const inherited = parent?.attrs?.wordNumbering;
     let pattern = node.attrs?.wordNumbering;
     const sameAncestry = pattern && priorContexts.has(contextKey(pattern, parent));
-    if (!pattern && inherited && oldPatterns) {
+    if (!pattern && inherited && priorInstances.has(inherited.instanceId)) {
       // A pre-existing plain nested list is not a newly authored level.
       const unchanged = [...oldPatterns.keys()].some(old => (old.content || []).some(item => (item.content || []).some(child => child.type === 'orderedList' && !child.attrs?.wordNumbering && JSON.stringify(child) === JSON.stringify(node))));
       if (!unchanged && node.attrs?.wordListId == null) pattern = { ...cloneData(inherited), level: inherited.level + 1 };
-    } else if (pattern && inherited && pattern.instanceId === inherited.instanceId && oldPatterns && !sameAncestry) {
+    } else if (pattern && inherited && pattern.instanceId === inherited.instanceId && priorInstances.has(pattern.instanceId) && !sameAncestry) {
       pattern = { ...pattern, level: inherited.level + 1 };
     }
-    if (pattern && !parent && oldPatterns && !sameAncestry) pattern = {...pattern,level:0};
+    if (pattern && !parent && priorInstances.has(pattern.instanceId) && !sameAncestry) pattern = {...pattern,level:0};
     if (pattern) {
       pattern = validateNumbering(pattern);
       node.attrs = { ...(node.attrs || {}), wordNumbering: pattern, type:pattern.levels[pattern.level].format };

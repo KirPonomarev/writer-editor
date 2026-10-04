@@ -2,7 +2,7 @@ import { Extension } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
 import { Slice, Fragment } from '@tiptap/pm/model';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { closeHistory } from '@tiptap/pm/history';
+import { closeHistory, isHistoryTransaction } from '@tiptap/pm/history';
 import numbering from '../../core/word-list-numbering-v1.cjs';
 
 // Omit only absent defaults declared by the trusted live schema. Core still
@@ -51,12 +51,13 @@ export const DocumentListNumbering = Extension.create({
       state: {
         init: (_config, state) => numberingDecorations(state.doc),
         apply: (tr, decorations, oldState) => !tr.docChanged ? decorations
-          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, oldState.doc),
+          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, (tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr)) ? null : oldState.doc),
       },
       props: { ...createNumberingClipboardHandlers(this.options?.onClipboardStatus), decorations(state) { return this.getState(state); } },
       appendTransaction(transactions, _old, state) {
       if (!transactions.some(tr => tr.docChanged) || isInlineOnly(transactions)) return null;
-      const json = numbering.normalizeAuthoring(numberingDocumentJSON(state.doc), numberingDocumentJSON(_old.doc)), starts = numbering.resolve(json);
+      const authoritativeRestore = transactions.some(tr => tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr));
+      const json = numbering.normalizeAuthoring(numberingDocumentJSON(state.doc), authoritativeRestore ? undefined : numberingDocumentJSON(_old.doc)), starts = numbering.resolve(json);
       if (!starts.size) return null;
       const tr = state.tr;
       const lists = []; walkLists(json, node => lists.push(node));
