@@ -127,7 +127,7 @@ async function mainHarness(t,options={}) {
   publications++;return real.commitManifestText(args);
  }};
  const gateway=require('../../src/core/legacy-strangler-v1.cjs');
- const sandbox={fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
+ const sandbox={require:require('node:module').createRequire(require.resolve('../../src/main.js')),computeHash:sha,currentLifecycleSubjectId:()=> 'scene-subject',commentSceneParagraphs:require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,commentAuthoringSessionId:"main-session-1",fs:fsp,path,Buffer,...gateway,SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   loadDocumentContentEnvelopeModule:()=>import('../../src/renderer/documentContentEnvelope.mjs'),
   pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs'),
   commitProjectTransaction:tx.commitProjectTransaction,recoverProjectTransaction:tx.recoverProjectTransaction,
@@ -289,4 +289,157 @@ for(const boundary of ['SCENE','COMMENT','COMMIT'])test(`paragraph split SIGKILL
  assert.equal((await child(f,'crash',boundary)).signal,'SIGKILL');
  const r=await child(f,'recover');assert.equal(r.code,0,r.stderr);
  assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.commentState.afterText]:[f.beforeScene,f.beforeManifest,f.beforeText]);
+});
+
+const editModel = require('../../src/core/word-comment-edit-intents-v1.cjs');
+function intent(old,from,to,insertText,{id='ledger-e1',historyId='ledger-h1',direction='forward'}={}) {
+  return {schemaVersion:1,baselineTextSha256:editModel.textDigest([old]),edits:[{id,historyId,direction,paragraphIndex:0,fromUtf16:from,toUtf16:to,removedText:old.slice(from,to),insertText}]};
+}
+function intentSave(old,next,state,edits,sessionId='main-session-1') {
+  return planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:content(old),afterContent:content(next),editIntents:edits,sessionId,includeUnchanged:true});
+}
+test('actual splices preserve duplicate occurrence, calibrated affinities, interior text and exact Undo after saved deletion',()=>{
+  const old='Alpha anchor omega', before=graph(old,0,'Alpha');
+  const inserted='AlINSIDEpha anchor omega';
+  const first=intentSave(old,inserted,before,intent(old,2,2,'INSIDE'));
+  assert.equal(JSON.parse(first.afterText).threads[0].anchor.selectedText,'AlINSIDEpha');
+  const undo=intentSave(inserted,old,first.afterText,intent(inserted,2,8,'',{id:'ledger-e2',direction:'undo'}));
+  assert.deepEqual(JSON.parse(undo.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const deleted=' anchor omega';
+  const deletion=intentSave(old,deleted,before,intent(old,0,5,''));
+  const dead=JSON.parse(deletion.afterText).threads[0];assert.equal(dead.status,'deleted');
+  assert.deepEqual(dead.messages,JSON.parse(before).threads[0].messages);
+  const restored=intentSave(deleted,old,deletion.afterText,intent(deleted,0,0,'Alpha',{id:'ledger-e2',direction:'undo'}));
+  assert.equal(JSON.parse(restored.afterText).threads[0].status,'open');
+  assert.deepEqual(JSON.parse(restored.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const redo=intentSave(old,deleted,restored.afterText,intent(old,0,5,'',{id:'ledger-e3',direction:'redo'}));
+  assert.equal(JSON.parse(redo.afterText).threads[0].status,'deleted');
+  const replaced=intentSave(old,'Beta anchor omega',before,intent(old,0,5,'Beta'));
+  assert.equal(JSON.parse(replaced.afterText).threads[0].status,'deleted');
+  for(const [at,expectedStart,expectedQuote] of [[0,1,'Alpha'],[5,0,'Alpha'],[2,0,'AlXpha']]) {
+    const next=old.slice(0,at)+'X'+old.slice(at);
+    const a=JSON.parse(intentSave(old,next,before,intent(old,at,at,'X')).afterText).threads[0].anchor;
+    assert.equal(a.startUtf16,expectedStart);assert.equal(a.selectedText,expectedQuote);
+  }
+  const repeated=graph('aaaa',1,'a');
+  assert.equal(JSON.parse(intentSave('aaaa','aaaaa',repeated,intent('aaaa',1,1,'a')).afterText).threads[0].anchor.startUtf16,2);
+});
+test('intent proof rejects wrong replay, accessor, cycle, stale history/session and does not revive manual deletion',()=>{
+  const old='Alpha anchor omega',before=graph(old,0,'Alpha'),next=' anchor omega';
+  const deleted=intentSave(old,next,before,intent(old,0,5,''));
+  const forged=intent(next,0,0,'Alpha',{id:'ledger-e2',direction:'undo'});
+  assert.throws(()=>intentSave(next,'X'+old,deleted.afterText,forged),/COMMENT_EDIT_REPLAY_MISMATCH/);
+  const unrelated=JSON.parse(before);unrelated.threads[0].status='deleted';
+  const retained=intentSave(old,'X'+old,JSON.stringify(unrelated),intent(old,0,0,'X',{direction:'undo'}));
+  assert.equal(JSON.parse(retained.afterText).threads[0].status,'deleted');
+  const wrongSession=intentSave(next,old,deleted.afterText,forged,'different-session');
+  assert.equal(JSON.parse(wrongSession.afterText).threads[0].status,'deleted');
+  let invoked=false;const getter={get schemaVersion(){invoked=true;return 1;}};
+  assert.throws(()=>editModel.validateEditIntents(getter),/COMMENT_EDIT_INTENT_INVALID/);assert.equal(invoked,false);
+  const cycle={};cycle.self=cycle;assert.throws(()=>editModel.validateEditIntents(cycle),/COMMENT_EDIT_INTENT_INVALID/);
+  const invalid=intent(old,0,1,'X');invalid.edits[0].removedText='Z';
+  assert.throws(()=>intentSave(old,'X'+old.slice(1),before,invalid),/COMMENT_EDIT_SPLICE_STALE/);
+});
+test('point Save uses explicit version and right affinity; transaction recomputes splice and rejects forged after graph',async t=>{
+  const f=fixture(t),state=JSON.parse(f.beforeText),a=state.threads[0].anchor;
+  Object.assign(a,{kind:'point',affinity:'right',selectedText:'',selectedTextSha256:sha('')});state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+  const beforeText=JSON.stringify(state),old='Left anchor right',next='Left Xanchor right';
+  const delta=intentSave(old,next,beforeText,intent(old,5,5,'X'));
+  assert.equal(JSON.parse(delta.afterText).threads[0].anchor.startUtf16,6);
+  fs.writeFileSync(f.commentPath,beforeText);
+  const request={...f.request,sceneContent:content(next),commentState:delta};
+  const forged=JSON.parse(delta.afterText);forged.threads[0].messages[0].body='injected';
+  await assert.rejects(()=>tx.commitProjectTransaction({...request,commentState:{...delta,afterText:JSON.stringify(forged)},publishManifest}),/E_PROJECT_TRANSACTION_COMMENT_STATE/);
+  await tx.commitProjectTransaction({...request,publishManifest});
+  assert.equal(fs.readFileSync(f.commentPath,'utf8'),delta.afterText);assert.equal(fs.readFileSync(f.scenePath,'utf8'),content(next));
+});
+test('actual Main Save admits interior splice and historical Undo after saved whole replacement atomically',async t=>{
+  const f=await mainHarness(t),old='Left anchor right',next='Left Beta right';
+  const forward=intent(old,5,11,'Beta');
+  const saved=await f.save(content(next),{commentEditIntentsJson:JSON.stringify(forward)});
+  assert.equal(saved.success,true,JSON.stringify(saved));
+  const dead=JSON.parse(fs.readFileSync(f.commentPath,'utf8'));assert.equal(dead.threads[0].status,'deleted');
+  const undo=intent(next,5,9,'anchor',{id:'ledger-e2',direction:'undo'});
+  const restored=await f.save(content(old),{commentEditIntentsJson:JSON.stringify(undo)});
+  assert.equal(restored.success,true,JSON.stringify(restored));
+  const state=JSON.parse(fs.readFileSync(f.commentPath,'utf8'));assert.equal(state.threads[0].status,'open');
+  assert.deepEqual(state.threads[0].anchor,JSON.parse(f.beforeText).threads[0].anchor);
+  assert.deepEqual(state.threads[0].messages,JSON.parse(f.beforeText).threads[0].messages);
+  assert.equal(fs.readFileSync(f.scenePath,'utf8'),f.beforeScene);
+});
+test('many harmless outside-anchor groups never exhaust canonical comment history',()=>{
+  let text='Alpha anchor omega',state=graph(text,0,'Alpha');
+  for(let n=0;n<80;n++){
+    const next=text+'x';state=intentSave(text,next,state,intent(text,text.length,text.length,'x',{id:`e${n}`,historyId:`h${n}`})).afterText;text=next;
+  }
+  assert.equal(JSON.parse(state).threads[0].anchorEditHistory,undefined);
+  assert.equal(JSON.parse(state).threads[0].anchor.selectedText,'Alpha');
+});
+test('covered point deletion tombstones and exact saved Undo reconstructs point; legacy fallback refuses ambiguous point move',()=>{
+  const old='Alpha anchor omega',state=JSON.parse(graph(old,0,'Alpha'));
+  Object.assign(state.threads[0].anchor,{kind:'point',affinity:'right',startUtf16:5,selectedText:'',selectedTextSha256:sha('')});state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+  const raw=JSON.stringify(state),next=' omega';
+  const deleted=intentSave(old,next,raw,intent(old,0,12,''));assert.equal(JSON.parse(deleted.afterText).threads[0].status,'deleted');
+  const restored=intentSave(next,old,deleted.afterText,intent(next,0,0,'Alpha anchor',{id:'e2',direction:'undo'}));
+  assert.deepEqual(JSON.parse(restored.afterText).threads[0].anchor,state.threads[0].anchor);
+  assert.throws(()=>plan(old,'AlphaX anchor omega',raw),/COMMENT_SAVE_POINT_INTENT_REQUIRED/);
+});
+test('actual Main verifies admitted prefix when newer typing overlaps save acknowledgment',async t=>{
+  const f=await mainHarness(t),old='Left anchor right',middle='Left anXchor right',next='Left anXYchor right';
+  const first=intent(old,7,7,'X');
+  const a=await f.save(content(middle),{commentEditIntentsJson:JSON.stringify(first)});assert.equal(a.success,true,JSON.stringify(a));
+  assert.equal(a.commentEditIntentsSha256,sha(JSON.stringify(first)));
+  const cumulative={...first,edits:[...first.edits,...intent(middle,8,8,'Y',{id:'e2',historyId:'h2'}).edits]};
+  const b=await f.save(content(next),{commentEditIntentsJson:JSON.stringify(cumulative)});assert.equal(b.success,true,JSON.stringify(b));
+  assert.equal(JSON.parse(readFile(f.commentPath)).threads[0].anchor.selectedText,'anXYchor');
+  const forged=structuredClone(cumulative);forged.edits[0].id='different';const before=observed(f);
+  const result=await f.save(content(next+'Z'),{commentEditIntentsJson:JSON.stringify(forged)});
+  assert.equal(result.success,false);assert.equal(result.code,'COMMENT_EDIT_BASELINE_STALE');assert.deepEqual(observed(f),before);
+});
+function readFile(file){return fs.readFileSync(file,'utf8');}
+test('bounded history is compact, remains valid after many groups and expired destructive Undo fails without revival',()=>{
+  let text='Alpha anchor omega',state=graph(text,0,'Alpha');
+  for(let n=0;n<40;n++) {
+    const next=text.slice(0,2)+'x'+text.slice(2);
+    state=intentSave(text,next,state,intent(text,2,2,'x',{id:`e${n}`,historyId:`h${n}`})).afterText;text=next;
+  }
+  const after=JSON.parse(state);assert.equal(after.threads[0].anchorEditHistory.length,32);
+  assert.ok(after.threads[0].anchorEditHistory.every(h=>h.before.length>=5 && !Object.hasOwn(h.before,'anchor')));
+  require('../../src/core/word-comment-authoring-v1.cjs').readState(state,projectId);
+  assert.throws(()=>intentSave(text,text.slice(0,2)+text.slice(3),state,intent(text,2,3,'',{id:'expired',historyId:'h0',direction:'undo'})),/COMMENT_EDIT_HISTORY_EXPIRED/);
+  const corrupt=structuredClone(after);corrupt.threads[0].anchorEditHistory[0].before.foreign=true;
+  assert.throws(()=>require('../../src/core/word-comment-authoring-v1.cjs').readState(JSON.stringify(corrupt),projectId),/COMMENT_HISTORY_INVALID/);
+});
+test('near 64KiB comment graphs either fit compact history exactly or refuse before publication',()=>{
+  const make=target=>{
+    const state=JSON.parse(graph('Alpha anchor omega',0,'Alpha'));
+    for(let i=0;i<3;i++)state.threads[0].messages.push({commentId:'budget-reply-'+i,kind:'reply',body:'r'.repeat(16000),provenance:{}});
+    state.threads[0].messages[0].body='';
+    const remaining=target-Buffer.byteLength(JSON.stringify(state));assert.ok(remaining>0 && remaining<=16384);
+    state.threads[0].messages[0].body='x'.repeat(remaining);
+    const raw=JSON.stringify(state);assert.equal(Buffer.byteLength(raw),target);
+    require('../../src/core/word-comment-authoring-v1.cjs').readState(raw,projectId);return raw;
+  };
+  const fits=make(64000),saved=intentSave('Alpha anchor omega','AlXpha anchor omega',fits,intent('Alpha anchor omega',2,2,'X'));
+  assert.ok(Buffer.byteLength(saved.afterText)<=65536);assert.equal(JSON.parse(saved.afterText).threads[0].anchor.selectedText,'AlXpha');
+  assert.deepEqual(JSON.parse(saved.afterText).threads[0].messages,JSON.parse(fits).threads[0].messages);
+  const full=make(65500),unchanged=full;
+  assert.throws(()=>intentSave('Alpha anchor omega','AlXpha anchor omega',full,intent('Alpha anchor omega',2,2,'X')),/COMMENT_SAVE_STATE_BUDGET/);
+  assert.equal(full,unchanged);
+});
+test('saved tombstone typing continues same history group and Undo/Redo retain exact deleted quote',()=>{
+  const old='Alpha',before=graph(old,0,old);
+  const first=intentSave(old,'X',before,intent(old,0,5,'X'));
+  const second=intentSave('X','XY',first.afterText,intent('X',1,1,'Y',{id:'e2'}));
+  const dead=JSON.parse(second.afterText).threads[0];assert.equal(dead.status,'deleted');assert.equal(dead.anchor.selectedText,'Alpha');assert.equal(dead.anchorEditHistory.length,1);
+  assert.equal(dead.anchorEditHistory[0].afterTextSha256,sha('XY'));
+  const undone=intentSave('XY',old,second.afterText,intent('XY',0,2,old,{id:'e3',direction:'undo'}));
+  assert.equal(JSON.parse(undone.afterText).threads[0].status,'open');assert.deepEqual(JSON.parse(undone.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const redone=intentSave(old,'XY',undone.afterText,intent(old,0,5,'XY',{id:'e4',direction:'redo'}));
+  assert.equal(JSON.parse(redone.afterText).threads[0].status,'deleted');assert.deepEqual(JSON.parse(redone.afterText).threads[0].anchor,dead.anchor);
+  assert.deepEqual(JSON.parse(redone.afterText).threads[0].messages,dead.messages);
+  const forged=JSON.parse(first.afterText);forged.threads[0].anchorEditHistory[0].afterTextSha256=sha('forged');forged.threads[0].anchorEditHistory[0].after.blockTextSha256=sha('forged');
+  assert.throws(()=>intentSave('X','XY',JSON.stringify(forged),intent('X',1,1,'Y',{id:'e2'})),/COMMENT_EDIT_HISTORY_STALE/);
+  const unrelated=intentSave('X','XY',first.afterText,intent('X',1,1,'Y',{id:'e2',historyId:'other'}));
+  assert.equal(JSON.parse(unrelated.afterText).threads[0].anchorEditHistory[0].afterTextSha256,sha('X'),'unrelated group must not rewrite original deletion endpoint');
 });

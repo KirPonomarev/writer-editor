@@ -758,7 +758,7 @@ function findAllTextOccurrences(text, needle) {
 }
 
 function applyRichInlineReplacement(block, operation) {
-  const blockText = richBlockVisibleText(block);
+  const blockText = operation.authenticatedBlock ? userBookmarkModel.textOf(block) : richBlockVisibleText(block);
   let from = Number(operation.from);
   let to = Number(operation.to);
   if (from < 0 || to < from || blockText.slice(from, to) !== operation.expectedText) {
@@ -820,7 +820,11 @@ function applyRichInlineReplacement(block, operation) {
     // Retain one complete original grapheme for an insertion, so the existing
     // writer still derives its marks from a nonempty exact source range.
     if (prefix + suffix === original.length && original !== replacement) {
-      if (prefix > 0) {
+      // The preceding hardBreak stays untouched. Use adjacent source text on
+      // the right when present; structural-only footprints still refuse below.
+      const rightText = prefix > 0 && original[prefix - 1] === '\n'
+        && suffix > 0 && original[prefix] !== '\n';
+      if (prefix > 0 && !rightText) {
         prefix -= 1;
         while (prefix > 0 && !boundaries.has(from + prefix)) prefix -= 1;
       } else if (suffix > 0) {
@@ -949,7 +953,7 @@ function resolveAuthenticatedBlockOperation(item, parsed, raw, sceneId, trustedD
     || !Number.isSafeInteger(owner.sceneParagraphIndex) || owner.sceneParagraphIndex < 0) return null;
   const selected = collectRichTextBlocks(parsed.doc)[owner.sceneParagraphIndex];
   if (!selected) return null;
-  const text = richBlockVisibleText(selected.node);
+  const text = userBookmarkModel.textOf(selected.node);
   if (owner.blockTextSha256 !== 'sha256:' + sha256Text(text)
     || owner.blockLocalStart !== 0 || owner.blockLocalEnd !== text.length || item.match.quote !== text) return null;
   // A marker in a private clone derives the exact rendered offset without
@@ -1484,6 +1488,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       afterContent: nextText,
       inputHash,
       operationKind: 'replaceExactTextBatch',
+      ...(options.commentTextReturnPlan ? {commentTextReturnPlan:options.commentTextReturnPlan}:{}),
       projectId,
       sessionId: rawString(input.revisionSession?.sessionId),
       sceneId,
@@ -1535,7 +1540,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
-        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentTextReturn || journalRef.entry.commentRebase);
       },
     });
 
@@ -1939,7 +1944,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
-        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentTextReturn || journalRef.entry.commentRebase);
       },
     });
 

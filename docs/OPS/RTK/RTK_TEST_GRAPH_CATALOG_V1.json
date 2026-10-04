@@ -92,6 +92,8 @@
     "rtk-word-combined-link-return.contract.test.js",
     "rtk-word-comment-anchor-save.contract.test.js",
     "rtk-word-comment-authoring.contract.test.js",
+    "rtk-word-comment-edit-intents-renderer.contract.test.js",
+    "rtk-word-comment-points.contract.test.js",
     "rtk-word-comment-return-apply.contract.test.js",
     "rtk-word-comment-return-delta.contract.test.js",
     "rtk-word-composite-fidelity.contract.test.js",

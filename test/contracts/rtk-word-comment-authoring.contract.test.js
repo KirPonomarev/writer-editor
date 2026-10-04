@@ -140,6 +140,7 @@ for (const nativeDefaults of [false, true]) test(`actual main handler captures c
     isAllowedFilePath: p => p === scenePath, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot, projectId: 'p1' }),
     loadDocumentContentEnvelopeModule: async () => envelope,
+    userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
     computeHash: hash, canonicalizeComparableValue: value => value, normalizeRtkNonTextReturnThreadProjection: value => value,
     loadRtkNonTextReturnModule: async () => runtime, queueDiskOperation: operation => operation(),
     getMainProjectManifestAuthority: async () => ({ withProjectLease: (_id, operation) => operation({ assertOwned: async () => {}, publish: op => op() }) }),
@@ -222,7 +223,7 @@ test('actual lifecycle confirmation vetoes pending comment authoring before docu
   assert.equal(await ctx.confirmDiscardChanges(),false);assert.equal(barrierCalls,1);
   const editor=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
   const sa=editor.indexOf('function composeEditorSnapshot() {'), sb=editor.indexOf('function applyIncomingBookProfile',sa);
-  const snapshotCtx=vm.createContext({isTiptapMode:true,getTiptapImageInsertionPosition:()=>6,currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
+  const snapshotCtx=vm.createContext({getTiptapCommentEditIntentsJson:()=>null,isTiptapMode:true,getTiptapImageInsertionPosition:()=>6,currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(editor.slice(sa,sb),snapshotCtx);assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);
   snapshotCtx.wordCommentDraft=null;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,false);
   snapshotCtx.wordCommentBusy=true;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);

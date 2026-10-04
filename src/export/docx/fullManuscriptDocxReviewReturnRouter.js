@@ -324,7 +324,7 @@ function deriveAuthenticatedCleanBlockRange({ operation, sceneId, baselineText, 
     if (parsed.issue || !parsed.doc || parsed.text !== baselineText) return invalid();
     const paragraphs = userBookmarkModel.paragraphs(parsed.doc), selected = paragraphs[owner.sceneParagraphIndex];
     if (paragraphs.length !== blocks.length || !selected) return invalid();
-    const text = deriveVisibleTextFromDocument({ type: 'doc', content: [selected] });
+    const text = userBookmarkModel.textOf(selected);
     if (!text || operation.anchor.selectedText !== text || owner.blockTextSha256 !== sha256Text(text)
       || owner.blockLocalStart !== 0 || owner.blockLocalEnd !== text.length) return invalid();
     let marker = 'YALKEN_AUTHENTICATED_BLOCK_POSITION';

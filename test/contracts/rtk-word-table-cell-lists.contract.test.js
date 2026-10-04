@@ -77,12 +77,27 @@ test('An orphan list level in a new cell cannot inherit a parent from the previo
 test('Core and both exporters reject malformed cell list shapes before publication', async () => {
   for (const bad of [list(1),list(-1,item('a')),list(1.5,item('a')),list(2147483647,item('a'),item('b')),
     { ...list(1,item('a')), attrs: { start: 1, type: 'unknown' } },
-    list(1,{ type: 'listItem', content: [p('a'),p('ambiguous continuation')] }),
     list(1,{ type: 'listItem', content: [list(null,item('orphan'))] }), table(cell(p('nested table')))]) {
     const document = doc(table(cell(bad)));
     assert.throws(() => envelope.composeObservablePayload({ doc: document }), /TABLE|WORD_LIST_FORMAT_INVALID/);
     await assert.rejects(exported(document), /TABLE/);
     assert.throws(() => buildFormatIrParagraphs({ doc: document, text: '', sceneId:'bad' }), /TABLE/);
+  }
+});
+test('Cell list continuation exports one numbered item and preserves two exact paragraph owners',async()=>{
+  const [bridge]=await modules;
+  const document=doc(table(cell(list(3,item('first',p('continued'))))));
+  assert.doesNotThrow(()=>envelope.composeObservablePayload({doc:document}));
+  const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,doc:document,text:envelope.deriveVisibleTextFromDocument(document)}]});
+  assert.deepEqual(source.blocks.map(block=>[block.formatIr.table.paragraphIndex,block.formatIr.paragraph.list.continuation===true]),[[0,false],[1,true]]);
+  for(const bytes of [await exported(document),require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer(source)]){
+    const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+    assert.equal((xml.match(/<w:numPr>/gu)||[]).length,1);
+    assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);
+    assert.match(xml,/<w:ind w:left="720"\/>/u);
+    const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+    assert.deepEqual(preview.contentPreview.paragraphs.map(p=>[p.text,p.table.paragraphIndex]),[['first',0],['continued',1]]);
+    assert.ok(preview.contentPreview.paragraphs[0].list);assert.equal(preview.contentPreview.paragraphs[1].list,undefined);
   }
 });
 test('Cell list depth, count and paragraph budgets reject limit plus one without recursion overflow', () => {

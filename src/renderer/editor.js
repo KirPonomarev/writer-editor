@@ -11,6 +11,9 @@ import {
   applyTiptapParagraphStyle,
   focusTiptapSurface,
   getTiptapDocumentSnapshot,
+  getTiptapCommentEditIntentsJson,
+  checkpointTiptapCommentEditIntents,
+  getTiptapCommentSelectionIntent,
   getTiptapFormattingState,
   captureTiptapLinkTarget,
   captureTiptapNumberingTarget,
@@ -1519,6 +1522,12 @@ function reviewSurfaceRenderNumberingChanges(operations) {
   }).join('');
 }
 
+function reviewSurfaceRenderCommentAnchorChanges(commentChanges) {
+  const count = commentChanges?.count;
+  return Number.isSafeInteger(count) && count > 0 && count <= 128
+    ? `<p class="right-rail-review-item-body">Текст и привязки комментариев применяются вместе. Комментариев: ${count}.</p>` : '';
+}
+
 function reviewSurfaceRenderCompositeNumberingChanges(operations, documentChanges = []) {
   const checked=reviewSurfaceArray(operations).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering);
   const documentMarkup=reviewSurfaceArray(documentChanges).map(operation=>{
@@ -2041,13 +2050,13 @@ function renderWordCommentAuthoring(projection) {
   const escape = reviewSurfaceEscapeHtml;
   const button = (action, label, threadId = '', commentId = '') => `<button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="${action}" data-thread-id="${escape(threadId)}" data-comment-id="${escape(commentId)}" ${wordCommentBusy || !p.available ? 'disabled' : ''}>${label}</button>`;
   const threads = reviewSurfaceArray(p.threads).map(thread => `<article class="right-rail-review-item right-rail-review-item--comments">
-    <div class="right-rail-review-item-meta"><span>${thread.status === 'resolved' ? 'Завершено' : 'Открыто'}</span><span>${escape(thread.anchor?.selectedText || '')}</span></div>
+    <div class="right-rail-review-item-meta"><span>${thread.status === 'resolved' ? 'Завершено' : 'Открыто'}</span><span>${escape(thread.anchor?.selectedText || 'В позиции курсора')}</span></div>
     ${reviewSurfaceArray(thread.messages).map(message => `<div><div class="right-rail-review-item-meta"><span>${escape(message.provenance?.author || 'Автор не указан')}</span><span>${escape(message.provenance?.dateUtc || message.provenance?.date || '')}</span></div><div class="right-rail-review-item-body">${renderCommentBodyHtml(message)}</div>${button('edit', 'Править', thread.threadId, message.commentId)}${message.kind === 'reply' ? button('deleteReply', 'Удалить ответ', thread.threadId, message.commentId) : ''}</div>`).join('')}
-    <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'К выделению', thread.threadId)}${button('delete', 'Удалить обсуждение', thread.threadId)}</div>
+    <div class="right-rail-review-item-meta">${thread.status === 'open' ? button('reply', 'Ответить', thread.threadId) : ''}${button(thread.status === 'open' ? 'resolve' : 'reopen', thread.status === 'open' ? 'Завершить' : 'Открыть снова', thread.threadId)}${button('reanchor', 'Перенести сюда', thread.threadId)}${button('delete', 'Удалить обсуждение', thread.threadId)}</div>
   </article>`).join('');
   const sameContext = p.available && wordCommentDraft && ['projectId', 'sceneId', 'subjectId', 'expectedStateSha256', 'expectedSceneSha256'].every(key => wordCommentDraft.binding[key] === p[key]);
-  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><div id="word-comment-label">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : 'Новый комментарий'}</div><div data-word-comment-editor-slot></div>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
-  return `<section class="right-rail-surface"><div class="right-rail-section__label">Комментарии к сцене</div>${p.available ? button('create', 'Добавить к выделению') : '<p>Откройте и сохраните сцену для работы с комментариями.</p>'}${draft}<p role="status" aria-live="polite">${escape(wordCommentNotice)}</p>${threads || (p.available ? '<p>Комментариев пока нет.</p>' : '')}</section>`;
+  const draft = wordCommentDraft ? `<div class="right-rail-review-item"><div id="word-comment-label">${wordCommentDraft.action === 'reply' ? 'Ответ' : wordCommentDraft.action === 'edit' ? 'Правка комментария' : wordCommentDraft.anchor?.selectedText === '' ? 'Новый комментарий в позиции курсора' : 'Новый комментарий к выделению'}</div><div data-word-comment-editor-slot></div>${!sameContext ? '<p>Контекст изменился. Скопируйте текст черновика перед отменой и начните правку заново.</p>' : ''}<div class="right-rail-review-item-meta"><button type="button" class="right-rail-review-apply-button" data-word-comment-action="save" ${wordCommentBusy || !sameContext ? 'disabled' : ''}>Сохранить комментарий</button><button type="button" class="right-rail-review-apply-button right-rail-review-apply-button--secondary" data-word-comment-action="cancel" ${wordCommentBusy ? 'disabled' : ''}>Отменить</button></div></div>` : '';
+  return `<section class="right-rail-surface"><div class="right-rail-section__label">Комментарии к сцене</div>${p.available ? button('create', 'Добавить комментарий') : '<p>Откройте и сохраните сцену для работы с комментариями.</p>'}${draft}<p role="status" aria-live="polite">${escape(wordCommentNotice)}</p>${threads || (p.available ? '<p>Комментариев пока нет.</p>' : '')}</section>`;
 }
 
 function focusWordCommentDraft() {
@@ -2093,9 +2102,10 @@ function mountWordCommentDraftEditor() {
 }
 
 function wordCommentSelectionIntent() {
+  if (isTiptapMode) return getTiptapCommentSelectionIntent();
   const selection = getSelectionOffsets();
   const parsed = parseObservablePayload(composeDocumentContent());
-  if (parsed.issue || selection.start === selection.end) throw new Error('Выделите текст в сцене.');
+  if (parsed.issue) throw new Error('Откройте сцену для добавления комментария.');
   const paragraphs = [];
   let lists = 0;
   const append = node => {
@@ -2125,7 +2135,8 @@ function wordCommentSelectionIntent() {
         { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
       if (!edges.has(selection.start - offset) || !edges.has(selection.end - offset))
         throw new Error('Выделите целые символы внутри одного абзаца.');
-      return { paragraphIndex: index, startUtf16: selection.start - offset, selectedText: text.slice(selection.start - offset, selection.end - offset) };
+      return { paragraphIndex: index, startUtf16: selection.start - offset, selectedText: text.slice(selection.start - offset, selection.end - offset),
+        ...(selection.start === selection.end ? { kind: 'point', affinity: 'right' } : {}) };
     }
     offset += text.length + 1;
   }
@@ -2678,6 +2689,7 @@ function reviewSurfaceBuildExactTextPreview(state) {
   if (exactPreview.status === 'ready' && applyOps.length > 0) {
     return {
       state: 'ready',
+      commentChanges:exactPreview.plan?.commentChanges,
       documentChanges:reviewSurfaceArray(exactPreview.plan?.documentChanges),
       numberingChanges:reviewSurfaceArray(exactPreview.plan?.numberingChanges).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering),
       ops: applyOps,
@@ -3146,6 +3158,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   const exactPreview = viewModel.exactTextPreview;
   const exactPreviewMarkup = exactPreview.state === 'ready'
     ? `
+      ${reviewSurfaceRenderCommentAnchorChanges(exactPreview.commentChanges)}
       ${reviewSurfaceRenderCompositeNumberingChanges(exactPreview.numberingChanges, exactPreview.documentChanges)}
       ${exactPreview.fullManuscriptAction
         ? `
@@ -8652,6 +8665,7 @@ function composeEditorSnapshot() {
     imageInsertionPosition: isTiptapMode ? getTiptapImageInsertionPosition() : null,
     rootSplitBoundary: isTiptapMode ? getTiptapRootSplitBoundary() : null,
     generation: localEditGeneration,
+    ...(isTiptapMode ? { commentEditIntentsJson: getTiptapCommentEditIntentsJson() } : {}),
     commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
     manuscriptNoteAuthoringPending: Boolean(manuscriptDrafts.size || notesMutationPending || storyDrafts.size || (storyMutationPending && !pendingStoryRequestId)),
   };
@@ -21326,8 +21340,9 @@ function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
         // the exact current generation advances the admission coordinate;
         // PROTECTED and AT_RISK keep newer work marked and never regress it.
         const ack = result && typeof result === 'object' ? result.ack : null;
-        if (ack && ack.kind === 'SAVED' && ack.savedGeneration === localEditGeneration) {
-          lastAckedGeneration = ack.savedGeneration;
+        if (ack && ack.kind === 'SAVED') {
+          if (isTiptapMode) checkpointTiptapCommentEditIntents(ack.commentEditIntentsSha256);
+          if (ack.savedGeneration === localEditGeneration) lastAckedGeneration = ack.savedGeneration;
         }
       })
       .catch(() => {})
@@ -24864,6 +24879,7 @@ if (window.electronAPI) {
     if (message && typeof message === 'object') {
       const ack = message.ack;
       if (ack && ack.kind === 'SAVED') {
+        if (isTiptapMode) checkpointTiptapCommentEditIntents(ack.commentEditIntentsSha256);
         if (ack.savedGeneration === localEditGeneration) {
           lastAckedGeneration = ack.savedGeneration;
           localDirty = false;

@@ -66,6 +66,9 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     publishReview:publishReviewSceneWithProjectTransaction,
+    failAfterReviewPublication() { const original=publishReviewSceneWithProjectTransaction;let armed=true;
+      publishReviewSceneWithProjectTransaction=async(...args)=>{const result=await original(...args);if(armed){armed=false;throw Object.assign(Error('INJECT_AFTER_PROJECT_COMMIT'),{code:'INJECT_AFTER_PROJECT_COMMIT'});}return result;};
+    },
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
     formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
     setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
@@ -81,6 +84,8 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
       try { return {result:await MENU_COMMAND_HANDLERS['cmd.project.review.openDocxReviewPreviewSession']({requestId:'observation'}),statuses,opened}; }
       finally {handleDocxReviewPreviewSessionLocalFileCommandSurface=previousHandler;updateStatus=previousStatus;sendCanonicalRuntimeCommand=previousSender;}
     },
+    tamperEmptyCleanCandidate(){ userBookmarkModel.paragraphs(activeRtkCleanLinkLabelApplyStore.cleanTextCandidateDoc).at(-1).content=[{type:'text',text:'UNAUTHORIZED'}]; },
+    commentProjection: readCommentAuthoringProjection, authorComment: handleCommentAuthoringCommand,
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -1194,16 +1199,17 @@ test('structural backup dedupe preserves foreign history bytes and exact Undo re
   assert.equal(result.ok,false); assert.deepEqual(f.capture(),before); assert.equal(read(foreign),'foreign history');
 });
 
-for(const variant of ['typed-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
+for(const variant of ['typed-failure','formatting-failure','secret-filter','cancel','pending','success']) test(`actual native DOCX review menu observes ${variant} receipt without changing activation semantics`,async t=>{
   const f=await fixture(t), logger=f.probe.captureExportLogs();t.after(()=>logger.restore());
   const receipt=variant==='typed-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_RETURN_INTAKE_PARSER_V2_BLOCKED',details:{nestedCode:'RTK_WORD_UNSUPPORTED',nestedReason:'RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH',message:'private manuscript /private/source'}}}
+    :variant==='formatting-failure'?{ok:false,error:{code:'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',reason:'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH',details:{nestedCode:'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT',nestedReason:'RTK_FORMATTING_RETURN_BLOCKED'}}}
     :variant==='secret-filter'?{ok:false,error:{code:'private secret /private/source',reason:'private manuscript text',details:{nestedCode:'RTK_WORD_'+'A'.repeat(170),nestedReason:'/private/source'}}}
     :variant==='cancel'?{ok:true,activated:false,cancelled:true}
     :variant==='pending'?{ok:true,activated:false,pendingProductPath:{ok:true,status:'preview-ready'}}
     :{ok:true,activated:true,requestId:'actual-success'};
   const before=structuredClone(receipt), out=await f.probe.observeLocalReviewReceipt(receipt);
   assert.strictEqual(out.result,receipt);assert.deepEqual(receipt,before);
-  if(variant==='typed-failure'){
+  if(variant==='typed-failure'||variant==='formatting-failure'){
     for(const code of [receipt.error.code,receipt.error.reason,receipt.error.details.nestedCode,receipt.error.details.nestedReason])assert.ok(out.statuses[0].includes(code));
     assert.deepEqual(logger.records,[{context:'review-docx-return',error:{code:receipt.error.code,reason:receipt.error.reason,nestedCode:receipt.error.details.nestedCode,nestedReason:receipt.error.details.nestedReason}}]);
     assert.deepEqual(out.opened,[]);assert.equal(out.statuses.length,1);
@@ -1218,7 +1224,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1250,8 +1256,22 @@ async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBre
   const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
   const beforeAppend=structuredClone(parsed.doc);
   // Repeated quote belongs to a different signed block, not this operation.
-  parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
+  parsed.doc.content.push(emptyTailLanguage?{type:'paragraph',...(emptyTailLanguage==='remove'?{attrs:{wordParagraphMarkLanguage:{val:'ru-FI'}}}:{})}:{type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(tableCommentContinuation) {
+    const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+    parsed.doc={type:'doc',content:[{type:'table',attrs:{wordTable:{version:1,grid:[7200],layout:'fixed',widthDxa:7200,shading:null,borders:{}}},content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:continuationLabel+' cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
+  }
+  if(tableCommentContinuation)for(const paragraph of bookmarks.paragraphs(parsed.doc).slice(0,3))paragraph.attrs={...paragraph.attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}};
+  if(nativeTableProfile){
+    const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+    for(const paragraph of bookmarks.paragraphs(parsed.doc)){
+      paragraph.attrs={...paragraph.attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:language};
+      for(const node of paragraph.content||[])if(node.type==='text')node.marks=[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',wordLanguage:language}}];
+      if(!paragraph.content?.length)delete paragraph.content;
+    }
+  }
+  if(bookParagraphs)while(parsed.doc.content.length<bookParagraphs)parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'Book paragraph '+parsed.doc.content.length+' '+crypto.randomBytes(60).toString('hex')}]});
   if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
   fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
@@ -1266,6 +1286,36 @@ async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBre
       beforeContent=afterContent;
     }
   }
+  if(anchoredComment) {
+    const raw=read(f.alpha),ps=require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(raw).map(p=>p.text);
+    const model=require('../../src/core/word-comment-authoring-v1.cjs'),sceneId='roman/Imported/01_Alpha.txt';
+    const planned=model.planCommentAuthoring({beforeText:null,projectId:f.query.projectId,sceneId,sceneSha256:sha(raw),paragraphs:ps,now:'2026-10-04T00:00:00Z',
+      input:{action:'create',requestId:'anchor-composite',projectId:f.query.projectId,sceneId,expectedStateSha256:'',expectedSceneSha256:sha(raw),body:'Anchor body',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}});
+    const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});
+    if(tableCommentContinuation) {
+      const state=JSON.parse(planned.afterText),root=state.threads[0];state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
+      for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?1+continuationLabel.length:1,selectedText:point?'':continuationLabel,...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
+      state.threads[1].messages.push({commentId:'continuation-reply',kind:'reply',body:'Reply body',provenance:{author:'Reply author'}});
+      const foreignScene='roman/Imported/02_Beta.txt';state.threads.push({threadId:'foreign',rootCommentId:'foreign-root',sceneId:foreignScene,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Beta'},foreignScene,['Beta']),messages:[{commentId:'foreign-root',kind:'root',body:'Foreign body',provenance:{author:'Foreign'}}]});
+      if(commentParagraphSpacing)for(const thread of state.threads)for(const message of thread.messages)message.richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:message.body}]}]}};
+      if(nativeTableProfile)for(const thread of state.threads)for(const message of thread.messages){
+        const paragraph=message.richBody.document.content[0],language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+        paragraph.attrs.wordParagraphMarkLanguage=language;
+        paragraph.content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',wordLanguage:language}}];
+      }
+      model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
+    } else if(largeCommentGraph) {
+      const state=JSON.parse(planned.afterText),root=state.threads[0].messages[0];
+      root.body=crypto.randomBytes(15500).toString('base64').slice(0,15500);
+      for(let i=1;i<4;i++)state.threads[0].messages.push({...root,commentId:'large-reply-'+i,kind:'reply',body:crypto.randomBytes(15500).toString('base64').slice(0,15500)});
+      model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
+    } else fs.writeFileSync(target,planned.afterText);
+  }
+  if(commentParagraphSpacing)fs.writeFileSync(f.beta,envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:'Beta'}]}]}}));
+  if(nativeTableProfile){const sibling=envelope.parseObservablePayload(read(f.beta)),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+    sibling.doc.content[0].attrs.wordParagraphMarkLanguage=language;
+    sibling.doc.content[0].content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',wordLanguage:language}}];
+    fs.writeFileSync(f.beta,envelope.composeObservablePayload({...sibling,metaEnabled:sibling.hasMetaBlock}));}
   f.source=read(f.alpha); let observed=f.source;
   if(schemaDefaults){
     const live=envelope.parseObservablePayload(observed);
@@ -1351,7 +1401,7 @@ for (const languageOnly of [false,true]) test(`actual whole Main clean Word lang
   assert.ok(xml.includes('<w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart+'</w:t></w:r>'));
 });
 
-for(const variant of ['comment-body','note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
+for(const variant of ['note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
   const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
     if(variant==='comment-body'){
       assert.ok(parts['word/comments.xml'].includes('Mixed comment'));
@@ -2053,4 +2103,249 @@ for(const composite of ['none','single','multi'])for(const stale of (composite==
  const reexport=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(reexport.publicationGate.publishAllowed,true);const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:reexport.documentBuffer}).parts;
  if(composite!=='none')assert.match(output['word/settings.xml'],/<w:defaultTabStop w:val="708"\/>/);
  assert.match(output['word/numbering.xml'],/<w:start w:val="7"\/>/);assert.doesNotMatch(output['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);assert.equal((output['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);assert.match(output['word/document.xml'],/Continuation native-round5/);assert.notEqual(read(f.alpha),before);
+});
+
+test('actual whole Main atomically applies authenticated text and comment body together',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
+    parts['word/comments.xml']=parts['word/comments.xml'].replace('Mixed comment','Changed comment');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const result=await f.probe.fullApply({requestId:'mixed-comment-text-apply'});
+  assert.equal(result.ok,true,JSON.stringify(result));
+  const state=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.ok(state.threads.some(thread=>thread.messages.some(message=>message.body==='Changed comment')),JSON.stringify({result,state,activated}));
+  assert.ok(envelope.parseObservablePayload(read(f.alpha)).text.includes('Unannotated target CLEAN_EDIT'));
+  assert.equal(read(f.beta),Buffer.from(beforeActivation.files['roman/Imported/02_Beta.txt'],'base64').toString());
+});
+test('actual whole Main moves range with authenticated inside-anchor Word text and preserves identities',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    assert.ok(parts['word/document.xml'].includes('>Alpha<'));
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlINSIDEpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const before=JSON.parse(Buffer.from(beforeActivation.files['.yalken/word-review/non-text-return-state.v1.json'],'base64'));
+  const result=await f.probe.fullApply({requestId:'inside-comment-text-apply'});
+  assert.equal(result.totals?.applied,1,JSON.stringify(result));assert.equal(result.totals.blocked,0);assert.equal(result.totals.failed,0);
+  const after=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+  assert.equal(after.threads[0].anchor.selectedText,'AlINSIDEpha');
+  assert.equal(after.threads[0].threadId,before.threads[0].threadId);assert.deepEqual(after.threads[0].messages,before.threads[0].messages);
+  assert.ok(envelope.parseObservablePayload(read(f.alpha)).text.startsWith('AlINSIDEpha'));
+});
+test('mixed comment return fault after inner commit preserves coherent pair; outer recovery rejects torn pairs and mutated proof',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));f.probe.failAfterReviewPublication();
+  const result=await f.probe.fullApply({requestId:'fault-comment-text-apply'});
+  assert.equal(result.totals?.applied,0,JSON.stringify(result));
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),afterText=read(f.alpha),afterComments=read(commentPath);
+  assert.ok(envelope.parseObservablePayload(afterText).text.startsWith('AlXpha'));
+  assert.equal(JSON.parse(afterComments).threads[0].anchor.selectedText,'AlXpha');
+  const dir=path.join(f.root,'backups/revision-bridge-apply-journal');
+  const journalFile=fs.readdirSync(dir).filter(name=>name.endsWith('.json')).map(name=>path.join(dir,name)).find(file=>JSON.parse(read(file)).commentTextReturn);
+  assert.ok(journalFile);const original=read(journalFile),entry=JSON.parse(original);
+  const journals=await import('../../src/io/revisionBridge/exactTextApplyJournal.mjs');
+  const recovered=await journals.reconcileExactTextApplyJournal(f.root,entry.operationId);assert.ok(recovered);
+  assert.equal(read(f.alpha),afterText);assert.equal(read(commentPath),afterComments);
+  fs.writeFileSync(journalFile,JSON.stringify({...entry,status:'prepared'}));
+  fs.writeFileSync(f.alpha,Buffer.from(beforeActivation.files['roman/Imported/01_Alpha.txt'],'base64'));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT'});
+  fs.writeFileSync(f.alpha,afterText);fs.writeFileSync(commentPath,entry.commentTextReturn.beforeText);
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_COMMIT_INCOMPLETE'});
+  fs.writeFileSync(commentPath,afterComments);
+  const altered={...JSON.parse(original),status:'prepared'},proof=JSON.parse(altered.commentTextReturn.returnProofJson);proof.textChanges[0].newText='forged';altered.commentTextReturn.returnProofJson=JSON.stringify(proof);fs.writeFileSync(journalFile,JSON.stringify(altered));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId));
+  assert.equal(read(f.alpha),afterText);assert.equal(read(commentPath),afterComments);
+  altered.commentRebase={};fs.writeFileSync(journalFile,JSON.stringify(altered));
+  await assert.rejects(()=>journals.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_JOURNAL_INVALID'});
+});
+test('mixed comment return stale comment state rejects without either canonical write',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const file=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),state=JSON.parse(read(file));state.revision++;fs.writeFileSync(file,JSON.stringify(state));
+  const before=f.capture(),result=await f.probe.fullApply({requestId:'stale-comment-text-apply'});
+  assert.equal(result.totals?.applied||0,0);assert.deepEqual(f.capture(),before);
+});
+test('mixed comment and multirow text return rejects partial selection without any canonical writes',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<').replace('STARTBOUND_Alpha_ENDBOUND','STARTBOUND_Alpha_ENDBOUND SECOND_EDIT');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const ops=f.probe.reviewState().reviewSurface.exactTextPlanPreview.plan.applyOps;assert.equal(ops.length,2);
+  const before=f.capture(),partial=await f.probe.reviewBatchApply({requestId:'partial-comment-composite',changeIds:[ops[0].changeId]});
+  assert.notEqual(partial.applied,true);assert.deepEqual(f.capture(),before);
+  assert.equal(partial.error.reason,'RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED');
+  const full=await f.probe.fullApply({requestId:'complete-comment-composite'});
+  assert.equal(full.totals?.applied,2,JSON.stringify(full));assert.equal(full.totals.failed,0);assert.equal(full.totals.blocked,0);
+  assert.equal(JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'))).threads[0].anchor.selectedText,'AlXpha');
+});
+
+for(const fault of [false,true])test('large random comment graph and 1000 paragraphs mixed Apply uses bounded journal envelope'+(fault?' with recovery':' successfully'),async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookParagraphs:1000,largeCommentGraph:true,bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
+  assert.ok(Buffer.byteLength(read(commentPath))>62000);assert.equal(before.threads[0].messages.length,4);
+  const expectedParagraphs=require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text);expectedParagraphs[0]=expectedParagraphs[0].replace('Alpha','AlXpha');
+  if(fault)f.probe.failAfterReviewPublication();
+  const result=await f.probe.fullApply({requestId:'large-graph-apply'});
+  assert.equal(result.totals?.applied,fault?0:1,JSON.stringify(result));
+  const afterScene=read(f.alpha),afterComments=read(commentPath),after=JSON.parse(afterComments);
+  assert.equal(after.threads[0].anchor.selectedText,'AlXpha');assert.deepEqual(after.threads[0].messages,before.threads[0].messages);
+  assert.equal(expectedParagraphs.length,1000);assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(afterScene).map(p=>p.text),expectedParagraphs);
+  const expectedThreads=structuredClone(before.threads);expectedThreads[0].anchor={...expectedThreads[0].anchor,authoritySource:'AUTHENTICATED_WORD_COMMENT_RETURN',selectedText:'AlXpha',selectedTextSha256:sha('AlXpha'),blockTextSha256:sha(expectedParagraphs[0])};assert.deepEqual(after.threads,expectedThreads);assert.equal(after.revision,before.revision+1);
+  assert.ok(Buffer.byteLength(afterComments)<=65536);
+  const dir=path.join(f.root,'backups/revision-bridge-apply-journal');
+  const file=fs.readdirSync(dir).filter(n=>n.endsWith('.json')).map(n=>path.join(dir,n)).find(p=>JSON.parse(read(p)).commentTextReturn);
+  const original=read(file),entry=JSON.parse(original),encoded=entry.commentTextReturn;
+  assert.equal(encoded.schemaVersion,'yalken.word.comment-text-return.brotli.v1');assert.ok(encoded.decodedBytes>256*1024);
+  assert.ok(Buffer.byteLength(original)<=256*1024);assert.ok(Buffer.byteLength(JSON.stringify(encoded))<=192*1024);
+  const journal=await import('../../src/io/revisionBridge/exactTextApplyJournal.mjs');
+  const restarted=require('node:child_process').spawnSync(process.execPath,['--input-type=module','-e',
+    'const m=await import(process.argv[1]);await m.reconcileExactTextApplyJournal(process.argv[2],process.argv[3]);',
+    require('node:url').pathToFileURL(path.join(ROOT,'src/io/revisionBridge/exactTextApplyJournal.mjs')).href,f.root,entry.operationId],{encoding:'utf8'});
+  assert.equal(restarted.status,0,restarted.stderr);
+  await journal.reconcileExactTextApplyJournal(f.root,entry.operationId);
+  assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  const variants=[
+    {...encoded,sha256:'0'.repeat(64)}, {...encoded,decodedBytes:encoded.decodedBytes+1},
+    {...encoded,decodedBytes:2*1024*1024+1}, {...encoded,data:encoded.data+'!'},
+    {...encoded,data:Buffer.concat([Buffer.from(encoded.data,'base64'),Buffer.from('junk')]).toString('base64')},
+    {...encoded,foreign:true}, {...encoded,data:'A'.repeat(192*1024)},
+  ];
+  const z=require('node:zlib'),bomb=Buffer.alloc(2*1024*1024+1,65);
+  variants.push({...encoded,data:z.brotliCompressSync(bomb).toString('base64')});
+  for(const bad of variants){
+    fs.writeFileSync(file,JSON.stringify({...entry,status:'prepared',commentTextReturn:bad}));
+    await assert.rejects(()=>journal.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_JOURNAL_INVALID'});
+    assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  }
+  const decodedPlan=JSON.parse(z.brotliDecompressSync(Buffer.from(encoded.data,'base64')).toString('utf8'));
+  for(const mutate of [proof=>{proof.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);},proof=>{proof.exportMap.scenes[0].blocks[0].formatIr.runs[0].text='forged';}]) {
+    const offered=structuredClone(decodedPlan),proof=JSON.parse(offered.returnProofJson);mutate(proof);offered.returnProofJson=JSON.stringify(proof);
+    const raw=Buffer.from(JSON.stringify(offered)),bad={...encoded,decodedBytes:raw.length,sha256:sha(raw),data:z.brotliCompressSync(raw).toString('base64')};
+    fs.writeFileSync(file,JSON.stringify({...entry,status:'prepared',commentTextReturn:bad}));
+    await assert.rejects(()=>journal.reconcileExactTextApplyJournal(f.root,entry.operationId));
+    assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  }
+  fs.writeFileSync(file,original);
+});
+
+
+for(const defaultsMode of ['removed','inherited','foreign-global','native','native-georgia','native-tamper','native-break-adjacent','native-break-grapheme'])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; defaults ${defaultsMode}`,async t=>{
+  const inheritedDefaults=defaultsMode!=='removed',nativeTableProfile=defaultsMode.startsWith('native'),adjacentBreak=defaultsMode.startsWith('native-break-');
+  const continuationLabel=defaultsMode==='native-break-grapheme'?'🚀ontQinued':'contQinued';
+  const expectedContinuation='\n'+(adjacentBreak?'B'+continuationLabel:continuationLabel+'R')+' cell anchor\n';
+  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{continuationLabel,nativeTableProfile,commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+    const before=parts['word/document.xml'];
+    if(nativeTableProfile){
+      const point=[...parts['word/comments.xml'].matchAll(/<w:comment\b[^>]*w:id="(\d+)"[^>]*>[\s\S]*?<\/w:comment>/gu)].find(match=>match[0].includes(adjacentBreak?'continuation body':'point body'));
+      assert.ok(point);const marker=`<w:commentRangeStart w:id="${point[1]}"/>`;
+      parts['word/document.xml']=before.replace(marker,'<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:eastAsia="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr><w:t>'+(adjacentBreak?'B':'R')+'</w:t></w:r>'+marker);
+    }else parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');
+    assert.notEqual(parts['word/document.xml'],before);
+    if(defaultsMode==='native-georgia'){
+      const unstyled=parts['word/document.xml'];parts['word/document.xml']=unstyled.replace(/<w:r>(<w:br[^>]*\/>)<\/w:r>/u,'<w:r><w:rPr><w:rFonts w:ascii="Georgia" w:eastAsia="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/></w:rPr>$1</w:r>');
+      assert.notEqual(parts['word/document.xml'],unstyled,'Word explicitly formats first break with nondefault Georgia');
+    }
+    assert.match(parts['word/document.xml'],/<w:spacing\b/u);parts['word/document.xml']=parts['word/document.xml'].replace(/<w:spacing\b[^>]*\/>/gu,'');assert.doesNotMatch(parts['word/document.xml'],/<w:spacing\b/u);
+    if(inheritedDefaults){
+      assert.doesNotMatch(parts['word/styles.xml'],/<w:pPrDefault>/u);
+      parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+      if(defaultsMode==='foreign-global'||nativeTableProfile)parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>');
+    }
+
+  }});
+  if(defaultsMode==='foreign-global'){assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error?.reason,'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT');assert.equal(activated.error?.details?.detail,'COMMENT_TEXT_RETURN_FOREIGN_SCENE');assert.deepEqual(f.capture(),beforeActivation);return;}
+  assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));
+  const sibling=read(f.beta),beforeScene=read(f.alpha),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
+  if(defaultsMode==='native-tamper'){
+    f.probe.tamperEmptyCleanCandidate();const capture=f.capture(),blocked=await f.probe.fullApply({requestId:'candidate-tamper'});
+    assert.equal(blocked.totals?.applied,0,JSON.stringify(blocked));assert.ok((blocked.totals?.blocked||0)+(blocked.totals?.failed||0)>0);assert.deepEqual(f.capture(),capture);return;
+  }
+  const result=await f.probe.fullApply({requestId:'table-comments-apply'});assert.equal(result.totals?.applied,1,JSON.stringify(result));
+  assert.equal(read(f.beta),sibling);const after=JSON.parse(read(commentPath)),doc=envelope.parseObservablePayload(read(f.alpha)).doc;
+  assert.equal(doc.content[0].type,'table');assert.equal(doc.content[0].content.length,1);
+  for(const paragraph of bookmarks.paragraphs(doc).slice(0,3)){
+    assert.deepEqual(paragraph.attrs?.wordParagraphSpacing,inheritedDefaults?{after:160,line:278,lineRule:'auto'}:undefined,'effective inherited spacing differs from genuine removal');
+  }
+  assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item',expectedContinuation,'Second cell item W','']);
+  assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
+  assert.deepEqual(after.threads.find(t=>t.threadId==='foreign'),before.threads.find(t=>t.threadId==='foreign'));
+  assert.equal(after.threads.find(t=>t.threadId==='point').anchor.startUtf16,continuationLabel.length+2);
+  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.selectedText,nativeTableProfile?continuationLabel:continuationLabel+'R');
+  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.startUtf16,adjacentBreak?2:1);
+  const freshSource=await f.probe.fullSource(),fresh=await f.probe.reviewBuild(freshSource);assert.equal(fresh.publicationGate.publishAllowed,true);
+  const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fresh.documentBuffer}).parts['word/document.xml'];
+  if(adjacentBreak){
+    const literalParagraphs=[...xml.matchAll(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/gu)].map(match=>[...match[0].matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:br(?:\s[^>]*)?\/>/gu)].map(token=>token[1]??'\n').join(''));
+    assert.ok(literalParagraphs.includes(expectedContinuation),'exact literal re-export is independent of run segmentation');
+  }else assert.ok(nativeTableProfile?xml.includes('>R</w:t>'):xml.includes('contQinuedR'));
+  assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2);
+  if(nativeTableProfile){
+    assert.equal(Object.hasOwn(doc.content.at(-1),'content'),false,'unchanged empty paragraph keeps absent content');
+    const continuation=bookmarks.paragraphs(doc)[1];
+    let breakIndex=0;for(const node of continuation.content){const style=node.marks?.find(m=>m.type==='textStyle')?.attrs;if(node.type==='hardBreak')assert.equal(style?.fontFamily,defaultsMode==='native-georgia'&&breakIndex++===0?'Georgia':'Times New Roman');else if(node.type==='text')assert.equal(style?.fontFamily,'Aptos');}
+    if(defaultsMode==='native-georgia')assert.ok([...xml.matchAll(/<w:r>[\s\S]*?<\/w:r>/gu)].some(match=>match[0].includes('w:ascii="Georgia"')&&match[0].includes('<w:br')),'explicit break font survives raw Review re-export');
+    const captured=f.capture();await f.probe.activate(freshSource.pendingAuthorityStore);
+    const reopened=await f.probe.reviewActivate({requestId:'native-table-reexport',bufferSource:fresh.documentBuffer.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+    assert.equal(reopened.ok,true,JSON.stringify(reopened));assert.deepEqual(f.capture(),captured);
+  }
+  const journals=fs.readdirSync(path.join(f.root,'backups/revision-bridge-apply-journal')).filter(n=>n.endsWith('.json')).map(n=>JSON.parse(read(path.join(f.root,'backups/revision-bridge-apply-journal',n))));assert.ok(journals.some(j=>j.commentTextReturn));
+});
+
+for(const failure of ['grid','property','owner','stale'])test('actual Main table comment return refuses '+failure+' without writes',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>contQinued</w:t>','>contQinuedR</w:t>');
+    const before=parts['word/document.xml'];
+    if(failure==='grid')parts['word/document.xml']=before.replace(/(<w:gridCol w:w=")(\d+)(")/u,(_,a,n,b)=>a+(Number(n)+240)+b);
+    if(failure==='property')parts['word/document.xml']=before.replace('<w:tblLayout w:type="fixed"/>','<w:tblLayout w:type="autofit"/>');
+    if(failure==='owner')parts['word/document.xml']=before.replace(/w:name="YRTK_[a-f0-9]{32}"/u,'w:name="YRTK_ffffffffffffffffffffffffffffffff"');
+    if(failure!=='stale')assert.notEqual(parts['word/document.xml'],before);
+  }});
+  if(failure==='stale') {
+    assert.equal(activated.ok,true,JSON.stringify(activated));
+    const original=read(f.alpha),parsed=envelope.parseObservablePayload(original);require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(parsed.doc)[0].content[0].text+=' LOCAL';fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true}));
+    const before=f.capture(),result=await f.probe.fullApply({requestId:'table-stale-apply'});assert.equal(result.totals?.applied,0,JSON.stringify(result));assert.ok((result.totals?.blocked||0)+(result.totals?.failed||0)>0,JSON.stringify(result));assert.deepEqual(f.capture(),before);
+  } else {assert.equal(activated.ok,false,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);}
+});
+
+for(const point of [false,true])test(`actual Main comment authoring retains plain paragraph boundary breaks; point ${point}`,async t=>{
+ const f=await fixture(t),doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha'},{type:'hardBreak'}]}]};
+ const raw=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,raw);
+ mountRenderer(f,()=>raw,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const projection=await f.probe.commentProjection();assert.equal(projection.available,true,JSON.stringify(projection));
+ const anchor={paragraphIndex:0,startUtf16:point?6:1,selectedText:point?'':'Alpha',...(point?{kind:'point',affinity:'right'}:{})};
+ const result=await f.probe.authorComment({action:'create',requestId:'edge-break-'+point,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedStateSha256:projection.expectedStateSha256,expectedSceneSha256:projection.expectedSceneSha256,anchor,body:'Boundary comment'});
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),raw);
+ const state=JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json')));
+ assert.equal(state.threads[0].anchor.startUtf16,anchor.startUtf16);assert.equal(state.threads[0].anchor.selectedText,anchor.selectedText);
+ assert.equal(state.threads[0].anchor.blockTextSha256,sha('\nAlpha\n'));
+});
+
+for(const action of ['set','remove'])test(`actual Main mixed text return rebuilds empty paragraph language ${action} before atomic publication`,async t=>{
+ const {f,activated}=await cleanTextReturnFixture(t,{emptyTailLanguage:action,bookmarked:false,sceneScope:true,mutateReturn:parts=>{
+  if(action==='set')parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:lang w:val="ru-FI"/>');
+  else {assert.match(parts['word/document.xml'],/<w:lang\b/u);parts['word/document.xml']=parts['word/document.xml'].replace(/<w:lang\b[^>]*\/>/gu,'').replace(/<w:rPr><\/w:rPr>/gu,'');}
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));const sibling=read(f.beta);
+ const result=await f.probe.fullApply({requestId:'empty-language-'+action});assert.equal(result.totals?.applied,1,JSON.stringify(result));
+ const ps=bookmarks.paragraphs(envelope.parseObservablePayload(read(f.alpha)).doc);
+ assert.equal(bookmarks.textOf(ps[0]),'Alpha CLEAN_EDIT');assert.equal(bookmarks.textOf(ps.at(-1)),'');
+ assert.deepEqual(ps.at(-1).attrs?.wordParagraphMarkLanguage,action==='set'?{val:'ru-FI'}:undefined);assert.equal(read(f.beta),sibling);
+});
+
+test('formatting break font preserves typed break and unrelated marks with exact range validation',async()=>{
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ for(const wordBreakType of [undefined,'page','column']){
+  const br={type:'hardBreak',...(wordBreakType?{attrs:{wordBreakType}}:{}),marks:[{type:'italic'}]},doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'},br,{type:'text',text:'B'}]}]};
+  const raw=envelope.composeObservablePayload({doc}),operation={operationId:'break-font',sceneId:'scene',blockId:'block',paragraphOrdinal:0,from:1,to:2,selectedText:'\n',inline:{fontFamily:{action:'set',value:'Georgia'}},paragraph:{}};
+  const applied=runtime.applyFormattingOperationsToObservableContent(raw,[operation]);assert.equal(applied.ok,true,JSON.stringify(applied));
+  const result=applied.doc.content[0].content[1];assert.deepEqual(result.attrs,br.attrs);assert.ok(result.marks.some(mark=>mark.type==='italic'));assert.equal(result.marks.find(mark=>mark.type==='textStyle').attrs.fontFamily,'Georgia');
+  const removed=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc:applied.doc}),[{...operation,inline:{fontFamily:{action:'remove'}}}]);assert.equal(removed.ok,true);assert.deepEqual(removed.doc.content[0].content[1],br);
+  const invalid=runtime.applyFormattingOperationsToObservableContent(raw,[{...operation,selectedText:'X'}]);assert.equal(invalid.ok,false);assert.equal(invalid.code,'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH');assert.deepEqual(doc.content[0].content[1],br);
+ }
 });

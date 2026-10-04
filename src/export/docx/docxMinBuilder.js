@@ -149,7 +149,7 @@ function readDocumentInlineRuns(node) {
   }
   if (node.type === 'hardBreak') {
     const type = require('../../core/word-typed-breaks-v1.cjs').kind(node);
-    return [{ text: '\n', marks: [], ...(type !== 'line' ? { wordBreakType: type } : {}) }];
+    return [{ text: '\n', marks: node.marks, ...(type !== 'line' ? { wordBreakType: type } : {}) }];
   }
   if (node.type === 'image') return [{ text: '', image: node.attrs }];
   return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);
@@ -245,7 +245,9 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
             if (nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
             listIds.set(list.listId, numberId(list));
           }
-          blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: list.wordNumbering?.level ?? entry.listStack.length - 1, ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), kind: list.kind, start: list.wordListStart ?? list.start, ...(list.type ? { type: list.type } : {}) };
+          if (list.continuation === true) {
+            blocks.at(-1).wordParagraphIndent ??= {left:docxListTextIndent(list.wordNumbering?.level ?? entry.listStack.length-1)};
+          } else blocks.at(-1).numbering = { numId: listIds.get(list.listId), level: list.wordNumbering?.level ?? entry.listStack.length - 1, ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), kind: list.kind, start: list.wordListStart ?? list.start, ...(list.type ? { type: list.type } : {}) };
         }
       }
       return;

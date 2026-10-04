@@ -68,7 +68,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     demand(!paragraph.media?.length, 'TOPOLOGY');
     const text = paragraph.text, boundaries = edges(text);
     demand(Number.isSafeInteger(range.startUtf16) && Number.isSafeInteger(range.endUtf16)
-      && range.startUtf16 < range.endUtf16 && boundaries.has(range.startUtf16)
+      && range.startUtf16 <= range.endUtf16 && boundaries.has(range.startUtf16)
       && boundaries.has(range.endUtf16) && sha256Hex(text) === range.blockTextSha256
       && text.slice(range.startUtf16, range.endUtf16) === range.selectedText
       && range.selectedText === thread.quotedAnchorText, 'ANCHOR');
@@ -80,6 +80,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       nativeIds.add(item.sourceCommentId);
     }
     return { paragraphIndex: index, startUtf16: range.startUtf16,
+      ...(range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}),
       selectedText: range.selectedText, blockTextSha256: range.blockTextSha256,
       status: thread.status === 'RESOLVED' ? 'resolved' : 'open', messages };
   });
@@ -92,7 +93,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
   demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
   const before = commentAuthoring.readState(beforeText, projectId);
-  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2].includes(before.schemaVersion) && before.projectId === projectId
+  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3].includes(before.schemaVersion) && before.projectId === projectId
     && Number.isSafeInteger(before.revision) && before.revision >= 0 && before.revision < Number.MAX_SAFE_INTEGER
     && Array.isArray(before.threads) && Array.isArray(before.events), 'STATE');
   const existing = new Set();
@@ -105,13 +106,15 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   const operation = sha256Hex(`${projectId}\n${sceneId}\n${importOperationId}`);
   const reserve = id => { demand(!existing.has(id), 'IDENTITY_CONFLICT'); existing.add(id); return id; };
   const threads = candidates.map((candidate, ordinal) => {
-    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages'].includes(key))
+    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages', 'kind', 'affinity'].includes(key))
       && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
       && ['open', 'resolved'].includes(candidate.status)
       && Array.isArray(candidate.messages) && candidate.messages.length > 0 && candidate.messages.length <= 129, 'CANDIDATE');
     const text = paragraphs[candidate.paragraphIndex]?.text;
     demand(typeof text === 'string' && sha256Hex(text) === candidate.blockTextSha256
-      && typeof candidate.selectedText === 'string' && candidate.selectedText.length > 0
+      && typeof candidate.selectedText === 'string'
+      && (candidate.kind === 'point' ? candidate.affinity === 'right' && candidate.selectedText === ''
+        : candidate.kind === undefined && candidate.affinity === undefined && candidate.selectedText.length > 0)
       && edges(text).has(candidate.startUtf16) && edges(text).has(candidate.startUtf16 + candidate.selectedText.length)
       && text.slice(candidate.startUtf16, candidate.startUtf16 + candidate.selectedText.length) === candidate.selectedText, 'ANCHOR');
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
@@ -129,7 +132,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
         ...content, provenance: clone(item.provenance) };
     });
     return { threadId, sceneId, rootCommentId: messages[0].commentId, status: candidate.status,
-      anchor: { sceneId, sceneParagraphIndex: candidate.paragraphIndex,
+      anchor: { ...(candidate.kind === 'point' ? {kind: 'point', affinity: 'right'} : {}), sceneId, sceneParagraphIndex: candidate.paragraphIndex,
         paragraphIndex: candidate.paragraphIndex, blockTextSha256: candidate.blockTextSha256,
         startUtf16: candidate.startUtf16, selectedText: candidate.selectedText,
         selectedTextSha256: sha256Hex(candidate.selectedText), authoritySource: 'GENERIC_IMPORT_LOCAL_IDENTITY',

@@ -1,7 +1,7 @@
 'use strict';
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
-const { validateCommentMessageContent, STATE_V2, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { validateCommentMessageContent, STATE_V2, STATE_V3, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const SCHEMA = 'yalken.rtk.word.non-text-return-state.v1';
 const COMMAND_ID = 'cmd.project.review.editComment';
 const sha = value => sha256UpdateCompatible(value);
@@ -16,7 +16,7 @@ function readState(text, projectId) {
   if (typeof text !== 'string' || bytes(text) > 65536) fail('COMMENT_STATE_BUDGET');
   let state;
   try { state = JSON.parse(text); } catch { fail('COMMENT_STATE_INVALID'); }
-  if (!plain(state) || ![SCHEMA, STATE_V2].includes(state.schemaVersion) || state.projectId !== projectId
+  if (!plain(state) || ![SCHEMA, STATE_V2, STATE_V3].includes(state.schemaVersion) || state.projectId !== projectId
     || !Number.isSafeInteger(state.revision) || state.revision < 0
     || !Array.isArray(state.threads) || state.threads.length > 128
     || !Array.isArray(state.events) || state.events.length > 512) fail('COMMENT_STATE_INVALID');
@@ -25,6 +25,26 @@ function readState(text, projectId) {
     if (!plain(thread) || typeof thread.threadId !== 'string' || ids.has(thread.threadId)
       || !Array.isArray(thread.messages) || thread.messages.length < 1 || thread.messages.length > 129
       || !['open', 'resolved', 'deleted'].includes(thread.status)) fail('COMMENT_STATE_INVALID');
+    if ((thread.anchor?.kind === 'point' || thread.anchorEditHistory !== undefined) && state.schemaVersion !== STATE_V3) fail('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+    if (thread.anchorEditHistory !== undefined) {
+      if (!Array.isArray(thread.anchorEditHistory) || thread.anchorEditHistory.length > 32) fail('COMMENT_HISTORY_INVALID');
+      const histories = new Set();
+      for (const h of thread.anchorEditHistory) {
+        if (!plain(h) || Object.keys(h).sort().join(',') !== 'after,afterTextSha256,before,beforeTextSha256,historyId,sessionId,undone'
+          || !id(h.historyId) || !id(h.sessionId) || typeof h.undone !== 'boolean' || histories.has(h.sessionId+'|'+h.historyId)) fail('COMMENT_HISTORY_INVALID');
+        histories.add(h.sessionId+'|'+h.historyId);
+        for (const [key,digestKey] of [['before','beforeTextSha256'],['after','afterTextSha256']]) {
+          const p=h[key], point=p?.kind==='point';
+          if (!plain(p) || Object.keys(p).sort().join(',') !== [...(point?['kind','affinity']:[]),...(p.status==='deleted'?['deletedText']:[]),'blockTextSha256','length','sceneParagraphIndex','startUtf16','status'].sort().join(',')
+            || !Number.isSafeInteger(p.sceneParagraphIndex) || p.sceneParagraphIndex<0 || p.sceneParagraphIndex!==thread.anchor?.sceneParagraphIndex
+            || !Number.isSafeInteger(p.startUtf16) || p.startUtf16<0 || !Number.isSafeInteger(p.length) || p.length<0
+            || (point ? p.length!==0 || p.affinity!=='right' : p.length===0)
+            || (p.status==='deleted' && (typeof p.deletedText!=='string' || !p.deletedText.isWellFormed() || p.deletedText.length!==p.length || bytes(p.deletedText)>16384))
+            || !['open','resolved','deleted'].includes(p.status) || !/^[a-f0-9]{64}$/u.test(p.blockTextSha256)
+            || p.blockTextSha256!==h[digestKey]) fail('COMMENT_HISTORY_INVALID');
+        }
+      }
+    }
     ids.add(thread.threadId);
     if (thread.deletedMessages !== undefined && (!Array.isArray(thread.deletedMessages)
       || thread.messages.length + thread.deletedMessages.length > 129)) fail('COMMENT_STATE_INVALID');
@@ -32,7 +52,7 @@ function readState(text, projectId) {
     for (const message of [...thread.messages, ...(thread.deletedMessages || [])]) {
       if (!plain(message) || typeof message.commentId !== 'string' || messageIds.has(message.commentId)
         || typeof message.body !== 'string' || bytes(message.body) > 16384) fail('COMMENT_STATE_INVALID');
-      if (message.richBody !== undefined && state.schemaVersion !== STATE_V2) fail('COMMENT_RICH_STATE_VERSION_REQUIRED');
+      if (message.richBody !== undefined && ![STATE_V2, STATE_V3].includes(state.schemaVersion)) fail('COMMENT_RICH_STATE_VERSION_REQUIRED');
       validateCommentMessageContent(message);
       messageIds.add(message.commentId);
     }
@@ -42,16 +62,18 @@ function readState(text, projectId) {
 }
 
 function exactAnchor(anchor, sceneId, paragraphs) {
-  if (!plain(anchor) || Object.keys(anchor).some(k => !['paragraphIndex', 'startUtf16', 'selectedText'].includes(k))) fail('COMMENT_ANCHOR_INVALID');
+  if (!plain(anchor) || Object.keys(anchor).some(k => !['paragraphIndex', 'startUtf16', 'selectedText', 'kind', 'affinity'].includes(k))) fail('COMMENT_ANCHOR_INVALID');
+  const point = anchor.kind === 'point';
+  if (point ? anchor.affinity !== 'right' || anchor.selectedText !== '' : anchor.kind !== undefined || anchor.affinity !== undefined) fail('COMMENT_ANCHOR_INVALID');
   const { paragraphIndex, startUtf16, selectedText } = anchor;
   const text = paragraphs[paragraphIndex];
   if (!Number.isSafeInteger(paragraphIndex) || paragraphIndex < 0 || typeof text !== 'string'
     || !Number.isSafeInteger(startUtf16) || startUtf16 < 0 || typeof selectedText !== 'string'
-    || !selectedText || bytes(selectedText) > 16384
+    || (!point && !selectedText) || bytes(selectedText) > 16384 || startUtf16 > text.length
     || text.slice(startUtf16, startUtf16 + selectedText.length) !== selectedText) fail('COMMENT_ANCHOR_STALE');
   const edges = new Set([text.length, ...Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text), s => s.index)]);
   if (!edges.has(startUtf16) || !edges.has(startUtf16 + selectedText.length)) fail('COMMENT_ANCHOR_GRAPHEME');
-  return { sceneId, sceneParagraphIndex: paragraphIndex, paragraphIndex, startUtf16, selectedText,
+  return { ...(point ? { kind: 'point', affinity: 'right' } : {}), sceneId, sceneParagraphIndex: paragraphIndex, paragraphIndex, startUtf16, selectedText,
     selectedTextSha256: sha(selectedText), blockTextSha256: sha(text), authoritySource: 'CANONICAL_LOCAL_AUTHORING' };
 }
 
@@ -87,7 +109,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
   if (input.action !== 'create' && (!thread || thread.sceneId !== sceneId || thread.status === 'deleted')) fail('COMMENT_TARGET_INVALID');
   if (thread && input.action !== 'reanchor') {
     const anchor = thread.anchor || {};
-    const proved = exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex, startUtf16: anchor.startUtf16, selectedText: anchor.selectedText }, sceneId, paragraphs);
+    const proved = exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex, startUtf16: anchor.startUtf16, selectedText: anchor.selectedText, ...(anchor.kind === 'point' ? {kind:'point',affinity:anchor.affinity} : {}) }, sceneId, paragraphs);
     if (anchor.sceneId !== sceneId || anchor.blockTextSha256 !== proved.blockTextSha256 || anchor.selectedTextSha256 !== proved.selectedTextSha256) fail('COMMENT_ANCHOR_STALE');
   }
   if (!['create', 'reanchor'].includes(input.action) && input.anchor !== undefined) fail('COMMENT_INPUT_INVALID');
@@ -111,6 +133,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
     delete message.richBody;
     Object.assign(message, content); // Original Word provenance is retained, not re-authenticated.
   } else if (input.action === 'reanchor') {
+    delete thread.anchorEditHistory;
     thread.anchor = exactAnchor(input.anchor, sceneId, paragraphs);
   } else if (input.action === 'delete' && input.commentId !== undefined) {
     const index = thread.messages.findIndex(m => m.commentId === input.commentId);
@@ -120,6 +143,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
   } else {
     const desired = { resolve: 'resolved', reopen: 'open', delete: 'deleted' }[input.action];
     if (thread.status === desired) fail('COMMENT_STATUS_UNCHANGED');
+    delete thread.anchorEditHistory;
     thread.status = desired;
   }
   upgradeCommentState(after);

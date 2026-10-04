@@ -506,3 +506,36 @@ test('DOCX import safe create: thrown write error messageCode cannot carry an ab
   assert.equal(JSON.stringify(result.error.details).includes(leakedPath), false);
   assert.deepEqual(listFilesRecursive(path.join(romanRoot, 'Imported')), []);
 });
+
+
+test('DOCX safe-create preserves exact table continuation hardBreak and blockquote comment coordinates with existing V3 threads',async t=>{
+  const projectRoot=makeProjectRoot('docx-table-comment-breaks-'),romanRoot=path.join(projectRoot,'roman'),projectId='table-comments';
+  t.after(()=>fs.rmSync(projectRoot,{recursive:true,force:true}));
+  const core=require('../../src/core/word-comment-authoring-v1.cjs'),env=require('../../src/core/document-content-envelope-v1.cjs');
+  const sourceScene='roman/source.txt',texts=['Alpha cell item','\ncontinued cell anchor\n','Second cell item'];
+  const p=text=>({type:'paragraph',content:[{type:'text',text}]}),doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[p(texts[0]),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'continued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[p(texts[2])]}]}]}]}]}]};
+  texts.push('Quote anchor');doc.content.push({type:'blockquote',content:[p(texts[3])]});
+  const thread=(id,index,start,quote,point=false)=>({threadId:id,rootCommentId:id+'-root',sceneId:sourceScene,status:'open',anchor:core.exactAnchor({paragraphIndex:index,startUtf16:start,selectedText:quote,...(point?{kind:'point',affinity:'right'}:{})},sourceScene,texts),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Alice'}}]});
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v3',projectId,revision:0,events:[],threads:[thread('range',0,0,'Alpha'),thread('continuation',1,1,'continued'),thread('point',1,10,'',true),thread('quote',3,0,'Quote')]};
+  state.threads[1].messages.push({commentId:'reply',kind:'reply',body:'Reply body',provenance:{author:'Bob'}});
+  const raw=env.composeObservablePayload({doc}),source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectId,projectRoot:'/synthetic',nonTextReturnState:state,scenes:[{sceneId:sourceScene,scenePath:'/synthetic/'+sourceScene,observableContent:raw,text:texts.join('\n'),doc,order:0}]});
+  const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule,commentExport:source.commentExport,commentBlocks:source.blocks});
+  const bridge=await loadBridge(),plan=admitPreviewPlan(bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes)));
+  assert.equal(plan.ok,true,JSON.stringify(plan));assert.equal(plan.candidateCreatePlan.entries[0].comments.length,4);
+  const prior={...state,threads:[{...thread('prior',0,0,'Alpha'),sceneId:'roman/prior.txt',anchor:{...thread('prior',0,0,'Alpha').anchor,sceneId:'roman/prior.txt'}}]};
+  const commentPath=path.join(projectRoot,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,JSON.stringify(prior));
+  const options={projectRoot,romanRoot,projectId};
+  const result=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(result.ok,true,JSON.stringify(result));
+  const after=JSON.parse(fs.readFileSync(commentPath,'utf8'));assert.equal(after.schemaVersion,prior.schemaVersion);assert.deepEqual(after.threads[0],prior.threads[0]);
+  const imported=env.parseObservablePayload(fs.readFileSync(expectedScenePath(romanRoot,plan,projectId),'utf8'));assert.ok(imported.doc.content.some(node=>node.type==='blockquote'),'accepted blockquote structure survives actual safe-create');
+  assert.deepEqual(after.threads.slice(1).map(x=>[x.anchor.sceneParagraphIndex,x.anchor.startUtf16,x.anchor.selectedText,x.anchor.blockTextSha256]),state.threads.map(x=>[x.anchor.sceneParagraphIndex,x.anchor.startUtf16,x.anchor.selectedText,x.anchor.blockTextSha256]));
+  assert.equal(after.threads.slice(1).reduce((n,x)=>n+x.messages.length,0),5);
+  const snapshot=()=>Object.fromEntries(listFilesRecursive(projectRoot).filter(p=>!p.includes('.test-authority')).map(p=>[path.relative(projectRoot,p),fs.readFileSync(p).toString('base64')]));
+  const beforeRepeat=snapshot(),again=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(again.ok,true,JSON.stringify(again));assert.deepEqual(snapshot(),beforeRepeat);
+  for(const mutate of [c=>{c.startUtf16=0;},c=>{c.blockTextSha256='0'.repeat(64);}]){
+    const forged=clone(plan);mutate(forged.candidateCreatePlan.entries[0].comments[1]);rehashPreviewPlan(forged);admitPreviewPlan(forged);
+    assert.equal(validateDocxImportPreviewPlan(forged).ok,true);
+    const rejected=await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},options);assert.equal(rejected.ok,false);assert.equal(rejected.error.code,'DOCX_SAFE_CREATE_COMMENTS_INVALID');assert.equal(rejected.error.details.code,'DOCX_GENERIC_COMMENT_ANCHOR');assert.deepEqual(snapshot(),beforeRepeat);
+  }
+});

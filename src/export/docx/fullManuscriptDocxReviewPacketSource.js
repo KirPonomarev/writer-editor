@@ -302,9 +302,7 @@ function buildFormatIrParagraphs(scene) {
       const breakType = inlineNode.type === 'hardBreak' ? require('../../core/word-typed-breaks-v1.cjs').kind(inlineNode) : 'line';
       const text = inlineNode.type === 'hardBreak' ? '\n' : normalizeSceneText(inlineNode.text);
       if (inlineNode.type === 'text' && !text) continue;
-      const normalizedMarks = inlineNode.type === 'text'
-        ? normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal, registry)
-        : { inline: {}, preservedMarks: [] };
+      const normalizedMarks = normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal, registry);
       runs.push({
         from: cursor,
         to: cursor + text.length,
@@ -341,7 +339,7 @@ function buildFormatIrParagraphs(scene) {
         const listStack = entry.listStack.map(list => {
           if (!list.wordNumbering && (list.start < 1 || list.start > 32767)) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
           if (!listIds.has(list.listId)) listIds.set(list.listId, numberId(list));
-          return { ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
+          return { ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), ...(list.continuation === true ? {continuation:true} : {}), kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
             itemOrdinal: list.itemOrdinal + (list.wordListStart == null ? 0 : list.start - list.wordListStart), numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
         });
         appendTextBlock(entry.node, { ...context, listStack });

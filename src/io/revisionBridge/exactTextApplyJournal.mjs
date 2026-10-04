@@ -1,7 +1,10 @@
+import commentAnchorModel from '../../core/word-comment-anchor-save-v1.cjs';
+import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import crypto from 'node:crypto';
+import { brotliCompressSync, brotliDecompressSync, constants as zlibConstants } from 'node:zlib';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { prepareExactTextCommentRebase, validateExactTextCommentRebase, publishExactTextCommentRebase, computeExactTextCommentRebase } from './reviewTransportNonTextReturnRuntime.mjs';
+import { readCommentAuthoringState, prepareExactTextCommentRebase, validateExactTextCommentRebase, publishExactTextCommentRebase, computeExactTextCommentRebase } from './reviewTransportNonTextReturnRuntime.mjs';
 
 import {
   atomicWriteFile,
@@ -213,8 +216,44 @@ function validateJournalEntry(entry, expectedOperationId = '') {
   normalizePortableRelativePath(entry.sceneRelativePath, 'sceneRelativePath');
   assertHash(entry.beforeHash, 'beforeHash');
   assertHash(entry.afterHash, 'afterHash');
+  if (entry.commentTextReturn) {
+    const value=entry.commentTextReturn;
+    if(entry.commentRebase || !isPlainObject(value) || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
+      || Buffer.byteLength(JSON.stringify(value))>2*1024*1024 || value.mode!==commentAnchorModel.RETURN_MODE || typeof value.returnProofJson!=='string' || Buffer.byteLength(value.returnProofJson)>2*1024*1024) throw journalError('E_COMMENT_TEXT_RETURN_JOURNAL_INVALID','invalid mixed comment proof');
+    commentAuthoring.readState(value.beforeText,entry.projectId);commentAuthoring.readState(value.afterText,entry.projectId);
+  }
   if (entry.commentRebase) validateExactTextCommentRebase(entry.commentRebase, entry.projectId);
   return entry;
+}
+
+const COMMENT_PROOF_ENCODING = 'yalken.word.comment-text-return.brotli.v1';
+const COMMENT_PROOF_MAX_BYTES = 2 * 1024 * 1024;
+const COMMENT_PROOF_ENVELOPE_MAX_BYTES = 192 * 1024;
+function encodeCommentProof(value) {
+  const raw=Buffer.from(JSON.stringify(value),'utf8');
+  if(raw.length>COMMENT_PROOF_MAX_BYTES) throw journalError('E_COMMENT_TEXT_RETURN_JOURNAL_INVALID','mixed comment proof exceeds decoded budget');
+  if(raw.length<=64*1024) return value;
+  const compressed=brotliCompressSync(raw,{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:4}});
+  const encoded={schemaVersion:COMMENT_PROOF_ENCODING,decodedBytes:raw.length,sha256:crypto.createHash('sha256').update(raw).digest('hex'),data:compressed.toString('base64')};
+  if(Buffer.byteLength(JSON.stringify(encoded))>COMMENT_PROOF_ENVELOPE_MAX_BYTES) throw journalError('E_COMMENT_TEXT_RETURN_JOURNAL_INVALID','mixed comment proof exceeds encoded budget');
+  return encoded;
+}
+function decodeCommentProof(value) {
+  if(value?.mode===commentAnchorModel.RETURN_MODE) return value;
+  const invalid=()=>{throw journalError('E_COMMENT_TEXT_RETURN_JOURNAL_INVALID','invalid encoded mixed comment proof');};
+  if(!isPlainObject(value) || Object.keys(value).sort().join(',')!=='data,decodedBytes,schemaVersion,sha256'
+    || value.schemaVersion!==COMMENT_PROOF_ENCODING || !Number.isSafeInteger(value.decodedBytes)
+    || value.decodedBytes<1 || value.decodedBytes>COMMENT_PROOF_MAX_BYTES
+    || typeof value.data!=='string' || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u.test(value.data)
+    || !HASH_PATTERN.test(value.sha256) || Buffer.byteLength(JSON.stringify(value))>COMMENT_PROOF_ENVELOPE_MAX_BYTES) invalid();
+  const packed=Buffer.from(value.data,'base64');
+  if(packed.toString('base64')!==value.data) invalid();
+  let raw;try {const decoded=brotliDecompressSync(packed,{maxOutputLength:COMMENT_PROOF_MAX_BYTES,info:true});
+    if(decoded.engine.bytesWritten!==packed.length) invalid();raw=decoded.buffer;} catch {invalid();}
+  if(raw.length!==value.decodedBytes || crypto.createHash('sha256').update(raw).digest('hex')!==value.sha256) invalid();
+  let decoded;try {decoded=JSON.parse(raw.toString('utf8'));} catch {invalid();}
+  if(!Buffer.from(raw.toString('utf8'),'utf8').equals(raw)) invalid();
+  return decoded;
 }
 
 async function readJournalEntryFromContext(context, operationIdRaw) {
@@ -225,13 +264,15 @@ async function readJournalEntryFromContext(context, operationIdRaw) {
     throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_FILE_UNSAFE', 'journal file is unsafe');
   }
   const parsed = JSON.parse(await fs.readFile(journalPath, 'utf8'));
+  if(parsed?.commentTextReturn) parsed.commentTextReturn=decodeCommentProof(parsed.commentTextReturn);
   return validateJournalEntry(parsed, operationId);
 }
 
 async function writeJournalEntry(context, entry) {
   const validated = validateJournalEntry(entry, entry.operationId);
   const journalPath = journalPathFor(context, validated.operationId);
-  const bytes = `${JSON.stringify(validated, null, 2)}\n`;
+  const stored=validated.commentTextReturn ? {...validated,commentTextReturn:encodeCommentProof(validated.commentTextReturn)} : validated;
+  const bytes = `${JSON.stringify(stored, null, 2)}\n`;
   if (Buffer.byteLength(bytes) > JOURNAL_MAX_BYTES) throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_FILE_UNSAFE', 'journal exceeds budget');
   const result = await atomicWriteFile(journalPath, bytes, {
     safetyMode: 'strict',
@@ -405,7 +446,15 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
     || (typeof input.afterContent === 'string' && sha256Text(input.afterContent) !== afterHash)) {
     throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_CONTENT_HASH', 'comment transition must use exact scene bytes');
   }
-  const commentRebase = typeof input.beforeContent === 'string' && typeof input.afterContent === 'string'
+  let commentTextReturn=null;
+  if(input.commentTextReturnPlan) {
+    const offered=input.commentTextReturnPlan;
+    commentTextReturn=commentAnchorModel.planCommentTextReturn({beforeText:offered.beforeText,projectId:input.projectId,sceneId:input.sceneId,
+      beforeContent:input.beforeContent,afterContent:input.afterContent,returnProofJson:offered.returnProofJson});
+    if(JSON.stringify(commentTextReturn)!==JSON.stringify(offered)
+      || (await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:input.projectId})).text!==offered.beforeText) throw journalError('E_COMMENT_TEXT_RETURN_SOURCE_STALE','mixed comment source changed');
+  }
+  const commentRebase = !commentTextReturn && typeof input.beforeContent === 'string' && typeof input.afterContent === 'string'
     ? await prepareExactTextCommentRebase(input) : null;
 
   const entry = {
@@ -424,6 +473,7 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
     mutationEpoch,
     expectedSlices,
     ...(commentRebase ? { commentRebase } : {}),
+    ...(commentTextReturn ? {commentTextReturn} : {}),
     preparedAt,
     updatedAt: preparedAt,
     transactionId: '',
@@ -463,6 +513,19 @@ export async function recordExactTextApplyJournalSnapshot(projectRoot, operation
   }, options);
 }
 
+async function verifyJournalCommentTextReturn(context,entry) {
+  const value=entry.commentTextReturn;
+  if(!value)return;
+  const scenePath=await resolveStoredProjectFile(context,entry.sceneRelativePath,'sceneRelativePath');
+  const snapshotPath=await resolveStoredProjectFile(context,entry.recovery.snapshotRelativePath,'snapshotRelativePath');
+  const beforeContent=await fs.readFile(snapshotPath,'utf8'),afterContent=await fs.readFile(scenePath,'utf8');
+  if(sha256Text(beforeContent)!==entry.beforeHash || sha256Text(afterContent)!==entry.afterHash) throw journalError('E_COMMENT_TEXT_RETURN_SCENE_STALE','mixed scene hashes changed');
+  const expected=commentAnchorModel.planCommentTextReturn({beforeText:value.beforeText,projectId:entry.projectId,sceneId:entry.sceneId,
+    beforeContent,afterContent,returnProofJson:value.returnProofJson});
+  if(expected.afterText!==value.afterText || (await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:entry.projectId})).text!==expected.afterText)
+    throw journalError('E_COMMENT_TEXT_RETURN_COMMIT_INCOMPLETE','project transaction must publish the complete scene/comment pair');
+}
+
 async function publishJournalCommentRebase(context, entry) {
   if (!entry.commentRebase) return;
   const scenePath = await resolveStoredProjectFile(context, entry.sceneRelativePath, 'sceneRelativePath');
@@ -490,6 +553,7 @@ export async function recordExactTextApplyJournalApplied(projectRoot, operationI
       throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_AFTER_HASH_MISMATCH', 'target does not match afterHash');
     }
     if (entry.commentRebase) await publishJournalCommentRebase(context, entry);
+    if (entry.commentTextReturn) await verifyJournalCommentTextReturn(context,entry);
     const next = appendStatus(entry, 'applied', options.now);
     next.transactionId = normalizeString(details.transactionId) || entry.transactionId;
     return next;
@@ -608,6 +672,14 @@ export async function reconcileExactTextApplyJournal(projectRoot, operationId, o
       || (normalizeString(pendingIntent.nextTextHash) && pendingIntent.nextTextHash !== entry.afterHash)
     )
   );
+  if(observedHash===entry.beforeHash && entry.commentTextReturn) {
+    const current=await readCommentAuthoringState({projectRoot:context.projectRoot,projectId:entry.projectId});
+    if(current.text!==entry.commentTextReturn.beforeText) throw journalError('E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT','scene/comment rollback pair is incomplete');
+  }
+  if(observedHash===entry.afterHash && entry.commentTextReturn) {
+    if(intentConflicts || !recoveryVerified) throw journalError("E_COMMENT_TEXT_RETURN_RECOVERY_CONFLICT","verified project transaction required");
+    await verifyJournalCommentTextReturn(context,entry);
+  }
   if (observedHash === entry.afterHash && entry.commentRebase) {
     if (intentConflicts || !recoveryVerified) throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_RECOVERY_CONFLICT', 'verified scene recovery and nonconflicting intent required');
     await publishJournalCommentRebase(context, entry);

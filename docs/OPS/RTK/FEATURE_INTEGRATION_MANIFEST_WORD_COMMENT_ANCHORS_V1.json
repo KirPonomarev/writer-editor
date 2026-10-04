@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_COMMENT_ANCHORS_MAC_20261004",
+  "objective": "Preserve point and range comment identities through native authoring, edits inside a paragraph, atomic save/history/reopen and changed Word exchange",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "f5dd73ea86deeae90f563f517ac11ab5cfbaf4a5",
+  "scopeIn": [
+    "src/core/word-comment-authoring-v1.cjs",
+    "src/core/word-comment-anchor-save-v1.cjs",
+    "src/core/word-comment-body-v1.cjs",
+    "src/core/word-comment-return-delta-v1.cjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/io/documentTables.js",
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "src/io/revisionBridge/index.mjs",
+    "src/export/docx/docxReviewPacketComments.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/main.js",
+    "src/preload.js",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/documentCommentEditIntents.mjs",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/core/word-comment-edit-intents-v1.cjs",
+    "src/renderer/tiptap/documentTables.mjs",
+    "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+    "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
+    "test/contracts/rtk-word-generic-comments.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+    "test/contracts/rtk-word-comment-points.contract.test.js",
+    "test/contracts/rtk-word-table-editor.contract.test.js",
+    "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+    "src/io/revisionBridge/exactTextApplyJournal.mjs",
+    "src/utils/docxImportSafeCreate.js",
+    "test/unit/docx-import-safe-create.test.js",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "test/contracts/rtk-word-nested-tables.contract.test.js",
+    "test/contracts/rtk-word-table-cell-lists.contract.test.js",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "test/contracts/rtk-word-local-image.contract.test.js",
+    "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
+    "test/contracts/rtk-word-review-default-typography.contract.test.js",
+    "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+    "test/unit/project-tree-pathless-contract.test.js",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+    "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs",
+    "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows",
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "productAuthority": "Owner-authorized full Mac Word plan P1-02 P1-03 P1-04. Core owns versioned point/range anchor validation, splice replay and mutation plans. Existing project transaction owns atomic scene+comment persistence. Linked table repair reuses existing signed export-map topology and exact owner/property validation; only proven unchanged table text may reach the existing combined text+comment transaction.",
+  "commandAuthority": "Existing cmd.project.review.editComment and Main Save/authenticated Apply; existing Kernel dispatch with fresh project scene session generation and source CAS; renderer submits bounded intent, never after-anchor authority. Existing cmd.project.docx.importSafeCreate remains the sole explicit ordinary-import path with admitted preview, project lease and source binding; the linked repair may correct canonical paragraph projection only after reproducing the actual rejection.",
+  "designAuthority": "Reuse existing comment command and dialog/sidebar; permit collapsed selection with explicit point context. No new surface/layout/tokens. Lazyweb c5e4ce16-ebcb-475c-8448-def4d6b4a2e4 reference only; native Word bytes determine semantics.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated generic DOCX -> existing safe-create scene+comment transaction",
+    "Existing comment command -> Core typed anchor authoring -> existing comment persistence",
+    "Revision-bound editor splice intents -> Core replay and exact final-document comparison -> existing Main Save scene+comment transaction",
+    "Authenticated Word text and marker delta -> combined private Core candidate -> explicit Apply and existing atomic journal"
+  ],
+  "readPaths": [
+    "Canonical comment state, source document and existing identity-bound editor snapshots",
+    "Validated OOXML comment markers and authenticated export identity"
+  ],
+  "productPorts": [
+    "Existing scene Save, comment authoring, DOCX import/export, review Apply and project transaction ports"
+  ],
+  "designOsPorts": [
+    "Existing comment command/dialog/sidebar and keyboard routes"
+  ],
+  "readProjections": [
+    "Immutable point/range anchor context and existing review operation cards"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact project scene lifecycle session and generation; raw source SHA; comment-state SHA/revision",
+    "Closed bounded splice grammar, exact removed text, sequential replay and exact final text/topology; no quote-search identity",
+    "Authenticated Word root/reply identity, source proof and scene ownership; stale publication and CAS refusal"
+  ],
+  "capabilityRevalidation": "Kernel dispatch plus Main lease/session/source validation immediately before persistence; UI availability is not authority.",
+  "fallbacks": [
+    "Preserve unsaved author text on invalid or stale intent; fail explicitly without partial scene/comment writes",
+    "Legacy nonempty ranges unchanged; new typed point state uses versioned schema and old-reader fail-closed",
+    "Cross-paragraph/cross-scene structural anchors remain separate full-plan work, never silently flattened"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Point offset bounds/grapheme and duplicate-text anchors",
+    "Interior insertion/replacement/deletion; explicit whole-anchor tombstone and Undo recovery",
+    "Zero-width start/end/ref ordering and coexistence with ranges",
+    "List continuation/table leaf ownership and stale scene switch",
+    "Forged after-state, incomplete splice replay, mismatched generations, failed-write recovery",
+    "Native early SOURCE/PACKAGED vertical route before broad tests; five changed Word exchanges per build for admitted route",
+    "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes.",
+    "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof.",
+    "Signed block literal leaf text/hash may not be normalized away. Preserve exact owner plus global visible-coordinate proof; reject forged block, mismatched leaf bounds and ambiguous normalized placement. Actual Main table LF regression must pass without changing source protection.",
+    "Exact Mac counterexample: stage timeout or invalid heartbeat is correctly rejected; later ps observation changes comm to <defunct> with unchanged PID/PGID/start. Preserve primary failure plus cleanup identity error, ok=false and quarantine=true. Zero-exit plus ambiguous cleanup still fails. PID/PGID reuse refusal and all prior process guards unchanged. Focused red/green and complete RTK required; source/package byte identity binds existing native observations to the tooling-only successor."
+  ],
+  "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
+  "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
+  "currentReality": [
+    "PR2075 delivered atf5dd73ea; current comment packet remains unmerged.",
+    "SOURCE06 at0f9d2433 reached native Preview but explicit Apply refused canonical preparation; both scenes and8threads10messages stayed unchanged. Exit0 and36-file snapshot independently verified.",
+    "Full actual Main native-shaped Apply isolated an unchanged empty paragraph content-key mismatch. Independent runtime also proved a hardBreak font no-op and an omitted empty-paragraph language preparation path; correction and final native acceptance remain required.",
+    "Affected table suites121pass and prior Main focused5pass are historical to0f9; final corrected Main, mandatory baseline/RTK, both native builds and delivery are still pending.",
+    "Producer, formatting preparation and both exporters repaired. Focused Main/runtime6 and parser/export10 pass; strict whole-candidate equality, typed-break attributes and foreign-scene protection retained. Final native SOURCE07/PACKAGED and broad gates are pending.",
+    "SOURCE07 at7b0e1b7c: actual native retained table return Apply1/0/0; independent8threads10messages exact anchor, spacing, font and foreign-state proof. Native table point creation and inside-range save persisted9threads11messages through owner reboot. Final five changed cycles per build remain pending.",
+    "PR2076 is draft at7b0e1b7c. First full CI RTK3186pass/9fail, no skips; baseline has2 failures. Restore shifted-cell inherited-language compatibility and update isolated harness dependencies/obsolete scope expectation before final acceptance.",
+    "CI remediation focused results: harness71/71, parser/style79/79, governance2/2; zero skips. Parser change is comparison-local bounded legacy inherited language; full rich Original check and returned IR preserved. Final full mandatory runs are pending.",
+    "PACKAGED08 at d5a93d45 completed two changed native Word exchanges with independent nine-thread/eleven-message and foreign-state proof. Third insertion immediately after leading hardBreak refused without writes; exact native input reproduces label-linebreak-unsupported. Bounded analyzer/writer repair passes twelve focused Main cases; final native and mandatory gates remain pending. Earlier d5a CI passed19of19; interrupted local broad run is not PASS.",
+    "aa0811dc native acceptance complete and CI19/19. Local baseline2160pass59existing skips. RTK clean-scope repaired by preserving/removing owned scratch; two clean full runs3196pass2fail from original failure overwritten by process cleanup identity ambiguity. Actual owned parallel probe reproduced node-><defunct>, identical pid/pgid/start and no survivors. No broad replay before this diagnostic repair.",
+    "Native final aa0811dc: SOURCE09 and PACKAGED09 each completed five changed Word exchanges, point/range creation, deletion and saved Undo/Redo, ordinary export in Word, exact reopen and clean shutdown. All observed product runtime source/package bytes remain frozen. The required RTK tooling-only repair preserves original failure diagnostics plus identity ambiguity; it does not relax signaling, quarantine, timeout or acceptance conditions. Final successor gates remain pending."
+  ],
+  "targetOnly": [
+    "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert integrated PR; retain immutable prior schema and atomic journal/recovery; never manually mutate native project truth.",
+  "featureIntegrationManifestVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core typed comment anchors and replayed authoring intents; existing Main and atomic project transaction",
+  "interfacePlane": "Existing comment command, dialog and sidebar; immutable anchor context and bounded editor intent capture",
+  "surfaceManifest": {
+    "schemaVersion": "SURFACE_MANIFEST_V1",
+    "surfaceId": "EXISTING_WORD_COMMENT_AUTHORING",
+    "host": "existing comment authoring dialog and comment sidebar",
+    "slots": [
+      "existing-comment-command",
+      "existing-comment-dialog"
+    ],
+    "commands": [
+      "cmd.project.review.editComment"
+    ],
+    "projection": "Validated range or point context; never UI-owned canonical anchor",
+    "fallback": "Preserve draft and report stale or unsupported context",
+    "accessibility": [
+      "existing keyboard flow",
+      "labelled context",
+      "focus return"
+    ]
+  }
+}

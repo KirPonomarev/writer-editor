@@ -174,6 +174,7 @@ test('Actual committed-context reader admits bounded authoring and pending leave
     isAllowedFilePath: value => value === file, getDocumentContextFromPath: () => ({ kind: 'scene' }),
     readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot: root, projectId: 'rich-context' }),
     loadDocumentContentEnvelopeModule: async () => envelope, pendingTextRevisions: model,
+    userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
     commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs,
     computeHash: value => crypto.createHash('sha256').update(value).digest('hex'),
     loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ state: { threads: [] } }) }),
