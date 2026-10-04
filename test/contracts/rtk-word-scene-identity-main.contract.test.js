@@ -1217,7 +1217,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1283,7 +1283,7 @@ async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,sch
   const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
   assert.ok(zip['word/document.xml'].includes(target));
   const editedText=nativeSuffix?'SourceEdit02':mixedLanguage?target.slice(1):target;
-  zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
+  if (!omitTextEdit) zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
   if(mutateReturn)mutateReturn(zip);
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
   if(localCase){
@@ -1855,4 +1855,21 @@ for(const scope of ['scene','full'])test(`actual Main authenticated paragraph la
  if(scope==='scene')assert.equal(read(f.beta),beta);assert.equal(observed,read(f.alpha));
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'layout-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
  const reexport=await f.probe[scope==='scene'?'sceneSource':'fullSource'](),rebuilt=await f.probe.reviewBuild(reexport);assert.equal(rebuilt.publicationGate.publishAllowed,true);assert.match(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:rebuilt.documentBuffer}).parts['word/settings.xml'],/defaultTabStop w:val="851"/);
+});
+
+for(const textEdit of [false,true])test(`actual Main inactive grid addition ${textEdit?'with text':'metadata only'} requires explicit Apply and persists exact values`,async t=>{
+ const grid={type:'default',linePitch:-12,charSpace:0};
+ const {f,activated,beforeActivation,bridge}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,omitTextEdit:!textEdit,
+  mutateReturn:parts=>{parts['word/document.xml']=parts['word/document.xml'].replaceAll('</w:sectPr>','<w:docGrid w:type="default" w:linePitch="-12" w:charSpace="0"/></w:sectPr>');}});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation,'intake must not write');
+ const before=envelope.parseObservablePayload(read(f.alpha)),sibling=read(f.beta);
+ let applied;
+ if(textEdit){assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));applied=await f.probe.fullApply({requestId:'grid-text-apply'});assert.equal(applied.applied,true,JSON.stringify(applied));}
+ else {assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+  const ops=f.probe.formattingInput().operations;assert.equal(ops.length,1);assert.equal(ops[0].kind,'section-doc-grid');
+  const settle=f.probe.observeDeferredEditorSync();applied=await f.probe.formatApply({requestId:'grid-metadata-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);}
+ const after=envelope.parseObservablePayload(read(f.alpha));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(after.doc).final.docGrid,grid);
+ assert.equal(read(f.beta),sibling);if(textEdit)assert.match(after.text,/CLEAN_EDIT/);else assert.equal(after.text,before.text);
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/<w:docGrid w:type="default" w:linePitch="-12" w:charSpace="0"\/>/);
 });

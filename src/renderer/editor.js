@@ -1501,7 +1501,8 @@ function reviewSurfaceRenderNumberingChanges(operations) {
     const restart = level.restartAfterLevel === null ? 'не перезапускать' : `после уровня ${level.restartAfterLevel + 1}`;
     return `«${level.text}», формат ${level.format}, начало ${level.start}, ${restart}`;
   };
-  return reviewSurfaceArray(operations).filter(operation => operation.numbering).map(operation => {
+  return reviewSurfaceArray(operations).filter(operation => operation.numbering || operation.kind === 'section-doc-grid').map(operation => {
+    if (operation.kind === 'section-doc-grid') return `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Параметры раздела Word</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div><p>Сохранить добавленные Word параметры отключённой сетки документа.</p></article>`;
     const { expectedLevels, levels } = operation.numbering;
     const changes = Array.from({length: Math.max(expectedLevels.length, levels.length)}, (_, index) => {
       const before = expectedLevels[index], after = levels[index];

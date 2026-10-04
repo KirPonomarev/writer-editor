@@ -1,3 +1,4 @@
+import wordSections from '../../core/word-sections-v1.cjs';
 import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
@@ -177,6 +178,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     const sectionVerified = Boolean(protectedSections && sectionProof?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
       && sectionProof.protectedDigest === protectedSections.protectedDigest
       && same(sectionProof.protectedSections, protectedSections.protectedSections));
+    const additions = sectionProof?.inactiveGridAdditions;
+    if (additions !== undefined && !sectionVerified) return reject('inactive-grid-proof');
+    const inactiveGridPlan = additions !== undefined ? wordSections.planInactiveGridAdditions(baselineDoc,
+      {sceneId,exportMap,protectedSections,additions}) : null;
     if(baselineRegistry!==undefined&&!same(registry,baselineRegistry))return reject('baseline-registry');
     const scene=exportMap?.scenes?.find(item=>item.sceneId===sceneId);
     const allBlocks=exportMap?.scenes?.flatMap(item=>item.blocks||[]), observed=reviewIr.formattingParagraphs;
@@ -410,14 +415,14 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         return record.id!==target.id||record.name!==target.name||record.state!==target.state
           ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
       }))return reject('ordinary-text-bookmark-endpoint-mismatch');
-      return {ok:true,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
+      return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
         doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
     }
-    if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
+    if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};
     core.validateRegistry(resultRegistry,doc);core.readRegistry(doc);
     core.planReturn({beforeDoc:baselineDoc,candidateDoc:doc});
-    return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
+    return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
   }catch(error){return reject(error.code||error.message);}
 }
 

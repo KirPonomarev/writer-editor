@@ -140,3 +140,52 @@ test('authenticated section proof binds existing disabled grid values and refuse
  }
  assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned,signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
 });
+test('authenticated inactive grid addition belongs only to the section end owner and preserves multi-scene topology',()=>{
+ const first={type:'doc',content:[p('First')]},last={type:'doc',content:[p('Last')]};
+ const exportMap={scenes:[{sceneId:'a',blocks:[{documentParagraphIndex:0}]},{sceneId:'b',blocks:[{documentParagraphIndex:1}]}]};
+ const protectedSections=[{ordinal:0,startParagraphIndex:0,endParagraphIndex:1,properties:props('nextPage'),carriers:{sectionProperties:true}}];
+ const additions=[{ordinal:0,docGrid:{type:'default',linePitch:360,charSpace:-4096}}];
+ assert.equal(sections.planInactiveGridAdditions(first,{sceneId:'a',exportMap,protectedSections,additions}),null);
+ const plan=sections.planInactiveGridAdditions(last,{sceneId:'b',exportMap,protectedSections,additions});
+ assert.deepEqual(plan,{expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:additions[0].docGrid}]});
+ const changed=sections.applyInactiveGridAdditions(last,plan);assert.equal(sections.read(first),null);
+ assert.deepEqual(sections.read(changed),{schemaVersion:1,boundaries:[],final:{type:'nextPage',docGrid:additions[0].docGrid}});
+ assert.deepEqual(last,{type:'doc',content:[p('Last')]});
+ const edited=structuredClone(changed);edited.content[0].content[0].text='Changed last';
+ sections.validateSaveWithGridAddition(last,edited,plan);
+ assert.throws(()=>sections.validateSave(last,edited),/SAVE_AUTHORITY/);
+ const forged=structuredClone(edited);forged.attrs.wordSections.final.type='continuous';assert.throws(()=>sections.validateSaveWithGridAddition(last,forged,plan),/SAVE_AUTHORITY/);
+ assert.throws(()=>sections.applyInactiveGridAdditions(changed,plan),/WORD_SECTIONS_INVALID/);
+ for(const mutate of [v=>v.additions[0].endParagraphIndex=1,v=>v.additions[0].docGrid.type='lines',v=>v.path='/forged',v=>v.additions.push(v.additions[0])]){const bad=structuredClone(plan);mutate(bad);assert.throws(()=>sections.applyInactiveGridAdditions(last,bad));}
+ const badSource=structuredClone(protectedSections);badSource[0].properties.docGrid={type:'default'};assert.throws(()=>sections.planInactiveGridAdditions(last,{sceneId:'b',exportMap,protectedSections:badSource,additions}));
+ assert.throws(()=>sections.planInactiveGridAdditions(last,{sceneId:'foreign',exportMap,protectedSections,additions}));
+ let calls=0;const bad={expectedRegistry:null,additions:[]};Object.defineProperty(bad,'additions',{enumerable:true,get(){calls++;return plan.additions;}});assert.throws(()=>sections.validateInactiveGridPlan(bad));assert.equal(calls,0);
+});
+test('inactive grid additions preserve existing section geometry and reject a non-boundary endpoint',()=>{
+ const doc=fixture(),count=require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(doc).length;
+ const before=sections.read(doc),end=before.boundaries[0].endParagraphIndex;
+ const plan={expectedRegistry:before,additions:[{endParagraphIndex:end,docGrid:{type:'default',linePitch:0}},{endParagraphIndex:count-1,docGrid:{type:'default',charSpace:0}}]};
+ const changed=sections.applyInactiveGridAdditions(doc,plan),actual=sections.read(changed);
+ delete actual.boundaries[0].properties.docGrid;delete actual.final.docGrid;assert.deepEqual(actual,before);
+ const stale=structuredClone(doc);stale.attrs.wordSections.final.type='oddPage';assert.throws(()=>sections.applyInactiveGridAdditions(stale,plan));
+ const invalid={expectedRegistry:before,additions:[{endParagraphIndex:count,docGrid:{type:'default'}}]};
+ assert.throws(()=>sections.applyInactiveGridAdditions(doc,invalid));
+});
+
+test('end-owner inactive grid plan reexports multiple scenes without adding section breaks or changing geometry',()=>{
+ const scenes=['roman/a.txt','roman/b.txt','other/c.txt'].map(sceneId=>({sceneId,text:sceneId,doc:{type:'doc',content:[p(sceneId)]}}));
+ const blocks=scenes.flatMap((scene,i)=>source.buildFormatIrParagraphs(scene).map(block=>({...block,sceneId:scene.sceneId,documentParagraphIndex:i})));
+ const before=source.buildFullManuscriptDocumentSections(scenes,blocks);
+ assert.deepEqual(before.protectedSections.map(section=>section.endParagraphIndex),[1,2]);
+ const exportMap={scenes:scenes.map((scene,i)=>({sceneId:scene.sceneId,blocks:[blocks[i]]}))};
+ const additions=before.protectedSections.map(section=>({ordinal:section.ordinal,docGrid:{type:'default',linePitch:360+section.ordinal}}));
+ const updated=scenes.map(scene=>{const plan=sections.planInactiveGridAdditions(scene.doc,{sceneId:scene.sceneId,exportMap,protectedSections:before,additions});return {...scene,doc:plan?sections.applyInactiveGridAdditions(scene.doc,plan):scene.doc};});
+ assert.equal(sections.read(updated[0].doc),null);
+ const after=source.buildFullManuscriptDocumentSections(updated,blocks);
+ assert.deepEqual(after.protectedSections.map(section=>section.endParagraphIndex),[1,2]);
+ for(let i=0;i<after.protectedSections.length;i++){
+  assert.deepEqual(after.protectedSections[i].properties.docGrid,additions[i].docGrid);
+  delete after.protectedSections[i].properties.docGrid;delete after.protectedSections[i].carriers.docGrid;
+ }
+ assert.deepEqual(after.protectedSections,before.protectedSections);
+});

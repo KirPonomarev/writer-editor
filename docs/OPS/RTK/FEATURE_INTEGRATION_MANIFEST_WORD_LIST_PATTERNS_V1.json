@@ -46,7 +46,10 @@
     "src/core/entitlement-law-v1.cjs",
     "src/renderer/tiptap/documentTables.mjs",
     "src/core/word-sections-v1.cjs",
-    "test/contracts/rtk-word-sections.contract.test.js"
+    "test/contracts/rtk-word-sections.contract.test.js",
+    "test/unit/toolbar-configurator-foundation.integration.test.js",
+    "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -66,7 +69,8 @@
   "writePaths": [
     "Validated DOCX numbering -> existing generic safe-create -> canonical document envelope",
     "Governed list settings intent -> Core plan -> one captured editor transaction -> existing Main Save",
-    "Authenticated changed numbering proof -> Core group plan -> existing formatting transaction/recovery"
+    "Authenticated changed numbering proof -> Core group plan -> existing formatting transaction/recovery",
+    "Authenticated inactive grid addition -> Core endpoint-owned plan -> existing explicit formatting or clean-text Apply -> guarded atomic scene publication"
   ],
   "readPaths": [
     "Bounded owned numbering XML and scene-local canonical list definition",
@@ -91,7 +95,8 @@
     "Project/scene/editor identity, exact document/selection and generation at dialog completion",
     "Canonical instance identity and identical complete level definitions per group",
     "Return artifact, baseline scene revision/raw SHA, group definition before and publication CAS",
-    "Preserve distinct abstract lineage and instance identity; explicit per-level start overrides apply on first use. No identity deduplication by equal formatting."
+    "Preserve distinct abstract lineage and instance identity; explicit per-level start overrides apply on first use. No identity deduplication by equal formatting.",
+    "Inactive grid additions are separately parsed and privately bound to unchanged protected section baseline; only the scene owning an existing section endpoint receives a strict Core plan. Existing source CAS, effect digest, explicit Apply and atomic publication remain mandatory."
   ],
   "capabilityRevalidation": "Existing Kernel dispatch and Main source checks; list settings checks captured writable manuscript editor and exact current doc before command transaction; auxiliary unsupported contexts refuse.",
   "fallbacks": [

@@ -774,15 +774,27 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   };
   const normalizedSections = cloneJson(returnedSections);
   const providerNormalizedFields = [];
-  if (input.allowOfficeDefaultOmissions === true && returnedSections.length === expectedSections.length) {
+  const inactiveGridAdditions = [];
+  if ((input.allowOfficeDefaultOmissions === true || input.allowInactiveGridAdditions === true) && returnedSections.length === expectedSections.length) {
     for (const [index, section] of normalizedSections.entries()) {
       const expectedSection = expectedSections[index];
-      if (section?.properties?.margins?.gutterTwips === null
+      if (!Object.hasOwn(expectedSection?.properties || {}, 'docGrid')
+        && !Object.hasOwn(expectedSection?.carriers || {}, 'docGrid')
+        && Object.hasOwn(section?.properties || {}, 'docGrid')
+        && section?.carriers?.docGrid === true) {
+        try {
+          const docGrid = require('../../core/word-sections-v1.cjs').validateDocGrid(section.properties.docGrid);
+          inactiveGridAdditions.push({ ordinal: index, docGrid });
+          delete section.properties.docGrid;
+          delete section.carriers.docGrid;
+        } catch { mismatches.push('docGrid'); }
+      }
+      if (input.allowOfficeDefaultOmissions === true && section?.properties?.margins?.gutterTwips === null
         && expectedSection?.properties?.margins?.gutterTwips === 0) {
         section.properties.margins.gutterTwips = 0;
         providerNormalizedFields.push(`section-${index}:default-gutter-zero`);
       }
-      if (section?.carriers?.columns === false
+      if (input.allowOfficeDefaultOmissions === true && section?.carriers?.columns === false
         && section?.properties?.columns?.count === 1
         && section?.properties?.columns?.spaceTwips === null
         && expectedSection?.properties?.columns?.count === 1
@@ -818,7 +830,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   if (returned.applicable !== true) mismatches.push('applicable');
   if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
   if (JSON.stringify(normalizedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
-  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.paragraphBindings !== undefined
+  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.allowInactiveGridAdditions === true || input.paragraphBindings !== undefined
     ? sha256Text(canonicalWordBookmarkIdentityJson(returnedProjection)) : expectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
   if (mismatches.length > 0) {
@@ -839,6 +851,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
       authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
       protectedDigest: expectedDigest,
       protectedSections: cloneJson(normalizedSections),
+      ...(inactiveGridAdditions.length ? { inactiveGridAdditions: cloneJson(inactiveGridAdditions) } : {}),
       sourceBindings: Array.isArray(expected.sourceBindings) ? cloneJson(expected.sourceBindings) : [],
       policies: isPlainObjectValue(expected.policies) ? cloneJson(expected.policies) : {},
       lossLedger: {

@@ -219,6 +219,11 @@ test('actual formatting preview preserves detached numbering projection and rend
   assert.match(markup,/scene&lt;1&gt;/);assert.doesNotMatch(markup,/<img|MUTATED/);
   assert.equal(ctx.reviewSurfaceRenderNumberingChanges([{sceneId:'x',numbering:{expectedLevels,levels:expectedLevels}}]),'');
   assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{expectedLevels,levels:[{evil:true}]}}),null);
+  const gridPreview=ctx.reviewSurfaceNormalizeFormattingReturn({status:'ready',operations:[{operationId:'grid',sceneId:'scene<grid>',kind:'section-doc-grid'}]},{});
+  assert.equal(gridPreview.ready,true);
+  const gridMarkup=ctx.reviewSurfaceRenderNumberingChanges(gridPreview.operations);
+  assert.match(gridMarkup,/Параметры раздела Word/);assert.match(gridMarkup,/отключённой сетки/);
+  assert.match(gridMarkup,/scene&lt;grid&gt;/);
   assert.match(source,/reviewSurfaceRenderNumberingChanges\(formattingReturn\.operations\)/);
 });
 

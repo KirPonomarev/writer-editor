@@ -70,8 +70,14 @@ test('toolbar configurator foundation: restore-last-stable and project switch re
   assert.equal(restoreSnippet.includes('readConfiguratorBucketState('), false)
 
   const projectSwitchStart = source.indexOf('if (hasProjectId) {')
-  const projectSwitchEnd = source.indexOf('const parsed = treeContentParsed || parseDocumentContent(content);', projectSwitchStart)
+  const projectSwitchEnd = source.indexOf('if (hasBookProfile) {', projectSwitchStart)
   assert.ok(projectSwitchStart > -1 && projectSwitchEnd > projectSwitchStart, 'project switch bounds must exist')
+  // Scene publication is failure-atomic: parse and checked publication precede identity adoption.
+  const parseStart = source.indexOf('const parsed = treeContentParsed || parseDocumentContent(content);')
+  const publicationStart = source.indexOf('!setTiptapDocumentSnapshot({', parseStart)
+  const identityStart = source.indexOf('currentDocumentId = documentId || null;', publicationStart)
+  assert.ok(parseStart > -1 && publicationStart > parseStart && identityStart > publicationStart
+    && projectSwitchStart > identityStart, 'checked publication must precede document/project identity adoption')
   const projectSwitchSnippet = source.slice(projectSwitchStart, projectSwitchEnd)
   assert.ok(projectSwitchSnippet.includes('currentProjectId = nextProjectId;'))
   assert.ok(projectSwitchSnippet.includes('restoreSpatialLayoutState(currentProjectId);'))
