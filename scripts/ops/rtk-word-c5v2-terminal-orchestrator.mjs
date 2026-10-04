@@ -1731,7 +1731,10 @@ export async function runOwnedStageProcess({
     result.quarantined = true;
   } else if (identityMismatches.length > 0) {
     result.ok = false;
-    result.code = `ORCH_PROCESS_IDENTITY_AMBIGUOUS:${identityMismatches.map((entry) => entry.code).join(',')}`;
+    const identityCode = `ORCH_PROCESS_IDENTITY_AMBIGUOUS:${identityMismatches.map((entry) => entry.code).join(',')}`;
+    result.code = result.code && result.code !== 'ORCH_STAGE_CHILD_EXIT_ZERO'
+      ? `${result.code}|${identityCode}`
+      : identityCode;
     result.quarantined = true;
     result.identityMismatches = identityMismatches;
   } else if (survivors.length > 0) {

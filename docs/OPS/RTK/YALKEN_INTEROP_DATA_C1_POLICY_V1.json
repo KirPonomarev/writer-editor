@@ -560,7 +560,8 @@
     "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
     "test/contracts/rtk-word-comment-points.contract.test.js",
     "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
+    "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs"
   ],
   "protectedFiles": [
     {
@@ -1549,7 +1550,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
-        "sha256": "3aaaaef6d2456ace75db440bbd01aca301c5a0fdb7852ad8634b398cd3b489e2"
+        "sha256": "5e804b0696624c8cacdbd557aa953f203385d232a3fdd9467c930ccf6a97577d"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
@@ -2417,11 +2418,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "801dd1eb15c4d77f2fa60949753b13ed665e6e92f9b640cb79b00065169effaf"
+        "sha256": "f8f2c6a40d030cf1447551cf1972b6def2a4b6b99ba7003e5f61b8bf5b25ed11"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "0cafbe132caec5183375d8ffec3351f645e6d3a99cd1535870da38de72265da8"
+        "sha256": "a17c39236e2edb92627bac36fd67e3750f5701fd1d412767cc73e051afe734f8"
       },
       {
         "path": "src/preload.js",

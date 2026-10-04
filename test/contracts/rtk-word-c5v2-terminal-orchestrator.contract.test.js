@@ -1812,6 +1812,81 @@ leaseTest('ORCH_TEST_14O: stage wall and progress watchdogs use injected monoton
   }
 });
 
+leaseTest('ORCH_TEST_14P: cleanup identity ambiguity retains the original watchdog failure and quarantine', async () => {
+  const orch = await loadOrchestrator();
+  const dir = tmpDir('c5v2-orch-primary-failure-');
+  const stop = path.join(dir, 'child-stop');
+  const child = writeSleepChild(dir, 'self-exiting.cjs', `
+const fs=require('node:fs');process.stdout.write('boot\\n');
+setInterval(()=>{if(fs.existsSync(${JSON.stringify(stop)}))process.exit(0);},20);
+setTimeout(()=>process.exit(0),5000);
+`);
+  let bound = false;
+  const result = await orch.runOwnedStageProcess({
+    stage: 'POSITIVE', command: process.execPath, args: [child], cwd: dir, logDir: path.join(dir, 'logs'),
+    heartbeatPath: path.join(dir, 'hb.jsonl'), campaignId: 'c', chainId: 'W06',
+    stageTimeoutMs: 10000, progressTimeoutMs: 200, killGraceMs: 400,
+    processInspection: {
+      readProcessIdentity(pid) {
+        const observed = orch.readProcessIdentity(pid);
+        if (!observed.identity) return observed;
+        if (!bound) { bound = observed.identity.pgid === pid; return observed; }
+        fs.writeFileSync(stop, 'exit after the mismatched observation');
+        return { ...observed, identity: { ...observed.identity, executable: '<defunct>' } };
+      },
+    },
+  });
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.match(result.code, /ORCH_PROGRESS_TIMEOUT/u, JSON.stringify(result));
+  assert.match(result.code, /ORCH_PROCESS_IDENTITY_AMBIGUOUS/u);
+  assert.equal(result.quarantined, true);
+  assert.ok(result.identityMismatches.length > 0);
+  assert.equal(result.exitCode, 0, 'ambiguous identity was not signaled; owned fixture exits itself');
+  assert.deepEqual(result.survivingOwnedPids, []);
+});
+
+leaseTest('ORCH_TEST_14Q: zero-exit stage cannot pass when descendant cleanup identity is ambiguous', async () => {
+  const orch = await loadOrchestrator();
+  const dir = tmpDir('c5v2-orch-success-cleanup-');
+  const stop = path.join(dir, 'worker-stop');
+  const worker = writeSleepChild(dir, 'worker.cjs', `
+const fs=require('node:fs');
+setInterval(()=>{if(fs.existsSync(${JSON.stringify(stop)}))process.exit(0);},20);
+setTimeout(()=>process.exit(0),5000);
+`);
+  const parent = writeSleepChild(dir, 'parent.cjs', `
+const {spawn}=require('node:child_process');
+const child=spawn(process.execPath,[${JSON.stringify(worker)}],{stdio:'ignore'});
+process.stdout.write('ORCH_OWNED_PID:'+child.pid+'\\n');
+child.unref();setTimeout(()=>process.exit(0),350);
+`);
+  const reads = new Map();
+  let leaderPid = null;
+  const result = await orch.runOwnedStageProcess({
+    stage: 'POSITIVE', command: process.execPath, args: [parent], cwd: dir, logDir: path.join(dir, 'logs'),
+    heartbeatPath: path.join(dir, 'hb.jsonl'), campaignId: 'c', chainId: 'W06',
+    stageTimeoutMs: 10000, progressTimeoutMs: 10000, killGraceMs: 400,
+    processInspection: {
+      readProcessIdentity(pid) {
+        const observed = orch.readProcessIdentity(pid);
+        if (!observed.identity) return observed;
+        leaderPid ??= pid;
+        const count = reads.get(pid) || 0;
+        reads.set(pid, count + 1);
+        if (pid === leaderPid || count === 0) return observed;
+        fs.writeFileSync(stop, 'exit after the mismatched observation');
+        return { ...observed, identity: { ...observed.identity, executable: '<defunct>' } };
+      },
+    },
+  });
+  assert.equal(result.exitCode, 0, JSON.stringify(result));
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.match(result.code, /^ORCH_PROCESS_IDENTITY_AMBIGUOUS:/u);
+  assert.equal(result.quarantined, true);
+  assert.ok(result.identityMismatches.length > 0);
+  assert.deepEqual(result.survivingOwnedPids, []);
+});
+
 leaseTest('ORCH_TEST_14J: duplicate and conflicting process rows fail closed instead of deduping to PASS', async () => {
   const orch = await loadOrchestrator();
   assert.equal(typeof orch.mergeProcessInspectionObservations, 'function');

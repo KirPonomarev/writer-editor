@@ -63,7 +63,9 @@
     "test/contracts/rtk-word-review-default-typography.contract.test.js",
     "test/contracts/rtk-word-table-cell-shift.contract.test.js",
     "test/unit/project-tree-pathless-contract.test.js",
-    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+    "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs",
+    "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
@@ -127,8 +129,7 @@
     "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes.",
     "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof.",
     "Signed block literal leaf text/hash may not be normalized away. Preserve exact owner plus global visible-coordinate proof; reject forged block, mismatched leaf bounds and ambiguous normalized placement. Actual Main table LF regression must pass without changing source protection.",
-    "Exact Word table input preserves effective docDefaults and paragraph style properties when no competing table text-style layer exists; unsupported competing table formatting and invalid style graphs refuse before writes. Literal hardBreak coordinates also hold through existing formatting runtime.",
-    "Pure insertion immediately after a literal hardBreak uses the adjacent complete right source grapheme in analysis and exact writing; actual Main Apply/re-export/reactivation covers ASCII and supplementary-plane text while structural-only, typed-break, owner and candidate guards remain intact."
+    "Exact Mac counterexample: stage timeout or invalid heartbeat is correctly rejected; later ps observation changes comm to <defunct> with unchanged PID/PGID/start. Preserve primary failure plus cleanup identity error, ok=false and quarantine=true. Zero-exit plus ambiguous cleanup still fails. PID/PGID reuse refusal and all prior process guards unchanged. Focused red/green and complete RTK required; source/package byte identity binds existing native observations to the tooling-only successor."
   ],
   "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
   "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
@@ -141,7 +142,9 @@
     "SOURCE07 at7b0e1b7c: actual native retained table return Apply1/0/0; independent8threads10messages exact anchor, spacing, font and foreign-state proof. Native table point creation and inside-range save persisted9threads11messages through owner reboot. Final five changed cycles per build remain pending.",
     "PR2076 is draft at7b0e1b7c. First full CI RTK3186pass/9fail, no skips; baseline has2 failures. Restore shifted-cell inherited-language compatibility and update isolated harness dependencies/obsolete scope expectation before final acceptance.",
     "CI remediation focused results: harness71/71, parser/style79/79, governance2/2; zero skips. Parser change is comparison-local bounded legacy inherited language; full rich Original check and returned IR preserved. Final full mandatory runs are pending.",
-    "PACKAGED08 at d5a93d45 completed two changed native Word exchanges with independent nine-thread/eleven-message and foreign-state proof. Third insertion immediately after leading hardBreak refused without writes; exact native input reproduces label-linebreak-unsupported. Bounded analyzer/writer repair passes twelve focused Main cases; final native and mandatory gates remain pending. Earlier d5a CI passed19of19; interrupted local broad run is not PASS."
+    "PACKAGED08 at d5a93d45 completed two changed native Word exchanges with independent nine-thread/eleven-message and foreign-state proof. Third insertion immediately after leading hardBreak refused without writes; exact native input reproduces label-linebreak-unsupported. Bounded analyzer/writer repair passes twelve focused Main cases; final native and mandatory gates remain pending. Earlier d5a CI passed19of19; interrupted local broad run is not PASS.",
+    "aa0811dc native acceptance complete and CI19/19. Local baseline2160pass59existing skips. RTK clean-scope repaired by preserving/removing owned scratch; two clean full runs3196pass2fail from original failure overwritten by process cleanup identity ambiguity. Actual owned parallel probe reproduced node-><defunct>, identical pid/pgid/start and no survivors. No broad replay before this diagnostic repair.",
+    "Native final aa0811dc: SOURCE09 and PACKAGED09 each completed five changed Word exchanges, point/range creation, deletion and saved Undo/Redo, ordinary export in Word, exact reopen and clean shutdown. All observed product runtime source/package bytes remain frozen. The required RTK tooling-only repair preserves original failure diagnostics plus identity ambiguity; it does not relax signaling, quarantine, timeout or acceptance conditions. Final successor gates remain pending."
   ],
   "targetOnly": [
     "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"
