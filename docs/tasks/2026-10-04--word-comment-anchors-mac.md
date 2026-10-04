@@ -84,6 +84,8 @@ Exact admitted paths:
 - `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
 - `src/export/docx/fullManuscriptDocxReviewReturnRouter.js`
 - `src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs`
+- `test/contracts/rtk-word-nested-tables.contract.test.js`
+- `test/contracts/rtk-word-table-cell-lists.contract.test.js`
 
 ## Required proof and delivery
 
@@ -175,3 +177,10 @@ Independent raw OOXML inspection found a second coupled defect before accepting 
 The parser now reuses existing effective document/paragraph style resolution for table paragraphs only after proving there is no competing table text-style layer. Explicit/default table style references and same-type basedOn chains are bounded and cycle-checked; nested table ownership uses exclusive XML boundaries. Hidden paragraph/run/conditional properties in table style containers refuse. Empty paragraph-mark language uses the existing0..0 formatting operation instead of a fabricated text edit. Main comment authoring also uses literal Core leaf text for admitted flat paragraphs; actual range and point creation at edge hardBreaks now passes with exact canonical hashes.
 
 Focused parser/style/point suites42 passed, with malformed and nested-owner negatives. Broader table checks identified two existing renderer test harnesses missing the new mode predicate and an obsolete continuation-refusal expectation. These two test files require a clean scope amendment before editing; current checkpoint remains incomplete and unmerged. Existing native input private Main diagnosis preserves spacing160/278, language and explicit Aptos, but actual native Apply is still required.
+
+
+## SOURCE06 frozen runtime candidate
+
+Clean52path preflight passed atc457dfd0 before the two test-only compatibility repairs. Existing nested-table harnesses now provide the renderer mode predicate; all real selection, stale publication and grapheme assertions remain. The now-supported list continuation has a positive two-exporter text/numbering/ownership check; other malformed cases still reject. Affected nine-suite run121 passed with no skips.
+
+The full actual Main file had209 passes and one invalid new fixture: changing global Word defaults legitimately changed an implicitly formatted foreign comment. The corrected positive binds table, sibling and comment-body spacing explicitly before export, matching the native specimen; only direct table spacing is omitted while effective spacing remains unchanged. Global font/language mutation is retained as a separate exact FOREIGN_SCENE zero-write negative. Five focused final Main cases pass. The prior full run is not described as green; final mandatory RTK must execute the full corrected file. Source runtime is unchanged fromc457dfd0; SOURCE06 must prove actual native return and then final changed exchanges in both builds.

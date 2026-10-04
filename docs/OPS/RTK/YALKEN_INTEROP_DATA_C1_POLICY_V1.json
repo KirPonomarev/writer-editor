@@ -1705,7 +1705,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
-        "sha256": "4c57898902b590a202e081ac5b547be1cda7bd3ce9111fde7df60a2b7bc870b9"
+        "sha256": "31818b8ba0aaa60d4a7b022b18284e831f28ac3d1625486e8a6fef359ad5a9af"
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
@@ -1937,7 +1937,7 @@
       },
       {
         "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
-        "sha256": "de666b5b03b4802adf31654ac01c4d8114f60ef5cf14c23bd0a212d6ac89334a"
+        "sha256": "cc7e3a16488ad7c40d288216e2f38de504bd29dc72558301224fd8f46edf5659"
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "f53281d7fb87ead7d6ea14f922eac3a50ecf72c1a9b07ff47f86a9daac5bd1ad"
+        "sha256": "5c7fe6ad2aeccd0c16d5056af066ad8683eaaaec132d4d494d342e529d554962"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2417,11 +2417,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "28cf5a54b777068f0ab93fa8bd86224ff5960c55a95ed58d7e4001593f35e646"
+        "sha256": "60ee1f514ca584f34baddc82c167a50232170e4641e3dfe87b2cd552aab2a2f8"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "e42ee11340efe0d6f6bf85c0a6cc5c19383a05e4072b97470f08cfdee5970d18"
+        "sha256": "07cdba52c90282680b244fd2128c05297e0594f4cd6310321636fce24d4cd9a2"
       },
       {
         "path": "src/preload.js",

@@ -403,7 +403,7 @@ test('Actual renderer comment intent uses recursive cell/list leaf ordinal and r
   const src = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
   const doc = fixture(), records = require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(envelope.composeObservablePayload({ doc }));
   let selection;
-  const sandbox = vm.createContext({ getSelectionOffsets: () => selection, composeDocumentContent: () => envelope.composeObservablePayload({ doc }),
+  const sandbox = vm.createContext({ isTiptapMode: false, getSelectionOffsets: () => selection, composeDocumentContent: () => envelope.composeObservablePayload({ doc }),
     parseObservablePayload: envelope.parseObservablePayload, deriveVisibleTextFromDocument: envelope.deriveVisibleTextFromDocument, tableParagraphs: tables.tableParagraphs });
   vm.runInContext(src.slice(src.indexOf('function wordCommentSelectionIntent('), src.indexOf('async function handleWordCommentAction(')), sandbox);
   const index = records.findIndex(x => x.text === 'deep sentinel'), start = records.slice(0, index).reduce((n, x) => n + x.text.length + 1, 0);
@@ -471,7 +471,7 @@ test('Scene note-only evidence binds unchanged nested topology before actual Sta
 test('Visible comment refresh after scene/save uses fresh query and discards switched, dirty, hidden and superseded responses', async () => {
   const fs = require('node:fs'), vm = require('node:vm'), src = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
   const requests = [], published = [];
-  const sandbox = vm.createContext({ currentProjectId: 'p', currentDocumentId: 'scene-a', localEditGeneration: 1,
+  const sandbox = vm.createContext({ isTiptapMode: false, currentProjectId: 'p', currentDocumentId: 'scene-a', localEditGeneration: 1,
     currentMode: 'review', currentRightTab: 'comments', localDirty: false, lastAckedGeneration: 0,
     REVIEW_SURFACE_QUERY_ID: 'query.review', HTMLElement: class {}, reviewSurfaceHost: null,
     invokeWorkspaceQueryBridge: () => new Promise((resolve, reject) => { resolve.reject = reject; requests.push(resolve); }),

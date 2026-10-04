@@ -1223,7 +1223,7 @@ for(const variant of ['typed-failure','formatting-failure','secret-filter','canc
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1288,6 +1288,7 @@ async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookPara
       for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?11:1,selectedText:point?'':'contQinued',...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
       state.threads[1].messages.push({commentId:'continuation-reply',kind:'reply',body:'Reply body',provenance:{author:'Reply author'}});
       const foreignScene='roman/Imported/02_Beta.txt';state.threads.push({threadId:'foreign',rootCommentId:'foreign-root',sceneId:foreignScene,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Beta'},foreignScene,['Beta']),messages:[{commentId:'foreign-root',kind:'root',body:'Foreign body',provenance:{author:'Foreign'}}]});
+      if(commentParagraphSpacing)for(const thread of state.threads)for(const message of thread.messages)message.richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:message.body}]}]}};
       model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
     } else if(largeCommentGraph) {
       const state=JSON.parse(planned.afterText),root=state.threads[0].messages[0];
@@ -1296,6 +1297,7 @@ async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookPara
       model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
     } else fs.writeFileSync(target,planned.afterText);
   }
+  if(commentParagraphSpacing)fs.writeFileSync(f.beta,envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:'Beta'}]}]}}));
   f.source=read(f.alpha); let observed=f.source;
   if(schemaDefaults){
     const live=envelope.parseObservablePayload(observed);
@@ -2215,16 +2217,19 @@ for(const fault of [false,true])test('large random comment graph and 1000 paragr
 });
 
 
-for(const inheritedDefaults of [false,true])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; inherited defaults ${inheritedDefaults}`,async t=>{
-  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+for(const defaultsMode of ['removed','inherited','foreign-global'])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; defaults ${defaultsMode}`,async t=>{
+  const inheritedDefaults=defaultsMode!=='removed';
+  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
     const before=parts['word/document.xml'];parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');assert.notEqual(parts['word/document.xml'],before);
     assert.match(parts['word/document.xml'],/<w:spacing\b/u);parts['word/document.xml']=parts['word/document.xml'].replace(/<w:spacing\b[^>]*\/>/gu,'');assert.doesNotMatch(parts['word/document.xml'],/<w:spacing\b/u);
     if(inheritedDefaults){
       assert.doesNotMatch(parts['word/styles.xml'],/<w:pPrDefault>/u);
-      parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>').replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+      parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+      if(defaultsMode==='foreign-global')parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>');
     }
 
   }});
+  if(defaultsMode==='foreign-global'){assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error?.reason,'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT');assert.equal(activated.error?.details?.detail,'COMMENT_TEXT_RETURN_FOREIGN_SCENE');assert.deepEqual(f.capture(),beforeActivation);return;}
   assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));
   const sibling=read(f.beta),beforeScene=read(f.alpha),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
   const result=await f.probe.fullApply({requestId:'table-comments-apply'});assert.equal(result.totals?.applied,1,JSON.stringify(result));
@@ -2232,14 +2237,6 @@ for(const inheritedDefaults of [false,true])test(`actual Main table list continu
   assert.equal(doc.content[0].type,'table');assert.equal(doc.content[0].content.length,1);
   for(const paragraph of bookmarks.paragraphs(doc).slice(0,3)){
     assert.deepEqual(paragraph.attrs?.wordParagraphSpacing,inheritedDefaults?{after:160,line:278,lineRule:'auto'}:undefined,'effective inherited spacing differs from genuine removal');
-    if(inheritedDefaults){
-      assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
-      for(const node of paragraph.content)if(node.type==='text'){
-        const style=node.marks?.find(mark=>mark.type==='textStyle')?.attrs;
-        assert.equal(style?.fontFamily,'Times New Roman');
-        assert.deepEqual(style?.wordLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
-      }
-    }
   }
   assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item','\ncontQinuedR cell anchor\n','Second cell item W','']);
   assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
