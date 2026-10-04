@@ -1221,7 +1221,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1255,6 +1255,7 @@ async function cleanTextReturnFixture(t,{anchoredComment=false,omitTextEdit=fals
   // Repeated quote belongs to a different signed block, not this operation.
   parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'STARTBOUND_'+target+'_ENDBOUND'}]});
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
+  if(bookParagraphs)while(parsed.doc.content.length<bookParagraphs)parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'Book paragraph '+parsed.doc.content.length+' '+crypto.randomBytes(60).toString('hex')}]});
   if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
   if(sectionType)parsed.doc=require('../../src/core/word-sections-v1.cjs').bind(parsed.doc,{schemaVersion:1,boundaries:[{endParagraphIndex:0,properties:{type:sectionType,columns:{count:2,spaceTwips:720}}}],final:{type:'oddPage',columns:{count:2,spaceTwips:720}}});
   fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc}));
@@ -1274,7 +1275,13 @@ async function cleanTextReturnFixture(t,{anchoredComment=false,omitTextEdit=fals
     const model=require('../../src/core/word-comment-authoring-v1.cjs'),sceneId='roman/Imported/01_Alpha.txt';
     const planned=model.planCommentAuthoring({beforeText:null,projectId:f.query.projectId,sceneId,sceneSha256:sha(raw),paragraphs:ps,now:'2026-10-04T00:00:00Z',
       input:{action:'create',requestId:'anchor-composite',projectId:f.query.projectId,sceneId,expectedStateSha256:'',expectedSceneSha256:sha(raw),body:'Anchor body',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}});
-    const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,planned.afterText);
+    const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});
+    if(largeCommentGraph) {
+      const state=JSON.parse(planned.afterText),root=state.threads[0].messages[0];
+      root.body=crypto.randomBytes(15500).toString('base64').slice(0,15500);
+      for(let i=1;i<4;i++)state.threads[0].messages.push({...root,commentId:'large-reply-'+i,kind:'reply',body:crypto.randomBytes(15500).toString('base64').slice(0,15500)});
+      model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
+    } else fs.writeFileSync(target,planned.afterText);
   }
   f.source=read(f.alpha); let observed=f.source;
   if(schemaDefaults){
@@ -2127,4 +2134,69 @@ test('mixed comment return stale comment state rejects without either canonical 
   const file=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),state=JSON.parse(read(file));state.revision++;fs.writeFileSync(file,JSON.stringify(state));
   const before=f.capture(),result=await f.probe.fullApply({requestId:'stale-comment-text-apply'});
   assert.equal(result.totals?.applied||0,0);assert.deepEqual(f.capture(),before);
+});
+test('mixed comment and multirow text return rejects partial selection without any canonical writes',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<').replace('STARTBOUND_Alpha_ENDBOUND','STARTBOUND_Alpha_ENDBOUND SECOND_EDIT');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const ops=f.probe.reviewState().reviewSurface.exactTextPlanPreview.plan.applyOps;assert.equal(ops.length,2);
+  const before=f.capture(),partial=await f.probe.reviewBatchApply({requestId:'partial-comment-composite',changeIds:[ops[0].changeId]});
+  assert.notEqual(partial.applied,true);assert.deepEqual(f.capture(),before);
+  assert.equal(partial.error.reason,'RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED');
+  const full=await f.probe.fullApply({requestId:'complete-comment-composite'});
+  assert.equal(full.totals?.applied,2,JSON.stringify(full));assert.equal(full.totals.failed,0);assert.equal(full.totals.blocked,0);
+  assert.equal(JSON.parse(read(path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'))).threads[0].anchor.selectedText,'AlXpha');
+});
+
+for(const fault of [false,true])test('large random comment graph and 1000 paragraphs mixed Apply uses bounded journal envelope'+(fault?' with recovery':' successfully'),async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookParagraphs:1000,largeCommentGraph:true,bookmarked:false,anchoredComment:true,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha<','>AlXpha<');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
+  assert.ok(Buffer.byteLength(read(commentPath))>62000);assert.equal(before.threads[0].messages.length,4);
+  const expectedParagraphs=require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text);expectedParagraphs[0]=expectedParagraphs[0].replace('Alpha','AlXpha');
+  if(fault)f.probe.failAfterReviewPublication();
+  const result=await f.probe.fullApply({requestId:'large-graph-apply'});
+  assert.equal(result.totals?.applied,fault?0:1,JSON.stringify(result));
+  const afterScene=read(f.alpha),afterComments=read(commentPath),after=JSON.parse(afterComments);
+  assert.equal(after.threads[0].anchor.selectedText,'AlXpha');assert.deepEqual(after.threads[0].messages,before.threads[0].messages);
+  assert.equal(expectedParagraphs.length,1000);assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(afterScene).map(p=>p.text),expectedParagraphs);
+  const expectedThreads=structuredClone(before.threads);expectedThreads[0].anchor={...expectedThreads[0].anchor,authoritySource:'AUTHENTICATED_WORD_COMMENT_RETURN',selectedText:'AlXpha',selectedTextSha256:sha('AlXpha'),blockTextSha256:sha(expectedParagraphs[0])};assert.deepEqual(after.threads,expectedThreads);assert.equal(after.revision,before.revision+1);
+  assert.ok(Buffer.byteLength(afterComments)<=65536);
+  const dir=path.join(f.root,'backups/revision-bridge-apply-journal');
+  const file=fs.readdirSync(dir).filter(n=>n.endsWith('.json')).map(n=>path.join(dir,n)).find(p=>JSON.parse(read(p)).commentTextReturn);
+  const original=read(file),entry=JSON.parse(original),encoded=entry.commentTextReturn;
+  assert.equal(encoded.schemaVersion,'yalken.word.comment-text-return.brotli.v1');assert.ok(encoded.decodedBytes>256*1024);
+  assert.ok(Buffer.byteLength(original)<=256*1024);assert.ok(Buffer.byteLength(JSON.stringify(encoded))<=192*1024);
+  const journal=await import('../../src/io/revisionBridge/exactTextApplyJournal.mjs');
+  const restarted=require('node:child_process').spawnSync(process.execPath,['--input-type=module','-e',
+    'const m=await import(process.argv[1]);await m.reconcileExactTextApplyJournal(process.argv[2],process.argv[3]);',
+    require('node:url').pathToFileURL(path.join(ROOT,'src/io/revisionBridge/exactTextApplyJournal.mjs')).href,f.root,entry.operationId],{encoding:'utf8'});
+  assert.equal(restarted.status,0,restarted.stderr);
+  await journal.reconcileExactTextApplyJournal(f.root,entry.operationId);
+  assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  const variants=[
+    {...encoded,sha256:'0'.repeat(64)}, {...encoded,decodedBytes:encoded.decodedBytes+1},
+    {...encoded,decodedBytes:2*1024*1024+1}, {...encoded,data:encoded.data+'!'},
+    {...encoded,data:Buffer.concat([Buffer.from(encoded.data,'base64'),Buffer.from('junk')]).toString('base64')},
+    {...encoded,foreign:true}, {...encoded,data:'A'.repeat(192*1024)},
+  ];
+  const z=require('node:zlib'),bomb=Buffer.alloc(2*1024*1024+1,65);
+  variants.push({...encoded,data:z.brotliCompressSync(bomb).toString('base64')});
+  for(const bad of variants){
+    fs.writeFileSync(file,JSON.stringify({...entry,status:'prepared',commentTextReturn:bad}));
+    await assert.rejects(()=>journal.reconcileExactTextApplyJournal(f.root,entry.operationId),{code:'E_COMMENT_TEXT_RETURN_JOURNAL_INVALID'});
+    assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  }
+  const decodedPlan=JSON.parse(z.brotliDecompressSync(Buffer.from(encoded.data,'base64')).toString('utf8'));
+  for(const mutate of [proof=>{proof.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);},proof=>{proof.exportMap.scenes[0].blocks[0].formatIr.runs[0].text='forged';}]) {
+    const offered=structuredClone(decodedPlan),proof=JSON.parse(offered.returnProofJson);mutate(proof);offered.returnProofJson=JSON.stringify(proof);
+    const raw=Buffer.from(JSON.stringify(offered)),bad={...encoded,decodedBytes:raw.length,sha256:sha(raw),data:z.brotliCompressSync(raw).toString('base64')};
+    fs.writeFileSync(file,JSON.stringify({...entry,status:'prepared',commentTextReturn:bad}));
+    await assert.rejects(()=>journal.reconcileExactTextApplyJournal(f.root,entry.operationId));
+    assert.equal(read(f.alpha),afterScene);assert.equal(read(commentPath),afterComments);
+  }
+  fs.writeFileSync(file,original);
 });

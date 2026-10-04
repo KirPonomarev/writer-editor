@@ -162,6 +162,7 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
       const history=thread.anchorEditHistory || [], last=history[history.length-1];
       const snapshot=()=>({sceneParagraphIndex:thread.anchor.sceneParagraphIndex,startUtf16:thread.anchor.startUtf16,
         length:thread.anchor.selectedText.length,status:thread.status,blockTextSha256:thread.anchor.blockTextSha256,
+        ...(thread.status==='deleted'?{deletedText:thread.anchor.selectedText}:{}),
         ...(thread.anchor.kind==='point'?{kind:'point',affinity:'right'}:{})});
       const current=()=>JSON.stringify(snapshot());
       const entry=history.slice().reverse().find(h=>h.sessionId===sessionId && h.historyId===historyId);
@@ -171,8 +172,8 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
           || sha(selected[0].before)!==(undo?entry.afterTextSha256:entry.beforeTextSha256)
           || sha(selected[selected.length-1].after)!==(undo?entry.beforeTextSha256:entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
         const text=selected[selected.length-1].after;
-        if(target.startUtf16+target.length>text.length || !edges(text).has(target.startUtf16) || !edges(text).has(target.startUtf16+target.length)) fail('COMMENT_EDIT_HISTORY_STALE');
-        const selectedText=text.slice(target.startUtf16,target.startUtf16+target.length);
+        if(target.status!=='deleted' && (target.startUtf16+target.length>text.length || !edges(text).has(target.startUtf16) || !edges(text).has(target.startUtf16+target.length))) fail('COMMENT_EDIT_HISTORY_STALE');
+        const selectedText=target.status==='deleted'?target.deletedText:text.slice(target.startUtf16,target.startUtf16+target.length);
         thread.anchor={...thread.anchor,startUtf16:target.startUtf16,selectedText,selectedTextSha256:sha(selectedText),blockTextSha256:sha(text)};
         thread.status=target.status; entry.undone=undo;
         continue;
@@ -180,7 +181,19 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
       if(direction!=='forward' && !entry && history.some(h=>h.sessionId===sessionId)
         && (thread.status==='deleted' || selected.some(step=>step.edit.fromUtf16<=thread.anchor.startUtf16+thread.anchor.selectedText.length
           && step.edit.toUtf16>=thread.anchor.startUtf16))) fail('COMMENT_EDIT_HISTORY_EXPIRED');
-      if (thread.status==='deleted') continue;
+      if (thread.status==='deleted') {
+        // Further typing in the same actual history group extends its saved
+        // endpoint without reviving the discussion or replacing its quote.
+        if(direction==='forward' && entry===last && entry && !entry.undone) {
+          if(current()!==JSON.stringify(entry.after) || sha(selected[0].before)!==entry.afterTextSha256) fail('COMMENT_EDIT_HISTORY_STALE');
+          thread.anchor.blockTextSha256=sha(selected[selected.length-1].after);
+          entry.after=snapshot();entry.afterTextSha256=thread.anchor.blockTextSha256;
+        }
+        continue;
+      }
+      const continuesSavedGroup=direction==='forward' && entry===last && entry && !entry.undone;
+      if(continuesSavedGroup && (current()!==JSON.stringify(entry.after)
+        || sha(selected[0].before)!==entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
       const prior=JSON.parse(current()),priorQuote=thread.anchor.selectedText;
       for (const step of selected) {
         if (thread.status==='deleted') { thread.anchor.blockTextSha256=sha(step.after); continue; }
@@ -189,6 +202,10 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
       }
       if (current()===JSON.stringify(prior)) continue;
       const result=JSON.parse(current());
+      if(continuesSavedGroup) {
+        entry.after=result;entry.afterTextSha256=sha(selected[selected.length-1].after);
+        continue;
+      }
       // Outside-anchor movement is reversibly replayable. Retain history only
       // when an edit destroys anchor information or changes the selected text.
       const destructive = prior.status!==result.status || priorQuote!==thread.anchor.selectedText
@@ -241,7 +258,7 @@ function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,after
   const before=readState(beforeText,projectId),after=readState(result.afterText,projectId);
   if(JSON.stringify(before.threads.filter(t=>t.sceneId!==sceneId))!==JSON.stringify(after.threads.filter(t=>t.sceneId!==sceneId))) fail('COMMENT_TEXT_RETURN_FOREIGN_SCENE');
   const plan={mode:RETURN_MODE,beforeText,afterText:result.afterText,returnProofJson};
-  if(Buffer.byteLength(JSON.stringify(plan))>128*1024) fail('COMMENT_TEXT_RETURN_PROOF_BUDGET');
+  if(Buffer.byteLength(JSON.stringify(plan))>2*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_BUDGET');
   return plan;
 }
 

@@ -10022,8 +10022,23 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
           const sceneId=scenes[0],raw=authority.baselineObservableContentBySceneId?.[sceneId] ?? authority.baselineFinalTextBySceneId?.[sceneId];
           const parsed=envelope.parseObservablePayload(raw);
           const afterContent=envelope.composeObservablePayload({doc:cleanTextDocsBySceneId[sceneId],metaEnabled:parsed.hasMetaBlock,meta:parsed.meta,cards:parsed.cards});
+          // This private comment proof needs paragraph ownership and literal text;
+          // the original signed source and full formatting capsule remain intact.
+          const commentExportMap={...proof.exportMap,scenes:proof.exportMap.scenes.map(scene=>({
+            sceneId:scene.sceneId,rawSha256:scene.rawSha256,blocks:scene.blocks.map(block=>({
+              documentParagraphIndex:block.documentParagraphIndex,formatIr:{runs:block.formatIr.runs.map(run=>({text:run.text}))}
+            }))
+          }))};
+          if(commentExportMap.commentExport!==undefined) {
+            if(stableRtkReviewTransportJson(commentExportMap.commentExport)!==stableRtkReviewTransportJson(proof.baseline)) throw Error('COMMENT_TEXT_RETURN_BASELINE_MISMATCH');
+            delete commentExportMap.commentExport;
+          }
+          const privateProof={...proof,exportMap:commentExportMap,returnedParagraphs:proof.returnedParagraphs.map(paragraph=>({
+            paragraphIndex:paragraph.paragraphIndex,paragraphText:paragraph.paragraphText,trackedRevision:paragraph.trackedRevision
+          }))};
           cleanTextCommentPlan=require('./core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({beforeText,projectId:context.projectId,sceneId,
-            beforeContent:raw,afterContent,returnProofJson:JSON.stringify(proof)});
+            beforeContent:raw,afterContent,returnProofJson:JSON.stringify(privateProof)});
+          if(cleanTextCommentPlan.afterText!==delta.afterText) throw Error('COMMENT_TEXT_RETURN_PROJECTION_MISMATCH');
         }
         cleanTextCommentSourceText = beforeText;
       } catch (error) { return {ok:false,code:'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT',detail:error.code || error.message}; }

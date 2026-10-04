@@ -169,3 +169,27 @@ test('Last-cell Tab adds a row as one undoable edit and recording preserves its 
   const outside=EditorState.create({schema,doc:schema.node('doc',null,[schema.node('paragraph',null,schema.text('Outside'))])});
   assert.equal(nextTableCell(outside,()=>{throw Error('Unexpected write');}),false);
 });
+test('table list continuation and hardBreak retain leaf ownership and raw ordinary/review OOXML numbering',async()=>{
+  const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}), continuation={type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'continued'},{type:'hardBreak'}]};
+  const list={type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('first'),continuation]},{type:'listItem',content:[paragraph('second')]}]};
+  const doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[list]}]}]}]};
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs'),raw=envelope.composeObservablePayload({doc});
+  const leaves=require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(raw);
+  assert.deepEqual(leaves.map(p=>p.text),['first','\ncontinued\n','second']);
+  assert.deepEqual(leaves.map(p=>[p.table.row,p.table.column,p.table.paragraphIndex]),[[0,0,0],[0,0,1],[0,0,2]]);
+  const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+  const ordinary=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+  const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const blocks=source.buildFormatIrParagraphs({sceneId:'scene',doc,text:'first\n\ncontinued\n\nsecond'}).map((p,i)=>({...p,sceneId:'scene',blockId:'b'+i,paragraphId:'p'+i}));
+  assert.equal(blocks[1].formatIr.paragraph.list.continuation,true);
+  const review=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({blocks,customProperties:[{name:'YRTK_C01_AUTH',value:'test'},{name:'YRTK2_TOKEN',value:'test'}]});
+  function part(bytes,name){let offset=0;while(bytes.readUInt32LE(offset)===0x04034b50){const size=bytes.readUInt32LE(offset+18),n=bytes.readUInt16LE(offset+26),extra=bytes.readUInt16LE(offset+28),start=offset+30+n+extra;if(bytes.subarray(offset+30,offset+30+n).toString()===name)return bytes.subarray(start,start+size).toString();offset=start+size;}throw Error(name);}
+  for(const bytes of [ordinary,review]) {
+    const xml=part(bytes,'word/document.xml'),ps=[...xml.matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].map(m=>m[0]);
+    assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:tc>/gu)||[]).length,1);
+    assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2,'continuation must not create a third numbered item');
+    const continued=ps.find(p=>p.includes('continued'));assert.ok(continued);assert.doesNotMatch(continued,/<w:numPr>/u);
+    assert.equal((continued.match(/<w:br\s*\/>/gu)||[]).length,2,'both leading and trailing hardBreak are semantic text');
+    assert.match(continued,/<w:ind w:left="720"\/>/u);
+  }
+});

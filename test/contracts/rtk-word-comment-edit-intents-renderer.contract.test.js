@@ -182,3 +182,39 @@ test('existing text preview explicitly discloses bounded comment-anchor changes 
   assert.match(context.reviewSurfaceRenderCommentAnchorChanges({count:2}),/Комментариев: 2/);
   for(const count of [undefined,0,-1,129,Infinity,'<img src=x>'])assert.equal(context.reviewSurfaceRenderCommentAnchorChanges({count}),'');
 });
+for (const scenario of [
+  {name:'full anchor',from:1,status:'deleted',after:'XY suffix'},
+  {name:'partial anchor',from:4,status:'open',after:'AlpXY suffix'},
+]) test(`same actual history group continues saved ${scenario.name} and Save after Undo/Redo restores exact identity`,async()=>{
+  const author=require('../../src/core/word-comment-authoring-v1.cjs');
+  const save=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const {editor,ui,wire}=await harness([p('Alpha suffix')]);
+  const projectId='renderer-tombstone',sceneId='roman/s.txt',sessionId='actual-editor-tombstone';
+  const content=()=>envelope.composeObservablePayload({doc:editor.getJSON()});
+  let savedContent=content();
+  let savedState=author.planCommentAuthoring({beforeText:null,projectId,sceneId,sceneSha256:wireHash(savedContent),paragraphs:['Alpha suffix'],now:'2026-10-04T00:00:00Z',input:{requestId:'create-tombstone',action:'create',projectId,sceneId,subjectId:'scene',expectedStateSha256:'',expectedSceneSha256:wireHash(savedContent),body:'Preserve comment identity',anchor:{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}}}).afterText;
+  const original=JSON.parse(savedState).threads[0];
+  const commit=()=>{
+    const intent=ui.getCommentEditIntentsJson(editor),nextContent=content();
+    const plan=save.planCommentAnchorSave({beforeText:savedState,projectId,sceneId,beforeContent:savedContent,afterContent:nextContent,editIntents:intent,sessionId});
+    if(plan)savedState=plan.afterText;
+    savedContent=nextContent;
+    assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(intent)),true);
+    return JSON.parse(savedState).threads[0];
+  };
+  try {
+    editor.commands.setTextSelection({from:scenario.from,to:6});editor.commands.insertContent({type:'text',text:'X'});
+    const historyId=wire().edits[0].historyId;
+    assert.equal(commit().status,scenario.status);
+    editor.commands.insertContent({type:'text',text:'Y'});
+    assert.equal(wire().edits[0].historyId,historyId,'typing continues the actual PM group across Save');
+    const tombstone=commit();assert.equal(tombstone.status,scenario.status);assert.equal(editor.state.doc.textContent,scenario.after);
+    assert.equal(editor.commands.undo(),true);assert.equal(editor.state.doc.textContent,'Alpha suffix');
+    const restored=commit();assert.equal(restored.threadId,original.threadId);assert.equal(restored.status,'open');
+    assert.deepEqual(restored.anchor,original.anchor);assert.deepEqual(restored.messages,original.messages);
+    assert.equal(editor.commands.redo(),true);assert.equal(editor.state.doc.textContent,scenario.after);
+    const deletedAgain=commit();assert.equal(deletedAgain.status,scenario.status);assert.equal(deletedAgain.threadId,original.threadId);
+    assert.deepEqual(deletedAgain.anchor,tombstone.anchor);assert.deepEqual(deletedAgain.messages,original.messages);
+  } finally {editor.destroy();}
+});

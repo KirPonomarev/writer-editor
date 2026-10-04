@@ -35,10 +35,11 @@ function readState(text, projectId) {
         histories.add(h.sessionId+'|'+h.historyId);
         for (const [key,digestKey] of [['before','beforeTextSha256'],['after','afterTextSha256']]) {
           const p=h[key], point=p?.kind==='point';
-          if (!plain(p) || Object.keys(p).sort().join(',') !== (point ? 'affinity,blockTextSha256,kind,length,sceneParagraphIndex,startUtf16,status' : 'blockTextSha256,length,sceneParagraphIndex,startUtf16,status')
+          if (!plain(p) || Object.keys(p).sort().join(',') !== [...(point?['kind','affinity']:[]),...(p.status==='deleted'?['deletedText']:[]),'blockTextSha256','length','sceneParagraphIndex','startUtf16','status'].sort().join(',')
             || !Number.isSafeInteger(p.sceneParagraphIndex) || p.sceneParagraphIndex<0 || p.sceneParagraphIndex!==thread.anchor?.sceneParagraphIndex
             || !Number.isSafeInteger(p.startUtf16) || p.startUtf16<0 || !Number.isSafeInteger(p.length) || p.length<0
             || (point ? p.length!==0 || p.affinity!=='right' : p.length===0)
+            || (p.status==='deleted' && (typeof p.deletedText!=='string' || !p.deletedText.isWellFormed() || p.deletedText.length!==p.length || bytes(p.deletedText)>16384))
             || !['open','resolved','deleted'].includes(p.status) || !/^[a-f0-9]{64}$/u.test(p.blockTextSha256)
             || p.blockTextSha256!==h[digestKey]) fail('COMMENT_HISTORY_INVALID');
         }

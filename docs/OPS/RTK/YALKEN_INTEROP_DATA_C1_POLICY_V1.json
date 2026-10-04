@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "acb501e3fc7139bf39e46772b6976cad655cdce1d9382cbb402320aac2e32448"
+        "sha256": "1ca14f060bf985b629cd732e8f81af9d1f03cb6207823573f83c454f5c9f5882"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -925,7 +925,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "b6c1693cf6a25e22eb703011c22e8ba4a55f25bb808b870c002c0afed753b5c4"
+        "sha256": "74c52f9fcad530de7d453f75d3f1be8704ec3171acb7bcf3965cda8f85b7e88c"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1325,7 +1325,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "ece6759f3a7ab3b79138ff2529033a9867bce8fb4b109514a7ea717c3b0c8c30"
+        "sha256": "f9ace3bbddda4b178ef26d41c6f7a478428208ef958ebbb38c9855dc7f692714"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
@@ -1341,7 +1341,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextApplyJournal.mjs",
-        "sha256": "4f66b69e5621779382ccf9ce5ada5776687486b567bf46e5f0bc7d82a9ad5e10"
+        "sha256": "811e541289ea56bf5651a780aaec0410adfab6f5ce11ba3f42906f5bd18d7951"
       },
       {
         "path": "docs/tasks/2026-09-25--word-table-autofit-review.md",
@@ -1457,7 +1457,7 @@
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
-        "sha256": "3d154eef8ec4e9ea26f380217ca1c577baea0f821d4d616ae8696a25e127b590"
+        "sha256": "42f2986327627d4da53b232bff9098541b757ecc9c6905c73245bdf51e64376c"
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
@@ -1485,11 +1485,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "b274337a7b7c0a94b24a6f09d3feb9f9f877e8ab6f0c78193a89b3486b22f01b"
+        "sha256": "02d5e63712028da8382af4e685dfde8a7664c36ac0d3f22e50a66b039ce34e4c"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "9c7b59a76eac0f210ec81dc36dbab6ab3d48d111e8c4b7b66a759d1785fab56d"
+        "sha256": "178e75e1634cb0dd8da7c8b1a4f92934530bdbeb7a0909591f78f5960f454496"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "3fef39a70bb9086cfbef2118f9c772e45b9f0461ed583450d6bfb179d024f3db"
+        "sha256": "206d536a80c1b02cca1c591ae62ba9aa673cae3e35d556514595648729e3c89a"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2409,7 +2409,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "1485bbb8062d750063fb9811da174679aab0868a5a8ce1785f243babf3ebece3"
+        "sha256": "553b7fc626b03f519ab5d97148005ac122e72905c61464c55c33ef2dd08fcae2"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2417,7 +2417,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "339efe12bac4742f2a74c649c26106f21bec787161c0c996651754533767f6de"
+        "sha256": "c8525c5aba6b9bef88691b464b9a427e341e690f5f380dd32049062c7958f822"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",

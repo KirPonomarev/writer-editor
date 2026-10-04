@@ -410,3 +410,36 @@ test('bounded history is compact, remains valid after many groups and expired de
   const corrupt=structuredClone(after);corrupt.threads[0].anchorEditHistory[0].before.foreign=true;
   assert.throws(()=>require('../../src/core/word-comment-authoring-v1.cjs').readState(JSON.stringify(corrupt),projectId),/COMMENT_HISTORY_INVALID/);
 });
+test('near 64KiB comment graphs either fit compact history exactly or refuse before publication',()=>{
+  const make=target=>{
+    const state=JSON.parse(graph('Alpha anchor omega',0,'Alpha'));
+    for(let i=0;i<3;i++)state.threads[0].messages.push({commentId:'budget-reply-'+i,kind:'reply',body:'r'.repeat(16000),provenance:{}});
+    state.threads[0].messages[0].body='';
+    const remaining=target-Buffer.byteLength(JSON.stringify(state));assert.ok(remaining>0 && remaining<=16384);
+    state.threads[0].messages[0].body='x'.repeat(remaining);
+    const raw=JSON.stringify(state);assert.equal(Buffer.byteLength(raw),target);
+    require('../../src/core/word-comment-authoring-v1.cjs').readState(raw,projectId);return raw;
+  };
+  const fits=make(64000),saved=intentSave('Alpha anchor omega','AlXpha anchor omega',fits,intent('Alpha anchor omega',2,2,'X'));
+  assert.ok(Buffer.byteLength(saved.afterText)<=65536);assert.equal(JSON.parse(saved.afterText).threads[0].anchor.selectedText,'AlXpha');
+  assert.deepEqual(JSON.parse(saved.afterText).threads[0].messages,JSON.parse(fits).threads[0].messages);
+  const full=make(65500),unchanged=full;
+  assert.throws(()=>intentSave('Alpha anchor omega','AlXpha anchor omega',full,intent('Alpha anchor omega',2,2,'X')),/COMMENT_SAVE_STATE_BUDGET/);
+  assert.equal(full,unchanged);
+});
+test('saved tombstone typing continues same history group and Undo/Redo retain exact deleted quote',()=>{
+  const old='Alpha',before=graph(old,0,old);
+  const first=intentSave(old,'X',before,intent(old,0,5,'X'));
+  const second=intentSave('X','XY',first.afterText,intent('X',1,1,'Y',{id:'e2'}));
+  const dead=JSON.parse(second.afterText).threads[0];assert.equal(dead.status,'deleted');assert.equal(dead.anchor.selectedText,'Alpha');assert.equal(dead.anchorEditHistory.length,1);
+  assert.equal(dead.anchorEditHistory[0].afterTextSha256,sha('XY'));
+  const undone=intentSave('XY',old,second.afterText,intent('XY',0,2,old,{id:'e3',direction:'undo'}));
+  assert.equal(JSON.parse(undone.afterText).threads[0].status,'open');assert.deepEqual(JSON.parse(undone.afterText).threads[0].anchor,JSON.parse(before).threads[0].anchor);
+  const redone=intentSave(old,'XY',undone.afterText,intent(old,0,5,'XY',{id:'e4',direction:'redo'}));
+  assert.equal(JSON.parse(redone.afterText).threads[0].status,'deleted');assert.deepEqual(JSON.parse(redone.afterText).threads[0].anchor,dead.anchor);
+  assert.deepEqual(JSON.parse(redone.afterText).threads[0].messages,dead.messages);
+  const forged=JSON.parse(first.afterText);forged.threads[0].anchorEditHistory[0].afterTextSha256=sha('forged');forged.threads[0].anchorEditHistory[0].after.blockTextSha256=sha('forged');
+  assert.throws(()=>intentSave('X','XY',JSON.stringify(forged),intent('X',1,1,'Y',{id:'e2'})),/COMMENT_EDIT_HISTORY_STALE/);
+  const unrelated=intentSave('X','XY',first.afterText,intent('X',1,1,'Y',{id:'e2',historyId:'other'}));
+  assert.equal(JSON.parse(unrelated.afterText).threads[0].anchorEditHistory[0].afterTextSha256,sha('X'),'unrelated group must not rewrite original deletion endpoint');
+});
