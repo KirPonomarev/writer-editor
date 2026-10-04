@@ -1098,7 +1098,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "63b4cb279638e0784911c218eb894dc6f0f9583494763e4b389ee9aad6b0eb3b"
+        "sha256": "4867db19a930f5d3ae9886acf7bfe737f9ade21802fdc606ef78301aec518736"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -1446,7 +1446,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "8b8f351a55df341927ef6ff50006179bfc8dbca53f97e0676a8ab9d55a41f02f"
+        "sha256": "690779216d11e5553c69a6eb35c534685538a1b5b4b954ab48366fcd58291d27"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -1970,7 +1970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "c18d259b8a8d021dab6cbf3d81da8f565c3b2baa09977f7faae70e214333c159"
+        "sha256": "c88b1f0513870f543843eb04427b70bfaf6e95bb9f48b5574e1a552130102603"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2382,11 +2382,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "8a657be43f9657d6d880baa433af4cb9058525823b92f541ac49bed39c1497d5"
+        "sha256": "1cb4079b3bbdf611b56872db700aba6314f1f74267ed82ae0e6363206443670a"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "81d5c4aec2443d2cbd84293d4dbf12d29a773a95cc022b48c67327a5ae981a04"
+        "sha256": "3fbaaffd5dd25d1155191d4fcc0343132ab2c02ce347bef62e69f9174aaa7644"
       },
       {
         "path": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",

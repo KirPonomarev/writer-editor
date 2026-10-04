@@ -51,7 +51,9 @@
     "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
     "test/contracts/rtk-word-scene-identity-main.contract.test.js",
     "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-    "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js"
+    "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js"
   ],
   "scopeOut": [
     "package.json",
