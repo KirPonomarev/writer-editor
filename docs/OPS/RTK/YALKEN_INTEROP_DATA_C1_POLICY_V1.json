@@ -1497,7 +1497,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "02d5e63712028da8382af4e685dfde8a7664c36ac0d3f22e50a66b039ce34e4c"
+        "sha256": "21ba2540121669396a739f78099fd65ca7fd34339c15443043079835de0ecf23"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
@@ -2473,7 +2473,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-restart-mac.md",
-        "sha256": "dc3bf9e9079c8bf9425aebfbf2713ffbfb2f39beec512299c6d457c307b2948a"
+        "sha256": "21e8e339079041602066c97c5ecc66bfa113951461c8a5d1fce244a924d362ff"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",

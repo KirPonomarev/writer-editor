@@ -168,3 +168,8 @@ A systematic inventory of all five SafeCreate Main-section VM loaders found the
 remaining bookmark native-local harness closure gap before full RTK reached it.
 The broad run was stopped, and the complete affected harness set is required to
 pass together before restarting full gates. This does not change native runtime.
+
+All eight import VM test files now pass together: 242 tests, zero failures/skips/
+todo. The audit also covered direct recovery-function loaders beyond import
+markers and identified one missing context binding in the comment-anchor recovery
+fixture. No runtime or acceptance boundary is weakened to repair these fixtures.
