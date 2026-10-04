@@ -137,6 +137,11 @@ test('real command runner enforces numbering capability and editor mode before i
   const registry=createCommandRegistry();let calls=0;
   registerProjectCommands(registry,{uiActions:{listConfigureNumbering:()=>{calls++;return {performed:true};}}});
   const run=createCommandRunner(registry),id=EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING;
+  const {createPaletteDataProvider}=await import('../../src/renderer/commands/palette-groups.v1.mjs');
+  const {resolveCommandEntitlement}=await import('../../src/renderer/commands/localCapabilityProvider.mjs');
+  const surfaced=createPaletteDataProvider(registry,{defaultSurface:'palette',entitlementTier:'free'}).listAll();
+  assert.equal(surfaced.find(entry=>entry.id===id)?.label,'Настроить нумерацию');
+  assert.equal(resolveCommandEntitlement(id,{entitlementTier:'free'}).available,true);
   assert.equal((await run(id,{platformId:'node',editorMode:'tiptap'})).ok,true);assert.equal(calls,1);
   assert.equal((await run(id,{platformId:'node',editorMode:'plain'})).ok,false);assert.equal(calls,1);
   assert.equal((await run(id,{platformId:'unknown',editorMode:'tiptap'})).ok,false);assert.equal(calls,1);
@@ -187,4 +192,29 @@ test('new list continues the explicitly selected custom definition and restart i
     next.apply({action:'restart',levels:next.levels});assert.notEqual(editor.getJSON().content[0].attrs.wordNumbering.instanceId,editor.getJSON().content[2].attrs.wordNumbering.instanceId);
     assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),continued);
   }finally{editor.destroy();}
+});
+
+test('actual formatting preview preserves detached numbering projection and renders escaped before/after settings',()=>{
+  const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const start=source.indexOf('function reviewSurfaceNumberingProjection('),end=source.indexOf('function reviewSurfaceNormalizeExactTextApplyState(',start);
+  const ctx=vm.createContext({wordListNumbering:core,
+    reviewSurfaceIsPlainObject:v=>v&&typeof v==='object'&&!Array.isArray(v),
+    reviewSurfaceText:v=>typeof v==='string'?v.trim():'',reviewSurfaceArray:v=>Array.isArray(v)?v:[],
+    reviewSurfaceEscapeHtml:v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))});
+  vm.runInContext(source.slice(start,end),ctx);
+  const expectedLevels=core.defaultLevels(2),levels=structuredClone(expectedLevels);
+  levels[0].text='<img src=x onerror=evil> %1';levels[0].start=3;
+  levels[1].format='a';levels[1].restartAfterLevel=null;
+  const operation={operationId:'op',sceneId:'scene<1>',kind:'list-numbering',numbering:{instanceId:'list',expectedLevels,levels}};
+  const normalized=ctx.reviewSurfaceNormalizeFormattingReturn({status:'ready',operations:[operation]},{});
+  assert.equal(normalized.ready,true);assert.equal(normalized.operations[0].kind,'list-numbering');
+  assert.deepEqual(normalized.operations[0].numbering.levels,levels);
+  levels[0].text='MUTATED';assert.notEqual(normalized.operations[0].numbering.levels[0].text,'MUTATED');
+  const markup=ctx.reviewSurfaceRenderNumberingChanges(normalized.operations);
+  assert.match(markup,/Уровень 1: «%1\.», формат 1, начало 1, не перезапускать → «&lt;img/);
+  assert.match(markup,/Уровень 2:.*после уровня 1 →.*формат a.*не перезапускать/);
+  assert.match(markup,/scene&lt;1&gt;/);assert.doesNotMatch(markup,/<img|MUTATED/);
+  assert.equal(ctx.reviewSurfaceRenderNumberingChanges([{sceneId:'x',numbering:{expectedLevels,levels:expectedLevels}}]),'');
+  assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{expectedLevels,levels:[{evil:true}]}}),null);
+  assert.match(source,/reviewSurfaceRenderNumberingChanges\(formattingReturn\.operations\)/);
 });

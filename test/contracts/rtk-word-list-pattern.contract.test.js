@@ -121,3 +121,12 @@ test('legacy and pattern identifiers occupy separate DOCX instance namespaces',a
  const blocks=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId:'scene',doc,text:'pattern\ngap\nlegacy'});
  assert.notEqual(blocks[0].formatIr.paragraph.list.numId,blocks[2].formatIr.paragraph.list.numId);
 });
+
+test('fresh authoring identity never reuses a surviving lineage after its original instance is deleted',()=>{
+ const survivor={...pattern(model.defaultLevels()),instanceId:'numbering-2',lineageId:'numbering-1',startOverrides:[{level:0,start:5}]};
+ const before=document(list(survivor,item('surviving restarted instance')),paragraph('independent new list'));
+ const after=model.planNumberingEdit(before,{listPath:[1],action:'configure'});
+ assert.equal(after.content[1].attrs.wordNumbering.instanceId,'numbering-3');
+ assert.deepEqual(labels(after),['5.','1.']);
+ assert.deepEqual(after.content[0].attrs.wordNumbering,survivor);
+});

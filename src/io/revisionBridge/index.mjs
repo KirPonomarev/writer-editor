@@ -9237,7 +9237,7 @@ function docxEffectiveNumberingLevels(instance, abstract) {
       || (definition.suff !== undefined && definition.suff !== 'tab')
       || (definition.lvlJc !== undefined && definition.lvlJc !== 'left')) return null;
     const restart = definition.lvlRestart === undefined ? level : definition.lvlRestart;
-    if (restart > level) return null;
+    if (restart > level || level > 0 && definition.lvlRestart === level) return null;
     levels.push({ format, start: definition.start ?? 0,
       text: definition.lvlText, restartAfterLevel: restart === 0 ? null : restart - 1 });
   }
@@ -9268,11 +9268,24 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
   const level = reference.level ?? (styleLevels.length === 1 ? styleLevels[0] : 0);
   const definition = definitionAt(level);
   const kind = definition?.numFmt === 'bullet' ? 'bulletList' : 'orderedList';
+  // Native Word suppresses these explicitly declared levels, even though
+  // omitting the immediate-ancestor restart displays them. Normalizing that
+  // raw form to omission would invent visible markers on the next export.
+  const nativeUnsupportedRestart = level > 0 && definition?.lvlRestart !== undefined
+    && definition.lvlRestart >= level;
   const declareLoss = () => {
     docxContentPreviewAddListNumberingDiagnostic(diagnostics, { paragraphIndex, numId: reference.numId, ilvl: String(level) });
   };
   if (!instance || !abstract || abstract.unsupported || !definition || styleLevels.length > 1) {
     declareLoss();
+    return;
+  }
+  if (nativeUnsupportedRestart) {
+    declareLoss();
+    if (diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) diagnostics.push(docxContentPreviewDiagnostic('DOCX_LIST_EXPLICIT_RESTART_UNSUPPORTED', {
+      severity:'warning',sourcePart:'word/numbering.xml',paragraphIndex,numId:reference.numId,ilvl:String(level),
+      message:'This explicit restart form suppresses level markers in native Word. Its numbering is not imported because replacing it with the default restart would invent visible markers.',
+    }));
     return;
   }
   // Word shares the running lineage across instances of the same abstract.
@@ -11894,6 +11907,9 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null, richCandidate = false) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  if (diagnosticCode === 'DOCX_LIST_EXPLICIT_RESTART_UNSUPPORTED') {
+    return { code:'DOCX_IMPORT_PREVIEW_LIST_EXPLICIT_RESTART_UNSUPPORTED', category:'listNumbering', message:diagnostic.message };
+  }
   if (diagnosticCode === 'DOCX_LIST_MARKER_LAYOUT_NORMALIZED') {
     return { code:'DOCX_IMPORT_PREVIEW_LIST_MARKER_LAYOUT_NORMALIZED', category:'formatting', message:diagnostic.message };
   }
@@ -12147,6 +12163,7 @@ function docxImportPreviewBuildLossReport(
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
     const knownContentDiagnostic = [
+      'DOCX_LIST_EXPLICIT_RESTART_UNSUPPORTED',
       'DOCX_LIST_MARKER_LAYOUT_NORMALIZED',
       'DOCX_NAMED_STYLES_NORMALIZED',
       'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS',

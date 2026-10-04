@@ -170,3 +170,19 @@ test('standard markers retain typed reset, skipped-level, override and Word alph
     }
   }
 });
+
+test('native Word suppressed explicit redundant restart is disclosed instead of inventing child labels', async () => {
+  const api=await bridge;
+  // Same level grammar as calibration-parent-child-reset-ordered.docx:
+  // native Word showed no child labels for explicit 1 or 2 on ilvl1.
+  for(const restart of [1,2]) {
+    const numbering=`<w:abstractNum w:abstractNumId="4"><w:lvl w:ilvl="0"><w:start w:val="3"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/></w:lvl><w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="lowerLetter"/><w:lvlRestart w:val="${restart}"/><w:lvlText w:val="%1.%2."/></w:lvl></w:abstractNum><w:num w:numId="7"><w:abstractNumId w:val="4"/></w:num>`;
+    const body=[0,1,1,0,1].map((level,i)=>`<w:p><w:pPr><w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="7"/></w:numPr></w:pPr><w:r><w:t>Item ${i}</w:t></w:r></w:p>`).join('');
+    const preview=api.buildDocxContentPreviewFromZipBytes(fixture({numbering,body}));assert.equal(preview.ok,true);
+    for(const index of [1,2,4])assert.equal(preview.contentPreview.paragraphs[index].list,undefined);
+    const plan=api.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));
+    assert.ok(plan.lossReport.items.some(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_EXPLICIT_RESTART_UNSUPPORTED'));
+    assert.ok(plan.lossReport.items.some(item=>item.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'));
+    assert.deepEqual(preview.contentPreview.paragraphs.map(p=>p.text),['Item 0','Item 1','Item 2','Item 3','Item 4']);
+  }
+});

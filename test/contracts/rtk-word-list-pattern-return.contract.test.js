@@ -19,8 +19,27 @@ test('formatting Apply changes complete authenticated lineage, preserves text/re
 test('formatting numbering refuses foreign selector, authority, definitions, getters and forged extension keys',async()=>{
  const {applyFormattingOperationsToObservableContent:apply}=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
  const raw=envelope.composeObservablePayload({doc:document()});let calls=0;
- for(const mutate of [op=>op.numbering.instanceId='foreign',op=>op.sourceAuthority='renderer',op=>op.sourceRawSha256='',op=>op.numbering.extra='authority',op=>op.numbering.levels[0].text='%2',op=>Object.defineProperty(op.numbering,'levels',{get(){calls++;return changed;}})]){
+ for(const mutate of [op=>op.numbering.instanceId='foreign',op=>op.numbering.instanceId='shared',op=>op.sourceAuthority='renderer',op=>op.sourceRawSha256='',op=>op.numbering.extra='authority',op=>op.numbering.levels[0].text='%2',op=>Object.defineProperty(op.numbering,'levels',{get(){calls++;return changed;}})]){
   const op=structuredClone(operation());mutate(op);assert.equal(apply(raw,[op]).ok,false);
  }
  assert.equal(calls,0);
+});
+test('actual Main public preview preserves exact numbering diff without private writer authority',()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const source=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+ const start=source.indexOf('function attachRtkFormattingReturnProductPreview('),end=source.indexOf('function prepareAuthenticatedDocxFormattingReturnProductPath(',start);
+ const clone=value=>JSON.parse(JSON.stringify(value));
+ const context=vm.createContext({activeReviewSessionLifecycle:'active',activeReviewSessionStore:{reviewSurface:{}},activeRtkFormattingReturnApplyStore:null,
+  currentReviewSurfacePayload:null,currentReviewSurfacePayloadSource:'',currentReviewSurfacePayloadContentHash:'',
+  isPlainObjectValue:value=>value&&typeof value==='object'&&!Array.isArray(value),cloneJsonSafe:clone,
+  docxReviewPreviewSessionDetailString:value=>typeof value==='string'?value:'',
+  readRtkNonOverlapTrackedReplacementSessionToken:()=>({sessionId:'s',sourcePacketHash:'hash'}),sanitizeRtkFormattingReturnDiagnostics:()=>[],
+  readActiveReviewSessionReviewSurface:()=>context.currentReviewSurfacePayload});
+ vm.runInContext(source.slice(start,end),context);
+ const op=operation(),input={operations:[op]},result=context.attachRtkFormattingReturnProductPreview({input,candidates:[op],diagnostics:[],keyAuthority:{keyRef:'private'}});
+ const publicOp=clone(result.formattingReturnPreview.operations[0]);assert.equal(publicOp.kind,'list-numbering');assert.deepEqual(publicOp.numbering,op.numbering);
+ for(const key of ['sourceAuthority','sourceSceneRevision','sourceRawSha256','keyRef'])assert.equal(Object.hasOwn(publicOp,key),false);
+ result.formattingReturnPreview.operations[0].numbering.levels[0].text='untrusted renderer copy';
+ assert.equal(context.activeRtkFormattingReturnApplyStore.input.operations[0].numbering.levels[0].text,'Article %1');
+ assert.equal(op.numbering.levels[0].text,'Article %1');
 });

@@ -781,7 +781,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c3320b59358232de9a950deebfca9c254323d60b106b94c8877ba5823f84be7c"
+        "sha256": "f68eefd3db9f1c900cdb05088b0011e0d52be48aecf2f40c96a2ea12739c3f6f"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -793,7 +793,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "2389a6f6e81b6245abea9662b2aa2853869ebd89a9d128b9e0371613292e2fb3"
+        "sha256": "682dcff4325f808dcf48d50311b1c5aaf337bf5abc63386db6ad59d6282c4b5d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -813,11 +813,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "b60af7752ba9c2b72991f79166666b4b448997a4dd9429c54a1994d3bd1ce1d7"
+        "sha256": "309413598c0486ab1fae781d3451a385261ed4633d0550da4fd7eeb54aa7d998"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "209a441d02237198873646b4815d932898dc85ab99b25a0e25cb2529678e1614"
+        "sha256": "c4523ee440921e6a719dbab3c7f59c3f8fefc73d95472b029714281e49dadd58"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -869,7 +869,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-lists.contract.test.js",
-        "sha256": "ca9c88579c5c55c3ff202b06733e1428d5ab1f0d62024ddb2b61f580112c8486"
+        "sha256": "b80591a999e74a1c1bce6418de0306fd714330870156abf2acf92f4919b4a676"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-list-roundtrip.md",
@@ -917,7 +917,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "f0f6b2957a58f9cdc6e70ba453dbcbdd652750ee14b966d667443872f10e8b68"
+        "sha256": "dd36ab00b20b8cbc76f9924649e94d507228168bdb2403dd8a35ed657090bedd"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -957,7 +957,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "44d7051520bbd863da2de8a2baa0f7d00d4417828b829a2a014a33fbefbfc37b"
+        "sha256": "729d1a7b5f9e1db1702369107732473e94f9c09823cfb0f03008e319cfd1c69e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1453,7 +1453,7 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "30cfbd3522b2342bdbe5e1a5f5ae0b5fce3eeed9a2bf3ff94fa3224c3dc3b0bd"
+        "sha256": "7652d20be2aacefa9e2b94797656fd02ae7e3cd104bc70c39f50ce494c8208d3"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
@@ -2109,7 +2109,7 @@
       },
       {
         "path": "src/core/word-list-numbering-v1.cjs",
-        "sha256": "f79e46fd9a16ebd6145e812fec9e8421f560534b7097840f94f326db6606e9af"
+        "sha256": "a47f5ebd405aea5ab4421781510f44af79772c77e30663cba404621523931ce0"
       },
       {
         "path": "src/renderer/tiptap/documentListNumbering.mjs",
@@ -2365,27 +2365,27 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
-        "sha256": "d49db008ad185bbfb5500ecdfa418f5127c323dabbd7a6677e7a5ccc5521d3d5"
+        "sha256": "58ffd57953b43139c09028fcf6de32a245fca4e2b1c03a0b93107e9a30eb54c2"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-return.contract.test.js",
-        "sha256": "2dead455aff3b845d6375acd6389cdc780e880183b57e0ccce29ad0584fc8854"
+        "sha256": "382773a0d1797694bbed17d31668e52fc1d914ebe31df43854bd349b195f5860"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "f45c5dcb5ba0829bcce1cc047a25f79294e713ae25d575ebcc0d2cbbd9c5844f"
+        "sha256": "44f049bbf81b20459ec50ae304420ea6e5bdbc004cf7c8729cb49aeecdb14b4b"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "6165d375b3f8f1b199dbd045fbd3795e113f60cc73dbc26a83efbb2808ad6d04"
+        "sha256": "91d4431fc3d58a81256dee959f72b481d21c8467ceea07162cc317cba4d1849c"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "8bc563cfb0c0f33f48e1205c42a01af5465dcd24e41ecf234f752d25acc67326"
+        "sha256": "3abc2f3ba2e160a3927f0d14fa5a74fdd6fce1bc297444b8c8b86d893c3c495e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "ee71a98c9d91d4fd1f12f6e5a7ab8336eb1bd13730579c30ab1111efbb43aff8"
+        "sha256": "29523b26ba25c85fbdc6922385af3c2fdf7218c6b66183a337ee06be2b09efe0"
       }
     ],
     "followupRepair": {

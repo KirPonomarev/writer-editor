@@ -221,7 +221,10 @@ function planNumberingEdit(doc, intent) {
   const current = ownCurrent || (action === 'configure' && parentPattern ? validateNumbering(parentPattern) : null);
   const targetLevel = ownCurrent?.level ?? (parentPattern ? parentPattern.level + 1 : ancestors.length);
   if (targetLevel > 8 || (action !== 'configure' && targetLevel !== 0)) fail();
-  const used = new Set([...before.values()].map(item => item.instanceId));
+  const used = new Set([...before.keys()].flatMap(node => {
+    const value = node.attrs.wordNumbering;
+    return [value.instanceId, value.lineageId || value.instanceId];
+  }));
   let fresh = 1; while (used.has(`numbering-${fresh}`)) fresh++;
   let levels = own(intent,'levels') === undefined ? current?.levels || defaultLevels() : validateLevels(own(intent,'levels'));
   let instanceId = current?.instanceId || `numbering-${fresh}`;
@@ -330,7 +333,8 @@ function applyDefinitionChange(doc, change) {
   const id = own(change, 'instanceId'), markers = resolveMarkers(doc);
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(id)) fail();
   const representative = [...markers.keys()].find(node => node.attrs.wordNumbering.instanceId === id);
-  const lineageId = representative?.attrs.wordNumbering.lineageId || id;
+  if (!representative) fail();
+  const lineageId = representative.attrs.wordNumbering.lineageId || id;
   let found = false;
   for (const [node] of markers) if ((node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId) === lineageId) {
     found = true;

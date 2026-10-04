@@ -36,6 +36,7 @@ Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Pa
 
 ## ALLOWLIST
 - `src/core/word-list-numbering-v1.cjs`
+- `src/core/entitlement-law-v1.cjs`
 - `src/core/document-content-envelope-v1.cjs`
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/word-manuscript-notes-v1.cjs`
@@ -76,6 +77,13 @@ Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Pa
 
 ## Capability integration amendment
 Intermediate owned WIP checkpoint80bd485494cda45080245e7732edd570141d916d preserves the unverified implementation. New list command required an explicit capabilityPolicy binding; initial dirty preflight refused, then clean38path preflight passed on this checkpoint before that file was edited. Original delivery base remains2c831673. This amendment adds no platform authority and no second delivery contour.
+
+Native SOURCE01 proved import persistence and all ten expected list labels on38a88fb0. It also found the command missing from the actual palette because Core entitlement classification was absent. Clean39path preflight passed on owned checkpoint946897c5 before entitlement-law was edited; original delivery base remains2c831673. Core list editing remains free like existing list commands.
+
+## Native02 corrective checkpoint
+SOURCE01 import is evidence only for its pinned candidate; no authoring or changed-return acceptance is inherited. The next candidate must expose numbering settings through the real entitlement-backed palette and show public old/new numbering settings before explicit Apply. Reviewed Core repairs require an actual instance selector and reserve both instance and lineage identities when allocating a new group, including after deletion of its original representative. A fresh Review export is required because numbering export identifiers changed during hardening.
+
+The independently observed explicit redundant restart form must never silently acquire visible labels after import/export. Any explicit unsupported outcome remains a compatibility gap in the full Mac plan, not evidence of full numbering fidelity. Native default omission, never-restart and nondefault ancestor cases remain positive acceptance requirements.
 
 ## Delivery
 COMMIT_REQUIRED: true

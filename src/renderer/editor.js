@@ -1,3 +1,4 @@
+import wordListNumbering from '../core/word-list-numbering-v1.cjs';
 import {
   applyTiptapStoryBody,
   applyTiptapUserBookmarkPublication,
@@ -1483,6 +1484,34 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
   return {};
 }
 
+function reviewSurfaceNumberingProjection(operation) {
+  if (operation?.kind !== 'list-numbering' || !reviewSurfaceIsPlainObject(operation.numbering)) return null;
+  try {
+    return {
+      instanceId: reviewSurfaceText(operation.numbering.instanceId),
+      expectedLevels: wordListNumbering.validateLevels(operation.numbering.expectedLevels),
+      levels: wordListNumbering.validateLevels(operation.numbering.levels),
+    };
+  } catch { return null; } // Invalid presentation data never supplies mutation authority.
+}
+
+function reviewSurfaceRenderNumberingChanges(operations) {
+  const describe = level => {
+    if (!level) return 'нет';
+    const restart = level.restartAfterLevel === null ? 'не перезапускать' : `после уровня ${level.restartAfterLevel + 1}`;
+    return `«${level.text}», формат ${level.format}, начало ${level.start}, ${restart}`;
+  };
+  return reviewSurfaceArray(operations).filter(operation => operation.numbering).map(operation => {
+    const { expectedLevels, levels } = operation.numbering;
+    const changes = Array.from({length: Math.max(expectedLevels.length, levels.length)}, (_, index) => {
+      const before = expectedLevels[index], after = levels[index];
+      if (JSON.stringify(before) === JSON.stringify(after)) return '';
+      return `<p>${reviewSurfaceEscapeHtml(`Уровень ${index + 1}: ${describe(before)} → ${describe(after)}`)}</p>`;
+    }).join('');
+    return changes ? `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Нумерация списка</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div>${changes}</article>` : '';
+  }).join('');
+}
+
 function reviewSurfaceNormalizeFormattingReturn(previewValue, resultValue) {
   const preview = reviewSurfaceIsPlainObject(previewValue) ? previewValue : {};
   const result = reviewSurfaceIsPlainObject(resultValue) ? resultValue : {};
@@ -1492,6 +1521,8 @@ function reviewSurfaceNormalizeFormattingReturn(previewValue, resultValue) {
     blockId: reviewSurfaceText(operation?.blockId),
     selectedText: typeof operation?.selectedText === 'string' ? operation.selectedText : '',
     expectedOutcome: reviewSurfaceText(operation?.expectedOutcome),
+    kind: reviewSurfaceText(operation?.kind),
+    numbering: reviewSurfaceNumberingProjection(operation),
   })).filter((operation) => operation.operationId && operation.sceneId);
   const diagnostics = reviewSurfaceArray(preview.diagnostics).map((diagnostic) => ({
     code: reviewSurfaceText(diagnostic?.code),
@@ -3173,6 +3204,7 @@ function renderReviewSurfaceMarkup(viewModel) {
         <p>${reviewSurfaceEscapeHtml(`${formattingReturn.operationCount} операций в ${formattingReturn.sceneCount} сценах${formattingReturn.diagnosticCount > 0 ? `, вручную: ${formattingReturn.diagnosticCount}` : ''}`)}</p>
         ${formattingReturn.code ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(formattingReturn.code)}</div>` : ''}
       </div>
+      ${reviewSurfaceRenderNumberingChanges(formattingReturn.operations)}
       ${formattingDiagnosticsMarkup}
       <div class="right-rail-review-actions">
         <button

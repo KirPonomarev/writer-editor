@@ -8358,6 +8358,7 @@ function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostic
     : null;
   const publicOperations = candidates.map((candidate) => ({
     ...(candidate.kind==='document-properties'?{kind:'document-properties',document:cloneJsonSafe(candidate.document)}:{}),
+    ...(candidate.kind==='list-numbering'?{kind:'list-numbering',numbering:cloneJsonSafe(candidate.numbering)}:{}),
     operationId: docxReviewPreviewSessionDetailString(candidate.operationId),
     sceneId: docxReviewPreviewSessionDetailString(candidate.sceneId),
     blockId: docxReviewPreviewSessionDetailString(candidate.blockId),
