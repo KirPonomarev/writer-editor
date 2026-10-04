@@ -572,7 +572,10 @@
     "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
     "test/unit/r24-wp302-session-continuity.test.mjs",
     "docs/tasks/2026-10-04--word-import-restart-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",
+    "docs/CONTEXT.md",
+    "docs/HANDOFF.md",
+    "docs/WORKLOG.md"
   ],
   "protectedFiles": [
     {
@@ -2490,6 +2493,18 @@
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
         "sha256": "317e9ae773f180372cceecb24c5731c73a8e0c06ecbac2d27ebab655f4f50f61"
+      },
+      {
+        "path": "docs/CONTEXT.md",
+        "sha256": "49a58a98d60eb2d026edfd9838306aac140d44fba430834600629a206adb401b"
+      },
+      {
+        "path": "docs/HANDOFF.md",
+        "sha256": "f982f37c29b992797e096e5debb14f71c84682ba5968f92aa99c5608e4084da2"
+      },
+      {
+        "path": "docs/WORKLOG.md",
+        "sha256": "b8ac96330fecafe064dee7cfe5e8dcd15658def3bc1befe584c1d2ec492fda68"
       }
     ],
     "followupRepair": {
