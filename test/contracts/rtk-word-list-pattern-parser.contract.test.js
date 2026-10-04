@@ -268,7 +268,7 @@ test('literal note alpha stays legacy only inside proven common range; custom an
   }
 });
 
-async function continuationReturnFixture() {
+async function continuationReturnFixture({nativeStyled=false}={}) {
   const io=await bridge, analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
   const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
@@ -284,6 +284,10 @@ async function continuationReturnFixture() {
   const {stableJson}=await import('../../src/io/revisionBridge/reviewTransportCore.mjs');
   const hash=s=>require('node:crypto').createHash('sha256').update(String(s)).digest('hex');
   const cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(stableJson(v)),byteLength:s=>Buffer.byteLength(String(s)),hmacSha256Json:(v,key)=>'hmac-sha256:'+require('node:crypto').createHmac('sha256',key).update(stableJson(v)).digest('hex'),hmacSha256Text:(v,key)=>'hmac-sha256:'+require('node:crypto').createHmac('sha256',key).update(String(v)).digest('hex')};
+  if(nativeStyled)baselineDoc.content[0].content[0].content[0].content=[
+    {type:'text',text:'Authored',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:null}}]},
+    {type:'text',text:' first',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:''}}]},
+  ];
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
   const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
@@ -380,4 +384,14 @@ test('metadata-only Word inherited font materializes through the existing explic
   assert.equal(result.ok,true,JSON.stringify(result));
   const fonts=result.candidates.filter(op=>op.inline?.fontFamily?.value==='Times New Roman');
   assert.equal(new Set(fonts.map(op=>op.paragraphOrdinal)).size,6,JSON.stringify(result));
+});
+test('font no-op is proved on final replacement coverage without splitting preserved native textStyle leaves',async()=>{
+  const f=await continuationReturnFixture({nativeStyled:true});
+  const xml=f.parts['word/document.xml'].replace(/(> first<\/w:t><\/w:r>)(<w:bookmarkEnd)/u,'$1<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:eastAsia="Aptos" w:cs="Aptos"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> CLEAN_EDIT</w:t></w:r>$2');
+  assert.notEqual(xml,f.parts['word/document.xml']);
+  const result=f.analyzer.analyzeUserBookmarksReturn(f.input(f.parse(xml)));
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.ordinaryFormattingOperations.filter(op=>op.inline.fontFamily).length,0);
+  const expected=structuredClone(f.baselineDoc);expected.content[0].content[0].content[0].content[1].text+=' CLEAN_EDIT';
+  assert.deepEqual(result.doc,expected,'same font must not split distinct null/empty style leaves or coalesce them');
 });

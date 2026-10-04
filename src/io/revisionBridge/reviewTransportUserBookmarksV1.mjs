@@ -468,8 +468,30 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         return record.id!==target.id||record.name!==target.name||record.state!==target.state
           ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
       }))return reject('ordinary-text-bookmark-endpoint-mismatch');
+      // Compare against the actual text/language replacement, not the old
+      // offsets or Word run segmentation. Reapplying an unchanged family can
+      // split otherwise preserved canonical leaves at arbitrary XML borders.
+      const mappedParagraphs=core.paragraphs(mapped.doc);
+      const effectiveFormattingOperations=ordinaryFormattingOperations.filter(operation=>{
+        const action=operation.inline?.fontFamily;
+        if(action?.action!=='set' || Object.keys(operation.inline).length!==1 || Object.keys(operation.paragraph).length)return true;
+        const paragraph=mappedParagraphs[operation.paragraphOrdinal];
+        if(!paragraph || core.textOf(paragraph).slice(operation.from,operation.to)!==operation.selectedText)return true;
+        let cursor=0, covered=0;
+        for(const node of paragraph.content || []){
+          const length=node.type==='text'?node.text.length:node.type==='hardBreak'?1:0;
+          const overlap=Math.max(0,Math.min(cursor+length,operation.to)-Math.max(cursor,operation.from));
+          if(overlap){
+            const styles=(node.marks || []).filter(mark=>mark.type==='textStyle');
+            if(node.type!=='text' || styles.length!==1 || styles[0].attrs?.fontFamily!==action.value)return true;
+            covered+=overlap;
+          }
+          cursor+=length;
+        }
+        return covered!==operation.to-operation.from;
+      });
       return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
-        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations,changed:true};
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations:effectiveFormattingOperations,changed:true};
     }
     if(ordinaryFormattingOperations.length && effects.length)return reject('paragraph-format-bookmark-composite');
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
