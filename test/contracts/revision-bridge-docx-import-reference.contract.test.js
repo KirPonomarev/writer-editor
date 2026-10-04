@@ -38,6 +38,12 @@ function harness(t, options = {}) {
   const sandbox = {
     Buffer, createDocxImportPreviewReferences, cloneJsonSafe: copy, isPlainObjectValue: record,
     ...admission, currentProjectName: 'A', path, sanitizeFilename: value => value,
+    recoverPendingWriterProjectTransaction: async () => {
+      const core = require('../../src/core/project-transaction-v1.cjs');
+      const binding = await core.readPendingProjectTransactionBinding({ manifestPath: path.join(sandbox.getProjectRootPath(), 'project.craftsman.json') });
+      assert.equal(binding.pending, false, 'reference-only fixture must not bypass a real pending transaction');
+      return { recovered: false, outcome: 'NO_JOURNAL' };
+    },
     loadRevisionBridgeModule: async () => { await state.beforeLoad?.(); return bridge(); },
     getProjectRootPath: () => path.join(tempRoot, sandbox.currentProjectName),
     getProjectSectionPath: () => path.join(sandbox.getProjectRootPath(), 'roman'),

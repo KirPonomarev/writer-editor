@@ -140,6 +140,7 @@ async function mainHarness(t,options={}) {
   loadProRoundtripPreservationModule:async()=>({applyFreeEditProDataInvalidation:manifest=>({ok:true,manifest})}),
   isPlainObjectValue:v=>!!v&&typeof v==='object'&&!Array.isArray(v),
   loadRtkNonTextReturnModule:async()=>({readCommentAuthoringState:async()=>{assert.equal(active,true);if(options.review)throw Error('double rebase');return{text:fs.readFileSync(f.commentPath,'utf8')};}}),
+  captureDocxImportPreviewContext:()=>JSON.stringify([f.root,sandbox.commentAuthoringSessionId,sandbox.currentLifecycleSubjectId()]),
   getProjectRootPath:()=>f.root,isPathInside:(root,p)=>p.startsWith(root+path.sep),
   getProjectManifestPath:()=>f.manifestPath,currentProjectName:'test',DEFAULT_PROJECT_NAME:'test',normalizeStableProjectId:s=>s,
  };

@@ -215,12 +215,12 @@ test('DOCX import product flow: accept runs preview then safe-create through com
         }
         if (request.commandId === 'cmd.project.docx.previewImportPlan') {
           assert.equal(request.payload.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_READY');
-          assert.equal(request.payload.requestId, 'accept-now');
+          assert.equal(request.payload.requestId, 'docx-product-flow');
           return { ok: true, value: { ok: true, docxImportPreviewPlan: plan } };
         }
         if (request.commandId === 'cmd.project.docx.importSafeCreate') {
           assert.deepEqual(request.payload.docxImportPreviewPlan, plan);
-          assert.equal(request.payload.requestId, 'accept-now');
+          assert.equal(request.payload.requestId, 'docx-product-flow');
           return { ok: true, value: safeCreateResult(plan) };
         }
         throw new Error(`unexpected command: ${request.commandId}`);
@@ -358,4 +358,69 @@ test('DOCX product command forwards one explicit attempt through preview, failed
  assert.ok(calls.length>=3);assert.ok(calls.every(call=>call.payload.requestId==='attempt-a'));
  const before=calls.length;assert.equal((await run(id,{requestId:'attempt-b'})).ok,true);
  assert.equal(calls.length,before+1);assert.equal(calls.at(-1).payload.requestId,'attempt-b');
+});
+
+test('DOCX acknowledgement uses the existing safe-create port without parsing or creating', async () => {
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const calls = [], registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(cloneJsonSafe(request));
+    return { ok: true, value: { ok: true, acknowledged: true, cleared: true } };
+  } } });
+  const run = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const input = { action: 'acknowledge-open', requestId: 'accepted-attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  const result = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, input);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.acknowledged, true);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].commandId, 'cmd.project.docx.importSafeCreate');
+  assert.deepEqual(calls[0].payload, input);
+});
+
+test('actual editor dispatch metadata crosses the command bus but never enters the closed Main ACK payload', async () => {
+  const fs = require('node:fs'), vm = require('node:vm');
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/commandBusGuard.mjs')).href);
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const actualDispatch = source.slice(source.indexOf('function withEditorModeCommandPayload('), source.indexOf('async function invokePreloadUiCommandBridge('));
+  const calls = [], registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(cloneJsonSafe(request));
+    assert.deepEqual(Object.keys(request.payload).sort(), ['action', 'nodeId', 'projectId', 'requestId']);
+    return { ok: true, value: { ok: true, acknowledged: true, cleared: true } };
+  } } });
+  const runCommand = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const context = { isTiptapMode: true, runCommand, COMMAND_BUS_ROUTE, runCommandThroughBus,
+    updateStatusText: () => {}, mapCommandErrorToUi: error => ({ ...error, severity: 'ERROR', userMessage: 'failed' }),
+    console: { error: () => {} } };
+  vm.runInNewContext(actualDispatch, context);
+  const input = { action: 'acknowledge-open', requestId: 'real-dispatch-attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  for (const tiptap of [true, false]) {
+    context.isTiptapMode = tiptap;
+    const result = await context.dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, input);
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.deepEqual(calls.at(-1).payload, input);
+  }
+  assert.equal(calls.length, 2);
+  for (const extra of [{ editorMode: 'forged' }, { editorMode: {} }, { editorMode: null }, { path: '/forged' }, { accepted: true }, { docxImportPreviewPlan: {} }]) {
+    const result = await runCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { ...input, ...extra });
+    assert.equal(result.ok, false); assert.equal(result.error.code, 'E_DOCX_IMPORT_ACK_INVALID');
+    assert.equal(calls.length, 2, 'invalid metadata must not reach Main');
+  }
+});
+
+test('ACK bridge preserves only fixed Main diagnostic codes and never arbitrary server text', async () => {
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const registry = createCommandRegistry(); let serverCode = 'E_DOCX_IMPORT_ACK_CONTENT_MISMATCH';
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async () => ({ ok: true, value: {
+    ok: false, error: { code: serverCode, reason: '/private/source.docx secret content', details: { path: '/private/secret' } },
+  } }) } });
+  const run = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const payload = { action: 'acknowledge-open', requestId: 'attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  const known = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, payload);
+  assert.equal(known.error.code, serverCode); assert.equal(known.error.reason, 'DOCX_IMPORT_ACK_CONTENT_MISMATCH');
+  assert.equal(JSON.stringify(known).includes('private'), false);
+  serverCode = 'E_DOCX_IMPORT_ACK_PRIVATE_DATA';
+  const unknown = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, payload);
+  assert.equal(unknown.error.code, 'E_DOCX_IMPORT_ACK_FAILED'); assert.equal(JSON.stringify(unknown).includes('private'), false);
 });

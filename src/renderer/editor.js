@@ -20904,7 +20904,7 @@ async function openImportedDocxSceneAfterAccept(plan, createdSceneIds, acceptedV
   const opened = await openDocumentNode(node);
   if (opened) {
     renderTree();
-    return { opened: true, reason: 'opened-imported-scene' };
+    return { opened: true, reason: 'opened-imported-scene', nodeId: getEffectiveDocumentId(node) };
   }
   return { opened: false, reason: 'imported-scene-open-failed' };
 }
@@ -21118,6 +21118,13 @@ async function openDocxImportPreviewFlow() {
       updateStatusText(result?.value?.localFilePreview?.status === 'cancelled' ? 'DOCX import cancelled' : 'DOCX import preview unavailable');
       return;
     }
+    const effectiveRequestId = result.value?.localFilePreview?.requestId;
+    if (typeof effectiveRequestId !== 'string' || !effectiveRequestId.trim() || effectiveRequestId.length > 120) {
+      invalidateDocxImportAttempt();
+      updateStatusText('DOCX import preview unavailable');
+      return;
+    }
+    attempt.requestId = effectiveRequestId;
     attempt.phase = 'ready';
     openDocxImportPreviewModal(result.value);
     updateStatusText('DOCX import preview ready');
@@ -21184,12 +21191,23 @@ async function confirmDocxImportPreviewAndRun() {
     if (!isCurrentDocxImportAttempt(attempt)) return;
     const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue);
     if (!isCurrentDocxImportAttempt(attempt)) return;
+    if (openResult.opened) {
+      const acknowledgement = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
+        action: 'acknowledge-open', requestId: attempt.requestId,
+        projectId: attempt.projectId, nodeId: openResult.nodeId,
+      });
+      if (!isCurrentDocxImportAttempt(attempt)) return;
+      if (acknowledgement?.ok !== true || acknowledgement.value?.acknowledged !== true) {
+        updateStatusText('Import saved. Opening could not be confirmed; choose Import DOCX to resume.');
+        return;
+      }
+    }
     const openSuffix = openResult.opened
       ? '; opened imported scene'
-      : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+      : (createdSceneIds.length > 0 ? '; choose Import DOCX to resume opening' : '');
     updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}${openSuffix}`);
   } catch {
-    if (isCurrentDocxImportAttempt(attempt)) updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}; open the imported scene from the project tree`);
+    if (isCurrentDocxImportAttempt(attempt)) updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}; choose Import DOCX to resume opening`);
   } finally {
     if (isCurrentDocxImportAttempt(attempt)) invalidateDocxImportAttempt();
   }

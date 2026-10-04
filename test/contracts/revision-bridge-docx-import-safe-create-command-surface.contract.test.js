@@ -51,6 +51,9 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
   };
   const sandbox = {
     calls,
+    currentProjectName: 'Project', DEFAULT_PROJECT_NAME: 'Project',
+    recoverPendingWriterProjectTransaction: async () => {},
+    readDocxImportAttempt: async () => ({ record: { requestId: sandbox.lastRequestId }, sha256: 'a'.repeat(64) }),
     cloneJsonSafe,
     isPlainObjectValue,
     copyDocxImportPreviewAllowedFields,
@@ -66,6 +69,7 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
     applyDocxImportSafeCreate: Object.prototype.hasOwnProperty.call(options, 'applyDocxImportSafeCreate')
       ? options.applyDocxImportSafeCreate
       : async (input, helperOptions) => {
+          sandbox.lastRequestId = helperOptions.importRequestNonce;
           calls.helper.push({ input: cloneJsonSafe(input), options: cloneJsonSafe({
             projectRoot: helperOptions.projectRoot,
             romanRoot: helperOptions.romanRoot,
@@ -176,6 +180,7 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
     getMainProjectManifestAuthority: async () => ({ kind: 'captured-port-for-projection-test' }),
     module: { exports: {} },
     exports: {},
+    ...options.globals,
   };
   vm.runInNewContext(
     `${section}
@@ -188,7 +193,7 @@ module.exports = {
     sandbox,
     { filename: MAIN_PATH },
   );
-  return sandbox.module.exports;
+  return { ...sandbox.module.exports, sandbox };
 }
 
 function validPreviewPlan(overrides = {}) {
@@ -450,3 +455,210 @@ test('DOCX import safe create command surface: contour section does not reparse 
     assert.equal(section.includes(marker), false, `${marker} must stay out of DOCX safe-create command surface`);
   }
 });
+
+function readSourceForComposer() {
+  const editor = fs.readFileSync(path.join(REPO_ROOT, 'src/renderer/editor.js'), 'utf8');
+  return editor.slice(editor.indexOf('function composeDocumentContent()'), editor.indexOf('function composeEditorSnapshot()'));
+}
+
+async function acknowledgedImportHarness(t, options = {}) {
+  const os = require('node:os');
+  const safe = require('../../src/utils/docxImportSafeCreate');
+  const { withRealDocxImportAuthority } = require('../fixtures/docx-import-real-authority.cjs');
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'main-import-ack-'));
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  const binding = await withRealDocxImportAuthority({ projectRoot, projectId: 'ack-project' });
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder');
+  const bytes = buildStoredZip([
+    {name:'[Content_Types].xml',data:'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+    {name:'_rels/.rels',data:'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/document.xml',data:'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + (options.body || '<w:p><w:r><w:t>Actual parser source</w:t></w:r></w:p>') + '</w:body></w:document>'},
+  ]);
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
+  assert.equal(plan.ok, true);
+  safe.rememberDocxImportPreviewPlanAdmission(plan);
+  let context = 'A', continuity = true, beforeSnapshot = () => {}, beforeContinuity = () => {}, saves = 0;
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const equalityContext = {
+    loadDocumentContentEnvelopeModule: async () => envelope,
+    loadRtkNonTextReturnModule: () => import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+    userBookmarkModel: require('../../src/core/word-user-bookmarks-v1.cjs'),
+    pendingTextRevisions: require('../../src/core/word-pending-text-revisions-v1.cjs'),
+  };
+  const mainSource = readMainSource();
+  vm.runInNewContext(mainSource.slice(mainSource.indexOf('async function treeSceneSnapshotsEqual('),
+    mainSource.indexOf('async function assertTreeEditorSnapshotIdentity(')), equalityContext);
+  const liveContent = () => {
+    const raw = fs.readFileSync(port.sandbox.currentFilePath, 'utf8'), parsed = envelope.parseObservablePayload(raw);
+    const editor = readSourceForComposer();
+    const composer = { isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false,
+      getTiptapDocumentSnapshot: () => ({ doc: parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), text: parsed.text }),
+      composeObservablePayload: envelope.composeObservablePayload, metaEnabled: true, currentMeta: parsed.meta, currentCards: parsed.cards };
+    vm.runInNewContext(editor, composer);
+    return composer.composeDocumentContent();
+  };
+  const port = instantiateDocxImportSafeCreatePort({ globals: {
+    ...safe, ...equalityContext, fs: fs.promises,
+    getProjectRootPath: () => projectRoot, getProjectSectionPath: () => path.join(projectRoot, 'roman'),
+    resolveProjectBindingForFile: async () => ({ ...binding, manifestRaw: fs.readFileSync(binding.manifestPath, 'utf8') }),
+    getMainProjectManifestAuthority: async () => binding.transactionAuthority,
+    captureDocxImportPreviewContext: () => context,
+    mainWindow: {}, activeStage10ApplicationBootstrap: {}, commentAuthoringSessionId: 'session',
+    currentLifecycleSubjectId: () => 'subject', lastSignaledEditGeneration: 0, currentFilePath: '',
+    isDirty: false, activePendingRecording: false, autoSaveInProgress: false,
+    userBookmarkCapability: () => {},
+    getResolvedTreeDocumentTarget: node => ({ filePath: node.filePath }),
+    requestEditorSnapshot: async () => { beforeSnapshot(); return { projectId: binding.projectId,
+      documentId: port.nodeId, generation: 0, content: liveContent(), selectionRange: { start: 0, end: 0 } }; },
+    saveLastFile: async options => { saves++; beforeContinuity(); options.beforeWrite(); return { ok: continuity }; },
+    resolveProjectTreeNodeIdentity: async nodeId => { assert.equal(nodeId, port.nodeId); return { filePath: port.sandbox.currentFilePath }; },
+  } });
+  const result = await port.handleDocxImportSafeCreateCommandSurface({ requestId: 'docx-import-before-restart', docxImportPreviewPlan: plan });
+  assert.equal(result.safeCreateOk, true, JSON.stringify(result));
+  port.nodeId = result.publicSceneLocator.nodeId;
+  port.sandbox.currentFilePath = path.join(projectRoot, 'roman', 'Imported', fs.readdirSync(path.join(projectRoot, 'roman', 'Imported')).find(name => name.endsWith('.txt')));
+  const record = await safe.readDocxImportAttempt({ projectRoot, projectId: binding.projectId });
+  const payload = { action: 'acknowledge-open', requestId: record.record.requestId, projectId: binding.projectId, nodeId: port.nodeId };
+  return { ...port, payload, record, plan, binding,
+    read: () => safe.readDocxImportAttempt({ projectRoot, projectId: binding.projectId }),
+    setContinuity: value => { continuity = value; }, setContext: value => { context = value; },
+    onSnapshot: fn => { beforeSnapshot = fn; }, onContinuity: fn => { beforeContinuity = fn; }, saves: () => saves,
+  };
+}
+
+test('Main actual accepted import ACK clears only after verified receipt, live scene and successful continuity', async t => {
+  const h = await acknowledgedImportHarness(t);
+  h.setContinuity(false);
+  const failed = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(failed.ok, false); assert.equal((await h.read()).sha256, h.record.sha256);
+  h.setContinuity(true);
+  const acknowledged = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(acknowledged.acknowledged, true, JSON.stringify(acknowledged)); assert.equal(acknowledged.cleared, true);
+  assert.equal((await h.read()).record, null); assert.equal(h.saves(), 2);
+});
+
+for (const fault of ['nonce', 'project', 'locator', 'extra-plan', 'dirty', 'snapshot-context', 'continuity-generation', 'content']) {
+  test(`Main ACK refuses ${fault} and retains the exact accepted record`, async t => {
+    const h = await acknowledgedImportHarness(t), input = { ...h.payload };
+    if (fault === 'nonce') input.requestId = 'different';
+    if (fault === 'project') input.projectId = 'different';
+    if (fault === 'locator') input.nodeId = 'tree-node-' + 'f'.repeat(32);
+    if (fault === 'extra-plan') input.docxImportPreviewPlan = h.plan;
+    if (fault === 'dirty') h.sandbox.isDirty = true;
+    if (fault === 'snapshot-context') h.onSnapshot(() => h.setContext('B'));
+    if (fault === 'continuity-generation') h.onContinuity(() => h.sandbox.lastSignaledEditGeneration++);
+    if (fault === 'content') h.sandbox.treeSceneSnapshotsEqual = async () => false;
+    const result = await h.handleDocxImportSafeCreateCommandSurface(input);
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal((await h.read()).sha256, h.record.sha256);
+  });
+}
+
+for (const mutation of ['text', 'metadata', 'cards', 'marks']) {
+  test(`actual imported-open composer ACK rejects changed ${mutation}`, async t => {
+    const h = await acknowledgedImportHarness(t);
+    const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+    const snapshot = h.sandbox.requestEditorSnapshot;
+    h.sandbox.requestEditorSnapshot = async () => {
+      const live = await snapshot(), parsed = envelope.parseObservablePayload(live.content);
+      if (mutation === 'text') parsed.doc.content[0].content[0].text += ' changed';
+      if (mutation === 'metadata') parsed.meta.synopsis = 'unsaved synopsis';
+      if (mutation === 'cards') parsed.cards.push({ title: 'unsaved', text: 'keep', tags: '' });
+      if (mutation === 'marks') parsed.doc.content[0].content[0].marks = [{ type: 'bold' }];
+      return { ...live, content: envelope.composeObservablePayload({ ...parsed, metaEnabled: true }) };
+    };
+    assert.equal((await h.handleDocxImportSafeCreateCommandSurface(h.payload)).ok, false);
+    assert.equal((await h.read()).sha256, h.record.sha256);
+  });
+}
+
+test('late acknowledgement A cannot clear a newly accepted durable attempt B', async t => {
+  const h = await acknowledgedImportHarness(t);
+  const second = await h.handleDocxImportSafeCreateCommandSurface({ requestId: 'docx-import-new-B', docxImportPreviewPlan: h.plan });
+  assert.equal(second.safeCreateOk, true, JSON.stringify(second));
+  const recordB = await h.read();
+  assert.equal(recordB.record.requestId, 'docx-import-new-B'); assert.notEqual(recordB.sha256, h.record.sha256);
+  const stale = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(stale.ok, false); assert.equal(stale.error.code, 'E_DOCX_IMPORT_ACK_STALE');
+  assert.equal((await h.read()).sha256, recordB.sha256); assert.equal(h.saves(), 0);
+});
+
+test('project change during continuity write retains accepted correlation', async t => {
+  const h = await acknowledgedImportHarness(t);
+  h.onContinuity(() => h.setContext('other-project'));
+  assert.equal((await h.handleDocxImportSafeCreateCommandSurface(h.payload)).ok, false);
+  assert.equal((await h.read()).sha256, h.record.sha256);
+});
+
+test('ACK reports a fixed failing guard and redacts unknown private exception details', async t => {
+  const h = await acknowledgedImportHarness(t);
+  h.sandbox.isDirty = true;
+  const dirty = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(dirty.error.code, 'E_DOCX_IMPORT_ACK_DIRTY');
+  h.sandbox.isDirty = false;
+  h.sandbox.requestEditorSnapshot = async () => { throw Error('/private/source.docx secret content'); };
+  const unknown = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(unknown.error.code, 'E_DOCX_IMPORT_ACK_SNAPSHOT_FAILED');
+  assert.equal(JSON.stringify(unknown).includes('private'), false);
+  assert.equal(JSON.stringify(unknown).includes('secret'), false);
+  assert.equal((await h.read()).sha256, h.record.sha256);
+});
+
+async function actualProductionEditorSchema() {
+  const { getSchema } = await import('@tiptap/core');
+  const modules = { documentStories: ['DocumentStories'], documentSections: ['DocumentSections'], documentBreaks: ['DocumentBreaks'],
+    documentListNumbering: ['DocumentListNumbering'], documentListItems: ['DocumentListItems'], documentHeadings: ['DocumentHeadings'],
+    wordPendingRevisions: ['WordPendingRevisions'], userBookmarks: ['UserBookmarks', 'UserBookmarkLink'], documentTextStyle: ['DocumentTextStyle'],
+    documentParagraphAlignment: ['DocumentParagraphAlignment'], documentTables: ['DocumentTables'], documentMedia: ['DocumentMedia'],
+    manuscriptNotes: ['ManuscriptNoteReferences'], documentCommentEditIntents: ['DocumentCommentEditIntents'] };
+  const scope = {};
+  for (const [file, names] of Object.entries(modules)) {
+    const module = await import(`../../src/renderer/tiptap/${file}.mjs`);
+    for (const name of names) scope[name] = module[name];
+  }
+  scope.StarterKit = (await import('@tiptap/starter-kit')).default;
+  for (const [name, packageName] of [['Color', 'color'], ['Highlight', 'highlight'], ['Underline', 'underline']]) scope[name] = (await import('@tiptap/extension-' + packageName)).default;
+  const source = fs.readFileSync(path.join(REPO_ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
+  const start = source.indexOf('    extensions: [', source.indexOf('const editor = new Editor(')) + '    extensions: '.length;
+  const end = source.indexOf('    content:', start);
+  assert.ok(start > 0 && end > start);
+  return getSchema(Function(...Object.keys(scope), 'return ' + source.slice(start, end).trim().replace(/,$/u, ''))(...Object.values(scope)));
+}
+
+test('actual production Tiptap table and empty-paragraph serialization acknowledges exact imported content', async t => {
+  const h = await acknowledgedImportHarness(t, { body: '<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="2400"/></w:tblGrid><w:tr><w:tc><w:tcPr/><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p/>' });
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs'), schema = await actualProductionEditorSchema();
+  const getSnapshot = h.sandbox.requestEditorSnapshot;
+  h.sandbox.requestEditorSnapshot = async () => {
+    const original = await getSnapshot(), parsed = envelope.parseObservablePayload(original.content);
+    assert.equal(parsed.doc.content[0].type, 'table');
+    const last = parsed.doc.content.at(-1);
+    assert.equal(last.type, 'paragraph'); assert.deepEqual(last.content, []);
+    const observed = schema.nodeFromJSON(parsed.doc).toJSON();
+    assert.equal(Object.hasOwn(observed.content.at(-1), 'content'), false);
+    return { ...original, content: envelope.composeObservablePayload({ ...parsed, doc: observed, metaEnabled: true }) };
+  };
+  const result = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(result.acknowledged, true, JSON.stringify(result)); assert.equal((await h.read()).record, null);
+});
+
+for (const mutation of ['empty-paragraph-text', 'empty-paragraph-alignment']) {
+  test(`ACK empty-paragraph equivalence preserves ${mutation} differences`, async t => {
+    const h = await acknowledgedImportHarness(t, { body: '<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="2400"/></w:tblGrid><w:tr><w:tc><w:tcPr/><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p/>' });
+    const envelope = require('../../src/core/document-content-envelope-v1.cjs'), schema = await actualProductionEditorSchema();
+    const getSnapshot = h.sandbox.requestEditorSnapshot;
+    h.sandbox.requestEditorSnapshot = async () => {
+      const original = await getSnapshot(), parsed = envelope.parseObservablePayload(original.content);
+      const observed = schema.nodeFromJSON(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text)).toJSON();
+      const last = observed.content.at(-1);
+      assert.equal(last.type, 'paragraph'); assert.equal(Object.hasOwn(last, 'content'), false);
+      if (mutation === 'empty-paragraph-text') last.content = [{ type: 'text', text: 'Unsaved' }];
+      else last.attrs = { ...(last.attrs || {}), textAlign: 'right' };
+      return { ...original, content: envelope.composeObservablePayload({ ...parsed, doc: observed, metaEnabled: true }) };
+    };
+    const result = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+    assert.equal(result.error.code, 'E_DOCX_IMPORT_ACK_CONTENT_MISMATCH');
+    assert.equal((await h.read()).sha256, h.record.sha256);
+  });
+}

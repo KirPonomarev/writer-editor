@@ -53,12 +53,20 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
   const section = extractMarkedSection(readSource(MAIN_PATH), SECTION_START, SECTION_END);
   const calls = {
     showOpenDialog: [],
+    showMessageBox: [],
     stat: [],
     readFile: [],
     rememberAdmission: [],
   };
+  const references = require('../../src/utils/docxImportPreviewReferences').createDocxImportPreviewReferences();
   const sandbox = {
+    rememberDocxImportPreviewReference: (kind, value, context) => references.remember(kind, value, context),
     Buffer,
+    crypto: require('node:crypto'), currentProjectName: 'Project', DEFAULT_PROJECT_NAME: 'Project',
+    getProjectManifestPath: () => '/trusted/project.craftsman.json',
+    captureDocxImportPreviewContext: options.captureContext || (() => 'project-context'),
+    userBookmarkCapability: () => {},
+    readDocxImportAttempt: options.readAttempt || (async () => ({ record: null, sha256: null })),
     calls,
     cloneJsonSafe,
     createDocxImportLocalFilePreview: Object.prototype.hasOwnProperty.call(
@@ -68,6 +76,10 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
       ? options.createDocxImportLocalFilePreview
       : createDocxImportLocalFilePreview,
     dialog: {
+      showMessageBox: async (...args) => {
+        calls.showMessageBox.push(cloneJsonSafe(args));
+        return options.showMessageBox ? options.showMessageBox(...args) : { response: options.choice ?? 0 };
+      },
       showOpenDialog: async (...args) => {
         calls.showOpenDialog.push(cloneJsonSafe(args));
         if (typeof options.showOpenDialog === 'function') {
@@ -96,6 +108,7 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
         };
       },
       readFile: async (filePath) => {
+        if (filePath === '/trusted/project.craftsman.json') return JSON.stringify({projectId:'project-a'});
         calls.readFile.push(filePath);
         if (typeof options.readFile === 'function') return options.readFile(filePath);
         return Buffer.from(options.bytes || '');
@@ -714,4 +727,65 @@ test('DOCX local file preview command surface: helper and hostile output fail cl
   assert.equal(hostileResult.error.reason, 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_RESULT');
   assert.equal(hostileResult.error.details.key, 'docxImportPreviewPlan.writeReceipt');
   assertNoForbiddenPublicFields(hostileResult);
+});
+
+test('Resume reparses selected bytes with saved nonce; New and Cancel do not alter accepted correlation', async () => {
+  const saved = { record: { requestId: 'docx-import-accepted-before-restart', sourceArtifactSha256: 'a'.repeat(64), candidateContentSha256: 'b'.repeat(64) }, sha256: 'a'.repeat(64) };
+  for (const choice of [0, 1, 2]) {
+    let reads = 0;
+    const port = instantiateDocxImportLocalFilePreviewCommandPort({ choice,
+      readAttempt: async () => { reads++; return saved; },
+      dialogResult: { canceled: false, filePaths: [path.join(os.tmpdir(), 'Resume.docx')] },
+      bytes: cleanDocxZip('<w:p><w:r><w:t>Fresh source</w:t></w:r></w:p>'),
+    });
+    const result = await port.handleDocxImportLocalFilePreviewCommandSurface({ requestId: 'docx-import-proposed-new' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(port.calls.showMessageBox.length, 1);
+    const dialog = port.calls.showMessageBox[0].at(-1);
+    assert.equal(dialog.cancelId, 2); assert.equal(dialog.defaultId, 0);
+    if (choice === 2) {
+      assert.equal(result.status, 'cancelled'); assert.equal(port.calls.showOpenDialog.length, 0); assert.equal(reads, 1);
+    } else {
+      assert.equal(port.calls.showOpenDialog.length, 1); assert.equal(port.calls.readFile.length, 1);
+      assert.equal(result.importPreviewOk, true); assert.match(result.docxContentPreviewRef, /^[a-f0-9]{64}$/u);
+      if (choice === 0) assert.equal(result.requestId, saved.record.requestId);
+      else { assert.notEqual(result.requestId, saved.record.requestId); assert.notEqual(result.requestId, 'docx-import-proposed-new'); }
+      assert.equal(reads, 2);
+    }
+    assert.equal(saved.record.requestId, 'docx-import-accepted-before-restart');
+  }
+});
+
+test('Resume fails closed when project or accepted record changes during native question', async () => {
+  for (const fault of ['project', 'record']) {
+    let context = 'A', reads = 0;
+    const port = instantiateDocxImportLocalFilePreviewCommandPort({ captureContext: () => context,
+      readAttempt: async () => ({ record: { requestId: 'accepted' }, sha256: (++reads === 1 ? 'a' : 'b').repeat(64) }),
+      showMessageBox: async () => { if (fault === 'project') context = 'B'; return { response: 0 }; },
+    });
+    const result = await port.handleDocxImportLocalFilePreviewCommandSurface({ requestId: 'new' });
+    assert.equal(result.ok, false); assert.equal(port.calls.showOpenDialog.length, 0); assert.equal(port.calls.readFile.length, 0);
+  }
+});
+
+test('legacy accepted correlation without either source hash offers explicit New or Cancel, never Resume', async () => {
+  for (const missing of ['sourceArtifactSha256', 'candidateContentSha256']) {
+    for (const choice of [0, 1]) {
+      const saved = { record: { requestId: 'legacy-accepted', sourceArtifactSha256: 'a'.repeat(64), candidateContentSha256: 'b'.repeat(64), [missing]: null }, sha256: 'c'.repeat(64) };
+      const before = JSON.stringify(saved);
+      const port = instantiateDocxImportLocalFilePreviewCommandPort({ choice,
+        readAttempt: async () => saved,
+        dialogResult: { canceled: false, filePaths: [path.join(os.tmpdir(), 'New.docx')] },
+        bytes: cleanDocxZip('<w:p><w:r><w:t>New source</w:t></w:r></w:p>'),
+      });
+      const result = await port.handleDocxImportLocalFilePreviewCommandSurface({ requestId: 'proposed' });
+      assert.equal(result.ok, true, JSON.stringify(result));
+      const dialog = port.calls.showMessageBox[0].at(-1);
+      assert.deepEqual(dialog.buttons, ['Новый импорт', 'Отмена']);
+      assert.match(dialog.detail, /нельзя проверить исходный файл/u); assert.equal(dialog.cancelId, 1);
+      if (choice === 0) { assert.notEqual(result.requestId, saved.record.requestId); assert.equal(port.calls.readFile.length, 1); }
+      else { assert.equal(result.status, 'cancelled'); assert.equal(port.calls.readFile.length, 0); }
+      assert.equal(JSON.stringify(saved), before);
+    }
+  }
 });

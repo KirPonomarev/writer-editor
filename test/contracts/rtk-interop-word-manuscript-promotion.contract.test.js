@@ -59,7 +59,12 @@ test('Manuscript promotion admits only exact inspected C4 and Word proof success
   for (const binding of bindings) {
     const target = path.join(root, binding.path);
     await fs.mkdir(path.dirname(target), {recursive: true});
-    await fs.copyFile(path.join(ROOT, binding.path), target);
+    // This carrier is the inspected PR1997 proof, not today's evolving harness.
+    const historicalCarrier = 'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js';
+    if (binding.path === historicalCarrier) {
+      const bytes = execFileSync('git', ['show', `1c74b5af75e1bfb9d9ced3fa7bbe578d7c7059d9:${historicalCarrier}`], {cwd: ROOT});
+      await fs.writeFile(target, bytes);
+    } else await fs.copyFile(path.join(ROOT, binding.path), target);
     assert.equal(digest(await fs.readFile(target)), binding.sha256);
   }
   const certificationCarrier = 'scripts/ops/r24/corrective/post-audit-certification-set.mjs';

@@ -422,3 +422,134 @@ test('WP302 active document path rebind preserves selection without adding UI or
   assert.equal(contractSource.includes('setInterval'), false);
   assert.equal(contractSource.includes('setTimeout'), false);
 });
+
+test('startup recovers the selected journal before tree reconciliation and Stage10, and stops on recovery error', async () => {
+  const vm = await import('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = source.indexOf('async function initializeApp()');
+  const end = source.indexOf('// ROUND-01', start);
+  const body = source.slice(start, end) + '}';
+  for (const fails of [false, true]) {
+    const calls = [];
+    const context = { currentProjectName: 'Alpha', DEFAULT_PROJECT_NAME: 'Default', fileManager: { migrateDocumentsFolder: async () => {}, ensureDocumentsFolder: async () => {} },
+      ensureAutosaveDirectory: async () => {}, ensureProjectStructure: async () => calls.push('ensure'),
+      recoverSelectedProjectAtStartup: async () => { calls.push('recover'); if (fails) throw Error('recovery'); },
+      buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
+      bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
+      reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {},
+      reconcileReviewExactTextApplyJournalsAtStartup: async () => {}, reconcileRoundRecordV3StoreAtStartup: async () => {} };
+    vm.runInNewContext(body, context);
+    if (fails) { await assert.rejects(context.initializeApp(), /recovery/); assert.deepEqual(calls, ['recover']); }
+    else { await context.initializeApp(); assert.deepEqual(calls, ['recover', 'ensure', 'tree', 'stage10']); }
+  }
+});
+
+test('scene recovery adapter revalidates lifecycle and lease before actual filesystem publication', async () => {
+  const vm = await import('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = source.indexOf('async function recoverWriterProjectTransactionForFile(');
+  const end = source.indexOf('async function recoverPendingWriterProjectTransaction()', start);
+  for (const fault of ['none', 'context', 'lease']) {
+    let context = 'A', mutations = 0, leaseChecks = 0;
+    const globals = { getProjectRootPath: () => '/project', isPathInside: () => true,
+      getProjectManifestPath: () => '/project/project.craftsman.json', currentProjectName: 'project', DEFAULT_PROJECT_NAME: 'project',
+      captureDocxImportPreviewContext: () => context, normalizeStableProjectId: value => value,
+      fs: { readFile: async () => '{"projectId":"project-a"}', rename: async () => { mutations++; } },
+      getMainProjectManifestAuthority: async () => ({ withProjectLease: async (_id, fn) => fn({ publish: async fn => fn({
+        assertOwned: async () => { leaseChecks++; if (fault === 'lease') throw Error('lease expired'); },
+      }) }) }),
+      recoverProjectTransaction: async ({ fsAdapter }) => {
+        await fsAdapter.readFile('/project/scene.txt');
+        if (fault === 'context') context = 'B';
+        await fsAdapter.rename('/project/temp', '/project/scene.txt');
+        return { recovered: true };
+      },
+    };
+    vm.runInNewContext(source.slice(start, end), globals);
+    if (fault === 'none') { assert.equal((await globals.recoverWriterProjectTransactionForFile('/project/scene.txt')).recovered, true); assert.equal(mutations, 1); assert.equal(leaseChecks, 1); }
+    else { await assert.rejects(globals.recoverWriterProjectTransactionForFile('/project/scene.txt')); assert.equal(mutations, 0); }
+  }
+});
+
+async function rawStartupHarness(t, { selected = true, schema = 1, external = false, malformed = false, missing = false } = {}) {
+  const vm = await import('node:vm');
+  const documents = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'raw-startup-recovery-'));
+  t.after(() => fsPromises.rm(documents, { recursive: true, force: true }));
+  const project = path.join(documents, selected ? 'Selected' : 'Default');
+  await fsPromises.mkdir(project);
+  const manifestPath = path.join(project, PROJECT_MANIFEST_FILENAME);
+  const raw = malformed ? '{broken' : JSON.stringify({ projectId: 'project-alpha', schemaVersion: schema, preserved: 'before' });
+  if (!missing) await fsPromises.writeFile(manifestPath, raw);
+  const protectedDefault = path.join(documents, 'Default', PROJECT_MANIFEST_FILENAME);
+  if (selected) { await fsPromises.mkdir(path.dirname(protectedDefault)); await fsPromises.writeFile(protectedDefault, '{"projectId":"default-untouched","schemaVersion":1}'); }
+  const settings = external ? { lastExternalFilePath: '/owned/external.txt' }
+    : selected ? { sessionContinuityV1: makeRecord() } : {};
+  const calls = [];
+  const context = { fs: fsPromises, path, PROJECT_MANIFEST_FILENAME, PROJECT_MANIFEST_SCHEMA_VERSION: 1,
+    DEFAULT_PROJECT_NAME: 'Default', currentProjectName: '', loadSettings: async () => settings,
+    readSessionContinuityV1, normalizeStableProjectId: value => typeof value === 'string' ? value.trim() : '',
+    isPlainObjectValue: value => !!value && typeof value === 'object' && !Array.isArray(value),
+    fileManager: { getDocumentsPath: () => documents },
+    getProjectManifestPath: name => path.join(documents, name, PROJECT_MANIFEST_FILENAME),
+    setActiveProjectNameFromRoot: root => { context.currentProjectName = path.basename(root); calls.push(['select', context.currentProjectName]); },
+    recoverPendingWriterProjectTransaction: async () => {
+      calls.push(['recover', context.currentProjectName]);
+      assert.equal(await fsPromises.readFile(manifestPath, 'utf8'), raw, 'recovery receives exact before-image before normalization');
+      await fsPromises.writeFile(manifestPath, JSON.stringify({ projectId: 'project-alpha', schemaVersion: 1, preserved: 'recovered' }));
+    },
+  };
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = source.indexOf('async function recoverSelectedProjectAtStartup()');
+  const end = source.indexOf('async function bootstrapStage10ApplicationAtStartup()', start);
+  vm.runInNewContext(source.slice(start, end), context);
+  return { context, calls, manifestPath, protectedDefault, raw, source, vm };
+}
+
+test('startup binds nondefault selected project from raw manifest and leaves default untouched', async t => {
+  const h = await rawStartupHarness(t);
+  const defaultBefore = await fsPromises.readFile(h.protectedDefault, 'utf8');
+  await h.context.recoverSelectedProjectAtStartup();
+  assert.deepEqual(h.calls, [['select', 'Selected'], ['recover', 'Selected']]);
+  assert.equal(await fsPromises.readFile(h.protectedDefault, 'utf8'), defaultBefore);
+  assert.equal(JSON.parse(await fsPromises.readFile(h.manifestPath, 'utf8')).preserved, 'recovered');
+});
+
+for (const specimen of [
+  { name: 'default existing', selected: false, recover: true },
+  { name: 'default absent', selected: false, missing: true },
+  { name: 'external last file', external: true },
+  { name: 'future selected', schema: 99, rejects: true },
+  { name: 'malformed default', selected: false, malformed: true, rejects: true },
+]) test(`raw startup ${specimen.name} preserves safe admission`, async t => {
+  const h = await rawStartupHarness(t, specimen);
+  if (specimen.rejects) await assert.rejects(h.context.recoverSelectedProjectAtStartup());
+  else await h.context.recoverSelectedProjectAtStartup();
+  assert.equal(h.calls.filter(call => call[0] === 'recover').length, specimen.recover ? 1 : 0);
+  if (!specimen.missing && !specimen.recover) assert.equal(await fsPromises.readFile(h.manifestPath, 'utf8'), h.raw);
+});
+
+test('actual window startup continuation preserves autosave precedence after project recovery', async () => {
+  const vm = await import('node:vm');
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const windowStart = source.indexOf('function createWindow()');
+  const continuationStart = source.indexOf('}).then(async () => {', windowStart) + '}).then(async () => {'.length;
+  const continuationEnd = source.indexOf('}).catch((error)', continuationStart);
+  const continuation = 'async function loadedWindow() {' + source.slice(continuationStart, continuationEnd) + '}';
+  const initializeStart = source.indexOf('async function initializeApp()');
+  const initializeEnd = source.indexOf('// ROUND-01', initializeStart);
+  for (const autosave of [true, false]) {
+    const calls = [];
+    const c = { currentProjectName: 'Selected', DEFAULT_PROJECT_NAME: 'Default',
+      fileManager: { migrateDocumentsFolder: async () => {}, ensureDocumentsFolder: async () => {} },
+      ensureAutosaveDirectory: async () => {}, recoverSelectedProjectAtStartup: async () => calls.push('recovery'),
+      ensureProjectStructure: async () => calls.push('structure'), buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
+      bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
+      reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {}, reconcileReviewExactTextApplyJournalsAtStartup: async () => {},
+      mainWindow: { webContents: { setZoomFactor: () => {} } }, logPerfStage: () => {}, loadSavedFontSize: async () => {},
+      restoreAutosaveIfExists: async () => { calls.push('autosave'); return autosave; }, openLastFile: async () => { calls.push('last-file'); return 'loaded'; }, updateStatus: () => {},
+    };
+    vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + continuation, c);
+    await c.initializeApp(); await c.loadedWindow();
+    assert.deepEqual(calls, ['recovery', 'structure', 'tree', 'stage10', 'autosave', ...(autosave ? [] : ['last-file'])]);
+  }
+});
