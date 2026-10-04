@@ -101,7 +101,11 @@ function replaceOrdinaryText(p,before,after) {
     &&before[before.length-suffix-1]===after[after.length-suffix-1])suffix++;
   while(suffix>0&&(!oldBounds.has(before.length-suffix)||!newBounds.has(after.length-suffix)))suffix--;
   if(prefix+suffix===before.length&&before!==after){
-    if(prefix>0){prefix--;while(prefix>0&&!oldBounds.has(prefix))prefix--;}
+    // Anchor a pure insertion to adjacent source text. A preceding hardBreak
+    // is unchanged structure, so retain the right grapheme instead of copying
+    // that break into the replacement's text footprint.
+    const rightText=prefix>0&&before[prefix-1]==='\n'&&suffix>0&&before[prefix]!=='\n';
+    if(prefix>0&&!rightText){prefix--;while(prefix>0&&!oldBounds.has(prefix))prefix--;}
     else if(suffix>0){suffix--;while(suffix>0&&!oldBounds.has(before.length-suffix))suffix--;}
   }
   if(before!==after)replaceText(p,prefix,before.length-suffix,after.slice(prefix,after.length-suffix));

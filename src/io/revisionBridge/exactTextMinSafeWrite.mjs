@@ -820,7 +820,11 @@ function applyRichInlineReplacement(block, operation) {
     // Retain one complete original grapheme for an insertion, so the existing
     // writer still derives its marks from a nonempty exact source range.
     if (prefix + suffix === original.length && original !== replacement) {
-      if (prefix > 0) {
+      // The preceding hardBreak stays untouched. Use adjacent source text on
+      // the right when present; structural-only footprints still refuse below.
+      const rightText = prefix > 0 && original[prefix - 1] === '\n'
+        && suffix > 0 && original[prefix] !== '\n';
+      if (prefix > 0 && !rightText) {
         prefix -= 1;
         while (prefix > 0 && !boundaries.has(from + prefix)) prefix -= 1;
       } else if (suffix > 0) {

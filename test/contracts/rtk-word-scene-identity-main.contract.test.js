@@ -1224,7 +1224,7 @@ for(const variant of ['typed-failure','formatting-failure','secret-filter','canc
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1260,7 +1260,7 @@ async function cleanTextReturnFixture(t,{emptyTailLanguage=null,nativeTableProfi
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
   if(tableCommentContinuation) {
     const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
-    parsed.doc={type:'doc',content:[{type:'table',attrs:{wordTable:{version:1,grid:[7200],layout:'fixed',widthDxa:7200,shading:null,borders:{}}},content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'contQinued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
+    parsed.doc={type:'doc',content:[{type:'table',attrs:{wordTable:{version:1,grid:[7200],layout:'fixed',widthDxa:7200,shading:null,borders:{}}},content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:continuationLabel+' cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
   }
   if(tableCommentContinuation)for(const paragraph of bookmarks.paragraphs(parsed.doc).slice(0,3))paragraph.attrs={...paragraph.attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}};
   if(nativeTableProfile){
@@ -1294,7 +1294,7 @@ async function cleanTextReturnFixture(t,{emptyTailLanguage=null,nativeTableProfi
     const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});
     if(tableCommentContinuation) {
       const state=JSON.parse(planned.afterText),root=state.threads[0];state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
-      for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?11:1,selectedText:point?'':'contQinued',...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
+      for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?1+continuationLabel.length:1,selectedText:point?'':continuationLabel,...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
       state.threads[1].messages.push({commentId:'continuation-reply',kind:'reply',body:'Reply body',provenance:{author:'Reply author'}});
       const foreignScene='roman/Imported/02_Beta.txt';state.threads.push({threadId:'foreign',rootCommentId:'foreign-root',sceneId:foreignScene,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Beta'},foreignScene,['Beta']),messages:[{commentId:'foreign-root',kind:'root',body:'Foreign body',provenance:{author:'Foreign'}}]});
       if(commentParagraphSpacing)for(const thread of state.threads)for(const message of thread.messages)message.richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}},content:[{type:'text',text:message.body}]}]}};
@@ -2235,14 +2235,16 @@ for(const fault of [false,true])test('large random comment graph and 1000 paragr
 });
 
 
-for(const defaultsMode of ['removed','inherited','foreign-global','native','native-georgia','native-tamper'])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; defaults ${defaultsMode}`,async t=>{
-  const inheritedDefaults=defaultsMode!=='removed',nativeTableProfile=defaultsMode.startsWith('native');
-  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{nativeTableProfile,commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+for(const defaultsMode of ['removed','inherited','foreign-global','native','native-georgia','native-tamper','native-break-adjacent','native-break-grapheme'])test(`actual Main table list continuation Word edit atomically preserves range point reply and sibling scene; defaults ${defaultsMode}`,async t=>{
+  const inheritedDefaults=defaultsMode!=='removed',nativeTableProfile=defaultsMode.startsWith('native'),adjacentBreak=defaultsMode.startsWith('native-break-');
+  const continuationLabel=defaultsMode==='native-break-grapheme'?'🚀ontQinued':'contQinued';
+  const expectedContinuation='\n'+(adjacentBreak?'B'+continuationLabel:continuationLabel+'R')+' cell anchor\n';
+  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{continuationLabel,nativeTableProfile,commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
     const before=parts['word/document.xml'];
     if(nativeTableProfile){
-      const point=[...parts['word/comments.xml'].matchAll(/<w:comment\b[^>]*w:id="(\d+)"[^>]*>[\s\S]*?<\/w:comment>/gu)].find(match=>match[0].includes('point body'));
+      const point=[...parts['word/comments.xml'].matchAll(/<w:comment\b[^>]*w:id="(\d+)"[^>]*>[\s\S]*?<\/w:comment>/gu)].find(match=>match[0].includes(adjacentBreak?'continuation body':'point body'));
       assert.ok(point);const marker=`<w:commentRangeStart w:id="${point[1]}"/>`;
-      parts['word/document.xml']=before.replace(marker,'<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:eastAsia="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr><w:t>R</w:t></w:r>'+marker);
+      parts['word/document.xml']=before.replace(marker,'<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:eastAsia="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr><w:t>'+(adjacentBreak?'B':'R')+'</w:t></w:r>'+marker);
     }else parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');
     assert.notEqual(parts['word/document.xml'],before);
     if(defaultsMode==='native-georgia'){
@@ -2270,14 +2272,19 @@ for(const defaultsMode of ['removed','inherited','foreign-global','native','nati
   for(const paragraph of bookmarks.paragraphs(doc).slice(0,3)){
     assert.deepEqual(paragraph.attrs?.wordParagraphSpacing,inheritedDefaults?{after:160,line:278,lineRule:'auto'}:undefined,'effective inherited spacing differs from genuine removal');
   }
-  assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item','\ncontQinuedR cell anchor\n','Second cell item W','']);
+  assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item',expectedContinuation,'Second cell item W','']);
   assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
   assert.deepEqual(after.threads.find(t=>t.threadId==='foreign'),before.threads.find(t=>t.threadId==='foreign'));
-  assert.equal(after.threads.find(t=>t.threadId==='point').anchor.startUtf16,12);
-  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.selectedText,nativeTableProfile?'contQinued':'contQinuedR');
+  assert.equal(after.threads.find(t=>t.threadId==='point').anchor.startUtf16,continuationLabel.length+2);
+  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.selectedText,nativeTableProfile?continuationLabel:continuationLabel+'R');
+  assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.startUtf16,adjacentBreak?2:1);
   const freshSource=await f.probe.fullSource(),fresh=await f.probe.reviewBuild(freshSource);assert.equal(fresh.publicationGate.publishAllowed,true);
   const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fresh.documentBuffer}).parts['word/document.xml'];
-  assert.ok(nativeTableProfile?xml.includes('>R</w:t>'):xml.includes('contQinuedR'));assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2);
+  if(adjacentBreak){
+    const literalParagraphs=[...xml.matchAll(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/gu)].map(match=>[...match[0].matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:br(?:\s[^>]*)?\/>/gu)].map(token=>token[1]??'\n').join(''));
+    assert.ok(literalParagraphs.includes(expectedContinuation),'exact literal re-export is independent of run segmentation');
+  }else assert.ok(nativeTableProfile?xml.includes('>R</w:t>'):xml.includes('contQinuedR'));
+  assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2);
   if(nativeTableProfile){
     assert.equal(Object.hasOwn(doc.content.at(-1),'content'),false,'unchanged empty paragraph keeps absent content');
     const continuation=bookmarks.paragraphs(doc)[1];
