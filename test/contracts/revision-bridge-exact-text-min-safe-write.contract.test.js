@@ -907,7 +907,25 @@ test('C04 core stays isolated while the approved review apply command may call i
   const moduleText = fs.readFileSync(MODULE_PATH, 'utf8');
   assert.equal(moduleText.includes('main.js'), false);
   assert.equal(moduleText.includes('preload'), false);
-  assert.equal(moduleText.includes('docx'), false);
+  // The existing URL validator is pure interpretation, not a DOCX package reader.
+  // Admit only this import and these two exact calls; every other DOCX dependency stays forbidden.
+  let isolatedText = moduleText;
+  for (const permitted of ["import docxHyperlinks from '../docxHyperlinks.cjs';",
+    'docxHyperlinks.normalizeDocxHttpHref(value.expectedHref)',
+    'docxHyperlinks.normalizeDocxHttpHref(value.replacementHref)']) {
+    assert.equal(isolatedText.split(permitted).length - 1, 1, `expected one bounded helper use: ${permitted}`);
+    isolatedText = isolatedText.replace(permitted, '');
+  }
+  assert.doesNotMatch(isolatedText, /docx/iu);
+  const helperText = fs.readFileSync('src/io/docxHyperlinks.cjs', 'utf8');
+  assert.deepEqual([...helperText.matchAll(/require\(['"]([^'"]+)['"]\)/gu)].map(match => match[1]),
+    ['../core/word-user-bookmarks-v1.cjs']);
+  assert.doesNotMatch(helperText, /\b(?:fetch|XMLHttpRequest|ipcMain|ipcRenderer|readFile|writeFile|execFile|spawn)\b|\bimport\s*(?:\(|[^;]*from)/u);
+  const sandbox = {module:{exports:{}}, URL, require(){throw Error('normalization must not load dependencies');}};
+  require('node:vm').runInNewContext(helperText, sandbox);
+  assert.equal(sandbox.module.exports.normalizeDocxHttpHref('https://example.com/a#b'), 'https://example.com/a#b');
+  assert.throws(() => sandbox.module.exports.normalizeDocxHttpHref('file:///private/document'), /DOCX_LINK_TARGET_UNSUPPORTED/);
+
   assert.equal(moduleText.includes('ipcMain'), false);
   assert.equal(moduleText.includes('ipcRenderer'), false);
 
