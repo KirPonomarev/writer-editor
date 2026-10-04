@@ -313,8 +313,15 @@ function applyInlineRange(paragraph, operation) {
   let cursor = 0;
   for (const node of content) {
     if (!isPlainObject(node) || node.type !== 'text') {
-      nextContent.push(cloneJson(node));
-      if (node?.type === 'hardBreak') cursor += 1;
+      const copied=cloneJson(node);
+      if(node?.type==='hardBreak'){
+        if(cursor<operation.to && cursor+1>operation.from){
+          const marks=applyInlineActions(Array.isArray(node.marks)?node.marks:[],operation.inline);
+          if(marks.length)copied.marks=marks;else delete copied.marks;
+        }
+        cursor+=1;
+      }
+      nextContent.push(copied);
       continue;
     }
     const value = rawString(node.text);

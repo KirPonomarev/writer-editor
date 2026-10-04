@@ -533,7 +533,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const merged=[];
       for(const node of resultPs[i].content||[]){const last=merged.at(-1);if(node.type==='text'&&last?.type==='text'&&same(node.marks||[],last.marks||[])){last.text+=node.text;}else merged.push(node);}
       resultPs[i].content=merged;
-      if(same(semanticParagraph(resultPs[i]),semanticParagraph(basePs[i])))resultPs[i].content=clone(basePs[i].content||[]);
+      if(same(semanticParagraph(resultPs[i]),semanticParagraph(basePs[i]))){
+        if(Object.hasOwn(basePs[i],'content'))resultPs[i].content=clone(basePs[i].content);
+        else delete resultPs[i].content;
+      }
       else if(!effects.some(e=>e.kind==='linkLabel'&&e.paragraphIndex===i))effects.push({kind:'linkTarget',paragraphIndex:i});
     }
     if(ordinaryTextChanges.length){

@@ -149,7 +149,7 @@ function readDocumentInlineRuns(node) {
   }
   if (node.type === 'hardBreak') {
     const type = require('../../core/word-typed-breaks-v1.cjs').kind(node);
-    return [{ text: '\n', marks: [], ...(type !== 'line' ? { wordBreakType: type } : {}) }];
+    return [{ text: '\n', marks: node.marks, ...(type !== 'line' ? { wordBreakType: type } : {}) }];
   }
   if (node.type === 'image') return [{ text: '', image: node.attrs }];
   return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);

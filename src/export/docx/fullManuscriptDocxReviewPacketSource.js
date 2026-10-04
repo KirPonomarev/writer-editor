@@ -302,9 +302,7 @@ function buildFormatIrParagraphs(scene) {
       const breakType = inlineNode.type === 'hardBreak' ? require('../../core/word-typed-breaks-v1.cjs').kind(inlineNode) : 'line';
       const text = inlineNode.type === 'hardBreak' ? '\n' : normalizeSceneText(inlineNode.text);
       if (inlineNode.type === 'text' && !text) continue;
-      const normalizedMarks = inlineNode.type === 'text'
-        ? normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal, registry)
-        : { inline: {}, preservedMarks: [] };
+      const normalizedMarks = normalizeFormatIrInlineMarks(inlineNode.marks, scene.sceneId, paragraphOrdinal, registry);
       runs.push({
         from: cursor,
         to: cursor + text.length,

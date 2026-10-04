@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "25a1d5fda690c4c5f859f600e885fb11cf8e7655bf0e3ea88326a3950c846ef7"
+        "sha256": "71cb953cadadf9446e0b039efb0caa17a415897a3598e671a84e5e99ed620dc2"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -821,7 +821,7 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "860e879b8ee022522225f3e1dbc012f0b2eb2aa811a4d323a4854fcfc66eb1e0"
+        "sha256": "4fd8836d069e644658123a114a5bafd8d92ed77a60548d546343307504876c28"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
@@ -925,7 +925,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "74c52f9fcad530de7d453f75d3f1be8704ec3171acb7bcf3965cda8f85b7e88c"
+        "sha256": "6c4608c089fcb41e0a162f7d45e2820bb420ac27850caa95a4a4ee83766087fc"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1389,7 +1389,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "3ddf150003d5c037552ce6b883dff5004cacf263a6db14ba09f0e514d278b58b"
+        "sha256": "e87b9ea7fbe97b801e527df00acbb38203181f7ca60a481da4df7ae95bea1226"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1781,7 +1781,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "63bce95c24b372239b71a1d6029c840cbd578ee4e05579ff5a53657bfe6f87b8"
+        "sha256": "404e746367b895ed63d89a54a39b221495a390e961161a173c2cec55c9259d02"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "5c7fe6ad2aeccd0c16d5056af066ad8683eaaaec132d4d494d342e529d554962"
+        "sha256": "17805d40ba34ff8a2cf76104f3d1755545526e2199d71deaba382d34fb7c0ae1"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2413,15 +2413,15 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
-        "sha256": "d23e6f272b9e8f7f1ef820827b4b085e786282c1e71d2da749e2e07c651a278d"
+        "sha256": "5f38541ae0d226b02a7ffa539c2a88e82340386cd831184fbb2d6666beb69bed"
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "60ee1f514ca584f34baddc82c167a50232170e4641e3dfe87b2cd552aab2a2f8"
+        "sha256": "5a0a9b4d6db035dc57a99b88bb644de911f5e9018717f224bd8f6ed705552f6e"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "07cdba52c90282680b244fd2128c05297e0594f4cd6310321636fce24d4cd9a2"
+        "sha256": "bf6acfb022252e015dd25a46af47451c6cd789557981c49e96aebf9fce3b3e5a"
       },
       {
         "path": "src/preload.js",

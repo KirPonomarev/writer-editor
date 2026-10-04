@@ -26130,9 +26130,10 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
         const byParagraph=new Map();
         for(const operation of store.cleanTextFormattingOperations){
           if(['list-numbering','document-properties'].includes(operation.kind))continue;
-          const entry=byParagraph.get(operation.paragraphOrdinal) || {operation,font:false,spacing:false};
+          const entry=byParagraph.get(operation.paragraphOrdinal) || {operation,font:false,spacing:false,markLanguage:false};
           entry.font ||= Object.hasOwn(operation.inline || {},'fontFamily');
           entry.spacing ||= Object.hasOwn(operation.paragraph || {},'wordParagraphSpacing');
+          entry.markLanguage ||= Object.hasOwn(operation.paragraph || {},'wordParagraphMarkLanguage');
           byParagraph.set(operation.paragraphOrdinal,entry);
         }
         for(const [index,entry] of byParagraph){
@@ -26143,9 +26144,11 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
             operationId:`${entry.operation.operationId}-prepared-${operations.length}`,from,to,selectedText:text.slice(from,to),inline,paragraph});
           if(entry.spacing){const value=target.attrs?.wordParagraphSpacing;
             add(0,text.length,{}, {wordParagraphSpacing:value==null?{action:'remove'}:{action:'set',value}});}
+          if(entry.markLanguage){const value=target.attrs?.wordParagraphMarkLanguage;
+            add(0,text.length,{}, {wordParagraphMarkLanguage:value==null?{action:'remove'}:{action:'set',value}});}
           if(entry.font){let offset=0;for(const node of target.content || []){
             const length=node.type==='text'?node.text.length:node.type==='hardBreak'?1:0;
-            if(node.type==='text' && length){
+            if(['text','hardBreak'].includes(node.type) && length){
               const style=(node.marks || []).find(mark=>mark.type==='textStyle');
               const family=style?.attrs?.fontFamily;
               add(offset,offset+length,{fontFamily:family==null?{action:'remove'}:{action:'set',value:family}},{});

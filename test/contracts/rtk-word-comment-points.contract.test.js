@@ -112,7 +112,7 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const model=require('../../src/core/word-comment-authoring-v1.cjs');
  const sceneId='roman/breaks.txt',text='\nAlpha omega\n';
  const family=[{type:'textStyle',attrs:{fontFamily:'Aptos'}}];
- const doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha omega',marks:family},{type:'hardBreak'}]},{type:'paragraph',content:[]}]};
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha omega',marks:family},{type:'hardBreak'}]},{type:'paragraph'}]};
  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v3',projectId:'breaks',revision:0,events:[],threads:[{
   threadId:'point',rootCommentId:'point-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:6,selectedText:'',kind:'point',affinity:'right'},sceneId,[text]),
   messages:[{commentId:'point-root',kind:'root',body:'Point at Alpha end',provenance:{author:'A'}}],
@@ -131,6 +131,7 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const input={baselineDoc:doc,sceneId,exportMap:map,reviewIr:ir,ordinaryTextMode:true,exportTypography:map.exportTypography};
  const accepted=analyzer.analyzeUserBookmarksReturn(input);assert.equal(accepted.ok,true,JSON.stringify(accepted));
  assert.equal(require('../../src/core/word-user-bookmarks-v1.cjs').textOf(accepted.doc.content[0]),'\nAlphaX omega\n');
+ assert.deepEqual(accepted.doc.content[1],{type:'paragraph'},'unchanged empty paragraph keeps absent content key');
  assert.equal(accepted.doc.content[0].content[0].type,'hardBreak');assert.equal(accepted.doc.content[0].content.at(-1).type,'hardBreak');
  const languageStyles=parts['word/styles.xml'].replace('<w:rPr>','<w:rPr><w:lang w:val="ru-FI"/>');
  assert.notEqual(languageStyles,parts['word/styles.xml']);
@@ -179,4 +180,29 @@ test('table comment paragraphs resolve owned default and paragraph styles, refus
  assert.ok(nestedResult.reviewIr.formattingParagraphs[1].unsupportedParagraphNames.includes('styleResolution'));
  const cycle=parse('',normal.replace('<w:name w:val="Normal"/>','<w:name w:val="Normal"/><w:basedOn w:val="Normal"/>'));
  assert.ok(cycle.ok===false || cycle.reviewIr.formattingParagraphs[0]?.unsupportedParagraphNames.includes('styleResolution'));
+});
+
+test('ordinary and review export preserve nondefault marks on line page and column breaks',async()=>{
+ const [bridge,docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/io/revisionBridge/index.mjs'),import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const env=require('../../src/core/document-content-envelope-v1.cjs');
+ const marks=[{type:'textStyle',attrs:{fontFamily:'Courier New',fontSize:'18pt',color:'#123456'}},{type:'bold'}];
+ for(const kind of ['line','page','column']){
+  const br={type:'hardBreak',...(kind==='line'?{}:{attrs:{wordBreakType:kind}}),marks};
+  const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'},br,{type:'text',text:'B'}]}]};
+  const baseline=source({projectId:'breaks',projectRoot:'/synthetic',scenes:[{sceneId:'a',scenePath:'/synthetic/a',order:0,doc,text:env.deriveVisibleTextFromDocument(doc)}]});
+  assert.equal(baseline.blocks[0].formatIr.runs[1].inline.fontFamily,'Courier New');
+  const ordinary=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+  for(const bytes of [ordinary,exportDocx(baseline)]){
+   const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+   assert.ok(xml.includes('Courier New'));assert.ok(xml.includes('w:val="36"'));
+   const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},ports);assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));
+   const paragraph=analysis.reviewIr.formattingParagraphs[0],run=paragraph.formattedRuns.find(run=>run.text==='\n');
+   assert.equal(paragraph.paragraphText,'A\nB');assert.equal(run.inlineState.fontFamily,'Courier New');assert.equal(run.inlineState.fontSize,'18pt');assert.equal(run.inlineState.bold,true);assert.equal(run.inlineState.color,'#123456');
+   assert.deepEqual(paragraph.typedBreaks,kind==='line'?undefined:[{offset:1,type:kind}]);
+  }
+ }
+ const plain={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'},{type:'hardBreak'},{type:'text',text:'B'}]}]};
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc:plain,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+ assert.ok(xml.includes('<w:r><w:t xml:space="preserve">A</w:t><w:br/><w:t xml:space="preserve">B</w:t></w:r>'));
 });
