@@ -359,4 +359,78 @@ function normalize(doc) {
   for (const [node, start] of resolve(doc)) node.attrs.start = start;
   return doc;
 }
-module.exports = { attributes, resolve, normalize, validateLevels, validateNumbering, normalizePattern: validateNumbering, defaultLevels, formatOrdinal, resolveMarkers, planNumberingEdit, normalizeAuthoring, applyDefinitionChange };
+const CLIPBOARD_SCHEMA = 'yalken.numbering-clipboard.v1';
+function clipboardShape(doc) {
+  const shape = node => [node.type, typeof node.text === 'string' ? node.text : null, (node.content || []).map(shape)];
+  visitNodes(doc, () => {});
+  return shape(doc);
+}
+function clipboardLists(doc) {
+  const lists = [];
+  visitNodes(doc, (node, path, parents) => {
+    if (!node.attrs?.wordNumbering) return;
+    const numbering = validateNumbering(node.attrs.wordNumbering);
+    if (node.type !== 'orderedList' || !node.content?.length) fail();
+    const ancestors = parents.filter(value => value.attrs?.wordNumbering).map(value => validateNumbering(value.attrs.wordNumbering));
+    if (!ancestors.length && numbering.level !== 0) fail();
+    for (const match of numbering.levels[numbering.level].text.matchAll(/%([1-9])/g)) {
+      const referenced = Number(match[1])-1;
+      if (referenced < numbering.level && !ancestors.some(value => value.level === referenced && (value.lineageId || value.instanceId) === (numbering.lineageId || numbering.instanceId))) fail();
+    }
+    const start = node.attrs.start;
+    validateLevels([{...numbering.levels[numbering.level],start,text:'%1.',restartAfterLevel:null}]);
+    lists.push({path,start,numbering});
+    if (lists.length > 2048) fail();
+  });
+  return lists;
+}
+function createNumberingClipboard(fragmentDoc) {
+  const fragment = cloneData(fragmentDoc), lists = clipboardLists(fragment);
+  if (!lists.length) fail();
+  const value = JSON.stringify({schemaVersion:CLIPBOARD_SCHEMA,shape:clipboardShape(fragment),lists});
+  if (new TextEncoder().encode(value).length > 65536) fail();
+  // Verify independent counter reconstruction before a caller can remove a cut.
+  const plain=cloneData(fragment);visitNodes(plain,node=>{if(node.attrs)delete node.attrs.wordNumbering;});
+  prepareNumberingPaste({type:'doc',content:[]},{fragment:plain,numberingCarrier:value});
+  return value;
+}
+function prepareNumberingPaste(destinationDoc, intent) {
+  record(intent,['fragment','numberingCarrier']);
+  const carrier = own(intent,'numberingCarrier');
+  if (typeof carrier !== 'string' || carrier.length > 65536 || new TextEncoder().encode(carrier).length > 65536) fail();
+  let value; try { value = JSON.parse(carrier); } catch { fail(); }
+  record(value,['schemaVersion','shape','lists']);
+  const fragment = cloneData(own(intent,'fragment')), destination = cloneData(destinationDoc);
+  if (value.schemaVersion !== CLIPBOARD_SCHEMA || JSON.stringify(value.shape) !== JSON.stringify(clipboardShape(fragment))
+    || !Array.isArray(value.lists) || !value.lists.length || value.lists.length > 2048) fail();
+  // Normal schema-parsed clipboard content owns text/marks; carrier owns only
+  // validated numbering data and never retained project or transport identity.
+  visitNodes(fragment,node=>{if(node.attrs?.wordNumbering != null) fail();});
+  const seen = new Set();
+  for (const raw of value.lists) {
+    record(raw,['path','start','numbering']);
+    const key=JSON.stringify(raw.path);if(seen.has(key))fail();seen.add(key);
+    const node=nodeAt(fragment,raw.path),numbering=validateNumbering(raw.numbering);
+    if(node?.type!=='orderedList')fail();
+    validateLevels([{...numbering.levels[numbering.level],start:raw.start,text:'%1.',restartAfterLevel:null}]);
+    node.attrs={...(node.attrs||{}),start:raw.start,type:numbering.levels[numbering.level].format,wordNumbering:numbering};
+    delete node.attrs.wordListId;delete node.attrs.wordListStart;
+  }
+  const entries=clipboardLists(fragment), reserved=new Set(), ids=new Map(), seeds=new Map();
+  resolveMarkers(destination);
+  visitNodes(destination,node=>{const p=node.attrs?.wordNumbering;if(p){reserved.add(p.instanceId);reserved.add(p.lineageId||p.instanceId);}});
+  let serial=1;
+  const fresh=id=>{if(!ids.has(id)){while(reserved.has(`numbering-${serial}`))serial++;const next=`numbering-${serial++}`;reserved.add(next);ids.set(id,next);}return ids.get(id);};
+  for(const entry of entries){const p=entry.numbering;let map=seeds.get(p.instanceId);if(!map){map=new Map((p.startOverrides||[]).map(x=>[x.level,x.start]));seeds.set(p.instanceId,map);}const key=`${p.instanceId}:${p.level}`;if(!seen.has(key)){seen.add(key);map.set(p.level,entry.start);}}
+  // Validate source identity consistency before adding first-visible counters.
+  const definitions=new Map();
+  for(const entry of entries){const p=entry.numbering,key=JSON.stringify({...p,level:0});if(definitions.has(p.instanceId)&&definitions.get(p.instanceId)!==key)fail();definitions.set(p.instanceId,key);}
+  for(const entry of entries){const node=nodeAt(fragment,entry.path),p=entry.numbering;node.attrs.wordNumbering=validateNumbering({...p,instanceId:fresh(p.instanceId),lineageId:fresh(p.lineageId||p.instanceId),startOverrides:[...seeds.get(p.instanceId)].sort((a,b)=>a[0]-b[0]).map(([level,start])=>({level,start}))});}
+  const markers=resolveMarkers(fragment);
+  for(const entry of entries)if(markers.get(nodeAt(fragment,entry.path))?.start!==entry.start)fail();
+  if(destination.type!=='doc'||fragment.type!=='doc')fail();
+  resolveMarkers({type:'doc',content:[...(destination.content||[]),...(fragment.content||[])]});
+  return normalize(fragment);
+}
+
+module.exports = { createNumberingClipboard, prepareNumberingPaste, attributes, resolve, normalize, validateLevels, validateNumbering, normalizePattern: validateNumbering, defaultLevels, formatOrdinal, resolveMarkers, planNumberingEdit, normalizeAuthoring, applyDefinitionChange };

@@ -1,5 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
+import { Slice, Fragment } from '@tiptap/pm/model';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { closeHistory } from '@tiptap/pm/history';
 import numbering from '../../core/word-list-numbering-v1.cjs';
@@ -8,6 +9,7 @@ import numbering from '../../core/word-list-numbering-v1.cjs';
 // the current authoring transaction; persistence still uses canonical Save.
 export const DocumentListNumbering = Extension.create({
   name: 'documentListNumbering',
+  addOptions() { return { onClipboardStatus: () => {} }; },
   addGlobalAttributes() {
     return [{ types: ['orderedList'], attributes: {
       wordNumbering: { default: null, rendered: false, parseHTML: () => null },
@@ -22,7 +24,7 @@ export const DocumentListNumbering = Extension.create({
         apply: (tr, decorations, oldState) => !tr.docChanged ? decorations
           : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, oldState.doc),
       },
-      props: { decorations(state) { return this.getState(state); } },
+      props: { ...createNumberingClipboardHandlers(this.options.onClipboardStatus), decorations(state) { return this.getState(state); } },
       appendTransaction(transactions, _old, state) {
       if (!transactions.some(tr => tr.docChanged) || isInlineOnly(transactions)) return null;
       const json = numbering.normalizeAuthoring(state.doc.toJSON(), _old.doc.toJSON()), starts = numbering.resolve(json);
@@ -42,6 +44,52 @@ export const DocumentListNumbering = Extension.create({
     } })];
   },
 });
+
+export const NUMBERING_CLIPBOARD_MIME = 'application/x-yalken-numbering-v1+json';
+export function createNumberingClipboardHandlers(onStatus = () => {}) {
+  const report = () => onStatus('Нумерация не скопирована или не вставлена. Выберите полный список с родительскими пунктами; текст документа сохранён.');
+  const hasNumbering = slice => {
+    let found = false; slice.content.descendants(node => { if (node.attrs.wordNumbering != null) found = true; }); return found;
+  };
+  const asDoc = slice => ({type:'doc',content:slice.content.toJSON() || []});
+  const copy = (view, event) => {
+    const selection = view.state.selection;
+    if (selection.empty) return false;
+    const slice = selection.content();
+    if (!hasNumbering(slice)) return false;
+    event.preventDefault();
+    try {
+      if (slice.openStart || slice.openEnd || !event.clipboardData || event.type === 'cut' && !view.editable) throw Error('NUMBERING_CLIPBOARD_PARTIAL');
+      const carrier = numbering.createNumberingClipboard(asDoc(slice));
+      const {dom,text} = view.serializeForClipboard(slice);
+      event.clipboardData.clearData();
+      event.clipboardData.setData('text/html',dom.innerHTML);
+      event.clipboardData.setData('text/plain',text);
+      event.clipboardData.setData(NUMBERING_CLIPBOARD_MIME,carrier);
+      if (event.clipboardData.getData(NUMBERING_CLIPBOARD_MIME) !== carrier) throw Error('NUMBERING_CLIPBOARD_WRITE_FAILED');
+      if (event.type === 'cut') view.dispatch(closeHistory(view.state.tr.deleteSelection()).scrollIntoView().setMeta('uiEvent','cut'));
+    } catch { report(); }
+    return true;
+  };
+  return {
+    handleDOMEvents: {copy,cut:copy},
+    handlePaste(view,event,slice) {
+      // An explicit Paste as Plain Text keeps the existing plain-text policy.
+      if (event.shiftKey) return false;
+      const carrier = event.clipboardData?.getData(NUMBERING_CLIPBOARD_MIME);
+      if (!carrier) return false;
+      event.preventDefault();
+      try {
+        if (!view.editable || slice.openStart || slice.openEnd) throw Error('NUMBERING_CLIPBOARD_PARTIAL');
+        const planned = numbering.prepareNumberingPaste(view.state.doc.toJSON(),{fragment:asDoc(slice),numberingCarrier:carrier});
+        const content = Fragment.fromJSON(view.state.schema,planned.content);
+        const tr = closeHistory(view.state.tr.replaceSelection(new Slice(content,0,0)));
+        view.dispatch(tr.scrollIntoView().setMeta('paste',true).setMeta('uiEvent','paste'));
+      } catch { report(); }
+      return true;
+    },
+  };
+}
 
 function isInlineOnly(transactions) {
   return transactions.every(tr => tr.steps.every((step, index) => {

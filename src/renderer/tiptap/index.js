@@ -598,7 +598,10 @@ export function initTiptap(mountEl, options = {}) {
         link: false,
         underline: false,
       }),
-      DocumentListNumbering,
+      DocumentListNumbering.configure({ onClipboardStatus: message => {
+        const status = document.getElementById('status');
+        if (status) status.textContent = message;
+      } }),
       DocumentSections,
       DocumentStories,
       DocumentHeadings,

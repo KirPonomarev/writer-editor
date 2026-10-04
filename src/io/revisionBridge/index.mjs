@@ -1,4 +1,4 @@
-import { analyzeListNumberingReturn } from './reviewTransportUserBookmarksV1.mjs';
+import { analyzeListNumberingReturn, createLegacyNumberingProofComparator } from './reviewTransportUserBookmarksV1.mjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
@@ -10003,10 +10003,11 @@ function docxResolveBlockStyle(metadata, catalog) {
   if (role) Object.assign(metadata, role);
 }
 
-function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = false, asDocument = false } = {}) {
+function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = false, asDocument = false, allowLegacyAlpha = false } = {}) {
   let runCount = 0;
   let needsRichContent = false;
   const counterGroups = [], currentCounters = new Map();
+  const legacyEquivalent = createLegacyNumberingProofComparator(paragraphs.map(row=>row.list));
   const blocks = paragraphs.map((paragraph) => {
     const codeBlock = paragraph.blockKind === 'codeBlock';
     const depth = paragraph.blockquoteDepth;
@@ -10143,10 +10144,12 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
       || !['paragraph', 'heading'].includes(block.type) || (!list.wordNumbering && list.level > listStack.length)) throw new Error('DOCX_LIST_PROJECTION_INVALID');
         if (list.numberingLevels !== undefined) listNumbering.validateNumbering({schemaVersion:1,instanceId:`word-numbering-${list.numId}`,
       level:list.level,levels:list.numberingLevels,lineageId:list.numberingLineageId,...(list.numberingStartOverrides?.length?{startOverrides:list.numberingStartOverrides}:{})});
-    const pattern = list.wordNumbering === undefined ? null : listNumbering.validateNumbering(list.wordNumbering);
+    let pattern = list.wordNumbering === undefined ? null : listNumbering.validateNumbering(list.wordNumbering);
     if (pattern && (list.kind !== 'orderedList' || pattern.level !== list.level
       || pattern.instanceId !== `word-numbering-${list.numId}` || pattern.lineageId !== list.numberingLineageId
       || hashCanonicalValue(pattern.startOverrides||[]) !== hashCanonicalValue(list.numberingStartOverrides||[]) || hashCanonicalValue(pattern.levels) !== hashCanonicalValue(list.numberingLevels))) throw Error('DOCX_LIST_PROJECTION_INVALID');
+    if (pattern && list.level <= listStack.length && (allowLegacyAlpha || !['A','a'].includes(pattern.levels[list.level].format))
+      && legacyEquivalent(list,{type:pattern.levels[list.level].format,start:pattern.levels[list.level].start})) pattern = null;
     needsRichContent = true;
     listStack.length = Math.min(listStack.length, list.level + 1);
     let active = listStack[list.level];
@@ -10920,7 +10923,7 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
     || body.contentPreview.paragraphs.some(p => p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
   if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
-  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs);
+  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs, { allowLegacyAlpha:true });
   return manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
 }
 

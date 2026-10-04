@@ -86,6 +86,11 @@ SOURCE01 import is evidence only for its pinned candidate; no authoring or chang
 The independently observed explicit redundant restart form must never silently acquire visible labels after import/export. Any explicit unsupported outcome remains a compatibility gap in the full Mac plan, not evidence of full numbering fidelity. Native default omission, never-restart and nondefault ancestor cases remain positive acceptance requirements.
 
 ## Delivery
+### Candidate02 regression repair
+Candidate24d04b1d completed five changed Word returns in SOURCE and five in PACKAGED, plus native Y0 authoring and process reopen. Those observations do not establish acceptance: both CI RTK jobs report3034passed and24failed. Legacy exporters' padded numbering definitions are promoted to typed list attributes, breaking existing notes, table topology and authenticated return checks. Repair must prove legacy representability, retain genuine custom numbering and preserve existing Main authority and exact-shape assertions. Clean39path preflight was renewed at24d04b1d before repair; original delivery base remains2c831673.
+
+Native PACKAGED CmdA, CmdC, CmdV on the Y0 list changed Item4/5/6 into plain4/5/6; Undo restored the original labels. Clipboard preservation remains a blocking declared operation. Serialized clipboard input is untrusted semantic data, never source-return authority. A correction must validate bounded definitions, isolate pasted instance and lineage identities, preserve visible numbering context, and publish through one existing undoable editor transaction. Same-editor-only acceptance cannot substitute for ordinary cross-scene copy. Native numbering restart/continue, structural operations, table-cell patterns and never/nondefault ancestor restart remain explicit acceptance requirements.
+
 COMMIT_REQUIRED: true
 PUSH_REQUIRED: true
 PR_REQUIRED: true

@@ -130,3 +130,33 @@ test('fresh authoring identity never reuses a surviving lineage after its origin
  assert.deepEqual(labels(after),['5.','1.']);
  assert.deepEqual(after.content[0].attrs.wordNumbering,survivor);
 });
+const clipboardPlain=doc=>{const next=structuredClone(doc);const walk=n=>{if(n.attrs)delete n.attrs.wordNumbering;for(const c of n.content||[])walk(c);};walk(next);return next;};
+test('clipboard carries visible numbering across intervening edits and freshens both identity namespaces',()=>{
+ const levels=model.defaultLevels(1);Object.assign(levels[0],{start:4,text:'Item %1)'});
+ const source=model.normalize(document(list({...pattern(levels),instanceId:'numbering-1',lineageId:'numbering-2'},item('first'),item('second'))));
+ const carrier=model.createNumberingClipboard(source);
+ const destination=model.normalize(document(list({...pattern(levels),instanceId:'other',lineageId:'numbering-1'},item('later edit'))));
+ const before=structuredClone(destination),pasted=model.prepareNumberingPaste(destination,{fragment:clipboardPlain(source),numberingCarrier:carrier});
+ assert.deepEqual(labels(pasted),['Item 4)','Item 5)']);assert.deepEqual(destination,before);
+ const p=pasted.content[0].attrs.wordNumbering;assert.notEqual(p.instanceId,'numbering-1');assert.notEqual(p.lineageId,'numbering-1');assert.notEqual(p.instanceId,'other');
+ assert.deepEqual(labels(document(...destination.content,...pasted.content)),['Item 4)','Item 4)','Item 5)']);
+});
+test('clipboard continuation retains visible start and shared lineage override sequence',()=>{
+ const levels=model.defaultLevels(1);levels[0].start=3;
+ const a={...pattern(levels),instanceId:'a',lineageId:'shared'},b={...a,instanceId:'b',startOverrides:[{level:0,start:9}]};
+ const original=model.normalize(document(...[a,a,b,a,b,a].map((p,i)=>list(p,item(String(i))))));
+ const fragment=document(...structuredClone(original.content.slice(1)));
+ const pasted=model.prepareNumberingPaste(document(),{fragment:clipboardPlain(fragment),numberingCarrier:model.createNumberingClipboard(fragment)});
+ assert.deepEqual(labels(pasted),['4.','9.','10.','11.','12.']);
+ assert.equal(new Set(pasted.content.map(n=>n.attrs.wordNumbering.lineageId)).size,1);
+});
+test('clipboard rejects forged shape, unknown keys, orphan dependent levels and oversize without mutating destination',()=>{
+ const source=model.normalize(document(list(pattern(),item('protected')))),plain=clipboardPlain(source),carrier=model.createNumberingClipboard(source),destination=document();
+ for(const change of [v=>{v.authority='yes';},v=>{v.lists[0].numbering.path='/tmp/x';},v=>{v.lists[0].start=-1;},v=>{v.lists.push(v.lists[0]);},v=>{v.lists[0].numbering.levels[0].text='%2';}]){
+  const bad=JSON.parse(carrier);change(bad);assert.throws(()=>model.prepareNumberingPaste(destination,{fragment:plain,numberingCarrier:JSON.stringify(bad)}),/WORD_LIST_NUMBERING_INVALID/);
+ }
+ const changed=structuredClone(plain);changed.content[0].content[0].content[0].content[0].text='tampered';assert.throws(()=>model.prepareNumberingPaste(destination,{fragment:changed,numberingCarrier:carrier}));
+ assert.throws(()=>model.prepareNumberingPaste(destination,{fragment:plain,numberingCarrier:' '.repeat(65537)}));
+ const orphan=model.normalize(document(list({...pattern(),level:1},item('orphan'))));assert.throws(()=>model.createNumberingClipboard(orphan));
+ let calls=0;const hostile={};Object.defineProperty(hostile,'type',{get(){calls++;return 'doc';}});assert.throws(()=>model.createNumberingClipboard(hostile));assert.equal(calls,0);assert.deepEqual(destination,document());
+});

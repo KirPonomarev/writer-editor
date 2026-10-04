@@ -218,3 +218,124 @@ test('actual formatting preview preserves detached numbering projection and rend
   assert.equal(ctx.reviewSurfaceNumberingProjection({...operation,numbering:{expectedLevels,levels:[{evil:true}]}}),null);
   assert.match(source,/reviewSurfaceRenderNumberingChanges\(formattingReturn\.operations\)/);
 });
+
+function editorPatternLabels(editor) {
+  return [...core.resolveMarkers(editor.getJSON()).values()].flatMap(value=>value.items.map(item=>item.label));
+}
+function editorTextPosition(editor,text) {
+  let result;editor.state.doc.descendants((node,pos)=>{if(node.isText&&node.text===text)result=pos;});
+  assert.equal(typeof result,'number');return result;
+}
+
+test('actual editor selection slice copy and paste preserves custom definition and Undo/Redo without claiming OS clipboard transport',async()=>{
+  const levels=core.defaultLevels(2);levels[0].text='Article %1';levels[0].start=4;
+  const input=core.planNumberingEdit(doc(p('Alpha'),p('separator')),{listPath:[0],action:'configure',levels});
+  const {editor}=await harness(input);
+  try {
+    const before=editor.getJSON();
+    editor.commands.setNodeSelection(0);
+    const copied=editor.state.selection.content();
+    editor.commands.setTextSelection(editor.state.doc.content.size-1);
+    editor.view.dispatch(editor.state.tr.replaceSelection(copied).setMeta('paste',true).setMeta('uiEvent','paste'));
+    assert.deepEqual(editorPatternLabels(editor),['Article 4','Article 5']);
+    assert.equal(editor.state.doc.textContent,'AlphaseparatorAlpha');
+    const after=editor.getJSON();assert.deepEqual(after.content.at(-1).attrs.wordNumbering,before.content[0].attrs.wordNumbering);
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
+    assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);
+  }finally{editor.destroy();}
+});
+
+test('actual list item deletion and backward merge recompute custom counters and preserve exact Undo/Redo',async()=>{
+  for(const action of ['delete','merge']) {
+    const levels=core.defaultLevels(2);levels[0].text='Section %1)';levels[0].start=7;
+    const initial=doc({type:'orderedList',content:['Alpha','Beta','Gamma'].map(text=>({type:'listItem',content:[p(text)]}))});
+    const {editor}=await harness(core.planNumberingEdit(initial,{listPath:[0],action:'configure',levels}));
+    try {
+      const before=editor.getJSON();editor.commands.setTextSelection(editorTextPosition(editor,'Beta'));
+      if(action==='delete') {
+        const from=editor.state.selection.$from.before(2);
+        editor.commands.setNodeSelection(from);assert.equal(editor.commands.deleteSelection(),true);
+      } else assert.equal(editor.commands.joinBackward(),true);
+      assert.deepEqual(editorPatternLabels(editor),['Section 7)','Section 8)']);
+      assert.equal(editor.state.doc.textContent,action==='delete'?'AlphaGamma':'AlphaBetaGamma');
+      assert.deepEqual(editor.getJSON().content[0].attrs.wordNumbering,before.content[0].attrs.wordNumbering);
+      const after=editor.getJSON();assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
+      assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);
+    }finally{editor.destroy();}
+  }
+});
+
+test('actual overflow split refuses before publishing state and retains document selection and Undo history',async()=>{
+  for(const [format,start] of [['I',3999],['a',780],['1',2147483647]]) {
+    const levels=core.defaultLevels(1);Object.assign(levels[0],{format,start,text:'%1)'});
+    const {editor}=await harness(core.planNumberingEdit(doc(p('Alpha')),{listPath:[0],action:'configure',levels}));
+    try {
+      editor.commands.setTextSelection(editorTextPosition(editor,'Alpha')+2);
+      const state=editor.state,before=editor.getJSON(),selection=editor.state.selection.toJSON();
+      assert.throws(()=>editor.commands.splitListItem('listItem'),/WORD_LIST_NUMBERING_INVALID/);
+      assert.equal(editor.state,state);assert.deepEqual(editor.getJSON(),before);assert.deepEqual(editor.state.selection.toJSON(),selection);
+      assert.equal(editor.commands.undo(),false);
+      assert.equal(editorPatternLabels(editor).length,1);
+    }finally{editor.destroy();}
+  }
+});
+
+test('numbering clipboard event hooks restore only Core-validated descriptors onto a sanitized slice across editors',async()=>{
+  const {AllSelection}=await import('@tiptap/pm/state');
+  const {Slice,Fragment,DOMSerializer}=await import('@tiptap/pm/model');
+  const levels=core.defaultLevels(2);levels[0].text='Item %1)';levels[0].start=4;
+  const input=core.planNumberingEdit(doc({type:'orderedList',content:['Alpha','Beta'].map(text=>({type:'listItem',content:[p(text)]}))}),{listPath:[0],action:'configure',levels});
+  const origin=await harness(input),destination=await harness(core.planNumberingEdit(doc(p('destination')),{listPath:[0],action:'configure',levels:core.defaultLevels(2)})),messages=[];
+  try {
+    const {createNumberingClipboardHandlers,NUMBERING_CLIPBOARD_MIME}=origin.ui,handlers=createNumberingClipboardHandlers(message=>messages.push(message));
+    origin.editor.view.dispatch(origin.editor.state.tr.setSelection(new AllSelection(origin.editor.state.doc)));
+    const data=new Map(),clipboardData={clearData:()=>data.clear(),setData:(key,value)=>data.set(key,value),getData:key=>data.get(key)||''};
+    let prevented=0;const event={type:'copy',clipboardData,preventDefault:()=>prevented++};
+    // Actual schema HTML output deliberately contains no private canonical identity.
+    const spec=DOMSerializer.fromSchema(origin.editor.schema).nodes.orderedList(origin.editor.state.doc.firstChild);
+    assert.equal(JSON.stringify(spec).includes('wordNumbering'),false);
+    const view={get state(){return origin.editor.state;},editable:true,serializeForClipboard:()=>({dom:{innerHTML:'<ol start="4"><li>Alpha</li><li>Beta</li></ol>'},text:'Alpha\nBeta'}),dispatch:tr=>origin.editor.view.dispatch(tr)};
+    assert.equal(handlers.handleDOMEvents.copy(view,event),true);assert.equal(prevented,1);
+    assert.ok(data.get(NUMBERING_CLIPBOARD_MIME));assert.equal(messages.length,0);
+    const clean=structuredClone(input);for(const node of clean.content){delete node.attrs.wordNumbering;delete node.attrs.wordListId;delete node.attrs.wordListStart;}
+    const sanitized=new Slice(Fragment.fromJSON(destination.editor.schema,clean.content),0,0);
+    // Copy then edit is permitted; paste is independent of source document revision.
+    origin.editor.commands.setTextSelection(4);origin.editor.commands.insertContent({type:'text',text:'changed'});
+    destination.editor.view.dispatch(destination.editor.state.tr.setSelection(new AllSelection(destination.editor.state.doc)));
+    const before=destination.editor.getJSON(),destinationView={get state(){return destination.editor.state;},editable:true,dispatch:tr=>destination.editor.view.dispatch(tr)};
+    assert.equal(handlers.handlePaste(destinationView,{clipboardData,preventDefault(){}},sanitized),true);
+    assert.equal(messages.length,0);assert.deepEqual(editorPatternLabels(destination.editor),['Item 4)','Item 5)']);
+    assert.notEqual(destination.editor.getJSON().content[0].attrs.wordNumbering.instanceId,input.content[0].attrs.wordNumbering.instanceId);
+    const after=destination.editor.getJSON();assert.equal(destination.editor.commands.undo(),true);assert.deepEqual(destination.editor.getJSON(),before);
+    assert.equal(destination.editor.commands.redo(),true);assert.deepEqual(destination.editor.getJSON(),after);
+    for(const invalid of ['{','x'.repeat(65537),JSON.stringify({schemaVersion:'yalken.numbering-clipboard.v1',path:'/tmp/authority'})]) {
+      data.set(NUMBERING_CLIPBOARD_MIME,invalid);const state=destination.editor.state;
+      assert.equal(handlers.handlePaste(destinationView,{clipboardData,preventDefault(){}},sanitized),true);assert.equal(destination.editor.state,state);
+    }
+    assert.equal(messages.length,3);
+    assert.equal(handlers.handlePaste(destinationView,{shiftKey:true,clipboardData,preventDefault(){}},sanitized),false);
+    data.clear();assert.equal(handlers.handlePaste(destinationView,{clipboardData,preventDefault(){}},sanitized),false);
+    // Carrier preparation failure cannot turn Cut into a destructive plain-text fallback.
+    origin.editor.commands.setTextSelection({from:4,to:editorTextPosition(origin.editor,'Beta')+2});const state=origin.editor.state;
+    assert.equal(handlers.handleDOMEvents.cut(view,{...event,type:'cut'}),true);assert.equal(origin.editor.state,state);assert.equal(messages.length,4);
+  }finally{origin.editor.destroy();destination.editor.destroy();}
+});
+
+test('numbered Cut publishes checked carrier before deletion and retains exact Undo on success or clipboard failure',async()=>{
+  const {AllSelection}=await import('@tiptap/pm/state');
+  for(const failedWrite of [false,true]) {
+    const levels=core.defaultLevels(1);levels[0].text='Item %1)';
+    const {editor,ui}=await harness(core.planNumberingEdit(doc(p('Alpha')),{listPath:[0],action:'configure',levels}));
+    const notices=[],data=new Map();
+    try {
+      editor.view.dispatch(editor.state.tr.setSelection(new AllSelection(editor.state.doc)));
+      const before=editor.getJSON(),state=editor.state;
+      const handlers=ui.createNumberingClipboardHandlers(message=>notices.push(message));
+      const view={get state(){return editor.state;},editable:true,serializeForClipboard:()=>({dom:{innerHTML:'<ol><li>Alpha</li></ol>'},text:'Alpha'}),dispatch:tr=>editor.view.dispatch(tr)};
+      const clipboardData={clearData:()=>data.clear(),setData:(k,v)=>{if(failedWrite&&k===ui.NUMBERING_CLIPBOARD_MIME)throw Error('write');data.set(k,v);},getData:k=>data.get(k)||''};
+      assert.equal(handlers.handleDOMEvents.cut(view,{type:'cut',clipboardData,preventDefault(){}}),true);
+      if(failedWrite){assert.equal(editor.state,state);assert.equal(notices.length,1);}
+      else {assert.equal(notices.length,0);assert.ok(data.get(ui.NUMBERING_CLIPBOARD_MIME));assert.equal(editor.state.doc.textContent,'');assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);}
+    }finally{editor.destroy();}
+  }
+});

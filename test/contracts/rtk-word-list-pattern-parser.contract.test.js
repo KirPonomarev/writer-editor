@@ -186,3 +186,43 @@ test('native Word suppressed explicit redundant restart is disclosed instead of 
     assert.deepEqual(preview.contentPreview.paragraphs.map(p=>p.text),['Item 0','Item 1','Item 2','Item 3','Item 4']);
   }
 });
+test('unused uniform review-export padding preserves exact legacy shape without discarding meaningful definitions', async () => {
+  const api=await bridge,envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
+  const levels=Array.from({length:9},(_,i)=>`<w:lvl w:ilvl="${i}"><w:start w:val="7"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%${i+1}."/></w:lvl>`).join('');
+  const numbering=`<w:abstractNum w:abstractNumId="4">${levels}</w:abstractNum><w:num w:numId="7"><w:abstractNumId w:val="4"/></w:num>`;
+  const parse=numbering=>{const preview=api.buildDocxContentPreviewFromZipBytes(fixture({numbering}));const plan=api.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));return envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;};
+  assert.deepEqual(parse(numbering),{type:'doc',content:[{type:'orderedList',attrs:{start:7},content:[{type:'listItem',content:[{type:'paragraph',content:[{type:'text',text:'Item'}]}]}]}]});
+  // An unused customized future level is data, not uniform legacy padding.
+  assert.equal(parse(numbering.replace('%9.','Future %9')).content[0].attrs.wordNumbering.levels[8].text,'Future %9');
+});
+test('legacy signed numbering equivalence rejects custom definitions, alpha divergence and merged lineage', async () => {
+  const {legacyNumberingProofEquivalent,createLegacyNumberingProofComparator}=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+  const levels=Array.from({length:9},(_,i)=>({format:'1',start:7,text:`%${i+1}.`,restartAfterLevel:i?i-1:null}));
+  const make=()=>({numId:'5',level:0,ordinal:7,numberingLineageId:'lineage',numberingLevels:structuredClone(levels),numberingStartOverrides:[],wordNumbering:{schemaVersion:1,instanceId:'instance',lineageId:'lineage',level:0,levels:structuredClone(levels)}});
+  let list=make();assert.equal(legacyNumberingProofEquivalent(list,{start:7},[list]),true);
+  for(const mutate of [x=>x.wordNumbering.levels[8].text='future %9',x=>x.wordNumbering.levels[1].restartAfterLevel=null,x=>x.wordNumbering.startOverrides=[{level:0,start:7}],x=>x.wordNumbering.levels[8].start=1,x=>x.wordNumbering.levels[8].format='I']) {
+    list=make();mutate(list);assert.equal(legacyNumberingProofEquivalent(list,{start:7},[list]),false);
+  }
+  list=make();assert.equal(legacyNumberingProofEquivalent(list,{start:7},[list,{...list,numId:'6'}]),false);
+  assert.equal(legacyNumberingProofEquivalent(list,{start:7},[list,{...list,level:1}]),false);
+  const alpha=make();for(const entry of alpha.numberingLevels)entry.format='a';alpha.wordNumbering.levels=structuredClone(alpha.numberingLevels);alpha.ordinal=26;
+  assert.equal(legacyNumberingProofEquivalent(alpha,{start:7,type:'a'},[alpha]),true);
+  const beyond={...structuredClone(alpha),ordinal:28};const compare=createLegacyNumberingProofComparator([alpha,beyond]);
+  assert.equal(compare(alpha,{start:7,type:'a'}),false);assert.equal(compare(beyond,{start:7,type:'a'}),false);
+});
+test('literal note alpha stays legacy only inside proven common range; custom and alpha28 notes remain explicit refusal', async () => {
+  const api=await bridge;
+  const bytes=(format,start,template)=>buildStoredZip([
+    {name:'[Content_Types].xml',data:`<Types xmlns="${CT}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/></Types>`},
+    {name:'_rels/.rels',data:`<Relationships xmlns="${P}"><Relationship Id="d" Type="${R}/officeDocument" Target="word/document.xml"/></Relationships>`},
+    {name:'word/_rels/document.xml.rels',data:`<Relationships xmlns="${P}"><Relationship Id="n" Type="${R}/footnotes" Target="footnotes.xml"/><Relationship Id="l" Type="${R}/numbering" Target="numbering.xml"/></Relationships>`},
+    {name:'word/document.xml',data:`<w:document xmlns:w="${W}"><w:body><w:p><w:r><w:t>Body</w:t><w:footnoteReference w:id="1"/></w:r></w:p></w:body></w:document>`},
+    {name:'word/numbering.xml',data:`<w:numbering xmlns:w="${W}"><w:abstractNum w:abstractNumId="4"><w:lvl w:ilvl="0"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${template}"/></w:lvl></w:abstractNum><w:num w:numId="7"><w:abstractNumId w:val="4"/></w:num></w:numbering>`},
+    {name:'word/footnotes.xml',data:`<w:footnotes xmlns:w="${W}"><w:footnote w:id="1">${['First','Second'].map((text,i)=>`<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="7"/></w:numPr></w:pPr><w:r>${i?'':'<w:footnoteRef/>'}<w:t>${text}</w:t></w:r></w:p>`).join('')}</w:footnote></w:footnotes>`},
+  ]);
+  const report=api.buildDocxContentPreviewFromZipBytes(bytes('lowerLetter',4,'%1.'));assert.equal(report.ok,true,JSON.stringify(report));
+  assert.deepEqual(report.contentPreview.manuscriptNotes[0].body.content[0].attrs,{start:4,type:'a'});
+  for(const values of [['lowerLetter',28,'%1.'],['decimal',4,'Article %1']]) {
+    const unsupported=api.buildDocxContentPreviewFromZipBytes(bytes(...values));assert.equal(unsupported.ok,false,JSON.stringify(unsupported));
+  }
+});

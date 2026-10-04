@@ -134,6 +134,41 @@ function replaceLinks(p,runs,registry) {
   p.content=out;
 }
 
+// Compare the complete effective definition, not just the current label. A
+// single used level may carry the legacy exporter's unused uniform padding.
+// No custom template, shared instance lineage, explicit override or distinct
+// ancestor behavior is equivalent to the old per-level list representation.
+export function legacyNumberingProofEquivalent(list, expected, peers = []) {
+  try {
+    const pattern = listNumbering.validateNumbering(list.wordNumbering);
+    const type = expected.type || '1';
+    if (pattern.level !== list.level || pattern.startOverrides?.length
+      || pattern.levels.some((entry,index) => entry.format !== type || entry.start !== expected.start
+        || entry.text !== `%${index+1}.` || entry.restartAfterLevel !== (index ? index-1 : null))) return false;
+    const related = peers.filter(peer => peer?.numberingLineageId === list.numberingLineageId);
+    if (!related.length || related.some(peer => peer.numId !== list.numId || peer.level !== list.level
+      || peer.numberingStartOverrides?.length
+      || !same(peer.numberingLevels, pattern.levels))) return false;
+    // CSS legacy alpha and native Word agree only through Z/z. Main documents
+    // keep typed alpha; this bounded equivalence is for existing legacy data.
+    if (['A','a'].includes(type) && related.some(peer => peer.ordinal > 26)) return false;
+    return true;
+  } catch { return false; }
+}
+
+export function createLegacyNumberingProofComparator(lists) {
+  const lineages = new Map(), cache = new Map();
+  for (const list of lists) if (list?.numberingLineageId) {
+    if (!lineages.has(list.numberingLineageId)) lineages.set(list.numberingLineageId, []);
+    lineages.get(list.numberingLineageId).push(list);
+  }
+  return (list, expected) => {
+    const key = hashCanonicalValue([list.numId,list.wordNumbering,expected.type || '1',expected.start]);
+    if (!cache.has(key)) cache.set(key, legacyNumberingProofEquivalent(list,expected,lineages.get(list.numberingLineageId) || []));
+    return cache.get(key);
+  };
+}
+
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
 export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
@@ -197,6 +232,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       if (!ordinaryTextMode || proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1'
         || !Array.isArray(proof.paragraphs) || proof.paragraphs.length !== allBlocks.length) return reject('list-numbering-proof-required');
       const forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
+      const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
       const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
       for (let j = 0; j < allBlocks.length; j++) {
         const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
@@ -220,7 +256,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             || lineageForward.has(lineage) && lineageForward.get(lineage) !== actualLineage
             || lineageReverse.has(actualLineage) && lineageReverse.get(actualLineage) !== lineage) return reject('list-lineage-change');
           lineageForward.set(lineage, actualLineage); lineageReverse.set(actualLineage, lineage);
-        } else if (list.wordNumbering) return reject('list-definition-added');
+        } else if (list.wordNumbering && !legacyEquivalent(list,expected)) return reject('list-definition-added');
       }
     }
     const basePs=core.paragraphs(baselineDoc);
@@ -400,6 +436,7 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
       || !Array.isArray(observed) || proof.paragraphs.length !== rows.length || observed.length !== rows.length
       || typeof resolveBlock !== 'function') return fail('same-byte-proof-required');
     const groups = new Map(), forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
+    const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
     for (let i=0;i<rows.length;i++) {
       const {scene,block} = rows[i], p = observed[i], actual = proof.paragraphs[i];
       const authority = resolveBlock({...p,paragraphIndex:i});
@@ -416,7 +453,7 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
       if (forward.has(identity) && forward.get(identity)!==returned.numId || reverse.has(returned.numId) && reverse.get(returned.numId)!==identity) return fail('list-instance-bijection');
       forward.set(identity,returned.numId); reverse.set(returned.numId,identity);
       if (!expected.wordNumbering) {
-        if (returned.wordNumbering || (returned.type || '1') !== (expected.type || '1')
+        if (returned.wordNumbering && !legacyEquivalent(returned,expected) || (returned.type || '1') !== (expected.type || '1')
           || expected.kind==='ordered' && returned.ordinal !== expected.start + expected.itemOrdinal) return fail('legacy-list-change');
         continue;
       }
