@@ -817,7 +817,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-        "sha256": "515ad8d816a5d0be05d00ce0cc2199c5ce9a01b6e6be80f8155d9944762f79b1"
+        "sha256": "cab858588a99190b147571ba9b6b1f9745486785ccc74248d4e90bade9127187"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -1225,11 +1225,11 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-        "sha256": "acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5"
+        "sha256": "d9d5d8dfbf849d5f9cd8fecfe53e4f079e0b15873a3f6e1dc9b00e04e5ebfdfd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
-        "sha256": "f3357d2d76d90d8db0dc01abfd2d2d397951ae5e2b3b231fee669d6b92b95bbc"
+        "sha256": "9c60e44d9a267a07923452d55435196c4e8c96c24d822ee58a1f8417bbb475dd"
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
@@ -2481,7 +2481,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
-        "sha256": "fec2d209e16c81dcc51b25e950e56112c4d2825d197d141bed6fe4730ed0f4e5"
+        "sha256": "61ded2f6d12d3b74219632d58134d596d4734a3e32665c0221fe3e59d975193d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
@@ -2489,7 +2489,7 @@
       },
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
-        "sha256": "3f333aae040f943803f619849db2998b3508a36348402edff2169e8c6894ef45"
+        "sha256": "317e9ae773f180372cceecb24c5731c73a8e0c06ecbac2d27ebab655f4f50f61"
       }
     ],
     "followupRepair": {

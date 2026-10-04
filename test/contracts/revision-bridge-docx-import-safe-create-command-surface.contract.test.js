@@ -572,3 +572,21 @@ for (const mutation of ['text', 'metadata', 'cards', 'marks']) {
     assert.equal((await h.read()).sha256, h.record.sha256);
   });
 }
+
+test('late acknowledgement A cannot clear a newly accepted durable attempt B', async t => {
+  const h = await acknowledgedImportHarness(t);
+  const second = await h.handleDocxImportSafeCreateCommandSurface({ requestId: 'docx-import-new-B', docxImportPreviewPlan: h.plan });
+  assert.equal(second.safeCreateOk, true, JSON.stringify(second));
+  const recordB = await h.read();
+  assert.equal(recordB.record.requestId, 'docx-import-new-B'); assert.notEqual(recordB.sha256, h.record.sha256);
+  const stale = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(stale.ok, false); assert.equal(stale.error.code, 'E_DOCX_IMPORT_ACK_STALE');
+  assert.equal((await h.read()).sha256, recordB.sha256); assert.equal(h.saves(), 0);
+});
+
+test('project change during continuity write retains accepted correlation', async t => {
+  const h = await acknowledgedImportHarness(t);
+  h.onContinuity(() => h.setContext('other-project'));
+  assert.equal((await h.handleDocxImportSafeCreateCommandSurface(h.payload)).ok, false);
+  assert.equal((await h.read()).sha256, h.record.sha256);
+});

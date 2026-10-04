@@ -10,6 +10,7 @@ const { pathToFileURL } = require('node:url');
 
 const {
   applyDocxImportSafeCreate,
+  readDocxImportAttempt,
   isDocxImportPreviewPlanAdmitted,
   rememberDocxImportPreviewPlanAdmission,
 } = require('../../src/utils/docxImportSafeCreate');
@@ -172,6 +173,14 @@ function instantiateDocxSafeCreatePort(options = {}) {
       isPlainObjectValue,
       isDocxImportPreviewPlanAdmitted,
       applyDocxImportSafeCreate,
+      readDocxImportAttempt,
+      currentProjectName: 'DOCX E2E Project', DEFAULT_PROJECT_NAME: 'DOCX E2E Project',
+      recoverPendingWriterProjectTransaction: async () => {
+        const core = require('../../src/core/project-transaction-v1.cjs');
+        const binding = await core.readPendingProjectTransactionBinding({ manifestPath });
+        assert.equal(binding.pending, false, 'E2E fixture must not bypass an unresolved transaction');
+        return { recovered: false, outcome: 'NO_JOURNAL' };
+      },
       ensureProjectStructure: async () => {
         calls.ensureProjectStructure += 1;
         fs.mkdirSync(romanRoot, { recursive: true });

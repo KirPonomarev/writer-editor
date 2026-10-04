@@ -74,12 +74,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
-      "sha256": "acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5"
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "d9d5d8dfbf849d5f9cd8fecfe53e4f079e0b15873a3f6e1dc9b00e04e5ebfdfd"
     },
     {
       "approved": true,
@@ -104,12 +104,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "f3357d2d76d90d8db0dc01abfd2d2d397951ae5e2b3b231fee669d6b92b95bbc"
+      "sha256": "9c60e44d9a267a07923452d55435196c4e8c96c24d822ee58a1f8417bbb475dd"
     },
     {
       "approved": true,
@@ -205,7 +205,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
@@ -214,7 +214,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
@@ -223,7 +223,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-product-flow-command.test.js",
@@ -259,7 +259,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
@@ -280,7 +280,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
@@ -288,7 +288,7 @@
       ],
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "fec2d209e16c81dcc51b25e950e56112c4d2825d197d141bed6fe4730ed0f4e5"
+      "sha256": "61ded2f6d12d3b74219632d58134d596d4734a3e32665c0221fe3e59d975193d"
     },
     {
       "approved": true,
@@ -472,12 +472,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
-      "sha256": "515ad8d816a5d0be05d00ce0cc2199c5ce9a01b6e6be80f8155d9944762f79b1"
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "cab858588a99190b147571ba9b6b1f9745486785ccc74248d4e90bade9127187"
     },
     {
       "approved": true,
@@ -1653,7 +1653,7 @@
       "filePath": "src/main.js",
       "sha256": "a74ebaa015f4cd8e7fdaadf40864aa10f110127dbf3a74b53f50e8e83e1ad1b9",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "01c0cd28d30e02d1719773b8b5c1d48eae6c341defbd0429acf122bcce27b95e",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1671,7 +1671,7 @@
       "filePath": "src/renderer/editor.js",
       "sha256": "b177818138cce245c58dfe01afe15523d93f390af42a13073c0eedc8a19da28d",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1707,7 +1707,7 @@
       "filePath": "src/utils/docxImportSafeCreate.js",
       "sha256": "95f003f32dd7fe1898e612d6e25143dc8b639bf8e160b2775acce171e689252d",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d9b1e3e450af082c5dfb5d5d175d4611e99ed2b4b102adab7dd533d160f262a3",
+      "sha256": "b746b430a5af5a91a31b4db8dbb2c035e6daa12dff17338f8c5bda9ea142bacf",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "8fd75460bd46f39355a5df9328f820cf9d82f688d150d7cc8b0613c1a21d8854",
+      "sha256": "c720cf8a76172cbdeedbc0d6b832f39d5c3ac52de37a3f67713926b3a4b8dae7",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "829e36e9824910b003dc6292396b77cc1615d2bfaeb6894c1c18f12e8b779174",
+      "sha256": "82e16bbcf798886d6c571d5b21d9dde128e17137b05dce87b61242432a32899b",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1851,7 +1851,7 @@
       "filePath": "test/contracts/word-import-transaction-remediation.contract.test.js",
       "sha256": "0fcc2950dbd9ed2f7ffa0ebb3ac731883bc55dbc399cb56f885868a411a32410",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1869,7 +1869,7 @@
       "filePath": "test/fixtures/word-import-replay-child.cjs",
       "sha256": "d4d95368f6746cdd15aa79bf27919662f208b096773152e212aeeb8b14cbd7d6",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5b76d66896b90d8aa2bd9f9610d483b7a052eddfcf3bf076c5eb59622f01bf6a",
+      "sha256": "2ac06915c5ef8e1789858a9194ef75e46db0a4b9383ba918a5d0ecad1e9691b0",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "8fe042cc2b1278089c2987239930463e7e0a430cbe2965331d26773bcc5ab35d",
+      "sha256": "ef6d21e5f93f1adb4827cf932c2e8a26b140179190871e1fb01b92c7dd665636",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2d602646d7ce41b08aff1eb9302a53d576cfc1802d285d0e0bd78bfc9123c28c",
+      "sha256": "8f06bd39b2d219633dada9c9191184e6a5aaaff7264a296b72d6cc936d674c76",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -4793,7 +4793,7 @@
     {
       "filePath": "src/core/word-import-attempt-v1.cjs",
       "sha256": "68a61248b0476d017c50e220430d3fd3fcb700e38f49fe0c23389949e709ec1a",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4802,7 +4802,7 @@
     {
       "filePath": "test/contracts/rtk-word-import-attempt-recovery.contract.test.js",
       "sha256": "960b684cc4191c1222bcd57fe4b1cdb5c3799d81ff914075f932e6d6d6c9762a",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4811,7 +4811,7 @@
     {
       "filePath": "docs/tasks/2026-10-04--word-import-restart-mac.md",
       "sha256": "42cd9e924b3adfb54b4c485b2c3047f238f0ad68c39f385443ae20445b1dc4b2",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4820,7 +4820,7 @@
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",
       "sha256": "0d5554e851a6adcb418fdfe0bbe51c36161059271c9f77284ee538a7565e75c7",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4828,8 +4828,8 @@
     },
     {
       "filePath": "test/unit/r24-wp302-session-continuity.test.mjs",
-      "sha256": "3f333aae040f943803f619849db2998b3508a36348402edff2169e8c6894ef45",
-      "approvedAtUtc": "2026-10-04T20:46:13.795417Z",
+      "sha256": "317e9ae773f180372cceecb24c5731c73a8e0c06ecbac2d27ebab655f4f50f61",
+      "approvedAtUtc": "2026-10-04T20:51:41.519187Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
       "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -28696,6 +28696,15 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "sha256": "acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
@@ -28753,6 +28762,15 @@
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
       "sha256": "1dda8cb9610e6b5fd702275890188b5afed65eb13607f29bf520183abc20b800"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "515ad8d816a5d0be05d00ce0cc2199c5ce9a01b6e6be80f8155d9944762f79b1"
     },
     {
       "filePath": "src/main.js",
