@@ -5179,8 +5179,8 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
         && typeof returnedRun.inheritedFontSize === 'string') {
         returnedState.fontSize = returnedRun.inheritedFontSize;
       }
-      if(Object.hasOwn(baselineState,'fontFamily')&&!Object.hasOwn(returnedState,'fontFamily')
-        && typeof returnedRun.resolvedFontFamily==='string')returnedState.fontFamily=returnedRun.resolvedFontFamily;
+      if(!Object.hasOwn(returnedState,'fontFamily')
+        && typeof returnedRun.resolvedFontFamily==='string' && returnedRun.resolvedFontFamily)returnedState.fontFamily=returnedRun.resolvedFontFamily;
       const ambiguousRemovalKeys = docxReviewFormattingAmbiguousRemovalKeys(
         baselineState,
         returnedState,

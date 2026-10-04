@@ -8187,6 +8187,7 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
         cleanTextCandidateDoc:capsule.cleanTextMergedDocsBySceneId?.[command.sceneId] || capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
         cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,
         cleanTextGridPlan:capsule.cleanTextGridPlansBySceneId?.[command.sceneId] || null,
+        cleanTextFormattingOperations:capsule.cleanTextFormattingBySceneId?.[command.sceneId] || [],
         cleanTextAuthoringBinding:{subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,
           generation:lastSignaledEditGeneration},
         openScenePath:currentFilePath,
@@ -9931,7 +9932,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
 async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
-  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {}, cleanTextMergedDocsBySceneId = {}, cleanTextGridPlansBySceneId = {};
+  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {}, cleanTextMergedDocsBySceneId = {}, cleanTextGridPlansBySceneId = {}, cleanTextFormattingBySceneId = {};
   for (const scene of authority.exportMap.scenes) {
     const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId] ?? authority.baselineFinalTextBySceneId?.[scene.sceneId];
     if (typeof raw !== 'string') return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_REQUIRED' };
@@ -9945,6 +9946,13 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       ordinaryTextMode: true });
     if (!analysis.ok) return analysis;
     if (analysis.ordinaryTextChanges?.length) {
+      if(analysis.ordinaryFormattingOperations?.length) {
+        const runtime=await loadRtkFormattingReturnModule();
+        const formatted=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc:analysis.doc}),analysis.ordinaryFormattingOperations);
+        if(!formatted.ok)return {ok:false,code:formatted.code};
+        analysis.doc=formatted.doc;
+        cleanTextFormattingBySceneId[scene.sceneId]=analysis.ordinaryFormattingOperations;
+      }
       if(analysis.inactiveGridPlan) {
         analysis.doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(analysis.doc,analysis.inactiveGridPlan);
         cleanTextGridPlansBySceneId[scene.sceneId]=analysis.inactiveGridPlan;
@@ -10051,7 +10059,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     } catch (error) {
       return {ok:false,code:'RTK_CLEAN_TEXT_NOTE_BINDING_CONFLICT',detail:error.code || error.message};
     }
-    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,cleanTextGridPlansBySceneId,
+    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,cleanTextGridPlansBySceneId,cleanTextFormattingBySceneId,
       cleanTextComparisonBindings:context.comparisonBindings || null,cleanTextCommentUnchanged,
       cleanTextNotesUnchanged:true,cleanTextCommentSourceText,cleanTextNoteSourceText}};
   }
@@ -26042,12 +26050,48 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
   };
   try {
     guard();
-    const prepareCanonicalContent=store.cleanTextGridPlan ? ({beforeContent,afterContent})=>{
+    const prepareCanonicalContent=store.cleanTextGridPlan || store.cleanTextFormattingOperations?.length ? async ({beforeContent,afterContent})=>{
       guard();
       if(beforeContent!==before)throw Error('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
       const after=envelope.parseObservablePayload(afterContent);
       if(after.issue || !userBookmarkEnvelopeMetadataEqual(after,parsed))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
-      const doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(after.doc,store.cleanTextGridPlan);
+      let doc=after.doc;
+      if(store.cleanTextFormattingOperations?.length) {
+        const runtime=await loadRtkFormattingReturnModule();
+        // Rebuild only the admitted property families from the private merged
+        // candidate. Concurrent local insertions may shift returned run ranges.
+        const targetParagraphs=userBookmarkModel.paragraphs(store.cleanTextCandidateDoc);
+        const currentParagraphs=userBookmarkModel.paragraphs(doc), operations=[];
+        const byParagraph=new Map();
+        for(const operation of store.cleanTextFormattingOperations){
+          const entry=byParagraph.get(operation.paragraphOrdinal) || {operation,font:false,spacing:false};
+          entry.font ||= Object.hasOwn(operation.inline || {},'fontFamily');
+          entry.spacing ||= Object.hasOwn(operation.paragraph || {},'wordParagraphSpacing');
+          byParagraph.set(operation.paragraphOrdinal,entry);
+        }
+        for(const [index,entry] of byParagraph){
+          const target=targetParagraphs[index],current=currentParagraphs[index];
+          if(!target || !current || userBookmarkModel.textOf(target)!==userBookmarkModel.textOf(current))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+          const text=userBookmarkModel.textOf(target);
+          const add=(from,to,inline,paragraph)=>operations.push({...entry.operation,
+            operationId:`${entry.operation.operationId}-prepared-${operations.length}`,from,to,selectedText:text.slice(from,to),inline,paragraph});
+          if(entry.spacing){const value=target.attrs?.wordParagraphSpacing;
+            add(0,text.length,{}, {wordParagraphSpacing:value==null?{action:'remove'}:{action:'set',value}});}
+          if(entry.font){let offset=0;for(const node of target.content || []){
+            const length=node.type==='text'?node.text.length:node.type==='hardBreak'?1:0;
+            if(node.type==='text' && length){
+              const style=(node.marks || []).find(mark=>mark.type==='textStyle');
+              const family=style?.attrs?.fontFamily;
+              add(offset,offset+length,{fontFamily:family==null?{action:'remove'}:{action:'set',value:family}},{});
+            }
+            offset+=length;
+          }}
+        }
+        const formatted=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc}),operations);
+        if(!formatted.ok)throw Error(formatted.code);
+        doc=formatted.doc;
+      }
+      if(store.cleanTextGridPlan)doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(doc,store.cleanTextGridPlan);
       if(JSON.stringify(envelope.canonicalizeDocumentJson(doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(store.cleanTextCandidateDoc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
       return envelope.composeObservablePayload({doc,metaEnabled:after.hasMetaBlock,meta:after.meta,cards:after.cards});
     } : undefined;

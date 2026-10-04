@@ -287,9 +287,9 @@ async function continuationReturnFixture() {
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
   const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
-  const parse=xml=>{const result=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(result.ok,true,JSON.stringify(result));return result.reviewIr;};
+  const parse=(xml,overrides={})=>{const result=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,...overrides,'word/document.xml':xml}).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(result.ok,true,JSON.stringify(result));return result.reviewIr;};
   const input=reviewIr=>({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,ordinaryTextMode:true,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
-  return {analyzer,baselineDoc,exportMap,parts,parse,input};
+  return {analyzer,baselineDoc,exportMap,parts,parse,input,cryptoPort};
 }
 test('authenticated list continuation accepts a Word paragraph-tail edit after its transport bookmark without creating an item',async()=>{
   const f=await continuationReturnFixture();
@@ -333,4 +333,51 @@ test('authenticated numbering-definition route preserves continuation ownership 
   ]) {const value=clone();mutate(value);assert.equal(f.analyzer.analyzeListNumberingReturn(value).ok,false);}
   const changed=clone();for(const p of changed.reviewIr.listNumbering.paragraphs)if(p.list)p.list.numberingLevels[0].text='Chapter %1';
   const result=f.analyzer.analyzeListNumberingReturn(changed);assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.operations.length,1);
+});
+
+function nativeWordDefaultStyles(parts,{language=true}={}) {
+  // Literal defaults observed in Word-saved PACKAGED-10, not exporter output.
+  const defaults='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/>'
+    +(language?'<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>':'')
+    +'</w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>';
+  const styles=parts['word/styles.xml'].replace(/<w:docDefaults>[\s\S]*?<\/w:docDefaults>/u,defaults);
+  assert.notEqual(styles,parts['word/styles.xml']);return {'word/styles.xml':styles};
+}
+test('native Word defaults plus a continuation tail produce private lossless spacing font and language composition',async()=>{
+  const f=await continuationReturnFixture(),io=await bridge;
+  const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs'),bookmarks=require('../../src/core/word-user-bookmarks-v1.cjs');
+  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-continuation-10</w:t></w:r>');
+  const ir=f.parse(xml,nativeWordDefaultStyles(f.parts));
+  const result=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.ordinaryTextChanges.length,6,'language is independently retained on unchanged paragraphs');
+  assert.ok(result.ordinaryFormattingOperations.length>=12);
+  const formatted=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc:result.doc}),result.ordinaryFormattingOperations);
+  assert.equal(formatted.ok,true,JSON.stringify(formatted));
+  for(const p of bookmarks.paragraphs(formatted.doc)){
+    assert.deepEqual(p.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});
+    assert.deepEqual(p.attrs.wordParagraphMarkLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+    for(const node of p.content)if(node.type==='text'){
+      const style=node.marks.find(mark=>mark.type==='textStyle').attrs;
+      assert.equal(style.fontFamily,'Times New Roman');assert.deepEqual(style.wordLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});
+    }
+  }
+  assert.equal(bookmarks.textOf(bookmarks.paragraphs(formatted.doc).at(-1)),'After child native-continuation-10');
+  assert.equal(formatted.doc.content[0].content.length,3);
+  const partial=structuredClone(ir);delete partial.formattingParagraphs[5].formattedRuns[0].resolvedFontFamily;
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(partial)).detail,'ordinary-text-font-profile-incomplete');
+  const invalid=structuredClone(ir);invalid.formattingParagraphs[0].paragraphState.wordParagraphSpacing.line=-1;
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(invalid)).ok,false);
+  const forged=structuredClone(ir);forged.formattingParagraphs[0].bookmarkNames=[];
+  assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(forged)).ok,false);
+});
+test('metadata-only Word inherited font materializes through the existing explicit formatting lane',async()=>{
+  const f=await continuationReturnFixture(),io=await bridge;
+  const ir=f.parse(f.parts['word/document.xml'],nativeWordDefaultStyles(f.parts,{language:false}));
+  const clean=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(clean.ok,true,JSON.stringify(clean));
+  assert.equal(clean.ordinaryTextChanges,undefined,'no fabricated text or language edits');
+  const result=io.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:ir},{fullManuscriptExportMap:f.exportMap,cryptoPort:f.cryptoPort});
+  assert.equal(result.ok,true,JSON.stringify(result));
+  const fonts=result.candidates.filter(op=>op.inline?.fontFamily?.value==='Times New Roman');
+  assert.equal(new Set(fonts.map(op=>op.paragraphOrdinal)).size,6,JSON.stringify(result));
 });

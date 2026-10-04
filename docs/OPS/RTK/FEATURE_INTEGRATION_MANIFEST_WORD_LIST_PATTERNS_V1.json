@@ -73,7 +73,8 @@
     "Governed list settings intent -> Core plan -> one captured editor transaction -> existing Main Save",
     "Authenticated changed numbering proof -> Core group plan -> existing formatting transaction/recovery",
     "Authenticated inactive grid addition -> Core endpoint-owned plan -> existing explicit formatting or clean-text Apply -> guarded atomic scene publication",
-    "Private authenticated section-grid plan prepares final canonical bytes before exact-text output hash and journal; formatting rollback validates the strict inverse of the same endpoint-owned plan."
+    "Private authenticated section-grid plan prepares final canonical bytes before exact-text output hash and journal; formatting rollback validates the strict inverse of the same endpoint-owned plan.",
+    "Authenticated clean text with parser-proved paragraph spacing and effective font -> private source-bound formatting operations -> existing pure formatting transform before exact-text journal hash; final canonical candidate equality and Main source CAS remain mandatory."
   ],
   "readPaths": [
     "Bounded owned numbering XML and scene-local canonical list definition",

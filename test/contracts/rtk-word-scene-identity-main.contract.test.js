@@ -1955,3 +1955,34 @@ for(const variant of ['unchanged','suffix','removed-list'])test(`actual Main sig
  const exported=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(exported.publicationGate.publishAllowed,true);
  assert.equal((bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported.documentBuffer}).parts['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);
 });
+
+for(const stale of [false,true])test(`actual Main native Word defaults plus continuation text retain spacing and language; stale ${stale}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs');
+ const p=text=>({type:'paragraph',attrs:{textAlign:null},content:[{type:'text',text}]}),levels=numbering.defaultLevels(9);levels[0].start=4;levels[0].text='Item %1)';
+ const original={type:'doc',attrs:{wordPendingRevisions:null,wordUserBookmarks:null},content:[{type:'orderedList',attrs:{start:4,type:'1',wordNumbering:{schemaVersion:1,instanceId:'numbering-2',level:0,levels,startOverrides:[{level:0,start:4}]}},content:[
+  {type:'listItem',content:[p('Authored first')]},{type:'listItem',content:[p('Authored second')]},{type:'listItem',content:[p('Authored third'),p(' Structural fourth')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ // These are the effective defaults actually added by Word in PACKAGED-10.
+ assert.doesNotMatch(parts['word/styles.xml'],/<w:pPrDefault>/);
+ parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>')
+  .replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+ const xml=parts['word/document.xml'];parts['word/document.xml']=xml.replace(/ Structural fourth(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,' Structural fourth$1<w:r><w:t xml:space="preserve"> native-continuation-10</w:t></w:r>');assert.notEqual(parts['word/document.xml'],xml);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activation=await f.probe.reviewActivate({requestId:'native-default-continuation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.deepEqual(f.capture(),capture);assert.equal(activation.ok,true,JSON.stringify(activation));assert.equal(activation.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activation));
+ await f.probe.refreshReview();assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');assert.deepEqual(f.capture(),capture);
+ if(stale){const local=structuredClone(original);local.content[0].content[0].content[0].attrs.wordParagraphSpacing={after:400};const foreign=envelope.composeObservablePayload({doc:local});fs.writeFileSync(f.alpha,foreign);
+  const result=await f.probe.fullApply({requestId:'native-default-stale'});assert.notEqual(result.applied,true);assert.equal(read(f.alpha),foreign);assert.equal(read(f.beta),sibling);return;}
+ const result=await f.probe.fullApply({requestId:'native-default-continuation-apply'});assert.equal(result.applied,true,JSON.stringify(result));
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,paragraphs=bookmarks.paragraphs(saved),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ assert.equal(saved.content[0].content.length,3);assert.equal(saved.content[0].content[2].content.length,2);assert.deepEqual(saved.content[0].attrs,original.content[0].attrs);
+ assert.deepEqual(paragraphs.map(bookmarks.textOf),['Authored first','Authored second','Authored third',' Structural fourth native-continuation-10']);
+ for(const paragraph of paragraphs){assert.deepEqual(paragraph.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,language);for(const node of paragraph.content)if(node.type==='text'){const attrs=node.marks?.find(mark=>mark.type==='textStyle')?.attrs;assert.deepEqual(attrs?.wordLanguage,language);assert.equal(attrs?.fontFamily,'Times New Roman');}}
+ assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ const journalRoot=path.join(f.root,'backups','revision-bridge-apply-journal');assert.ok(fs.readdirSync(journalRoot).filter(name=>name.endsWith('.json')).map(name=>JSON.parse(read(path.join(journalRoot,name)))).some(entry=>entry.beforeHash===sha(before)&&entry.afterHash===sha(read(f.alpha))));
+ const exported=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(exported.publicationGate.publishAllowed,true);
+ const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported.documentBuffer}).parts['word/document.xml'];assert.equal((output.match(/<w:numPr>/g)||[]).length,3);assert.equal((output.match(/<w:spacing w:after="160" w:line="278" w:lineRule="auto"\/>/g)||[]).length,4);assert.match(output,/w:lang w:val="ru-FI"/);assert.match(output,/w:rFonts[^>]*w:ascii="Times New Roman"/);
+});

@@ -1,3 +1,4 @@
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
@@ -357,7 +358,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     for(const old of resultRegistry.bookmarks)if(old.state==='active'&&!retained.has(old.id)){effects.push({kind:'delete',id:old.id});old.state='deleted';delete old.start;delete old.end;}
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='deleted'))if(!resultRegistry.bookmarks.some(item=>key(item.name)===key(record.name)))return reject('unknown-broken-target');
-    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[];
+    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[], ordinaryFormattingOperations=[];
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
@@ -369,10 +370,39 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
-      if(!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null))return reject('paragraph-spacing-change');
+      const spacingChanged=!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null);
+      if(spacingChanged && !ordinaryTextMode)return reject('paragraph-spacing-change');
+      const returnedSpacing=p.paragraphState?.wordParagraphSpacing == null ? null
+        : paragraphSpacing.normalizeWordParagraphSpacing(p.paragraphState.wordParagraphSpacing);
+      const formattingOperation=(from,to,inline,paragraph)=>({
+        operationId:`clean-format-${sceneId}-${i}-${ordinaryFormattingOperations.length}`,
+        sceneId,blockId:block.blockId,paragraphOrdinal:i,from,to,selectedText:p.paragraphText.slice(from,to),inline,paragraph,
+        sourceAuthority:'authenticated-full-manuscript-export-map-format-ir-v1',sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,
+      });
+      if(spacingChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{},
+        {wordParagraphSpacing:returnedSpacing===null?{action:'remove'}:{action:'set',value:returnedSpacing}}));
       if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');
       const before=runsForBase(block,defaultFontSize,ordinaryTextMode),after=runsForReturn(p,defaultFontSize,ordinaryTextMode);
+      // Effective family is resolved by the same-byte parser's owned style and
+      // theme catalog. Retain it as a real format effect, never waive equality
+      // and discard inherited Word formatting during a text return.
+      const completeFontProfile=ordinaryTextMode && after.length>0
+        && after.every(run=>typeof (run.inlineState?.fontFamily || run.resolvedFontFamily)==='string'
+          && (run.inlineState?.fontFamily || run.resolvedFontFamily).length>0);
+      if(ordinaryTextMode && !completeFontProfile && after.some(run=>run.resolvedFontFamily || run.inlineState?.fontFamily))
+        return reject('ordinary-text-font-profile-incomplete');
+      let fontChanged=false;
+      if(completeFontProfile){
+        for(const run of after){
+          const family=run.inlineState?.fontFamily || run.resolvedFontFamily;
+          const unchanged=block.text===p.paragraphText && before.filter(old=>old.from<run.to&&old.to>run.from)
+            .every(old=>old.style.fontFamily===family);
+          if(!unchanged){fontChanged=true;ordinaryFormattingOperations.push(formattingOperation(run.from,run.to,{fontFamily:{action:'set',value:family}},{}));}
+        }
+        for(const run of [...before,...after])delete run.style.fontFamily;
+      }
+
       const languageChange={schemaVersion:1,paragraphMark:p.wordParagraphMarkLanguage||null,
         runs:after.map(run=>({from:run.from,to:run.to,language:run.wordLanguage||null}))};
       const languages = runs => {
@@ -410,7 +440,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
           continue;
         }
-        if(ordinaryTextMode && hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
+        if(ordinaryTextMode && (hasLanguage && languageChanged || spacingChanged || fontChanged))return reject('label-language-composite-unsupported');
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);
@@ -439,8 +469,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
       }))return reject('ordinary-text-bookmark-endpoint-mismatch');
       return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
-        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations,changed:true};
     }
+    if(ordinaryFormattingOperations.length && effects.length)return reject('paragraph-format-bookmark-composite');
     if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};
     core.validateRegistry(resultRegistry,doc);core.readRegistry(doc);

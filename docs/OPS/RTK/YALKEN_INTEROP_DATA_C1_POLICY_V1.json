@@ -782,7 +782,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "cc4789e5dfda1e1cc463eaf2700d7dfbda8f23b18736eac426b5ea32ee713152"
+        "sha256": "bde60e551d78bfc262be650b1fb2cb4e0b52e382d36107d95e38832c55541439"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -818,7 +818,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "129cc6b83b1f1b96dd5ae2a0727fedf53ac8db08bdeea1d4021c06f49d0510e6"
+        "sha256": "99115ae3cc7d46f5a31e752fed5a3721b557b7134bb6a97b2eef85f69e8e152f"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1774,7 +1774,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
-        "sha256": "3c3a9734cefdd2f2a804e478f2c3fb7771f8dc5d5f70d14cf88964fb754c196b"
+        "sha256": "d366376db7a5fa16a038cbddcf7c3280c176f57ae944674b8618e0f7c35513d7"
       },
       {
         "path": "src/renderer/tiptap/userBookmarks.mjs",
@@ -1970,7 +1970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "b65be77c95a555fcc0b98a525630bfe59e55d31ea2565328ed1446845c2b4bf9"
+        "sha256": "c18d259b8a8d021dab6cbf3d81da8f565c3b2baa09977f7faae70e214333c159"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2374,7 +2374,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
-        "sha256": "99be7db525b12e6a14f10b64a4b0781ac39273de2bc8945df2cd8b479d6e25a9"
+        "sha256": "a589f2d817bcf337f88dad9ebbf6772beb03f1079ccd396275b1da95495fa9f3"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
@@ -2382,11 +2382,11 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
-        "sha256": "bd2c7fa29482e95338450622e6084e147d9f3c85ef50f91e0fd48e8e17b77bbb"
+        "sha256": "ddb17632d0b27514a77a55ddfe0bb8fdfaccb0419f9c82cd83287a2cc88d01df"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
-        "sha256": "edeaf373e8bf3776eb4d637654ef07a9ed4218c9a30460cfa5ba8eeb6f0eb964"
+        "sha256": "81d5c4aec2443d2cbd84293d4dbf12d29a773a95cc022b48c67327a5ae981a04"
       },
       {
         "path": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
