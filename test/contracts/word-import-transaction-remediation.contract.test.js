@@ -40,6 +40,14 @@ async function fixture(t, fault = '', doc = null) {
   } };
   const sandbox = {
     captureDocxImportPreviewContext: () => context,
+    fs: fs.promises, path,
+    ...require('../../src/core/project-transaction-v1.cjs'),
+    ...require('../../src/core/io/path-boundary'),
+    ...require('../../src/product/projectIdDomain.cjs'),
+    currentProjectName: 'project', DEFAULT_PROJECT_NAME: 'project',
+    getProjectManifestPath: () => manifestPath,
+    readDocxImportAttempt: safe.readDocxImportAttempt,
+    treeCohortError: code => Object.assign(Error(code), { code }),
     cloneJsonSafe: x => JSON.parse(JSON.stringify(x)),
     isPlainObjectValue: x => !!x && typeof x === 'object' && !Array.isArray(x),
     isDocxImportPreviewPlanAdmitted: safe.isDocxImportPreviewPlanAdmitted,
@@ -55,7 +63,12 @@ async function fixture(t, fault = '', doc = null) {
   };
   const src = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
   const section = src.slice(src.indexOf('// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_START'), src.indexOf('// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_END'));
-  vm.runInNewContext(section + '\nmodule.exports = handleDocxImportSafeCreateCommandSurface;', sandbox);
+  // Execute the actual Main recovery adapter with real Core and lease authority.
+  // A missing journal is decided by Core; pending fault journals are reconciled.
+  const recovery = src.slice(src.indexOf('async function recoverWriterProjectTransactionForFile('), src.indexOf('\nfunction isFileUrl(', src.indexOf('async function recoverWriterProjectTransactionForFile(')));
+  const pathGuards = src.slice(src.indexOf('function isPathInside('), src.indexOf('\n// Проверка существования файла', src.indexOf('function isPathInside(')));
+  const projectIdGuard = src.slice(src.indexOf('function normalizeStableProjectId('), src.indexOf('\nfunction canonicalizeComparableValue(', src.indexOf('function normalizeStableProjectId(')));
+  vm.runInNewContext(recovery + pathGuards + projectIdGuard + section + '\nmodule.exports = handleDocxImportSafeCreateCommandSurface;', sandbox);
   const call = (requestId = 'owned-request', admittedPlan = plan) => sandbox.module.exports({ requestId, docxImportPreviewPlan: admittedPlan });
   const scenes = () => fs.readdirSync(romanRoot, { recursive: true }).filter(p => p.endsWith('.txt'));
   return { root, projectRoot, romanRoot, manifestPath, originalManifest, plan, bytes, authority, call, scenes, recover: () => { enabled = false; }, commits: () => commitCalls };

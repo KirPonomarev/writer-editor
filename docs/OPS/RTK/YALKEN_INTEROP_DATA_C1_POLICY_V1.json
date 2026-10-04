@@ -1253,7 +1253,7 @@
       },
       {
         "path": "test/contracts/word-import-transaction-remediation.contract.test.js",
-        "sha256": "0fcc2950dbd9ed2f7ffa0ebb3ac731883bc55dbc399cb56f885868a411a32410"
+        "sha256": "95794e47051ca3f29691c6c17bbef14694ee9bf197f9e30f7a3f08656e80a7c0"
       },
       {
         "path": "test/fixtures/docx-import-real-authority.cjs",
@@ -1261,7 +1261,7 @@
       },
       {
         "path": "test/fixtures/word-import-replay-child.cjs",
-        "sha256": "d4d95368f6746cdd15aa79bf27919662f208b096773152e212aeeb8b14cbd7d6"
+        "sha256": "c0d8cdc2990e7d58f01d536ef927c33bfb5788cf20d9c3d2c135ca096a2acfd8"
       },
       {
         "path": "test/fixtures/word-import-transaction-child.cjs",
@@ -2473,7 +2473,7 @@
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-restart-mac.md",
-        "sha256": "73026b80338799a2df0598e32303713a1f2dde4da572ac13d76c8c38da89ca0e"
+        "sha256": "ad39bbb9bdf6fadec1b039d6dad95241aa050f62ebd6f721c44680e0fac31610"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_IMPORT_RESTART_V1.json",

@@ -144,3 +144,17 @@ startup recovery and passed only after coherent recovery. No oracle was relaxed.
 The changed-source rejection currently uses the existing generic retry message;
 this packet proves rejection and data preservation, not a new detailed error UI.
 Full RTK, exact-head CI baseline and delivery remain pending at this checkpoint.
+
+## Required-gate repair checkpoint
+
+The first required graph admission rejected the missing new recovery-contract
+catalog entry. After registering it, the full graph exposed stale sliced-Main
+fixtures: newly required real recovery and correlation-reader dependencies were
+absent, so healthy imports failed with an internal ReferenceError. The earlier
+27-test result predates the final Main closure and cannot qualify that candidate.
+An external one-test diagnostic exposed the missing dependency without changing
+production error handling. The repair must execute actual recovery/authority
+helpers, not bypass recovery. A second gate found a stale exact binding to the
+reviewed end-to-end test; its companion pin is updated to the inspected bytes.
+The known-failing local run and its CI run were stopped before repair; neither
+is counted as acceptance. Native-qualified application source is unchanged.
