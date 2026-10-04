@@ -74,6 +74,13 @@ export function createNumberingClipboardHandlers(onStatus = () => {}) {
   return {
     handleDOMEvents: {copy,cut:copy},
     handlePaste(view,event,slice) {
+      // ProseMirror data-pm-slice context can create attrs directly, bypassing
+      // parseHTML. Only the bounded Core carrier may restore private identity.
+      let hiddenIdentity = false;
+      slice.content.descendants(node => {
+        if (['wordNumbering','wordListId','wordListStart'].some(key => node.attrs[key] != null)) hiddenIdentity = true;
+      });
+      if (hiddenIdentity) { event.preventDefault(); report(); return true; }
       // An explicit Paste as Plain Text keeps the existing plain-text policy.
       if (event.shiftKey) return false;
       const carrier = event.clipboardData?.getData(NUMBERING_CLIPBOARD_MIME);

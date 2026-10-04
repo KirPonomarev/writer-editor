@@ -339,3 +339,33 @@ test('numbered Cut publishes checked carrier before deletion and retains exact U
     }finally{editor.destroy();}
   }
 });
+
+test('actual ProseMirror clipboard context cannot bypass numbering identity validation without MIME or through plain-paste fallback',async()=>{
+  const pmModel=await import('@tiptap/pm/model');
+  const source=fs.readFileSync(require.resolve('prosemirror-view'),'utf8');
+  const from=source.indexOf('function addContext(slice, context) {'),to=source.indexOf('\nvar handlers =',from);
+  assert.ok(from>=0&&to>from);
+  // Execute the actual installed parser helper in this realm: it reconstructs
+  // context attrs with type.create and never invokes the schema parseHTML hook.
+  const addContext=new Function('prosemirrorModel',`${source.slice(from,to)};return addContext;`)(pmModel);
+  const levels=core.defaultLevels(1);levels[0].text='Item %1)';
+  const input=core.planNumberingEdit(doc(p('Existing')),{listPath:[0],action:'configure',levels});
+  const {editor,ui}=await harness(input),notices=[];
+  try {
+    const handlers=ui.createNumberingClipboardHandlers(message=>notices.push(message));
+    const item=editor.schema.nodeFromJSON({type:'listItem',content:[p('Untrusted')]});
+    const bare=new pmModel.Slice(pmModel.Fragment.from(item),0,0);
+    for(const attrs of [{wordNumbering:input.content[0].attrs.wordNumbering},{wordListId:'legacy',wordListStart:3}]) {
+      const forged=addContext(bare,JSON.stringify(['orderedList',{start:1,...attrs}]));
+      assert.equal(forged.openStart,1);assert.deepEqual(forged.content.firstChild.attrs.wordNumbering??forged.content.firstChild.attrs.wordListId,attrs.wordNumbering??attrs.wordListId);
+      for(const shiftKey of [false,true]) {
+        let prevented=false;const state=editor.state;
+        assert.equal(handlers.handlePaste({state,editable:true,dispatch:()=>assert.fail('forged slice dispatched')},{shiftKey,clipboardData:{getData:()=>''},preventDefault(){prevented=true;}},forged),true);
+        assert.equal(prevented,true);assert.equal(editor.state,state);
+      }
+    }
+    assert.equal(notices.length,4);
+    const clean=new pmModel.Slice(pmModel.Fragment.from(editor.schema.nodeFromJSON(p('ordinary text'))),0,0);
+    assert.equal(handlers.handlePaste({state:editor.state},{clipboardData:{getData:()=>''}},clean),false);
+  }finally{editor.destroy();}
+});
