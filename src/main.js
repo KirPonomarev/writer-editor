@@ -1158,6 +1158,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     returned: finalParse.reviewIr?.documentSections,
     signedDigest: finalPayload.documentSectionsDigest,
     allowOfficeDefaultOmissions: source.officeModeTransport === true,
+    allowInactiveGridAdditions: true,
   });
   if (!documentSectionsBinding.ok) {
     return {
@@ -8185,6 +8186,8 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
       activeRtkCleanLinkLabelApplyStore = {input:cloneJsonSafe(command.input.writerInput),keyAuthority:cloneJsonSafe(capsule),
         cleanTextCandidateDoc:capsule.cleanTextMergedDocsBySceneId?.[command.sceneId] || capsule.cleanTextDocsBySceneId[command.sceneId],cleanTextCommentSourceText:capsule.cleanTextCommentSourceText,
         cleanTextNoteSourceText:capsule.cleanTextNoteSourceText,
+        cleanTextGridPlan:capsule.cleanTextGridPlansBySceneId?.[command.sceneId] || null,
+        cleanTextFormattingOperations:capsule.cleanTextFormattingBySceneId?.[command.sceneId] || [],
         cleanTextAuthoringBinding:{subjectId:currentLifecycleSubjectId(),sessionId:commentAuthoringSessionId,
           generation:lastSignaledEditGeneration},
         openScenePath:currentFilePath,
@@ -8196,7 +8199,10 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
         inputsByChangeId:{},inputsByKey:{},writerAuthorityExposedToRenderer:false,fullManuscriptApplyEnvelopeExposedToRenderer:false};
       const preview = {ok:true,status:'ready',code:'RTK_CLEAN_BLOCK_TEXT_PREVIEW_READY',plan:{
         commandId:REVIEW_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID,fullManuscript:true,sessionId:token.sessionId,
-        sceneCount:1,sceneIds:[command.sceneId],canApply:false,noDisk:true,applyOps:publicItems.map(item=>{
+        sceneCount:1,sceneIds:[command.sceneId],canApply:false,noDisk:true,
+        numberingChanges:(capsule.cleanTextFormattingBySceneId?.[command.sceneId] || []).filter(operation=>operation.kind==='list-numbering').map(operation=>({kind:'list-numbering',sceneId:operation.sceneId,numbering:cloneJsonSafe(operation.numbering)})),
+        documentChanges:(capsule.cleanTextFormattingBySceneId?.[command.sceneId] || []).filter(operation=>operation.kind==='document-properties').map(operation=>({kind:'document-properties',sceneId:operation.sceneId,document:cloneJsonSafe(operation.document),expectedWordDefaultTabStop:require('./core/document-content-envelope-v1.cjs').parseObservablePayload(command.input.writerInput.projectSnapshot.scenes.find(scene=>scene.sceneId===command.sceneId).text).doc?.attrs?.wordDefaultTabStop ?? null})),
+        applyOps:publicItems.map(item=>{
           const range=ranges.find(range=>range.operationId===item.changeId);
           return {opId:item.changeId,changeId:item.changeId,kind:'replaceExactText',sceneId:command.sceneId,
             from:range.from,to:range.to,expectedText:item.match.quote,replacementText:item.replacementText};
@@ -8358,6 +8364,8 @@ function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostic
     : null;
   const publicOperations = candidates.map((candidate) => ({
     ...(candidate.kind==='document-properties'?{kind:'document-properties',document:cloneJsonSafe(candidate.document)}:{}),
+    ...(candidate.kind==='list-numbering'?{kind:'list-numbering',numbering:cloneJsonSafe(candidate.numbering)}:{}),
+    ...(candidate.kind==='section-doc-grid'?{kind:'section-doc-grid'}:{}),
     operationId: docxReviewPreviewSessionDetailString(candidate.operationId),
     sceneId: docxReviewPreviewSessionDetailString(candidate.sceneId),
     blockId: docxReviewPreviewSessionDetailString(candidate.blockId),
@@ -8434,6 +8442,8 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
   ) return null;
   const extracted = revisionBridge.buildDocxReviewFormattingReturnCandidatesFromEvidence(formattingPacket, {
     fullManuscriptExportMap,
+    consumedCleanFormattingBySceneId: Object.fromEntries(Object.entries(capsule.cleanTextFormattingBySceneId || {}).filter(([sceneId]) =>
+      capsule.cleanTextDocsBySceneId?.[sceneId] && capsule.cleanTextChanges?.some(change => change.sceneId === sceneId)).map(([sceneId,operations])=>[sceneId,{operations,paragraphsDigest:capsule.cleanTextFormattingConsumptionBySceneId?.[sceneId]?.paragraphsDigest}])),
     cryptoPort: createRtkReviewTransportCryptoPort(),
     budgets,
   });
@@ -8446,6 +8456,24 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
       diagnosticCount: Array.isArray(extracted?.diagnostics) ? extracted.diagnostics.length : 0,
       writerCalled: false,
     };
+  }
+  const gridAdditions=intake.parserResult?.documentSectionsBinding?.inactiveGridAdditions || [];
+  if(gridAdditions.length) {
+    const sectionModel=require('./core/word-sections-v1.cjs'), envelope=require('./core/document-content-envelope-v1.cjs');
+    for(const scene of fullManuscriptExportMap.scenes || []) {
+      if(capsule.cleanTextGridPlansBySceneId?.[scene.sceneId] || capsule.userBookmarksCandidate?.sceneId===scene.sceneId && capsule.userBookmarksCandidate.inactiveGridPlan)continue;
+      const raw=capsule.baselineObservableContentBySceneId?.[scene.sceneId] ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId]
+        ?? (capsule.scope==='scene'?capsule.baselineFinalText:undefined);
+      if(typeof raw!=='string' || scene.rawSha256!==`sha256:${computeHash(raw)}`) throw Error('WORD_SECTIONS_GRID_BASELINE');
+      const parsed=envelope.parseObservablePayload(raw);
+      if(parsed.issue)throw Error('WORD_SECTIONS_GRID_BASELINE');
+      const sectionGrid=sectionModel.planInactiveGridAdditions(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text),{
+        sceneId:scene.sceneId,exportMap:fullManuscriptExportMap,protectedSections:capsule.documentSections,additions:gridAdditions});
+      if(sectionGrid) extracted.candidates.push({kind:'section-doc-grid',sectionGrid,
+        operationId:'rtk-grid-'+computeHash(JSON.stringify({sceneId:scene.sceneId,sectionGrid,artifact:intake.returnedArtifactSha256})),
+        sceneId:scene.sceneId,sourceAuthority:'authenticated-full-manuscript-section-doc-grid-v1',
+        sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256});
+    }
   }
   const input = {
     projectId: docxReviewPreviewSessionDetailString(context.projectId),
@@ -9356,6 +9384,7 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
   const nonNegativeInteger = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : null);
   const sanitizedSectionProperties = (value) => ({
     type: docxReviewPreviewSessionDetailString(value?.type),
+    ...(value && Object.hasOwn(value,'docGrid') ? {docGrid:require('./core/word-sections-v1.cjs').validateDocGrid(value.docGrid)} : {}),
     pageSize: {
       widthTwips: nonNegativeInteger(value?.pageSize?.widthTwips),
       heightTwips: nonNegativeInteger(value?.pageSize?.heightTwips),
@@ -9498,6 +9527,7 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
           pageSize: section?.carriers?.pageSize === true,
           margins: section?.carriers?.margins === true,
           columns: section?.carriers?.columns === true,
+          ...(section?.carriers && Object.hasOwn(section.carriers,'docGrid') ? {docGrid:section.carriers.docGrid === true} : {}),
         },
         properties: sanitizedSectionProperties(section?.properties),
       })),
@@ -9907,7 +9937,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
 async function prepareCleanUserBookmarksCapsule(authority, parserResult, context) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportUserBookmarksV1.mjs')).href);
-  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {}, cleanTextMergedDocsBySceneId = {};
+  const candidates = [], cleanTextChanges = [], cleanTextDocsBySceneId = {}, cleanTextMergedDocsBySceneId = {}, cleanTextGridPlansBySceneId = {}, cleanTextFormattingBySceneId = {}, cleanTextFormattingConsumptionBySceneId = {};
   for (const scene of authority.exportMap.scenes) {
     const raw = authority.baselineObservableContentBySceneId?.[scene.sceneId] ?? authority.baselineFinalTextBySceneId?.[scene.sceneId];
     if (typeof raw !== 'string') return { ok: false, code: 'RTK_USER_BOOKMARK_BASELINE_REQUIRED' };
@@ -9921,6 +9951,19 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       ordinaryTextMode: true });
     if (!analysis.ok) return analysis;
     if (analysis.ordinaryTextChanges?.length) {
+      cleanTextFormattingConsumptionBySceneId[scene.sceneId]=analysis.ordinaryFormattingConsumption;
+      cleanTextFormattingBySceneId[scene.sceneId]=analysis.ordinaryFormattingOperations || [];
+      if(analysis.ordinaryFormattingOperations?.length) {
+        const runtime=await loadRtkFormattingReturnModule();
+        const formatted=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc:analysis.doc}),analysis.ordinaryFormattingOperations);
+        if(!formatted.ok)return {ok:false,code:formatted.code};
+        analysis.doc=formatted.doc;
+        cleanTextFormattingBySceneId[scene.sceneId]=analysis.ordinaryFormattingOperations;
+      }
+      if(analysis.inactiveGridPlan) {
+        analysis.doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(analysis.doc,analysis.inactiveGridPlan);
+        cleanTextGridPlansBySceneId[scene.sceneId]=analysis.inactiveGridPlan;
+      }
       cleanTextDocsBySceneId[scene.sceneId] = analysis.doc;
       const current = context.comparisonBindings?.find(binding => binding.sceneId === scene.sceneId);
       if (current && current.rawContent !== raw) {
@@ -9938,7 +9981,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       continue;
     }
     const plan = userBookmarkModel.planReturn({ beforeDoc, candidateDoc: analysis.doc });
-    if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects });
+    if (plan.changed) candidates.push({ sceneId: scene.sceneId, beforeDoc, plan, raw, parsed, effects: analysis.effects,
+      ...(analysis.inactiveGridPlan?{inactiveGridPlan:analysis.inactiveGridPlan}:{}) });
   }
   if (cleanTextChanges.length) {
     if (candidates.length) return {ok:false,code:'RTK_USER_BOOKMARK_RETURN_CONFLICT',detail:'ordinary-text-bookmark-composite'};
@@ -10022,7 +10066,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     } catch (error) {
       return {ok:false,code:'RTK_CLEAN_TEXT_NOTE_BINDING_CONFLICT',detail:error.code || error.message};
     }
-    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,
+    return {ok:true,changed:true,fields:{cleanTextChanges,cleanTextDocsBySceneId,cleanTextMergedDocsBySceneId,cleanTextGridPlansBySceneId,cleanTextFormattingBySceneId,cleanTextFormattingConsumptionBySceneId,
       cleanTextComparisonBindings:context.comparisonBindings || null,cleanTextCommentUnchanged,
       cleanTextNotesUnchanged:true,cleanTextCommentSourceText,cleanTextNoteSourceText}};
   }
@@ -10031,7 +10075,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
   const candidate = candidates[0], scenePath = authority.scenePathBySceneId?.[candidate.sceneId];
   if (typeof scenePath !== 'string' || scenePath !== currentFilePath) return { ok: false, code: 'RTK_USER_BOOKMARK_OPEN_SCENE_REQUIRED' };
   const changeId = 'docx-user-bookmarks-' + computeHash(JSON.stringify({ roundId: authority.roundId,
-    sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc })).slice(0, 24);
+    sceneId: candidate.sceneId, before: candidate.raw, after: candidate.plan.doc,
+    ...(candidate.inactiveGridPlan?{inactiveGridPlan:candidate.inactiveGridPlan}:{}) })).slice(0, 24);
   const change = { changeId, targetScope: { type: 'scene', id: candidate.sceneId },
     match: { kind: 'exact', quote: candidate.parsed.text, prefix: '', suffix: '' },
     replacementText: envelope.deriveVisibleTextFromDocument(candidate.plan.doc),
@@ -10737,6 +10782,7 @@ async function inspectDocxReviewReturnIntakeV2({
     returned: verifiedParserResult.reviewIr?.documentSections,
     signedDigest: payload.documentSectionsDigest,
     allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
+    allowInactiveGridAdditions: true,
   });
   if (!documentSectionsBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
@@ -10746,7 +10792,7 @@ async function inspectDocxReviewReturnIntakeV2({
     if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
       documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
         expected: localAuthority.documentSections, returned: verifiedParserResult.reviewIr?.documentSections,
-        signedDigest: payload.documentSectionsDigest, allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
+        signedDigest: payload.documentSectionsDigest, allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true, allowInactiveGridAdditions: true,
         paragraphBindings: ownership.paragraphBindings,
       });
     }
@@ -11000,6 +11046,16 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       canAutoApply:false,canImportMutate:false,canWriteStorage:false,canOpenReviewSession:true,
       reviewPacket:{...buildCleanLinkLabelPreviewPacket(changes[0]),textChanges:changes},
       sourceViewState:{packetHash:returnIntake.returnedArtifactSha256,mode:'docx-clean-block-text-preview'}};
+  }
+
+  if (returnIntake.authenticated === true && authenticatedFormattingExportMap
+    && returnIntake.parserResult?.documentSectionsBinding?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
+    && returnIntake.parserResult.documentSectionsBinding.inactiveGridAdditions?.length
+    && candidate?.reason === 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS') {
+    candidate={...candidate,ok:true,status:'ready',reason:'RTK_SECTION_GRID_PREVIEW_READY',
+      canAutoApply:false,canImportMutate:false,canWriteStorage:false,canOpenReviewSession:true,
+      reviewPacket:{commentThreads:[],commentPlacements:[],textChanges:[],structuralChanges:[],diagnosticItems:[],decisionStates:[]},
+      sourceViewState:{packetHash:returnIntake.returnedArtifactSha256,mode:'docx-section-grid-preview'}};
   }
 
   const isReadyPreviewCandidate = isPlainObjectValue(candidate)
@@ -22835,7 +22891,14 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               if (!checked.changed || JSON.stringify(envelope.canonicalizeDocumentJson(checked.doc))
                 !== JSON.stringify(envelope.canonicalizeDocumentJson(workingDoc))) throw Error('WORD_STORIES_INTENT_MISMATCH');
             }
-            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) require('./core/word-sections-v1.cjs').validateSave(beforeDoc, workingDoc);
+            if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordSections != null || workingDoc.attrs?.wordSections != null)) {
+              const sections=require('./core/word-sections-v1.cjs');
+              if(options.inactiveGridPlan) {
+                if(options.inactiveGridRollback===true)sections.validateGridRollback(beforeDoc,workingDoc,options.inactiveGridPlan);
+                else sections.validateSaveWithGridAddition(beforeDoc,workingDoc,options.inactiveGridPlan);
+              }
+              else sections.validateSave(beforeDoc,workingDoc);
+            }
             if (!options.storyAuthoringIntent && !options.storyReturnPlan?.storyMutationReplay && expectedSceneContent !== null && (beforeDoc.attrs?.wordStories != null || workingDoc.attrs?.wordStories != null)) require('./core/word-stories-v1.cjs').validateSave(beforeDoc, workingDoc);
             if (workingDoc.attrs?.wordStories != null) mediaUpdateResources = await prepareWordMediaReturnResources(workingDoc, prepared.manifestPath);
             if (beforeDoc.attrs?.wordUserBookmarks != null || workingDoc.attrs?.wordUserBookmarks != null) {
@@ -25542,7 +25605,8 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
     filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
     'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL',
       ...(options.userBookmarkPlan ? {userBookmarkPlan:options.userBookmarkPlan,userBookmarkCapturedContent:options.userBookmarkCapturedContent}: {}),
-      ...(options.authenticatedCleanBlockText === true ? {authenticatedCleanBlockText:true}: {}) },
+      ...(options.authenticatedCleanBlockText === true ? {authenticatedCleanBlockText:true}: {}),
+      ...(options.inactiveGridPlan ? {inactiveGridPlan:options.inactiveGridPlan,...(options.inactiveGridRollback===true?{inactiveGridRollback:true}:{})}: {}) },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
     throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
@@ -25945,6 +26009,10 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
   if (!store.cleanTextCandidateDoc || input.reviewItems.some(item=>!String(item.changeId).startsWith('docx-clean-block-text-'))) {
     return blocked('RTK_CLEAN_BLOCK_TEXT_PRIVATE_CANDIDATE_REQUIRED');
   }
+  if(store.cleanTextFormattingOperations?.some(operation=>['list-numbering','document-properties'].includes(operation.kind))) {
+    const required=store.input.reviewItems.map(item=>item.changeId).sort(), selected=input.reviewItems.map(item=>item.changeId).sort();
+    if(JSON.stringify(required)!==JSON.stringify(selected))return blocked('RTK_CLEAN_TEXT_NUMBERING_ATOMIC_GROUP_REQUIRED');
+  }
   const subjectId=currentLifecycleSubjectId(),sessionId=commentAuthoringSessionId,
     generation=lastSignaledEditGeneration,scenePath=input.scenePath;
   const envelope=await loadDocumentContentEnvelopeModule(),snapshot=await requestEditorSnapshot();
@@ -25986,13 +26054,85 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
     if(JSON.stringify(envelope.canonicalizeDocumentJson(plan.doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(after.doc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
     await beforeRename();
     const result=await publishReviewSceneWithProjectTransaction(filePath,content,{...publishOptions,beforeRename,
-      userBookmarkPlan:plan,userBookmarkCapturedContent:snapshot.content,authenticatedCleanBlockText:true});
+      userBookmarkPlan:plan,userBookmarkCapturedContent:snapshot.content,authenticatedCleanBlockText:true,
+      ...(store.cleanTextGridPlan?{inactiveGridPlan:store.cleanTextGridPlan}:{})});
     publication={filePath,savedContent:content,capturedContent:snapshot.content,generation:snapshot.generation,subjectId,sessionId};
     return result;
   };
   try {
     guard();
-    const result=await writer(input,{...options,publishScene,
+    const prepareCanonicalContent=store.cleanTextGridPlan || store.cleanTextFormattingOperations?.length ? async ({beforeContent,afterContent})=>{
+      guard();
+      if(beforeContent!==before)throw Error('RTK_CLEAN_BLOCK_TEXT_SOURCE_STALE');
+      const after=envelope.parseObservablePayload(afterContent);
+      if(after.issue || !userBookmarkEnvelopeMetadataEqual(after,parsed))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+      let doc=after.doc;
+      if(store.cleanTextFormattingOperations?.length) {
+        const runtime=await loadRtkFormattingReturnModule();
+        // Rebuild only the admitted property families from the private merged
+        // candidate. Concurrent local insertions may shift returned run ranges.
+        const targetParagraphs=userBookmarkModel.paragraphs(store.cleanTextCandidateDoc);
+        const currentParagraphs=userBookmarkModel.paragraphs(doc), operations=[];
+        const byParagraph=new Map();
+        for(const operation of store.cleanTextFormattingOperations){
+          if(['list-numbering','document-properties'].includes(operation.kind))continue;
+          const entry=byParagraph.get(operation.paragraphOrdinal) || {operation,font:false,spacing:false};
+          entry.font ||= Object.hasOwn(operation.inline || {},'fontFamily');
+          entry.spacing ||= Object.hasOwn(operation.paragraph || {},'wordParagraphSpacing');
+          byParagraph.set(operation.paragraphOrdinal,entry);
+        }
+        for(const [index,entry] of byParagraph){
+          const target=targetParagraphs[index],current=currentParagraphs[index];
+          if(!target || !current || userBookmarkModel.textOf(target)!==userBookmarkModel.textOf(current))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+          const text=userBookmarkModel.textOf(target);
+          const add=(from,to,inline,paragraph)=>operations.push({...entry.operation,
+            operationId:`${entry.operation.operationId}-prepared-${operations.length}`,from,to,selectedText:text.slice(from,to),inline,paragraph});
+          if(entry.spacing){const value=target.attrs?.wordParagraphSpacing;
+            add(0,text.length,{}, {wordParagraphSpacing:value==null?{action:'remove'}:{action:'set',value}});}
+          if(entry.font){let offset=0;for(const node of target.content || []){
+            const length=node.type==='text'?node.text.length:node.type==='hardBreak'?1:0;
+            if(node.type==='text' && length){
+              const style=(node.marks || []).find(mark=>mark.type==='textStyle');
+              const family=style?.attrs?.fontFamily;
+              add(offset,offset+length,{fontFamily:family==null?{action:'remove'}:{action:'set',value:family}},{});
+            }
+            offset+=length;
+          }}
+        }
+        for(const operation of store.cleanTextFormattingOperations.filter(operation=>['list-numbering','document-properties'].includes(operation.kind))) {
+          if(operation.kind==='list-numbering') {
+            const numbering=require('./core/word-list-numbering-v1.cjs'),change=numbering.validateDefinitionChange(operation.numbering);
+            const currentMarkers=numbering.resolveMarkers(doc), representative=[...currentMarkers.keys()].find(node=>node.attrs.wordNumbering.instanceId===change.instanceId);
+            const lineage=representative?.attrs.wordNumbering.lineageId || change.instanceId;
+            const group=[...currentMarkers].filter(([node])=>(node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId)===lineage);
+            const updates=new Map((change.instanceOverrides || []).map(item=>[item.instanceId,item.startOverrides]));
+            const alreadyDesired=group.length>0 && group.every(([node])=>stableRtkReviewTransportJson(node.attrs.wordNumbering.levels)===stableRtkReviewTransportJson(change.levels)
+              && (!updates.has(node.attrs.wordNumbering.instanceId) || stableRtkReviewTransportJson(node.attrs.wordNumbering.startOverrides || [])===stableRtkReviewTransportJson(updates.get(node.attrs.wordNumbering.instanceId))));
+            if(alreadyDesired) {
+              const baselineRaw=store.keyAuthority.baselineObservableContentBySceneId?.[operation.sceneId] ?? store.keyAuthority.baselineFinalTextBySceneId?.[operation.sceneId];
+              const baseline=envelope.parseObservablePayload(baselineRaw);
+              if(baseline.issue || !baseline.doc)throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+              const membership=markers=>[...markers].filter(([node])=>(node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId)===lineage)
+                .map(([node,value])=>({path:value.path,instanceId:node.attrs.wordNumbering.instanceId,lineageId:node.attrs.wordNumbering.lineageId || node.attrs.wordNumbering.instanceId,level:node.attrs.wordNumbering.level,
+                  ...(updates.has(node.attrs.wordNumbering.instanceId)?{}:{startOverrides:node.attrs.wordNumbering.startOverrides || []})}));
+              if(stableRtkReviewTransportJson(membership(numbering.resolveMarkers(baseline.doc)))!==stableRtkReviewTransportJson(membership(currentMarkers)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+              const asserted=numbering.applyDefinitionChange(doc,{...change,expectedLevels:change.levels,
+                ...(change.instanceOverrides?{instanceOverrides:change.instanceOverrides.map(item=>({...item,expectedStartOverrides:item.startOverrides}))}:{})});
+              if(JSON.stringify(envelope.canonicalizeDocumentJson(asserted))!==JSON.stringify(envelope.canonicalizeDocumentJson(doc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+              continue;
+            }
+          }
+          operations.push(operation);
+        }
+        const formatted=runtime.applyFormattingOperationsToObservableContent(envelope.composeObservablePayload({doc}),operations);
+        if(!formatted.ok)throw Error(formatted.code);
+        doc=formatted.doc;
+      }
+      if(store.cleanTextGridPlan)doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(doc,store.cleanTextGridPlan);
+      if(JSON.stringify(envelope.canonicalizeDocumentJson(doc))!==JSON.stringify(envelope.canonicalizeDocumentJson(store.cleanTextCandidateDoc)))throw Error('RTK_CLEAN_BLOCK_TEXT_CANDIDATE_MISMATCH');
+      return envelope.composeObservablePayload({doc,metaEnabled:after.hasMetaBlock,meta:after.meta,cards:after.cards});
+    } : undefined;
+    const result=await writer(input,{...options,publishScene,prepareCanonicalContent,
       trustedAuthenticatedBlockDigests:input.reviewItems.map(item=>computeHash(JSON.stringify(item)))});
     if(result.ok && publication)result.receipt={...result.receipt,bookmarkPublication:publication};
     return result;
@@ -26039,6 +26179,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   if (!plan.changed) return blocked('RTK_USER_BOOKMARK_NO_CHANGE');
   // Schema materialization follows semantic admission; it cannot create an
   // effect or revision, and preserves every explicitly stored link attribute.
+  if(candidate.inactiveGridPlan)plan.doc=require('./core/word-sections-v1.cjs').applyInactiveGridAdditions(plan.doc,candidate.inactiveGridPlan);
   plan.doc = userBookmarkModel.materializeInternalLinkSchemaDefaults(plan.doc);
   const content = envelope.composeObservablePayload({ ...candidate.parsed, metaEnabled: candidate.parsed.hasMetaBlock, doc: plan.doc });
   const beforeScenePublish = async () => {
@@ -26064,6 +26205,7 @@ async function applyPrivateUserBookmarksReturn(input) {
   catch (error) { return blocked(error.code || error.message || 'RTK_USER_BOOKMARK_SOURCE_STALE'); }
   const receipt = await commitWriterProjectSnapshot(scenePath, content, snapshot.generation, snapshot.bookProfile,
     isStory ? 'authenticated document story return' : isMedia ? 'authenticated media return' : 'authenticated user bookmark return', { expectedSceneContent: candidate.raw, beforeScenePublish,
+      ...(candidate.inactiveGridPlan?{inactiveGridPlan:candidate.inactiveGridPlan}:{}),
       ...(isStory ? { storyReturnPlan: plan, storyReturnCapturedContent: snapshot.content }
         : isMedia ? { mediaReturnPlan: plan, mediaReturnCapturedContent: snapshot.content }
         : { userBookmarkPlan: plan, userBookmarkCapturedContent: snapshot.content }) });

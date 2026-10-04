@@ -1,3 +1,5 @@
+import wordListNumbering from '../core/word-list-numbering-v1.cjs';
+import wordParagraphLayout from '../core/word-paragraph-layout-v1.cjs';
 import {
   applyTiptapStoryBody,
   applyTiptapUserBookmarkPublication,
@@ -11,6 +13,7 @@ import {
   getTiptapDocumentSnapshot,
   getTiptapFormattingState,
   captureTiptapLinkTarget,
+  captureTiptapNumberingTarget,
   getTiptapSelectionOffsets,
   getTiptapPlainText,
   initTiptap,
@@ -1482,6 +1485,53 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
   return {};
 }
 
+function reviewSurfaceNumberingProjection(operation) {
+  if (operation?.kind !== 'list-numbering' || !reviewSurfaceIsPlainObject(operation.numbering)) return null;
+  try {
+    return wordListNumbering.validateDefinitionChange(operation.numbering);
+  } catch { return null; } // Invalid presentation data never supplies mutation authority.
+}
+
+function reviewSurfaceRenderNumberingChanges(operations) {
+  const describe = level => {
+    if (!level) return 'нет';
+    const restart = level.restartAfterLevel === null ? 'не перезапускать' : `после уровня ${level.restartAfterLevel + 1}`;
+    return `«${level.text}», формат ${level.format}, начало ${level.start}, ${restart}`;
+  };
+  return reviewSurfaceArray(operations).filter(operation => operation.numbering || operation.kind === 'section-doc-grid').map(operation => {
+    if (operation.kind === 'section-doc-grid') return `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Параметры раздела Word</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div><p>Сохранить добавленные Word параметры отключённой сетки документа.</p></article>`;
+    const { expectedLevels, levels } = operation.numbering;
+    const changes = Array.from({length: Math.max(expectedLevels.length, levels.length)}, (_, index) => {
+      const before = expectedLevels[index], after = levels[index];
+      if (JSON.stringify(before) === JSON.stringify(after)) return '';
+      return `<p>${reviewSurfaceEscapeHtml(`Уровень ${index + 1}: ${describe(before)} → ${describe(after)}`)}</p>`;
+    }).join('');
+    const overrides = (operation.numbering.instanceOverrides || []).map((change, changeIndex) => {
+      const before = new Map(change.expectedStartOverrides.map(value => [value.level, value.start]));
+      const after = new Map(change.startOverrides.map(value => [value.level, value.start]));
+      return [...new Set([...before.keys(), ...after.keys()])].sort((a, b) => a - b).map(level => {
+        if (before.get(level) === after.get(level)) return '';
+        const describeStart = (values, definitions) => values.has(level) ? String(values.get(level)) : (definitions[level] ? `по настройке уровня (${definitions[level].start})` : 'уровень удалён');
+        return `<p>${reviewSurfaceEscapeHtml(`Список ${changeIndex + 1}, уровень ${level + 1}: начало ${describeStart(before, expectedLevels)} → ${describeStart(after, levels)}`)}</p>`;
+      }).join('');
+    }).join('');
+    return changes || overrides ? `<article class="right-rail-review-item"><div class="right-rail-review-item-title">Нумерация списка</div><div class="right-rail-review-item-meta">${reviewSurfaceEscapeHtml(operation.sceneId)}</div>${changes}${overrides}</article>` : '';
+  }).join('');
+}
+
+function reviewSurfaceRenderCompositeNumberingChanges(operations, documentChanges = []) {
+  const checked=reviewSurfaceArray(operations).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering);
+  const documentMarkup=reviewSurfaceArray(documentChanges).map(operation=>{
+    try {
+      if(operation?.kind!=='document-properties' || operation.document?.wordDefaultTabStop?.action!=='set')return '';
+      const value=wordParagraphLayout.normalizeWordDefaultTabStop(operation.document.wordDefaultTabStop.value);
+      const before=operation.expectedWordDefaultTabStop==null?'по умолчанию':`${wordParagraphLayout.normalizeWordDefaultTabStop(operation.expectedWordDefaultTabStop) / 20} пт`;
+      return `<p>${reviewSurfaceEscapeHtml(`Шаг табуляции: ${before} → ${value / 20} пт`)}</p>`;
+    }catch{return '';}
+  }).join('');
+  return checked.length || documentMarkup ? `<p class="right-rail-review-item-body">Применение текста также изменит параметры ниже. Все показанные текстовые изменения и параметры применяются вместе.</p>${reviewSurfaceRenderNumberingChanges(checked)}${documentMarkup}` : '';
+}
+
 function reviewSurfaceNormalizeFormattingReturn(previewValue, resultValue) {
   const preview = reviewSurfaceIsPlainObject(previewValue) ? previewValue : {};
   const result = reviewSurfaceIsPlainObject(resultValue) ? resultValue : {};
@@ -1491,6 +1541,8 @@ function reviewSurfaceNormalizeFormattingReturn(previewValue, resultValue) {
     blockId: reviewSurfaceText(operation?.blockId),
     selectedText: typeof operation?.selectedText === 'string' ? operation.selectedText : '',
     expectedOutcome: reviewSurfaceText(operation?.expectedOutcome),
+    kind: reviewSurfaceText(operation?.kind),
+    numbering: reviewSurfaceNumberingProjection(operation),
   })).filter((operation) => operation.operationId && operation.sceneId);
   const diagnostics = reviewSurfaceArray(preview.diagnostics).map((diagnostic) => ({
     code: reviewSurfaceText(diagnostic?.code),
@@ -2626,6 +2678,8 @@ function reviewSurfaceBuildExactTextPreview(state) {
   if (exactPreview.status === 'ready' && applyOps.length > 0) {
     return {
       state: 'ready',
+      documentChanges:reviewSurfaceArray(exactPreview.plan?.documentChanges),
+      numberingChanges:reviewSurfaceArray(exactPreview.plan?.numberingChanges).map(operation=>({...operation,numbering:reviewSurfaceNumberingProjection(operation)})).filter(operation=>operation.numbering),
       ops: applyOps,
       batchAction: batchCandidate
         ? {
@@ -3092,6 +3146,7 @@ function renderReviewSurfaceMarkup(viewModel) {
   const exactPreview = viewModel.exactTextPreview;
   const exactPreviewMarkup = exactPreview.state === 'ready'
     ? `
+      ${reviewSurfaceRenderCompositeNumberingChanges(exactPreview.numberingChanges, exactPreview.documentChanges)}
       ${exactPreview.fullManuscriptAction
         ? `
           <div class="right-rail-review-actions right-rail-review-actions--batch">
@@ -3172,6 +3227,7 @@ function renderReviewSurfaceMarkup(viewModel) {
         <p>${reviewSurfaceEscapeHtml(`${formattingReturn.operationCount} операций в ${formattingReturn.sceneCount} сценах${formattingReturn.diagnosticCount > 0 ? `, вручную: ${formattingReturn.diagnosticCount}` : ''}`)}</p>
         ${formattingReturn.code ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(formattingReturn.code)}</div>` : ''}
       </div>
+      ${reviewSurfaceRenderNumberingChanges(formattingReturn.operations)}
       ${formattingDiagnosticsMarkup}
       <div class="right-rail-review-actions">
         <button
@@ -7772,6 +7828,7 @@ registerProjectCommands(commandRegistry, {
     formatAlignJustify: () => handleFormatAlign('align-justify'),
     listToggleBullet: () => handleTiptapFormatCommand('toggleBulletList'),
     listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
+    listConfigureNumbering: () => handleNumberingSettings(),
     listClear: () => handleTiptapFormatCommand('clearList'),
     insertLinkPrompt: (payload = {}) => handleInsertLinkPrompt(payload),
     reviewImportLocalPacket: () => handleReviewImportLocalPacket(),
@@ -22388,6 +22445,7 @@ function syncToolbarFormattingState(nextState = null) {
 
   listActionButtons.forEach((button) => {
     const action = button.dataset.listAction || '';
+    if (action === 'configure-numbering') return;
     const active = (action === 'bullet' && state.bulletList)
       || (action === 'ordered' && state.orderedList)
       || (action === 'no-list' && !state.bulletList && !state.orderedList);
@@ -22636,6 +22694,107 @@ async function handleInsertLinkPrompt(payload = {}) {
   return target.apply('setLink', { href: normalized.href });
 }
 
+let activeNumberingDialog = null;
+async function handleNumberingSettings() {
+  if (!isTiptapMode || activeNumberingDialog || isLinkDialogOpen()) return { performed: false, reason: 'EDITOR_UNAVAILABLE' };
+  const target = captureTiptapNumberingTarget();
+  if (!target) { updateStatusText('Выберите абзац или нумерованный список в рукописи.', { visible: true }); return { performed: false, reason: 'NUMBERING_TARGET_REQUIRED' }; }
+  const identity = { projectId: currentProjectId, documentId: currentDocumentId, generation: localEditGeneration };
+  const current = () => isTiptapMode && currentProjectId === identity.projectId
+    && currentDocumentId === identity.documentId && localEditGeneration === identity.generation;
+  return new Promise(resolve => {
+    const previousFocus = document.activeElement;
+    const dialog = document.createElement('dialog'); dialog.className = 'modal__content';
+    dialog.style.width = 'min(440px, calc(100vw - 48px))';
+    dialog.style.maxHeight = 'calc(100vh - 48px)'; dialog.style.overflow = 'auto';
+    dialog.style.border = '1px solid var(--toolbar-control-border)';
+    dialog.setAttribute('aria-labelledby', 'numbering-dialog-title');
+    const title = document.createElement('h2'); title.id = 'numbering-dialog-title'; title.className = 'modal__title'; title.textContent = 'Нумерация списка';
+    dialog.append(title);
+    const controls = {};
+    const field = (name, labelText, options = null) => {
+      const label = document.createElement('label'); label.className = 'modal__label'; label.htmlFor = `numbering-${name}`; label.textContent = labelText;
+      const input = document.createElement(options ? 'select' : 'input'); input.className = 'modal__input'; input.id = label.htmlFor; input.name = name;
+      if (options) for (const [value, text] of options) { const option = document.createElement('option'); option.value = String(value); option.textContent = text; input.append(option); }
+      else { input.type = 'text'; input.autocomplete = 'off'; }
+      input.setAttribute('aria-describedby', 'numbering-error'); dialog.append(label, input); controls[name] = input; return input;
+    };
+    const levels = structuredClone(target.levels); let selectedLevel = target.level;
+    const mode = field('action', 'Применить к списку', [['configure', 'Изменить оформление'], ['restart', 'Начать новый список'], ['continue', 'Продолжить предыдущий']]);
+    const previous = field('previous', 'Предыдущий список', target.candidates.map(item => [item.instanceId, item.label]));
+    const level = field('level', 'Настроить уровень', levels.map((_, i) => [i, String(i + 1)]));
+    const format = field('format', 'Формат числа', [['1','1, 2, 3'], ['I','I, II, III'], ['i','i, ii, iii'], ['A','A, B, C'], ['a','a, b, c']]);
+    const template = field('template', 'Шаблон номера'); template.maxLength = 256;
+    const hint = document.createElement('p'); hint.className = 'modal__label'; hint.id = 'numbering-template-hint';
+    hint.textContent = 'Например: (%1), Article %1 или %1.%2. Цифра после % обозначает уровень.';
+    template.setAttribute('aria-describedby', 'numbering-template-hint numbering-error'); template.after(hint);
+    const start = field('start', 'Начать с'); start.inputMode = 'numeric';
+    const restart = field('restart', 'Начинать заново после уровня', [['', 'Не начинать заново']]);
+    const preview = document.createElement('p'); preview.className = 'modal__label'; preview.setAttribute('aria-live','polite');
+    const error = document.createElement('p'); error.id = 'numbering-error'; error.className = 'modal__label'; error.setAttribute('role','alert');
+    dialog.append(preview, error);
+    const actions = document.createElement('div'); actions.className = 'modal__actions'; dialog.append(actions);
+    let settled = false;
+    const finish = result => { if (settled) return; settled = true; activeNumberingDialog = null;
+      if (dialog.open) dialog.close(); dialog.remove(); if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); resolve(result); };
+    const button = (text, action, primary = false) => { const node = document.createElement('button'); node.type = 'button'; node.className = `modal__button${primary ? ' modal__button--primary' : ''}`; node.textContent = text; node.addEventListener('click', action); actions.append(node); return node; };
+    const readLevel = () => {
+      const number = /^\d+$/u.test(start.value) ? Number(start.value) : NaN;
+      levels[selectedLevel] = { ...levels[selectedLevel], format: format.value, start: number, text: template.value, restartAfterLevel: restart.value === '' ? null : Number(restart.value) };
+    };
+    const loadLevel = () => {
+      const value = levels[selectedLevel]; level.value = String(selectedLevel); format.value = value.format; start.value = String(value.start); template.value = value.text;
+      restart.replaceChildren();
+      for (const [value, text] of [['','Не начинать заново'], ...Array.from({length:selectedLevel}, (_,i)=>[String(i),String(i+1)])]) {
+        const option = document.createElement('option'); option.value = value; option.textContent = text; restart.append(option);
+      }
+      restart.value = value.restartAfterLevel == null ? '' : String(value.restartAfterLevel);
+    };
+    const intent = () => {
+      readLevel();
+      if (!current()) throw Error('STALE_DOCUMENT');
+      return mode.value === 'continue' ? { action: 'continue', instanceId: previous.value }
+        : { action: mode.value, levels: structuredClone(levels) };
+    };
+    const refresh = () => {
+      previous.disabled = mode.value !== 'continue';
+      for (const input of [level,format,template,start,restart]) input.disabled = mode.value === 'continue';
+      try { const labels = target.preview(intent()); preview.textContent = `Пример: ${labels.slice(0,3).join('  ')}`; }
+      catch { preview.textContent = 'Проверьте шаблон и начальное число.'; }
+    };
+    const submit = () => {
+      error.textContent = ''; template.removeAttribute('aria-invalid'); start.removeAttribute('aria-invalid');
+      try {
+        const input = intent();
+        const capability = enforceCapabilityForCommand(EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING, withEditorModeCommandPayload(),
+          { defaultPlatformId: window.electronAPI ? 'node' : 'web' });
+        if (!capability.ok) throw Error('NUMBERING_CAPABILITY_UNAVAILABLE');
+        const result = target.apply(input);
+        if (result?.performed !== true) throw Error(result?.reason || 'NUMBERING_NOT_APPLIED');
+        finish(result);
+      } catch (cause) {
+        if (cause.message === 'NO_OP') {
+          error.textContent = 'Уже используется выбранная нумерация.';
+          return;
+        }
+        error.textContent = /STALE/u.test(cause.message)
+          ? 'Документ изменился. Скопируйте нужный шаблон и откройте настройки заново.'
+          : 'Проверьте шаблон, начальное число и выбранный предыдущий список. Настройки сохранены в этом окне.';
+        template.setAttribute('aria-invalid','true'); template.focus({ preventScroll: true });
+      }
+    };
+    button('Отмена', () => finish({performed:false,reason:'USER_CANCELLED'})); button('Применить', submit, true);
+    level.addEventListener('change', () => { readLevel(); selectedLevel = Number(level.value); loadLevel(); refresh(); });
+    for (const input of [mode,previous,format,template,start,restart]) input.addEventListener('input', refresh);
+    dialog.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.isComposing && event.target.tagName === 'INPUT') { event.preventDefault(); submit(); } });
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish({performed:false,reason:'USER_CANCELLED'}); });
+    dialog.addEventListener('close', () => finish({performed:false,reason:'USER_CANCELLED'}));
+    dialog.addEventListener('click', event => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) finish({performed:false,reason:'USER_CANCELLED'}); } });
+    activeNumberingDialog = dialog; document.body.append(dialog); loadLevel(); refresh();
+    try { dialog.showModal(); template.focus({ preventScroll: true }); } catch (cause) { finish({performed:false,reason:cause.message}); }
+  });
+}
+
 function dispatchListTypeAction(listAction) {
   switch (listAction) {
     case 'no-list':
@@ -22644,6 +22803,8 @@ function dispatchListTypeAction(listAction) {
       return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
     case 'ordered':
       return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED);
+    case 'configure-numbering':
+      return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING);
     default:
       return Promise.resolve({ ok: false, error: { reason: 'LIST_ACTION_UNKNOWN' } });
   }
@@ -24110,6 +24271,22 @@ if (window.electronAPI) {
       activeDocumentRevealRequested || documentId !== currentDocumentId
     );
 
+    // Publish before committing the active identity. Failed loads retain the
+    // previous manuscript, its metadata, and its Undo history.
+    const parsed = treeContentParsed || parseDocumentContent(content);
+    const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
+    if (useLargePayloadFastPath) parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
+    const nextDocumentId = hasDocumentId ? documentId || null : hasKind || hasProjectId ? null : currentDocumentId;
+    const nextProjectId = hasProjectId ? normalizeProjectId(projectId) : currentProjectId;
+    if (isTiptapMode && !treeContentParsed && !setTiptapDocumentSnapshot({
+      doc: parsed.doc,
+      text: parsed.text || '',
+      resetHistory: nextDocumentId !== currentDocumentId || nextProjectId !== currentProjectId,
+    })) {
+      updateStatusText('Сцена не открыта. Предыдущий документ сохранён в редакторе.', { visible: true });
+      return;
+    }
+
     clearFlowModeState();
     clearPendingMetadataUpdate();
     currentMetadataBaselineHash = '';
@@ -24140,26 +24317,17 @@ if (window.electronAPI) {
     }
     setReviewSurfaceState(reviewSurfaceResolveIncomingPayload(payload));
 
-    const parsed = treeContentParsed || parseDocumentContent(content);
     currentMeta = parsed.meta;
     currentCards = parsed.cards;
     plainTextBuffer = parsed.text || '';
-    const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
     if (useLargePayloadFastPath) {
       beginCentralSheetLargePayloadFastPath(parsed.text || '');
-      parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
     } else {
       clearCentralSheetLargePayloadFastPath();
     }
     if (isTiptapMode) {
       resetCentralSheetStripForIncomingPayload();
-      if (!treeContentParsed) {
-        setTiptapDocumentSnapshot({
-          doc: parsed.doc,
-          text: parsed.text || '',
-        });
-      }
-      resetCentralSheetStripForIncomingPayload();
+
       if (useLargePayloadFastPath) {
         applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
         scheduleCentralSheetStripProofRefresh({ scrollOnly: true });
@@ -24671,7 +24839,12 @@ if (window.electronAPI) {
     }
     const exportFailure = typeof status === 'string' && status.length <= 320
       && /^Не удалось экспортировать DOCX \(E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}(?:: (?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+)?\)\.$/u.test(status);
-    updateStatusText(status, { visible: exportFailure });
+    const returnCodes = typeof status === 'string' && status.length <= 704
+      ? /^Не удалось открыть возврат Word \(([^\r\n]+)\)\.$/u.exec(status)?.[1].split(': ') : null;
+    const returnFailure = Array.isArray(returnCodes) && returnCodes.length >= 1 && returnCodes.length <= 4
+      && returnCodes.every(code => code.length <= 160
+        && /^(?:E_)?(?:DOCX_REVIEW_PREVIEW_SESSION|RTK_(?:RETURN_INTAKE|WORD|DOCX|SECRET_STORE|USER_BOOKMARK|V4|ROUND|COMMENT|CLEAN_LINK_LABEL|FULL_MANUSCRIPT|REVIEW_TRANSPORT|NON_OVERLAP_TRACKED_REPLACEMENT|STRUCTURAL_RETURN|FORMATTING_RETURN)|PENDING_RETURN|PENDING_REVISIONS|COMMENT_RETURN|NOTE_RETURN|FULL_MANUSCRIPT)_[A-Z0-9_]+$/u.test(code));
+    updateStatusText(status, { visible: exportFailure || returnFailure });
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
       updateWarningStateText('recovery');

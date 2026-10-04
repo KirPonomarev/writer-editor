@@ -20,10 +20,12 @@ const ROOT_COMMENT_BODY_LIMIT = 16_384;
 
 // Tiptap materializes these declared schema defaults when opening an imported
 // document. Compare their meanings without weakening dirty, revision, lease or
-// byte-bound scene CAS checks. Every other attribute and array order stays exact.
+// byte-bound scene CAS checks. Adjacent identical text leaves also share the
+// same meaning after ProseMirror joins them on load; other array order stays exact.
 export function commentSceneSnapshotsEqual(left, right) {
-  const canonical = value => {
-    if (Array.isArray(value)) return value.map(canonical);
+  const contentTypes=new Set(['doc','paragraph','heading','codeBlock','blockquote','bulletList','orderedList','listItem','table','tableRow','tableCell','tableHeader']);
+  const canonical = (value, documentNode=false) => {
+    if (Array.isArray(value)) return value.map(item=>canonical(item));
     if (value === null || typeof value !== 'object') return value;
     let source = value;
     const defaults = value.type === 'doc' ? { wordPendingRevisions: null, wordUserBookmarks: null }
@@ -32,9 +34,24 @@ export function commentSceneSnapshotsEqual(left, right) {
     if (defaults && (value.attrs === undefined || (value.attrs && typeof value.attrs === 'object' && !Array.isArray(value.attrs)))) {
       source = { ...value, attrs: { ...defaults, ...value.attrs } };
     }
-    return Object.fromEntries(Object.keys(source).sort().map(key => [key, canonical(source[key])]));
+    return Object.fromEntries(Object.keys(source).sort().map(key => {
+      if(key!=='content' || !documentNode || !contentTypes.has(source.type) || !Array.isArray(source[key]))return [key,canonical(source[key])];
+      const children=source[key].map(child=>canonical(child,true));
+      if(!['paragraph','heading','codeBlock'].includes(source.type))return [key,children];
+      const merged=[];
+      const shape=node=>Object.fromEntries(Object.entries(node).filter(([name])=>name!=='text'));
+      const standardLeaf=node=>Object.keys(node).every(key=>['type','text','marks'].includes(key));
+      for(const child of children){
+        const previous=merged.at(-1);
+        if(previous?.type==='text' && child?.type==='text' && typeof previous.text==='string' && typeof child.text==='string'
+          && standardLeaf(previous) && standardLeaf(child)
+          && JSON.stringify(shape(previous))===JSON.stringify(shape(child)))previous.text+=child.text;
+        else merged.push(child);
+      }
+      return [key,merged];
+    }));
   };
-  return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
+  return JSON.stringify(canonical(left,left?.type==='doc')) === JSON.stringify(canonical(right,right?.type==='doc'));
 }
 
 // Fixed canonical target only. Payloads never supply a path or a writer.

@@ -1,3 +1,7 @@
+import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
+import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
+import wordSections from '../../core/word-sections-v1.cjs';
+import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import wordBreaks from '../../core/word-typed-breaks-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import core from '../../core/word-user-bookmarks-v1.cjs';
@@ -133,6 +137,80 @@ function replaceLinks(p,runs,registry) {
   p.content=out;
 }
 
+// Compare the complete effective definition, not just the current label. A
+// single used level may carry the legacy exporter's unused uniform padding.
+// No custom template, shared instance lineage, explicit override or distinct
+// ancestor behavior is equivalent to the old per-level list representation.
+export function legacyNumberingProofEquivalent(list, expected, peers = []) {
+  try {
+    const pattern = listNumbering.validateNumbering(list.wordNumbering);
+    const type = expected.type || '1';
+    if (pattern.level !== list.level || pattern.startOverrides?.length
+      || pattern.levels.some((entry,index) => entry.format !== type || entry.start !== expected.start
+        || entry.text !== `%${index+1}.` || entry.restartAfterLevel !== (index ? index-1 : null))) return false;
+    const related = peers.filter(peer => peer?.numberingLineageId === list.numberingLineageId);
+    if (!related.length || related.some(peer => peer.numId !== list.numId || peer.level !== list.level
+      || peer.numberingStartOverrides?.length
+      || !same(peer.numberingLevels, pattern.levels))) return false;
+    // CSS legacy alpha and native Word agree only through Z/z. Main documents
+    // keep typed alpha; this bounded equivalence is for existing legacy data.
+    if (['A','a'].includes(type) && related.some(peer => peer.ordinal > 26)) return false;
+    return true;
+  } catch { return false; }
+}
+
+export function createLegacyNumberingProofComparator(lists) {
+  const lineages = new Map(), cache = new Map();
+  for (const list of lists) if (list?.numberingLineageId) {
+    if (!lineages.has(list.numberingLineageId)) lineages.set(list.numberingLineageId, []);
+    lineages.get(list.numberingLineageId).push(list);
+  }
+  return (list, expected) => {
+    const key = hashCanonicalValue([list.numId,list.wordNumbering,expected.type || '1',expected.start]);
+    if (!cache.has(key)) cache.set(key, legacyNumberingProofEquivalent(list,expected,lineages.get(list.numberingLineageId) || []));
+    return cache.get(key);
+  };
+}
+
+// A continuation is private canonical ownership, never an inference from an
+// unnumbered Word paragraph. Nested children may intervene, but neither a scene
+// boundary nor a different item at this level may supply its owner.
+function continuationOwnerIsBound(rows, index) {
+  const {scene,block} = rows[index], expected = block.formatIr?.paragraph?.list;
+  if (expected?.continuation !== true) return false;
+  const withoutFlag = value => { const result={...value}; delete result.continuation; return result; };
+  for (let i=index-1;i>=0;i--) {
+    if (rows[i].scene.sceneId !== scene.sceneId) return false;
+    const previous=rows[i].block.formatIr?.paragraph?.list;
+    if (!previous) return false;
+    if (previous.level > expected.level) continue;
+    if (previous.level !== expected.level || !same(withoutFlag(previous),withoutFlag(expected))) return false;
+    if (previous.continuation !== true) return previous.continuation === undefined;
+  }
+  return false;
+}
+
+export function cleanFormattingConsumptionDigest(scene,reviewIr) {
+  return `sha256:${hashCanonicalValue({paragraphs:scene.blocks.map(block=>reviewIr.formattingParagraphs[block.documentParagraphIndex]),
+    numbering:scene.blocks.map(block=>reviewIr.listNumbering?.paragraphs?.[block.documentParagraphIndex] ?? null),
+    documentProperties:reviewIr.documentProperties ?? null})}`;
+}
+
+export function documentPropertyReturnOperation(scene,documentProperties) {
+  if(!documentProperties || !scene.documentFormatIr)return null;
+  const baseline=scene.documentFormatIr;
+  if(!baseline || typeof baseline!=='object' || Array.isArray(baseline)
+    || ![Object.prototype,null].includes(Object.getPrototypeOf(baseline)) || !Number.isSafeInteger(baseline.wordDefaultTabStop)
+    || typeof baseline.explicit!=='boolean' || !/^sha256:[a-f0-9]{64}$/u.test(scene.rawSha256)
+    || !/^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision))throw Error('RTK_FORMATTING_DOCUMENT_SOURCE_INVALID');
+  const value=paragraphLayout.normalizeWordDefaultTabStop(documentProperties.effective);
+  paragraphLayout.normalizeWordDefaultTabStop(baseline.wordDefaultTabStop);
+  if(value===baseline.wordDefaultTabStop)return null;
+  const operation={kind:'document-properties',sceneId:scene.sceneId,sourceAuthority:'authenticated-full-manuscript-export-map-document-properties-v1',
+    sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,document:{wordDefaultTabStop:{action:'set',value}}};
+  operation.operationId='rtk-document-format-'+hashCanonicalValue(operation);return operation;
+}
+
 // Caller owns authentication, private baseline acquisition and writer CAS.
 // This module checks semantic bindings and produces no publication authority.
 export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegistry,exportMap,sceneId,reviewIr={},exportTypography,protectedSections,sectionProof,ordinaryTextMode=false}={}) {
@@ -141,6 +219,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     const sectionVerified = Boolean(protectedSections && sectionProof?.status === 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
       && sectionProof.protectedDigest === protectedSections.protectedDigest
       && same(sectionProof.protectedSections, protectedSections.protectedSections));
+    const additions = sectionProof?.inactiveGridAdditions;
+    if (additions !== undefined && !sectionVerified) return reject('inactive-grid-proof');
+    const inactiveGridPlan = additions !== undefined ? wordSections.planInactiveGridAdditions(baselineDoc,
+      {sceneId,exportMap,protectedSections,additions}) : null;
     if(baselineRegistry!==undefined&&!same(registry,baselineRegistry))return reject('baseline-registry');
     const scene=exportMap?.scenes?.find(item=>item.sceneId===sceneId);
     const allBlocks=exportMap?.scenes?.flatMap(item=>item.blocks||[]), observed=reviewIr.formattingParagraphs;
@@ -189,27 +271,67 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       seen.add(names[0]);
       if(observed.filter(item=>(item.bookmarkNames||[]).includes(names[0])).length!==1)return reject('transport-owner-duplicate');
     }
+    const numberingAnalysis=ordinaryTextMode ? analyzeListNumberingReturn({exportMap,reviewIr,allowTextChanges:true,
+      resolveBlock:p=>{const row=exportMap.scenes.flatMap(owner=>owner.blocks.map(block=>({owner,block})))[p.paragraphIndex];
+        return row?{ok:true,authority:{sceneId:row.owner.sceneId,blockId:row.block.blockId}}:{ok:false};}}) : {ok:true,operations:[]};
+    if(!numberingAnalysis.ok)return reject(numberingAnalysis.detail);
+    const numberingOperations=numberingAnalysis.operations.filter(operation=>operation.sceneId===sceneId);
+    let numberingDoc=baselineDoc;
+    for(const operation of numberingOperations)numberingDoc=listNumbering.applyDefinitionChange(numberingDoc,operation.numbering);
+    const numberingFormats=source.buildFormatIrParagraphs({sceneId,doc:numberingDoc,text:envelope.deriveVisibleTextFromDocument(numberingDoc)});
     const hasLists = allBlocks.some(block => block.formatIr?.paragraph?.list)
       || observed.some(p => p.unsupportedParagraphNames?.includes('numPr'));
     if (hasLists) {
       const proof = reviewIr.listNumbering;
       if (!ordinaryTextMode || proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1'
         || !Array.isArray(proof.paragraphs) || proof.paragraphs.length !== allBlocks.length) return reject('list-numbering-proof-required');
-      const forward = new Map(), reverse = new Map();
+      const forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map();
+      const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
       const owners = exportMap.scenes.flatMap(scene => scene.blocks.map(() => scene.sceneId));
+      const ownerRows = exportMap.scenes.flatMap(scene => scene.blocks.map(block => ({scene,block})));
       for (let j = 0; j < allBlocks.length; j++) {
-        const expected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
+        const originalExpected = allBlocks[j].formatIr?.paragraph?.list, actual = proof.paragraphs[j];
+        const localIndex=scene.blocks.findIndex(block=>block.documentParagraphIndex===j);
+        let expected=localIndex>=0?numberingFormats[localIndex]?.formatIr?.paragraph?.list:originalExpected;
+        // Other scenes are counter-checked against their own private baseline by
+        // their analyzer invocation; here retain global membership and bijections.
+        const foreignChange=localIndex<0 && numberingAnalysis.operations.find(operation=>{
+          if(operation.sceneId!==owners[j] || !originalExpected?.wordNumbering)return false;
+          const owner=exportMap.scenes.find(item=>item.sceneId===owners[j]);
+          const representative=owner.blocks.map(block=>block.formatIr?.paragraph?.list?.wordNumbering)
+            .find(pattern=>pattern?.instanceId===operation.numbering.instanceId);
+          return representative && (representative.lineageId || representative.instanceId)
+            ===(originalExpected.wordNumbering.lineageId || originalExpected.wordNumbering.instanceId);
+        });
+        if(foreignChange){const change=foreignChange.numbering,old=originalExpected.wordNumbering;
+          expected={...originalExpected,type:change.levels[old.level].format,wordNumbering:{...old,levels:change.levels,
+            startOverrides:change.instanceOverrides?.find(item=>item.instanceId===old.instanceId)?.startOverrides || old.startOverrides || []}};}
+
         if (actual?.textSha256 !== sha256Hex(observed[j].paragraphText)) return reject('list-text-binding');
         const list = actual.list;
         if (!expected) { if (list !== null) return reject('list-added'); continue; }
+        if (Object.hasOwn(expected,'continuation')) {
+          if (!continuationOwnerIsBound(ownerRows,j) || list !== null) return reject('list-continuation-owner');
+          continue;
+        }
         if (!list || list.kind !== (expected.kind === 'ordered' ? 'orderedList' : 'bulletList')
           || list.level !== expected.level || (list.type || '1') !== (expected.type || '1')
-          || (expected.kind === 'ordered' && list.ordinal !== expected.start + expected.itemOrdinal)
+          || (expected.kind === 'ordered' && !foreignChange && list.ordinal !== expected.start + expected.itemOrdinal)
           || typeof list.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(list.numId)) return reject('list-semantics-change');
         const identity = `${owners[j]}:${expected.numId}`;
         if ((forward.has(identity) && forward.get(identity) !== list.numId)
           || (reverse.has(list.numId) && reverse.get(list.numId) !== identity)) return reject('list-identity-change');
         forward.set(identity, list.numId); reverse.set(list.numId, identity);
+        if (expected.wordNumbering) {
+          const canonical = listNumbering.validateNumbering(expected.wordNumbering);
+          if (!same(canonical.levels, list.numberingLevels)
+            || !same(canonical.startOverrides || [], list.numberingStartOverrides || [])) return reject('list-definition-change');
+          const lineage = `${owners[j]}:${canonical.lineageId || canonical.instanceId}`, actualLineage = list.numberingLineageId;
+          if (typeof actualLineage !== 'string' || !actualLineage
+            || lineageForward.has(lineage) && lineageForward.get(lineage) !== actualLineage
+            || lineageReverse.has(actualLineage) && lineageReverse.get(actualLineage) !== lineage) return reject('list-lineage-change');
+          lineageForward.set(lineage, actualLineage); lineageReverse.set(actualLineage, lineage);
+        } else if (list.wordNumbering && !legacyEquivalent(list,expected)) return reject('list-definition-added');
       }
     }
     const basePs=core.paragraphs(baselineDoc);
@@ -282,7 +404,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     }
     for(const old of resultRegistry.bookmarks)if(old.state==='active'&&!retained.has(old.id)){effects.push({kind:'delete',id:old.id});old.state='deleted';delete old.start;delete old.end;}
     for(const record of returnedRegistry.bookmarks.filter(item=>item.state==='deleted'))if(!resultRegistry.bookmarks.some(item=>key(item.name)===key(record.name)))return reject('unknown-broken-target');
-    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[];
+    const doc=clone(baselineDoc), resultPs=core.paragraphs(doc), ordinaryTextChanges=[], ordinaryFormattingOperations=[...numberingOperations];
+    const documentOperation=ordinaryTextMode?documentPropertyReturnOperation(scene,reviewIr.documentProperties):null;
+    if(documentOperation)ordinaryFormattingOperations.push(documentOperation);
     for(let i=0;i<basePs.length;i++) {
       const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
@@ -294,10 +418,39 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
-      if(!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null))return reject('paragraph-spacing-change');
+      const spacingChanged=!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null);
+      if(spacingChanged && !ordinaryTextMode)return reject('paragraph-spacing-change');
+      const returnedSpacing=p.paragraphState?.wordParagraphSpacing == null ? null
+        : paragraphSpacing.normalizeWordParagraphSpacing(p.paragraphState.wordParagraphSpacing);
+      const formattingOperation=(from,to,inline,paragraph)=>({
+        operationId:`clean-format-${sceneId}-${i}-${ordinaryFormattingOperations.length}`,
+        sceneId,blockId:block.blockId,paragraphOrdinal:i,from,to,selectedText:p.paragraphText.slice(from,to),inline,paragraph,
+        sourceAuthority:'authenticated-full-manuscript-export-map-format-ir-v1',sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,
+      });
+      if(spacingChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{},
+        {wordParagraphSpacing:returnedSpacing===null?{action:'remove'}:{action:'set',value:returnedSpacing}}));
       if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');
       if(core.textOf(nextPs[i])!==p.paragraphText)return reject('returned-text-binding');
       const before=runsForBase(block,defaultFontSize,ordinaryTextMode),after=runsForReturn(p,defaultFontSize,ordinaryTextMode);
+      // Effective family is resolved by the same-byte parser's owned style and
+      // theme catalog. Retain it as a real format effect, never waive equality
+      // and discard inherited Word formatting during a text return.
+      const completeFontProfile=ordinaryTextMode && after.length>0
+        && after.every(run=>typeof (run.inlineState?.fontFamily || run.resolvedFontFamily)==='string'
+          && (run.inlineState?.fontFamily || run.resolvedFontFamily).length>0);
+      if(ordinaryTextMode && !completeFontProfile && after.some(run=>run.resolvedFontFamily || run.inlineState?.fontFamily))
+        return reject('ordinary-text-font-profile-incomplete');
+      let fontChanged=false;
+      if(completeFontProfile){
+        for(const run of after){
+          const family=run.inlineState?.fontFamily || run.resolvedFontFamily;
+          const unchanged=block.text===p.paragraphText && before.filter(old=>old.from<run.to&&old.to>run.from)
+            .every(old=>old.style.fontFamily===family);
+          if(!unchanged){fontChanged=true;ordinaryFormattingOperations.push(formattingOperation(run.from,run.to,{fontFamily:{action:'set',value:family}},{}));}
+        }
+        for(const run of [...before,...after])delete run.style.fontFamily;
+      }
+
       const languageChange={schemaVersion:1,paragraphMark:p.wordParagraphMarkLanguage||null,
         runs:after.map(run=>({from:run.from,to:run.to,language:run.wordLanguage||null}))};
       const languages = runs => {
@@ -335,7 +488,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
           continue;
         }
-        if(ordinaryTextMode && hasLanguage && languageChanged)return reject('label-language-composite-unsupported');
+        if(ordinaryTextMode && (hasLanguage && languageChanged || spacingChanged || fontChanged))return reject('label-language-composite-unsupported');
         const owned=possible[0];from=owned.from;to=owned.to;afterTo=p.paragraphText.length-(block.text.length-to);
         if(afterTo<=from||!uniformAt(after,from,afterTo,owned.style))return reject('label-style-change');
         compareStyles(before,after,0,0,from);compareStyles(before,after,afterTo-to,to,block.text.length);
@@ -363,13 +516,115 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         return record.id!==target.id||record.name!==target.name||record.state!==target.state
           ||['start','end'].some(edge=>core.endpointOffset(mapped.doc,record[edge])!==core.endpointOffset(mapped.doc,target[edge]));
       }))return reject('ordinary-text-bookmark-endpoint-mismatch');
-      return {ok:true,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
-        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,changed:true};
+      // Compare against the actual text/language replacement, not the old
+      // offsets or Word run segmentation. Reapplying an unchanged family can
+      // split otherwise preserved canonical leaves at arbitrary XML borders.
+      const mappedParagraphs=core.paragraphs(mapped.doc);
+      const effectiveFormattingOperations=ordinaryFormattingOperations.filter(operation=>{
+        const action=operation.inline?.fontFamily;
+        if(action?.action!=='set' || Object.keys(operation.inline).length!==1 || Object.keys(operation.paragraph).length)return true;
+        const paragraph=mappedParagraphs[operation.paragraphOrdinal];
+        if(!paragraph || core.textOf(paragraph).slice(operation.from,operation.to)!==operation.selectedText)return true;
+        let cursor=0, covered=0;
+        for(const node of paragraph.content || []){
+          const length=node.type==='text'?node.text.length:node.type==='hardBreak'?1:0;
+          const overlap=Math.max(0,Math.min(cursor+length,operation.to)-Math.max(cursor,operation.from));
+          if(overlap){
+            const styles=(node.marks || []).filter(mark=>mark.type==='textStyle');
+            if(node.type!=='text' || styles.length!==1 || styles[0].attrs?.fontFamily!==action.value)return true;
+            covered+=overlap;
+          }
+          cursor+=length;
+        }
+        return covered!==operation.to-operation.from;
+      });
+      return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_ORDINARY_TEXT_ANALYZED',analysisOnly:true,canWriteManuscript:false,
+        doc:mapped.doc,registry:mapped.registry,effects:[],ordinaryTextChanges,ordinaryFormattingOperations:effectiveFormattingOperations,
+        ordinaryFormattingConsumption:{sceneId,paragraphsDigest:cleanFormattingConsumptionDigest(scene,reviewIr)},changed:true};
     }
-    if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
+    if(ordinaryFormattingOperations.length && effects.length)return reject('paragraph-format-bookmark-composite');
+    if(!registry&&!resultRegistry.bookmarks.length&&!effects.length)return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc:clone(baselineDoc),registry:null,effects:[],changed:false};
     resultRegistry.revision+=(effects.length?1:0);doc.attrs={...(doc.attrs||{}),[core.KEY]:resultRegistry};
     core.validateRegistry(resultRegistry,doc);core.readRegistry(doc);
     core.planReturn({beforeDoc:baselineDoc,candidateDoc:doc});
-    return {ok:true,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
+    return {ok:true,inactiveGridPlan,code:'RTK_USER_BOOKMARK_RETURN_ANALYZED',analysisOnly:true,canWriteManuscript:false,doc,registry:resultRegistry,effects,changed:!same(doc,baselineDoc)};
   }catch(error){return reject(error.code||error.message);}
+}
+
+// Read-only numbering proof comparison. Canonical group identity and revision
+// come exclusively from the authenticated private export map, never OOXML IDs.
+export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBlock, allowTextChanges = false } = {}) {
+  const fail = detail => ({ ok:false, code:'RTK_LIST_NUMBERING_RETURN_CONFLICT', detail, operations:[] });
+  try {
+    const scenes = exportMap?.scenes;
+    if (!Array.isArray(scenes)) return fail('private-map');
+    const rows = scenes.flatMap(scene => (scene.blocks || []).map(block => ({scene,block})));
+    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering);
+    if (!hasPatterns) return {ok:true,hasPatterns:false,operations:[]};
+    const proof = reviewIr.listNumbering, observed = reviewIr.formattingParagraphs;
+    if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)
+      || !Array.isArray(observed) || proof.paragraphs.length !== rows.length || observed.length !== rows.length
+      || typeof resolveBlock !== 'function') return fail('same-byte-proof-required');
+    const groups = new Map(), forward = new Map(), reverse = new Map(), lineageForward = new Map(), lineageReverse = new Map(), changedTextScenes = new Set();
+    const legacyEquivalent = createLegacyNumberingProofComparator(proof.paragraphs.map(row=>row.list));
+    for (let i=0;i<rows.length;i++) {
+      const {scene,block} = rows[i], p = observed[i], actual = proof.paragraphs[i];
+      const authority = resolveBlock({...p,paragraphIndex:i});
+      if (!authority?.ok || authority.authority.sceneId !== scene.sceneId || authority.authority.blockId !== block.blockId
+        || block.documentParagraphIndex !== i || actual?.textSha256 !== sha256Hex(p.paragraphText)
+        || (!allowTextChanges && block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`)
+        || block.canonicalMarksSha256 !== `sha256:${hashCanonicalValue(block.formatIr)}`
+        || p.trackedRevision) return fail('source-owner-text-or-revision');
+      if(block.canonicalTextSha256 !== `sha256:${sha256Hex(p.paragraphText)}`)changedTextScenes.add(scene.sceneId);
+      const expected = block.formatIr?.paragraph?.list, returned = actual.list;
+      if (!expected) { if (returned !== null) return fail('list-added'); continue; }
+      if (Object.hasOwn(expected,'continuation')) {
+        if (!continuationOwnerIsBound(rows,i) || returned !== null) return fail('list-continuation-owner');
+        continue;
+      }
+      if (!returned || typeof returned.numId !== 'string' || !/^[1-9]\d{0,9}$/u.test(returned.numId)
+        || returned.level !== expected.level || returned.kind !== (expected.kind === 'ordered' ? 'orderedList':'bulletList')) return fail('list-membership-or-level');
+      const identity = `${scene.sceneId}:${expected.numId}`;
+      if (forward.has(identity) && forward.get(identity)!==returned.numId || reverse.has(returned.numId) && reverse.get(returned.numId)!==identity) return fail('list-instance-bijection');
+      forward.set(identity,returned.numId); reverse.set(returned.numId,identity);
+      if (!expected.wordNumbering) {
+        if (returned.wordNumbering && !legacyEquivalent(returned,expected) || (returned.type || '1') !== (expected.type || '1')
+          || expected.kind==='ordered' && returned.ordinal !== expected.start + expected.itemOrdinal) return fail('legacy-list-change');
+        continue;
+      }
+      const canonical = listNumbering.validateNumbering(expected.wordNumbering);
+      const levels = listNumbering.validateLevels(returned.numberingLevels);
+      if (canonical.level !== returned.level || (returned.type || '1') !== levels[returned.level]?.format) return fail('effective-definition');
+      const lineage = `${scene.sceneId}:${canonical.lineageId || canonical.instanceId}`;
+      const returnedLineage = returned.numberingLineageId;
+      if (typeof returnedLineage !== 'string' || !returnedLineage) return fail('lineage-or-start-override');
+      const returnedPattern=listNumbering.validateNumbering({schemaVersion:1,instanceId:canonical.instanceId,
+        level:canonical.level,levels,startOverrides:returned.numberingStartOverrides ?? []});
+      const instanceOverride={instanceId:canonical.instanceId,expectedStartOverrides:canonical.startOverrides || [],
+        startOverrides:returnedPattern.startOverrides};
+      if (lineageForward.has(lineage) && lineageForward.get(lineage) !== returnedLineage
+        || lineageReverse.has(returnedLineage) && lineageReverse.get(returnedLineage) !== lineage) return fail('list-lineage-bijection');
+      lineageForward.set(lineage, returnedLineage); lineageReverse.set(returnedLineage, lineage);
+      const groupKey = lineage;
+      const prior = groups.get(groupKey);
+      if (prior && (!same(prior.expectedLevels,canonical.levels) || !same(prior.levels,levels))) return fail('group-definition-consistency');
+      if (!prior) groups.set(groupKey,{scene,instanceId:canonical.instanceId,expectedLevels:canonical.levels,levels,instances:new Map()});
+      const group=groups.get(groupKey),previousInstance=group.instances.get(canonical.instanceId);
+      if(previousInstance && !same(previousInstance,instanceOverride))return fail('instance-override-consistency');
+      group.instances.set(canonical.instanceId,instanceOverride);
+    }
+    const operations = [];
+    for (const group of groups.values()) {
+      const instanceOverrides=[...group.instances.values()].filter(item=>!same(item.expectedStartOverrides,item.startOverrides))
+        .sort((a,b)=>a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0);
+      if (same(group.expectedLevels,group.levels) && !instanceOverrides.length) continue;
+      if (!/^sha256:[a-f0-9]{64}$/u.test(group.scene.sceneRevision) || !/^sha256:[a-f0-9]{64}$/u.test(group.scene.rawSha256)) return fail('source-revision');
+      const operation={kind:'list-numbering',sceneId:group.scene.sceneId,
+        sourceAuthority:'authenticated-full-manuscript-export-map-list-numbering-v1',sourceSceneRevision:group.scene.sceneRevision,
+        sourceRawSha256:group.scene.rawSha256,numbering:{instanceId:group.instanceId,expectedLevels:group.expectedLevels,levels:group.levels,
+          ...(instanceOverrides.length?{instanceOverrides}:{})}};
+      operation.operationId=`rtk-list-numbering-${hashCanonicalValue(operation)}`;operations.push(operation);
+    }
+    return {ok:true,hasPatterns:true,operations,changedTextSceneIds:[...changedTextScenes]};
+  } catch { return fail('numbering-proof-invalid'); }
 }

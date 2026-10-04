@@ -4217,7 +4217,7 @@ function sectionIntegerAttribute(token, localName) {
   return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
-function parseDocumentSections(documentScan, cryptoPort) {
+function parseDocumentSections(documentScan, cryptoPort, documentXml) {
   const reasons = [];
   const allSectionTokens = documentScan.tokens
     .filter((token) => isWordToken(token, 'sectPr'))
@@ -4296,11 +4296,13 @@ function parseDocumentSections(documentScan, cryptoPort) {
     const pageSizeTokens = byName('pgSz');
     const marginTokens = byName('pgMar');
     const columnTokens = byName('cols');
+    const gridTokens = children.filter(token => token.localName === 'docGrid');
     for (const [name, tokens] of [
       ['type', typeTokens],
       ['pgSz', pageSizeTokens],
       ['pgMar', marginTokens],
       ['cols', columnTokens],
+      ['docGrid', gridTokens],
     ]) {
       if (tokens.length > 1) {
         reasons.push(reason(
@@ -4311,7 +4313,7 @@ function parseDocumentSections(documentScan, cryptoPort) {
         ));
       }
     }
-    const protectedNames = new Set(['type', 'pgSz', 'pgMar', 'cols']);
+    const protectedNames = new Set(['type', 'pgSz', 'pgMar', 'cols', 'docGrid']);
     for (const child of children.filter((token) => !protectedNames.has(token.localName))) {
       providerExtensionElements.push({
         sectionOrdinal: ordinal,
@@ -4323,6 +4325,30 @@ function parseDocumentSections(documentScan, cryptoPort) {
     const pageSizeToken = pageSizeTokens[0];
     const marginToken = marginTokens[0];
     const columnToken = columnTokens[0];
+    let docGrid;
+    if (gridTokens.length) {
+      const grid = gridTokens[0];
+      try {
+        if (!isWordToken(grid, 'docGrid') || grid.attributes.some(attribute => (
+          attribute.qName !== 'xmlns' && attribute.prefix !== 'xmlns'
+          && (attribute.namespaceUri !== W_NS || !['type','linePitch','charSpace'].includes(attribute.localName))
+        )) || directChildTokensWithin(documentScan, grid).length
+          || elementBody(documentXml, grid).replace(/<\x21--[\s\S]*?-->|<\?[\s\S]*?\?>/gu, '').trim()) throw Error('DOC_GRID_SHAPE');
+        const type = attr(grid, 'type', W_NS);
+        if (type !== undefined && type !== '' && type !== 'default') throw Error('DOC_GRID_ACTIVE');
+        if (grid.attributes.some(attribute => attribute.namespaceUri === W_NS && attribute.localName === 'type' && attribute.value === '')) throw Error('DOC_GRID_TYPE');
+        docGrid = { type: 'default' };
+        for (const key of ['linePitch','charSpace']) {
+          const attribute = grid.attributes.find(item => item.namespaceUri === W_NS && item.localName === key);
+          if (!attribute) continue;
+          if (!/^[+-]?\d+$/u.test(attribute.value) || !Number.isSafeInteger(Number(attribute.value))) throw Error('DOC_GRID_INTEGER');
+          docGrid[key] = Number(attribute.value) || 0;
+        }
+      } catch (error) {
+        reasons.push(reason('RTK_WORD_SECTIONS_MALFORMED_BLOCKED', `reviewIr.documentSections.${ordinal}.docGrid`,
+          'Only a closed, bounded inactive Word document grid is supported.', { detail: error.message }));
+      }
+    }
     const widthTwips = sectionIntegerAttribute(pageSizeToken, 'w');
     const heightTwips = sectionIntegerAttribute(pageSizeToken, 'h');
     const declaredOrientation = attr(pageSizeToken, 'orient', W_NS);
@@ -4342,6 +4368,7 @@ function parseDocumentSections(documentScan, cryptoPort) {
         pageSize: pageSizeTokens.length === 1,
         margins: marginTokens.length === 1,
         columns: columnTokens.length === 1,
+        ...(docGrid ? { docGrid: true } : {}),
       },
       properties: {
         type: attr(typeToken, 'val', W_NS) || 'nextPage',
@@ -4363,6 +4390,7 @@ function parseDocumentSections(documentScan, cryptoPort) {
           count: sectionIntegerAttribute(columnToken, 'num') ?? 1,
           spaceTwips: sectionIntegerAttribute(columnToken, 'space'),
         },
+        ...(docGrid ? { docGrid } : {}),
       },
     });
   }
@@ -4675,7 +4703,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       }
     } catch (error) { reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', 'reviewIr.documentMedia', error.message)); }
   }
-  const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort);
+  const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort, documentXml);
   reasons.push(...documentSectionsResult.reasons);
   const documentSections = documentSectionsResult.sections;
   const documentNotesResult = parseDocumentNotes(parts, documentXml, documentScan,

@@ -16,8 +16,13 @@ const li = (...content) => ({ type: 'listItem', content });
 const ul = (...content) => ({ type: 'bulletList', content });
 const ol = (start, ...content) => ({ type: 'orderedList', attrs: { start }, content });
 const doc = (...content) => ({ type: 'doc', content });
+const withoutTypedNumbering = value => {const next=structuredClone(value);const visit=node=>{if(node.attrs)delete node.attrs.wordNumbering;for(const child of node.content||[])visit(child);};visit(next);return next;};
+const listModel=require('../../src/core/word-list-numbering-v1.cjs');
+const withRenumberedPatternIdentities = value => {const next=structuredClone(value),instances=new Map(),lineages=new Map();const visit=node=>{const pattern=node.attrs?.wordNumbering;if(pattern){if(!instances.has(pattern.instanceId))instances.set(pattern.instanceId,`instance-${instances.size}`);const lineage=pattern.lineageId||pattern.instanceId;if(!lineages.has(lineage))lineages.set(lineage,`lineage-${lineages.size}`);pattern.instanceId=instances.get(pattern.instanceId);pattern.lineageId=lineages.get(lineage);}for(const child of node.content||[])visit(child);};visit(next);return next;};
+
+
 const paragraph = (text, id = 1, level = 0, extra = '') => `<w:p><w:pPr>${extra}${id === null ? '' : `<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${id}"/></w:numPr>`}</w:pPr><w:r><w:t>${text}</w:t></w:r></w:p>`;
-const levelXml = (level, format = 'decimal', start = 1, extra = '') => `<w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${format === 'bullet' ? '•' : '%'+(level+1)+'.'}"/>${extra}</w:lvl>`;
+const levelXml = (level, format = 'decimal', start = 1, extra = '') => `<w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/>${extra}<w:lvlText w:val="${format === 'bullet' ? '•' : '%'+(level+1)+'.'}"/></w:lvl>`;
 const definition = (levels = levelXml(0), override = '', extra = '') => `<w:abstractNum w:abstractNumId="0">${extra}${levels}</w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/>${override}</w:num>`;
 function packageBytes(body, numbering = definition(), styles = '') {
  const parts = [
@@ -63,19 +68,23 @@ test('C1 lists: shared Word numbering continues across body paragraphs',async()=
 test('C1 lists: Word multilevel counters restart after parent items',async()=>{
  const body=paragraph('a')+paragraph('a1',1,1)+paragraph('a2',1,1)+paragraph('b')+paragraph('b1',1,1);
  const actual=await read(packageBytes(body,definition(levelXml(0)+levelXml(1))));
- assert.deepEqual(actual.doc,doc(ol(1,li(p('a'),ol(1,li(p('a1')),li(p('a2')))),li(p('b'),ol(1,li(p('b1')))))));
+ assert.deepEqual(withoutTypedNumbering(actual.doc),doc(ol(1,li(p('a'),ol(1,li(p('a1')),li(p('a2')))),li(p('b'),ol(1,li(p('b1')))))));
+ assert.equal(actual.doc.content[0].attrs.wordNumbering.levels[1].restartAfterLevel,0);
 });
 test('C1 lists: explicit never-restart counters are preserved as nested start values',async()=>{
  const body=paragraph('a')+paragraph('a1',1,1)+paragraph('b')+paragraph('b2',1,1);
  const actual=await read(packageBytes(body,definition(levelXml(0)+levelXml(1,'decimal',1,'<w:lvlRestart w:val="0"/>'))));
  const expected=doc(ol(1,li(p('a'),ol(1,li(p('a1')))),li(p('b'),ol(2,li(p('b2'))))));
- for(const item of expected.content[0].content)Object.assign(item.content[1].attrs,{wordListId:'word-list-2',wordListStart:1});
- assert.deepEqual(actual.doc,expected);
+ assert.deepEqual(withoutTypedNumbering(actual.doc),expected);
+ assert.equal(actual.doc.content[0].attrs.wordNumbering.levels[1].restartAfterLevel,null);
+ assert.deepEqual([...listModel.resolveMarkers(actual.doc).values()].flatMap(entry=>entry.items.map(item=>item.label)),['1.','2.','1.','2.']);
 });
 test('C1 lists: startOverride wins over both abstract and replacement level starts',async()=>{
  const replacement=levelXml(0,'decimal',3);
  const actual=await read(packageBytes(paragraph('a')+paragraph('b'),definition(levelXml(0,'decimal',1),`<w:lvlOverride w:ilvl="0"><w:startOverride w:val="8"/>${replacement}</w:lvlOverride>`)));
- assert.deepEqual(actual.doc,doc(ol(8,li(p('a')),li(p('b')))));
+ assert.deepEqual(withoutTypedNumbering(actual.doc),doc(ol(8,li(p('a')),li(p('b')))));
+ assert.equal(actual.doc.content[0].attrs.wordNumbering.levels[0].start,3);
+ assert.deepEqual(actual.doc.content[0].attrs.wordNumbering.startOverrides,[{level:0,start:8}]);
 });
 test('C1 lists: explicit level override can change list kind',async()=>{
  const actual=await read(packageBytes(paragraph('a'),definition(levelXml(0),`<w:lvlOverride w:ilvl="0">${levelXml(0,'bullet')}</w:lvlOverride>`)));
@@ -158,7 +167,9 @@ for (const [type, format] of [['I','upperRoman'],['i','lowerRoman'],['A','upperL
  test(`P3d lists: ${format} import, durable create and five edited exchanges preserve type/start`,async t=>{
   const input=doc({...ol(3,li(p('First')),li(p('Second'))),attrs:{start:3,type}});
   const imported=await read(packageBytes(paragraph('First')+paragraph('Second'),definition(levelXml(0,format,3))));
-  assert.deepEqual(imported.doc,input);assert.equal(imported.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
+  assert.deepEqual(withoutTypedNumbering(imported.doc),input);
+  if(['A','a'].includes(type)){assert.equal(imported.doc.content[0].attrs.wordNumbering.levels[0].format,type);input.content[0].attrs.wordNumbering=structuredClone(imported.doc.content[0].attrs.wordNumbering);}
+  assert.equal(imported.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
   const local=await createDocxImportLocalFilePreview({}, {pickLocalFile:async()=>({path:'/tmp/synthetic-list-format.docx'}),readLocalFileBytes:async()=>imported.bytes});
   assert.equal(local.ok,true,JSON.stringify(local));const plan=local.docxImportPreviewPlan;
   assert.match(rememberDocxImportPreviewPlanAdmission(plan),/^[a-f0-9]{64}$/);
@@ -166,7 +177,7 @@ for (const [type, format] of [['I','upperRoman'],['i','lowerRoman'],['A','upperL
   const result=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},{projectRoot,romanRoot:path.join(projectRoot,'roman'),projectId:'lists-format'});assert.equal(result.ok,true,JSON.stringify(result));
   const dir=path.join(projectRoot,'roman','Imported'),file=fs.readdirSync(dir).find(n=>n.endsWith('.txt'));const [,envelope]=await modules;
   const saved=fs.readFileSync(path.join(dir,file),'utf8');assert.match(saved,/word-list-format.v1/);let current=envelope.parseObservablePayload(saved).doc;assert.deepEqual(current,input);
-  for(let i=0;i<5;i++){current.content[0].content[0].content[0].content[0].text+=' '+i;const returned=await roundtrip(current);assert.deepEqual(returned.doc,current);current=returned.doc;}
+  for(let i=0;i<5;i++){current.content[0].content[0].content[0].content[0].text+=' '+i;const returned=await roundtrip(current);assert.deepEqual(withRenumberedPatternIdentities(returned.doc),withRenumberedPatternIdentities(current));current=returned.doc;}
  });
 }
 test('P3d lists: forged formats cannot grant supported list projection',async()=>{
@@ -214,7 +225,8 @@ for(const type of ['1','I','i','A','a'])test(`P3d numbered headings: ${type} lev
  const h=level=>({type:'heading',attrs:{level},content:p('Heading '+level).content});
  let input=doc({...ol(3,...Array.from({length:9},(_,i)=>li(h(i+1)))),attrs:{start:3,...(type==='1'?{}:{type})}});
  for(let cycle=0;cycle<5;cycle++){
-  const result=await roundtrip(input);assert.deepEqual(result.doc,input);
+  const result=await roundtrip(input);
+  if(cycle===0&&['A','a'].includes(type)){assert.deepEqual(withoutTypedNumbering(result.doc),input);assert.equal(result.doc.content[0].attrs.wordNumbering.levels[0].format,type);input=result.doc;}else assert.deepEqual(result.doc,input);
   assert.equal(result.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'),false);
   input.content[0].content[cycle].content[0].content[0].text+=' edit';
  }

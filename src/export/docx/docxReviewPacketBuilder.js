@@ -3,7 +3,7 @@ const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 
-const { buildStoredZip } = require('./docxMinBuilder');
+const { buildStoredZip, buildDocxPatternNumberingParts, docxListTextIndent } = require('./docxMinBuilder');
 const {
   buildDocxRunContentXml,
   escapeXml,
@@ -297,6 +297,7 @@ function normalizeDocumentSections(input, blockCount) {
       breakPlacement: section.breakPlacement,
       properties: {
         type,
+        ...(Object.hasOwn(properties,'docGrid') ? {docGrid:require('../../core/word-sections-v1.cjs').validateDocGrid(properties.docGrid)} : {}),
         pageSize: {
           widthTwips: sectionInteger(pageSize.widthTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
           heightTwips: sectionInteger(pageSize.heightTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
@@ -332,6 +333,7 @@ function buildSectionPropertiesXml(section, options = {}) {
     `<w:pgSz w:w="${pageSize.widthTwips}" w:h="${pageSize.heightTwips}" w:orient="${escapeXml(pageSize.orientation)}"/>`,
     `<w:pgMar w:top="${margins.topTwips}" w:right="${margins.rightTwips}" w:bottom="${margins.bottomTwips}" w:left="${margins.leftTwips}" w:header="${margins.headerTwips}" w:footer="${margins.footerTwips}" w:gutter="${margins.gutterTwips}"/>`,
     `<w:cols w:num="${columns.count}" w:space="${columns.spaceTwips}"/>`,
+    ...(Object.hasOwn(properties,'docGrid') ? [require('../../core/word-sections-v1.cjs').docGridXml(properties.docGrid)] : []),
     '</w:sectPr>',
   ].join('');
 }
@@ -395,15 +397,19 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     const numId = Number(list.numId);
     if (!['bullet', 'ordered'].includes(list.kind)
       || !Number.isSafeInteger(level) || level < 0 || level > 8
-      || !Number.isSafeInteger(numId) || numId < 1) {
+      || !Number.isSafeInteger(numId) || numId < 1
+      || (Object.hasOwn(list, 'continuation') && list.continuation !== true)) {
       throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_LIST_UNSUPPORTED');
     }
-    paragraphPropertyParts.push(`<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${numId}"/></w:numPr>`);
+    if (list.continuation !== true) paragraphPropertyParts.push(`<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${numId}"/></w:numPr>`);
   }
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
-  paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(block.formatIr?.paragraph));
+  const paragraphLayout = block.formatIr?.paragraph || {};
+  const effectiveLayout = list?.continuation === true && paragraphLayout.wordParagraphIndent == null
+    ? {...paragraphLayout,wordParagraphIndent:{left:docxListTextIndent(Number(list.level),!list.wordNumbering)}} : paragraphLayout;
+  paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(effectiveLayout));
   paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(block.formatIr?.paragraph?.wordParagraphSpacing));
   const markLanguage = buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
   if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
@@ -629,7 +635,7 @@ function collectNumberingDefinitions(blocks) {
     if (!isPlainObjectValue(list)) continue;
     const numId = Number(list.numId);
     const start = Number(list.start);
-    const definition = {
+    const definition = list.wordNumbering ? { numId, scope:block.sceneId, wordNumbering: { ...require('../../core/word-list-numbering-v1.cjs').validateNumbering(list.wordNumbering), level:0 } } : {
       numId,
       kind: normalizeString(list.kind),
       type: require('../../core/word-list-format-v1.cjs').normalizeType(list.type),
@@ -645,15 +651,16 @@ function collectNumberingDefinitions(blocks) {
 }
 
 function buildNumberingXml(definitions) {
-  const abstract = definitions.map((definition) => {
+  const patterns = buildDocxPatternNumberingParts(definitions.filter(value => value.wordNumbering));
+  const abstract = patterns.abstract + definitions.filter(value => !value.wordNumbering).map((definition) => {
     const levels = Array.from({ length: 9 }, (_, level) => {
       const ordered = definition.kind === 'ordered';
       const levelText = ordered ? `%${level + 1}.` : ['•', '◦', '▪'][level % 3];
-      return `<w:lvl w:ilvl="${level}"><w:start w:val="${definition.start}"/><w:numFmt w:val="${ordered ? require('../../core/word-list-format-v1.cjs').wordFormat(definition.type) : 'bullet'}"/><w:lvlText w:val="${escapeXml(levelText)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${720 + level * 360}"/></w:tabs><w:ind w:left="${720 + level * 360}" w:hanging="360"/></w:pPr></w:lvl>`;
+      return `<w:lvl w:ilvl="${level}"><w:start w:val="${definition.start}"/><w:numFmt w:val="${ordered ? require('../../core/word-list-format-v1.cjs').wordFormat(definition.type) : 'bullet'}"/><w:lvlText w:val="${escapeXml(levelText)}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${docxListTextIndent(level, true)}"/></w:tabs><w:ind w:left="${docxListTextIndent(level, true)}" w:hanging="360"/></w:pPr></w:lvl>`;
     }).join('');
     return `<w:abstractNum w:abstractNumId="${definition.numId}"><w:multiLevelType w:val="hybridMultilevel"/>${levels}</w:abstractNum>`;
   }).join('');
-  const instances = definitions.map((definition) => (
+  const instances = patterns.instances + definitions.filter(value => !value.wordNumbering).map((definition) => (
     `<w:num w:numId="${definition.numId}"><w:abstractNumId w:val="${definition.numId}"/></w:num>`
   )).join('');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

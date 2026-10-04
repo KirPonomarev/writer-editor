@@ -3,7 +3,8 @@ import { DocumentStories, applyStoryBody } from './documentStories.mjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import { DocumentSections } from './documentSections.mjs';
 import { DocumentBreaks } from './documentBreaks.mjs';
-import { DocumentListNumbering } from './documentListNumbering.mjs';
+import { DocumentListNumbering, captureNumberingTarget, numberingDocumentJSON } from './documentListNumbering.mjs';
+import wordListNumbering from '../../core/word-list-numbering-v1.cjs';
 import { DocumentListItems } from './documentListItems.mjs';
 import { DocumentHeadings } from './documentHeadings.mjs';
 import { applyLocalImagePublication } from './localImage.mjs'
@@ -598,7 +599,10 @@ export function initTiptap(mountEl, options = {}) {
         link: false,
         underline: false,
       }),
-      DocumentListNumbering,
+      DocumentListNumbering.configure({ onClipboardStatus: message => {
+        const status = document.getElementById('status');
+        if (status) status.textContent = message;
+      } }),
       DocumentSections,
       DocumentStories,
       DocumentHeadings,
@@ -762,16 +766,42 @@ export function getTiptapDocumentSnapshot() {
 }
 
 export function setTiptapDocumentSnapshot(snapshot = {}) {
-  if (!currentEditorInstance) return
+  const editor = currentEditorInstance
+  if (!editor || editor.isDestroyed) return false
+  const before = editor.state
+  const plugins = before.plugins
+  const historyKey = history().spec.key
+  const historyPlugins = plugins.filter(plugin => plugin.spec.key === historyKey)
+  if (snapshot.resetHistory === true && historyPlugins.length !== 1) return false
   const doc = snapshot && snapshot.doc && typeof snapshot.doc === 'object'
     ? snapshot.doc
     : buildParagraphDocumentFromText(snapshot && typeof snapshot.text === 'string' ? snapshot.text : '')
-  setCheckedDocument(currentEditorInstance, doc)
+  try {
+    const expected = editor.schema.nodeFromJSON(wordListNumbering.normalizeAuthoring(
+      numberingDocumentJSON(editor.schema.nodeFromJSON(doc))))
+    expected.check()
+    if (!setCheckedDocument(editor, doc) || !editor.state.doc.eq(expected)) throw Error('DOCUMENT_PUBLICATION_REFUSED')
+    if (snapshot.resetHistory === true) {
+      const reset = editor.state.reconfigure({ plugins: plugins.filter(plugin => plugin !== historyPlugins[0]) })
+        .reconfigure({ plugins })
+      editor.view.updateState(reset)
+    }
+  } catch {
+    if (editor.state !== before) editor.view.updateState(before)
+    return false
+  }
   notifyFormattingStateChange()
+  return true
 }
 
 // A dialog owns only this captured editor selection. It may never fall back
 // to another editor when focus changes while awaiting user input.
+export function captureTiptapNumberingTarget() {
+  if (getFocusedManuscriptBodyEditor()) return null;
+  const editor = currentEditorInstance;
+  return captureNumberingTarget(editor, () => currentEditorInstance === editor);
+}
+
 export function captureTiptapLinkTarget() {
   const auxiliary = getFocusedManuscriptBodyEditor();
   const editor = auxiliary || currentEditorInstance;

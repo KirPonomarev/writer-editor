@@ -156,6 +156,7 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'cmd.project.format.alignJustify',
   'cmd.project.list.toggleBullet',
   'cmd.project.list.toggleOrdered',
+  'cmd.project.list.configureNumbering',
   'cmd.project.list.clear',
   'cmd.project.insert.linkPrompt',
   'cmd.project.docx.previewLocalFile',

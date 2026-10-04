@@ -35,6 +35,7 @@ function noteSceneSchemaDefaults(value) {
 // The same leaf occurrence order used by DOCX export. Empty and repeated
 // paragraphs retain their position; table/container boundaries add no text.
 function sceneParagraphs(doc) {
+  require('./word-list-numbering-v1.cjs').resolve(doc);
   const paragraphs = []; let lists = 0;
   const append = block => {
     need(['paragraph', 'heading', 'codeBlock'].includes(block?.type), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
@@ -50,7 +51,7 @@ function sceneParagraphs(doc) {
     }
     need(['bulletList', 'orderedList'].includes(block?.type) && depth <= 8 && ++lists <= 2048
       && Array.isArray(block.content) && block.content.length > 0, 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
-    need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
+    need(!block.attrs || keys(block.attrs, block.type === 'orderedList' ? ['start', 'type', 'wordListId', 'wordListStart', 'wordNumbering'] : []), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');
     const start = block.attrs?.start ?? 1;
     need(Number.isSafeInteger(start) && start >= 0 && start + block.content.length - 1 <= 2147483647
       && (block.attrs?.type == null || ['1', 'I', 'i', 'A', 'a'].includes(block.attrs.type)), 'NOTE_SCENE_STRUCTURE_UNSUPPORTED');

@@ -65,6 +65,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
+    publishReview:publishReviewSceneWithProjectTransaction,
     formatApply: payload => MENU_COMMAND_HANDLERS['cmd.project.review.applyFormattingReturn'](payload),
     formattingInput:()=>cloneJsonSafe(activeRtkFormattingReturnApplyStore?.input),
     setFormattingRound(value){if(value===undefined)delete activeRtkFormattingReturnApplyStore.input.formattingRoundId;else activeRtkFormattingReturnApplyStore.input.formattingRoundId=value;},
@@ -1217,7 +1218,7 @@ for(const variant of ['typed-failure','secret-filter','cancel','pending','succes
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1283,7 +1284,7 @@ async function cleanTextReturnFixture(t,{sectionType,typedBreak,headingLevel,sch
   const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
   assert.ok(zip['word/document.xml'].includes(target));
   const editedText=nativeSuffix?'SourceEdit02':mixedLanguage?target.slice(1):target;
-  zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
+  if (!omitTextEdit) zip['word/document.xml']=zip['word/document.xml'].replace(editedText,editedText+' CLEAN_EDIT');
   if(mutateReturn)mutateReturn(zip);
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data})));
   if(localCase){
@@ -1855,4 +1856,201 @@ for(const scope of ['scene','full'])test(`actual Main authenticated paragraph la
  if(scope==='scene')assert.equal(read(f.beta),beta);assert.equal(observed,read(f.alpha));
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'layout-replay'});await settle();assert.equal(replay.ok,true);assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
  const reexport=await f.probe[scope==='scene'?'sceneSource':'fullSource'](),rebuilt=await f.probe.reviewBuild(reexport);assert.equal(rebuilt.publicationGate.publishAllowed,true);assert.match(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:rebuilt.documentBuffer}).parts['word/settings.xml'],/defaultTabStop w:val="851"/);
+});
+
+for(const textEdit of [false,true])test(`actual Main inactive grid addition ${textEdit?'with text':'metadata only'} requires explicit Apply and persists exact values`,async t=>{
+ const grid={type:'default',linePitch:-12,charSpace:0};
+ const {f,activated,beforeActivation,bridge}=await cleanTextReturnFixture(t,{sceneScope:true,bookmarked:false,omitTextEdit:!textEdit,
+  mutateReturn:parts=>{parts['word/document.xml']=parts['word/document.xml'].replaceAll('</w:sectPr>','<w:docGrid w:type="default" w:linePitch="-12" w:charSpace="0"/></w:sectPr>');}});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation,'intake must not write');
+ const before=envelope.parseObservablePayload(read(f.alpha)),sibling=read(f.beta);
+ let applied;
+ if(textEdit){assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));applied=await f.probe.fullApply({requestId:'grid-text-apply'});assert.equal(applied.applied,true,JSON.stringify(applied));}
+ else {assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+  const ops=f.probe.formattingInput().operations;assert.equal(ops.length,1);assert.equal(ops[0].kind,'section-doc-grid');
+  const settle=f.probe.observeDeferredEditorSync();applied=await f.probe.formatApply({requestId:'grid-metadata-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);}
+ const after=envelope.parseObservablePayload(read(f.alpha));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(after.doc).final.docGrid,grid);
+ assert.equal(read(f.beta),sibling);if(textEdit)assert.match(after.text,/CLEAN_EDIT/);else assert.equal(after.text,before.text);
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/<w:docGrid w:type="default" w:linePitch="-12" w:charSpace="0"\/>/);
+});
+
+test('actual Main keeps later-scene grid operation when earlier scene has ordinary text return',async t=>{
+ const {f,activated,bridge}=await cleanTextReturnFixture(t,{bookmarked:false,mutateReturn:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<\/w:sectPr>(?=[\s\S]*<\/w:body>)/g,'<w:docGrid w:type="default" w:linePitch="360"/></w:sectPr>');
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath.prepared,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));
+ const ops=f.probe.formattingInput().operations.filter(op=>op.kind==='section-doc-grid');assert.equal(ops.length,1);assert.notEqual(ops[0].sceneId,'roman/Imported/01_Alpha.txt');
+ const text=await f.probe.fullApply({requestId:'grid-other-text'});assert.equal(text.applied,true,JSON.stringify(text));
+ const alpha=read(f.alpha),settle=f.probe.observeDeferredEditorSync();const grid=await f.probe.formatApply({requestId:'grid-other-owner'});await settle();assert.equal(grid.ok,true,JSON.stringify(grid));assert.equal(read(f.alpha),alpha);
+ const beta=envelope.parseObservablePayload(read(f.beta));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(beta.doc).final.docGrid,{type:'default',linePitch:360});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true);
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/<w:docGrid w:type="default" w:linePitch="360"\/>/);
+});
+
+test('actual Main bookmark-only Word return preserves accompanying inactive grid in one guarded Apply',async t=>{
+ const {f,activated,beforeActivation,bridge}=await cleanTextReturnFixture(t,{bookmarked:true,sectionType:'continuous',omitTextEdit:true,mutateReturn:parts=>{
+  assert.match(parts['word/document.xml'],/UserTwinA/);parts['word/document.xml']=parts['word/document.xml'].replaceAll('UserTwinA','usertwina').replace('</w:sectPr>','<w:docGrid w:type="default" w:linePitch="240"/></w:sectPr>');
+ }});
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);await f.probe.refreshReview();
+ const changes=f.probe.reviewState().reviewSurface.revisionSession.reviewGraph.textChanges;assert.equal(changes.length,1);
+ const sibling=read(f.beta);
+ const result=await f.probe.reviewBatchApply({requestId:'bookmark-grid-apply',changeIds:[changes[0].changeId]});assert.equal(result.applied,true,JSON.stringify(result));
+ const doc=envelope.parseObservablePayload(read(f.alpha)).doc;assert.ok(bookmarks.readRegistry(doc).bookmarks.some(item=>item.name==='usertwina'));
+ assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(doc).boundaries[0].properties.docGrid,{type:'default',linePitch:240});
+ assert.equal(read(f.beta),sibling);const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true);
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];assert.match(xml,/usertwina/);assert.match(xml,/<w:docGrid w:type="default" w:linePitch="240"\/>/);
+});
+
+test('actual Main ordinary Save cannot acquire private inactive-grid authority from payload',async t=>{
+ const f=await fixture(t),sections=require('../../src/core/word-sections-v1.cjs');
+ const beforeDoc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]},before=envelope.composeObservablePayload({doc:beforeDoc});fs.writeFileSync(f.alpha,before);
+ const plan={expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:{type:'default',linePitch:360}}]};
+ const forged=sections.applyInactiveGridAdditions(beforeDoc,plan),working=envelope.composeObservablePayload({doc:forged});
+ mountRenderer(f,()=>working,1,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман',dirty:true,generation:1});
+ const result=await f.probe.save({inactiveGridPlan:plan,inactiveGridRollback:false,authenticatedCleanBlockText:true});assert.notEqual(result,true);assert.equal(read(f.alpha),before);
+});
+
+test('actual Main formatting publication rolls back inactive grid to exact plain scene bytes after write fault',async t=>{
+ const f=await fixture(t),runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ const before='Alpha plain grid source';fs.writeFileSync(f.alpha,before);const sibling=read(f.beta);
+ mountRenderer(f,()=>before,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const hash=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),stable=v=>JSON.stringify(v,(_,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.entries(x).sort(([a],[b])=>a.localeCompare(b))):x);
+ const cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(stable(v))},commandId=runtime.RTK_FORMATTING_RETURN_COMMAND_ID,revision='sha256:'+hash(before);
+ const input={commandId,callerRole:'main',commandAuthority:{issuer:'main',intent:'rtk.formattingApply',commandId},projectId:f.query.projectId,projectRoot:f.root,requestId:'actual-main-grid-rollback',returnArtifactSha256:'sha256:'+'c'.repeat(64),previewConfirmed:true,scenePathBySceneId:{alpha:f.alpha},operations:[{kind:'section-doc-grid',operationId:'main-grid-op',sceneId:'alpha',sourceAuthority:'authenticated-full-manuscript-section-doc-grid-v1',sourceRawSha256:revision,sourceSceneRevision:revision,sectionGrid:{expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:{type:'default',linePitch:360}}]}}]};
+ let observedWritten=false;
+ const result=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene:f.probe.publishReview,afterSceneWrite:()=>{observedWritten=true;assert.notEqual(read(f.alpha),before);throw Error('after actual Main publication');}});
+ assert.equal(observedWritten,true);assert.equal(result.code,'RTK_FORMATTING_WRITE_FAILED_ROLLED_BACK',JSON.stringify(result));assert.equal(read(f.alpha),before);assert.equal(read(f.beta),sibling);
+ const retry=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort,publishScene:f.probe.publishReview});assert.equal(retry.status,'applied',JSON.stringify(retry));assert.deepEqual(require('../../src/core/word-sections-v1.cjs').read(envelope.parseObservablePayload(read(f.alpha)).doc).final.docGrid,{type:'default',linePitch:360});assert.equal(read(f.beta),sibling);
+});
+
+for(const variant of ['unchanged','suffix','removed-list'])test(`actual Main signed list continuation preserves three item ownership: ${variant}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs');
+ const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),levels=numbering.defaultLevels(1);levels[0].start=4;levels[0].text='Item %1';
+ const original={type:'doc',content:[{type:'orderedList',attrs:{start:4,wordNumbering:{schemaVersion:1,instanceId:'continuation-main',level:0,levels}},content:[
+  {type:'listItem',content:[paragraph('First item')]},{type:'listItem',content:[paragraph('Second item')]},
+  {type:'listItem',content:[paragraph('Third item'),paragraph('Tail continuation')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.equal((parts['word/document.xml'].match(/<w:numPr>/g)||[]).length,3,'continuation paragraph must not start a fourth numbered item');
+ assert.equal(read(f.alpha),before,'unchanged export is read-only');assert.equal(read(f.beta),sibling);
+ if(variant==='unchanged')return;
+ await f.probe.activate(source.pendingAuthorityStore);
+ const xml=parts['word/document.xml'];
+ parts['word/document.xml']=xml.replace(/Tail continuation(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'Tail continuation$1<w:r><w:t xml:space="preserve"> WORD_SUFFIX</w:t></w:r>');
+ assert.notEqual(parts['word/document.xml'],xml,'Word suffix must be outside the signed bookmark but in the same paragraph');
+ if(variant==='removed-list')parts['word/document.xml']=parts['word/document.xml'].replace(/<w:numPr>[\s\S]*?<\/w:numPr>/u,'');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activation=await f.probe.reviewActivate({requestId:'continuation-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.deepEqual(f.capture(),capture,'intake never writes');
+ if(variant==='removed-list'){assert.notEqual(activation.ok,true,JSON.stringify(activation));assert.equal(read(f.alpha),before);return;}
+ assert.equal(activation.ok,true,JSON.stringify(activation));assert.equal(activation.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activation));
+ const applied=await f.probe.fullApply({requestId:'continuation-apply'});assert.equal(applied.applied,true,JSON.stringify(applied));
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,expected=structuredClone(original);expected.content[0].content[2].content[1].content[0].text+=' WORD_SUFFIX';
+ assert.deepEqual(saved,expected);assert.equal(saved.content[0].content.length,3);assert.equal(saved.content[0].content[2].content.length,2);assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ const journalRoot=path.join(f.root,'backups','revision-bridge-apply-journal'),journals=fs.readdirSync(journalRoot).filter(name=>name.endsWith('.json')).map(name=>JSON.parse(read(path.join(journalRoot,name))));
+ assert.ok(journals.some(entry=>entry.beforeHash===sha(before)&&entry.afterHash===sha(read(f.alpha))),'recovery journal binds exact original and final list documents');
+ const exported=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(exported.publicationGate.publishAllowed,true);
+ assert.equal((bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported.documentBuffer}).parts['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);
+});
+
+for(const stale of [false,true])test(`actual Main native Word defaults plus continuation text retain spacing and language; stale ${stale}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs');
+ const p=text=>({type:'paragraph',attrs:{textAlign:null},content:[{type:'text',text}]}),levels=numbering.defaultLevels(9);levels[0].start=4;levels[0].text='Item %1)';
+ const original={type:'doc',attrs:{wordPendingRevisions:null,wordUserBookmarks:null},content:[{type:'orderedList',attrs:{start:4,type:'1',wordNumbering:{schemaVersion:1,instanceId:'numbering-2',level:0,levels,startOverrides:[{level:0,start:4}]}},content:[
+  {type:'listItem',content:[p('Authored first')]},{type:'listItem',content:[p('Authored second')]},{type:'listItem',content:[p('Authored third'),p(' Structural fourth')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ // These are the effective defaults actually added by Word in PACKAGED-10.
+ assert.doesNotMatch(parts['word/styles.xml'],/<w:pPrDefault>/);
+ parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>')
+  .replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+ const xml=parts['word/document.xml'];parts['word/document.xml']=xml.replace(/ Structural fourth(<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,' Structural fourth$1<w:r><w:t xml:space="preserve"> native-continuation-10</w:t></w:r>');assert.notEqual(parts['word/document.xml'],xml);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activation=await f.probe.reviewActivate({requestId:'native-default-continuation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.deepEqual(f.capture(),capture);assert.equal(activation.ok,true,JSON.stringify(activation));assert.equal(activation.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activation));
+ await f.probe.refreshReview();assert.equal(f.probe.reviewState().reviewSurface.exactTextPlanPreview.status,'ready');assert.deepEqual(f.capture(),capture);
+ if(stale){const local=structuredClone(original);local.content[0].content[0].content[0].attrs.wordParagraphSpacing={after:400};const foreign=envelope.composeObservablePayload({doc:local});fs.writeFileSync(f.alpha,foreign);
+  const result=await f.probe.fullApply({requestId:'native-default-stale'});assert.notEqual(result.applied,true);assert.equal(read(f.alpha),foreign);assert.equal(read(f.beta),sibling);return;}
+ const result=await f.probe.fullApply({requestId:'native-default-continuation-apply'});assert.equal(result.applied,true,JSON.stringify(result));
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,paragraphs=bookmarks.paragraphs(saved),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ assert.equal(saved.content[0].content.length,3);assert.equal(saved.content[0].content[2].content.length,2);assert.deepEqual(saved.content[0].attrs,original.content[0].attrs);
+ assert.deepEqual(paragraphs.map(bookmarks.textOf),['Authored first','Authored second','Authored third',' Structural fourth native-continuation-10']);
+ for(const paragraph of paragraphs){assert.deepEqual(paragraph.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,language);for(const node of paragraph.content)if(node.type==='text'){const attrs=node.marks?.find(mark=>mark.type==='textStyle')?.attrs;assert.deepEqual(attrs?.wordLanguage,language);assert.equal(attrs?.fontFamily,'Times New Roman');}}
+ assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ const journalRoot=path.join(f.root,'backups','revision-bridge-apply-journal');assert.ok(fs.readdirSync(journalRoot).filter(name=>name.endsWith('.json')).map(name=>JSON.parse(read(path.join(journalRoot,name)))).some(entry=>entry.beforeHash===sha(before)&&entry.afterHash===sha(read(f.alpha))));
+ const exported=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(exported.publicationGate.publishAllowed,true);
+ const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:exported.documentBuffer}).parts['word/document.xml'];assert.equal((output.match(/<w:numPr>/g)||[]).length,3);assert.equal((output.match(/<w:spacing w:after="160" w:line="278" w:lineRule="auto"\/>/g)||[]).length,4);assert.match(output,/w:lang w:val="ru-FI"/);assert.match(output,/w:rFonts[^>]*w:ascii="Times New Roman"/);
+ const [{Editor},{default:StarterKit},{default:Color},{DocumentTextStyle},{DocumentParagraphAlignment},{DocumentListNumbering},{WordPendingRevisions},{UserBookmarks}]=await Promise.all([
+  import('@tiptap/core'),import('@tiptap/starter-kit'),import('@tiptap/extension-color'),import('../../src/renderer/tiptap/documentTextStyle.mjs'),
+  import('../../src/renderer/tiptap/documentParagraphAlignment.mjs'),import('../../src/renderer/tiptap/documentListNumbering.mjs'),
+  import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),import('../../src/renderer/tiptap/userBookmarks.mjs')]);
+ for(const mode of ['single','batch']){
+  const canonical=read(f.alpha),parsed=envelope.parseObservablePayload(canonical),tail=bookmarks.paragraphs(parsed.doc).at(-1);
+  if(mode==='single')assert.ok(tail.content.length>1,'first saved return must retain adjacent runs that actual reopening merges');
+  const editor=new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false}),DocumentTextStyle,Color,DocumentParagraphAlignment,DocumentListNumbering,WordPendingRevisions,UserBookmarks],content:parsed.doc});
+  const reopened=envelope.canonicalizeDocumentJson(editor.getJSON());editor.destroy();
+  assert.equal(bookmarks.paragraphs(reopened).at(-1).content.length,1,'actual ProseMirror reopening merges identical styled runs');
+  if(mode==='single')assert.notDeepEqual(reopened,parsed.doc);assert.equal(envelope.deriveVisibleTextFromDocument(reopened),parsed.text);
+  observed=envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:reopened});
+  assert.equal(read(f.alpha),canonical,'reopening must not save normalized runs');
+  const round=await f.probe.sceneSource(),packet=await f.probe.reviewBuild(round);assert.equal(packet.publicationGate.publishAllowed,true,JSON.stringify(packet.publicationGate));await f.probe.activate(round.pendingAuthorityStore);
+  const zip=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:packet.documentBuffer}).parts;
+  const suffix=' native-reopened-'+mode,paragraphsXml=[...zip['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)];
+  const last=paragraphsXml.at(-1)[0],lastRun=[...last.matchAll(/<w:r(?:\s[^>]*)?>[\s\S]*?<\/w:r>/gu)].at(-1)[0],runProperties=lastRun.match(/<w:rPr>[\s\S]*?<\/w:rPr>/u)?.[0]||'';
+  assert.match(runProperties,/Times New Roman/,'Word typing inherits the existing final run formatting');
+  const patched=last.replace(/(<w:bookmarkEnd[^>]*\/>)(?=<\/w:p>)/u,`$1<w:r>${runProperties}<w:t xml:space="preserve">${suffix}</w:t></w:r>`);
+  assert.notEqual(patched,last,'append outside technical bookmark in same last paragraph');zip['word/document.xml']=zip['word/document.xml'].replace(last,patched);
+  const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(zip).map(([name,data])=>({name,data}))),beforeIntake=f.capture();
+  const admitted=await f.probe.reviewActivate({requestId:'reopened-'+mode,bufferSource:returned.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});assert.equal(admitted.ok,true,JSON.stringify(admitted));assert.deepEqual(f.capture(),beforeIntake);
+  const changes=f.probe.reviewState().revisionSession.reviewGraph.textChanges;assert.equal(changes.length,1);
+  const applied=mode==='single'?await f.probe.reviewBatchApply({requestId:'reopened-single-apply',changeIds:[changes[0].changeId]}):await f.probe.fullApply({requestId:'reopened-batch-apply'});
+  assert.equal(applied.applied,true,JSON.stringify(applied));const after=envelope.parseObservablePayload(read(f.alpha)).doc;
+  assert.equal(bookmarks.textOf(bookmarks.paragraphs(after).at(-1)),bookmarks.textOf(tail)+suffix);assert.equal(after.content[0].content.length,3);assert.equal(after.content[0].content[2].content.length,2);assert.equal(read(f.beta),sibling);
+  for(const p of bookmarks.paragraphs(after)){assert.deepEqual(p.attrs.wordParagraphSpacing,{after:160,line:278,lineRule:'auto'});for(const node of p.content)if(node.type==='text'){const attrs=node.marks.find(mark=>mark.type==='textStyle').attrs;assert.equal(attrs.fontFamily,'Times New Roman');assert.deepEqual(attrs.wordLanguage,language);}}
+ }
+
+});
+
+for(const composite of ['none','single','multi'])for(const stale of (composite==='single'?[false,true,'equal','different']:[false,true]))test(`actual Main Word start change removes concrete override and preserves styled continuation; stale ${stale}; composite ${composite}`,async t=>{
+ const f=await fixture(t),numbering=require('../../src/core/word-list-numbering-v1.cjs'),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ const paragraph=text=>({type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:language},content:[{type:'text',text,marks:[{type:'textStyle',attrs:{fontFamily:'Times New Roman',wordLanguage:language}}]}]});
+ const levels=numbering.defaultLevels(9);levels[0].start=4;levels[0].text='Item %1)';
+ const original={type:'doc',content:[{type:'orderedList',attrs:{start:4,type:'1',wordNumbering:{schemaVersion:1,instanceId:'numbering-2',lineageId:'numbering-lineage',level:0,levels,startOverrides:[{level:0,start:4}]}},content:[{type:'listItem',content:[paragraph('First')]},{type:'listItem',content:[paragraph('Second')]},{type:'listItem',content:[paragraph('Third'),paragraph(' Continuation native-round5')]}]}]};
+ let observed=envelope.composeObservablePayload({doc:original});fs.writeFileSync(f.alpha,observed);const before=observed,sibling=read(f.beta);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await ((stale==='equal'||stale==='different')?f.probe.fullSource():f.probe.sceneSource()),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ assert.match(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
+ parts['word/numbering.xml']=parts['word/numbering.xml'].replace('<w:start w:val="4"/>','<w:start w:val="7"/>').replace(/<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"\/><\/w:lvlOverride>/u,'');
+ assert.doesNotMatch(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
+ if(composite!=='none')parts['word/settings.xml']=parts['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>');
+ if(composite!=='none')parts['word/document.xml']=parts['word/document.xml'].replace(' Continuation native-round5',' Continuation native-round5 WORD_COMPOSITE');
+ if(composite==='multi')parts['word/document.xml']=parts['word/document.xml'].replace('>First</w:t>','>First WORD_SECOND</w:t>');
+ if(stale==='equal'||stale==='different'){const local=structuredClone(original);local.content[0].attrs.wordNumbering.levels[0].start=stale==='equal'?7:8;delete local.content[0].attrs.wordNumbering.startOverrides;local.content[0].attrs.start=stale==='equal'?7:8;observed=envelope.composeObservablePayload({doc:local});fs.writeFileSync(f.alpha,observed);}
+ const applyBefore=read(f.alpha);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),capture=f.capture();
+ const activated=await f.probe.reviewActivate({requestId:'word-start-change',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});if(stale==='different'){assert.notEqual(activated.ok,true,JSON.stringify(activated));assert.deepEqual(f.capture(),capture);return;}assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(composite==='none'?activated.formattingProductPath?.prepared:activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));assert.deepEqual(f.capture(),capture,'preview cannot persist numbering');
+ const preview=f.probe.reviewState().reviewSurface;
+ const operation=composite==='none'?f.probe.formattingInput().operations.find(value=>value.kind==='list-numbering'):preview.exactTextPlanPreview.plan.numberingChanges[0];
+ if(composite==='none'){assert.equal(preview.formattingReturnPreview.status,'ready');assert.deepEqual(preview.formattingReturnPreview.diagnostics,[]);}
+ else {assert.deepEqual(preview.formattingReturnPreview.diagnostics,[]);assert.equal(preview.formattingReturnPreview.operations.length,stale==='equal'?1:0);if(stale==='equal'){assert.equal(preview.formattingReturnPreview.operations[0].kind,'document-properties');assert.notEqual(preview.formattingReturnPreview.operations[0].sceneId,'roman/Imported/01_Alpha.txt');}assert.equal(preview.exactTextPlanPreview.plan.numberingChanges.length,1);}
+ assert.deepEqual(operation.numbering.instanceOverrides,[{instanceId:'numbering-2',expectedStartOverrides:[{level:0,start:4}],startOverrides:[]}]);
+ if(stale===true){const changed=structuredClone(original);changed.content[0].attrs.wordNumbering.startOverrides[0].start=6;changed.content[0].attrs.start=6;const foreign=envelope.composeObservablePayload({doc:changed});fs.writeFileSync(f.alpha,foreign);observed=foreign;
+  const result=composite==='none'?await f.probe.formatApply({requestId:'word-start-stale'}):await f.probe.fullApply({requestId:'word-start-stale'});assert.notEqual(composite==='none'?result.ok:result.applied,true,JSON.stringify(result));assert.equal(read(f.alpha),foreign);assert.equal(read(f.beta),sibling);return;}
+ if(composite==='multi'){const changes=preview.exactTextPlanPreview.plan.applyOps,captured=f.capture();assert.equal(changes.length,2);const partial=await f.probe.reviewBatchApply({requestId:'word-start-partial',changeIds:[changes[0].changeId]});assert.notEqual(partial.applied,true);assert.equal(partial.error.reason,'RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED','existing private input authority rejects partial selection before publication');assert.deepEqual(f.capture(),captured,'partial selection must not write text or numbering');}
+ const settle=composite==='none'?f.probe.observeDeferredEditorSync():null,applied=composite==='none'?await f.probe.formatApply({requestId:'word-start-apply'}):composite==='single'?await f.probe.reviewBatchApply({requestId:'word-start-single',changeIds:[preview.exactTextPlanPreview.plan.applyOps[0].changeId]}):await f.probe.fullApply({requestId:'word-start-apply'});if(settle)await settle();assert.equal(composite==='none'?applied.ok:applied.applied,true,JSON.stringify(applied));if(composite==='none')assert.equal(applied.replayVerified,true);
+ const saved=envelope.parseObservablePayload(read(f.alpha)).doc,expected=structuredClone(original);expected.content[0].attrs.start=7;expected.content[0].attrs.wordNumbering.levels[0].start=7;delete expected.content[0].attrs.wordNumbering.startOverrides;
+ if(composite!=='none')expected.attrs={wordDefaultTabStop:708};
+ if(composite!=='none')expected.content[0].content[2].content[1].content[0].text+=' WORD_COMPOSITE';
+ if(composite==='multi')expected.content[0].content[0].content[0].content[0].text+=' WORD_SECOND';
+ if(composite!=='none'){const journalRoot=path.join(f.root,'backups','revision-bridge-apply-journal');assert.ok(fs.readdirSync(journalRoot).filter(name=>name.endsWith('.json')).map(name=>JSON.parse(read(path.join(journalRoot,name)))).some(entry=>entry.beforeHash===sha(applyBefore)&&entry.afterHash===sha(read(f.alpha))),'journal hashes bind text plus numbering final bytes');}
+ assert.deepEqual(saved,expected);assert.deepEqual([...numbering.resolveMarkers(saved).values()].flatMap(value=>value.items.map(item=>item.label)),['Item 7)','Item 8)','Item 9)']);assert.equal(read(f.beta),sibling);
+ const reexport=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(reexport.publicationGate.publishAllowed,true);const output=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:reexport.documentBuffer}).parts;
+ if(composite!=='none')assert.match(output['word/settings.xml'],/<w:defaultTabStop w:val="708"\/>/);
+ assert.match(output['word/numbering.xml'],/<w:start w:val="7"\/>/);assert.doesNotMatch(output['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);assert.equal((output['word/document.xml'].match(/<w:numPr>/g)||[]).length,3);assert.match(output['word/document.xml'],/Continuation native-round5/);assert.notEqual(read(f.alpha),before);
 });

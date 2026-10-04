@@ -1,7 +1,9 @@
+import wordSections from '../../core/word-sections-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
+import listNumbering from '../../core/word-list-numbering-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 const { normalizeDocxHttpHref } = docxHyperlinks;
 import fs from 'node:fs/promises';
@@ -24,7 +26,7 @@ const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguag
 const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
 const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs']);
 const OPERATION_KEYS = new Set([
-  'kind','document','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
+  'kind','document','numbering','sectionGrid','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
   'inline', 'paragraph', 'targetScope', 'sceneOrdinal', 'paragraphId', 'sourceAuthority', 'expectedOutcome',
   'sourceSceneRevision', 'sourceRawSha256',
 ]);
@@ -130,6 +132,26 @@ function normalizeOperation(operation, index) {
   if (unknownKeys.length > 0) {
     return result(false, 'RTK_FORMATTING_OPERATION_UNKNOWN_KEY', { operationIndex: index, unknownKeys });
   }
+  if (operation.kind === 'section-doc-grid') {
+    const keys=['kind','sectionGrid','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
+    if(Object.keys(operation).some(key=>!keys.includes(key)) || !normalizedString(operation.operationId) || !normalizedString(operation.sceneId)
+      || operation.sourceAuthority!=='authenticated-full-manuscript-section-doc-grid-v1'
+      || !SHA256_RE.test(operation.sourceSceneRevision) || !SHA256_RE.test(operation.sourceRawSha256)) return result(false,'RTK_FORMATTING_SECTION_GRID_AUTHORITY_INVALID');
+    try { return {ok:true,operation:{...cloneJson(operation),sectionGrid:wordSections.validateInactiveGridPlan(operation.sectionGrid)}}; }
+    catch { return result(false,'RTK_FORMATTING_SECTION_GRID_PLAN_INVALID'); }
+  }
+  if (operation.kind === 'list-numbering') {
+    const keys = ['kind','numbering','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
+    const value = operation.numbering;
+    if (Object.keys(operation).some(key => !keys.includes(key)) || !normalizedString(operation.operationId) || !normalizedString(operation.sceneId)
+      || operation.sourceAuthority !== 'authenticated-full-manuscript-export-map-list-numbering-v1'
+      || !SHA256_RE.test(operation.sourceSceneRevision) || !SHA256_RE.test(operation.sourceRawSha256)
+      || !isPlainObject(value)
+      || typeof value.instanceId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(value.instanceId)) return result(false, 'RTK_FORMATTING_NUMBERING_AUTHORITY_INVALID');
+    try { listNumbering.validateDefinitionChange(value); }
+    catch { return result(false, 'RTK_FORMATTING_NUMBERING_DEFINITION_INVALID'); }
+    return { ok: true, operation: cloneJson(operation) };
+  }
   if(operation.kind==='document-properties') {
     const keys=['kind','document','operationId','sceneId','sourceAuthority','sourceSceneRevision','sourceRawSha256'];
     const action=operation.document?.wordDefaultTabStop;
@@ -141,7 +163,7 @@ function normalizeOperation(operation, index) {
     try{paragraphLayout.normalizeWordDefaultTabStop(action.value);}catch{return result(false,'RTK_FORMATTING_DOCUMENT_ACTION_INVALID');}
     return {ok:true,operation:cloneJson(operation)};
   }
-  if(operation.kind!==undefined||operation.document!==undefined)return result(false,'RTK_FORMATTING_OPERATION_UNKNOWN_KIND');
+  if(operation.kind!==undefined||operation.document!==undefined||operation.numbering!==undefined||operation.sectionGrid!==undefined)return result(false,'RTK_FORMATTING_OPERATION_UNKNOWN_KIND');
   const operationId = normalizedString(operation.operationId);
   const sceneId = normalizedString(operation.sceneId);
   const blockId = normalizedString(operation.blockId);
@@ -380,10 +402,26 @@ export function applyFormattingOperationsToObservableContent(baseContent, operat
 
   let doc = parsed.doc ? cloneJson(parsed.doc) : buildParagraphDocumentFromText(parsed.text);
   if (!Array.isArray(doc.content)) return result(false, 'RTK_FORMATTING_DOCUMENT_CONTENT_INVALID');
+  const gridOperations=normalized.filter(operation=>operation.kind==='section-doc-grid');
+  if(gridOperations.length>1)return result(false,'RTK_FORMATTING_SECTION_GRID_DUPLICATE_OPERATION');
+  if(gridOperations.length) {
+    try { doc=wordSections.applyInactiveGridAdditions(doc,gridOperations[0].sectionGrid); }
+    catch(error) { return result(false,'RTK_FORMATTING_SECTION_GRID_CONFLICT',{detail:error.message}); }
+  }
   const rootOperations=normalized.filter(operation=>operation.kind==='document-properties');
   if(rootOperations.length>1)return result(false,'RTK_FORMATTING_DOCUMENT_DUPLICATE_OPERATION');
   if(rootOperations.length)doc=pendingTextRevisions.setDefaultTabStop(doc,rootOperations[0].document.wordDefaultTabStop.value);
-  const ordered = normalized.filter(operation=>operation.kind!=='document-properties').sort((left, right) => (
+  const numberingOperations = normalized.filter(operation => operation.kind === 'list-numbering');
+  const numberingGroups = new Set();
+  for (const operation of numberingOperations) {
+    const representative = [...listNumbering.resolveMarkers(doc).keys()].find(node => node.attrs.wordNumbering.instanceId === operation.numbering.instanceId);
+    const lineageId = representative?.attrs.wordNumbering.lineageId || operation.numbering.instanceId;
+    if (numberingGroups.has(lineageId)) return result(false, 'RTK_FORMATTING_NUMBERING_DUPLICATE_OPERATION');
+    numberingGroups.add(lineageId);
+    try { doc = listNumbering.applyDefinitionChange(doc, operation.numbering); }
+    catch (error) { return result(false, 'RTK_FORMATTING_NUMBERING_CONFLICT', { detail: error.message }); }
+  }
+  const ordered = normalized.filter(operation=>operation.kind!=='document-properties' && operation.kind!=='list-numbering' && operation.kind!=='section-doc-grid').sort((left, right) => (
     left.paragraphOrdinal - right.paragraphOrdinal || left.from - right.from || left.operationId.localeCompare(right.operationId)
   ));
   for (const operation of ordered) {
@@ -524,6 +562,16 @@ function stateIndexIsValid(value) {
   ));
 }
 
+function stateSceneGridIsValid(scene) {
+  if(!Object.hasOwn(scene,'inactiveGridPlan'))return true;
+  try {
+    const before=parseObservablePayload(scene.beforeContent),after=parseObservablePayload(scene.afterContent);
+    if(before.issue || after.issue)return false;
+    wordSections.validateGridRollback(after.doc || buildParagraphDocumentFromText(after.text),before.doc || buildParagraphDocumentFromText(before.text),scene.inactiveGridPlan);
+    return true;
+  } catch { return false; }
+}
+
 function stateSceneIsValid(scene, cryptoPort) {
   return isPlainObject(scene)
     && normalizedString(scene.sceneId)
@@ -534,6 +582,7 @@ function stateSceneIsValid(scene, cryptoPort) {
     && SHA256_RE.test(normalizedString(scene.afterSha256))
     && normalizedString(scene.beforeSha256) === sha256Text(cryptoPort, scene.beforeContent)
     && normalizedString(scene.afterSha256) === sha256Text(cryptoPort, scene.afterContent)
+    && stateSceneGridIsValid(scene)
     && Array.isArray(scene.operationIds)
     && scene.operationIds.length > 0
     && scene.operationIds.every((operationId) => normalizedString(operationId) === operationId);
@@ -827,9 +876,10 @@ function sceneCommitGuard(projectRoot, authority, expectedSha256, cryptoPort, op
   };
 }
 
-async function publishFormattingScene(scenePath, content, expectedText, beforeRename, options) {
+async function publishFormattingScene(scenePath, content, expectedText, beforeRename, options, inactiveGridPlan = null, rollback = false) {
   if (typeof options.publishScene === 'function') {
-    const receipt = await options.publishScene(scenePath, content, { expectedText, beforeRename });
+    const receipt = await options.publishScene(scenePath, content, { expectedText, beforeRename,
+      ...(inactiveGridPlan?{inactiveGridPlan:wordSections.validateInactiveGridPlan(inactiveGridPlan),...(rollback?{inactiveGridRollback:true}:{})}:{}) });
     if (receipt?.ok !== 1) throw new Error('RTK_FORMATTING_PROJECT_PUBLICATION_FAILED');
     return receipt;
   }
@@ -871,7 +921,7 @@ async function restoreTransaction(projectRoot, transaction, sceneAuthorityByScen
           cryptoPort,
           options,
           { phase: 'rollback', sceneId: scene.sceneId },
-        ), options,
+        ), options, scene.inactiveGridPlan, true,
       );
     } catch (error) {
       const current = await fs.readFile(scene.scenePath, 'utf8').catch(() => null);
@@ -1312,6 +1362,7 @@ export async function applyMultiSceneFormattingReturnRuntime(input = {}, options
           sceneRelativePath: scene.sceneRelativePath,
           beforeContent,
           afterContent: transformed.content,
+          ...(scene.operations.find(operation=>operation.kind==='section-doc-grid') ? {inactiveGridPlan:cloneJson(scene.operations.find(operation=>operation.kind==='section-doc-grid').sectionGrid)}:{}),
           beforeSha256,
           afterSha256: sha256Text(cryptoPort, transformed.content),
           operationIds: scene.operations.map((operation) => operation.operationId),
@@ -1346,7 +1397,7 @@ export async function applyMultiSceneFormattingReturnRuntime(input = {}, options
               cryptoPort,
               options,
               { phase: 'commit', index, sceneId: scene.sceneId },
-            ), options,
+            ), options, scene.inactiveGridPlan, false,
           );
           writerCalled = true;
           if (!await revalidateSceneAuthority(normalized.projectRoot, authority)) {

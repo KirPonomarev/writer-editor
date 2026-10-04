@@ -9719,3 +9719,8 @@ body.dark-theme .manual-map-workspace__minimap {
   outline-offset: -2px;
   background: var(--selected-bg);
 }
+
+/* Labels are a Core projection, never characters in the manuscript. */
+.tiptap-editor li.word-numbering-item::marker {
+  content: attr(data-word-marker) " ";
+}

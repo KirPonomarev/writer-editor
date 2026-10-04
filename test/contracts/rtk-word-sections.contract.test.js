@@ -101,3 +101,106 @@ test('final-only nextPage custom geometry survives import and both exports while
  }
  const ordinaryPlain=ordinary({type:'doc',content:[p('Legacy')]},mods);const report=mods[0].buildDocxContentPreviewFromZipBytes(ordinaryPlain);assert.equal(report.ok,true);assert.equal(report.contentPreview.wordSections,undefined);
 });
+test('disabled document grid preserves optional signed latent values and requires explicit reader support',()=>{
+ for(const grid of [{type:'default'},{type:'default',linePitch:360},{type:'default',linePitch:0,charSpace:-4096},{type:'default',linePitch:Number.MIN_SAFE_INTEGER,charSpace:Number.MAX_SAFE_INTEGER}]){
+  const d=fixture();d.attrs.wordSections.final.docGrid=grid;
+  assert.deepEqual(sections.read(d).final.docGrid,grid);
+  const payload=envelope.composeObservablePayload({doc:d});assert.ok(payload.includes('word-section-doc-grid.v1'));
+  assert.deepEqual(sections.read(envelope.parseObservablePayload(payload).doc).final.docGrid,grid);
+  assert.ok(sections.xml(d.attrs.wordSections.final).includes('<w:docGrid w:type="default"'));
+ }
+ assert.equal(envelope.composeObservablePayload({doc:fixture()}).includes('word-section-doc-grid.v1'),false);
+ for(const grid of [{type:'lines',linePitch:360},{type:'linesAndChars'},{type:'snapToChars'},{type:'default',linePitch:1.5},{type:'default',linePitch:Number.MAX_SAFE_INTEGER+1},{type:'default',charSpace:'0'},{type:'default',extra:0}])assert.throws(()=>sections.validateDocGrid(grid),/WORD_SECTIONS_INVALID/);
+ let calls=0;const grid={type:'default'};Object.defineProperty(grid,'linePitch',{enumerable:true,get(){calls++;return 360;}});assert.throws(()=>sections.validateDocGrid(grid));assert.equal(calls,0);
+});
+test('disabled grids survive generic import, save and both DOCX exporters with exact latent values',async()=>{
+ const mods=await modules;const original=fixture();original.attrs.wordSections.boundaries[0].properties.docGrid={type:'default',charSpace:-4096};original.attrs.wordSections.final.docGrid={type:'default',linePitch:360,charSpace:0};
+ for(const exporter of ['ordinary','review']){
+  let d=original;for(let round=0;round<2;round++){
+   const bytes=exporter==='ordinary'?ordinary(d,mods):packet(d);
+   const report=mods[0].buildDocxContentPreviewFromZipBytes(bytes);assert.equal(report.ok,true,JSON.stringify(report));
+   const plan=mods[0].buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true,JSON.stringify(plan));
+   d=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+   assert.deepEqual(sections.read(d),sections.read(original));
+  }
+ }
+});
+test('authenticated section proof binds existing disabled grid values and refuses mutation or removal',async()=>{
+ const mods=await modules,bridge=mods[0];const d=fixture();d.attrs.wordSections.final.docGrid={type:'default',linePitch:360,charSpace:-4096};
+ const scene={sceneId:'roman/test.txt',scenePath:'/synthetic/roman/test.txt',doc:d,text:envelope.deriveVisibleTextFromDocument(d),observableContent:envelope.composeObservablePayload({doc:d}),order:0};
+ const crypto=require('node:crypto'),stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+stable(value[key])).join(',')+'}':JSON.stringify(value);
+ const cryptoPort={sha256Text:value=>crypto.createHash('sha256').update(String(value)).digest('hex'),sha256Json(value){return 'sha256:'+this.sha256Text(stable(value));},hmacSha256Text:(value,secret)=>'hmac-sha256:'+crypto.createHmac('sha256',secret).update(String(value)).digest('hex'),hmacSha256Json(value,secret){return this.hmacSha256Text(stable(value),secret);},byteLength:value=>Buffer.byteLength(String(value))};
+ const input=source.buildFullManuscriptDocxReviewPacketSource({projectId:'doc-grid',projectRoot:'/synthetic',scenes:[scene]},{revisionBridge:bridge,cryptoPort,hmacSecret:'grid-test-secret',roundIdHex:'e'.repeat(32),keyIdHex:'f'.repeat(32)});
+ const bytes=review.buildDocxReviewPacketBuffer(input),parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:input.forbiddenSecret,expectedAuthority:input.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+ const returned=parsed.reviewIr?.documentSections;assert.ok(returned,JSON.stringify(parsed));
+ const signedDigest=parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest;
+ assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned,signedDigest}).ok,true);
+ for(const mutate of [value=>value.protectedSections.at(-1).properties.docGrid.linePitch++,value=>delete value.protectedSections.at(-1).properties.docGrid,value=>value.protectedSections.at(-1).properties.docGrid.charSpace=0]){
+  const changed=structuredClone(returned);mutate(changed);assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned:changed,signedDigest}).ok,false);
+ }
+ assert.equal(source.validateFullManuscriptDocumentSectionsReturn({expected:input.documentSections,returned,signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
+});
+test('authenticated inactive grid addition belongs only to the section end owner and preserves multi-scene topology',()=>{
+ const first={type:'doc',content:[p('First')]},last={type:'doc',content:[p('Last')]};
+ const exportMap={scenes:[{sceneId:'a',blocks:[{documentParagraphIndex:0}]},{sceneId:'b',blocks:[{documentParagraphIndex:1}]}]};
+ const protectedSections=[{ordinal:0,startParagraphIndex:0,endParagraphIndex:1,properties:props('nextPage'),carriers:{sectionProperties:true}}];
+ const additions=[{ordinal:0,docGrid:{type:'default',linePitch:360,charSpace:-4096}}];
+ assert.equal(sections.planInactiveGridAdditions(first,{sceneId:'a',exportMap,protectedSections,additions}),null);
+ const plan=sections.planInactiveGridAdditions(last,{sceneId:'b',exportMap,protectedSections,additions});
+ assert.deepEqual(plan,{expectedRegistry:null,additions:[{endParagraphIndex:0,docGrid:additions[0].docGrid}]});
+ const changed=sections.applyInactiveGridAdditions(last,plan);assert.equal(sections.read(first),null);
+ assert.deepEqual(sections.read(changed),{schemaVersion:1,boundaries:[],final:{type:'nextPage',docGrid:additions[0].docGrid}});
+ assert.deepEqual(last,{type:'doc',content:[p('Last')]});
+ const edited=structuredClone(changed);edited.content[0].content[0].text='Changed last';
+ sections.validateSaveWithGridAddition(last,edited,plan);
+ assert.throws(()=>sections.validateSave(last,edited),/SAVE_AUTHORITY/);
+ const forged=structuredClone(edited);forged.attrs.wordSections.final.type='continuous';assert.throws(()=>sections.validateSaveWithGridAddition(last,forged,plan),/SAVE_AUTHORITY/);
+ assert.throws(()=>sections.applyInactiveGridAdditions(changed,plan),/WORD_SECTIONS_INVALID/);
+ for(const mutate of [v=>v.additions[0].endParagraphIndex=1,v=>v.additions[0].docGrid.type='lines',v=>v.path='/forged',v=>v.additions.push(v.additions[0])]){const bad=structuredClone(plan);mutate(bad);assert.throws(()=>sections.applyInactiveGridAdditions(last,bad));}
+ const badSource=structuredClone(protectedSections);badSource[0].properties.docGrid={type:'default'};assert.throws(()=>sections.planInactiveGridAdditions(last,{sceneId:'b',exportMap,protectedSections:badSource,additions}));
+ assert.throws(()=>sections.planInactiveGridAdditions(last,{sceneId:'foreign',exportMap,protectedSections,additions}));
+ let calls=0;const bad={expectedRegistry:null,additions:[]};Object.defineProperty(bad,'additions',{enumerable:true,get(){calls++;return plan.additions;}});assert.throws(()=>sections.validateInactiveGridPlan(bad));assert.equal(calls,0);
+});
+test('inactive grid additions preserve existing section geometry and reject a non-boundary endpoint',()=>{
+ const doc=fixture(),count=require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(doc).length;
+ const before=sections.read(doc),end=before.boundaries[0].endParagraphIndex;
+ const plan={expectedRegistry:before,additions:[{endParagraphIndex:end,docGrid:{type:'default',linePitch:0}},{endParagraphIndex:count-1,docGrid:{type:'default',charSpace:0}}]};
+ const changed=sections.applyInactiveGridAdditions(doc,plan),actual=sections.read(changed);
+ delete actual.boundaries[0].properties.docGrid;delete actual.final.docGrid;assert.deepEqual(actual,before);
+ const stale=structuredClone(doc);stale.attrs.wordSections.final.type='oddPage';assert.throws(()=>sections.applyInactiveGridAdditions(stale,plan));
+ const invalid={expectedRegistry:before,additions:[{endParagraphIndex:count,docGrid:{type:'default'}}]};
+ assert.throws(()=>sections.applyInactiveGridAdditions(doc,invalid));
+});
+
+test('end-owner inactive grid plan reexports multiple scenes without adding section breaks or changing geometry',()=>{
+ const scenes=['roman/a.txt','roman/b.txt','other/c.txt'].map(sceneId=>({sceneId,text:sceneId,doc:{type:'doc',content:[p(sceneId)]}}));
+ const blocks=scenes.flatMap((scene,i)=>source.buildFormatIrParagraphs(scene).map(block=>({...block,sceneId:scene.sceneId,documentParagraphIndex:i})));
+ const before=source.buildFullManuscriptDocumentSections(scenes,blocks);
+ assert.deepEqual(before.protectedSections.map(section=>section.endParagraphIndex),[1,2]);
+ const exportMap={scenes:scenes.map((scene,i)=>({sceneId:scene.sceneId,blocks:[blocks[i]]}))};
+ const additions=before.protectedSections.map(section=>({ordinal:section.ordinal,docGrid:{type:'default',linePitch:360+section.ordinal}}));
+ const updated=scenes.map(scene=>{const plan=sections.planInactiveGridAdditions(scene.doc,{sceneId:scene.sceneId,exportMap,protectedSections:before,additions});return {...scene,doc:plan?sections.applyInactiveGridAdditions(scene.doc,plan):scene.doc};});
+ assert.equal(sections.read(updated[0].doc),null);
+ const after=source.buildFullManuscriptDocumentSections(updated,blocks);
+ assert.deepEqual(after.protectedSections.map(section=>section.endParagraphIndex),[1,2]);
+ for(let i=0;i<after.protectedSections.length;i++){
+  assert.deepEqual(after.protectedSections[i].properties.docGrid,additions[i].docGrid);
+  delete after.protectedSections[i].properties.docGrid;delete after.protectedSections[i].carriers.docGrid;
+ }
+ assert.deepEqual(after.protectedSections,before.protectedSections);
+});
+
+test('inactive grid rollback verifies exact inverse section effect and unchanged paragraph text',()=>{
+ const before=fixture(),count=require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(before).length;
+ const plan={expectedRegistry:sections.read(before),additions:[{endParagraphIndex:count-1,docGrid:{type:'default',linePitch:360}}]};
+ const after=sections.applyInactiveGridAdditions(before,plan);
+ sections.validateGridRollback(after,before,plan);
+ const beforeBytes=JSON.stringify(before),afterBytes=JSON.stringify(after);
+ sections.validateGridRollback(after,before,plan);assert.equal(JSON.stringify(before),beforeBytes);assert.equal(JSON.stringify(after),afterBytes);
+ for(const mutate of [doc=>doc.attrs.wordSections.final.docGrid.linePitch++,doc=>doc.attrs.wordSections.final.type='oddPage',doc=>doc.content[0].content[0].text+=' stale',doc=>doc.content.push(p('extra'))]){
+  const stale=structuredClone(after);mutate(stale);assert.throws(()=>sections.validateGridRollback(stale,before,plan));
+ }
+ const forged=structuredClone(plan);forged.expectedRegistry.final.type='oddPage';assert.throws(()=>sections.validateGridRollback(after,before,forged));
+ const badTarget=structuredClone(before);badTarget.attrs.wordSections.final.margins.leftTwips++;assert.throws(()=>sections.validateGridRollback(after,badTarget,plan));
+ assert.throws(()=>sections.validateGridRollback(before,after,plan));
+});

@@ -209,9 +209,12 @@ function buildFormatIrParagraphs(scene) {
   let nextListNumId = 1;
   const linkedIds = new Map();
   const numberId = attrs => {
-    if (!attrs?.wordListId) return nextListNumId++;
-    if (!linkedIds.has(attrs.wordListId)) linkedIds.set(attrs.wordListId, nextListNumId++);
-    return linkedIds.get(attrs.wordListId);
+    const id = attrs?.wordNumbering ? `pattern:${attrs.wordNumbering.instanceId}` : attrs?.wordListId ? `legacy:${attrs.wordListId}` : null;
+    if (!id) return nextListNumId++;
+    if (!linkedIds.has(id)) linkedIds.set(id, attrs?.wordNumbering
+      ? 2000000 + crypto.createHash('sha256').update(`${scene.sceneId}\u0000${id}`).digest().readUInt32BE(0) % 2145483647
+      : nextListNumId++);
+    return linkedIds.get(id);
   };
   let nextTableId = 0;
   const appendTextBlock = (node, context) => {
@@ -262,12 +265,18 @@ function buildFormatIrParagraphs(scene) {
     if (activeList) {
       paragraphFormat.list = {
         kind: activeList.kind,
-        level: context.listStack.length - 1,
+        level: activeList.wordNumbering?.level ?? context.listStack.length - 1,
+        ...(activeList.wordNumbering ? {wordNumbering:activeList.wordNumbering} : {}),
         itemOrdinal: activeList.itemOrdinal,
+        ...(activeList.continuation === true ? { continuation: true } : {}),
         start: activeList.start,
         numId: activeList.numId,
         ...(activeList.type ? { type: activeList.type } : {}),
       };
+      if (activeList.continuation === true && attrs.wordParagraphIndent == null) {
+        paragraphFormat.wordParagraphIndent = {left:require('./docxMinBuilder.js').docxListTextIndent(
+          paragraphFormat.list.level, !activeList.wordNumbering)};
+      }
     }
     if (attrs.textAlign !== null && attrs.textAlign !== undefined && attrs.textAlign !== '') {
       const textAlign = normalizeString(attrs.textAlign).toLowerCase();
@@ -330,9 +339,9 @@ function buildFormatIrParagraphs(scene) {
       const listIds = new Map();
       for (const entry of tableParagraphs(node, `${scene.sceneId}:table-${nextTableId++}`)) {
         const listStack = entry.listStack.map(list => {
-          if (list.start < 1 || list.start > 32767) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
+          if (!list.wordNumbering && (list.start < 1 || list.start > 32767)) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED');
           if (!listIds.has(list.listId)) listIds.set(list.listId, numberId(list));
-          return { kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
+          return { ...(list.wordNumbering ? {wordNumbering:list.wordNumbering} : {}), kind: list.kind === 'orderedList' ? 'ordered' : 'bullet', start: list.wordListStart ?? list.start,
             itemOrdinal: list.itemOrdinal + (list.wordListStart == null ? 0 : list.start - list.wordListStart), numId: listIds.get(list.listId), ...(list.type ? { type: list.type } : {}) };
         });
         appendTextBlock(entry.node, { ...context, listStack });
@@ -369,9 +378,9 @@ function buildFormatIrParagraphs(scene) {
     }
     if (node.type === 'bulletList' || node.type === 'orderedList') {
       const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
-      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type', 'wordListId', 'wordListStart'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
+      const unknownAttrs = Object.keys(attrs).filter((key) => !['start', 'type', 'wordListId', 'wordListStart', 'wordNumbering'].includes(key) && attrs[key] !== null && attrs[key] !== undefined);
       const start = node.type === 'orderedList' ? Number(attrs.start ?? 1) : 1;
-      if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || start < 1 || start > 32767) {
+      if (unknownAttrs.length > 0 || (attrs.type != null && (node.type !== 'orderedList' || !['1', 'I', 'i', 'A', 'a'].includes(attrs.type))) || !Number.isSafeInteger(start) || (attrs.wordNumbering ? start < 0 || start > 2147483647 : start < 1 || start > 32767)) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_LIST_ATTR_UNSUPPORTED', { sceneId: scene.sceneId, unknownAttrs });
       }
       const items = Array.isArray(node.content) ? node.content : [];
@@ -382,13 +391,19 @@ function buildFormatIrParagraphs(scene) {
         }
         const listStack = [...context.listStack, {
           kind: node.type === 'orderedList' ? 'ordered' : 'bullet',
+          ...(attrs.wordNumbering ? {wordNumbering:require('../../core/word-list-numbering-v1.cjs').validateNumbering(attrs.wordNumbering)} : {}),
           start: attrs.wordListStart ?? start,
           ...(attrs.type ? { type: attrs.type } : {}),
           itemOrdinal: itemOrdinal + (attrs.wordListStart == null ? 0 : start - attrs.wordListStart),
           numId,
         }];
+        let paragraphSeen = false;
         for (const child of Array.isArray(item.content) ? item.content : []) {
-          visit(child, { ...context, listStack });
+          const directParagraph = ['paragraph', 'heading'].includes(child?.type);
+          const childListStack = directParagraph && paragraphSeen
+            ? [...listStack.slice(0, -1), { ...listStack.at(-1), continuation: true }] : listStack;
+          visit(child, { ...context, listStack: childListStack });
+          if (directParagraph) paragraphSeen = true;
         }
       }
       return;
@@ -712,7 +727,7 @@ function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = create
     protectedSections = [...ends].sort((a,b)=>a[0]-b[0]).map(([end, properties], ordinal, all) => {
       const section = { ordinal, startParagraphIndex: start, endParagraphIndex: end,
         breakPlacement: ordinal === all.length - 1 ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES',
-        carriers: {sectionProperties:true,pageSize:true,margins:true,columns:true}, properties };
+        carriers: {sectionProperties:true,pageSize:true,margins:true,columns:true,...(Object.hasOwn(properties,'docGrid')?{docGrid:true}:{})}, properties };
       start = end + 1; return section;
     });
   }
@@ -769,15 +784,27 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   };
   const normalizedSections = cloneJson(returnedSections);
   const providerNormalizedFields = [];
-  if (input.allowOfficeDefaultOmissions === true && returnedSections.length === expectedSections.length) {
+  const inactiveGridAdditions = [];
+  if ((input.allowOfficeDefaultOmissions === true || input.allowInactiveGridAdditions === true) && returnedSections.length === expectedSections.length) {
     for (const [index, section] of normalizedSections.entries()) {
       const expectedSection = expectedSections[index];
-      if (section?.properties?.margins?.gutterTwips === null
+      if (input.allowInactiveGridAdditions === true && !Object.hasOwn(expectedSection?.properties || {}, 'docGrid')
+        && !Object.hasOwn(expectedSection?.carriers || {}, 'docGrid')
+        && Object.hasOwn(section?.properties || {}, 'docGrid')
+        && section?.carriers?.docGrid === true) {
+        try {
+          const docGrid = require('../../core/word-sections-v1.cjs').validateDocGrid(section.properties.docGrid);
+          inactiveGridAdditions.push({ ordinal: index, docGrid });
+          delete section.properties.docGrid;
+          delete section.carriers.docGrid;
+        } catch { mismatches.push('docGrid'); }
+      }
+      if (input.allowOfficeDefaultOmissions === true && section?.properties?.margins?.gutterTwips === null
         && expectedSection?.properties?.margins?.gutterTwips === 0) {
         section.properties.margins.gutterTwips = 0;
         providerNormalizedFields.push(`section-${index}:default-gutter-zero`);
       }
-      if (section?.carriers?.columns === false
+      if (input.allowOfficeDefaultOmissions === true && section?.carriers?.columns === false
         && section?.properties?.columns?.count === 1
         && section?.properties?.columns?.spaceTwips === null
         && expectedSection?.properties?.columns?.count === 1
@@ -813,7 +840,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
   if (returned.applicable !== true) mismatches.push('applicable');
   if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
   if (JSON.stringify(normalizedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
-  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.paragraphBindings !== undefined
+  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true || input.allowInactiveGridAdditions === true || input.paragraphBindings !== undefined
     ? sha256Text(canonicalWordBookmarkIdentityJson(returnedProjection)) : expectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
   if (mismatches.length > 0) {
@@ -834,6 +861,7 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
       authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
       protectedDigest: expectedDigest,
       protectedSections: cloneJson(normalizedSections),
+      ...(inactiveGridAdditions.length ? { inactiveGridAdditions: cloneJson(inactiveGridAdditions) } : {}),
       sourceBindings: Array.isArray(expected.sourceBindings) ? cloneJson(expected.sourceBindings) : [],
       policies: isPlainObjectValue(expected.policies) ? cloneJson(expected.policies) : {},
       lossLedger: {

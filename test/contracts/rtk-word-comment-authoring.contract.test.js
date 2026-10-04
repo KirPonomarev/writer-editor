@@ -382,3 +382,53 @@ test('actual full editor schema roundtrip preserves imported scene authority whi
   ]) {const changed=structuredClone(opened);mutate(changed);assert(!equal(before,changed));assert(!equal(changed,before));}
   assert.equal(envelope.composeObservablePayload({doc}),bytes);
 });
+
+test('actual editor reopen joins identical native Word text runs without invalidating saved scene authority',async()=>{
+  const {Editor}=await import('@tiptap/core'),{default:StarterKit}=await import('@tiptap/starter-kit');
+  const {DocumentTextStyle}=await import('../../src/renderer/tiptap/documentTextStyle.mjs');
+  const {DocumentParagraphAlignment}=await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const {DocumentListNumbering}=await import('../../src/renderer/tiptap/documentListNumbering.mjs');
+  const {WordPendingRevisions}=await import('../../src/renderer/tiptap/wordPendingRevisions.mjs');
+  const {UserBookmarks}=await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const {commentSceneSnapshotsEqual:equal}=await runtimePromise;
+  const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+  const marks=[{type:'textStyle',attrs:{fontFamily:'Times New Roman',wordLanguage:language}}];
+  const original={type:'doc',content:[{type:'orderedList',attrs:{start:4,type:'1',wordNumbering:{schemaVersion:1,instanceId:'native',level:0,levels:[{format:'1',start:4,text:'Item %1)',restartAfterLevel:null}]}},content:[{type:'listItem',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:language},content:[{type:'text',text:' Structural fourth',marks:structuredClone(marks)},{type:'text',text:' native-continuation-11',marks:structuredClone(marks)}]}]}]}]};
+  const bytes=JSON.stringify(original);
+  const editor=new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false}),DocumentTextStyle,DocumentParagraphAlignment,DocumentListNumbering,WordPendingRevisions,UserBookmarks],content:original});
+  try {
+    const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+    const opened=envelope.parseObservablePayload(envelope.composeObservablePayload({doc:editor.getJSON()})).doc;
+    assert.equal(opened.content[0].content[0].content[0].content.length,1,'real ProseMirror merges the two identical runs');
+    assert.equal(equal(original,opened),true,JSON.stringify({original,opened}));assert.equal(equal(opened,original),true);
+    assert.equal(JSON.stringify(original),bytes,'comparison cannot mutate persisted input');
+    const changed=structuredClone(opened);changed.content[0].content[0].content[0].content[0].text+=' user edit';
+    assert.equal(equal(original,changed),false);
+  } finally {editor.destroy();}
+});
+
+test('snapshot run equivalence is confined to adjacent identical leaves in document inline content',async()=>{
+  const {commentSceneSnapshotsEqual:equal}=await runtimePromise;
+  const leaf=(text,attrs={fontFamily:'Aptos'})=>({type:'text',text,marks:[{type:'textStyle',attrs}]});
+  const doc=content=>({type:'doc',content:[{type:'paragraph',content}]});
+  const original=doc([leaf('A'),leaf('B')]),joined=doc([leaf('AB')]);
+  assert(equal(original,joined));
+  for(const content of [
+    [leaf('A'),leaf('B',{fontFamily:'Arial'})],
+    [leaf('A',{fontFamily:'Aptos',color:null}),leaf('B',{fontFamily:'Aptos',color:''})],
+    [leaf('A'),{...leaf('B'),unknown:'retained'}],
+    [leaf('A'),{...leaf('B'),marks:[...leaf('B').marks,{type:'bold'}]}],
+    [leaf('A'),{type:'hardBreak'},leaf('B')],
+    [leaf('B'),leaf('A')],
+  ])assert.equal(equal(doc(content),joined),false,JSON.stringify(content));
+  for(const key of ['id','foreign','attrs'])assert.equal(equal(doc([{...leaf('A'),[key]:'same'},{...leaf('B'),[key]:'same'}]),doc([{...leaf('AB'),[key]:'same'}])),false,'unknown leaf identity cannot lose an occurrence: '+key);
+  assert.equal(equal({type:'doc',content:[{type:'paragraph',content:[leaf('A')]},{type:'paragraph',content:[leaf('B')]}]},joined),false);
+  for(const key of ['attrs','marks','foreign']){
+    const a=structuredClone(joined),b=structuredClone(joined);
+    a[key]={type:'paragraph',content:[leaf('A'),leaf('B')]};b[key]={type:'paragraph',content:[leaf('AB')]};
+    assert.equal(equal(a,b),false,'lookalike content inside '+key+' remains exact');
+  }
+  const a=structuredClone(joined),b=structuredClone(joined);
+  a.content[0].attrs={foreign:[leaf('A'),leaf('B')]};b.content[0].attrs={foreign:[leaf('AB')]};
+  assert.equal(equal(a,b),false);
+});

@@ -119,6 +119,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   LIST_TOGGLE_BULLET: 'cmd.project.list.toggleBullet',
   LIST_TOGGLE_ORDERED: 'cmd.project.list.toggleOrdered',
   LIST_CLEAR: 'cmd.project.list.clear',
+  LIST_CONFIGURE_NUMBERING: 'cmd.project.list.configureNumbering',
   INSERT_LINK_PROMPT: 'cmd.project.insert.linkPrompt',
   REVIEW_IMPORT_LOCAL_PACKET: 'cmd.project.review.importLocalPacket',
   REVIEW_EXPORT_LOCAL_PACKET: 'cmd.project.review.exportLocalPacket',
@@ -2730,6 +2731,12 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async () => runUiAction(uiActions, 'listToggleOrdered', EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED),
+  );
+
+  registry.registerCommand(
+    { id: EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING, label: 'Настроить нумерацию',
+      group: 'list', surface: ['menu', 'palette', 'toolbar'], hotkey: '' },
+    async () => runUiAction(uiActions, 'listConfigureNumbering', EXTRA_COMMAND_IDS.LIST_CONFIGURE_NUMBERING),
   );
 
   registry.registerCommand(

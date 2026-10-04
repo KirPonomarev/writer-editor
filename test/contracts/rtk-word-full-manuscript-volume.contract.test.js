@@ -42,7 +42,7 @@ async function fixture(paragraphs,{rich=false}={}){
   const gate=s=>context.buildFullManuscriptProvisionalSelfParse({source:s,revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),coreManifest:s.advisoryManifest.coreManifest});
   return {source,gate,bridge,context};
 }
-async function sectionFixture({trailingEmpty=false}={}){
+async function sectionFixture({trailingEmpty=false,docGrid}={}){
   const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
   const context=harness();
   const scenes=[
@@ -50,9 +50,10 @@ async function sectionFixture({trailingEmpty=false}={}){
     {sceneId:'roman/part-01/chapter-01/b.txt',scenePath:'/synthetic/roman/part-01/chapter-01/b.txt',text:trailingEmpty?'b-1\n':'b-1',order:1},
     {sceneId:'roman/part-01/chapter-02/c.txt',scenePath:'/synthetic/roman/part-01/chapter-02/c.txt',text:'c-1\nc-2',order:2},
   ];
+  if(docGrid!==undefined) for(const scene of scenes) scene.doc={type:'doc',attrs:{wordSections:{schemaVersion:1,boundaries:[],final:{type:'nextPage',docGrid:clone(docGrid)}}},content:scene.text.split('\n').map(text=>({type:'paragraph',...(text?{content:[{type:'text',text}]}:{})}))};
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'section-project',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes,expectedOrderedSceneIds:scenes.map(s=>s.sceneId)},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),createdAtUtc:'2026-09-18T00:00:00Z',roundIdHex:'c'.repeat(32),keyIdHex:'d'.repeat(32),hmacSecret:'section-local-key-never-published'});
   const parse=bytes=>bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
-  const validate=parsed=>validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:parsed.reviewIr?.documentSections,signedDigest:parsed.authorityCarrier?.selectedCarrier?.payload?.documentSectionsDigest});
+  const validate=(parsed,options={})=>validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:parsed.reviewIr?.documentSections,signedDigest:parsed.authorityCarrier?.selectedCarrier?.payload?.documentSectionsDigest,...options});
   const repack=mutate=>{
     const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
     assert.equal(extracted.ok,true,JSON.stringify(extracted));
@@ -140,12 +141,43 @@ test('Full manuscript Word sections reject boundary and protected-layout drift e
     assert.ok(binding.mismatches.includes('protectedSections'),kind+':'+JSON.stringify(binding));
   }
 });
-test('Full manuscript Word sections account provider extensions and block missing duplicate or forged carriers',async()=>{
-  const {source,parse,validate,repack}=await sectionFixture();
+test('Full manuscript Word sections retain inactive grid additions and block missing duplicate or forged carriers',async()=>{
+  const {source,context,parse,validate,repack}=await sectionFixture();
   const extended=parse(repack(xml=>xml.replaceAll('</w:sectPr>','<w:docGrid w:linePitch="360"/></w:sectPr>')));
   assert.equal(extended.ok,true,JSON.stringify(extended));
-  assert.equal(validate(extended).ok,true);
-  assert.equal(extended.reviewIr.documentSections.lossLedger.providerExtensionElements.every(item=>item.elementName==='docGrid'),true);
+  const binding=validate(extended,{allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true});
+  assert.equal(binding.ok,true,JSON.stringify(binding));
+  assert.deepEqual(binding.proof.inactiveGridAdditions,source.documentSections.protectedSections.map((_,ordinal)=>({ordinal,docGrid:{type:'default',linePitch:360}})));
+  assert.deepEqual(binding.proof.protectedSections,source.documentSections.protectedSections);
+  assert.equal(binding.proof.protectedDigest,source.documentSections.protectedDigest);
+  assert.equal(validate(extended).ok,false,'strict mode does not treat a new retained property as unchanged');
+  for (const options of [{allowOfficeDefaultOmissions:true}, {allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:false}]) {
+    const rejected=validate(extended,options);
+    assert.equal(rejected.ok,false,'Office default omissions never authorize retained grid additions: '+JSON.stringify(options));
+    assert.ok(rejected.mismatches.includes('protectedSections'));
+    assert.equal(rejected.proof,undefined);
+  }
+  const gridOnly=validate(extended,{allowInactiveGridAdditions:true});
+  assert.equal(gridOnly.ok,true,JSON.stringify(gridOnly));
+  assert.deepEqual(gridOnly.proof.inactiveGridAdditions,binding.proof.inactiveGridAdditions);
+  assert.ok(extended.reviewIr.documentSections.protectedSections.length>0);
+  for(const section of extended.reviewIr.documentSections.protectedSections){
+    assert.deepEqual(section.properties.docGrid,{type:'default',linePitch:360});
+    assert.equal(section.carriers.docGrid,true);
+  }
+  assert.equal(extended.reviewIr.documentSections.lossLedger.providerExtensionElements.some(item=>item.elementName==='docGrid'),false);
+  for(const [name,mutate,rehash] of [
+    ['wrong digest',sections=>{sections.protectedDigest='sha256:'+'0'.repeat(64);},false],
+    ['missing carrier',sections=>{delete sections.protectedSections[0].carriers.docGrid;},true],
+    ['wrong ordinal',sections=>{sections.protectedSections[0].ordinal=99;},true],
+    ['active behavior',sections=>{sections.protectedSections[0].properties.docGrid.type='lines';},true],
+    ['unsafe integer',sections=>{sections.protectedSections[0].properties.docGrid.linePitch=Number.MAX_SAFE_INTEGER+1;},true],
+  ]){
+    const changed=clone(extended);mutate(changed.reviewIr.documentSections);
+    if(rehash)changed.reviewIr.documentSections.protectedDigest=context.createRtkReviewTransportCryptoPort().sha256Json({schemaVersion:changed.reviewIr.documentSections.schemaVersion,protectedSections:changed.reviewIr.documentSections.protectedSections});
+    assert.equal(validate(changed,{allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true}).ok,false,name);
+  }
+  assert.equal(validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:extended.reviewIr.documentSections,signedDigest:'sha256:'+'0'.repeat(64),allowOfficeDefaultOmissions:true,allowInactiveGridAdditions:true}).ok,false);
   const missing=parse(repack(xml=>xml.replace(/<w:sectPr>[\s\S]*?<\/w:sectPr>/u,'')));
   assert.equal(missing.ok,true,JSON.stringify(missing));
   assert.equal(validate(missing).ok,false);
@@ -156,6 +188,29 @@ test('Full manuscript Word sections account provider extensions and block missin
   const forged=validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:identity.reviewIr.documentSections,signedDigest:'sha256:'+'0'.repeat(64)});
   assert.equal(forged.ok,false);
   assert.ok(forged.mismatches.includes('signedDigest'));
+});
+test('Full manuscript signed inactive grid protects latent values presence and removal while accepting omitted default type',async()=>{
+  const docGrid={type:'default',linePitch:360,charSpace:-4096};
+  const {source,parse,validate,repack}=await sectionFixture({docGrid});
+  const identity=parse(buildDocxReviewPacketBuffer(source));
+  assert.equal(identity.ok,true,JSON.stringify(identity));assert.equal(validate(identity).ok,true,JSON.stringify(validate(identity)));
+  assert.ok(source.documentSections.protectedSections.every(section=>JSON.stringify(section.properties.docGrid)===JSON.stringify(docGrid)));
+  const omittedType=parse(repack(xml=>xml.replaceAll('<w:docGrid w:type="default"','<w:docGrid')));
+  assert.equal(omittedType.ok,true,JSON.stringify(omittedType));assert.equal(validate(omittedType).ok,true,JSON.stringify(validate(omittedType)));
+  for(const [name,mutate] of [
+    ['line pitch',xml=>xml.replaceAll('w:linePitch="360"','w:linePitch="361"')],
+    ['character pitch',xml=>xml.replaceAll('w:charSpace="-4096"','w:charSpace="-4095"')],
+    ['removed field',xml=>xml.replaceAll(' w:charSpace="-4096"','')],
+    ['removed grid',xml=>xml.replace(/<w:docGrid\b[^>]*\/>/gu,'')],
+  ]){
+    const returned=parse(repack(mutate));assert.equal(returned.ok,true,name+':'+JSON.stringify(returned));
+    assert.notEqual(returned.reviewIr.documentSections.protectedDigest,identity.reviewIr.documentSections.protectedDigest,name);
+    const checked=validate(returned);assert.equal(checked.ok,false,name);assert.ok(checked.mismatches.includes('protectedSections'),name+':'+JSON.stringify(checked));
+  }
+  for(const type of ['lines','linesAndChars','snapToChars']){
+    const active=parse(repack(xml=>xml.replaceAll('<w:docGrid w:type="default"',`<w:docGrid w:type="${type}"`)));
+    assert.equal(active.ok,false,type);assert.ok(active.reasons.some(item=>item.code==='RTK_WORD_SECTIONS_MALFORMED_BLOCKED'),type+':'+JSON.stringify(active));
+  }
 });
 for(const mutant of ['drop-empty','duplicate','swap-paragraphs','swap-scenes','change-codepoint'])test('Coherently rehashed provisional '+mutant+' is rejected',async()=>{
   const {source,gate}=await fixture([['alpha','','beta'],['gamma','delta']]);

@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "taskId": "WORD_LIST_PATTERNS_MAC_20261004",
+  "objective": "Editable literal and parent-dependent list numbering through Mac Word import, native Yalken authoring, save/reopen, ordinary/review export and authenticated changed-template Apply",
+  "taskType": "PRODUCT_UI",
+  "bindingBaseSha": "2c83167326282dd06517ed4a9c69713688f93a8a",
+  "scopeIn": [
+    "src/core/word-list-numbering-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/io/documentTables.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "src/main.js",
+    "src/renderer/editor.js",
+    "src/renderer/editor.bundle.js",
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/renderer/tiptap/documentListNumbering.mjs",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/commands/projectCommands.mjs",
+    "test/contracts/rtk-word-list-pattern.contract.test.js",
+    "test/contracts/rtk-word-list-pattern-return.contract.test.js",
+    "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
+    "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+    "test/contracts/rtk-word-list-format.contract.test.js",
+    "test/contracts/rtk-word-table-editor.contract.test.js",
+    "test/contracts/revision-bridge-docx-lists.contract.test.js",
+    "docs/tasks/2026-10-04--word-list-patterns-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_LIST_PATTERNS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "src/renderer/commands/capabilityPolicy.mjs",
+    "src/core/entitlement-law-v1.cjs",
+    "src/renderer/tiptap/documentTables.mjs",
+    "src/core/word-sections-v1.cjs",
+    "test/contracts/rtk-word-sections.contract.test.js",
+    "test/unit/toolbar-configurator-foundation.integration.test.js",
+    "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+    "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/unit/project-tree-pathless-contract.test.js"
+  ],
+  "scopeOut": [
+    "package.json",
+    "package-lock.json",
+    "src/preload.js",
+    ".github/workflows"
+  ],
+  "productAuthority": "Owner-authorized complete Mac Word plan P3d and section8 numbering; Core owns versioned wordNumbering definitions, counters, authoring plan and return validation.",
+  "commandAuthority": "Existing governed editor commands with explicit list settings command; existing Main scene Save and authenticated formatting Apply with exact source revalidation; no new IPC/persistence owner. Explicit new command capability binding uses existing editor-mode and platform policy. Existing free list-authoring classification admits new command through actual entitlement projection.",
+  "designAuthority": "Reuse existing list menu, current dialog primitives and tokens. Single list settings entry, scoped derived list markers, no shell redesign. Lazyweb619b1c31-cef5-439f-96cc-a957d88f2bfa context only; ui-craft and Design OS guide read.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EVENT",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "Validated DOCX numbering -> existing generic safe-create -> canonical document envelope",
+    "Governed list settings intent -> Core plan -> one captured editor transaction -> existing Main Save",
+    "Authenticated changed numbering proof -> Core group plan -> existing formatting transaction/recovery",
+    "Authenticated inactive grid addition -> Core endpoint-owned plan -> existing explicit formatting or clean-text Apply -> guarded atomic scene publication",
+    "Private authenticated section-grid plan prepares final canonical bytes before exact-text output hash and journal; formatting rollback validates the strict inverse of the same endpoint-owned plan.",
+    "Authenticated clean text with parser-proved paragraph spacing and effective font -> private source-bound formatting operations -> existing pure formatting transform before exact-text journal hash; final canonical candidate equality and Main source CAS remain mandatory.",
+    "Authenticated canonical numbering instanceOverrides binds expectedStartOverrides and returned startOverrides per instance within one lineage operation; Core validates complete prior state before atomic formatting publication.",
+    "Combined signed text and numbering return retains original text authority, compares against a separate Core numbering projection, and applies private validated operations after text mapping before existing exact candidate equality and journal hash. User preview discloses both deltas; unconsumed operations and other scenes retain independent validation."
+  ],
+  "readPaths": [
+    "Bounded owned numbering XML and scene-local canonical list definition",
+    "Immutable Core marker projection; sourcebound exportMap/formatIr"
+  ],
+  "productPorts": [
+    "Existing DOCX intake/export, scene Save and formatting Apply persistence adapters"
+  ],
+  "designOsPorts": [
+    "Existing toolbar list menu, current modal primitive, immutable numbering preview"
+  ],
+  "readProjections": [
+    "Core-computed ordinal and label per list item; never authored label text"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Project/scene/editor identity, exact document/selection and generation at dialog completion",
+    "Canonical instance identity and identical complete level definitions per group",
+    "Return artifact, baseline scene revision/raw SHA, group definition before and publication CAS",
+    "Preserve distinct abstract lineage and instance identity; explicit per-level start overrides apply on first use. No identity deduplication by equal formatting.",
+    "Inactive grid additions are separately parsed and privately bound to unchanged protected section baseline; only the scene owning an existing section endpoint receives a strict Core plan. Existing source CAS, effect digest, explicit Apply and atomic publication remain mandatory.",
+    "Override changes require unique existing canonical instances in the representative lineage and exact expected override arrays on all occurrences; unrelated instances and lineages remain unchanged."
+  ],
+  "capabilityRevalidation": "Existing Kernel dispatch and Main source checks; list settings checks captured writable manuscript editor and exact current doc before command transaction; auxiliary unsupported contexts refuse.",
+  "fallbacks": [
+    "Explicit unsupported outcome for notes/stories new pattern profile, unknown formats, undefined Roman/alpha zero and unsupported marker semantics",
+    "Legacy list fields and old documents unchanged; new required feature prevents old-reader flattening",
+    "Failed or stale dialog preserves draft; no manuscript fallback from auxiliary editor"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Handwritten independent raw OOXML cases with frozen labels and expected deltas",
+    "Strict scalar grammar, owned numbering relationships, overrides and namespace spoof rejection",
+    "Own descriptors, cycles, node/level/group/template bounds and integer overflow",
+    "Enter/delete/nest/lift/copy/Undo/Redo and parent counter propagation; compatible continuation vs restart",
+    "Word changed separator produces actual explicit Apply; stale/replay/forged expected group refusal",
+    "SOURCE/PACKAGED G and Y0 create/update/reopen/Word changed returns and five changed exchanges",
+    "Supported table traversal preserved; notes/stories patterns fail explicitly before flattening",
+    "Inactive grid metadata survives Word save/import, canonical save/reopen and exports without discarding latent fields; existing protected section geometry and grid changes remain authenticated and guarded.",
+    "Actual Main metadata-only and combined text-grid Apply, cross-scene endpoint owner, rejected public plan injection, journal final-byte equality and validated rollback."
+  ],
+  "securityAndInputBoundary": "No new dependency or runtime network; external numbering identifiers never grant scene/path authority; validate before interpretation.",
+  "performanceAndAccessibility": "Bounded Core traversal, no O(n) scan on inline-only typing; keyboard dialog labels/focus/error state; derived marker text never modifies author text or offsets.",
+  "currentReality": [
+    "Delivered base2c831673 is merged rich-comment package; current numbering PR2075 remains incomplete.",
+    "Clean dbadc94e3 supports custom numbering authoring/import/export in bounded implemented routes; native PACKAGED five text-changing exchanges passed independent115checks and4journal links after actual Editor reopening.",
+    "Clean866756a actual Word start4to7 and override removal apply successfully; full189Main checks pass. Actual Word combinedstart7to10 plus text suffix remains blocked and is under bounded repair.",
+    "Remaining Mac plan and SOURCE/PACKAGED final candidate qualification, mandatory gates, push, CI, merge and merged-head verification are still outstanding."
+  ],
+  "targetOnly": [
+    "Nine-level typed numbering definitions with decimal/Roman/alpha and literal templates; native tested boundary corpus required before acceptance",
+    "No whole Mac plan completion or full Word layout parity claim; other requirements remain open"
+  ],
+  "designToolRouter": "APPLICABLE_LAZYWEB_FIRST",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "prRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true
+  },
+  "rollbackPlan": "Revert integrated PR; retain raw inputs/evidence and existing atomic recovery; no manual edits to native test project truth.",
+  "featureIntegrationManifestVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core numbering definition and authoring/return plans; existing Kernel and persistence; existing Core section metadata retains inactive Word document-grid values encountered on native numbering roundtrip",
+  "interfacePlane": "Existing toolbar list menu and modal; Core-only computed marker projection",
+  "surfaceManifest": {
+    "schemaVersion": "SURFACE_MANIFEST_V1",
+    "surfaceId": "WORD_LIST_PATTERN_SETTINGS",
+    "host": "existing editor list menu and existing modal primitive",
+    "slots": [
+      "existing-list-menu",
+      "existing-editor-dialog"
+    ],
+    "commands": [
+      "cmd.project.list.configureNumbering"
+    ],
+    "projection": "Core numbering settings and marker preview",
+    "fallback": "Disabled for stale/read-only/unsupported auxiliary context",
+    "accessibility": [
+      "labelled inputs",
+      "keyboard submit/cancel",
+      "focus return",
+      "bounded non-author marker labels"
+    ]
+  }
+}
