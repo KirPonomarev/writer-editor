@@ -5,6 +5,35 @@ import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { closeHistory } from '@tiptap/pm/history';
 import numbering from '../../core/word-list-numbering-v1.cjs';
 
+// Omit only absent defaults declared by the trusted live schema. Core still
+// rejects undefined data from external JSON and explicit malformed metadata.
+export function numberingDocumentJSON(node) {
+  const json = node.toJSON();
+  const attrs = (value, spec) => {
+    if (!value) return value;
+    const copy = Object.create(Object.getPrototypeOf(value));
+    for (const key of Reflect.ownKeys(value)) {
+      const field = Object.getOwnPropertyDescriptor(value,key);
+      const declaration = spec && Object.getOwnPropertyDescriptor(spec,key);
+      const fallback = declaration && Object.hasOwn(declaration,'value')
+        ? Object.getOwnPropertyDescriptor(declaration.value,'default') : null;
+      if (field && Object.hasOwn(field,'value') && field.value === undefined
+        && fallback && Object.hasOwn(fallback,'value') && fallback.value === undefined) continue;
+      Object.defineProperty(copy,key,field);
+    }
+    return copy;
+  };
+  const visit = (live, out) => {
+    if (out.attrs) out.attrs = attrs(out.attrs,live.type.spec.attrs);
+    if (out.marks) out.marks.forEach((mark,index) => {
+      if (mark.attrs) mark.attrs = attrs(mark.attrs,live.marks[index].type.spec.attrs);
+    });
+    live.forEach((child,_offset,index) => visit(child,out.content[index]));
+  };
+  visit(node,json);
+  return json;
+}
+
 // The Core counter owns semantics. This adapter only applies its projection to
 // the current authoring transaction; persistence still uses canonical Save.
 export const DocumentListNumbering = Extension.create({
@@ -24,10 +53,10 @@ export const DocumentListNumbering = Extension.create({
         apply: (tr, decorations, oldState) => !tr.docChanged ? decorations
           : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, oldState.doc),
       },
-      props: { ...createNumberingClipboardHandlers(this.options.onClipboardStatus), decorations(state) { return this.getState(state); } },
+      props: { ...createNumberingClipboardHandlers(this.options?.onClipboardStatus), decorations(state) { return this.getState(state); } },
       appendTransaction(transactions, _old, state) {
       if (!transactions.some(tr => tr.docChanged) || isInlineOnly(transactions)) return null;
-      const json = numbering.normalizeAuthoring(state.doc.toJSON(), _old.doc.toJSON()), starts = numbering.resolve(json);
+      const json = numbering.normalizeAuthoring(numberingDocumentJSON(state.doc), numberingDocumentJSON(_old.doc)), starts = numbering.resolve(json);
       if (!starts.size) return null;
       const tr = state.tr;
       const lists = []; walkLists(json, node => lists.push(node));
@@ -51,7 +80,7 @@ export function createNumberingClipboardHandlers(onStatus = () => {}) {
   const hasNumbering = slice => {
     let found = false; slice.content.descendants(node => { if (node.attrs.wordNumbering != null) found = true; }); return found;
   };
-  const asDoc = slice => ({type:'doc',content:slice.content.toJSON() || []});
+  const asDoc = slice => { const content=[];slice.content.forEach(node=>content.push(numberingDocumentJSON(node)));return {type:'doc',content}; };
   const copy = (view, event) => {
     const selection = view.state.selection;
     if (selection.empty) return false;
@@ -88,7 +117,7 @@ export function createNumberingClipboardHandlers(onStatus = () => {}) {
       event.preventDefault();
       try {
         if (!view.editable || slice.openStart || slice.openEnd) throw Error('NUMBERING_CLIPBOARD_PARTIAL');
-        const planned = numbering.prepareNumberingPaste(view.state.doc.toJSON(),{fragment:asDoc(slice),numberingCarrier:carrier});
+        const planned = numbering.prepareNumberingPaste(numberingDocumentJSON(view.state.doc),{fragment:asDoc(slice),numberingCarrier:carrier});
         const content = Fragment.fromJSON(view.state.schema,planned.content);
         const tr = closeHistory(view.state.tr.replaceSelection(new Slice(content,0,0)));
         view.dispatch(tr.scrollIntoView().setMeta('paste',true).setMeta('uiEvent','paste'));
@@ -114,7 +143,7 @@ function walkLists(node, visit, path = []) {
 }
 
 export function numberingDecorations(doc, before = null) {
-  const json = numbering.normalizeAuthoring(doc.toJSON(), before?.toJSON()), markers = numbering.resolveMarkers(json), byPath = new Map();
+  const json = numbering.normalizeAuthoring(numberingDocumentJSON(doc), before ? numberingDocumentJSON(before) : undefined), markers = numbering.resolveMarkers(json), byPath = new Map();
   for (const projection of markers.values()) byPath.set(projection.path.join('/'), projection);
   const decorations = [];
   function visit(node, pos, path) {
@@ -144,7 +173,7 @@ export function captureNumberingTarget(editor, isCurrent = () => true) {
   if (!['orderedList', 'paragraph', 'heading'].includes(resolved.node(depth).type.name)
     || selection.to > resolved.end(depth)) return null;
   const listPath = Array.from({ length: depth }, (_, i) => resolved.index(i));
-  const original = doc.toJSON();
+  const original = numberingDocumentJSON(doc);
   let selected = original; for (const index of listPath) selected = selected.content[index];
   const pattern = selected.attrs?.wordNumbering;
   const levels = pattern ? structuredClone(pattern.levels) : numbering.defaultLevels();

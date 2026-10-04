@@ -43,7 +43,8 @@
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
     "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
     "src/renderer/commands/capabilityPolicy.mjs",
-    "src/core/entitlement-law-v1.cjs"
+    "src/core/entitlement-law-v1.cjs",
+    "src/renderer/tiptap/documentTables.mjs"
   ],
   "scopeOut": [
     "package.json",

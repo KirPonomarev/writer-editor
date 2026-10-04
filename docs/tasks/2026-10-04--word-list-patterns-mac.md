@@ -54,6 +54,7 @@ Core agent: Core/envelope/table/export/formatting runtime/Main and own tests. Pa
 - `src/renderer/index.html`
 - `src/renderer/styles.css`
 - `src/renderer/tiptap/documentListNumbering.mjs`
+- `src/renderer/tiptap/documentTables.mjs`
 - `src/renderer/tiptap/index.js`
 - `src/renderer/commands/projectCommands.mjs`
 - `src/renderer/commands/capabilityPolicy.mjs`
@@ -97,3 +98,10 @@ PR_REQUIRED: true
 MERGE_REQUIRED: true
 POST_MERGE_EXACT_HEAD_REQUIRED: true
 Rollback: revert integrated PR; preserve failed native inputs and recovery artifacts. No claim of full family/whole Mac readiness before all its promised operations are independently proved.
+
+## Native04 integration repair
+Native Restart then Continue exposed a same-lineage early no-op. Checkpoint fe6d35a17 removes only the selected first-root reset, preserves earlier instances and child overrides; 38 focused tests passed, native corrected-candidate acceptance pending.
+
+Candidate e89429bc CI completed with one RTK failure: standalone numbered-heading plugin construction lacks options for the new clipboard callback. Preserve optional callback compatibility and keep the unchanged regression test. Native table import persists valid canonical data but actual Editor initialization rejects an own undefined wordCell emitted by the table schema. Clean40path preflight at fe6d35a17 admits documentTables.mjs before its repair; retain strict Core validation and verify actual schema serialization. Original delivery base remains2c831673 and PR2075 remains unaccepted.
+
+Independent pre-build review reproduced the same rejection for four optional DocumentMedia attributes. The corrective implementation therefore projects only schema-declared undefined defaults out at the numbering adapter boundary, while preserving unknown or nested malformed values for strict Core rejection. Table schema/default serialization changes are unnecessary and withdrawn; actual table and media Editor regressions replace that narrower hypothesis. This is not permission to normalize external payloads before validation.

@@ -4,9 +4,11 @@ const fs = require('node:fs'), path = require('node:path'), vm = require('node:v
 const core = require('../../src/core/word-list-numbering-v1.cjs');
 const p = text => ({type:'paragraph',content:[{type:'text',text}]});
 const doc = (...content) => ({type:'doc',content});
-async function harness(content) {
+let projectNumberingJSON;
+async function harness(content, extraExtensions = []) {
   const [{Editor}, {default:StarterKit}, ui] = await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentListNumbering.mjs')]);
-  const editor = new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false}),ui.DocumentListNumbering],content});
+  projectNumberingJSON=ui.numberingDocumentJSON;
+  const editor = new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false}),ui.DocumentListNumbering,...extraExtensions],content});
   // A headless editor has no mounted view: install the real extension plugins
   // and model view lifecycle only, retaining actual transactions/history.
   editor.view.updateState(editor.state.reconfigure({plugins:editor.extensionManager.plugins}));
@@ -221,7 +223,7 @@ test('actual formatting preview preserves detached numbering projection and rend
 });
 
 function editorPatternLabels(editor) {
-  return [...core.resolveMarkers(editor.getJSON()).values()].flatMap(value=>value.items.map(item=>item.label));
+  return [...core.resolveMarkers(projectNumberingJSON(editor.state.doc)).values()].flatMap(value=>value.items.map(item=>item.label));
 }
 function editorTextPosition(editor,text) {
   let result;editor.state.doc.descendants((node,pos)=>{if(node.isText&&node.text===text)result=pos;});
@@ -389,5 +391,74 @@ test('captured settings Restart then Continue clears only selected reset and Und
     const continued=editor.getJSON();assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),restarted);
     assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),continued);
     assert.equal(editor.state.doc.textContent,'earliergapselectedgap2later');
+  }finally{editor.destroy();}
+});
+
+test('actual table editor omits only trusted undefined schema defaults and preserves nested numbering through edits envelope serialization and export',async()=>{
+  const {DocumentTables}=await import('../../src/renderer/tiptap/documentTables.mjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const levels=core.defaultLevels(2);levels[0].start=3;levels[0].text='Table %1';levels[1].format='a';levels[1].text='%1.%2.';
+  const pattern=level=>({schemaVersion:1,instanceId:'word-numbering-7',lineageId:'word-numbering-lineage-4',level,levels});
+  const nested={type:'orderedList',attrs:{start:1,type:'a',wordNumbering:pattern(1)},content:['child A','child B'].map(text=>({type:'listItem',content:[p(text)]}))};
+  const list={type:'orderedList',attrs:{start:3,wordNumbering:pattern(0)},content:[{type:'listItem',content:[p('root'),nested]}]};
+  const [docxPageSetupBindModule,semanticMappingModule,styleMapModule,bridge]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs'),import('../../src/io/revisionBridge/index.mjs')]);
+  for(const explicit of [false,true]) {
+    const table={type:'table',...(explicit?{attrs:{wordTable:{version:1,borders:{},grid:[4320],layout:null,shading:null,widthDxa:4320}}}:{}),content:[{type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:[list]}]}]};
+    const {editor,ui}=await harness(doc(table),[DocumentTables]);
+    try {
+      assert.deepEqual(editorPatternLabels(editor),['Table 3','3.a.','3.b.']);
+      const before=editor.getJSON();assert.equal(before.content[0].content[0].content[0].attrs.wordCell,undefined);
+      if(!explicit)assert.equal(before.content[0].attrs.wordTable,undefined);
+      editor.commands.setTextSelection(editorTextPosition(editor,'root'));
+      const target=ui.captureNumberingTarget(editor),changed=structuredClone(target.levels);changed[0].text='Cell %1';
+      assert.equal(target.apply({action:'configure',levels:changed}).performed,true);
+      assert.deepEqual(editorPatternLabels(editor),['Cell 3','3.a.','3.b.']);
+      const after=editor.getJSON();assert.equal(editor.commands.undo(),true);
+      // The imported decimal list omits type; the existing normalizer makes its
+      // derived format explicit on the first authoring transaction, including Undo.
+      const normalizedBefore=JSON.parse(JSON.stringify(before));normalizedBefore.content[0].content[0].content[0].content[0].attrs.type='1';
+      assert.deepEqual(JSON.parse(JSON.stringify(editor.getJSON())),normalizedBefore);
+      assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);
+      const reopened=envelope.parseObservablePayload(envelope.composeObservablePayload({doc:ui.numberingDocumentJSON(editor.state.doc)}));assert.equal(reopened.issue,null);
+      if(explicit){assert.deepEqual(after.content[0].attrs.wordTable,before.content[0].attrs.wordTable);assert.deepEqual(reopened.doc.content[0].attrs.wordTable,before.content[0].attrs.wordTable);}
+      assert.deepEqual([...core.resolveMarkers(reopened.doc).values()].flatMap(x=>x.items.map(i=>i.label)),['Cell 3','3.a.','3.b.']);
+      const bytes=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc:reopened.doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule});
+      const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+      const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));
+      const imported=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content);assert.equal(imported.issue,null);
+      assert.equal(imported.doc.content[0].type,'table');
+      assert.deepEqual([...core.resolveMarkers(imported.doc).values()].flatMap(x=>x.items.map(i=>i.label)),['Cell 3','3.a.','3.b.']);
+      assert.equal(editor.state.doc.textContent,'rootchild Achild B');
+    }finally{editor.destroy();}
+  }
+});
+
+test('trusted schema projection handles ordinary and numbered images but never weakens external undefined or accessor rejection',async()=>{
+  const {DocumentMedia}=await import('../../src/renderer/tiptap/documentMedia.mjs');
+  for(const explicit of [false,true])for(const numbered of [false,true]) {
+    const image={type:'image',attrs:{assetId:'owned',assetPath:'assets/owned.png',sha256:'a'.repeat(64),mimeType:'image/png',width:1,height:1,alt:'pixel',displayName:'pixel',dataBase64:'AAAA',...(explicit?{wordUseLocalDpi:false,displayWidthEmu:9525,displayHeightEmu:9525,displayEffectExtent:{l:0,r:0,t:0,b:0}}:{})}};
+    let input=doc({type:'paragraph',content:[{type:'text',text:'Image'},image]});
+    if(numbered)input=core.planNumberingEdit(input,{listPath:[0],action:'configure',levels:core.defaultLevels(1)});
+    const {editor,ui}=await harness(input,[DocumentMedia]);
+    try {
+      const raw=editor.getJSON(),projected=ui.numberingDocumentJSON(editor.state.doc);
+      if(!explicit)assert.throws(()=>core.normalizeAuthoring(raw),/WORD_LIST_NUMBERING_INVALID/);
+      assert.doesNotThrow(()=>core.normalizeAuthoring(projected));
+      let liveImage;editor.state.doc.descendants(node=>{if(node.type.name==='image')liveImage=node;});
+      assert.equal(Object.hasOwn(liveImage.attrs,'displayWidthEmu'),true);
+      const projectedImage=numbered?projected.content[0].content[0].content[0].content[1]:projected.content[0].content[1];
+      if(explicit)for(const key of ['wordUseLocalDpi','displayWidthEmu','displayHeightEmu','displayEffectExtent'])assert.deepEqual(projectedImage.attrs[key],image.attrs[key]);
+      else assert.equal(Object.hasOwn(projectedImage.attrs,'displayWidthEmu'),false);
+      const target=ui.captureNumberingTarget(editor);assert.ok(target);assert.ok(target.preview({action:'configure',levels:core.defaultLevels(1)}).length);
+      editor.commands.setTextSelection(editorTextPosition(editor,'Image')+2);editor.commands.insertContent({type:'text',text:'x'});
+      assert.doesNotThrow(()=>core.normalizeAuthoring(ui.numberingDocumentJSON(editor.state.doc)));
+    }finally{editor.destroy();}
+  }
+  const {editor,ui}=await harness(doc(p('Safe')));
+  try {
+    let reads=0;
+    const fake={type:{spec:{attrs:{optional:{default:undefined}}}},marks:[],forEach(){},toJSON(){const attrs={optional:undefined,unknown:undefined};Object.defineProperty(attrs,'trap',{enumerable:true,get(){reads++;return 1;}});return {type:'paragraph',attrs};}};
+    const projected=ui.numberingDocumentJSON(fake);assert.equal(reads,0);assert.equal(Object.hasOwn(projected.attrs,'optional'),false);assert.equal(Object.hasOwn(projected.attrs,'unknown'),true);
+    assert.throws(()=>core.normalizeAuthoring({type:'doc',content:[projected]}),/WORD_LIST_NUMBERING_INVALID/);assert.equal(reads,0);
   }finally{editor.destroy();}
 });
