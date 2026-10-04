@@ -2,7 +2,7 @@
 
 TASK_ID: WORD_IMPORT_RESTART_MAC_20261004
 BASE: 0aaa14140e32e6e6981ed14dd0a71da89e1da959
-STATUS: IMPLEMENTATION_AND_NATIVE_ACCEPTANCE_PENDING
+STATUS: NATIVE_SCENARIOS_OBSERVED_DELIVERY_GATES_PENDING
 
 Original Mac plan P1-08 explicitly requires timeout, crash, restart, changed
 same-filename bytes, cancellation and no duplicated scenes, annotations or
@@ -101,3 +101,46 @@ clean checkpoint and extended preflight. A mistaken post-write PRE rerun was
 rejected for our own dirty implementation; it is not counted as valid preflight
 or acceptance. Initial CHECK_01 remains recorded on the clean original base.
 No full RTK/CI/native acceptance or delivery is claimed at this checkpoint.
+
+## Stable native candidate and bounded observations
+
+Native SOURCE and PACKAGED both executed candidate
+`d08971862d2f1983292eb70ac69b2003bcafb689`; copied runtime digest
+`1413d7eb22c004aea8f159eb70bb9df1c13744cc2c6297983360cfca494c0608`.
+The early candidates exposed two real integration defects: the actual renderer
+composer adds presentation-only editorMode, and the actual Tiptap schema
+materializes empty paragraph content as an empty array. The ACK bridge now
+strips only the known presentation field and compares empty paragraphs on
+private parsed copies. Canonical scene bytes, receipt hashes and ordinary
+content comparison remain unchanged; changed text, attributes and marks reject.
+The final focused suite passed 56 tests with no failures, skips or todo.
+
+Both isolated native profiles observed:
+
+- A real denied scene write, restart recovery to coherent before, then explicit
+  same-attempt resume producing exactly one scene with six comment threads and
+  seven messages, preserved bodies and exact UTF-16 anchors.
+- A committed import with denied continuity persistence, restart to coherent
+  after, then resume with the same receipt bytes and no additional scene or
+  discussion. ACK clears only after the actual scene opens successfully.
+- Cancellation at the recovery question, after New at the chooser, and after
+  Resume at the preview: no added scene and byte-identical accepted correlation.
+- Editing Alpha to AlphaQ in Microsoft Word and saving the same source filename:
+  old-attempt acceptance rejects without changing project data; explicit New
+  imports exactly one separately identified scene with all six threads/seven
+  messages, clears correlation and retains the existing scenes/discussions.
+
+Independent raw-DOCX and saved-project observers cover text, discussion bodies,
+anchors, identities and prior bytes. Final profiles contain four imported scenes,
+24 threads and 28 messages each; these counts are fixtures, not plan progress.
+SOURCE additionally demonstrated recovery of the early candidate's pending ACK.
+Both owned app processes exited normally; supervisor copies matched saved bytes.
+All injected filesystem modes and flags were restored.
+
+Controlled child-process SIGKILL checks and native filesystem-failure/restart
+checks remain distinct evidence. In particular, a partial pre-recovery receipt
+was not accepted as a committed result: an observer comparison failed before
+startup recovery and passed only after coherent recovery. No oracle was relaxed.
+The changed-source rejection currently uses the existing generic retry message;
+this packet proves rejection and data preservation, not a new detailed error UI.
+Full RTK, exact-head CI baseline and delivery remain pending at this checkpoint.
