@@ -561,3 +561,62 @@ test('actual active-scene caller publishes before identity commit including same
     }finally{editor.destroy();}
   }
 });
+
+function ancestryCollisionDocument() {
+  const levels=core.defaultLevels(3);levels[0].start=3;levels[1].format='a';levels[1].text='%1.%2.';levels[2].text='%3';levels[2].restartAfterLevel=0;
+  const item=(n,...nested)=>({type:'listItem',content:[p('Item '+n),...nested]});
+  const list=(level,...content)=>({type:'orderedList',attrs:{start:level?1:3,type:levels[level].format,wordNumbering:{schemaVersion:1,instanceId:'shared',lineageId:'lineage',level,levels}},content});
+  return core.normalize(doc(list(0,item(1,list(1,item(2,list(2,item(3),item(4))),item(5,list(2,item(6))))),item(7,list(2,item(8))))));
+}
+function orderedItemLevels(editor) {
+  const levels=[];const walk=node=>{for(const child of node.content||[]){if(node.type==='orderedList')levels.push(node.attrs.wordNumbering.level);walk(child);}};walk(editor.getJSON());return levels;
+}
+
+test('per-occurrence transaction provenance lifts item two without changing unrelated skipped levels and Undo/Redo are exact',async()=>{
+  const {DocumentTables}=await import('../../src/renderer/tiptap/documentTables.mjs'),{DocumentMedia}=await import('../../src/renderer/tiptap/documentMedia.mjs');
+  const input=ancestryCollisionDocument();
+  input.content.push({type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[p('unrelated cell')]}]}]});
+  input.content.push({type:'paragraph',content:[{type:'image',attrs:{assetId:'owned',mimeType:'image/png',width:1,height:1,dataBase64:'AAAA'}}]});
+  const {editor}=await harness(input,[DocumentTables,DocumentMedia]);
+  try {
+    const before=editor.getJSON();editor.commands.setTextSelection(editorTextPosition(editor,'Item 2'));
+    assert.equal(editor.commands.liftListItem('listItem'),true);
+    assert.deepEqual(orderedItemLevels(editor),[0,0,1,1,1,2,0,2]);
+    const after=editor.getJSON();assert.deepEqual(after.content.slice(1),before.content.slice(1));
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
+    assert.equal(editor.commands.redo(),true);assert.deepEqual(editor.getJSON(),after);
+  }finally{editor.destroy();}
+});
+
+test('composed transaction mappings bind paragraph occurrences after unrelated insertion and lift, without text identity',async()=>{
+  const {Mapping}=await import('@tiptap/pm/transform');
+  const {EditorState,TextSelection}=await import('@tiptap/pm/state');const {liftListItem}=await import('@tiptap/pm/schema-list');
+  const {editor,ui}=await harness(ancestryCollisionDocument());
+  try {
+    const before=editor.state.doc;let state=EditorState.create({schema:editor.schema,doc:before}),transactions=[];
+    const insert=state.tr.insert(0,editor.schema.nodeFromJSON(p('Item 2')));transactions.push(insert);state=state.apply(insert);
+    let selected;state.doc.descendants((node,pos)=>{if(node.isText&&node.text==='Item 2'&&pos>10)selected=pos;});
+    state=state.apply(state.tr.setSelection(TextSelection.create(state.doc,selected)));
+    assert.equal(liftListItem(editor.schema.nodes.listItem)(state,tr=>{transactions.push(tr);state=state.apply(tr);}),true);
+    const mapping=new Mapping();transactions.forEach(tr=>mapping.appendMapping(tr.mapping));
+    const provenance=ui.numberingParagraphProvenance(before,state.doc,mapping);assert.equal(provenance.paragraphs.length,8);
+    const next=core.normalizeAuthoring(ui.numberingDocumentJSON(state.doc),ui.numberingDocumentJSON(before),provenance);
+    const result=[];const walk=node=>{for(const child of node.content||[]){if(node.type==='orderedList')result.push(node.attrs.wordNumbering.level);walk(child);}};walk(next);
+    assert.deepEqual(result,[0,0,1,1,1,2,0,2]);assert.equal(next.content[0].content[0].text,'Item 2');
+    assert.equal(before.childCount,1);
+  }finally{editor.destroy();}
+});
+
+test('mapped authoring preserves unrelated skipped occurrences on prefix insertion and refused first-item sink',async()=>{
+  const {editor}=await harness(ancestryCollisionDocument());
+  try {
+    const expected=orderedItemLevels(editor),before=editor.getJSON();
+    editor.commands.setTextSelection(editorTextPosition(editor,'Item 1'));
+    // Root lift is a real unlist operation; unavailable sinking of the first
+    // item is the no-op boundary and must not fabricate a mapping repair.
+    assert.equal(editor.commands.sinkListItem('listItem'),false);assert.deepEqual(editor.getJSON(),before);
+    assert.equal(editor.commands.insertContentAt(0,p('unrelated')),true);
+    assert.deepEqual(orderedItemLevels(editor),expected);
+    assert.equal(editor.commands.undo(),true);assert.deepEqual(editor.getJSON(),before);
+  }finally{editor.destroy();}
+});

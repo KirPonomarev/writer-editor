@@ -314,9 +314,72 @@ function planNumberingEdit(doc, intent) {
   visitNodes(next, node => { if (convertedLegacyIds.has(node.attrs?.wordListId)) fail(); });
   return normalize(next);
 }
-function normalizeAuthoring(doc, oldDoc) {
+function normalizeMappedAuthoring(next, oldDoc, provenance) {
+  provenance = cloneData(provenance);
+  record(provenance,['schemaVersion','paragraphs']);
+  if (!oldDoc || provenance.schemaVersion !== 1 || !Array.isArray(provenance.paragraphs) || provenance.paragraphs.length > 64000) fail();
+  const context = (doc,path) => {
+    nodeAt(doc,path);
+    let node=doc;const parents=[];
+    for(const index of path){parents.push(node);node=node.content[index];}
+    if (!['paragraph','heading'].includes(node.type)) fail();
+    const item=parents.at(-1);
+    const list=parents.at(-2);
+    if (item?.type!=='listItem' || path.at(-1)!==0 || !['orderedList','bulletList'].includes(list?.type)) return null;
+    return {list,path:path.slice(0,-2),depth:parents.filter(value=>['orderedList','bulletList'].includes(value.type)).length};
+  };
+  resolveMarkers(oldDoc);
+  const origins=new Set(),destinations=new Set(),plans=new Map();
+  for(const row of provenance.paragraphs){
+    record(row,['beforePath','afterPath']);
+    const old=context(oldDoc,row.beforePath),current=context(next,row.afterPath);
+    const beforeKey=JSON.stringify(row.beforePath),afterKey=JSON.stringify(row.afterPath);
+    if(origins.has(beforeKey)||destinations.has(afterKey))fail();origins.add(beforeKey);destinations.add(afterKey);
+    if(!old)fail();
+    if(!current || old.list.type!=='orderedList' || current.list.type!=='orderedList' || !old.list.attrs?.wordNumbering)continue;
+    const source=validateNumbering(old.list.attrs.wordNumbering);
+    const existing=current.list.attrs?.wordNumbering ? validateNumbering(current.list.attrs.wordNumbering) : null;
+    // Explicit configure/restart/paste creates a new group intentionally. Its
+    // canonical definition, rather than this topology projection, owns identity.
+    if(existing && existing.instanceId!==source.instanceId)continue;
+    if(!existing && current.list.attrs?.wordListId!=null)continue;
+    const pattern=existing || source;
+    const key=JSON.stringify(current.path);
+    if(!plans.has(key))plans.set(key,{node:current.list,depth:current.depth,rows:[]});
+    plans.get(key).rows.push({row,source,pattern,depthDelta:current.depth-old.depth});
+  }
+  const corrections=new Map();
+  const prefix=(a,b)=>a.length<b.length && a.every((value,index)=>value===b[index]);
+  for(const group of [...plans.values()].sort((a,b)=>a.depth-b.depth)){
+    for(const entry of group.rows){
+      let adjustment=0;
+      for(let length=1;length<entry.row.beforePath.length-1;length++){
+        const ancestor=corrections.get(JSON.stringify(entry.row.beforePath.slice(0,length)));
+        if(ancestor && prefix(ancestor.afterItemPath,entry.row.afterPath))adjustment+=ancestor.delta;
+      }
+      entry.predictedLevel=entry.source.level+entry.depthDelta+adjustment;
+    }
+    // An item that stays at this physical depth pins the existing destination
+    // group. A lifted skipped-level item joins that group; its additional
+    // logical shift applies only to its own mapped descendants.
+    const stable=group.rows.filter(entry=>entry.depthDelta===0);
+    const candidates=stable.length ? stable : group.rows;
+    const level=candidates[0].predictedLevel,instanceId=candidates[0].pattern.instanceId;
+    if(candidates.some(entry=>entry.predictedLevel!==level) || group.rows.some(entry=>entry.pattern.instanceId!==instanceId))fail();
+    const pattern=validateNumbering({...group.rows[0].pattern,level}),node=group.node;
+    node.attrs={...(node.attrs||{}),wordNumbering:pattern,type:pattern.levels[pattern.level].format};
+    delete node.attrs.wordListId;delete node.attrs.wordListStart;
+    for(const entry of group.rows)corrections.set(JSON.stringify(entry.row.beforePath.slice(0,-1)),{
+      afterItemPath:entry.row.afterPath.slice(0,-1),delta:level-entry.predictedLevel,
+    });
+  }
+  return normalize(next);
+}
+
+function normalizeAuthoring(doc, oldDoc, provenance) {
   const next = cloneData(doc);
   oldDoc = oldDoc ? cloneData(oldDoc) : null;
+  if (provenance !== undefined) return normalizeMappedAuthoring(next, oldDoc, provenance);
   const oldPatterns = oldDoc ? resolveMarkers(oldDoc) : null;
   // Newly loaded/pasted groups carry their own logical levels. Only an
   // identity already present in the prior document can be reparented here.

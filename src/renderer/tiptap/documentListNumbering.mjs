@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
 import { Slice, Fragment } from '@tiptap/pm/model';
+import { Mapping } from '@tiptap/pm/transform';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { closeHistory, isHistoryTransaction } from '@tiptap/pm/history';
 import numbering from '../../core/word-list-numbering-v1.cjs';
@@ -51,13 +52,15 @@ export const DocumentListNumbering = Extension.create({
       state: {
         init: (_config, state) => numberingDecorations(state.doc),
         apply: (tr, decorations, oldState) => !tr.docChanged ? decorations
-          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, (tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr)) ? null : oldState.doc),
+          : isInlineOnly([tr]) ? decorations.map(tr.mapping, tr.doc) : numberingDecorations(tr.doc, (tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr)) ? null : oldState.doc, tr.mapping),
       },
       props: { ...createNumberingClipboardHandlers(this.options?.onClipboardStatus), decorations(state) { return this.getState(state); } },
       appendTransaction(transactions, _old, state) {
       if (!transactions.some(tr => tr.docChanged) || isInlineOnly(transactions)) return null;
       const authoritativeRestore = transactions.some(tr => tr.getMeta('wordPendingRevisionsExternal') === true || isHistoryTransaction(tr));
-      const json = numbering.normalizeAuthoring(numberingDocumentJSON(state.doc), authoritativeRestore ? undefined : numberingDocumentJSON(_old.doc)), starts = numbering.resolve(json);
+      const mapping = new Mapping();transactions.forEach(transaction => mapping.appendMapping(transaction.mapping));
+      const json = numbering.normalizeAuthoring(numberingDocumentJSON(state.doc), authoritativeRestore ? undefined : numberingDocumentJSON(_old.doc),
+        authoritativeRestore ? undefined : numberingParagraphProvenance(_old.doc,state.doc,mapping)), starts = numbering.resolve(json);
       if (!starts.size) return null;
       const tr = state.tr;
       const lists = []; walkLists(json, node => lists.push(node));
@@ -143,8 +146,25 @@ function walkLists(node, visit, path = []) {
   (node.content || []).forEach((child, index) => walkLists(child, visit, [...path, index]));
 }
 
-export function numberingDecorations(doc, before = null) {
-  const json = numbering.normalizeAuthoring(numberingDocumentJSON(doc), before ? numberingDocumentJSON(before) : undefined), markers = numbering.resolveMarkers(json), byPath = new Map();
+// Positions come only from actual ProseMirror transaction mappings. Core owns
+// logical levels; this adapter reports surviving paragraph occurrences only.
+export function numberingParagraphProvenance(before, after, mapping) {
+  const paragraphs = [];
+  const pathAt = position => Array.from({length:position.depth},(_,depth)=>position.index(depth));
+  before.descendants((node,pos,parent,index) => {
+    if (index !== 0 || parent?.type.name !== 'listItem' || !['paragraph','heading'].includes(node.type.name)) return;
+    const prior = before.resolve(pos+1), mapped = mapping.mapResult(pos+1,1);
+    if (mapped.deleted || mapped.pos < 0 || mapped.pos > after.content.size) return;
+    const current = after.resolve(mapped.pos);
+    if (!['paragraph','heading'].includes(current.parent.type.name)) return;
+    if (paragraphs.length >= 64000) throw Error('WORD_LIST_NUMBERING_INVALID');
+    paragraphs.push({beforePath:pathAt(prior),afterPath:pathAt(current)});
+  });
+  return {schemaVersion:1,paragraphs};
+}
+
+export function numberingDecorations(doc, before = null, mapping = null) {
+  const json = numbering.normalizeAuthoring(numberingDocumentJSON(doc), before ? numberingDocumentJSON(before) : undefined, before && mapping ? numberingParagraphProvenance(before,doc,mapping) : undefined), markers = numbering.resolveMarkers(json), byPath = new Map();
   for (const projection of markers.values()) byPath.set(projection.path.join('/'), projection);
   const decorations = [];
   function visit(node, pos, path) {

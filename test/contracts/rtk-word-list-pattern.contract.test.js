@@ -194,3 +194,33 @@ test('newly loaded identities retain skipped logical levels and existing plain n
   assert.deepEqual(labels(result),['3.','1']);
  }
 });
+test('mapped occurrence ancestry repairs lifted descendants without rewriting unrelated skipped-level context',()=>{
+ const levels=model.defaultLevels(3);levels[0].start=3;levels[1].format='a';levels[1].text='%1.%2.';levels[2].text='%3';levels[2].restartAfterLevel=0;
+ const pat=level=>({...pattern(levels),level});
+ const before=model.normalize(document(list(pat(0),item('1',list(pat(1),item('2',list(pat(2),item('3'),item('4'))),item('5',list(pat(2),item('6'))))),item('7',list(pat(2),item('8'))))));
+ const working=document(list(pat(0),item('1'),item('2',list(pat(2),item('3'),item('4'),item('5',list(pat(2),item('6'))))),item('7',list(pat(2),item('8')))));
+ const oldPaths=[[0,0,0],[0,0,1,0,0],[0,0,1,0,1,0,0],[0,0,1,0,1,1,0],[0,0,1,1,0],[0,0,1,1,1,0,0],[0,1,0],[0,1,1,0,0]];
+ const newPaths=[[0,0,0],[0,1,0],[0,1,1,0,0],[0,1,1,1,0],[0,1,1,2,0],[0,1,1,2,1,0,0],[0,2,0],[0,2,1,0,0]];
+ const provenance={schemaVersion:1,paragraphs:oldPaths.map((beforePath,i)=>({beforePath,afterPath:newPaths[i]}))};
+ const original=structuredClone(working),result=model.normalizeAuthoring(working,before,provenance);
+ assert.deepEqual(working,original);
+ assert.deepEqual(labels(result),['3.','4.','5.','4.a.','4.b.','4.c.','1','1']);
+ assert.equal(result.content[0].content[1].content[1].attrs.wordNumbering.level,1);
+ assert.equal(result.content[0].content[2].content[1].attrs.wordNumbering.level,2);
+ for(const change of [v=>{v.authority=true;},v=>{v.paragraphs.push(v.paragraphs[0]);},v=>{v.paragraphs[0].afterPath=[999];},v=>{v.paragraphs[0].beforePath=['0'];}]){
+  const bad=structuredClone(provenance);change(bad);assert.throws(()=>model.normalizeAuthoring(working,before,bad),/WORD_LIST_NUMBERING_INVALID/);
+ }
+ let reads=0;const hostile={schemaVersion:1,paragraphs:[]};Object.defineProperty(hostile,'schemaVersion',{get(){reads++;return 1;}});assert.throws(()=>model.normalizeAuthoring(working,before,hostile));assert.equal(reads,0);
+});
+test('mapped lift joins an existing destination level and shifts only its own descendants',()=>{
+ const levels=model.defaultLevels(4),pat=level=>({...pattern(levels),level});
+ const before=model.normalize(document(list(pat(0),item('same',list(pat(2),item('same',list(pat(3),item('same'))))),item('same',list(pat(2),item('same'))))));
+ const working=document(list(pat(0),item('same'),item('same',list(pat(3),item('same'))),item('same',list(pat(2),item('same')))));
+ const beforePaths=[[0,0,0],[0,0,1,0,0],[0,0,1,0,1,0,0],[0,1,0],[0,1,1,0,0]],afterPaths=[[0,0,0],[0,1,0],[0,1,1,0,0],[0,2,0],[0,2,1,0,0]];
+ const result=model.normalizeAuthoring(working,before,{schemaVersion:1,paragraphs:beforePaths.map((beforePath,i)=>({beforePath,afterPath:afterPaths[i]}))});
+ assert.equal(result.content[0].attrs.wordNumbering.level,0);
+ assert.equal(result.content[0].content[1].content[1].attrs.wordNumbering.level,1);
+ assert.equal(result.content[0].content[2].content[1].attrs.wordNumbering.level,2);
+ assert.deepEqual(result.content[0].content[2].content[1].attrs.wordNumbering,before.content[0].content[1].content[1].attrs.wordNumbering);
+ assert.deepEqual(labels(result),['1.','2.','3.','1.','1.']);
+});
