@@ -408,3 +408,19 @@ test('actual editor dispatch metadata crosses the command bus but never enters t
     assert.equal(calls.length, 2, 'invalid metadata must not reach Main');
   }
 });
+
+test('ACK bridge preserves only fixed Main diagnostic codes and never arbitrary server text', async () => {
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const registry = createCommandRegistry(); let serverCode = 'E_DOCX_IMPORT_ACK_CONTENT_MISMATCH';
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async () => ({ ok: true, value: {
+    ok: false, error: { code: serverCode, reason: '/private/source.docx secret content', details: { path: '/private/secret' } },
+  } }) } });
+  const run = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const payload = { action: 'acknowledge-open', requestId: 'attempt', projectId: 'project-a', nodeId: 'tree-node-' + 'a'.repeat(32) };
+  const known = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, payload);
+  assert.equal(known.error.code, serverCode); assert.equal(known.error.reason, 'DOCX_IMPORT_ACK_CONTENT_MISMATCH');
+  assert.equal(JSON.stringify(known).includes('private'), false);
+  serverCode = 'E_DOCX_IMPORT_ACK_PRIVATE_DATA';
+  const unknown = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, payload);
+  assert.equal(unknown.error.code, 'E_DOCX_IMPORT_ACK_FAILED'); assert.equal(JSON.stringify(unknown).includes('private'), false);
+});

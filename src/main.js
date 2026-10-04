@@ -13247,16 +13247,28 @@ function validateDocxImportSafeCreateCommandResult(result) {
 
 async function docxImportOpenedSnapshotMatches(raw, live) {
   const envelope = await loadDocumentContentEnvelopeModule();
-  const saved = envelope.parseObservablePayload(raw);
-  if (saved.issue) return false;
+  const saved = envelope.parseObservablePayload(raw), observed = envelope.parseObservablePayload(live);
+  if (saved.issue || observed.issue) return false;
+  // ProseMirror omits an empty paragraph's content array on toJSON. Normalize
+  // only that representation on private parsed copies, preserving every attr,
+  // mark and nonempty child. The shared tree comparator remains unchanged.
+  const paragraphRepresentation = node => {
+    if (!node || typeof node !== 'object') return node;
+    if (node.type === 'paragraph' && Array.isArray(node.content) && node.content.length === 0) delete node.content;
+    if (Array.isArray(node.content)) node.content.forEach(paragraphRepresentation);
+    return node;
+  };
   // The existing scene-open adapter enables metadata and the editor materializes
-  // a paragraph document for plain text. Derive precisely that initial buffer;
-  // receipt validation continues to compare the original canonical bytes.
+  // a paragraph document for plain text. Receipt checks retain exact disk bytes.
   const opened = envelope.composeObservablePayload({
-    doc: saved.doc || envelope.buildParagraphDocumentFromText(saved.text),
+    doc: paragraphRepresentation(saved.doc || envelope.buildParagraphDocumentFromText(saved.text)),
     text: saved.text, metaEnabled: true, meta: saved.meta, cards: saved.cards,
   });
-  return treeSceneSnapshotsEqual(opened, live);
+  const composedLive = envelope.composeObservablePayload({
+    doc: paragraphRepresentation(observed.doc), text: observed.text,
+    metaEnabled: observed.hasMetaBlock, meta: observed.meta, cards: observed.cards,
+  });
+  return treeSceneSnapshotsEqual(opened, composedLive);
 }
 
 async function handleDocxImportOpenAcknowledgement(payload) {
@@ -13275,44 +13287,57 @@ async function handleDocxImportOpenAcknowledgement(payload) {
   const window = mainWindow, owner = activeStage10ApplicationBootstrap;
   const session = commentAuthoringSessionId, subject = currentLifecycleSubjectId();
   const generation = lastSignaledEditGeneration, filePath = currentFilePath;
+  let stage = 'PREFLIGHT';
   const guard = () => {
-    userBookmarkCapability(DOCX_IMPORT_SAFE_CREATE_COMMAND_ID);
-    if (docxImportOpenAcknowledgement !== admission || mainWindow !== window || !window
-      || captureDocxImportPreviewContext() !== admission.referenceContext
-      || getProjectRootPath() !== admission.projectRoot || activeStage10ApplicationBootstrap !== owner
-      || commentAuthoringSessionId !== session || currentLifecycleSubjectId() !== subject
-      || currentFilePath !== filePath || !filePath || lastSignaledEditGeneration !== generation
-      || isDirty || activePendingRecording || autoSaveInProgress) throw new Error('DOCX_IMPORT_ACK_STALE');
+    try { userBookmarkCapability(DOCX_IMPORT_SAFE_CREATE_COMMAND_ID); }
+    catch { throw new Error('DOCX_IMPORT_ACK_CAPABILITY_DENIED'); }
+    if (docxImportOpenAcknowledgement !== admission) throw new Error('DOCX_IMPORT_ACK_ATTEMPT_CHANGED');
+    if (mainWindow !== window || !window) throw new Error('DOCX_IMPORT_ACK_WINDOW_CHANGED');
+    if (captureDocxImportPreviewContext() !== admission.referenceContext || getProjectRootPath() !== admission.projectRoot) throw new Error('DOCX_IMPORT_ACK_CONTEXT_CHANGED');
+    if (activeStage10ApplicationBootstrap !== owner || commentAuthoringSessionId !== session || currentLifecycleSubjectId() !== subject) throw new Error('DOCX_IMPORT_ACK_SESSION_CHANGED');
+    if (currentFilePath !== filePath || !filePath) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_CHANGED');
+    if (lastSignaledEditGeneration !== generation) throw new Error('DOCX_IMPORT_ACK_GENERATION_CHANGED');
+    if (isDirty) throw new Error('DOCX_IMPORT_ACK_DIRTY');
+    if (activePendingRecording) throw new Error('DOCX_IMPORT_ACK_RECORDING_ACTIVE');
+    if (autoSaveInProgress) throw new Error('DOCX_IMPORT_ACK_AUTOSAVE_ACTIVE');
   };
   try {
     guard();
+    stage = 'AUTHORITY';
     const authority = await getMainProjectManifestAuthority();
     guard();
+    stage = 'RECEIPT';
     const result = await acknowledgeDocxImportAttempt({ projectRoot: admission.projectRoot,
       projectId: admission.projectId, requestId: admission.requestId, expectedAttemptSha256: admission.attemptSha256 }, {
       transactionAuthority: authority, manifestPath: admission.manifestPath,
       admittedPreviewPlan: admission.plan,
       revalidateOpen: async ({ receipt }) => {
         guard();
+        stage = 'LOCATOR';
         const locator = receipt.publicSceneLocator;
         if (!locator || locator.nodeId !== payload.nodeId || locator.kind !== 'scene') throw new Error('DOCX_IMPORT_ACK_LOCATOR_MISMATCH');
         const resolved = await resolveProjectTreeNodeIdentity(locator.nodeId, admission.projectId);
         guard();
         if (getResolvedTreeDocumentTarget(resolved).filePath !== filePath) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_MISMATCH');
+        stage = 'READ_SCENE';
         const raw = await fs.readFile(filePath, 'utf8');
         guard();
+        stage = 'SNAPSHOT';
         const snapshot = await requestEditorSnapshot();
         guard();
-        if (snapshot.projectId !== admission.projectId || snapshot.documentId !== locator.nodeId
-          || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation
-          || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
-          || !await docxImportOpenedSnapshotMatches(raw, snapshot.content)) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_MISMATCH');
+        if (snapshot.projectId !== admission.projectId || snapshot.documentId !== locator.nodeId) throw new Error('DOCX_IMPORT_ACK_SNAPSHOT_IDENTITY');
+        if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation) throw new Error('DOCX_IMPORT_ACK_SNAPSHOT_GENERATION');
+        if (snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending) throw new Error('DOCX_IMPORT_ACK_DRAFT_PENDING');
+        stage = 'CONTENT';
+        if (!await docxImportOpenedSnapshotMatches(raw, snapshot.content)) throw new Error('DOCX_IMPORT_ACK_CONTENT_MISMATCH');
         guard();
         if (await fs.readFile(filePath, 'utf8') !== raw) throw new Error('DOCX_IMPORT_ACK_DOCUMENT_CHANGED');
         guard();
+        stage = 'CONTINUITY';
         const saved = await saveLastFile({ selectionRange: snapshot.selectionRange, beforeWrite: guard });
         guard();
         if (saved?.ok !== true) throw new Error('DOCX_IMPORT_ACK_CONTINUITY_FAILED');
+        stage = 'CLEAR';
         return guard;
       },
     });
@@ -13320,8 +13345,28 @@ async function handleDocxImportOpenAcknowledgement(payload) {
     if (result?.ok !== true) throw new Error('DOCX_IMPORT_ACK_FAILED');
     docxImportOpenAcknowledgement = null;
     return { ok: true, acknowledged: true, cleared: result.cleared === true, requestId: payload.requestId };
-  } catch {
-    return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_ACK_FAILED', 'DOCX_IMPORT_ACK_FAILED');
+  } catch (error) {
+    // Fixed diagnostics only: never expose exception text, project paths or content.
+    const mapped = new Map([
+      ['DOCX_IMPORT_ATTEMPT_RECEIPT_INVALID', 'DOCX_IMPORT_ACK_RECEIPT_INVALID'],
+      ['DOCX_IMPORT_ATTEMPT_CONFLICT', 'DOCX_IMPORT_ACK_RECEIPT_CONFLICT'],
+      ['DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED', 'DOCX_IMPORT_ACK_PLAN_NOT_ADMITTED'],
+    ]).get(error?.message);
+    const known = new Set([
+      'DOCX_IMPORT_ACK_FAILED', 'DOCX_IMPORT_ACK_INVALID', 'DOCX_IMPORT_ACK_STALE',
+      'DOCX_IMPORT_ACK_ATTEMPT_CHANGED', 'DOCX_IMPORT_ACK_WINDOW_CHANGED', 'DOCX_IMPORT_ACK_CONTEXT_CHANGED',
+      'DOCX_IMPORT_ACK_SESSION_CHANGED', 'DOCX_IMPORT_ACK_DOCUMENT_CHANGED', 'DOCX_IMPORT_ACK_GENERATION_CHANGED',
+      'DOCX_IMPORT_ACK_DIRTY', 'DOCX_IMPORT_ACK_RECORDING_ACTIVE', 'DOCX_IMPORT_ACK_AUTOSAVE_ACTIVE',
+      'DOCX_IMPORT_ACK_CAPABILITY_DENIED', 'DOCX_IMPORT_ACK_LOCATOR_MISMATCH', 'DOCX_IMPORT_ACK_DOCUMENT_MISMATCH',
+      'DOCX_IMPORT_ACK_SNAPSHOT_IDENTITY', 'DOCX_IMPORT_ACK_SNAPSHOT_GENERATION', 'DOCX_IMPORT_ACK_DRAFT_PENDING',
+      'DOCX_IMPORT_ACK_CONTENT_MISMATCH', 'DOCX_IMPORT_ACK_CONTINUITY_FAILED', 'DOCX_IMPORT_ACK_RECEIPT_INVALID',
+      'DOCX_IMPORT_ACK_RECEIPT_CONFLICT', 'DOCX_IMPORT_ACK_PLAN_NOT_ADMITTED', 'DOCX_IMPORT_ACK_PREFLIGHT_FAILED',
+      'DOCX_IMPORT_ACK_AUTHORITY_FAILED', 'DOCX_IMPORT_ACK_RECEIPT_FAILED', 'DOCX_IMPORT_ACK_LOCATOR_FAILED',
+      'DOCX_IMPORT_ACK_READ_SCENE_FAILED', 'DOCX_IMPORT_ACK_SNAPSHOT_FAILED', 'DOCX_IMPORT_ACK_CONTENT_FAILED',
+      'DOCX_IMPORT_ACK_CLEAR_FAILED',
+    ]);
+    const reason = known.has(error?.message) ? error.message : mapped || `DOCX_IMPORT_ACK_${stage}_FAILED`;
+    return makeDocxImportSafeCreateTypedError(`E_${reason}`, reason);
   }
 }
 

@@ -461,7 +461,7 @@ function readSourceForComposer() {
   return editor.slice(editor.indexOf('function composeDocumentContent()'), editor.indexOf('function composeEditorSnapshot()'));
 }
 
-async function acknowledgedImportHarness(t) {
+async function acknowledgedImportHarness(t, options = {}) {
   const os = require('node:os');
   const safe = require('../../src/utils/docxImportSafeCreate');
   const { withRealDocxImportAuthority } = require('../fixtures/docx-import-real-authority.cjs');
@@ -473,7 +473,7 @@ async function acknowledgedImportHarness(t) {
   const bytes = buildStoredZip([
     {name:'[Content_Types].xml',data:'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
     {name:'_rels/.rels',data:'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
-    {name:'word/document.xml',data:'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Actual parser source</w:t></w:r></w:p></w:body></w:document>'},
+    {name:'word/document.xml',data:'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + (options.body || '<w:p><w:r><w:t>Actual parser source</w:t></w:r></w:p>') + '</w:body></w:document>'},
   ]);
   const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
   assert.equal(plan.ok, true);
@@ -590,3 +590,75 @@ test('project change during continuity write retains accepted correlation', asyn
   assert.equal((await h.handleDocxImportSafeCreateCommandSurface(h.payload)).ok, false);
   assert.equal((await h.read()).sha256, h.record.sha256);
 });
+
+test('ACK reports a fixed failing guard and redacts unknown private exception details', async t => {
+  const h = await acknowledgedImportHarness(t);
+  h.sandbox.isDirty = true;
+  const dirty = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(dirty.error.code, 'E_DOCX_IMPORT_ACK_DIRTY');
+  h.sandbox.isDirty = false;
+  h.sandbox.requestEditorSnapshot = async () => { throw Error('/private/source.docx secret content'); };
+  const unknown = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(unknown.error.code, 'E_DOCX_IMPORT_ACK_SNAPSHOT_FAILED');
+  assert.equal(JSON.stringify(unknown).includes('private'), false);
+  assert.equal(JSON.stringify(unknown).includes('secret'), false);
+  assert.equal((await h.read()).sha256, h.record.sha256);
+});
+
+async function actualProductionEditorSchema() {
+  const { getSchema } = await import('@tiptap/core');
+  const modules = { documentStories: ['DocumentStories'], documentSections: ['DocumentSections'], documentBreaks: ['DocumentBreaks'],
+    documentListNumbering: ['DocumentListNumbering'], documentListItems: ['DocumentListItems'], documentHeadings: ['DocumentHeadings'],
+    wordPendingRevisions: ['WordPendingRevisions'], userBookmarks: ['UserBookmarks', 'UserBookmarkLink'], documentTextStyle: ['DocumentTextStyle'],
+    documentParagraphAlignment: ['DocumentParagraphAlignment'], documentTables: ['DocumentTables'], documentMedia: ['DocumentMedia'],
+    manuscriptNotes: ['ManuscriptNoteReferences'], documentCommentEditIntents: ['DocumentCommentEditIntents'] };
+  const scope = {};
+  for (const [file, names] of Object.entries(modules)) {
+    const module = await import(`../../src/renderer/tiptap/${file}.mjs`);
+    for (const name of names) scope[name] = module[name];
+  }
+  scope.StarterKit = (await import('@tiptap/starter-kit')).default;
+  for (const [name, packageName] of [['Color', 'color'], ['Highlight', 'highlight'], ['Underline', 'underline']]) scope[name] = (await import('@tiptap/extension-' + packageName)).default;
+  const source = fs.readFileSync(path.join(REPO_ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
+  const start = source.indexOf('    extensions: [', source.indexOf('const editor = new Editor(')) + '    extensions: '.length;
+  const end = source.indexOf('    content:', start);
+  assert.ok(start > 0 && end > start);
+  return getSchema(Function(...Object.keys(scope), 'return ' + source.slice(start, end).trim().replace(/,$/u, ''))(...Object.values(scope)));
+}
+
+test('actual production Tiptap table and empty-paragraph serialization acknowledges exact imported content', async t => {
+  const h = await acknowledgedImportHarness(t, { body: '<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="2400"/></w:tblGrid><w:tr><w:tc><w:tcPr/><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p/>' });
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs'), schema = await actualProductionEditorSchema();
+  const getSnapshot = h.sandbox.requestEditorSnapshot;
+  h.sandbox.requestEditorSnapshot = async () => {
+    const original = await getSnapshot(), parsed = envelope.parseObservablePayload(original.content);
+    assert.equal(parsed.doc.content[0].type, 'table');
+    const last = parsed.doc.content.at(-1);
+    assert.equal(last.type, 'paragraph'); assert.deepEqual(last.content, []);
+    const observed = schema.nodeFromJSON(parsed.doc).toJSON();
+    assert.equal(Object.hasOwn(observed.content.at(-1), 'content'), false);
+    return { ...original, content: envelope.composeObservablePayload({ ...parsed, doc: observed, metaEnabled: true }) };
+  };
+  const result = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+  assert.equal(result.acknowledged, true, JSON.stringify(result)); assert.equal((await h.read()).record, null);
+});
+
+for (const mutation of ['empty-paragraph-text', 'empty-paragraph-alignment']) {
+  test(`ACK empty-paragraph equivalence preserves ${mutation} differences`, async t => {
+    const h = await acknowledgedImportHarness(t, { body: '<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="2400"/></w:tblGrid><w:tr><w:tc><w:tcPr/><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p/>' });
+    const envelope = require('../../src/core/document-content-envelope-v1.cjs'), schema = await actualProductionEditorSchema();
+    const getSnapshot = h.sandbox.requestEditorSnapshot;
+    h.sandbox.requestEditorSnapshot = async () => {
+      const original = await getSnapshot(), parsed = envelope.parseObservablePayload(original.content);
+      const observed = schema.nodeFromJSON(parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text)).toJSON();
+      const last = observed.content.at(-1);
+      assert.equal(last.type, 'paragraph'); assert.equal(Object.hasOwn(last, 'content'), false);
+      if (mutation === 'empty-paragraph-text') last.content = [{ type: 'text', text: 'Unsaved' }];
+      else last.attrs = { ...(last.attrs || {}), textAlign: 'right' };
+      return { ...original, content: envelope.composeObservablePayload({ ...parsed, doc: observed, metaEnabled: true }) };
+    };
+    const result = await h.handleDocxImportSafeCreateCommandSurface(h.payload);
+    assert.equal(result.error.code, 'E_DOCX_IMPORT_ACK_CONTENT_MISMATCH');
+    assert.equal((await h.read()).sha256, h.record.sha256);
+  });
+}

@@ -801,7 +801,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a74ebaa015f4cd8e7fdaadf40864aa10f110127dbf3a74b53f50e8e83e1ad1b9"
+        "sha256": "c02dbed68f5ec1f2ae629208d9462332088979a7a66ddeaa1bbb5bdb48be81bd"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -809,11 +809,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "82172184687e2bbff2fc76c43f8bda2dc926614ffe2a60b9dfc4c469aee195e6"
+        "sha256": "fd2bd5a6cb2cf7fb3bba1607c527748a6269830cd8438f74fa1f74f944fd33c3"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "85fa6dcbcd455993cdd2815139bec651256bb22ca4f3bc3fe51edca020a35db4"
+        "sha256": "ecf5bc12a86b0dc9db0ad3d1f001433f1d52dbcedacc62d3aa36e6c9bd2b3115"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1229,7 +1229,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
-        "sha256": "9c60e44d9a267a07923452d55435196c4e8c96c24d822ee58a1f8417bbb475dd"
+        "sha256": "ba20f3383d1c2b29334edd0d0828bb7d8e34167b0e1e0d4cf12529693f23d03d"
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
@@ -2457,7 +2457,7 @@
       },
       {
         "path": "test/unit/docx-import-product-flow-command.test.js",
-        "sha256": "9c1831d2f4856c8e0b0728776d9d8851e4e04d92839ebc5a50c4802ad9200665"
+        "sha256": "640191b52a983d8da28393239319fe0d179b13ebeb06ee0f3f2281b27563efd0"
       },
       {
         "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
