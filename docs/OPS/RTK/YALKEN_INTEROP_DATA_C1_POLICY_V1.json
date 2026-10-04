@@ -789,7 +789,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "1b20599db062823172dfab06e7fb264d2d79808dd55eefda2249b2e8a9b9d0c6"
+        "sha256": "fe3616ecc723d3e72b5d88e84a318879037bc43900968fca97064339ac7b1240"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1053,7 +1053,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-        "sha256": "8e85e617ce8c73bd517e6358dcaf36c112964314b7cd333a8b61ae66cec3b4d7"
+        "sha256": "549af3b32bfe10109938fb980dc1140c0272610ec289d7e9cfbe5c0ff116468b"
       },
       {
         "path": "src/io/markdown/index.mjs",
@@ -1305,7 +1305,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
-        "sha256": "f3c8c81f6b7b5eabd4af45d636a044d471809f67f1e2d20f5c4ed40a19ebc06f"
+        "sha256": "2c174e4203216e573846a84ee54771b36a607f356a7b33e88d835be2ad1af3e6"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
@@ -1977,7 +1977,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "be2b8d4a61d3fc7eebab37a132ca5213444316fb19dd0670c754db5937aef604"
+        "sha256": "f6ad0dee31f837d4f6c8842c7ad4091eec2c31f4ef68fb81bb1ca87b3652a42f"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2413,15 +2413,15 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
-        "sha256": "758a67f5b13e8d9ead5767bc0fb0cba2255b61c959fd66da5ef72afd4f3f7d79"
+        "sha256": "17499c20f0cec1aa8854f6db9816b965eabcda6bd60943565f7c329ba6708579"
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
-        "sha256": "beec31eb45f90fcbb1b813dca2044fee7aabeddbb9a721564fd9bb7b2910370e"
+        "sha256": "a9f4c337c22cff5c742d7d3f8a9e4f3b4080412f575dffbeae4c732a23eca8d5"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_ANCHORS_V1.json",
-        "sha256": "51795c36bff4a36638439c8b3f493c7a5be2df1c37e300ce1340f3b96bcd8560"
+        "sha256": "3dcf245f050dd85482415c3a36f5dcddfc5aeea86c0bc136f7afcb8466c07666"
       },
       {
         "path": "src/preload.js",

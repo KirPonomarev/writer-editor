@@ -52,7 +52,8 @@
     "src/io/revisionBridge/exactTextApplyJournal.mjs",
     "src/utils/docxImportSafeCreate.js",
     "test/unit/docx-import-safe-create.test.js",
-    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs"
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js"
   ],
   "scopeOut": [
     "package.json",
@@ -114,15 +115,19 @@
     "Forged after-state, incomplete splice replay, mismatched generations, failed-write recovery",
     "Native early SOURCE/PACKAGED vertical route before broad tests; five changed Word exchanges per build for admitted route",
     "Word-saved table/list continuation with leading/trailing hard breaks, point and range plus reply: exact import anchors, preservation of existing V3 discussions, malformed/mismatched anchors reject with zero writes.",
-    "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof."
+    "Actual Main authenticated unchanged table topology + list continuation + range/point/reply text return publishes one atomic effect; changed topology/property/owner, forged carried proof and stale source refuse without canonical writes. Recompute existing binder from original authenticated exportMap and parsed IR, never trust external proof.",
+    "Signed block literal leaf text/hash may not be normalized away. Preserve exact owner plus global visible-coordinate proof; reject forged block, mismatched leaf bounds and ambiguous normalized placement. Actual Main table LF regression must pass without changing source protection."
   ],
   "securityAndInputBoundary": "No new dependency/network/IPC channel. Optional closed snapshot payload is checked in Main/Core. Imported offsets and names never create file authority.",
   "performanceAndAccessibility": "Bounded transaction-step capture; no whole-project scan on typing. Existing keyboard and labelled comment flow retains focus and draft; visible point context uses existing text.",
   "currentReality": [
-    "PR2075 is delivered at f5dd73ea; local comment packet clean b0ea8170 remains unmerged.",
-    "SOURCE04 imported real Word table continuation with exact leading/trailing hardBreaks, range/point/reply comments; native edit Save Undo Save Redo Save preserves all8threads10messages.",
-    "Authenticated return of Word-inserted R refuses before Preview with RTK_USER_BOOKMARK_RETURN_CONFLICT. Exact raw parser and existing table binder succeed; analyzer has inventory blanket refusal and table leaf blanket refusal.",
-    "1000paragraph private proof and crash journal regression already passed; do not repeat without dependency change or mandatory gate."
+    "PR2075 is delivered at f5dd73ea; the current comment packet remains local and unmerged.",
+    "SOURCE04 ordinary import plus native edit Save Undo Save Redo Save preserved all8threads10messages and exact table continuation hardBreaks.",
+    "The retained actual Word R return has not yet been applied natively. Its former analyzer and exact-leaf routing failures are repaired in the candidate; native SOURCE05 is pending.",
+    "Actual Main affected suite23 and point/fontless-break suite8 pass without skips. Table geometry/property/owner/stale-source negatives reject without canonical writes; foreign discussions remain unchanged.",
+    "Unchanged literal rows from language-only formatting operations no longer enter the strict private comment text-delta proof; full formatting candidate and final checks remain intact.",
+    "Writer/router25 functional checks pass; historical dirty-file scope assertion requires clean-checkpoint rerun.",
+    "1000paragraph private proof and crash journal regression already passed; final mandatory and native build evidence still pending."
   ],
   "targetOnly": [
     "Complete declared point/range paragraph route is target until native proof and delivery; whole Mac plan remains incomplete"

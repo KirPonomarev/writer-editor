@@ -758,7 +758,7 @@ function findAllTextOccurrences(text, needle) {
 }
 
 function applyRichInlineReplacement(block, operation) {
-  const blockText = richBlockVisibleText(block);
+  const blockText = operation.authenticatedBlock ? userBookmarkModel.textOf(block) : richBlockVisibleText(block);
   let from = Number(operation.from);
   let to = Number(operation.to);
   if (from < 0 || to < from || blockText.slice(from, to) !== operation.expectedText) {
@@ -949,7 +949,7 @@ function resolveAuthenticatedBlockOperation(item, parsed, raw, sceneId, trustedD
     || !Number.isSafeInteger(owner.sceneParagraphIndex) || owner.sceneParagraphIndex < 0) return null;
   const selected = collectRichTextBlocks(parsed.doc)[owner.sceneParagraphIndex];
   if (!selected) return null;
-  const text = richBlockVisibleText(selected.node);
+  const text = userBookmarkModel.textOf(selected.node);
   if (owner.blockTextSha256 !== 'sha256:' + sha256Text(text)
     || owner.blockLocalStart !== 0 || owner.blockLocalEnd !== text.length || item.match.quote !== text) return null;
   // A marker in a private clone derives the exact rendered offset without

@@ -1257,7 +1257,7 @@ async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookPara
   parsed.doc=bookmarks.planSave({beforeDoc:beforeAppend,workingDoc:parsed.doc}).doc;
   if(tableCommentContinuation) {
     const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
-    parsed.doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'contQinued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
+    parsed.doc={type:'doc',content:[{type:'table',attrs:{wordTable:{version:1,grid:[7200],layout:'fixed',widthDxa:7200,shading:null,borders:{}}},content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[paragraph('Alpha cell item'),{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'contQinued cell anchor'},{type:'hardBreak'}]}]},{type:'listItem',content:[paragraph('Second cell item W')]}]}]}]}]},paragraph('')]};
   }
   if(bookParagraphs)while(parsed.doc.content.length<bookParagraphs)parsed.doc.content.push({type:'paragraph',content:[{type:'text',text:'Book paragraph '+parsed.doc.content.length+' '+crypto.randomBytes(60).toString('hex')}]});
   if(nativeDefaults)for(const paragraph of parsed.doc.content){paragraph.attrs={...paragraph.attrs,textAlign:'left'};for(const node of paragraph.content||[])if(node.type==='text')node.marks=[...(node.marks||[]),{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt'}}];}
@@ -1284,6 +1284,7 @@ async function cleanTextReturnFixture(t,{tableCommentContinuation=false,bookPara
       const state=JSON.parse(planned.afterText),root=state.threads[0];state.schemaVersion='yalken.rtk.word.non-text-return-state.v3';
       for(const [id,point] of [['continuation',false],['point',true]])state.threads.push({threadId:id,rootCommentId:id+'-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:1,startUtf16:point?11:1,selectedText:point?'':'contQinued',...(point?{kind:'point',affinity:'right'}:{})},sceneId,ps),messages:[{commentId:id+'-root',kind:'root',body:id+' body',provenance:{author:'Author'}}]});
       state.threads[1].messages.push({commentId:'continuation-reply',kind:'reply',body:'Reply body',provenance:{author:'Reply author'}});
+      const foreignScene='roman/Imported/02_Beta.txt';state.threads.push({threadId:'foreign',rootCommentId:'foreign-root',sceneId:foreignScene,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Beta'},foreignScene,['Beta']),messages:[{commentId:'foreign-root',kind:'root',body:'Foreign body',provenance:{author:'Foreign'}}]});
       model.readState(JSON.stringify(state),f.query.projectId);fs.writeFileSync(target,JSON.stringify(state));
     } else if(largeCommentGraph) {
       const state=JSON.parse(planned.afterText),root=state.threads[0].messages[0];
@@ -2222,10 +2223,27 @@ test('actual Main table list continuation Word edit atomically preserves range p
   assert.equal(doc.content[0].type,'table');assert.equal(doc.content[0].content.length,1);
   assert.deepEqual(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(read(f.alpha)).map(p=>p.text),['Alpha cell item','\ncontQinuedR cell anchor\n','Second cell item W','']);
   assert.deepEqual(after.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
+  assert.deepEqual(after.threads.find(t=>t.threadId==='foreign'),before.threads.find(t=>t.threadId==='foreign'));
   assert.equal(after.threads.find(t=>t.threadId==='point').anchor.startUtf16,12);
   assert.equal(after.threads.find(t=>t.threadId==='continuation').anchor.selectedText,'contQinuedR');
   const freshSource=await f.probe.fullSource(),fresh=await f.probe.reviewBuild(freshSource);assert.equal(fresh.publicationGate.publishAllowed,true);
   const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fresh.documentBuffer}).parts['word/document.xml'];
   assert.ok(xml.includes('contQinuedR'));assert.equal((xml.match(/<w:tr>/gu)||[]).length,1);assert.equal((xml.match(/<w:numPr>/gu)||[]).length,2);
   const journals=fs.readdirSync(path.join(f.root,'backups/revision-bridge-apply-journal')).filter(n=>n.endsWith('.json')).map(n=>JSON.parse(read(path.join(f.root,'backups/revision-bridge-apply-journal',n))));assert.ok(journals.some(j=>j.commentTextReturn));
+});
+
+for(const failure of ['grid','property','owner','stale'])test('actual Main table comment return refuses '+failure+' without writes',async t=>{
+  const {f,activated,beforeActivation}=await cleanTextReturnFixture(t,{tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+    parts['word/document.xml']=parts['word/document.xml'].replace('>contQinued</w:t>','>contQinuedR</w:t>');
+    const before=parts['word/document.xml'];
+    if(failure==='grid')parts['word/document.xml']=before.replace(/(<w:gridCol w:w=")(\d+)(")/u,(_,a,n,b)=>a+(Number(n)+240)+b);
+    if(failure==='property')parts['word/document.xml']=before.replace('<w:tblLayout w:type="fixed"/>','<w:tblLayout w:type="autofit"/>');
+    if(failure==='owner')parts['word/document.xml']=before.replace(/w:name="YRTK_[a-f0-9]{32}"/u,'w:name="YRTK_ffffffffffffffffffffffffffffffff"');
+    if(failure!=='stale')assert.notEqual(parts['word/document.xml'],before);
+  }});
+  if(failure==='stale') {
+    assert.equal(activated.ok,true,JSON.stringify(activated));
+    const original=read(f.alpha),parsed=envelope.parseObservablePayload(original);require('../../src/core/word-user-bookmarks-v1.cjs').paragraphs(parsed.doc)[0].content[0].text+=' LOCAL';fs.writeFileSync(f.alpha,envelope.composeObservablePayload({...parsed,metaEnabled:true}));
+    const before=f.capture(),result=await f.probe.fullApply({requestId:'table-stale-apply'});assert.equal(result.totals?.applied,0,JSON.stringify(result));assert.ok((result.totals?.blocked||0)+(result.totals?.failed||0)>0,JSON.stringify(result));assert.deepEqual(f.capture(),before);
+  } else {assert.equal(activated.ok,false,JSON.stringify(activated));assert.deepEqual(f.capture(),beforeActivation);}
 });

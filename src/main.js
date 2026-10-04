@@ -10009,7 +10009,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
     if (authority.commentExport) {
       try {
         const beforeText = cleanTextCommentSourceText;
-        const textChanges=cleanTextChanges.map(change=>({sceneId:change.sceneId,paragraphIndex:change.sceneParagraphIndex,
+        const textChanges=cleanTextChanges.filter(change=>change.expectedText!==change.replacementText).map(change=>({sceneId:change.sceneId,paragraphIndex:change.sceneParagraphIndex,
           oldText:change.expectedText,newText:change.replacementText}));
         const proof={projectId:context.projectId,roundId:authority.roundId,artifactSha256:context.returnedArtifactSha256,
           baseline:authority.commentExport,exportMap:authority.exportMap,returnedThreads:returnedComments,
@@ -26013,7 +26013,7 @@ function prepareCleanTextConcurrentWriterInput(command, capsule) {
   for (const item of input.reviewItems) {
     const owner = item.match.authenticatedBlock, index = owner.sceneParagraphIndex;
     if (!currentParagraphs[index] || !mergedParagraphs[index]) return blocked('RTK_WORD_CONCURRENT_BLOCK_MISSING');
-    const text = paragraph => envelope.deriveVisibleTextFromDocument({type:'doc',content:[paragraph]});
+    const text = paragraph => userBookmarkModel.textOf(paragraph);
     const expectedText = text(currentParagraphs[index]), replacementText = text(mergedParagraphs[index]);
     if (!expectedText || !replacementText) return blocked('RTK_WORD_CONCURRENT_EMPTY_BLOCK_UNSUPPORTED');
     item.match.quote = expectedText;

@@ -103,3 +103,41 @@ test('Word-saved point markers may straddle an adjacent range end without semant
  const comments=bridge.buildDocxImportPreviewPlanFromContentPreview(preview).candidateCreatePlan.entries[0].comments;
  assert.deepEqual(comments.map(c=>[c.startUtf16,c.selectedText,c.kind]).sort((a,b)=>a[0]-b[0]),[[0,'Alpha',undefined],[5,'','point']]);
 });
+
+test('comment-bearing text return keeps fontless boundary breaks without admitting unresolved text fonts or lost break fonts',async()=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
+ const {stableJson}=await import('../../src/io/revisionBridge/reviewTransportCore.mjs');
+ const env=require('../../src/core/document-content-envelope-v1.cjs');
+ const model=require('../../src/core/word-comment-authoring-v1.cjs');
+ const sceneId='roman/breaks.txt',text='\nAlpha omega\n';
+ const family=[{type:'textStyle',attrs:{fontFamily:'Aptos'}}];
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha omega',marks:family},{type:'hardBreak'}]}]};
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v3',projectId:'breaks',revision:0,events:[],threads:[{
+  threadId:'point',rootCommentId:'point-root',sceneId,status:'open',anchor:model.exactAnchor({paragraphIndex:0,startUtf16:6,selectedText:'',kind:'point',affinity:'right'},sceneId,[text]),
+  messages:[{commentId:'point-root',kind:'root',body:'Point at Alpha end',provenance:{author:'A'}}],
+ }]};
+ const cryptoPort={...ports.cryptoPort,sha256Json:v=>'sha256:'+sha(stableJson(v))};
+ const baseline=source({projectId:'breaks',projectRoot:'/synthetic',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,order:0,doc,text:env.deriveVisibleTextFromDocument(doc),observableContent:env.composeObservablePayload({doc})}]});
+ const original=exportDocx(baseline),map=bridge.bindUserBookmarkExportTransportPartsV1(baseline.localAuthorityCapsule.exportMap,original);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+ assert.match(parts['word/document.xml'],/>Alpha<\/w:t>/u);
+ parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha</w:t>','>AlphaX</w:t>');
+ const returned=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})))},{cryptoPort});
+ assert.equal(returned.ok,true,JSON.stringify(returned.reasons));
+ const ir=returned.reviewIr;
+ assert.equal(ir.formattingParagraphs[0].paragraphText,'\nAlphaX omega\n');
+ assert.equal(ir.commentThreads[0].finalTextAnchorRange.startUtf16,7);
+ const input={baselineDoc:doc,sceneId,exportMap:map,reviewIr:ir,ordinaryTextMode:true,exportTypography:map.exportTypography};
+ const accepted=analyzer.analyzeUserBookmarksReturn(input);assert.equal(accepted.ok,true,JSON.stringify(accepted));
+ assert.equal(require('../../src/core/word-user-bookmarks-v1.cjs').textOf(accepted.doc.content[0]),'\nAlphaX omega\n');
+ assert.equal(accepted.doc.content[0].content[0].type,'hardBreak');assert.equal(accepted.doc.content[0].content.at(-1).type,'hardBreak');
+ for(const mutate of [
+  ir=>{const r=ir.formattingParagraphs[0].formattedRuns.find(r=>r.text.includes('AlphaX'));delete r.inlineState.fontFamily;delete r.resolvedFontFamily;},
+  ir=>{const r=ir.formattingParagraphs[0].formattedRuns[0];r.from=1;r.to=2;},
+ ]){const altered=structuredClone(ir);mutate(altered);const refused=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:altered});assert.equal(refused.ok,false);assert.equal(refused.detail,'ordinary-text-font-profile-incomplete');}
+ const styled=structuredClone(doc);styled.content[0].content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Courier New'}}];
+ const styledMap=structuredClone(map);const formats=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId,doc:styled,text:env.deriveVisibleTextFromDocument(styled)});
+ styledMap.scenes[0].blocks[0].formatIr=formats[0].formatIr;
+ const lost=analyzer.analyzeUserBookmarksReturn({...input,baselineDoc:styled,exportMap:styledMap});assert.equal(lost.ok,false);assert.equal(lost.detail,'ordinary-text-font-profile-incomplete');
+});
