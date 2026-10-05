@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='aff37bf1bb0ef8dd940d035822c036934022722a5b88bb15d05d0e8a57828af4';
+export const DATA_POLICY_SHA256='6924b0788acbbb51d67fadddfb7611be57013b3f2656a3908ea2b8894a8a373d';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -20,7 +20,7 @@ const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const sha40=v=>typeof v==='string'&&/^[a-f0-9]{40}$/u.test(v);
 const sha64=v=>typeof v==='string'&&/^[a-f0-9]{64}$/u.test(v);
-const gitAt=root=>args=>execFileSync('git',args,{cwd:root,encoding:'utf8',timeout:10000,maxBuffer:16*1024*1024});
+const gitAt=root=>args=>execFileSync('git',args,{cwd:root,encoding:args[0]==='show'?null:'utf8',timeout:10000,maxBuffer:16*1024*1024});
 const MARKERS=['latin-basic','latin-diacritic','cyrillic','greek','cjk','rtl-hebrew','emoji-zwj'];
 export function validateDataCase(v) {
   demand(v&&typeof v==='object'&&!Array.isArray(v)&&same(Object.keys(v).sort(),['id','paragraphs','schemaVersion']),'DATA_CASE_FIELDS');

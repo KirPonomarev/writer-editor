@@ -297,3 +297,15 @@ commits require exact runtime-input equality, not a claim of new native runs.
 Required direct-consumer, RTK, baseline, security/OSS, CI and delivery remain
 pending. The separate break-only formatting return diagnostic and all explicitly
 listed remaining Mac-plan gaps remain open.
+
+## CI binary binding repair on 3b30e5536
+
+CI run 37248602192 retained RTK failure: 3254 cases, 3252 passed, two failed,
+zero skipped. Both failures are DATA_RUNTIME_REPAIR_PIN in Data C1 delivery
+adapter tests. All four new native DOCX fixture files match their raw-byte
+bindings, but the existing Git adapter and test doubles decode `git show` as
+UTF-8 before hashing. Keep all fixture bindings and make blob reads byte-exact;
+textual Git metadata remains text. Test corrupted binary refusal explicitly.
+The 54-path repair declaration admits the affected existing denominator test
+before edits. Runtime source/package bytes and native observations are unchanged;
+mandatory exact-candidate CI must pass before merge.

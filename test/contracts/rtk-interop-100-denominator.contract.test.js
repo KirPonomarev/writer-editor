@@ -1747,7 +1747,7 @@ it('data C1 delivery binds immutable code and preserves Buffer and text Git adap
     if(args[0]==='log')return delivery;
     if(args[0]==='merge-base')return '';
     if(args[0]==='diff')return (args[3]===policy.baseSha?changed:drift).join('\n');
-    if(args[0]==='show')return fs.readFileSync(path.join(root,args[1].slice(41)),'utf8');
+    if(args[0]==='show')return fs.readFileSync(path.join(root,args[1].slice(41)));
     throw new Error(args.join(' '));
   };
   const result=data.verifyDataC1PostEvaluation({git});assert.equal(result.status,'PASS');assert.equal(result.cellAcceptanceAuthority,false);
@@ -1757,6 +1757,29 @@ it('data C1 delivery binds immutable code and preserves Buffer and text Git adap
     assert.throws(()=>data.verifyDataC1PostEvaluation({git:alteredRuntime}),/RUNTIME_REPAIR_PIN/);
   }
   assert.deepEqual(data.verifyDataC1PostEvaluation({git:a=>Buffer.from(git(a))}),result);
+  const textMetadata=args=>{
+    const value=git(args);
+    return args[0]==='show'&&args[1].endsWith('.docx')?value:String(value);
+  };
+  assert.deepEqual(data.verifyDataC1PostEvaluation({git:textMetadata}),result,
+    'text metadata and text source adapters retain exact binary source bytes');
+  const binaryBindings=policy.qualifiedRuntimeRepair.sourceBindings.filter(binding=>binding.path.endsWith('.docx'));
+  for(const required of [
+    'test/fixtures/word-multiparagraph-root-native.docx',
+    'test/fixtures/word-multiparagraph-reply-native.docx',
+    'test/fixtures/word-multiparagraph-rich-ru-native.docx',
+    'test/fixtures/word-multiparagraph-empty-end-native.docx',
+  ])assert.ok(binaryBindings.some(binding=>binding.path===required),required+' remains source-bound');
+  for(const binding of binaryBindings){
+    const original=fs.readFileSync(path.join(root,binding.path));
+    const decoded=Buffer.from(original.toString('utf8'),'utf8');
+    assert.notDeepEqual(decoded,original,'this fixture exercises lossy UTF-8 decoding');
+    for(const corrupt of [decoded,Buffer.concat([original,Buffer.from([0])])]){
+      const alteredBinary=args=>args[0]==='show'&&args[1].endsWith(':'+binding.path)?corrupt:git(args);
+      assert.throws(()=>data.verifyDataC1PostEvaluation({git:alteredBinary}),/DATA_RUNTIME_REPAIR_PIN/);
+    }
+  }
+
   const unadmittedRuntime='src/renderer/flags.js';assert.equal(policy.admittedPaths.includes(unadmittedRuntime),false);
   changed.push(unadmittedRuntime);assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/UNADMITTED/);changed.pop();
   const altered=a=>a[0]==='show'&&a[1].endsWith(':src/utils/docxImportPreviewReferences.js')?git(a)+'\n':git(a);
@@ -1777,8 +1800,8 @@ it('data C1 delivery survives 33 policy revisions while retaining original ident
     if(args[0]==='diff')return (args[3]===policy.baseSha?policy.admittedPaths:drift).join('\n');
     if(args[0]==='show'){
       const revision=args[1].slice(0,40),file=args[1].slice(41);
-      const bytes=fs.readFileSync(path.join(root,file),'utf8');
-      return file===data.DATA_POLICY_PATH&&![candidate,firstDelivery,repeatedDelivery].includes(revision)?bytes+'\n':bytes;
+      const bytes=fs.readFileSync(path.join(root,file));
+      return file===data.DATA_POLICY_PATH&&![candidate,firstDelivery,repeatedDelivery].includes(revision)?Buffer.concat([bytes,Buffer.from('\n')]):bytes;
     }
     throw new Error(args.join(' '));
   };

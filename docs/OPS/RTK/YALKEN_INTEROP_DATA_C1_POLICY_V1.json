@@ -1029,7 +1029,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "cd41924ce57257fd15275a6321947c087114f17bf3de120953a61f88588356da"
+        "sha256": "08ade5c40194102b6500d51882f58cd5b3c3de6457acdfbb4366b3f97e8028da"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -2529,7 +2529,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "c425023b6c72a82e8fde78c6a8adeb84b610823dd34c48f64cee3750a562813a"
+        "sha256": "4bf1cc678f77c4d55405ed0d0d7d362c0df8649ef629566ae7af63df02f743a8"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",
