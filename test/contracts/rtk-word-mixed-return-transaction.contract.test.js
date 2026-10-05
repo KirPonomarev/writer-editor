@@ -10,7 +10,7 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
-async function fixture(clean=false,missing=false) {
+async function fixture(clean=false,missing=false,dense=false,format=false) {
   const source={type:'doc',content:['oldnew','tail AAA BBB'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
   const revisions=['delete','insert'].map((operation,i)=>({id:'revision-'+(i+1),nativeId:''+i,operation,author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from:i*3,to:i*3+3,state:'pending',groupId:'group-1'}));
   let beforeDoc=review.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]});
@@ -18,11 +18,21 @@ async function fixture(clean=false,missing=false) {
   const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[
     {threadId:'first',rootCommentId:'first-root',sceneId,status:'open',anchor:exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'ew'},sceneId,['new','tail AAA BBB']),messages:[{commentId:'first-root',kind:'root',body:'Old query',provenance:{author:'Writer'}}]},
     {threadId:'second',rootCommentId:'second-root',sceneId,status:'open',anchor:exactAnchor({paragraphIndex:1,startUtf16:9,selectedText:'BBB'},sceneId,['new','tail AAA BBB']),messages:[{commentId:'second-root',kind:'root',body:'Second query',provenance:{author:'Writer'}}]}]};
+  if(dense){
+    const first=structuredClone(state.threads[0]);
+    while(state.threads.length<40){const i=state.threads.length,t=structuredClone(first);t.threadId='dense-'+i;t.rootCommentId='dense-root-'+i;t.messages=[{commentId:t.rootCommentId,kind:'root',body:'Р'.repeat(400),provenance:{author:'Writer'}},{commentId:'dense-reply-'+i,kind:'reply',body:'О'.repeat(400),provenance:{author:'Editor'}}];state.threads.push(t);}
+    state.schemaVersion='yalken.rtk.word.non-text-return-state.v6';
+  }
   if(missing)state.threads=[];
   const beforeContent=encode(beforeDoc),beforeText=missing?null:JSON.stringify(state);
   const exported=makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail AAA BBB',doc:beforeDoc,observableContent:beforeContent}]});
   const ledger=structuredClone(review.readLedger(beforeDoc)||{schemaVersion:2,source:beforeDoc,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});ledger.source.content[1].content[0].text='tail AAAZZZ BBB';
   ledger.revisions.push(...['delete','insert'].map((operation,i)=>({id:'revision-'+(3+i),nativeId:''+(2+i),operation,author:'Editor',date:'',dateUtc:'',paragraphIndex:1,from:5+i*3,to:8+i*3,state:'pending',groupId:'group-2'})));
+  if(format) {
+    const marks=[{type:'textStyle',attrs:{wordLanguage:{val:'ru-RU'}}}];
+    ledger.source.content[1].content=[{type:'text',text:'tail AAAZZZ '},{type:'text',text:'BBB',marks}];
+    ledger.revisions.push({id:'revision-5',nativeId:'4',operation:'format',author:'Editor',date:'',dateUtc:'',paragraphIndex:1,from:12,to:15,state:'pending',groupId:null,format:{kind:'run',before:[],after:marks}});
+  }
   const returnedDoc=review.bindLedger(ledger),afterState=structuredClone(state);
   afterState.threads.forEach((t,i)=>t.messages.push({commentId:'reply-'+i,kind:'reply',body:'Answer '+i,provenance:{author:'Editor'}}));
   if(!missing)afterState.threads[0].messages[0].body='Edited query';
@@ -35,15 +45,55 @@ async function fixture(clean=false,missing=false) {
   const documents=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:[{sceneId,document:beforeDoc}],documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest,retainPendingSceneId:sceneId});assert.equal(documents.ok,true,JSON.stringify(documents));
   const proof={schemaVersion:1,projectId,roundId:'round-mixed',artifactSha256:'sha256:'+sha(bytes),baseline:capsule.commentExport,exportMap:capsule.exportMap,returnedDocument:documents.scenes[0].returnedDocument,
     returnedThreads:parsed.reviewIr.commentThreads,returnedParagraphs:parsed.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:parsed.reviewIr.commentReturnInventory};
+  if(dense){proof.schemaVersion=2;proof.returnedLedger=review.readLedger(proof.returnedDocument);delete proof.returnedDocument;delete proof.exportMap.commentExport;}
   return {beforeContent,beforeText,beforeDoc,proof,projectId,sceneId};
 }
 const plan=f=>planMixedPendingReturn({...f,returnProofJson:JSON.stringify(f.proof)});
+
+test('changed text, comment bodies and pending language survive exact mixed return and round Undo/Redo', async () => {
+  const f=await fixture(true,false,false,true),result=plan(f);
+  const doc=envelope.parseObservablePayload(result.content).doc,ledger=review.readLedger(doc);
+  assert.equal(review.projection(doc).current,'new\ntail ZZZ BBB');
+  assert.equal(review.projection(doc).original,'new\ntail AAA BBB');
+  const format=ledger.revisions.find(r=>r.operation==='format');assert.ok(format);
+  assert.deepEqual(format.format.before,[]);
+  assert.deepEqual(format.format.after,[{type:'textStyle',attrs:{wordLanguage:{val:'ru-RU'}}}]);
+  const state=JSON.parse(result.afterText);
+  assert.equal(state.threads[0].messages[0].body,'Edited query');
+  assert.equal(state.threads[1].anchor.startUtf16,9);
+  const undone=review.decide(doc,{action:'undo'}).doc;
+  assert.deepEqual(review.normalizeNode(undone),review.normalizeNode(f.beforeDoc));
+  const redone=review.decide(undone,{action:'redo'}).doc;
+  assert.deepEqual(review.normalizeNode(redone),review.normalizeNode(doc));
+  assert.deepEqual(review.readLedger(redone).revisions,ledger.revisions);
+  const source = makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,
+    scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc,observableContent:result.content}]});
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const bytes=build(source),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(preview.ok,true,JSON.stringify(preview));
+  const unchanged=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
+    document:doc,returnedDocument:preview.contentPreview.pendingRevisionDocument,
+    binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,
+    anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),
+    exportTypography:source.localAuthorityCapsule.exportMap.exportTypography,
+    exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)});
+  assert.equal(unchanged.changed,false);
+  assert.deepEqual(review.readLedger(unchanged.document).revisions,ledger.revisions);
+  const forged=structuredClone(preview.contentPreview.pendingRevisionDocument),bad=review.readLedger(forged);
+  const property=bad.revisions.find(r=>r.operation==='format');
+  property.format.before=[{type:'bold'}];
+  const forgedDoc=review.bindLedger(bad);
+  assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
+    document:doc,returnedDocument:forgedDoc,binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,
+    anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),exportTypography:source.localAuthorityCapsule.exportMap.exportTypography,
+    exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)}),/MIXED_RETURN_SOURCE_CHANGED/);
+});
 const fs=require('node:fs'),fsp=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
 const tx=require('../../src/core/project-transaction-v1.cjs');
 const {durableSaveTransaction}=require('../../src/core/save-coordinator-v1.cjs');
-async function diskFixture(t,clean=false,missing=false) {
-  const input=await fixture(clean,missing),p=plan(input);
+async function diskFixture(t,clean=false,missing=false,dense=false) {
+  const input=await fixture(clean,missing,dense),p=plan(input);
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'word-mixed-atomic-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const scenePath=path.join(root,sceneId),manifestPath=path.join(root,'project.json'),commentPath=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');
   fs.mkdirSync(path.dirname(scenePath),{recursive:true});fs.mkdirSync(path.dirname(commentPath),{recursive:true});
@@ -133,4 +183,28 @@ test('first discussion with missing parent fails through existing writer and rec
  await assert.rejects(tx.commitProjectTransaction({...f.request,publishManifest}),/ENOENT/);
  await tx.recoverProjectTransaction({...f,publishManifest});assert.deepEqual(observed(f),f.before);
  assert.equal(fs.existsSync(path.dirname(f.commentPath)),false);
+});
+
+for(const boundary of ['JOURNAL','MANIFEST','SCENE','COMMENT','COMMIT','BEFORE_CLEANUP','AFTER_CLEANUP'])test('V6 greater than 64KiB SIGKILL '+boundary+' recovers exact cohort in a fresh process',async t=>{
+ const f=await diskFixture(t,false,false,true);assert.ok(Buffer.byteLength(f.before[2])>65536);assert.ok(Buffer.byteLength(f.after[2])>65536);
+ const crash=await child(f,'crash',boundary);assert.equal(crash.signal,'SIGKILL',JSON.stringify(crash));
+ if(fs.existsSync(tx.journalPathFor(f.manifestPath)))assert.ok(fs.statSync(tx.journalPathFor(f.manifestPath)).size<32*1024*1024);
+ const recovery=await child(f,'recover');assert.equal(recovery.code,0,recovery.stderr);
+ const committed=['COMMIT','BEFORE_CLEANUP','AFTER_CLEANUP'].includes(boundary);assert.deepEqual(observed(f),committed?f.after:f.before);
+ const repeated=await child(f,'recover');assert.equal(repeated.code,0,repeated.stderr);assert.deepEqual(observed(f),committed?f.after:f.before);
+ if(!committed){const result=await child(f,'commit');assert.equal(result.code,0,result.stderr);}
+ assert.deepEqual(observed(f),f.after);assert.equal(tx.classifyProjectTransactionState(f).classification,'NEW_COMMITTED');
+});
+test('V6 large-state forged companion and concurrent canonical update cannot publish',async t=>{
+ const f=await diskFixture(t,false,false,true),bad=structuredClone(f.request),state=JSON.parse(bad.commentState.afterText);state.threads[2].messages[0].body='forged';bad.commentState.afterText=JSON.stringify(state);
+ await assert.rejects(tx.commitProjectTransaction({...bad,publishManifest}),/COMMENT_STATE/);assert.deepEqual(observed(f),f.before);
+ fs.writeFileSync(f.commentPath,f.before[2]+' ');await assert.rejects(tx.commitProjectTransaction({...f.request,publishManifest}),/COMMENT_CAS/);assert.deepEqual(observed(f),[...f.before.slice(0,2),f.before[2]+' ']);
+});
+
+test('compact proof2 reconstructs exact legacy1 outcome and rejects conflicting or malformed source representations',async()=>{
+ const f=await fixture(),legacy=plan(f),proof=structuredClone(f.proof);proof.schemaVersion=2;proof.returnedLedger=review.readLedger(proof.returnedDocument);delete proof.returnedDocument;delete proof.exportMap.commentExport;
+ const compact=plan({...f,proof});assert.equal(compact.content,legacy.content);assert.equal(compact.afterText,legacy.afterText);
+ for(const alter of [p=>p.schemaVersion=3,p=>p.returnedDocument=f.proof.returnedDocument,p=>p.returnedLedger=null,p=>p.returnedLedger.extra=true,p=>p.exportMap.commentExport=p.baseline,p=>p.returnedLedger.source.content[0].content[0].text='forged']){
+  const changed=structuredClone(proof);alter(changed);assert.throws(()=>plan({...f,proof:changed}),/MIXED_RETURN_|PENDING_/);
+ }
 });

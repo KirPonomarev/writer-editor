@@ -40,13 +40,24 @@ function message(source, reply = false) {
 export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false, pendingDocument } = {}) {
   demand(analysis?.ok === true && (analysis.reviewIr?.sourceMode === 'CLEAN' || pendingDocument), 'ANALYSIS');
   const ir = analysis.reviewIr;
-  demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= 128
+  demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= commentBodyModel.COMMENT_CAPACITY.threads
     && Array.isArray(paragraphs), 'BUDGET');
   const pendingLedger = pendingDocument ? pendingTextRevisions.readLedger(pendingDocument) : null;
-  demand(!(ir.moveRevisions?.length || ir.propertyRevisions?.length)
-    && (!ir.textRevisions?.length || pendingLedger), 'TRACKED_UNSUPPORTED');
+  demand(!ir.moveRevisions?.length
+    && (!(ir.textRevisions?.length || ir.propertyRevisions?.length) || pendingLedger), 'TRACKED_UNSUPPORTED');
   if(pendingLedger) {
-    demand(pendingLedger.revisions.every(r=>['insert','delete'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName),'TRACKED_UNSUPPORTED');
+    demand(pendingLedger.revisions.every(r=>['insert','delete','format'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName
+      && (r.operation !== 'format' || r.format.kind === 'run')),'TRACKED_UNSUPPORTED');
+    // Formatting cannot move an anchor, but it must remain a pending operation
+    // in the independently validated rich ledger rather than disappear here.
+    const formats = pendingLedger.revisions.filter(r => r.operation === 'format');
+    const properties = ir.propertyRevisions || [];
+    demand(properties.length === formats.length && formats.every(revision =>
+      properties.filter(property => property.nativeRevisionId === revision.nativeId
+        && property.propertyKind === (revision.format.kind === 'run' ? 'rPrChange' : 'pPrChange')
+        && (property.author ?? '') === revision.author
+        && (property.date ?? '') === revision.date
+        && (property.dateUtc ?? '') === revision.dateUtc).length === 1), 'TRACKED_UNSUPPORTED');
     const current=pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(pendingLedger));
     demand(current.length===paragraphs.length && current.every((p,i)=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')===paragraphs[i].text),'PENDING_CURRENT');
   }
@@ -76,6 +87,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
   };
   const pendingProjection=pendingLedger?pendingTextRevisions.buildCommentExportBinding({document:pendingDocument}).projection:null;
   const nativeIds = new Set();
+  demand(ir.commentThreads.reduce((n,t)=>n+1+(t.replies?.length||0),0)<=commentBodyModel.COMMENT_CAPACITY.messages,'BUDGET');
   const candidates = ir.commentThreads.map(thread => {
     demand(['ANCHORED', 'RESOLVED'].includes(thread.status)
       && ['active', 'resolved', 'reopened'].includes(thread.doneResolvedReopenedState)
@@ -126,16 +138,17 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       selectedText: range.selectedText, blockTextSha256: range.blockTextSha256,
       status: thread.status === 'RESOLVED' ? 'resolved' : 'open', messages };
   });
-  demand(bytes(JSON.stringify(candidates)) <= 65536, 'BUDGET');
+  demand(bytes(JSON.stringify(candidates)) <= commentBodyModel.COMMENT_CAPACITY.stateBytes, 'BUDGET');
   return candidates;
 }
 
 export function materializeGenericComments({ candidates, paragraphs, pendingDocument, projectId, sceneId, importOperationId, beforeText }) {
-  demand(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= 128, 'BUDGET');
+  demand(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= commentBodyModel.COMMENT_CAPACITY.threads, 'BUDGET');
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
-  demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
+  demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= commentBodyModel.COMMENT_CAPACITY.stateBytes), 'STATE_BUDGET');
+  demand(candidates.reduce((n,t)=>n+(t.messages?.length||0),0)<=commentBodyModel.COMMENT_CAPACITY.messages,'BUDGET');
   const before = commentAuthoring.readState(beforeText, projectId);
-  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3,commentBodyModel.STATE_V4, commentBodyModel.STATE_V5].includes(before.schemaVersion) && before.projectId === projectId
+  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3,commentBodyModel.STATE_V4, commentBodyModel.STATE_V5,commentBodyModel.STATE_V6].includes(before.schemaVersion) && before.projectId === projectId
     && Number.isSafeInteger(before.revision) && before.revision >= 0 && before.revision < Number.MAX_SAFE_INTEGER
     && Array.isArray(before.threads) && Array.isArray(before.events), 'STATE');
   const existing = new Set();
@@ -189,9 +202,9 @@ export function materializeGenericComments({ candidates, paragraphs, pendingDocu
       anchor: { ...anchor, authoritySource: 'GENERIC_IMPORT_LOCAL_IDENTITY', sourceChangeId: importOperationId }, messages };
   });
   const after = { ...clone(before), revision: before.revision + 1, threads: [...clone(before.threads), ...threads] };
-  demand(after.threads.length <= 128, 'STATE');
+  demand(after.threads.length <= commentBodyModel.COMMENT_CAPACITY.threads, 'STATE');
   commentBodyModel.upgradeCommentState(after);
   const afterText = commentBodyModel.serializeCommentState(after, 'DOCX_GENERIC_COMMENT_STATE_BUDGET');
-  demand(bytes(afterText) <= 65536, 'STATE_BUDGET');
+  demand(bytes(afterText) <= commentBodyModel.COMMENT_CAPACITY.stateBytes, 'STATE_BUDGET');
   return { beforeText, afterText, threadIds: threads.map(thread => thread.threadId) };
 }

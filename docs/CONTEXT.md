@@ -1,3 +1,76 @@
+## 2026-10-05 — authority migration serialization repair; final delivery pending
+
+Actual race reproduction on bc9 resurrects EXPIRED/version3 as ACTIVE/version2 after a late unleased migration; bc9 is superseded. The same bounded61path contour now routes oversized legacy recovery through the existing disk queue and trusted project lease/publish, re-reading the original record inside serialization. The addressed real atomic-write race regression passes, retaining both terminal round graphs and a newly signed independently published active round. Whole affected Main/neighbor checks are ongoing; no broad result is attributed to these new bytes yet.
+
+Prior bc9 localRTK3461/3461 and native05 SOURCE/PACKAGED reopen/export/UndoRedo remain pinned to that earlier runtime and do not establish race safety. Native05 preserves both prior round graphs,1741 Current/Original paragraphs,200roots/400messages, all discussion ranges and run-property provenance; both new DOCX files open in real Word without repair,253pages/100233 Word-tokenizer words. Five fresh signed100001-word exports/clean changed returns are a separate actual-Main oracle; native proof has one previously genuine Word changed round per origin. Original composed/multi-scene novel launch and full Mac plan remain open.
+
+Obsolete local baseline was explicitly aborted as superseded, not PASS; owned scratch is preserved outside repo and no child remains. Final candidate must pass corrected native06, mandatory broad baseline, both RTK CI graphs, all remaining checks, merge and exact merged verification. No new dependency or UI contract is introduced.
+
+## 2026-10-05 — native04 authority-store refusal isolated; bounded recovery active
+
+Exact869 local maintained graph passes3444/3444 with zero fail/skip/todo and clean owned process/lease cleanup; six whole affected consumer files pass346/346. Native04 both origins reopen the same native03 saved projects without reseeding and complete text/format Undo/Redo; independently verified1741 paragraphs,200 roots/400 messages and all anchors persist. SOURCE Undo retains its separately durable discussion body edit. Corrected runtime DOCX reexport remains blocked, not PASS.
+
+Read-only production Main diagnosis isolates RTK_ROUND_STORE_PATH_UNSAFE: native03 publisher wrote22812767 bytes of pretty-JSON authority while strict reader caps16777216. Two active round records and the complete native03/native04 exit stores are byte-identical; no failed native04 attempt published a new round. Pure source/builder on saved source succeeds, excluding the emission-only IR repair as cause. Compact JSON alone would barely fit two rounds and fail the required five-export use case.
+
+Same capacity packet introduces a private lossless versioned storage codec under the existing encoded16MiB limit, with separate explicit expanded64MiB/depth64/1million-node bounds and full logical round/digest/lifecycle/CAS retention. Existing writer-produced oversized legacy JSON has bounded32MiB recovery admission, full semantic validation and governed atomic migration; no scene restore, round pruning or dependency. Conservative repeated-capture54.84MB decoded is sizing only, not five-round acceptance. Actual Main five fresh export/persist/reopen rounds, adversarial codec/no-write proofs, corrected native export, baseline/CI/merge and merged checks remain required. Preflight60 paths passes on clean exact89dd before codec and recovery edits. Original full Mac plan and composed/multi-scene novel launch remain open.
+
+## 2026-10-05 — exact consumer regressions addressed; final freeze pending
+
+Clean-break export now computes only emission language while keeping canonical
+formatIR/hash unchanged. Authored fonts, sizes and partial run-language fields
+remain exact. Diagnostic identified unwanted eastAsia/bidi additions and a new
+font on an otherwise partial font profile; strict binding and font guards stay.
+All21 addressed failures pass, zero skip/todo. Stable whole consumers, same-project
+native04 reopen/UndoRedo/export in both Mac origins, mandatory gates, CI and
+complete delivery remain required. Native03 and five-round Main observations
+retain their exact8ba qualification; no whole-novel acceptance is claimed.
+
+## 2026-10-05 — native100k routes observed; graph regression repair active
+
+Exact8ba native SOURCE03/PACKAGED03 completes real Word changed return, restart,
+text/format round Undo/Redo and DOCX reexport on100229words,1741paragraphs,
+200roots/400messages. SOURCE retains the earlier saved project during corrected
+runtime upgrade. Independent text/discussion geometry and effective run-property
+provenance oracles pass. Discussion body edits/replies remain durable through
+text/format Undo. NATIVE03_RECEIPT.json binds19 artifacts; owned apps stopped
+with byte-exact saved-profile snapshots. This is one changed Word round per
+origin, not five native Word rounds or full novel launch.
+
+Actual Main/disk five-exchange+fiveUndo+fiveRedo subtest passes on8ba, but full
+maintained graph is3429pass/15fail of3444, zero skip/todo. Failed graph cannot
+close delivery. Same packet repairs clean break export modifying canonical
+formatIR, keeping exact private binding and all font/stale guards; full-scope
+pending consumers are checked before repeating broad gates. Clean exact-base
+57path preflight passed before builder/consumer scope amendments. Original
+Mac plan and composed/multi-scene novel launch remain open. Next: address the
+measured consumer failures, freeze candidate, required gates and complete delivery.
+
+2026-10-05 native SOURCE02: actual100229-word mixed Word Apply independently verified1741paragraphs,200roots/400messages,3pending revisions. Restart Undo refused run-language round; corrected inverse restores exact prior rich source with format-neutral anchor steps,18/18focused whole tests. Native successor and delivery pending.
+
+## 2026-10-05 — capacity native language-return repair; acceptance pending
+
+Native SOURCE01 import/export verified1741paragraphs and400messages; native Apply blocked. Same capacity packet repairs pending run-property/comment binding and standalone-break language preservation. Task contract retains exact negative artifacts and supersedes the earlier recording-mode hypothesis. Corrected candidate needs fresh native both origins, exact affected proof and full delivery. Original novel launch/full Mac plans remain open; no completion claim.
+
+## 2026-10-05 — PR2085 delivered;100k editorial capacity active
+
+PR2085 is merged at89dd736b2a72bbe9335a2b7baa014fe62866c3de. CI19/19; both
+full RTK3415/3415, zero fail/skip/todo. Inventory2199 executed passes and59
+configured skips remain separate. Exact merged42wholefiles1259/1259, zero
+fail/skip/todo; clean detached tree equals candidate20538947c; OPS5 and
+guardrails pass. Native07 runtime08d27bdfb has identical src/package bytes;
+both Mac origins completed genuine Word05 artifact replay, Apply, restart,
+UndoRedo and finished DOCX readback. First absent-comment creation has actual
+Main plus real atomic transaction proof. DELIVERY_RECEIPT.json retains hashes.
+
+Active WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005 starts from that exact base.
+One outcome combines compact paragraph round history and finite discussion
+capacity:100k text,200 roots+200 replies,400 Cyrillic characters per message,
+5 changed exchanges with disk reopen,5 Undo and5 Redo without history pruning
+or identity/message loss. Bootstrap/preflight45paths pass before first edit.
+Original full Mac plan remains; complex objects deferred. Single-scene capacity
+proof does not close multi-scene, composed styles/notes/structure/conflict and
+other required novel launch scenarios. No new completion percentage claimed.
+
 ## 2026-10-05 — mixed-return native07 complete; final delivery gates pending
 
 Runtime08d27bdfb330a61b58ffa1b3b5738db83a6c713b completes actual SOURCE07

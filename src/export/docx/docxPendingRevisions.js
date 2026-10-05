@@ -98,11 +98,10 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   const remainingComments = new Map(commentMarkers);
   const emit = point => {
     if (remainingComments.has(point)) {
-      if (active?.operation === 'format') throw Error('PENDING_COMMENT_FORMAT_UNSUPPORTED');
       // Word discards comment references contained in deleted content when it
       // saves an edited document. Preserve the exact union endpoint, but close
       // the deletion first; the next segment resumes it if this point is inside.
-      if (active?.operation === 'delete') { flush(); active = null; }
+      if (['delete','format'].includes(active?.operation)) { flush(); active = null; }
       body += remainingComments.get(point); remainingComments.delete(point);
     }
     if (!remaining.has(point)) return;

@@ -553,13 +553,14 @@ test('compact imported graph remains writable through authoring, anchor save, si
  await runtime.commitCommentAuthoring(call,{publish:op=>op(),revalidate:async()=>{}});
  assert.deepEqual(author.readState(fs.readFileSync(recovery.recoveryPath,'utf8'),'p'),final,'authoring recovery never expands the compact graph');
  const oversized=structuredClone(final);oversized.threads[0].messages[0].body='x'.repeat(16384);oversized.threads[1].messages[0].body='y'.repeat(16384);
- assert.ok(Buffer.byteLength(JSON.stringify(oversized))>65536);let writes=0;
+ assert.ok(Buffer.byteLength(JSON.stringify(oversized))>65536);oversized.schemaVersion=body.STATE_V6;
+ oversized.extra='x'.repeat(body.COMMENT_CAPACITY.stateBytes);let writes=0;
  const guarded=runtime.createRtkNonTextReturnFilePort({atomicWriteFile:async()=>{writes++;}});
  await assert.rejects(guarded.writeRecovery({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);await assert.rejects(guarded.writeCanonical({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);assert.equal(writes,0);
  assert.throws(()=>body.serializeCommentState(oversized,'CUSTOM_BUDGET'),error=>error.code==='CUSTOM_BUDGET');
  const overCount={...original,threads:Array.from({length:128},(_,i)=>({threadId:'t'+i,sceneId:'s',status:'open',rootCommentId:'m'+i,anchor:{},messages:[{commentId:'m'+i,kind:'root',body:'x'}]}))};
  const atLimit=materializeGenericComments({...input,candidates:[candidate()],beforeText:JSON.stringify({...overCount,threads:overCount.threads.slice(0,127)})});assert.equal(author.readState(atLimit.afterText,'p').threads.length,128);
- const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);assert.throws(()=>materializeGenericComments({...input,candidates:[candidate()],beforeText:old}),/DOCX_GENERIC_COMMENT_STATE/);assert.equal(JSON.stringify(overCount),old);
+ const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);const expanded=materializeGenericComments({...input,candidates:[candidate()],beforeText:old});assert.equal(author.readState(expanded.afterText,'p').threads.length,129);assert.equal(JSON.parse(expanded.afterText).schemaVersion,body.STATE_V6);assert.equal(JSON.stringify(overCount),old);
 });
 
 test('generic import retains a comment at the start of a pending insertion for exact reexport',async()=>{
@@ -583,4 +584,46 @@ test('generic import retains a comment at the start of a pending insertion for e
  assert.throws(()=>api.materializeGenericComments({...input,pendingDocument:undefined}),/PENDING_DOCUMENT_REQUIRED/);
  const forged=structuredClone(entry.comments);forged[0].pendingUnionLocator.geometrySha256='0'.repeat(64);
  assert.throws(()=>api.materializeGenericComments({...input,candidates:forged}),/LOCATOR_STALE/);
+});
+
+test('pending language and text changes preserve comment anchors and both rich projections', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const review = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: ordinaryBytes() }).parts };
+  parts['word/document.xml'] = parts['word/document.xml']
+    .replace('<w:p>', '<w:p><w:ins w:id="7" w:author="Editor"><w:r><w:t>NEW </w:t></w:r></w:ins>')
+    .replace('<w:r><w:t>🧭 anchor</w:t></w:r>', '<w:r><w:rPr><w:lang w:val="en-US"/><w:rPrChange w:id="8" w:author="Editor"><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:rPrChange></w:rPr><w:t>🧭 anchor</w:t></w:r>');
+  const bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  const entry = plan.candidateCreatePlan.entries[0], doc = envelope.parseObservablePayload(entry.content).doc;
+  const ledger = review.readLedger(doc);
+  assert.deepEqual(ledger.revisions.map(r => r.operation), ['insert', 'format']);
+  const plainText = doc => envelope.parseObservablePayload(envelope.composeObservablePayload({doc})).text;
+  assert.equal(plainText(review.materialize(ledger)), 'NEW ' + text);
+  assert.equal(plainText(review.materialize(ledger, 'original')), text);
+  const language = projection => review.paragraphs(projection)[0].content.find(n => n.text === '🧭 anchor').marks.find(m => m.type === 'textStyle').attrs.wordLanguage.val;
+  assert.equal(language(review.materialize(ledger)), 'en-US');
+  assert.equal(language(review.materialize(ledger, 'original')), 'ru-RU');
+  assert.equal(entry.comments[0].startUtf16, 11);
+  assert.equal(entry.comments[0].selectedText, '🧭 anchor');
+  assert.equal(entry.comments[0].messages[0].body, 'Check literal 😀');
+
+  const analysis = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: { sha256Text: sha, sha256Json: v => 'sha256:' + sha(JSON.stringify(v)), byteLength: v => Buffer.byteLength(v) } });
+  const api = await generic, paragraphs = preview.contentPreview.paragraphs;
+  assert.throws(() => api.genericCommentCandidates(analysis, paragraphs), /COMMENT_(ANALYSIS|TRACKED_UNSUPPORTED)/);
+  for (const mutate of [
+    ir => { ir.propertyRevisions[0].nativeRevisionId = 'foreign'; },
+    ir => { ir.propertyRevisions[0].propertyKind = 'pPrChange'; },
+    ir => { ir.propertyRevisions[0].author = 'Other'; },
+    ir => { ir.propertyRevisions = []; },
+    ir => { ir.propertyRevisions.push(structuredClone(ir.propertyRevisions[0])); },
+    ir => { ir.moveRevisions = [{ nativeRevisionId: 'move' }]; },
+  ]) {
+    const changed = structuredClone(analysis); mutate(changed.reviewIr);
+    assert.throws(() => api.genericCommentCandidates(changed, paragraphs, { pendingDocument: doc }), /TRACKED_UNSUPPORTED/);
+  }
 });

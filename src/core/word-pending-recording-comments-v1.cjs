@@ -5,7 +5,8 @@ const recording = require('./word-pending-recording-v1.cjs');
 const envelope = require('./document-content-envelope-v1.cjs');
 const anchors = require('./word-comment-anchor-save-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
-const { upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { serializeCommentState, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { COMMENT_CAPACITY } = require('./word-comment-body-v1.cjs');
 const { validateEditIntents, replayEditIntents, textDigest } = require('./word-comment-edit-intents-v1.cjs');
 const { sha256UpdateCompatible: sha } = require('./browser-safe-hash.cjs');
 const clone = v => JSON.parse(JSON.stringify(v));
@@ -13,12 +14,12 @@ const stable = v => JSON.stringify(v, (_k, x) => x && typeof x === 'object' && !
   ? Object.fromEntries(Object.keys(x).sort().map(k => [k, x[k]])) : x);
 const equal = (a, b) => stable(a) === stable(b);
 const fail = code => { throw Object.assign(Error(code), { code }); };
-const frame = ledger => Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(k => [k, ledger[k]]));
+const frame = review.roundFrame;
 const texts = content => anchors.paragraphs(content).map(p => p.text);
 const definitions = ledger => ledger.revisions.map(({ state, ...r }) => r);
 const rowText = p => (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('');
 function roundIdentity(ledger) {
-  const baseline = ledger?.roundUndo?.at(-1);
+  const baseline = review.lastRoundFrame(ledger);
   if (!baseline) return null;
   return { sessionId: 'recording-round:' + sha(stable(baseline)),
     historyId: 'round:' + sha(stable({ baseline, source: ledger.source, revisions: definitions(ledger) })) };
@@ -35,7 +36,8 @@ const snapshotDigest = s => s.status === 'deleted' ? s.liveLocator.blockTextSha2
 // of inserted nodes reconstructs the original rich source before using them.
 function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'forward') {
   const oldIds = new Set(baseline.revisions.map(r => r.id));
-  if (recorded.revisions.some(r => !['insert', 'delete'].includes(r.operation) || review.isStructural(r) || r.moveName))
+  if (recorded.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
+    || r.operation === 'format' && r.format.kind !== 'run'))
     fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const fresh = recorded.revisions.filter(r => !oldIds.has(r.id));
   if (!fresh.length || fresh.some(r => r.state !== 'pending')) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
@@ -48,8 +50,8 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
     let cursor = 0, position = 0;
     for (const r of revisions) {
       position += r.from - cursor;
-      const isFresh = !oldIds.has(r.id), shown = r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected';
-      if (isFresh) edits.push({ id: 'round-splice-' + edits.length, ...identity, direction: 'forward',
+      const isFresh = !oldIds.has(r.id), shown = r.operation === 'format' || (r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected');
+      if (isFresh && r.operation !== 'format') edits.push({ id: 'round-splice-' + edits.length, ...identity, direction: 'forward',
         fromParagraphIndex: paragraphIndex, toParagraphIndex: paragraphIndex, fromUtf16: position,
         toUtf16: position + (r.operation === 'delete' ? r.to - r.from : 0),
         removedParagraphs: [r.operation === 'delete' ? value.slice(r.from, r.to) : ''],
@@ -58,12 +60,19 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
       cursor = r.to;
     }
     const insertions = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'insert');
+    const formats = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'format');
     let offset = 0; const nodes = [];
     for (const node of paragraph.content || []) {
       const size = node.type === 'hardBreak' ? 1 : node.text.length, end = offset + size;
-      const cuts = [...new Set([offset, end, ...insertions.flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a,b) => a-b);
-      for (let i = 1; i < cuts.length; i++) if (!insertions.some(r => r.from <= cuts[i-1] && r.to >= cuts[i]))
-        nodes.push(node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: node.text.slice(cuts[i-1]-offset, cuts[i]-offset) });
+      const cuts = [...new Set([offset, end, ...[...insertions,...formats].flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a,b) => a-b);
+      for (let i = 1; i < cuts.length; i++) if (!insertions.some(r => r.from <= cuts[i-1] && r.to >= cuts[i])) {
+        const restored = node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: node.text.slice(cuts[i-1]-offset, cuts[i]-offset) };
+        const format = formats.find(r => r.from <= cuts[i-1] && r.to >= cuts[i]);
+        if (format && restored.type === 'text') {
+          if (format.format.before.length) restored.marks = clone(format.format.before); else delete restored.marks;
+        }
+        nodes.push(restored);
+      }
       offset = end;
     }
     paragraph.content = nodes;
@@ -110,10 +119,10 @@ function planRecordingCommentSave(input) {
   const originalState = readState(beforeText, projectId), state = readState(normal.afterText, projectId);
   const baseFrame = frame(review.readLedger(recording.prepare(baseline.doc).baseline));
   const beforeLedger = review.readLedger(before.doc), afterLedger = review.readLedger(after.doc);
-  const belongs = ledger => ledger?.roundUndo?.length && equal(ledger.roundUndo.at(-1), { ...baseFrame, redo: [] });
+  const belongs = ledger => ledger?.roundUndo?.length && equal(review.lastRoundFrame(ledger), { ...baseFrame, redo: [] });
   const priorId = belongs(beforeLedger) ? roundIdentity(beforeLedger) : null;
   const nextId = belongs(afterLedger) ? roundIdentity(afterLedger) : null;
-  if (nextId) roundEdits(afterLedger, afterLedger.roundUndo.at(-1), texts(proof.baselineContent), texts(afterContent));
+  if (nextId) roundEdits(afterLedger, review.lastRoundFrame(afterLedger), texts(proof.baselineContent), texts(afterContent));
   let inverseState;
   for (const thread of state.threads.filter(t => t.sceneId === sceneId)) {
     const priorThread = originalState.threads.find(t => t.threadId === thread.threadId);
@@ -123,7 +132,7 @@ function planRecordingCommentSave(input) {
       if (!priorId) initial = snapshot(priorThread);
       else {
         if (!inverseState) {
-          const inverse = roundEdits(beforeLedger, beforeLedger.roundUndo.at(-1), texts(beforeContent), texts(proof.baselineContent), 'undo');
+          const inverse = roundEdits(beforeLedger, review.lastRoundFrame(beforeLedger), texts(beforeContent), texts(proof.baselineContent), 'undo');
           inverseState = readState(anchors.planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent,
             afterContent: proof.baselineContent, sessionId: inverse.sessionId, editIntents: inverse.plan, includeUnchanged: true }).afterText, projectId);
         }
@@ -138,14 +147,14 @@ function planRecordingCommentSave(input) {
       const history = thread.anchorEditHistory || [];
       const firstCurrent = history.findIndex(h => h.sessionId === proof.sessionId);
       history.splice(firstCurrent < 0 ? history.length : firstCurrent, 0, entry);
-      thread.anchorEditHistory = history.slice(-32);
+      if(history.length>32)fail('COMMENT_HISTORY_INVALID');thread.anchorEditHistory = history;
     }
     if (thread.anchorEditHistory?.length === 0) delete thread.anchorEditHistory;
   }
   if (!equal(originalState, state)) { state.revision = originalState.revision + 1; upgradeCommentState(state); }
-  let afterText = equal(originalState, state) ? beforeText : JSON.stringify(state, null, 2) + '\n';
-  if (Buffer.byteLength(afterText) > 65536) afterText = JSON.stringify(state) + '\n';
-  if (Buffer.byteLength(afterText) > 65536) fail('COMMENT_SAVE_STATE_BUDGET');
+  let afterText = equal(originalState, state) ? beforeText : serializeCommentState(state,'COMMENT_SAVE_STATE_BUDGET');
+  if (Buffer.byteLength(afterText) > COMMENT_CAPACITY.stateBytes) afterText = JSON.stringify(state) + '\n';
+  if (Buffer.byteLength(afterText) > COMMENT_CAPACITY.stateBytes) fail('COMMENT_SAVE_STATE_BUDGET');
   readState(afterText, projectId);
   return { mode: anchors.MODE, beforeText, afterText, recordingProofJson };
 }
@@ -154,7 +163,7 @@ function planRecordingRoundDecision(input, oldLedger, newLedger) {
   const direction = input.decision.action;
   if (!['undo', 'redo'].includes(direction)) fail('PENDING_COMMENT_DECISION_UNSUPPORTED');
   const recorded = direction === 'undo' ? oldLedger : newLedger, baseline = direction === 'undo' ? newLedger : oldLedger;
-  if (!equal(recorded.roundUndo.at(-1), frame(baseline))) fail('RECORDING_COMMENT_ROUND_SOURCE_MISMATCH');
+  if (!equal(review.lastRoundFrame(recorded), frame(baseline))) fail('RECORDING_COMMENT_ROUND_SOURCE_MISMATCH');
   const bound = roundEdits(recorded, frame(baseline), texts(input.beforeContent), texts(input.afterContent), direction);
   return anchors.planCommentAnchorSave({ ...input, includeUnchanged: true, sessionId: bound.sessionId, editIntents: bound.plan });
 }

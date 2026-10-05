@@ -8,7 +8,7 @@ const { sha256UpdateCompatible: sha } = require('./browser-safe-hash.cjs');
 const fail = code => { throw Object.assign(Error(code), { code }); };
 const stable = value => JSON.stringify(value, (_key, v) => v && typeof v === 'object' && !Array.isArray(v)
   ? Object.fromEntries(Object.keys(v).sort().map(k => [k, v[k]])) : v);
-const visible = r => r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected';
+const visible = r => r.operation === 'format' || (r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected');
 
 // The command's union intervals, not matching words, own each edit occurrence.
 // Existing atomic persistence independently replays the resulting splice plan.
@@ -26,7 +26,8 @@ function planPendingCommentDecision({ beforeText, projectId, sceneId, beforeCont
       { beforeText, projectId, sceneId, beforeContent, afterContent, decision }, oldLedger, newLedger);
   if (stable(oldLedger.source) !== stable(newLedger.source)
     || stable(definitions(oldLedger)) !== stable(definitions(newLedger))
-    || oldLedger.revisions.some(r => !['insert', 'delete'].includes(r.operation) || review.isStructural(r) || r.moveName))
+    || oldLedger.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
+      || r.operation === 'format' && r.format.kind !== 'run'))
     fail('PENDING_COMMENT_DECISION_UNSUPPORTED');
   const sessionId = 'pending-comments:' + sha(stable({ projectId, sceneId, source: oldLedger.source, revisions: definitions(oldLedger) }));
   const oldStates = oldLedger.revisions.map(r => r.state), newStates = newLedger.revisions.map(r => r.state);

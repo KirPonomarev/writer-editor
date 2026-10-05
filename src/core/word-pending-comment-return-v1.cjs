@@ -9,7 +9,40 @@ const equal=(a,b)=>stable(a)===stable(b);
 const fail=code=>{throw Object.assign(Error(code),{code});};
 const need=(v,code)=>{if(!v)fail(code);};
 const text=n=>n.type==='hardBreak'?'\n':n.text;
-const provenance=r=>r?stable([r.operation,r.author,r.date,r.dateUtc]):null;
+const provenance=r=>r?stable([r.operation,r.author,r.date,r.dateUtc,
+  ...(r.operation==='format'?[r.format]:[])]):null;
+// Change only properties that differ between Word's checked previous/current
+// snapshots. Emitted defaults must not rewrite unrelated canonical marks.
+function applyRunFormat(node, format) {
+  const result=clone(node),marks=clone(node.marks||[]);
+  for(const type of new Set([...format.before,...format.after].map(mark=>mark.type))) {
+    const before=format.before.find(mark=>mark.type===type),after=format.after.find(mark=>mark.type===type);
+    if(equal(before,after))continue;
+    const index=marks.findIndex(mark=>mark.type===type);
+    if(type!=='textStyle') {
+      if(index>=0)marks.splice(index,1);
+      if(after)marks.push(clone(after));
+      continue;
+    }
+    const attrs=clone(index>=0?marks[index].attrs||{}:{});
+    for(const key of new Set([...Object.keys(before?.attrs||{}),...Object.keys(after?.attrs||{})])) {
+      const a=before?.attrs?.[key],b=after?.attrs?.[key];
+      if(equal(a,b))continue;
+      if(key==='wordLanguage') {
+        const language=clone(attrs[key]||{});
+        for(const field of new Set([...Object.keys(a||{}),...Object.keys(b||{})])) {
+          if(equal(a?.[field],b?.[field]))continue;
+          if(b?.[field]===undefined)delete language[field];else language[field]=clone(b[field]);
+        }
+        if(Object.keys(language).length)attrs[key]=language;else delete attrs[key];
+      } else if(b===undefined)delete attrs[key];else attrs[key]=clone(b);
+    }
+    if(index>=0)marks.splice(index,1);
+    if(Object.keys(attrs).length)marks.push({type,attrs});
+  }
+  if(marks.length)result.marks=marks;else delete result.marks;
+  return review.normalizeNode(result);
+}
 function tokens(segments,comparison) {
   const compare=[];
   for(const node of comparison.content||[]) for(const c of text(node))compare.push({...clone(node),...(node.type==='text'?{text:c}:{})});
@@ -83,15 +116,20 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       const retained=old?.revision;
       const fresh=token.revision&&!retained;
       if(fresh)changes++;
-      const node=match===null?token.node:canonicalRow[match].node;
+      const canonicalNode=match===null?token.node:canonicalRow[match].node;
+      const node=fresh && token.revision.operation==='format'?applyRunFormat(canonicalNode,token.revision.format):canonicalNode;
       nodes.push(clone(node));
       if(retained||fresh) {
         const key=retained?'old:'+retained.id:'new:'+token.revision.id;
         let r=groups.get(key);
         if(!r){r={...clone(retained?oldLedger.revisions.find(r=>r.id===retained.id):token.revision),paragraphIndex:p,from:offset,to:offset+text(node).length};
-          if(!retained){r.id='revision-'+nextId++;r.groupId=null;}
+          if(!retained){r.id='revision-'+nextId++;r.groupId=null;
+            if(r.operation==='format')r.format={kind:'run',before:clone(canonicalNode.marks||[]),after:clone(node.marks||[])};
+          }
           groups.set(key,r);revisions.push(r);
-        }else {need(r.to===offset,'MIXED_RETURN_PARTITION_SPLIT');r.to=offset+text(node).length;}
+        }else {need(r.to===offset,'MIXED_RETURN_PARTITION_SPLIT');
+          if(fresh && r.operation==='format')need(equal(r.format.before,canonicalNode.marks||[])&&equal(r.format.after,node.marks||[]),'MIXED_RETURN_FORMAT_PARTITION_CHANGED');
+          r.to=offset+text(node).length;}
       }
       offset+=text(node).length;
     });
@@ -105,8 +143,13 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
 function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
   need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=8*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
   let proof;try{proof=JSON.parse(returnProofJson);}catch{fail('MIXED_RETURN_PROOF_INVALID');}
-  need(proof&&Object.keys(proof).sort().join(',')==='artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedDocument,returnedParagraphs,returnedThreads,roundId,schemaVersion'
-    &&proof.schemaVersion===1&&proof.projectId===projectId,'MIXED_RETURN_PROOF_INVALID');
+  need(proof&&[1,2].includes(proof.schemaVersion)&&Object.keys(proof).sort().join(',')===
+    (proof.schemaVersion===2?'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedLedger,returnedParagraphs,returnedThreads,roundId,schemaVersion':'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedDocument,returnedParagraphs,returnedThreads,roundId,schemaVersion')
+    &&proof.projectId===projectId,'MIXED_RETURN_PROOF_INVALID');
+  // Version 2 stores one canonical source; its visible document is an exact
+  // checked materialization, not a separately supplied transport projection.
+  if(proof.schemaVersion===2)need(proof.exportMap&&!Object.hasOwn(proof.exportMap,'commentExport'),'MIXED_RETURN_PROOF_INVALID');
+  const returnedDocument=proof.schemaVersion===2?review.bindLedger(proof.returnedLedger):proof.returnedDocument;
   const scene=proof.exportMap?.scenes?.[0];need(proof.exportMap?.scenes?.length===1&&scene.sceneId===sceneId,'MIXED_RETURN_SCENE_REQUIRED');
   const parsed=envelope.parseObservablePayload(beforeContent);need(!parsed.issue&&parsed.doc,'MIXED_RETURN_DOCUMENT_REQUIRED');
   const sha=require('./browser-safe-hash.cjs').sha256UpdateCompatible;
@@ -114,13 +157,13 @@ function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afte
   const state=readState(beforeText,projectId),anchors=state.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
   const baselineRows=review.paragraphs(review.normalizeNode(parsed.doc));
   need(baselineRows.length===scene.blocks.length&&scene.blocks.every((b,i)=>b.formatIr?.runs?.map(r=>r.text).join('')===(baselineRows[i].content||[]).map(text).join('')),'MIXED_RETURN_EXPORT_TEXT_STALE');
-  const derived=deriveMixedPendingDocument({document:parsed.doc,returnedDocument:proof.returnedDocument,binding:scene.pendingCommentBinding,anchors,
+  const derived=deriveMixedPendingDocument({document:parsed.doc,returnedDocument,binding:scene.pendingCommentBinding,anchors,
     exportTypography:proof.exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
   const replacement=review.replaceFromReturn(canonicalPendingBasis(parsed.doc),derived.document,{roundId:proof.roundId,artifactSha256:proof.artifactSha256.replace(/^sha256:/u,'')});
   const content=envelope.composeObservablePayload({...parsed,doc:replacement.doc});
   if(afterContent!==undefined)need(content===afterContent,'MIXED_RETURN_TARGET_MISMATCH');
   const delta=require('./word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText,
-    mixedPendingScene:{sceneId,document:parsed.doc,returnedDocument:proof.returnedDocument}});
+    mixedPendingScene:{sceneId,document:parsed.doc,returnedDocument}});
   need(equal(readState(delta.afterText,projectId).threads.filter(t=>t.sceneId!==sceneId),state.threads.filter(t=>t.sceneId!==sceneId)),'MIXED_RETURN_FOREIGN_SCENE');
   return {mode:RETURN_MODE,beforeText,afterText:delta.afterText,returnProofJson,content,replacement,changes:delta.changes};
 }

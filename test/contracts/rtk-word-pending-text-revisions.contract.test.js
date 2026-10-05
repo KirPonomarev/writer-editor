@@ -163,3 +163,49 @@ test('signed explicit left may return implicit left without admitting other alig
   const noBound=model.buildCommentExportBinding({document});
   assert.throws(()=>model.verifyCommentReturnBinding({document,binding:noBound.binding,returnedDocument:model.bindLedger(returned)}),/PROJECTION_CHANGED/);
 });
+
+
+test('large compact round frames restore five sources, keep legacy reads pure and bind default tab stops',()=>{
+ const review=require('../../src/core/word-pending-text-revisions-v1.cjs'),env=require('../../src/core/document-content-envelope-v1.cjs');
+ const source={type:'doc',content:Array.from({length:70},()=>({type:'paragraph',content:[{type:'text',text:'x'.repeat(1000)}]}))};
+ let doc=review.bindLedger({schemaVersion:1,source,revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'A',date:'',dateUtc:'',paragraphIndex:0,from:0,to:1,state:'pending',groupId:null}],undo:[],redo:[]});
+ const states=[doc];
+ for(let i=2;i<=6;i++){
+  const returned=review.exportNoteBasis(review.readLedger(doc)),from=returned.source.content[2].content.map(n=>n.text).join('').length;
+  returned.source.content[2].content.push({type:'text',text:' added'+i});returned.revisions.push({id:'revision-'+i,nativeId:String(i),operation:'insert',author:'E',date:'',dateUtc:'',paragraphIndex:2,from,to:from+7,state:'pending',groupId:null});
+  doc=review.replaceFromReturn(doc,review.bindLedger(returned),{roundId:'round-'+i,artifactSha256:String(i).repeat(64)}).doc;states.push(doc);
+ }
+ const ledger=review.readLedger(doc);assert.equal(ledger.roundUndo.length,5);assert.ok(ledger.roundUndo.every(f=>f.schemaVersion===4));
+ assert.ok(Buffer.byteLength(JSON.stringify(ledger.roundUndo))<20000);assert.match(env.composeObservablePayload({doc}),/word-pending-round-delta.v1/);
+ const raw=JSON.stringify(doc);review.readLedger(doc);assert.equal(JSON.stringify(doc),raw);
+ for(let i=4;i>=0;i--){doc=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(doc),review.normalizeNode(states[i]));}
+ for(let i=1;i<=5;i++){doc=review.decide(doc,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(doc),review.normalizeNode(states[i]));}
+ doc=review.setDefaultTabStop(doc,720);for(let i=0;i<5;i++){doc=review.decide(doc,{action:'undo'}).doc;assert.equal(review.readLedger(doc).source.attrs.wordDefaultTabStop,720);}
+});
+
+test('compact frame corruption refuses hashes, duplicate indices, topology and future versions without repairing input',()=>{
+ const review=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const source={type:'doc',content:Array.from({length:70},()=>({type:'paragraph',content:[{type:'text',text:'x'.repeat(1000)}]}))};
+ const base={schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]};
+ const next=structuredClone(base);next.source.content[0].content[0].text+='y';next.roundUndo=[review.roundFrame(base)];review.compactRoundHistory(next);
+ assert.equal(next.roundUndo[0].schemaVersion,4);
+ const checked=review.bindLedger(next),mutable=review.readLedger(checked);mutable.source.attrs={wordDefaultTabStop:720};assert.throws(()=>review.materialize(mutable),/PENDING_ROUND_DELTA_BASE_MISMATCH/);
+ for(const alter of [d=>d.source.content.unshift({type:'paragraph',content:[]}),d=>d.source.content[1].attrs={textAlign:'center'},d=>d.source.content.reverse()]){const changed=structuredClone(next);alter(changed);assert.throws(()=>review.bindLedger(changed),/PENDING_ROUND_DELTA_BASE_MISMATCH/);}
+ for(const corrupt of [f=>f.sourceDelta.baseSourceSha256='0'.repeat(64),f=>f.sourceDelta.targetSourceSha256='0'.repeat(64),f=>f.sourceDelta.replacements.push(structuredClone(f.sourceDelta.replacements[0])),f=>f.sourceDelta.replacements[0].paragraphIndex=70,f=>f.sourceDelta.replacements[0].previousParagraph={type:'blockquote',content:[{type:'paragraph'}]},f=>f.restoredSchemaVersion=4,f=>f.sourceDelta.extra=true]){
+  const broken=structuredClone(next);corrupt(broken.roundUndo[0]);const raw=JSON.stringify(broken);assert.throws(()=>review.bindLedger(broken),/PENDING_/);assert.equal(JSON.stringify(broken),raw);
+ }
+});
+
+test('normal return compacts eligible legacy stack before a third full source exceeds ledger budget',()=>{
+ const review=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const source={type:'doc',content:Array.from({length:1000},()=>({type:'paragraph',content:[{type:'text',text:'x'.repeat(1300)}]}))};
+ const initial={schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]};
+ const first=structuredClone(initial);first.source.content[0].content[0].text+='A';first.revisions=[{id:'revision-1',nativeId:'1',operation:'insert',author:'E',date:'',dateUtc:'',paragraphIndex:0,from:1300,to:1301,state:'pending',groupId:null}];
+ const second=structuredClone(first);second.source.content[1].content[0].text+='B';second.revisions.push({...first.revisions[0],id:'revision-2',nativeId:'2',paragraphIndex:1});second.roundUndo=[review.roundFrame(initial),review.roundFrame(first)];
+ const before=review.bindLedger(second),serialized=JSON.stringify(before);assert.ok(Buffer.byteLength(JSON.stringify(second))<4*1024*1024);
+ const third=review.exportNoteBasis(second);third.source.content[2].content[0].text+='C';third.revisions.push({...first.revisions[0],id:'revision-3',nativeId:'3',paragraphIndex:2});
+ assert.ok(Buffer.byteLength(JSON.stringify({...third,roundUndo:[...second.roundUndo,review.roundFrame(second)]}))>4*1024*1024);
+ let doc=review.replaceFromReturn(before,review.bindLedger(third),{roundId:'legacy-third',artifactSha256:'a'.repeat(64)}).doc;
+ assert.equal(JSON.stringify(before),serialized);assert.ok(review.readLedger(doc).roundUndo.every(f=>f.schemaVersion===4));
+ for(const expected of [second,first,initial]){doc=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.readLedger(doc).source,expected.source);}
+});

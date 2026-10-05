@@ -1,5 +1,6 @@
 // R2.4 WP-201_PROJECT_TRANSACTION - one recoverable scene + manifest commit.
 'use strict';
+const { COMMENT_CAPACITY } = require('./word-comment-body-v1.cjs');
 
 const crypto = require('node:crypto');
 const fs = require('node:fs');
@@ -185,7 +186,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
   if(value?.mode===COMMENT_TEXT_RETURN_MODE) {
     if(!scenePair || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
-      || !['beforeText','afterText'].every(k=>(k==='beforeText' && value[k]===null) || typeof value[k]==='string' && Buffer.byteLength(value[k])<=65536)) fail();
+      || !['beforeText','afterText'].every(k=>(k==='beforeText' && value[k]===null) || typeof value[k]==='string' && Buffer.byteLength(value[k])<=COMMENT_CAPACITY.stateBytes)) fail();
     try {
       const projectId=JSON.parse(scenePair.before.manifest).projectId;
       const expected=planCommentTextReturn({beforeText:value.beforeText,projectId,
@@ -197,7 +198,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   }
   if (value?.mode === COMMENT_REBASE_MODE && value.recordingProofJson !== undefined) {
     if (!scenePair || Object.keys(value).sort().join(',') !== 'afterText,beforeText,mode,recordingProofJson'
-      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
+      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= COMMENT_CAPACITY.stateBytes)) fail();
     try {
       const expected = require('./word-pending-recording-comments-v1.cjs').planRecordingCommentSave({
         beforeText: value.beforeText, projectId: JSON.parse(scenePair.before.manifest).projectId,
@@ -209,7 +210,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   }
   if (value?.mode === COMMENT_REBASE_MODE) {
     if (!scenePair || Object.keys(value).sort().join(',') !== (value.editIntents !== undefined ? 'afterText,beforeText,editIntents,mode,sessionId' : 'afterText,beforeText,mode')
-      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
+      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= COMMENT_CAPACITY.stateBytes)) fail();
     let projectId, expected;
     try {
       projectId = JSON.parse(scenePair.before.manifest).projectId;
@@ -225,10 +226,10 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   if (typeof value !== 'object' || Array.isArray(value)
     || Object.keys(value).sort().join(',') !== 'afterText,beforeText'
     || !['beforeText', 'afterText'].every(key => typeof value[key] === 'string'
-      && Buffer.byteLength(value[key]) <= 65536)) fail();
+      && Buffer.byteLength(value[key]) <= COMMENT_CAPACITY.stateBytes)) fail();
   let before, after;
   try { before = JSON.parse(value.beforeText); after = JSON.parse(value.afterText); } catch { fail(); }
-  const commentVersions = ['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3', 'yalken.rtk.word.non-text-return-state.v4', 'yalken.rtk.word.non-text-return-state.v5'];
+  const commentVersions = ['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3', 'yalken.rtk.word.non-text-return-state.v4', 'yalken.rtk.word.non-text-return-state.v5', 'yalken.rtk.word.non-text-return-state.v6'];
   if (!before || !after || !commentVersions.includes(before.schemaVersion)
     || !commentVersions.includes(after.schemaVersion) || commentVersions.indexOf(after.schemaVersion) < commentVersions.indexOf(before.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
     || after.projectId !== before.projectId || !Number.isSafeInteger(before.revision) || before.revision < 0
@@ -1515,7 +1516,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
       let current = path.dirname(manifestPath);
       for (const part of path.relative(current, target).split(path.sep)) {
         current = path.join(current, part); const stat = fs.lstatSync(current);
-        if (stat.isSymbolicLink() || (current === target ? !stat.isFile() || stat.nlink !== 1 || stat.size > 65536 : !stat.isDirectory())) throw Error('BOUNDARY');
+        if (stat.isSymbolicLink() || (current === target ? !stat.isFile() || stat.nlink !== 1 || stat.size > COMMENT_CAPACITY.stateBytes : !stat.isDirectory())) throw Error('BOUNDARY');
       }
       if ((!(record.commentState?.mode === COMMENT_TEXT_RETURN_MODE && record.commentState.beforeDigest === null) && !isDigest(record.commentState?.beforeDigest)) || !isDigest(record.commentState?.afterDigest)
         || sha256hex(fs.readFileSync(target)) !== record.commentState.afterDigest) throw Error('DIGEST');

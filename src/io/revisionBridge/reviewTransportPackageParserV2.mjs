@@ -5380,7 +5380,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
   attrs(roots[0],[],{'http://schemas.openxmlformats.org/markup-compatibility/2006':['Ignorable']}); noText(roots[0]);
   for (const comment of children(roots[0])) {
     require(isWordToken(comment,'comment')); attrs(comment,['id','author','initials','date'],{[W16DU_NS]:['dateUtc']}); noText(comment);
-    const id = attr(comment,'id',W_NS); require(id && !bodies.has(id));
+    const id = attr(comment,'id',W_NS); require(id && !bodies.has(id) && bodies.size<commentBodyModel.COMMENT_CAPACITY.messages);
     const paragraphs = children(comment); require(paragraphs.length > 0 && paragraphs.length <= 128);
     for(const p of paragraphs){const pid=attr(p,'paraId',W14_NS);if(pid){require(isValidModernCommentParaId(pid)&&!allParaIds.has(pid));allParaIds.add(pid);}}
     const finalParaId=attr(paragraphs.at(-1),'paraId',W14_NS);if(finalParaId)finalParaIds.add(finalParaId);
@@ -5434,7 +5434,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
       bodies.set(id,commentBodyModel.validateCommentRichBody(richBody));
     } catch (error) { throw Object.assign(Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'), { detail:error.message }); }
   }
-  require(used.size===rels.size && bodies.size<=256);
+  require(used.size===rels.size && bodies.size<=commentBodyModel.COMMENT_CAPACITY.messages);
   for(const [name,ns,tag]of [['word/commentsExtended.xml',W15_NS,'commentEx'],['word/commentsIds.xml',W16CID_NS,'commentId'],['word/commentsExtensible.xml',W16CEX_NS,'commentExtensible']]){
     if(!parts[name])continue;
     const metadata=parseXmlPart(name,parts[name],budgets,cryptoPort,state);

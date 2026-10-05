@@ -591,3 +591,16 @@ test('actual authenticated Main return admission accepts fresh rich editor repre
   assert.equal((await run()).status,'preview-ready');const applied=await prepared.apply();assert.equal(applied.writerCalled,true,JSON.stringify(applied));assert.equal(fs.readFileSync(scenePath,'utf8'),raw);
   const thread=JSON.parse(fs.readFileSync(statePath,'utf8')).threads[0];assert.equal(thread.threadId,state.threads[0].threadId);assert.equal(thread.messages[0].body,'Changed in Word');
 });
+
+
+test('V6 capacity counts tombstones, deleted messages, events and bytes independently without changing legacy reads',()=>{
+ const body=require('../../src/core/word-comment-body-v1.cjs'),core=require('../../src/core/word-comment-authoring-v1.cjs');
+ const state={schemaVersion:body.STATE_V6,projectId:'capacity',revision:0,events:[],threads:Array.from({length:512},(_,i)=>({threadId:'t'+i,rootCommentId:'m'+i+'-0',sceneId:'s',status:i%2?'open':'deleted',anchor:core.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'x'},'s',['x']),messages:Array.from({length:4},(_,j)=>({commentId:'m'+i+'-'+j,kind:j?'reply':'root',body:'x',provenance:{author:'A'}}))}))};
+ const raw=JSON.stringify(state);assert.equal(core.readState(raw,'capacity').threads.length,512);assert.equal(JSON.stringify(state),raw);
+ for(const change of [s=>s.threads.push({...s.threads[0],threadId:'extra'}),s=>s.threads[0].deletedMessages=[{commentId:'removed',kind:'reply',body:'x'}],s=>s.events=Array.from({length:2049},()=>({})),s=>s.extra='x'.repeat(body.COMMENT_CAPACITY.stateBytes),s=>s.schemaVersion=body.STATE_V5,s=>s.schemaVersion='yalken.rtk.word.non-text-return-state.v7']){
+  const bad=structuredClone(state);change(bad);assert.throws(()=>core.readState(JSON.stringify(bad),'capacity'),/COMMENT_/);
+ }
+ const legacy={schemaVersion:body.STATE_V1,projectId:'capacity',revision:0,events:[],threads:[state.threads[0]]};const before=JSON.stringify(legacy);
+ assert.equal(core.readState(before,'capacity').schemaVersion,body.STATE_V1);assert.equal(JSON.stringify(legacy),before);
+ body.upgradeCommentState(state);assert.equal(state.schemaVersion,body.STATE_V6);
+});

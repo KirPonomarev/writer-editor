@@ -40,3 +40,13 @@ test('legacy authenticated global locator remains distinct from scene-local coor
  assert.equal(a.paragraphIndex,5);
  const bad={...a,blockTextSha256:hash('foreign')};assert.throws(()=>validate({sceneId:'second',paragraphs,anchor:bad}));
 });
+
+test('point boundary admission equals complete grapheme oracle at every UTF16 offset',()=>{
+ for(const text of ['', 'abc', 'e\u0301a\u0308', '👩🏽‍💻👨‍👩‍👧‍👦', '🇫🇮🇺🇦🇦', 'x🧭𐐀z', 'a\r\nb\n', 'क्‍ष']){
+  const old=new Set([text.length,...Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(text),s=>s.index)]);
+  for(const offset of [...Array.from({length:text.length+1},(_,i)=>i),-1,text.length+1,0.5,NaN,Infinity,'0']){
+   const call=()=>derive({sceneId:'s',paragraphs:[text],input:{kind:'point',affinity:'right',paragraphIndex:0,startUtf16:offset,selectedText:''}});
+   if(old.has(offset))assert.equal(call().startUtf16,offset);else assert.throws(call,undefined,JSON.stringify({text,offset}));
+  }
+ }
+});

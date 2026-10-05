@@ -800,14 +800,15 @@ test('actual whole-anchor text plus Word comment removal retains explicit tombst
  assert.throws(()=>plan({...f.input,textChanges,commentReturnInventory:undefined}),/PACKAGE_INCOMPLETE/);
  assert.throws(()=>plan(f.input),/MANUSCRIPT_CHANGED/);
 });
-async function localAnchorHistoryFixture() {
+async function localAnchorHistoryFixture(protectedRound = false) {
   const authoring=require('../../src/core/word-comment-authoring-v1.cjs');
   const {planCommentAnchorSave}=require('../../src/core/word-comment-anchor-save-v1.cjs');
   const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
   const projectId='history-return',sceneId='roman/a.md',beforeContent='Alpha\nOther',afterContent='AlXpha\nOther';
   const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'history-thread',rootCommentId:'history-root',sceneId,status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Alpha'},sceneId,['Alpha','Other']),messages:[{commentId:'history-root',kind:'root',body:'Keep body',provenance:{author:'Alice'}}]}]};
   const forward={id:'forward',historyId:'history-edit',direction:'forward',paragraphIndex:0,fromUtf16:2,toUtf16:2,removedText:'',insertText:'X'};
-  const saved=planCommentAnchorSave({beforeText:JSON.stringify(state),projectId,sceneId,beforeContent,afterContent,sessionId:'local-session',editIntents:{schemaVersion:1,baselineTextSha256:textDigest(['Alpha','Other']),edits:[forward]}});
+  let saved=planCommentAnchorSave({beforeText:JSON.stringify(state),projectId,sceneId,beforeContent,afterContent,sessionId:protectedRound?'recording-round:source-round':'local-session',editIntents:{schemaVersion:1,baselineTextSha256:textDigest(['Alpha','Other']),edits:[forward]}});
+  if(protectedRound)for(const direction of ['undo','redo'])saved=planCommentAnchorSave({beforeText:saved.afterText,projectId,sceneId,beforeContent:direction==='undo'?afterContent:beforeContent,afterContent:direction==='undo'?beforeContent:afterContent,sessionId:'recording-round:source-round',editIntents:{schemaVersion:1,baselineTextSha256:textDigest(direction==='undo'?['AlXpha','Other']:['Alpha','Other']),edits:[direction==='undo'?{...forward,id:'undo',direction,fromUtf16:2,toUtf16:3,removedText:'X',insertText:''}:{...forward,id:'redo',direction}]}});
   const current=authoring.readState(saved.afterText,projectId);assert.equal(current.threads[0].anchorEditHistory.length,1);
   const source=makeSource({projectId,projectRoot:'/project',nonTextReturnState:current,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:afterContent,doc:{type:'doc',content:['AlXpha','Other'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))}}]});
   const bytes=buildDocxReviewPacketBuffer(source),bridge=await import('../../src/io/revisionBridge/index.mjs');
@@ -890,4 +891,14 @@ test('unchanged pending partition admits one reply with independently checked un
     v=>v.pendingScenes.push(v.pendingScenes[0]),v=>v.exportMap.scenes[0].pendingCommentBinding.extra=true]) {
     const bad=structuredClone(input);mutate(bad);const before=JSON.stringify(bad);assert.throws(()=>plan(bad));assert.equal(JSON.stringify(bad),before);
   }
+});
+
+for(const change of ['anchor','status','delete','body'])test('fresh Word return after recording Undo Redo protects history: '+change,async()=>{
+ const f=await localAnchorHistoryFixture(true),input=structuredClone(f.input),before=JSON.parse(input.beforeText);
+ if(change==='anchor'){const t=input.returnedThreads[0];t.paragraphIndex=1;t.quotedAnchorText='Other';t.anchorRange=t.finalTextAnchorRange={startUtf16:0,endUtf16:5,selectedText:'Other',blockTextSha256:hash('Other')};}
+ if(change==='status')input.returnedThreads[0].status='RESOLVED';
+ if(change==='delete'){input.returnedThreads=[];input.commentReturnInventory={schemaVersion:'yalken.rtk.comment-return-inventory.v1',status:'COMPLETE',deletionAuthority:false,packageState:'ABSENT',rootDurableIds:[],messageDurableIds:[]};}
+ if(change==='body'){setReturnedBody(input.returnedThreads[0],'New root text');const result=plan(input);assert.deepEqual(JSON.parse(result.afterText).threads[0].anchorEditHistory,before.threads[0].anchorEditHistory);assert.equal(JSON.parse(result.afterText).threads[0].messages[0].body,'New root text');}
+ else assert.throws(()=>plan(input),/COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT/);
+ assert.equal(input.beforeText,f.input.beforeText);
 });

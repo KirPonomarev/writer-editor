@@ -411,7 +411,7 @@ test('bounded history is compact, remains valid after many groups and expired de
   const corrupt=structuredClone(after);corrupt.threads[0].anchorEditHistory[0].before.foreign=true;
   assert.throws(()=>require('../../src/core/word-comment-authoring-v1.cjs').readState(JSON.stringify(corrupt),projectId),/COMMENT_HISTORY_INVALID/);
 });
-test('near 64KiB comment graphs either fit compact history exactly or refuse before publication',()=>{
+test('legacy near 64KiB comment graphs upgrade explicitly without losing anchor history',()=>{
   const make=target=>{
     const state=JSON.parse(graph('Alpha anchor omega',0,'Alpha'));
     for(let i=0;i<3;i++)state.threads[0].messages.push({commentId:'budget-reply-'+i,kind:'reply',body:'r'.repeat(16000),provenance:{}});
@@ -425,7 +425,10 @@ test('near 64KiB comment graphs either fit compact history exactly or refuse bef
   assert.ok(Buffer.byteLength(saved.afterText)<=65536);assert.equal(JSON.parse(saved.afterText).threads[0].anchor.selectedText,'AlXpha');
   assert.deepEqual(JSON.parse(saved.afterText).threads[0].messages,JSON.parse(fits).threads[0].messages);
   const full=make(65500),unchanged=full;
-  assert.throws(()=>intentSave('Alpha anchor omega','AlXpha anchor omega',full,intent('Alpha anchor omega',2,2,'X')),/COMMENT_SAVE_STATE_BUDGET/);
+  const upgraded=intentSave('Alpha anchor omega','AlXpha anchor omega',full,intent('Alpha anchor omega',2,2,'X'));
+  assert.equal(JSON.parse(upgraded.afterText).schemaVersion,'yalken.rtk.word.non-text-return-state.v6');
+  assert.deepEqual(JSON.parse(upgraded.afterText).threads[0].messages,JSON.parse(full).threads[0].messages);
+  assert.equal(JSON.parse(upgraded.afterText).threads[0].anchorEditHistory.length,1);
   assert.equal(full,unchanged);
 });
 test('saved tombstone typing continues same history group and Undo/Redo retain exact deleted quote',()=>{
@@ -537,4 +540,21 @@ test('comment traversal preserves finite quote, code, continuation and table own
   const split=structuredClone(doc);split.content[0].content.splice(0,1,p('Left'),p(' anchor right'));
   const intent={schemaVersion:2,baselineTextSha256:sha(JSON.stringify(rows.map(r=>r.text))),edits:[{id:'split',historyId:'h1',direction:'forward',fromParagraphIndex:0,fromUtf16:4,toParagraphIndex:0,toUtf16:4,removedParagraphs:[''],insertedParagraphs:['','']}]};
   assert.throws(()=>model.planCommentAnchorSave({beforeText:graph(),projectId,sceneId,beforeContent:raw,afterContent:envelope.composeObservablePayload({doc:split}),editIntents:intent,sessionId:'quote-session'}),/COMMENT_SAVE_STRUCTURE_UNSUPPORTED/);
+});
+
+test('manual typing after two round Undos retains protected identities and permits exact later Redo',()=>{
+ const original='Alpha anchor omega',one='AlXpha anchor omega',two='AlYXpha anchor omega';
+ let state=graph(original,0,'Alpha');
+ state=intentSave(original,one,state,intent(original,2,2,'X',{historyId:'round-a'}),'recording-round:a').afterText;
+ state=intentSave(one,two,state,intent(one,2,2,'Y',{historyId:'round-b'}),'recording-round:b').afterText;
+ state=intentSave(two,one,state,intent(two,2,3,'',{historyId:'round-b',direction:'undo'}),'recording-round:b').afterText;
+ state=intentSave(one,original,state,intent(one,2,3,'',{historyId:'round-a',direction:'undo'}),'recording-round:a').afterText;
+ const identities=JSON.parse(state).threads[0].anchorEditHistory.map(h=>h.sessionId+':'+h.historyId);
+ const manual='AlZpha anchor omega';state=intentSave(original,manual,state,intent(original,2,2,'Z',{historyId:'manual'})).afterText;
+ assert.deepEqual(JSON.parse(state).threads[0].anchorEditHistory.filter(h=>h.sessionId.startsWith('recording-round:')).map(h=>h.sessionId+':'+h.historyId),identities);
+ state=intentSave(manual,original,state,intent(manual,2,3,'',{historyId:'manual',direction:'undo'})).afterText;
+ state=intentSave(original,one,state,intent(original,2,2,'X',{historyId:'round-a',direction:'redo'}),'recording-round:a').afterText;
+ state=intentSave(one,two,state,intent(one,2,2,'Y',{historyId:'round-b',direction:'redo'}),'recording-round:b').afterText;
+ assert.equal(JSON.parse(state).threads[0].anchor.selectedText,'AlYXpha');
+ assert.equal(JSON.parse(state).threads[0].anchorEditHistory.filter(h=>h.sessionId.startsWith('recording-round:')&&!h.undone).length,2);
 });

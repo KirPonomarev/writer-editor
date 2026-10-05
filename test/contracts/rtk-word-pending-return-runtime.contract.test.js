@@ -18,15 +18,17 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false } = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
+async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false, novelDocument, novelState, reopenRoot, commandOnly = false } = {}) {
+  const root = reopenRoot || fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); if (!reopenRoot) t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, 'roman'), {recursive:true}); const file = path.join(root, 'roman/a.txt');
   let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
   const linked=(doc,target)=>{const node={type:'paragraph',content:[{type:'text',text:'Unchanged external link',marks:[{type:'link',attrs:{href:target,rel:'noopener noreferrer nofollow',target:'_blank'}}]}]},ledger=model.readLedger(doc);if(ledger){ledger.source.content.push(node);return model.bindLedger(ledger);}doc.content.push(node);return doc;};
   if(early) {const l=model.readLedger(initial);l.source.content.unshift({type:'paragraph',content:[{type:'text',text:'lead'}]});l.revisions.forEach(r=>r.paragraphIndex++);initial=model.bindLedger(l);}
   if(links)initial=linked(initial,'https://example.com/original');
+  if (novelDocument) initial=structuredClone(novelDocument);
+  if (reopenRoot) initial=envelope.parseObservablePayload(fs.readFileSync(file,'utf8')).doc;
   if (savedDefaults) initial.attrs = { wordPendingRevisions: null };
-  fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
+  if(!reopenRoot)fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
   const h = { writes: 0, opens: 0, snapshot: null, race: null };
   if (mixed) {
     const { exactAnchor } = require('../../src/core/word-comment-authoring-v1.cjs');
@@ -35,6 +37,8 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
         anchor:exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'ew'},'roman/a.txt',['new']),
         messages:[{commentId:'root-'+i,kind:'root',body:'Discussion '+i,provenance:{author:'Writer'}}]}))});
   }
+  if(novelState)h.commentText=JSON.stringify(novelState);
+  if(reopenRoot)h.commentText=fs.readFileSync(path.join(root,'.yalken/word-review/non-text-return-state.v1.json'),'utf8');
   if(early){const state=JSON.parse(h.commentText);for(const t of state.threads){t.anchor.sceneParagraphIndex=1;t.anchor.paragraphIndex=1;}h.commentText=JSON.stringify(state);}
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
@@ -73,12 +77,13 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     createRtkReviewTransportCryptoPort: () => ({ sha256Text: text => hash(text), sha256Json: v => 'sha256:' + hash(JSON.stringify(v)), byteLength: v => Buffer.byteLength(v) }),
     docxReviewReturnIntakeProductBudgets: () => ({}), resetActiveReviewSessionStore: () => { h.reset = (h.reset || 0) + 1; },
   });
-  vm.createContext(c); vm.runInContext(source + '\n' + bus + '\n' + prepareSource, c);
+  vm.createContext(c); vm.runInContext(main.slice(main.indexOf('function stableRtkReviewTransportJson('), main.indexOf('function createRtkReviewTransportCryptoPort(')),c); vm.runInContext(source + '\n' + bus + '\n' + prepareSource, c);
   const kernel = createCommandSurfaceKernel({ [id]: payload => c.handlePendingRevisionCommand(payload) });
   c.MENU_COMMAND_HANDLERS = { [id]: payload => kernel.dispatch(id, payload) };
   h.command = (action, override = {}) => c.dispatchMenuCommand(id, { projectId: 'p', sceneId: 'roman/a.txt', subjectId: 'life:session',
     expectedSceneSha256: context().sceneSha256, action, ...override }, { route: 'command.bus' });
   h.c = c; h.file = file; h.context = context;
+  if(commandOnly)return h;
   const b = await import('../../src/io/revisionBridge/index.mjs');
   let doc = document();
   if (clean) {
@@ -113,12 +118,23 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     if(locator)fresh.pendingUnionLocator=locator;
     returnedComments.threads.push({threadId:'insert-discussion',rootCommentId:'insert-root',sceneId:'roman/a.txt',status:'open',anchor:fresh,messages:[{commentId:'insert-root',kind:'root',body:'On early insertion',provenance:{author:'Editor'}}]});
   }
+  if(novelDocument||reopenRoot) {
+    const ledger=model.exportNoteBasis(model.readLedger(initial)),rows=model.paragraphs(ledger.source),index=101;
+    const next=Math.max(...ledger.revisions.map(r=>Number(r.id.slice(9))))+1;
+    const from=(rows[index].content||[]).map(n=>n.text||'\n').join('').length,addition=' editorial-'+next;rows[index].content.push({type:'text',text:addition});
+    const date='2026-10-05T12:00:'+String(next).padStart(2,'0')+'Z';
+    ledger.revisions.push({id:'revision-'+next,nativeId:String(next),operation:'insert',author:'Editor',date,dateUtc:date,paragraphIndex:index,from,to:from+addition.length,state:'pending',groupId:null});
+    doc=model.bindLedger(ledger);returnedComments=JSON.parse(h.commentText);
+    const changedText=model.paragraphs(model.normalizeNode(doc))[index].content.map(n=>n.text||'\n').join('');
+    for(const thread of returnedComments.threads)if(thread.anchor.sceneParagraphIndex===index)thread.anchor.blockTextSha256=hash(changedText);
+    returnedComments.threads.slice(0,2).forEach((thread,i)=>thread.messages.push({commentId:'capacity-reply-'+next+'-'+i,kind:'reply',body:'Editorial round '+next,provenance:{author:'Editor'}}));
+  }
   if(links)doc=linked(doc,linkTarget||'https://example.com/original');
   const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root, ...(mixed?{nonTextReturnState:returnedComments}:{}),
-    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: links||early?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: novelDocument||reopenRoot||links||early?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
   let bytes = buildDocxReviewPacketBuffer(exported);
   const baselineSource=mixed?buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:JSON.parse(h.commentText),
-    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:links||early?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
+    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:novelDocument||reopenRoot||links||early?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
   if(mixed) {
     const baseBytes=buildDocxReviewPacketBuffer(baselineSource);
     const baseParts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:baseBytes}).parts;
@@ -128,7 +144,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     newNames.forEach((name,i)=>{parts['word/document.xml']=parts['word/document.xml'].replaceAll(name,oldNames[i]);});
     bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
   }
-  const capsule = { ...baselineSource.localAuthorityCapsule, projectRoot: root, roundId: 'round-1',
+  const capsule = { ...baselineSource.localAuthorityCapsule, projectRoot: root, roundId: novelDocument||reopenRoot?'capacity-'+hash(context().raw).slice(0,24):'round-1',
     exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication', returnedArtifactExportMapAccepted: false,
     scenePathBySceneId: { 'roman/a.txt': file }, baselineObservableContentBySceneId: { 'roman/a.txt': context().raw } };
   h.input = { context: { projectId: 'p', projectRoot: root, reviewTransportAuthorityCapsule: capsule,
@@ -137,7 +153,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     onPrepared: value => { h.prepared = value; } };
   h.authority = installMainDocxRoundAuthority(c, { projectRoot: root, projectId: 'p', references: [capsule], publishAllocated: true, t });
   if(mixed) {
-    const commentFile=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentFile),{recursive:true});fs.writeFileSync(commentFile,h.commentText);
+    const commentFile=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentFile),{recursive:true});if(!reopenRoot)fs.writeFileSync(commentFile,h.commentText);
     Object.assign(c,{path,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
       validateDocumentNotesReturn:require('../../src/export/docx/docxReviewPacketNotes.js').validateDocumentNotesReturn,
       DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID:'preview',makeDocxReviewPreviewSessionTypedError:(_type,code)=>({ok:false,code})});
@@ -421,6 +437,7 @@ test('first incoming discussion with absent canonical file prepares without writ
  const h=await harness(t,{mixed:true,clean:true,firstDiscussion:true});
  const commentPath=path.join(h.context().projectRoot,'.yalken/word-review/non-text-return-state.v1.json');
  h.commentText=null;fs.unlinkSync(commentPath);assert.equal(fs.existsSync(commentPath),false);
+ delete h.input.context.reviewTransportAuthorityCapsule.exportMap.commentExport;
  const tx=require('../../src/core/project-transaction-v1.cjs'),save=require('../../src/core/save-coordinator-v1.cjs');
  const manifestPath=path.join(h.context().projectRoot,'project.json');fs.writeFileSync(manifestPath,JSON.stringify({projectId:'p',revision:0}));
  h.c.commitWriterProjectSnapshot=async(target,content,_generation,_profile,_label,options)=>{
@@ -451,4 +468,89 @@ test('first discussion malformed present state cannot use missing-state normaliz
  h.commentText='null';
  const result=await h.prepare();assert.equal(result.status,'blocked');assert.equal(result.code,'COMMENT_STATE_INVALID');
  assert.equal(h.writes,0);assert.equal(h.prepared,undefined);
+});
+
+function installRealEditorialWriter(h) {
+ const tx=require('../../src/core/project-transaction-v1.cjs'),save=require('../../src/core/save-coordinator-v1.cjs');
+ const load=h.c.require;h.c.require=specifier=>{const module=load(specifier);if(specifier!=='./core/word-pending-comment-return-v1.cjs')return module;return {...module,planMixedPendingReturn:input=>{const proof=JSON.parse(input.returnProofJson);h.proofMetrics={bytes:Buffer.byteLength(input.returnProofJson),parts:Object.fromEntries(Object.entries(proof).map(([key,value])=>[key,Buffer.byteLength(JSON.stringify(value))]))};console.log('CAPACITY_PROOF '+JSON.stringify(h.proofMetrics));return module.planMixedPendingReturn(input);}};};
+ const root=h.context().projectRoot,commentPath=path.join(root,'.yalken/word-review/non-text-return-state.v1.json'),manifestPath=path.join(root,'project.json');
+ if(!fs.existsSync(manifestPath))fs.writeFileSync(manifestPath,JSON.stringify({projectId:'p',revision:0}));
+ Object.defineProperty(h,'commentText',{configurable:true,get:()=>fs.existsSync(commentPath)?fs.readFileSync(commentPath,'utf8'):null,set:value=>fs.writeFileSync(commentPath,value)});
+ h.c.commitWriterProjectSnapshot=async(target,content,_generation,_profile,_label,options)=>{
+  await options.beforeScenePublish();
+  const input={beforeText:h.commentText,projectId:'p',sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content};
+  const commentState=options.pendingCommentReturnProofJson?require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({...input,returnProofJson:options.pendingCommentReturnProofJson}):require('../../src/core/word-pending-comment-decisions-v1.cjs').planPendingCommentDecision({...input,decision:options.pendingCommentDecision});
+  const expectedManifestContent=fs.readFileSync(manifestPath,'utf8'),revision=JSON.parse(expectedManifestContent).revision+1;
+  const adapter={...fs.promises,rename:async(from,to)=>{await fs.promises.rename(from,to);if(to===tx.journalPathFor(manifestPath))h.journalBytes=fs.statSync(to).size;}};
+  await tx.commitProjectTransaction({scenePath:target,manifestPath,sceneContent:content,expectedSceneContent:options.expectedSceneContent,expectedManifestContent,manifestContent:JSON.stringify({projectId:'p',revision}),revision,commentState,fsAdapter:adapter,
+   publishManifest:async({manifestPath,expectedText,nextText,revision})=>{assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);await save.durableSaveTransaction({filePath:manifestPath,content:nextText,revision});}});
+  h.writes++;return {success:true,projectTransaction:true};
+ };
+ return h;
+}
+function editorialCorpus() {
+ const ledger=structuredClone(model.readLedger(document())),text=Array(100).fill('романы').join(' ');
+ ledger.source.content.push(...Array.from({length:1000},()=>({type:'paragraph',content:[{type:'text',text}]})));
+ const doc=model.bindLedger(ledger),rows=model.paragraphs(model.normalizeNode(doc)).map(p=>(p.content||[]).map(n=>n.text||'\n').join(''));
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v6',projectId:'p',revision:0,events:[],threads:Array.from({length:200},(_,i)=>({threadId:'editorial-root-'+i,rootCommentId:'editorial-comment-'+i,sceneId:'roman/a.txt',status:'open',
+ anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex:i+1,startUtf16:0,selectedText:'романы'},'roman/a.txt',rows),
+ messages:[{commentId:'editorial-comment-'+i,kind:'root',body:'Р'.repeat(400),provenance:{author:'Writer'}},{commentId:'editorial-reply-'+i,kind:'reply',body:'О'.repeat(400),provenance:{author:'Editor'}}]}))};
+ return {doc,state};
+}
+test('editorial capacity actual Main disk route completes five 100000 word exchanges and five Undo Redo',async t=>{
+ const {doc,state}=editorialCorpus();let h=installRealEditorialWriter(await harness(t,{mixed:true,novelDocument:doc,novelState:state}));
+ const root=h.context().projectRoot,states=[model.projection(doc)],ledgers=[model.readLedger(doc)];
+ const measurements=[],initialThreads=structuredClone(state.threads);let knownThreads=structuredClone(initialThreads),protectedFrames;
+ const checkEntities=()=>{
+  const graph=JSON.parse(h.commentText),current=h.context().parsed.doc,rows=model.paragraphs(model.normalizeNode(current)).map(p=>(p.content||[]).map(n=>n.text||'\n').join(''));
+  for(const prior of knownThreads){const actual=graph.threads.find(t=>t.threadId===prior.threadId);assert.ok(actual);assert.equal(actual.rootCommentId,prior.rootCommentId);assert.equal(actual.sceneId,prior.sceneId);assert.equal(actual.status,'open');
+   for(const message of prior.messages)assert.deepEqual(actual.messages.find(m=>m.commentId===message.commentId),message);
+   const initial=initialThreads.find(t=>t.threadId===prior.threadId);
+   for(const key of ['sceneId','sceneParagraphIndex','startUtf16','selectedText','selectedTextSha256'])assert.deepEqual(actual.anchor[key],initial.anchor[key]);
+   assert.equal(actual.anchor.blockTextSha256,hash(rows[initial.anchor.sceneParagraphIndex]));
+   assert.equal(rows[actual.anchor.sceneParagraphIndex].slice(actual.anchor.startUtf16,actual.anchor.startUtf16+actual.anchor.selectedText.length),actual.anchor.selectedText);
+  }
+  const currentLedger=model.readLedger(current);for(const revision of ledgers[0].revisions)assert.deepEqual(currentLedger.revisions.find(r=>r.id===revision.id),revision);
+  return graph;
+ };
+ for(let round=0;round<5;round++){
+  const start=performance.now();
+  if(round)h=installRealEditorialWriter(await harness(t,{mixed:true,reopenRoot:root}));
+  const before=fs.readFileSync(h.file,'utf8'),comments=h.commentText,prepareStarted=performance.now();
+  const result=await h.route();assert.equal(result.pendingProductPath?.status,'preview-ready','round '+(round+1)+': '+JSON.stringify(result));
+  const prepareMs=performance.now()-prepareStarted;
+  assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);
+  if(round===0){let preview;Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{preview=options;return {response:0};}}});vm.runInContext(main.slice(main.indexOf('async function confirmLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),h.c);assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'novel.docx',changes:h.prepared.changes}),false);assert.equal(preview.cancelId,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);}
+  const applyStarted=performance.now();assert.equal((await h.prepared.apply()).ok,true);const applyMs=performance.now()-applyStarted;assert.equal(h.writes,1);
+  states.push(model.projection(h.context().parsed.doc));ledgers.push(model.readLedger(h.context().parsed.doc));
+  const record={round:round+1,prepareMs,applyMs,journalBytes:h.journalBytes,proofBytes:h.proofMetrics.bytes,elapsedMs:performance.now()-start,sceneBytes:Buffer.byteLength(fs.readFileSync(h.file,'utf8')),ledgerBytes:Buffer.byteLength(JSON.stringify(ledgers.at(-1))),commentsBytes:Buffer.byteLength(h.commentText),rss:process.memoryUsage().rss};measurements.push(record);console.log('CAPACITY_ROUND '+JSON.stringify(record));
+  assert.equal(states.at(-1).original,states[0].original);assert.equal(ledgers.at(-1).roundUndo.length,round+1);
+  const graph=checkEntities();knownThreads=structuredClone(graph.threads);assert.equal(graph.threads.length,200);assert.equal(graph.threads.reduce((n,t)=>n+t.messages.length,0),400+2*(round+1));assert.ok(graph.threads.every(t=>t.messages[0].body==='Р'.repeat(400)&&t.messages[1].body==='О'.repeat(400)));
+ }
+ for(const action of ['undo','redo'])for(let i=0;i<5;i++){
+  const started=performance.now();h=installRealEditorialWriter(await harness(t,{mixed:true,reopenRoot:root,commandOnly:true}));
+  assert.equal((await h.command(action)).ok,true);const expected=action==='undo'?4-i:i+1;
+  assert.equal(model.projection(h.context().parsed.doc).current,states[expected].current);
+  assert.deepEqual(model.readLedger(h.context().parsed.doc).revisions,ledgers[expected].revisions);
+  const graph=checkEntities();assert.equal(graph.threads.reduce((n,t)=>n+t.messages.length,0),410);assert.ok(graph.threads.every(t=>t.status==='open'));
+  const anchored=graph.threads.find(t=>t.anchor.sceneParagraphIndex===101);assert.equal(anchored.anchorEditHistory.filter(e=>e.sessionId.startsWith('recording-round:')).length,action==='undo'?i+1:5);
+  const protectedNow=anchored.anchorEditHistory.filter(e=>e.sessionId.startsWith('recording-round:')).map(({undone,...entry})=>entry);
+  if(action==='undo'&&i===4)protectedFrames=structuredClone(protectedNow);
+  if(action==='redo')assert.deepEqual(protectedNow,protectedFrames);
+  console.log('CAPACITY_DECISION '+JSON.stringify({action,step:i+1,elapsedMs:performance.now()-started,rss:process.memoryUsage().rss}));
+ }
+ const finalDoc=h.context().parsed.doc,finalState=JSON.parse(h.commentText),packet=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:finalState,scenes:[{sceneId:'roman/a.txt',scenePath:h.file,order:0,text:model.projection(finalDoc).current,doc:finalDoc}]});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),readback=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildDocxReviewPacketBuffer(packet)},{cryptoPort:h.c.createRtkReviewTransportCryptoPort()});assert.equal(readback.ok,true);assert.equal(readback.reviewIr.commentThreads.length,200);assert.equal(readback.reviewIr.commentThreads.reduce((n,t)=>n+1+t.replies.length,0),410);
+ for(const expected of finalState.threads){const exported=packet.commentExport.threads.find(t=>t.threadId===expected.threadId),actual=readback.reviewIr.commentThreads.find(t=>t.durableId===exported.messages[0].durableId);assert.ok(actual);
+  const messages=[actual,...actual.replies];for(const message of expected.messages){const binding=exported.messages.find(m=>m.canonicalCommentId===message.commentId),returned=messages.find(m=>m.durableId===binding.durableId);assert.ok(returned);assert.equal(returned.body,message.body);}
+  assert.equal(actual.finalTextAnchorRange.selectedText,exported.anchor.selectedText);
+ }
+});
+
+for(const variant of ['reordered','mismatch'])test('actual Main mixed proof duplicate baseline '+variant,async t=>{
+ const h=await harness(t,{mixed:true}),capsule=h.input.context.reviewTransportAuthorityCapsule;
+ if(variant==='reordered')capsule.exportMap.commentExport=Object.fromEntries(Object.entries(capsule.commentExport).reverse());
+ else capsule.exportMap.commentExport={...capsule.commentExport,stateRevision:capsule.commentExport.stateRevision+1};
+ const result=await h.prepare();assert.equal(result.status,variant==='reordered'?'preview-ready':'blocked',JSON.stringify(result));assert.equal(h.writes,0);
+ if(variant==='mismatch')assert.equal(result.code,'MIXED_RETURN_COMMENT_BASELINE_MISMATCH');
 });
