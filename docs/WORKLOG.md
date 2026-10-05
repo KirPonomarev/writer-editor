@@ -1,5 +1,13 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 06:12 EEST — CI consumer expectation repair
+
+- CI37257433260 failed both RTK lanes3294/3295 on the same stale valid-language
+  refusal assertion; dependent merge gates correctly failed. No success claim.
+- Test-only correction preserves valid manuscript break marks and strengthens
+  malformed language negatives. Full file14/14, zero skips; runtime unchanged.
+  Exact amended preflight passed at1f57fa059. Repeat mandatory CI before merge.
+
 ## 2026-10-05 05:53 EEST — break formatting native and focused proof
 
 - SOURCE/PACKAGED fc9aa9f56 actual Word edits three break types; Apply, ordinary

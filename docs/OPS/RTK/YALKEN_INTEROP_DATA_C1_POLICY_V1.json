@@ -2378,7 +2378,7 @@
       },
       {
         "path": "test/contracts/rtk-word-rich-comments-renderer.contract.test.js",
-        "sha256": "ec54c9938c46d0b10535bebbc3956eba39aa33ed1e4e8b69890a9772f0f1df8a"
+        "sha256": "5e58983c823ceecb6efa71c26a77d3b9a55e342e0abb04c8fd60746483eb2cc2"
       },
       {
         "path": "docs/tasks/2026-10-03--word-rich-comments-mac.md",
@@ -2510,15 +2510,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "fcaaaa3c5ff41131b456951494e6f2a6ab41450d032eb32bc630484e4edaa581"
+        "sha256": "508e609dd33bbd263595901a59196b4d80c89c01a32d7d8ae52305f5e0722e5c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ea02083af295eeaf18af78c45cd3a0a05f9243622135bb3e9abb6bc145ecb386"
+        "sha256": "3f4f498e1fe664dcb4b048215ca1317582667ad3def3c3d8502556a50be0187f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1119822cf986c0ddac2aaf3123496ab3f691cfa274e665bdca2cd13a71fe2231"
+        "sha256": "4aa5e415f4428c367a19f185d654065763adae68ad5d17445f67e5319d8de584"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2570,7 +2570,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-break-formatting-mac.md",
-        "sha256": "e90c09f95c69aa866ead001dc4b82ba48b7aed01fffd401b9f514a799bdcb579"
+        "sha256": "3e5018e0cf49fbbbed3877d4337495f66ac9753dd7557cb135a14a18d1eca821"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BREAK_FORMATTING_V1.json",

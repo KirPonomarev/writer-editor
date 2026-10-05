@@ -126,3 +126,18 @@ restart binding presentation issue. These join the original residual plan.
 Fixture setup initially used an incomplete sectPr, rejected WORD_SECTIONS_INVALID;
 a minimal corrected seed passed before positive execution. One Word focus error
 was undone and the failed artifact retained. Neither is product success evidence.
+
+## CI consumer correction — 2026-10-05 06:12 EEST
+
+CI37257433260 at1f57fa059 failed both full RTK lanes on the same obsolete
+renderer test:3294 passed of3295, zero skips. The old assertion required
+valid manuscript break language to refuse, contradicting this packet's
+validated preservation contract. Other executable jobs passed; dependent
+merge and compatibility gates correctly failed. This run is not acceptance.
+
+A clean-head declaration amendment at1f57fa059 explicitly adds the renderer
+consumer test; original PR base60a22cd0f is unchanged. The repaired full file
+passes14/14, zero skips: exact adjacent marks/language are preserved, and
+malformed tag, unknown tuple key, empty tuple, unknown field and unsupported
+mark refusals remain. No runtime bytes changed. It is now in the affected and
+exact-merged test lists. Repeat mandatory CI before merge.

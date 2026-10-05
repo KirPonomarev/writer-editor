@@ -1,5 +1,13 @@
 # HANDOFF (Yalken Writer)
 
+## CI consumer correction — 2026-10-05 06:12 EEST
+
+CI37257433260 failed both full RTK lanes3294/3295 on one stale renderer
+expectation. Updated valid break-language preservation plus malformed-tuple
+negatives; full renderer file14/14, zero skips. Runtime unchanged. Declaration
+amendment binds clean1f57fa059; original PR base remains60a22cd0f. Add this
+consumer to merged checks; repeat CI and close PR2081 delivery before next code.
+
 ## Stable candidate observations — 2026-10-05 05:53 EEST
 
 Break-formatting native SHAfc9aa9f56: SOURCE/PACKAGED actual Word break-only
