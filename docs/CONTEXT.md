@@ -1,3 +1,31 @@
+## 2026-10-05 — mixed-return native07 complete; final delivery gates pending
+
+Runtime08d27bdfb330a61b58ffa1b3b5738db83a6c713b completes actual SOURCE07
+and PACKAGED07 Apply, restart, round Undo/Redo and Review DOCX reexport. Genuine
+native05 preApply captures and real Word05 changed files were replayed; saved
+post06 profiles are archived. No new Word edit is claimed for native07. SOURCE
+retains5 old revisions and adds2,4 roots/7 messages; PACKAGED retains9 and adds2,
+5 roots/10 messages. Original text, prior identities/provenance and every prior
+message/status/Current quote survive. Restart hashes equal Apply; Redo scene
+bytes equal Apply. Independent ZIP/XML readback matches all40 Original and40
+Current paragraphs per finished DOCX, including internal hard breaks. Both owned
+processes stop normally and saved-profile copies are byte-exact.
+
+The absent-file first-comment edge is separately proven by actual Main with the
+real atomic writer and175 affected tests, zero fail/skip/todo, including7 fresh
+process SIGKILL recoveries. Null source is restricted to the typed mixed mode;
+malformed present state and concurrent-file/forged-null/symlink attacks refuse.
+Missing parent directories retain existing refusal and exact recovery to absence.
+Older transaction decoders do not admit null-before receipts: preserve canonical
+files and receipts and complete current recovery before a code downgrade; a
+code-only revert is not an established recovery proof for this new edge.
+
+NATIVE07_RECEIPT.json binds28 hashed artifacts. Required final CI, merge and42
+unique affected whole suites on the exact merged SHA remain pending. Earlier
+cancelled CI is not acceptance. These189/190-word fixtures do not accept100k.
+Next packet combines100k five-cycle history capacity and finite discussion
+capacity; original full Mac plan remains intact with complex objects deferred.
+
 ## 2026-10-05 — absent first-discussion state repaired; native07 pending
 
 The first returned Word discussion now prepares without writes when the canonical
