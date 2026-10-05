@@ -44,6 +44,8 @@ production code, contract tests and bound native SOURCE/PACKAGED observations.
 - `src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs`
 - `src/main.js`
 - `src/renderer/editor.bundle.js`
+- `src/renderer/tiptap/wordPendingRevisions.mjs`
+- `test/contracts/rtk-word-list-pattern-renderer.contract.test.js`
 - `test/contracts/rtk-word-pending-text-revisions.contract.test.js`
 - `test/contracts/rtk-word-comment-return-delta.contract.test.js`
 - `test/contracts/rtk-word-pending-revisions-package.contract.test.js`
@@ -169,6 +171,8 @@ canon reads and clean exact-base 34-path preflight. PR2081 already delivered
 with CI19/19, fullRTK3295/3295 twice and merged401/401 plus Git/OPS/guardrails.
 Scope amendment: clean checkpoint8039bf18f, preflight36paths PASS before edits
 to the two direct consumer tests. The original delivery base remains f557f7cb0.
+Second amendment: clean candidate c1ba94de, preflight38paths PASS before edits
+to atomic checked renderer root-attribute replacement and actual-schema tests.
 
 CHECK_02_POST_VERTICAL: actual generic import and Main signed reply-only Apply;
 normal, boundary, foreign/stale inputs; no writes on refusal, complete retention.
@@ -192,6 +196,16 @@ Candidate-focused evidence: actual Main13/13, scene consumers33/33, Core51/51;
 no full candidate acceptance from these counts. Native Word v04 true language
 changes refused; preserved as negative and separate original-plan residual.
 Actual Word v04 file is next generic input baseline, never edited to fit proof.
+
+Native SOURCE01 blocker: input early-v04-word.docx persisted correctly but
+opening failed DOCX_IMPORT_ACK_CONTENT_MISMATCH. Actual full Editor schema
+reproduction shows checked setContent copied ledger before defaultTabStop708
+and other root attrs, so pending projection filter correctly rejected the
+intermediate state. Copy all schema root attrs in the same replacement
+transaction; keep filter and ACK strict. Actual-schema regression30/30 passed, including real Main ACK and failed
+projection retaining prior editor state/history; independent source review
+found no blocking issue. Native recheck remains required. SOURCE01 profile and all12 files are
+retained byte-for-byte after safe stop. No native acceptance claimed.
 
 ## STOP_CONDITION
 

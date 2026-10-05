@@ -525,11 +525,11 @@ test('actual checked scene replacement preserves imported skipped levels despite
   }
 });
 
-async function scenePublicationHarness() {
+async function scenePublicationHarness(extraExtensions = []) {
   const [pending,sections,stories,bookmarks,{history,closeHistory}]=await Promise.all([
     import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),import('../../src/renderer/tiptap/documentSections.mjs'),
     import('../../src/renderer/tiptap/documentStories.mjs'),import('../../src/renderer/tiptap/userBookmarks.mjs'),import('@tiptap/pm/history')]);
-  const {editor}=await harness(doc(p('Scene A')),[pending.WordPendingRevisions,sections.DocumentSections,stories.DocumentStories,bookmarks.UserBookmarks]);
+  const {editor}=await harness(doc(p('Scene A')),[pending.WordPendingRevisions,sections.DocumentSections,stories.DocumentStories,bookmarks.UserBookmarks,...extraExtensions]);
   const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
   const code=source.slice(source.indexOf('function setCheckedDocument(editor, doc) {'),source.indexOf('export function applyTiptapUserBookmarkPublication'))
     +source.slice(source.indexOf('export function setTiptapDocumentSnapshot('),source.indexOf('// A dialog owns only')).replace('export ','');
@@ -697,4 +697,41 @@ test('actual status callback reveals bounded Word return codes and keeps hostile
  for(const status of hidden){callback(status);assert.deepEqual(updates.at(-1),{text:status,visible:false});}
  const count=updates.length;callback({type:'manuscript-notes-published',projectId:'foreign'});assert.equal(updates.length,count);assert.equal(notes,0);
  callback({type:'manuscript-notes-published',projectId:'project'});assert.equal(notes,2);assert.equal(updates.at(-1).text,'Сноски обновлены');
+});
+
+test('actual pending scene publication commits root settings with ledger atomically and passes Main import ACK comparison',async()=>{
+  const {DocumentParagraphAlignment}=await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const {editor,context}=await scenePublicationHarness([DocumentParagraphAlignment]);
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const sections=require('../../src/core/word-sections-v1.cjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  try {
+    let source={type:'doc',attrs:{wordDefaultTabStop:708},content:[p('Before inserted after'),p('Second paragraph')]};
+    source=sections.bind(source,{schemaVersion:1,boundaries:[],final:{type:'continuous',docGrid:{type:'default',linePitch:360}}});
+    const incoming=pending.bindLedger({schemaVersion:2,source,revisions:[{id:'revision-1',nativeId:'51',operation:'insert',author:'Reviewer',date:'',dateUtc:'',paragraphIndex:0,from:7,to:15,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+    const original=JSON.stringify(incoming),expected=editor.schema.nodeFromJSON(incoming);
+    assert.equal(context.setTiptapDocumentSnapshot({doc:incoming,resetHistory:true}),true);
+    assert.equal(editor.state.doc.eq(expected),true);
+    assert.equal(editor.state.doc.attrs.wordDefaultTabStop,708);
+    assert.deepEqual(pending.readLedger(editor.getJSON()),pending.readLedger(incoming));
+    assert.deepEqual(sections.read(editor.getJSON()),sections.read(incoming));
+    assert.equal(JSON.stringify(incoming),original);
+    const main=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+    const ack=main.slice(main.indexOf('async function docxImportOpenedSnapshotMatches('),main.indexOf('async function handleDocxImportOpenAcknowledgement('));
+    const comparator=main.slice(main.indexOf('async function treeSceneSnapshotsEqual('),main.indexOf('async function assertTreeEditorSnapshotIdentity('));
+    const ackContext=vm.createContext({loadDocumentContentEnvelopeModule:async()=>envelope,
+      loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+      userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),pendingTextRevisions:pending});
+    vm.runInContext(comparator+ack,ackContext);
+    const raw=envelope.composeObservablePayload({doc:incoming});
+    const live=envelope.composeObservablePayload({doc:editor.getJSON(),metaEnabled:true});
+    assert.equal(await ackContext.docxImportOpenedSnapshotMatches(raw,live),true);
+    const state=editor.state,malformed=structuredClone(incoming);malformed.attrs.wordDefaultTabStop=720;
+    assert.equal(context.setTiptapDocumentSnapshot({doc:malformed,resetHistory:true}),false);
+    assert.equal(editor.state,state,'inconsistent projection cannot publish or clear history');
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Next scene')),resetHistory:true}),true);
+    assert.equal(editor.state.doc.attrs.wordPendingRevisions,null);
+    assert.equal(editor.state.doc.attrs.wordDefaultTabStop,null);
+    assert.equal(editor.state.doc.attrs.wordSections,null);
+  }finally{editor.destroy();}
 });

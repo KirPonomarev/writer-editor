@@ -4,7 +4,8 @@
   "writePaths": [
     "DOCX validated OPC/parser -> Core pending/current and comment candidates -> existing atomic safe-create import transaction",
     "Canonical source/ledger/comment state -> validated compact export bindings -> ordinary/Review DOCX publication with semantic readback",
-    "Signed source/raw return -> independent unchanged-pending partition/anchor proof -> explicit Kernel/Main Apply -> existing leased atomic comment state writer; scenes remain byteexact"
+    "Signed source/raw return -> independent unchanged-pending partition/anchor proof -> explicit Kernel/Main Apply -> existing leased atomic comment state writer; scenes remain byteexact",
+    "Existing checked renderer document replacement carries every schema-declared root attribute in the same transaction, preserving pending ledger and complete projection; existing strict filter and Main ACK remain authoritative."
   ],
   "productPorts": [
     "Existing native DOCX chooser/read/write, atomic import project transaction, scene snapshot and leased atomic comment persistence/recovery ports"
@@ -37,7 +38,8 @@
     "Actual Word fragmentation around reply references, repeatedtext, insertion-internal and deletion-spanning comments; actual Main preview no write, explicit reply Apply scene+ledgerbyteequal, replay/restart",
     "Generic mixed single-scene import independently proved with shared quote/code/list/HTTP/markedbreak corpus; signed multi-scene proof alone insufficient",
     "Changed/missing/extra/empty/crossrevision fragments, untracked gaps, altered author/date/marks/breaks, wrong union/current anchors, stale sibling/comment/raw/context/generation refuse with zero writes",
-    "Early SOURCE/PACKAGED native before stable broad consumers; mandatory CI/delivery and exact merged verification"
+    "Early SOURCE/PACKAGED native before stable broad consumers; mandatory CI/delivery and exact merged verification",
+    "Actual full Editor schema accepts pending doc with defaultTabStop708 and protected section registry atomically; corrupted projection retains previous scene and identity."
   ],
   "securityAndInputBoundary": "No new dependencies, runtime network, UI/IPC writers, private owner data or budget inflation. External DOCX and proof fields validated before semantic use; compact signed binding avoids manuscript duplication.",
   "performanceAndAccessibility": "Bounded explicit import/export/return work, no per-keystroke fullbook scan. Existing keyboard/preview controls preserved. Shared100k corpus measured after small route;500k remains final original acceptance.",

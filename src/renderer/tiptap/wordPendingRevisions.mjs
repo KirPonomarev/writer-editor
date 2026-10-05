@@ -26,8 +26,14 @@ export const WordPendingRevisions = Extension.create({
 });
 export function setCheckedDocument(editor, doc) {
   model.readLedger(doc);
+  const target = editor.schema.nodeFromJSON(doc);
+  target.check();
   return editor.chain().command(({ tr }) => { tr.setMeta('wordPendingRevisionsExternal', true); return true; })
     .setContent(doc, { emitUpdate: false, errorOnInvalidContent: true }).command(({ tr }) => {
-      tr.setDocAttribute(model.KEY, doc.attrs?.[model.KEY] || null); return true;
+      // setContent replaces children but retains the old root attributes.
+      // The pending ledger and its complete projection must reach filters in
+      // one transaction, including document settings and protected registries.
+      for (const [key, value] of Object.entries(target.attrs)) tr.setDocAttribute(key, value);
+      return true;
     }).run();
 }

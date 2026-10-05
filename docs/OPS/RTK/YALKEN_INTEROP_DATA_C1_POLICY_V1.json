@@ -832,7 +832,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "3d3048f8ed6ba07f2e7b2eb877cd50c8959d306ec84698fa007df23e9f654f71"
+        "sha256": "7ef28e2fd73af39bfd5f58644309acf58513cb9f831c82fcfd89502af5c8677c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1696,7 +1696,7 @@
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
-        "sha256": "25e768f31206d41c329edc4b5cfe98952990f765d05e213f6d517fad37780b00"
+        "sha256": "69d48c9ae562d3063050e7591c4cb109814242ef58eb2e2fc47661918f606262"
       },
       {
         "path": "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
@@ -2416,7 +2416,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "cfd570875a13727b43e070e000eccb47ef51f7f155afa55bfe5acf8f3746f0ab"
+        "sha256": "39678cd30f24071a0dde322398585c8e94f28ce103f3f4e3da4991591a6174d3"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2580,11 +2580,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-        "sha256": "e5fe971e3111eb49b53764d874a7ef8f538881d5cb198f3609296879e6817576"
+        "sha256": "820f6874dc8643407123d222a38d5988ea7844fbee066f9c16f3cab42e54e470"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
-        "sha256": "bea7ae467ff1eb4ef3f7bb44361fef70d11dfd1fb8519dce1607a910bf6c8ece"
+        "sha256": "6ae82da48fd3952126d4db8683d4d58a8b3dd919cf61c04ebe28ea6ecefb7c60"
       }
     ],
     "followupRepair": {
