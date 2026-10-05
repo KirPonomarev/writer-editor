@@ -195,6 +195,18 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       return expected;
     } catch {fail();}
   }
+  if (value?.mode === COMMENT_REBASE_MODE && value.recordingProofJson !== undefined) {
+    if (!scenePair || Object.keys(value).sort().join(',') !== 'afterText,beforeText,mode,recordingProofJson'
+      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
+    try {
+      const expected = require('./word-pending-recording-comments-v1.cjs').planRecordingCommentSave({
+        beforeText: value.beforeText, projectId: JSON.parse(scenePair.before.manifest).projectId,
+        sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
+        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene, recordingProofJson: value.recordingProofJson });
+      if (!expected || expected.afterText !== value.afterText) fail();
+      return expected;
+    } catch { fail(); }
+  }
   if (value?.mode === COMMENT_REBASE_MODE) {
     if (!scenePair || Object.keys(value).sort().join(',') !== (value.editIntents !== undefined ? 'afterText,beforeText,editIntents,mode,sessionId' : 'afterText,beforeText,mode')
       || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();

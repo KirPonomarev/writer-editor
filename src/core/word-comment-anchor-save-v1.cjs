@@ -286,7 +286,12 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
           const provenance=Object.fromEntries(Object.entries(thread.anchor).filter(([k])=>['authoritySource','sourceChangeId'].includes(k)));
           thread.anchor={...provenance,...restored,sceneId};
         }
-        thread.status=target.status;entry.undone=undo;continue;
+        thread.status=target.status;entry.undone=undo;
+        // A whole recording round replaces its transient PM group cursor. Those
+        // later snapshots describe the superseded working document, not the
+        // restored round endpoint (notably a new comment inside an insertion).
+        if(sessionId.startsWith('recording-round:')) thread.anchorEditHistory=history.slice(0,history.indexOf(entry)+1);
+        continue;
       }
       const continuing=direction==='forward'&&entry===last&&entry&&!entry.undone;
       if(continuing&&!historyEqual(prior,entry.after)) fail('COMMENT_EDIT_HISTORY_STALE');
@@ -310,7 +315,7 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       } else {
         // Coordinates/kind changes also need history: an inverse separator edit
         // must restore the pre-edit interval, not guess its boundary affinity.
-        thread.anchorEditHistory=history.filter(h=>!h.undone&&h.sessionId===sessionId).slice(-31);
+        thread.anchorEditHistory=history.filter(h=>!h.undone&&(h.sessionId===sessionId||h.sessionId.startsWith('recording-round:'))).slice(-31);
         // A comment may have been created after the original edit. Its first
         // observed action can be Undo; store forward-oriented endpoints so a
         // later Redo replays that exact observation instead of reporting stale.
@@ -489,4 +494,4 @@ function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,after
   return plan;
 }
 
-module.exports = { currentStructuralHistorySnapshot, validateStructuralSnapshot, MODE, RETURN_MODE, paragraphs, planCommentAnchorSave, planCommentTextReturn };
+module.exports = { structuralSnapshot, currentStructuralHistorySnapshot, validateStructuralSnapshot, MODE, RETURN_MODE, paragraphs, planCommentAnchorSave, planCommentTextReturn };

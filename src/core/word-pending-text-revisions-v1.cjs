@@ -708,13 +708,35 @@ function commentRich(doc, fontSize, indents=null, leftDefaults=null) {
   if(leftDefaults) paragraphs(copy).forEach((p,index)=>{if(leftDefaults[index] && p.attrs?.textAlign==='left')delete p.attrs.textAlign;});
   return normalizeNode(copy);
 }
-function commentBasis(document,exportTypography) {
+// Version 2 makes the emitted run defaults and native timestamp precision
+// explicit. Local source stays unchanged; returned runs are compared strictly.
+function commentTransportSegments(segments, paragraph = {}) {
+  return segments.map(segment => {
+    const result=clone(segment),node=result.node;
+    if(paragraph.type!=='codeBlock' && ['text','hardBreak'].includes(node.type)) {
+      const marks=node.marks||(node.marks=[]);let style=marks.find(m=>m.type==='textStyle');
+      if(!style)marks.push(style={type:'textStyle',attrs:{}});
+      style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',...style.attrs,
+        wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US',...paragraph.attrs?.wordParagraphMarkLanguage,...style.attrs?.wordLanguage}};
+    }
+    if(result.revision) {
+      const r=result.revision;
+      if(r.dateUtc && Number.isFinite(Date.parse(r.dateUtc))) {
+        r.dateUtc=new Date(r.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
+        if(r.date && Number.isFinite(Date.parse(r.date)))r.date=new Date(r.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
+      }
+    }
+    return result;
+  });
+}
+function commentBasis(document,exportTypography,schemaVersion=1) {
   const ledger=readLedger(document);
   assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete'].includes(r.operation)), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
   const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], rows=[];
+  const exportedParagraphs=paragraphs(exported.doc);
   exported.paragraphs.forEach((p,paragraphIndex)=>{
     let offset=0; const parts=[];
-    for(const segment of p.segments) {
+    for(const segment of schemaVersion===2?commentTransportSegments(p.segments,exportedParagraphs[paragraphIndex]):p.segments) {
       const length=textOf(segment.node).length, from=offset; offset+=length;
       parts.push({fromUtf16:from,toUtf16:offset,node:clone(segment.node),revision:segment.revision});
       if(segment.revision) {
@@ -791,12 +813,13 @@ function commentAnchorBindings(basis,anchors) {
       originalStart:basisEndpoint(basis,start,unionStart.offsetUtf16,'original'),originalEnd:basisEndpoint(basis,end,unionEnd.offsetUtf16,'original')};
   }).sort((a,b)=>a.threadId<b.threadId?-1:a.threadId>b.threadId?1:0);
 }
-function buildCommentExportBinding({document,anchors=[],exportTypography,exportParagraphs}={}) {
+function buildCommentExportBinding({document,anchors=[],exportTypography,exportParagraphs,schemaVersion=1}={}) {
   inspectLedgerData({document,anchors,exportTypography,exportParagraphs});
-  const basis=commentBasis(document,exportTypography);
+  assert([1,2].includes(schemaVersion),'PENDING_COMMENT_BINDING_VERSION');
+  const basis=commentBasis(document,exportTypography,schemaVersion);
   const indents=commentExportIndents(basis.union,exportParagraphs), leftDefaults=commentLeftDefaults(basis.union,exportParagraphs);
   const projection={union:basis.union,current:basis.current,original:basis.original,segments:basis.rows};
-  const binding={schemaVersion:1,ledgerSha256:commentHash(basis.ledger),
+  const binding={schemaVersion,ledgerSha256:commentHash(basis.ledger),
     basisSha256:commentHash({union:commentRich(basis.union,basis.size,indents,leftDefaults),current:commentRich(basis.current,basis.size,indents,leftDefaults),original:commentRich(basis.original,basis.size,indents,leftDefaults)}),
     paragraphCount:basis.rows.length,revisionSpans:basis.spans,anchors:commentAnchorBindings(basis,anchors)};
   return {binding,projection};
@@ -804,13 +827,13 @@ function buildCommentExportBinding({document,anchors=[],exportTypography,exportP
 function mapCommentExportEndpoint({document,binding,anchors=[],exportTypography,exportParagraphs,paragraphIndex,offsetUtf16,affinity}={}) {
   inspectLedgerData(binding);
   assert(['left','right'].includes(affinity),'PENDING_COMMENT_ENDPOINT_INVALID');
-  const actual=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs});
+  const actual=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs,schemaVersion:binding?.schemaVersion});
   assert(stable(binding)===stable(actual.binding),'PENDING_COMMENT_BINDING_CHANGED');
   return basisEndpoint({rows:actual.projection.segments},paragraphIndex,offsetUtf16,'current',true);
 }
 function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs}={}) {
   inspectLedgerData({binding,returnedDocument});
-  const before=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs});
+  const before=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs,schemaVersion:binding?.schemaVersion});
   assert(stable(binding)===stable(before.binding),'PENDING_COMMENT_BINDING_CHANGED');
   const returned=commentBasis(returnedDocument,exportTypography);
   assert(returned.ledger.revisions.every(r=>r.state==='pending'),'PENDING_COMMENT_REVISION_CHANGED');
@@ -830,4 +853,4 @@ function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[
   assert(cursor===returned.spans.length,'PENDING_COMMENT_PARTITION_CHANGED');
   return {partitions,projection:before.projection,anchors:binding.anchors};
 }
-module.exports = { buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

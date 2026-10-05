@@ -21,18 +21,21 @@ async function harness(t) {
   const file = path.join(root, 'roman/a.txt'), manifest = path.join(root, 'project.json');
   fs.mkdirSync(path.dirname(file)); fs.writeFileSync(file, envelope.composeObservablePayload({ doc: doc('Alpha beta') }));
   fs.writeFileSync(manifest, JSON.stringify({ projectId: 'recording-project', revision: 1 }));
+  const commentPath = path.join(root, '.yalken', 'word-review', 'non-text-return-state.v1.json');
+  const readComments = () => { const text = fs.existsSync(commentPath) ? fs.readFileSync(commentPath, 'utf8') : null; return { text, state: text ? JSON.parse(text) : { threads: [] } }; };
   const h = { writes: 0, generation: 0, editor: fs.readFileSync(file, 'utf8'), publications: 0 };
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'recording-project', sceneId: 'roman/a.txt',
-    subjectId: 'life:session', saved: { state: { threads: [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
+    subjectId: 'life:session', saved: readComments(), sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
   const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
   const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, 'leases'), useLeaseHeartbeatWorker: false });
   const requests = new Map();
-  const c = { Buffer, crypto, setTimeout, clearTimeout, pendingSnapshotRequests: requests,
+  const c = { require: require('node:module').createRequire(path.join(__dirname, '../../src/main.js')),
+    commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs, Buffer, crypto, setTimeout, clearTimeout, pendingSnapshotRequests: requests,
     pendingTextRevisions: model, pendingRecordingModel: recording, cloneJsonSafe: v => JSON.parse(JSON.stringify(v)),
     isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => { if (c.isDirty || c.autoSaveInProgress) throw Error('DIRTY'); return context(); },
     loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises, path,
-    loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => ({ text: null, state: { threads: h.threads || [] } }) }),
+    loadRtkNonTextReturnModule: async () => ({ readCommentAuthoringState: async () => h.threads ? { text: null, state: { threads: h.threads } } : readComments() }),
     loadNotesStorageModule: () => import('../../src/product/notesStoragePersistence.mjs'),
     currentFilePath: file, currentLifecycleSubjectId: () => h.lifecycle || 'life', commentAuthoringSessionId: 'session',
     isDirty: false, autoSaveInProgress: false, activeAutoSavePromise: null, lastSignaledEditGeneration: 0,
@@ -58,7 +61,7 @@ async function harness(t) {
   };
   c.mainWindow = { isDestroyed: () => false, webContents: { send: (_channel, { requestId }) => {
     const p = requests.get(requestId); clearTimeout(p.timeoutId); requests.delete(requestId);
-    p.resolve({ content: h.editor, generation: h.generation, commentAuthoringPending: h.draft === true });
+    p.resolve({ content: h.editor, generation: h.generation, commentAuthoringPending: h.draft === true, commentEditIntentsJson: h.intents == null ? null : JSON.stringify(h.intents) });
   } } };
   vm.createContext(c);
   const recordingSource = main.slice(main.indexOf('let activePendingRecording ='), main.indexOf('const authenticatedPendingReturnAdmissions ='));
@@ -67,14 +70,14 @@ async function harness(t) {
   const kernel = createCommandSurfaceKernel({ [id]: payload => c.handlePendingRecordingCommand(payload) });
   c.MENU_COMMAND_HANDLERS = { [id]: payload => kernel.dispatch(id, payload) };
   h.capture = () => c.requestEditorSnapshot();
-  h.commit = snapshot => c.commitWriterProjectSnapshot(file, snapshot.content, snapshot.generation, null, 'test recording save');
+  h.commit = snapshot => c.commitWriterProjectSnapshot(file, snapshot.content, snapshot.generation, null, 'test recording save', { commentEditIntentsJson: snapshot.commentEditIntentsJson });
   h.save = async () => { const s = await h.capture(); const result = await h.commit(s); if (result.success) c.isDirty = false; return result; };
   c.handleSave = async () => (await h.save()).success === true;
   h.command = (action, override = {}) => c.dispatchMenuCommand(id, { projectId: 'recording-project', sceneId: 'roman/a.txt', subjectId: 'life:session',
     ...(action === 'start' ? { expectedSceneSha256: context().sceneSha256, author: 'Yalken tester' } : { sessionId: h.sessionId }), action, ...override }, { route: 'command.bus' });
   h.start = async () => { const r = await h.command('start'); assert.equal(r.ok, true, JSON.stringify(r)); h.sessionId = r.result?.sessionId || r.sessionId; return r; };
   h.type = text => { h.editor = envelope.composeObservablePayload({ doc: doc(text) }); h.generation++; c.lastSignaledEditGeneration = h.generation; c.isDirty = true; };
-  h.c = c; h.file = file; h.context = context; return h;
+  h.c = c; h.file = file; h.context = context; h.commentPath = commentPath; h.readComments = readComments; return h;
 }
 test('actual Kernel, main snapshot and atomic save preserve authored revisions across autosaves, stop and reopen', async t => {
   const h = await harness(t); await h.start();
@@ -179,4 +182,38 @@ test('out-of-order capture cannot overwrite newer autosave; stop publication can
   h.publicationRace = () => h.type('new unsaved text');
   const stopped = await h.command('stop'); assert.equal(stopped.ok, false); assert.equal(h.c.isDirty, true);
   assert.equal(envelope.parseObservablePayload(h.editor).text, 'new unsaved text');
+});
+
+const authoring = require('../../src/core/word-comment-authoring-v1.cjs');
+const { textDigest } = require('../../src/core/word-comment-edit-intents-v1.cjs');
+const typed = (id, from, removed, inserted, direction='forward', historyId=id) => ({id,historyId,direction,
+  fromParagraphIndex:0,toParagraphIndex:0,fromUtf16:from,toUtf16:from+removed.length,removedParagraphs:[removed],insertedParagraphs:[inserted]});
+const intents = (base,...edits) => ({schemaVersion:2,baselineTextSha256:textDigest([base]),edits});
+function addComment(h) {
+ const context=h.context(),beforeText=h.readComments().text;
+ const plan=authoring.planCommentAuthoring({beforeText,projectId:context.projectId,sceneId:context.sceneId,paragraphs:['Alpha beta'],sceneSha256:context.sceneSha256,now:'2026-10-05T00:00:00Z',
+ input:{action:'create',requestId:'runtime-comment',projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedStateSha256:beforeText===null?'':hash(beforeText),expectedSceneSha256:context.sceneSha256,body:'Editor note',anchor:{paragraphIndex:0,startUtf16:6,selectedText:'beta'}}});
+ fs.mkdirSync(path.dirname(h.commentPath),{recursive:true});fs.writeFileSync(h.commentPath,plan.afterText);return plan.afterText;
+}
+test('actual Main and atomic transaction record comments across ACK prefixes, stop and durable round Undo', async t=>{
+ const h=await harness(t),original=addComment(h);await h.start();
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('first',0,'','!'));
+ let r=await h.save();assert.equal(r.success,true,JSON.stringify(r));assert.equal(h.readComments().state.threads[0].anchor.startUtf16,7);
+ // Simulate the existing renderer ACK dropping the already saved prefix.
+ h.type('!Alpha beta!');h.intents=intents('!Alpha beta',typed('second',11,'','!'));
+ r=await h.save();assert.equal(r.success,true,JSON.stringify(r));
+ assert.deepEqual(h.readComments().state.threads[0].messages,JSON.parse(original).threads[0].messages);
+ h.intents=intents('!Alpha beta!');assert.equal((await h.command('stop')).ok,true);
+ const saved=h.context().parsed.doc,after=model.decide(saved,{action:'undo'}).doc;
+ const plan=require('../../src/core/word-pending-comment-decisions-v1.cjs').planPendingCommentDecision({beforeText:h.readComments().text,projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:h.context().raw,afterContent:envelope.composeObservablePayload({doc:after}),decision:{action:'undo'}});
+ assert.deepEqual(JSON.parse(plan.afterText).threads[0].anchor,JSON.parse(original).threads[0].anchor);
+});
+for(const mode of ['commentsRace','missingIntents','forgedPlan']) test(`actual recording comments ${mode} refuses without extra scene or comment mutation`,async t=>{
+ const h=await harness(t);addComment(h);await h.start();const scene=fs.readFileSync(h.file,'utf8'),comments=fs.readFileSync(h.commentPath,'utf8');
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('first',0,'','!'));
+ if(mode==='missingIntents')h.intents=null;
+ if(mode==='forgedPlan') { const real=h.c.commitProjectTransaction;h.c.commitProjectTransaction=async args=>real({...args,commentState:{...args.commentState,afterText:args.commentState.afterText.replace('Editor note','forged')}}); }
+ let r;try {const capture=await h.capture();if(mode==='commentsRace')fs.writeFileSync(h.commentPath,comments+' ');r=await h.commit(capture);}catch(error){r={success:false,error:error.message};}
+ assert.equal(r.success,false,JSON.stringify(r));assert.equal(h.writes,0);assert.equal(fs.readFileSync(h.file,'utf8'),scene);
+ assert.equal(fs.readFileSync(h.commentPath,'utf8'),mode==='commentsRace'?comments+' ':comments);assert.equal(h.c.isDirty,true);
 });
