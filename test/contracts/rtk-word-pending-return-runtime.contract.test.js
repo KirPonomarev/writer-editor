@@ -416,3 +416,39 @@ test('first incoming discussion uses mixed route despite empty signed comment ex
  assert.equal((await h.command('undo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'deleted');
  assert.equal((await h.command('redo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'open');
 });
+
+test('first incoming discussion with absent canonical file prepares without writes, then creates and reverses discussion',async t=>{
+ const h=await harness(t,{mixed:true,clean:true,firstDiscussion:true});
+ const commentPath=path.join(h.context().projectRoot,'.yalken/word-review/non-text-return-state.v1.json');
+ h.commentText=null;fs.unlinkSync(commentPath);assert.equal(fs.existsSync(commentPath),false);
+ const tx=require('../../src/core/project-transaction-v1.cjs'),save=require('../../src/core/save-coordinator-v1.cjs');
+ const manifestPath=path.join(h.context().projectRoot,'project.json');fs.writeFileSync(manifestPath,JSON.stringify({projectId:'p',revision:0}));
+ h.c.commitWriterProjectSnapshot=async(target,content,_generation,_profile,_label,options)=>{
+  await options.beforeScenePublish();
+  const beforeText=fs.existsSync(commentPath)?fs.readFileSync(commentPath,'utf8'):null;
+  const input={beforeText,projectId:'p',sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content};
+  const commentState=options.pendingCommentReturnProofJson
+   ?require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({...input,returnProofJson:options.pendingCommentReturnProofJson})
+   :require('../../src/core/word-pending-comment-decisions-v1.cjs').planPendingCommentDecision({...input,decision:options.pendingCommentDecision});
+  const expectedManifestContent=fs.readFileSync(manifestPath,'utf8'),revision=JSON.parse(expectedManifestContent).revision+1;
+  await tx.commitProjectTransaction({scenePath:target,manifestPath,sceneContent:content,expectedSceneContent:options.expectedSceneContent,
+   expectedManifestContent,manifestContent:JSON.stringify({projectId:'p',revision}),revision,commentState,
+   publishManifest:async({manifestPath,expectedText,nextText,revision})=>{assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);await save.durableSaveTransaction({filePath:manifestPath,content:nextText,revision});}});
+  h.commentText=fs.readFileSync(commentPath,'utf8');h.writes++;return {success:true,projectTransaction:true};
+ };
+
+ const routed=await h.route();assert.equal(routed.pendingProductPath?.status,'preview-ready',JSON.stringify(routed));
+ assert.equal(h.writes,0);assert.equal(fs.existsSync(commentPath),false);assert.deepEqual(Array.from(h.prepared.changes.commentsBefore),[]);
+ assert.equal((await h.prepared.apply()).ok,true);assert.equal(h.writes,1);assert.equal(fs.readFileSync(commentPath,'utf8'),h.commentText);
+ assert.equal(JSON.parse(h.commentText).threads[0].messages[0].body,'On added text');
+ assert.equal((await h.command('undo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'deleted');
+ assert.equal((await h.command('redo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'open');
+});
+
+
+test('first discussion malformed present state cannot use missing-state normalization',async t=>{
+ const h=await harness(t,{mixed:true,clean:true,firstDiscussion:true});
+ h.commentText='null';
+ const result=await h.prepare();assert.equal(result.status,'blocked');assert.equal(result.code,'COMMENT_STATE_INVALID');
+ assert.equal(h.writes,0);assert.equal(h.prepared,undefined);
+});

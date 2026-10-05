@@ -1,3 +1,25 @@
+## 2026-10-05 — absent first-discussion state repaired; native07 pending
+
+The first returned Word discussion now prepares without writes when the canonical
+comment file is absent. Main uses the canonical empty-state decoder. The existing
+atomic transaction permits a null before-state only for COMMENT_TEXT_RETURN_MODE,
+binds absence in its journal and commit receipt, and restores exact absence on
+rollback. Present malformed state, concurrent creation, forged null and symlinks
+remain refusals. Missing parent directories retain the existing ENOENT refusal;
+recovery leaves them absent. No new writer, dependency, UI or runtime network.
+
+Actual Main with the real atomic writer completes first creation, Undo and Redo.
+Six affected whole files execute175 tests, all pass with zero fail/skip/todo;
+seven SIGKILL boundaries recover in fresh processes, with idempotent retry.
+The original null dereference and transaction admission refusal were reproduced
+before the repair. Runtime changes are Main normalization and nullable lifecycle
+in the existing transaction. Native07 will replay genuine native05 captures and
+Word05 changed files through both Mac builds; this tests the existing-state route,
+while the absent-state edge is proven by actual Main and transaction tests.
+Native06 and its receipts retain their original runtime SHA. Final required CI,
+merge and exact merged verification remain pending. The100k five-cycle novel
+acceptance and finite discussion capacity are the next combined launch packet.
+
 ## 2026-10-05 — repaired mixed return native06 complete; final CI pending
 
 Repaired ae19881ec00e0bc96cc83b453b0adc8af09e8bcf completes actual native

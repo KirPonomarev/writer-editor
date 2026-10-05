@@ -6259,7 +6259,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
         pendingProductApplyLane: false };
     };
     if (replacement.replay) return await apply();
-    const changes = { before: current.parsed.doc, after: replacement.doc, ...(mixedPlan?{comments:JSON.parse(mixedPlan.afterText).threads.filter(t=>t.sceneId===sceneId),commentsBefore:JSON.parse(mixedPlan.beforeText).threads.filter(t=>t.sceneId===sceneId),commentChanges:mixedPlan.changes}:{}) };
+    const changes = { before: current.parsed.doc, after: replacement.doc, ...(mixedPlan?{comments:JSON.parse(mixedPlan.afterText).threads.filter(t=>t.sceneId===sceneId),commentsBefore:require('./core/word-comment-authoring-v1.cjs').readState(mixedPlan.beforeText,current.projectId).threads.filter(t=>t.sceneId===sceneId),commentChanges:mixedPlan.changes}:{}) };
     if (typeof onPrepared === 'function') onPrepared({ apply, changes });
     return { ok: true, status: 'preview-ready', code: 'PENDING_RETURN_EXPLICIT_APPLY_REQUIRED',
       writerCalled: false, pendingProductApplyLane: true };

@@ -835,7 +835,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "87a9e63bfaea822ef191dd7fd12f39103e5a2d0a8343ec2c9cae19dbbb588cc2"
+        "sha256": "e28f695f4fa89cad892765e94b1d58dd6fefab4177c3c29aa5e36869839b5e23"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1107,7 +1107,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "d90e86bf82bd895302aacbf60e182494f45eaedf86a10ae825f1a1e9b1bdccff"
+        "sha256": "b2b800634cdea6361c3b037088ec556508d6d20f4ee3325aaa39cf295e6e5a7f"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1735,7 +1735,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "4643e19a87d6bd1388690292218bc2ef7c7add105a0c9382db0951cce3acd134"
+        "sha256": "d957521739d3b71a22e6723bdd415b277a4cb16b4b45cf7e69962b71652f1218"
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
@@ -2527,15 +2527,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3f995960c4be4dc4436a517d02ac69a3da255192f2f2c25fe31de82748b375a2"
+        "sha256": "10c7ce7d10e88a79a6eb949b883cce4b5717aba1176c552af7f84c9b3768f545"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "08501726d6e20b7ae2224668c0edbb1ba710e761fb3794b5eb16f31937e445be"
+        "sha256": "6a22d25a163bac8e7eeca2eb2088c1de9312742d8af64af4381158275731443f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f31dcc4359bdc287e101181c46ff422f7ab8a3b37e36495c617e1e1e7b980844"
+        "sha256": "2f00770ffef7fde6cd6098f517073edca5aa84235866af35cc4f8cf4fb6768df"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2651,11 +2651,11 @@
       },
       {
         "path": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
-        "sha256": "43e59f21d4b78fe50a69c189417e7a49b0a9aa820ed49b3df06af5ae464cbbe6"
+        "sha256": "69ce0baa01d26c75416bc57e037e006af65d57043ea86098ac02aef6cd46e560"
       },
       {
         "path": "docs/tasks/2026-10-05--word-mixed-return-mac.md",
-        "sha256": "378b1d385e15cf73bc9084176b95a6537d98c87f67d19609e4369c3c1935780f"
+        "sha256": "bfca1c7d9a3c8cb33a899643dab83e7257c1286a8234e9700459a83b7e39364d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MIXED_RETURN_V1.json",
