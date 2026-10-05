@@ -350,8 +350,14 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   for (const image of block.formatIr?.media || []) {
     markers.set(image.offset, (markers.get(image.offset) || '') + mediaPackage.drawing(image.attrs));
   }
-  let textRun = block.pendingRevisionSegments ? '' : markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
-    : buildFormatIrRunsXml(block, hyperlinkByHref);
+  // Word must see explicit break defaults, but transport typography must never
+  // mutate the canonical format IR used by the signed source binding.
+  const emissionBlock = !block.pendingRevisionSegments && commentExport?.threads?.length
+    && block.formatIr?.paragraph?.nodeType !== 'codeBlock' ? {...block,formatIr:{...block.formatIr,
+      runs:block.formatIr?.runs?.map(run=>run.text==='\n'?{...run,inline:{...run.inline,
+        wordLanguage:run.inline?.wordLanguage || {val:'en-US',eastAsia:'en-US',bidi:'en-US',...block.formatIr.paragraph?.wordParagraphMarkLanguage}}}:run)}} : block;
+  let textRun = block.pendingRevisionSegments ? '' : markers.size ? buildCommentedRunsXml(emissionBlock, hyperlinkByHref, markers)
+    : buildFormatIrRunsXml(emissionBlock, hyperlinkByHref);
   if (block.pendingRevisionSegments) {
     if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);

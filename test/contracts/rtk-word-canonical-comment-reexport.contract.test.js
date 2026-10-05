@@ -47,7 +47,13 @@ test('clean comment export gives a standalone break its paragraph language despi
   const sceneId='roman/break.txt',anchor=require('../../src/core/word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId,paragraphs:['First','Before\nAfter'],input:{paragraphIndex:1,startUtf16:0,selectedText:'Before'}});
   const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'break',revision:0,events:[],threads:[{threadId:'t',rootCommentId:'m',sceneId,status:'open',anchor,messages:[{commentId:'m',kind:'root',body:'Query'}]}]};
   const source=makeSource({projectId:'break',projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'First\nBefore\nAfter',doc,observableContent:env.composeObservablePayload({doc})}]});
+  const canonical=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId,doc,text:env.deriveVisibleTextFromDocument(doc)});
+  for(const blocks of [source.blocks,source.localAuthorityCapsule.exportMap.scenes[0].blocks])blocks.forEach((block,i)=>{
+    assert.deepEqual(block.formatIr,canonical[i].formatIr);assert.equal(block.canonicalMarksSha256,'sha256:'+sha(JSON.stringify(canonical[i].formatIr)));
+  });
+  const beforeBuild=JSON.stringify(source);
   const bytes=buildDocxReviewPacketBuffer(source),xml=parts(bytes)['word/document.xml'];
+  assert.equal(JSON.stringify(source),beforeBuild,'serialization does not alter signed canonical source');
   assert.match(xml,/<w:r><w:rPr>(?=[\s\S]*?<w:lang w:val="en-US")(?:(?!<\/w:rPr>)[\s\S])*<\/w:rPr><w:br\/><\/w:r>/u);
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
   assert.equal(preview.ok,true,JSON.stringify(preview));

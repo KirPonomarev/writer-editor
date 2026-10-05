@@ -2252,7 +2252,7 @@ for(const defaultsMode of ['removed','inherited','foreign-global','native','nati
     }else parts['word/document.xml']=before.replace('>contQinued</w:t>','>contQinuedR</w:t>');
     assert.notEqual(parts['word/document.xml'],before);
     if(defaultsMode==='native-georgia'){
-      const unstyled=parts['word/document.xml'];parts['word/document.xml']=unstyled.replace(/<w:r>(<w:br[^>]*\/>)<\/w:r>/u,'<w:r><w:rPr><w:rFonts w:ascii="Georgia" w:eastAsia="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/></w:rPr>$1</w:r>');
+      const unstyled=parts['word/document.xml'];let formattedBreak=false;parts['word/document.xml']=unstyled.replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>{if(formattedBreak||!run.includes('<w:br'))return run;formattedBreak=true;const fonts='<w:rFonts w:ascii="Georgia" w:eastAsia="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/>';return /<w:rFonts\b/u.test(run)?run.replace(/<w:rFonts\b[^>]*\/>/u,fonts):run.replace('<w:rPr>','<w:rPr>'+fonts);});
       assert.notEqual(parts['word/document.xml'],unstyled,'Word explicitly formats first break with nondefault Georgia');
     }
     assert.match(parts['word/document.xml'],/<w:spacing\b/u);parts['word/document.xml']=parts['word/document.xml'].replace(/<w:spacing\b[^>]*\/>/gu,'');assert.doesNotMatch(parts['word/document.xml'],/<w:spacing\b/u);

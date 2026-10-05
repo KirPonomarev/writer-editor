@@ -1,3 +1,34 @@
+## 2026-10-05 — exact consumer regressions addressed; final freeze pending
+
+Clean-break export now computes only emission language while keeping canonical
+formatIR/hash unchanged. Authored fonts, sizes and partial run-language fields
+remain exact. Diagnostic identified unwanted eastAsia/bidi additions and a new
+font on an otherwise partial font profile; strict binding and font guards stay.
+All21 addressed failures pass, zero skip/todo. Stable whole consumers, same-project
+native04 reopen/UndoRedo/export in both Mac origins, mandatory gates, CI and
+complete delivery remain required. Native03 and five-round Main observations
+retain their exact8ba qualification; no whole-novel acceptance is claimed.
+
+## 2026-10-05 — native100k routes observed; graph regression repair active
+
+Exact8ba native SOURCE03/PACKAGED03 completes real Word changed return, restart,
+text/format round Undo/Redo and DOCX reexport on100229words,1741paragraphs,
+200roots/400messages. SOURCE retains the earlier saved project during corrected
+runtime upgrade. Independent text/discussion geometry and effective run-property
+provenance oracles pass. Discussion body edits/replies remain durable through
+text/format Undo. NATIVE03_RECEIPT.json binds19 artifacts; owned apps stopped
+with byte-exact saved-profile snapshots. This is one changed Word round per
+origin, not five native Word rounds or full novel launch.
+
+Actual Main/disk five-exchange+fiveUndo+fiveRedo subtest passes on8ba, but full
+maintained graph is3429pass/15fail of3444, zero skip/todo. Failed graph cannot
+close delivery. Same packet repairs clean break export modifying canonical
+formatIR, keeping exact private binding and all font/stale guards; full-scope
+pending consumers are checked before repeating broad gates. Clean exact-base
+57path preflight passed before builder/consumer scope amendments. Original
+Mac plan and composed/multi-scene novel launch remain open. Next: address the
+measured consumer failures, freeze candidate, required gates and complete delivery.
+
 2026-10-05 native SOURCE02: actual100229-word mixed Word Apply independently verified1741paragraphs,200roots/400messages,3pending revisions. Restart Undo refused run-language round; corrected inverse restores exact prior rich source with format-neutral anchor steps,18/18focused whole tests. Native successor and delivery pending.
 
 ## 2026-10-05 — capacity native language-return repair; acceptance pending

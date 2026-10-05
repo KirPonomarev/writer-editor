@@ -121,6 +121,11 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  const baseline=source({projectId:'breaks',projectRoot:'/synthetic',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,order:0,doc,text:env.deriveVisibleTextFromDocument(doc),observableContent:env.composeObservablePayload({doc})}]});
  const original=exportDocx(baseline),map=bridge.bindUserBookmarkExportTransportPartsV1(baseline.localAuthorityCapsule.exportMap,original);
  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+ // Simulate Word's fontless break representation; explicit export typography
+ // is independently covered by canonical-comment-reexport.
+ let fontlessBreaks=0;
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>{if(!/<w:br\/><\/w:r>$/u.test(run))return run;assert.match(run,/<w:rPr>/u);fontlessBreaks++;return run.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/u,'');});
+ assert.equal(fontlessBreaks,2);
  assert.match(parts['word/document.xml'],/>Alpha<\/w:t>/u);
  parts['word/document.xml']=parts['word/document.xml'].replace('>Alpha</w:t>','>AlphaX</w:t>');
  const returned=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})))},{cryptoPort});

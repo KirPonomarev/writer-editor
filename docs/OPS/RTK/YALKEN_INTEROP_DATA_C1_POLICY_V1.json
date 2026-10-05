@@ -950,7 +950,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "e9d4cb3b34b48dfad192e6a575420291be0a98f49b278cf3a37425984c0cbd67"
+        "sha256": "7f2467f5372876ce4a6737e995aa6589d07509994ea92d1977a88b6d7c813c0e"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1150,7 +1150,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "b495112bf908ee2c118a430972857fd7c5cf9ab66eae754e615a3f167e5a83f1"
+        "sha256": "045ce801ed1571fb6f1251632ed48c3538cfc0b0911e1152c78c35c217267b0b"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1158,7 +1158,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-        "sha256": "0f8d8b1c5489ac3996e6b0bad9a6679710764031e6e3ab7ed7003d51b6329b92"
+        "sha256": "993f395f3ae004b23dad6c0bd4dacaa1b859f6d1140ffa6ab5309bf95d5cee35"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js",
@@ -2026,7 +2026,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "9cfeb38bf45f42bdaf2268365cd6be667c821b43118cafdedb2488afdb1784c0"
+        "sha256": "784e9b8a2b48e097488d761c38f5d8610a2c324e9d31d71fb58ee7bd8d9244c3"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2462,7 +2462,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
-        "sha256": "b94708fc5b571a1a286c66bf5bd625d09e0f1c8b547688b0eedac4b044b26b25"
+        "sha256": "bbc02da95fe4b3e1b0184352f622450551eae61a1a6799120d1ccefed94a9877"
       },
       {
         "path": "docs/tasks/2026-10-04--word-comment-anchors-mac.md",
@@ -2530,15 +2530,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a6770bd1c6d0a52f974ea2c289bf2e0b8837dca93b1b730c8e3a9983d663fda2"
+        "sha256": "1c2f96cd2144c85926cfc044dd3931b9110ac4a53b589369eead5c69b0be76de"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c2d8173af4676e47dfcb2f7e0791e0154bef4beeea899d901b5ab622648745fa"
+        "sha256": "aaf627f0de41dc341df7aedb016cb137335d527108372006e865b2bdc3fcbb30"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "875c12f2b97d09e531d8a4424a5abd6d4704453d3300921965680c59e8460f80"
+        "sha256": "c4d98535520d6597f79ce3a9ab7e9bffdff1c4a9a0aac3039bbf3291fe1335fb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2666,11 +2666,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-        "sha256": "e875df364404e3e1630e91f3fa84afc89c05000b001c46b1da1158c5ee8d2edf"
+        "sha256": "eea4d7f792b76d53ddd33af1d4339d6c5bbd4cabad7c92feec1a602e266b48b2"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
-        "sha256": "d9472128f7338178554b9218d1112919bb3f61aca3728df8ab9373f601ed3d3b"
+        "sha256": "7c28ae164afc66101495e4235bbb267fa3cb195e5f130254724689f8eefded73"
       },
       {
         "path": "test/contracts/scene-document-admission.contract.test.js",
