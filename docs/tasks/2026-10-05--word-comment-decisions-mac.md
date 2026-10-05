@@ -5,7 +5,7 @@ TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 MODE: A
-STATUS: IMPLEMENTING_NOT_ACCEPTED
+STATUS: NATIVE_OBSERVED_DELIVERY_PENDING
 BASE: 8e038139ad3b0f0236140b5641a266924d48d255
 COMMIT_REQUIRED: true
 PUSH_REQUIRED: true
@@ -119,3 +119,23 @@ admits an ephemeral schema2 empty ledger only for signed zero-span bindings;
 local durable history is never replaced by it. Full rich projections, scene
 ownership and section proofs remain mandatory. Missing expected pending
 revisions continue to refuse. This is an implementation, not native acceptance.
+
+## Native and stable candidate observations
+
+Native SHA057cde135d90b028583d36733778d305c2609855. Fresh SOURCE and PACKAGED
+profiles imported the actual Word-derived rich C2 input (six pending fragments,
+three roots/five messages). SOURCE rejectAll->Undo->Redo->Review export->actual
+Word reply->explicit Apply->restart Undo->acceptAll->both reexports. PACKAGED
+selected rejection->Undo->acceptAll->Review export->actual Word reply->Apply
+->restart Undo->Redo->both reexports. No new app instrumentation or bypass.
+Each reply preserves scene and ledger bytes and adds exactly one message.
+Restart Undo restores exact anchors/statuses, retains all prior messages and
+the new reply. Six actual DOCX artifacts retain rich three-projection/section
+meaning under production verifier; independent raw byte/anchor comparisons
+are separate. Do not call the production verifier an independent oracle.
+
+Whole affected Core/anchor-save/pending-runtime/actual-Main files320/320,
+zero skips/todo, at native SHA. Expanded full-manuscript and combined-scene
+all-decided reply tests pass; unsupported hidden run property refuses without
+writes. Both native profiles stopped and copied with equal hashes. No full CI,
+merge or merged acceptance claim until the delivery chain actually completes.

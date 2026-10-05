@@ -2516,15 +2516,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "cb80274027eddd8755ccfacfaaf24a1ee24e0dbf9937711773d8d311c30cc91f"
+        "sha256": "b9559318efb208cd9eb2748630c40617976a33fd399517246feb82451d9eb4fb"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b59f9fc8627d1c9c77572b86caa26e4559e50b3efba507f17c6aae3dc8b18d08"
+        "sha256": "cfa74ba1918c3870d322a7629c678a61300cbe22cb1df5b562a50e5b6ae8222c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "189b0ac8d64993485f10b0abe40d4e23b05800de0e6e7e73f59c74f4de590be7"
+        "sha256": "2b57e5e3cf40203837148b4a3ce88ffc934ff16ce5c331059fecfa9d805ed494"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2600,7 +2600,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
-        "sha256": "f6d933c6ae951e42a9013f5c79d3cce86577836f929a61e70c2369d273e3aeda"
+        "sha256": "9582e622443d3846e15c625025356327a68b19d6bd31685860bbf108050a3a8f"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json",
