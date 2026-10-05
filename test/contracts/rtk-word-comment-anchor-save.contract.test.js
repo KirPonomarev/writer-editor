@@ -495,3 +495,21 @@ for(const boundary of ['SCENE','COMMENT','COMMIT']) test(`multi-paragraph V4 sav
  assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.commentState.afterText]:prior);
  assert.equal((await child(f,'recover')).code,0);
 });
+
+test('actual Main structural V2 Save and saved Undo publish one exact scene-comment pair; forged replay writes nothing',async t=>{
+ const f=await mainHarness(t),before=observed(f),old=['Left anchor right'],split=['Left anc','hor right'];
+ const multi=envelope.composeObservablePayload({doc:{type:'doc',content:split.map(text=>({type:'paragraph',content:[{type:'text',text}]}))}});
+ const ledger=(texts,edit)=>JSON.stringify({schemaVersion:2,baselineTextSha256:sha(JSON.stringify(texts)),edits:[edit]});
+ const forward={id:'struct-e1',historyId:'struct-h1',direction:'forward',fromParagraphIndex:0,fromUtf16:8,toParagraphIndex:0,toUtf16:8,removedParagraphs:[''],insertedParagraphs:['','']};
+ const bad=await f.save(multi,{commentEditIntentsJson:ledger(old,{...forward,removedParagraphs:['forged']})});
+ assert.equal(bad.success,false);assert.match(bad.code,/COMMENT_EDIT_SPLICE_STALE/);assert.deepEqual(observed(f),before);
+ const done=await f.save(multi,{commentEditIntentsJson:ledger(old,forward)});assert.equal(done.success,true,JSON.stringify(done));
+ assert.equal(fs.readFileSync(f.scenePath,'utf8'),multi);
+ const saved=JSON.parse(fs.readFileSync(f.commentPath,'utf8'));assert.equal(saved.schemaVersion,'yalken.rtk.word.non-text-return-state.v5');
+ assert.equal(saved.threads[0].anchor.selectedText,'anc\nhor');assert.deepEqual(saved.threads[0].messages,JSON.parse(f.beforeText).threads[0].messages);
+ const undone=await f.save(f.beforeScene,{commentEditIntentsJson:ledger(split,{id:'struct-e2',historyId:'struct-h1',direction:'undo',fromParagraphIndex:0,fromUtf16:8,toParagraphIndex:1,toUtf16:0,removedParagraphs:['',''],insertedParagraphs:['']})});
+ assert.equal(undone.success,true,JSON.stringify(undone));assert.equal(fs.readFileSync(f.scenePath,'utf8'),f.beforeScene);
+ assert.deepEqual(JSON.parse(fs.readFileSync(f.commentPath,'utf8')).threads[0].anchor,JSON.parse(f.beforeText).threads[0].anchor);
+ const current=observed(f);const stale=await f.save(multi,{commentEditIntentsJson:ledger(['foreign'],forward)});
+ assert.equal(stale.success,false);assert.match(stale.code,/COMMENT_EDIT_BASELINE_STALE/);assert.deepEqual(observed(f),current);
+});

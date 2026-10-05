@@ -102,7 +102,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
   demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
   const before = commentAuthoring.readState(beforeText, projectId);
-  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3,commentBodyModel.STATE_V4].includes(before.schemaVersion) && before.projectId === projectId
+  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3,commentBodyModel.STATE_V4, commentBodyModel.STATE_V5].includes(before.schemaVersion) && before.projectId === projectId
     && Number.isSafeInteger(before.revision) && before.revision >= 0 && before.revision < Number.MAX_SAFE_INTEGER
     && Array.isArray(before.threads) && Array.isArray(before.events), 'STATE');
   const existing = new Set();

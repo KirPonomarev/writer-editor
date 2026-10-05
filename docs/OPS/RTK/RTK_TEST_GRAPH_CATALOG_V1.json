@@ -207,6 +207,7 @@
     "rtk-word-scene-comment-export.contract.test.js",
     "rtk-word-scene-identity-main.contract.test.js",
     "rtk-word-sections.contract.test.js",
+    "rtk-word-structural-comment-history.contract.test.js",
     "rtk-word-structural-transaction.contract.test.js",
     "rtk-word-table-cell-lists.contract.test.js",
     "rtk-word-table-cell-shift.contract.test.js",

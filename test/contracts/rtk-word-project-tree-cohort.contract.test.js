@@ -845,3 +845,20 @@ test('multi-range crossing a scene split or stale covered paragraph refuses with
   assert.throws(()=>m.planProjectTreeCohort({...before,commentsText:JSON.stringify(deleted)}),{code:'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED'});
   assert.deepEqual(protectedBytes(),originals);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
 });
+
+for(const operation of ['move','leftmerge','split','rightmerge'])test(`V5 structural history tree ${operation} preserves identity or refuses unproved remap`,async t=>{
+ const f=fixture(t),m=await modelPromise,authoring=require('../../src/core/word-comment-authoring-v1.cjs'),anchors=require('../../src/core/word-comment-anchor-save-v1.cjs');
+ const sceneId=operation==='rightmerge'?'roman/02 Beta.txt':'roman/01 Alpha.txt',before='AlphaBeta',after='Alpha\nBeta';
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'project-test',revision:0,events:[],threads:[{threadId:'structural',sceneId,rootCommentId:'root',status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'lphaBe'},sceneId,[before]),messages:[{commentId:'root',kind:'root',body:'History',provenance:{}}]}]};
+ const saved=anchors.planCommentAnchorSave({beforeText:JSON.stringify(state),projectId:'project-test',sceneId,beforeContent:before,afterContent:after,sessionId:'s',editIntents:{schemaVersion:2,baselineTextSha256:sha(JSON.stringify([before])),edits:[{id:'split',historyId:'h',direction:'forward',fromParagraphIndex:0,fromUtf16:5,toParagraphIndex:0,toUtf16:5,removedParagraphs:[''],insertedParagraphs:['','']}]}});
+ const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,saved.afterText);fs.writeFileSync(path.join(f.root,sceneId),after);
+ const args={commentsText:saved.afterText,...(operation==='split'?{operation:'split',bindings:[],topology:{sourceNodeId:'tree-node-a',sourceRelativePath:sceneId,newRelativePath:'roman/01a Right.txt',boundaryRootIndex:1}}:operation.endsWith('merge')?{operation:'merge',bindings:[],topology:{leftNodeId:'tree-node-a',leftRelativePath:'roman/01 Alpha.txt',rightNodeId:'tree-node-b',rightRelativePath:'roman/02 Beta.txt'}}:{})};
+ const beforeInventory=inventory(f.root),beforeManifest=text(f.manifestPath);
+ if(['split','rightmerge'].includes(operation)){
+  assert.throws(()=>m.planProjectTreeCohort(f.capture(args)),{code:'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED'});
+  assert.equal(text(commentPath),saved.afterText);assert.equal(text(path.join(f.root,sceneId)),after);assert.equal(text(f.manifestPath),beforeManifest);assert.deepEqual(inventory(f.root),beforeInventory);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);return;
+ }
+ const plan=m.planProjectTreeCohort(f.capture(args));await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:f.publishManifest,revalidate:async()=>{}});
+ const result=authoring.readState(text(commentPath),'project-test'),original=JSON.parse(saved.afterText).threads[0];assert.equal(result.schemaVersion,'yalken.rtk.word.non-text-return-state.v5');assert.deepEqual(result.threads[0].anchorEditHistory,original.anchorEditHistory);assert.deepEqual(result.threads[0].messages,original.messages);
+ assert.deepEqual({...result.threads[0],sceneId:original.sceneId,anchor:{...result.threads[0].anchor,sceneId:original.sceneId}},original);
+});

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_STRUCTURAL_COMMENTS_MAC_20261005",
+  "bindingBaseSha": "555717390e94c5f41a0be79a2f3f49c0cda2f8a7",
+  "productPlane": "Core owns exact structural replacement replay, canonical comment anchors and additive StateV5 versioned saved history. Owner authorizes novel-text Mac portability. Existing canonical scenes and discussion messages remain authoritative.",
+  "interfacePlane": "Mechanical extension of existing PM operation capture; no layout, typography, composition, shell state or visual surface change.",
+  "commands": [
+    "cmd.project.review.editComment",
+    "cmd.project.save",
+    "cmd.project.importDocxV1",
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.export.docxMin",
+    "cmd.project.review.exportDocxReviewPacket",
+    "cmd.project.review.exportFullManuscriptDocxReviewPacket",
+    "cmd.rtk.reviewSession.importComments",
+    "cmd.rtk.review.applyRootCommentReturn",
+    "cmd.rtk.review.applyCommentLifecycleReturn"
+  ],
+  "queries": [
+    "Existing immutable project/scene/comment/capability projections"
+  ],
+  "events": [
+    "Existing committed scene/comment revision and saved edit-history acknowledgement"
+  ],
+  "effects": [
+    "Existing native file dialog, DOCX read/write, leased atomic scene/comment publication and recovery"
+  ],
+  "productPorts": [
+    "Existing project manifest lease, scene/comment atomic transaction and recovery, file chooser/read/export adapters"
+  ],
+  "designOsPorts": [
+    "Existing immutable comment and command availability projections only"
+  ],
+  "readProjections": [
+    "Existing immutable comment and command availability projection, no new renderer hash/path authority"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "writePaths": [
+    "Actual PM transactions -> bounded V2 paragraph-coordinate intent -> existing Kernel/Main save revalidation -> Core exact before/after replay and interval/history derivation -> existing leased atomic scene/comment transaction and recovery",
+    "Existing DOCX generic import and signed export/return readers accept monotonic V5 while retaining exact identity/CAS and explicit Apply authority"
+  ],
+  "identityGuards": [
+    "Exact PM observations are untrusted until Core verifies bounded replay, before/final text and root paragraph ownership",
+    "Preserve lifecycle/project/scene/revision/generation, session/historyID, pending-prefix ACK and exact signed baseline guards",
+    "Never infer identity from matching text, quote search, fabricated historical hashes or stale UI state"
+  ],
+  "capabilityRevalidation": "Unchanged Kernel/Main dispatch revalidation and leased current-state CAS; selection visibility or external ranges never grant mutation authority.",
+  "fallbacks": [
+    "Unsupported structural list/cell/heading/atom edits preserve working draft and refuse canonical write; existing same-leaf edits retain support",
+    "V1 intents and V1-V4 state remain readable; V5 never downgraded and old readers refuse safely",
+    "Unprovable tree history partition mapping refuses before publication; legacy supported tree operations remain covered"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Actual PM -> Core mixed typing/structural groups across Save in both orders; delayed ACK and checkpoint identity",
+    "Exact split/join/partial and whole deletion, ordinal changes before anchors, single/multi transitions, empty/repeated/grapheme/hardBreak cases",
+    "Deleted original quote retained; Core-proved collapsed live locator and matching history/session required to restore; unrelated/manual/remote tombstones never revive",
+    "Malformed input, stale source hashes, unsupported owner transitions, bounds and no-op spoofing refuse before canonical mutation",
+    "N-1 state and intent compatibility, monotonic V5 and retained old saved groups; existing transaction crash/recovery and protected resources",
+    "Native SOURCE/PACKAGED short route before broad gates: Enter Save Undo Save Redo; join/delete; restart; export actual changed Word reply and Apply",
+    "Focused negatives, affected consumers, required CI including RTK/baseline/security/OSS; independent review; clean exact merged verification"
+  ],
+  "securityAndInputBoundary": "No dependencies, new IPC, generic storage writer, runtime network or private user corpus. Validate bounded transport payload before interpretation; retain existing byte/entity budgets. One pure browser-safe Core interval helper reuses existing hash primitive.",
+  "performanceAndAccessibility": "Existing keyboard selection/comment workflow. Compute interval proof on explicit command/save; preserve existing incremental splice collection and never run full-book parse on keystrokes. Existing entity/byte budgets unchanged and not claimed sufficient for every novel.",
+  "currentReality": [
+    "PR2079 merged555717390 delivers multi-paragraph comments and fixed-topology edits with native source/package proof",
+    "Renderer rejects open and cross-leaf replacement; Core assumes equal leaf count and history ordinals match current anchor; structural positive is not implemented"
+  ],
+  "targetOnly": [
+    "Root paragraph structural edits remain TARGET until actual candidate proof",
+    "Crossscene comments, structural list/cell operations, unprovable tree-history partitioning, pending tracked-text combinations and whole-novel qualification remain open",
+    "Original complete Mac plan is not claimed complete"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "hotPathBoundary": "Use existing incremental splice capture; full interval validation only on explicit command/save, no full-book work per keystroke",
+  "migrationRollbackEvidence": "Revert one integrated PR; preserve scene/comment bytes. V5 additive reader upgrades never silently downgrade historical state; old binaries refuse new version.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SELECTION_COMMENT_AND_REVIEW_SURFACES_NO_DESIGN_CHANGE"
+}

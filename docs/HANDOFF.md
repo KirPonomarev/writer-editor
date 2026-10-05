@@ -1,12 +1,41 @@
 # HANDOFF (Yalken Writer)
 
-## Candidate qualification — 2026-10-05 03:37 EEST
+## Active implementation — 2026-10-05 04:52 EEST
+
+Structural-comment candidate `19ae1ccc4` completed native SOURCE/PACKAGED split,
+join, whole Delete, saved Undo/Redo, real Word reply, explicit Apply, exact no-op
+replay and restart. SOURCE additionally covers partial crossparagraph Delete.
+Scene bytes and discussion identities survive return; external
+`NATIVE_OBSERVATIONS_VERIFIED.json` binds 35 observations/artifacts. Both owned
+test apps stopped cleanly with saved-byte snapshots. No runtime change followed
+native start. Next: finish direct consumers, mandatory CI and full delivery,
+verify exact merged SHA, then continue original Mac novel-text plan.
+
+## Delivered predecessor and scope — 2026-10-05 04:27 EEST
+
+PR2079 delivery is closed at merged `555717390e94c5f41a0be79a2f3f49c0cda2f8a7`:
+19 CI jobs passed, RTK3254/3254 twice, exact merged700/700 with zero skips and
+clean tree. Native19d025661 runtime/package572-file equivalence is explicit;
+it is not a claim of executing a different binary. Baseline59 existing skips
+remain excluded. Exact external proof: predecessor DELIVERY.json.
+
+Current admitted slice: `docs/tasks/2026-10-05--word-structural-comments-mac.md`.
+Base555717390; root paragraphs Enter/join/Delete with V2 actual-step provenance
+and V5 bounded saved history. Root owns docs/OPS/proof/delivery, three code
+agents own disjoint Core/renderer/compatibility files. First actual PM/Core
+mixed-history checks, then native SOURCE/PACKAGED before full stable gates.
+Native candidate outcome is bounded as recorded above; delivery remains open.
+Continue original Mac novel-text
+plan autonomously; historical paused/pending checkpoints below are superseded.
+No whole-plan completion or percentage follows from this packet.
+
+## Historical candidate qualification — 2026-10-05 03:37 EEST
 
 Native SOURCE/PACKAGED candidate `19d025661f4ed431ee9c654950ed3e3f3d9ed95d` now completes fresh rich import, immediate review export, actual changed Word reply and native Apply without rewriting source scene bytes. Replay/restart and packaged saved Undo/Redo plus AllSelection authoring observed. Next: direct consumers, mandatory gates and delivery for the current packet; then continue original Mac novel-text plan. The break-only formatting return diagnostic remains a separate open item. Previous failed candidates stay failed; no whole-plan percentage is inferred.
 
 _Updated: 2026-10-05_
 
-## Active implementation — 2026-10-05 02:11 EEST
+## Historical implementation — 2026-10-05 02:11 EEST
 
 Owner resumed autonomous Mac novel-text portability work. PR 2078 is merged at
 `3f2e8e52f887c72753311bdb2e41c22b1e3f29f2`: CI 19/19, identical candidate/merged

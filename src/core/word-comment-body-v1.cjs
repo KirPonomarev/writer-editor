@@ -4,6 +4,7 @@ const { normalizeFontFamily, normalizeFontSize } = require('../io/inlineTypograp
 const STATE_V1 = 'yalken.rtk.word.non-text-return-state.v1';
 const STATE_V2 = 'yalken.rtk.word.non-text-return-state.v2';
 const STATE_V3 = 'yalken.rtk.word.non-text-return-state.v3';
+const STATE_V5 = 'yalken.rtk.word.non-text-return-state.v5';
 const STATE_V4 = 'yalken.rtk.word.non-text-return-state.v4';
 const SCHEMA = 'yalken.word.comment-body.v1';
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -141,10 +142,11 @@ function serializeCommentState(state, budgetCode = 'COMMENT_STATE_BUDGET') {
   return text;
 }
 function upgradeCommentState(state) {
-  if (![STATE_V1, STATE_V2, STATE_V3, STATE_V4].includes(state.schemaVersion)) fail('COMMENT_STATE_INVALID');
-  if (state.schemaVersion === STATE_V4 || state.threads.some(t => t.anchor?.kind === 'multi-paragraph-range')) state.schemaVersion = STATE_V4;
+  if (![STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5].includes(state.schemaVersion)) fail('COMMENT_STATE_INVALID');
+  if (state.schemaVersion === STATE_V5 || state.threads.some(t=>t.anchorEditHistory?.some(h=>h.schemaVersion===2))) state.schemaVersion=STATE_V5;
+  else if (state.schemaVersion === STATE_V4 || state.threads.some(t => t.anchor?.kind === 'multi-paragraph-range')) state.schemaVersion = STATE_V4;
   else if (state.schemaVersion === STATE_V3 || state.threads.some(t => t.anchor?.kind === 'point' || t.anchorEditHistory !== undefined)) state.schemaVersion = STATE_V3;
   else if (state.threads.some(t => [...t.messages, ...(t.deletedMessages || [])].some(m => m.richBody !== undefined))) state.schemaVersion = STATE_V2;
   return state;
 }
-module.exports = { serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };
+module.exports = { serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };
