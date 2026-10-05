@@ -862,7 +862,7 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "c2f62ee969d23bc7585ce4f189978f41eed6692048aef72cf628f73c5118af5a"
+        "sha256": "193c7d0a0aa0ad109c521bd7242daa4c1e20333b7857a2c0c641a4b857173d36"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
@@ -942,7 +942,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "e238b18109525a070393c378d656476f1940049a21950a3bd01c113a4fff7e89"
+        "sha256": "e9d4cb3b34b48dfad192e6a575420291be0a98f49b278cf3a37425984c0cbd67"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1142,7 +1142,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "c2530436b6936608995678ab096f5894d4f8a5194c255a35c8d03e824c6e8c8b"
+        "sha256": "4dbf118c6e7fbd4ae0130db8dd6435a2bc5c4fc30c72bd950bbca7692b37f5c9"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1698,7 +1698,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "f0d6a8811ac0edbe0f39fbb0c52e11d9309247cf601925954324d7b144afd311"
+        "sha256": "f55575e18cac0e004e5abaa722d65807d2aba3c1c1268a5d346d912dfae64a76"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -2602,7 +2602,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
-        "sha256": "0fb68803ab08f5b6878a0a299f0b1e058a287ddec194338ce42c078db3e414cf"
+        "sha256": "d7169d2ab85e0c734565168a9ef59fea0377706d87d9829b69dc607d5f7b96bf"
       },
       {
         "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
@@ -2630,11 +2630,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-recording-comments-mac.md",
-        "sha256": "c5cf92be7d76163ee944fe7c807a4c9d5d43fad660fda628acde72275c9adf63"
+        "sha256": "803b6ce6de2711efb331d047186b018ae5451b144ffd8db6f9a739973f1e17db"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RECORDING_COMMENTS_V1.json",
-        "sha256": "a2b6b6b5a650d0132ccbc3adc25edfb3e39ca7527fd32ce822ab93826eda66c4"
+        "sha256": "c0bb604b8101da822d66bf532b5914d40f1c2b7df601c8f7bab3d5930134d369"
       }
     ],
     "followupRepair": {

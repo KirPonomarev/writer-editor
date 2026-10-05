@@ -496,7 +496,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (pendingLedger) {
         if (userMarkers.size || hasMedia) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
         const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(deps.documentNotes, noteBlock || {});
-        runsXml = buildPendingRunsXml(rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index],
+        const rawSegments = rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index];
+        const emittedSegments = deps.commentExport?.threads?.length ? pendingTextRevisions.commentTransportSegments(rawSegments, {type:semanticKind,attrs:semanticBlocks?.[index]}) : rawSegments;
+        runsXml = buildPendingRunsXml(emittedSegments,
           node => {const run=node.type === 'hardBreak' ? readDocumentInlineRuns(node)[0] : {text:node.text,marks:node.marks};return wrapLink(buildDocxMarkedRunXml(run,true,true),readHref(run));}, revisionCounter, '', pendingMarkers, commentMarkers);
       }
       if (markers.size && !pendingLedger) {

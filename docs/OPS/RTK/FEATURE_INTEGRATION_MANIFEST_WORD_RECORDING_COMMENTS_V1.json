@@ -35,7 +35,8 @@
     "Document tabstop/sections preserved or typed refusal; unknown attributes fail",
     "Actual Main transaction comment preservation, stale scene/comments/generation/project, forged anchors and recovery",
     "Recording stop and restart source-changing Undo/Redo; subsequent pending decisions, new roots and Word replies",
-    "Early SOURCE/PACKAGED native route before full stable checks; mandatory CI and merged exact-head verification"
+    "Early SOURCE/PACKAGED native route before full stable checks; mandatory CI and merged exact-head verification",
+    "Early real Word blocker: explicitly signed v2 run defaults and native timestamp serialization; legacy v1 receipts remain strict. Tampered font, language, author and UTC second still fail."
   ],
   "securityAndInputBoundary": "No new dependencies, runtime network, UI/IPC writers, private owner data or budget inflation. External DOCX and proof fields validated before semantic use; compact signed binding avoids manuscript duplication.",
   "performanceAndAccessibility": "Reuse existing controls, no UI design changes. Bounded ledger and existing256-intent/32-comment-history budgets; no per-keystroke new work.",

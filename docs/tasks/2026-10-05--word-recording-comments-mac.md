@@ -22,3 +22,11 @@ I: Isolated existing worktree; branch codex/word-recording-comments-mac-20261005
 - Mandatory delivery and exact merged checks.
 
 Paragraph-mark typography, named styles, large-book/five-cycle full acceptance and other original requirements remain open. This packet is not whole-feature completion.
+
+## Early native checkpoint 838c4da39
+
+SOURCE01: imported actual predecessor DOCX with 3 roots and 6 messages. Recorded a replacement inside one anchor and an independent insertion in another paragraph. PM Undo/Redo across saves and source-changing round Undo/Redo after actual process restart restored exact rich source and all anchor/status/message fields. Review DOCX emitted 2 insertion wrappers and 1 deletion wrapper. These observations do not prove the packaged route or whole plan.
+
+Actual Word reply exposed a return blocker before broad checks: Word fills unspecified hardBreak font/language from its environment and serializes UTC revision timestamps to seconds, legacy timestamps to minutes. Original scene/comment state remained unmodified by blocked preview. New TARGET repair pins emitted run defaults and timestamp precision in signed pending-comment binding version 2; version 1 receipts retain their original strict comparison. Returned font/language, author and UTC second changes remain rejected. Local manuscript and full timestamp history are preserved.
+
+Focused Core and actual Main save tests pass, including repeated occurrence, disjoint edits, ACK prefixes, new comment within insertion, manual tombstone, stale comments, forged transaction plan and source-changing Undo/Redo. Native return, packaged route and mandatory delivery remain OPEN.

@@ -109,3 +109,27 @@ test('independent inline decisions Undo in reverse order preserve multiple exact
   const undoFirst=decide(undoSecond.doc,undoSecond.state,{action:'undo'});
   assert.deepEqual(JSON.parse(undoFirst.state).threads[0].anchor,JSON.parse(state).threads[0].anchor);
 });
+
+test('signed transport v2 pins missing run properties and native timestamp precision without changing local truth',()=>{
+ const p=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const source={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkLanguage:{val:'ru-FI'}},content:[{type:'text',text:'ab'},{type:'hardBreak',marks:[{type:'italic'}]},{type:'text',text:'c'}]}]};
+ const revision={id:'revision-1',nativeId:'1',operation:'insert',from:1,to:2,paragraphIndex:0,author:'Editor',date:'2026-10-05T07:12:02.240Z',dateUtc:'2026-10-05T07:12:02.240Z',groupId:null,state:'pending'};
+ const document=p.bindLedger({schemaVersion:1,source,revisions:[revision],undo:[],redo:[]}),before=JSON.stringify(document),typography={schemaVersion:'yalken.review-docx.typography-defaults.v1',fontSize:'12pt'};
+ const {binding,projection}=p.buildCommentExportBinding({schemaVersion:2,document,exportTypography:typography});
+ const rows=projection.segments[0],returnedSource=structuredClone(source);returnedSource.content[0].content=rows.map(s=>s.node);
+ const returned=p.bindLedger({schemaVersion:1,source:returnedSource,revisions:[{...revision,date:'2026-10-05T07:12:00Z',dateUtc:'2026-10-05T07:12:02Z'}],undo:[],redo:[]});
+ assert.equal(p.verifyCommentReturnBinding({document,binding,returnedDocument:returned,exportTypography:typography}).partitions.length,1);
+ assert.equal(JSON.stringify(document),before);
+ const breakStyle=rows.find(s=>s.node.type==='hardBreak').node.marks.find(m=>m.type==='textStyle').attrs;
+ assert.equal(breakStyle.fontFamily,'Times New Roman');assert.deepEqual(breakStyle.wordLanguage,{val:'ru-FI',eastAsia:'en-US',bidi:'en-US'});
+ for(const mutation of ['font','language','time','author']) {
+  const l=structuredClone(p.readLedger(returned));
+  if(mutation==='font')l.source.content[0].content.find(n=>n.type==='hardBreak').marks.find(m=>m.type==='textStyle').attrs.fontFamily='Georgia';
+  if(mutation==='language')l.source.content[0].content.find(n=>n.type==='hardBreak').marks.find(m=>m.type==='textStyle').attrs.wordLanguage.val='fr-FR';
+  if(mutation==='time')l.revisions[0].dateUtc='2026-10-05T07:12:03Z';
+  if(mutation==='author')l.revisions[0].author='Other';
+  assert.throws(()=>p.verifyCommentReturnBinding({document,binding,returnedDocument:p.bindLedger(l),exportTypography:typography}),/PENDING_COMMENT_(PROJECTION|PARTITION)_CHANGED/);
+ }
+ const legacy=p.buildCommentExportBinding({document,exportTypography:typography}).binding;
+ assert.equal(legacy.schemaVersion,1);assert.throws(()=>p.verifyCommentReturnBinding({document,binding:legacy,returnedDocument:returned,exportTypography:typography}),/PENDING_COMMENT_PROJECTION_CHANGED/);
+});

@@ -355,7 +355,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   if (block.pendingRevisionSegments) {
     if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
-    textRun = buildPendingRunsXml(block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments, node => {
+    const rawSegments = block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments;
+    const emittedSegments = commentExport?.threads?.length ? require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments, {type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}) : rawSegments;
+    textRun = buildPendingRunsXml(emittedSegments, node => {
       const inline = {}, preservedMarks = [];
       for (const mark of node.marks || []) {
         if (['bold', 'italic', 'underline', 'strike'].includes(mark.type)) inline[mark.type] = true;
