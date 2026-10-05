@@ -1,5 +1,12 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 03:37 EEST — multi-paragraph comment native candidate
+
+Candidate 19d025661 completed fresh rich import → immediate export → actual Word
+reply → Apply in SOURCE and PACKAGED, preserved scene bytes, and survived replay
+and restart. Packaged saved Undo/Redo and whole-document comment creation passed.
+Required broad gates and delivery remain pending; no whole-plan completion claim.
+
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 

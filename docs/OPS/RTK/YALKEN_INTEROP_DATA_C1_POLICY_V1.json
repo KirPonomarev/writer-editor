@@ -2505,15 +2505,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9d33da4618e9cfeb467e5532609c98054f10565154c9bbcb5f462c2031638bb4"
+        "sha256": "f10bb2339f9f5a1e5a5fb8a05d5113faf212eb73026fcb0130c3fa844f5d1685"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6b943c59598074e6a83c70df6f2ff5db33b256f90d82756f159484bcd11c347d"
+        "sha256": "07d07f2b87720344f415d981204e17c4cd60e2230b2e0570f6793939b120ca3b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c297382588945d33eb725bdca20c97d5d972953d1bffcca4c1c9493022047add"
+        "sha256": "98b5196604023f3bfa471b1ac3913b98981e4b487bf8f34c05762c03a836b2b2"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2529,7 +2529,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "a64294058e37bc3e5af31dd5a056fedf263a44c729660744d197498ed81a4e45"
+        "sha256": "c425023b6c72a82e8fde78c6a8adeb84b610823dd34c48f64cee3750a562813a"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",

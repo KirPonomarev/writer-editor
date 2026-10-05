@@ -3,7 +3,7 @@
 TASK_ID: WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005
 TYPE: PRODUCT_CODE
 BASE: 3f2e8e52f887c72753311bdb2e41c22b1e3f29f2
-STATUS: TARGET_IMPLEMENTATION
+STATUS: NATIVE_CANDIDATE_OBSERVED_REQUIRED_GATES_PENDING
 
 The owner's 2026-10-05 novel-text priority selects this concrete remaining
 comment portability gap. The original full Mac plan remains the backlog.
@@ -264,3 +264,36 @@ Command Kernel and comment publication against rich imported bytes. Those bytes
 remain exact; changed signed bytes and unsaved live text still refuse. Unknown
 node mark arrays remain exact after independent review found an overly broad
 normalization during development. Final native candidate observation is pending.
+
+## Native candidate 19d025661 — 2026-10-05 03:37 EEST
+
+Both SOURCE and packaged WRITER_LOCAL_V1 imported independent Word artifact
+77fba3ad26bf7414827b923ef36d8303193c5f3426abf36ceaf437226b5364b7,
+exported immediately without a scene Save, received a new actual Microsoft Word
+reply and applied it through the native confirmation. Both retained the exact
+original scene bytes, two roots and four messages, including the interval ending
+in the empty final paragraph. Import ACK completed. SOURCE replay left the same
+thread graph and scene hashes; a full restart retained the result.
+
+SOURCE04 exported artifact:
+5c167b6abc1be8038af7a47f299058109d48f20b7f33a22de8641441eda73ef3.
+SOURCE04 actual Word return:
+6603f7f14678f54b068f2cfa86c6f53dc0430fbf3095a17f05bae33ae2ef410f.
+PACKAGED04 actual Word return:
+71f762028d50505e1515b2b1d2aecd2a198d24fa8f11c29af4b1d551937df068.
+
+PACKAGED then joined paragraphs, undid the join, inserted and saved a middle
+character, executed saved Undo and Redo and created a third discussion using
+Cmd+A over the whole fragment. All three roots/five messages, exact anchors and
+saved text survived a complete restart. The generic observation file named
+edited-after-join-undo precedes that action because an AX selector refused an
+ambiguous target; only actual-edit-after-join-undo is evidence of that edit.
+No failed or partial earlier candidate is promoted to final acceptance.
+
+Native build HEAD is 19d025661f4ed431ee9c654950ed3e3f3d9ed95d, Word 16.112
+(16.112.26081010), macOS 27.0 arm64; isolated SOURCE/PACKAGED profiles and immutable
+saved project snapshots bind observations. Subsequent documentation/OPS-only
+commits require exact runtime-input equality, not a claim of new native runs.
+Required direct-consumer, RTK, baseline, security/OSS, CI and delivery remain
+pending. The separate break-only formatting return diagnostic and all explicitly
+listed remaining Mac-plan gaps remain open.

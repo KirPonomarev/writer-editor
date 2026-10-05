@@ -1,5 +1,9 @@
 # HANDOFF (Yalken Writer)
 
+## Candidate qualification — 2026-10-05 03:37 EEST
+
+Native SOURCE/PACKAGED candidate `19d025661f4ed431ee9c654950ed3e3f3d9ed95d` now completes fresh rich import, immediate review export, actual changed Word reply and native Apply without rewriting source scene bytes. Replay/restart and packaged saved Undo/Redo plus AllSelection authoring observed. Next: direct consumers, mandatory gates and delivery for the current packet; then continue original Mac novel-text plan. The break-only formatting return diagnostic remains a separate open item. Previous failed candidates stay failed; no whole-plan percentage is inferred.
+
 _Updated: 2026-10-05_
 
 ## Active implementation — 2026-10-05 02:11 EEST
