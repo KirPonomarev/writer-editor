@@ -277,6 +277,30 @@ function documentHasParagraphSpacing(doc, layoutKeys = ['wordParagraphSpacing'])
   return false;
 }
 
+// Presence detection is intentionally descriptor-only and dependency-free.
+// Unrelated optional domains keep their own accessor diagnostics; histories are
+// included so an Original-only marker cannot evade its required feature.
+function documentHasParagraphMarkTypography(doc) {
+  const pending = [{ node: doc, depth: 0 }], seen = new Set(); let count = 0;
+  while (pending.length) {
+    const { node, depth } = pending.pop();
+    if (!node || typeof node !== 'object' || seen.has(node)) continue;
+    if (++count > 1000000 || depth > 128) throw Error('WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID');
+    seen.add(node);
+    const descriptors = Object.getOwnPropertyDescriptors(node);
+    const marker = descriptors.wordParagraphMarkTypography;
+    if (marker) {
+      if (!marker.enumerable) throw Error('WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID');
+      if (!Object.hasOwn(marker, 'value') || marker.value != null) return true;
+    }
+    for (const descriptor of Object.values(descriptors)) {
+      if (Object.hasOwn(descriptor, 'value') && descriptor.value && typeof descriptor.value === 'object')
+        pending.push({ node: descriptor.value, depth: depth + 1 });
+    }
+  }
+  return false;
+}
+
 function canonicalizeDocumentJson(doc) {
   if (!isPlainObject(doc)) {
     return buildParagraphDocumentFromText('');
@@ -291,6 +315,7 @@ function canonicalizeDocumentJson(doc) {
     throw Object.assign(new Error('USER_BOOKMARK_SHAPE_INVALID'), { code: 'USER_BOOKMARK_SHAPE_INVALID' });
   }
   if (documentHasWordLanguage(doc)) require('./word-language-v1.cjs').inspectDocumentLanguage(doc);
+  if (documentHasParagraphMarkTypography(doc)) require('../io/inlineTypography.cjs').inspectParagraphMarkTypography(doc);
   if (documentHasParagraphSpacing(doc, ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop'])) require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(doc);
   if (documentHasParagraphSpacing(doc)) require('./word-paragraph-spacing-v1.cjs').inspectDocumentParagraphSpacing(doc);
   if (bookmarkDescriptor?.value != null) {
@@ -318,6 +343,7 @@ function canonicalizeDocumentJson(doc) {
     const node = pending.pop();
     // New optional schema defaults are representation-only; preserve every
     // explicit tuple, including its separate paragraph-mark scope.
+    if (node?.attrs?.wordParagraphMarkTypography === null) delete node.attrs.wordParagraphMarkTypography;
     if (node?.attrs?.wordParagraphMarkLanguage === null) delete node.attrs.wordParagraphMarkLanguage;
     for (const key of ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop']) if (node?.attrs?.[key] === null) delete node.attrs[key];
     if (node?.attrs?.wordParagraphSpacing === null) delete node.attrs.wordParagraphSpacing;
@@ -357,6 +383,7 @@ function requiredSceneFeatures(doc) {
     ...([doc.attrs?.wordSections?.final, ...(doc.attrs?.wordSections?.boundaries || []).map(item=>item.properties)].some(properties=>properties?.docGrid != null) ? ['word-section-doc-grid.v1'] : []), ...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
     ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
     ...(['roundUndo','roundRedo'].some(key=>doc.attrs?.wordPendingRevisions?.[key]?.some(frame=>frame.schemaVersion===4)) ? ['word-pending-round-delta.v1'] : []),
+    ...(documentHasParagraphMarkTypography(doc) && require('../io/inlineTypography.cjs').inspectParagraphMarkTypography(doc) ? ['word-paragraph-mark-typography.v1'] : []),
     ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : []),
     ...(documentHasParagraphSpacing(doc, ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop']) ? ['word-paragraph-layout.v1'] : []),
     ...(documentHasParagraphSpacing(doc) ? ['word-paragraph-spacing.v1'] : []),
@@ -397,8 +424,8 @@ function decodeSceneDocument(serializedDoc) {
   if (Object.keys(declaration).sort().join(',') !== 'format,requiredFeatures,version') fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
-    || declaration.requiredFeatures.length > 13 || declaration.requiredFeatures.some(feature =>
-      !['word-pending-round-delta.v1', 'word-stories.v1', 'word-sections.v1', 'word-section-doc-grid.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-list-pattern.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+    || declaration.requiredFeatures.length > 14 || declaration.requiredFeatures.some(feature =>
+      !['word-paragraph-mark-typography.v1', 'word-pending-round-delta.v1', 'word-stories.v1', 'word-sections.v1', 'word-section-doc-grid.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-list-pattern.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

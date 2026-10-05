@@ -1,3 +1,4 @@
+import { normalizeParagraphMarkTypography } from '../../io/inlineTypography.mjs';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
@@ -232,6 +233,10 @@ export const DocumentParagraphAlignment = Extension.create({
             }
             return { 'data-word-paragraph-spacing': JSON.stringify(spacing), ...(css.length ? { style: css.join('; ') } : {}) };
           },
+        },
+        wordParagraphMarkTypography: {
+          default:null,parseHTML:()=>null,
+          renderHTML:attrs=>attrs.wordParagraphMarkTypography==null?{}:{'data-word-paragraph-mark-typography':JSON.stringify(normalizeParagraphMarkTypography(attrs.wordParagraphMarkTypography))},
         },
         wordParagraphMarkLanguage: {
           default: null,

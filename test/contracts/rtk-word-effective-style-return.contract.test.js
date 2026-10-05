@@ -12,10 +12,10 @@ test('effective paragraph/character cascade resolves inherited values, toggles a
  +style('Derived','paragraph','<w:basedOn w:val="Base"/><w:rPr><w:b/><w:i w:val="0"/></w:rPr>')
  +style('Char','character','<w:rPr><w:i/><w:u w:val="single"/></w:rPr>');
  const result=await scan(styles,undefined,'<w:rStyle w:val="Char"/>');assert.equal(result.ok,true);
- const p=result.paragraphs[0],r=p.formattedRuns[0];assert.deepEqual(p.paragraphState,{textAlign:'right'});assert.deepEqual(p.paragraphStructure,{nodeType:'heading',headingLevel:3});assert.deepEqual(p.unsupportedParagraphNames,[]);
+ const p=result.paragraphs[0],r=p.formattedRuns[0];assert.deepEqual(p.paragraphState,{textAlign:'right',wordParagraphMarkTypography:{bold:true}});assert.deepEqual(p.paragraphStructure,{nodeType:'heading',headingLevel:3});assert.deepEqual(p.unsupportedParagraphNames,[]);
  assert.equal(r.inline.bold.action,'set');assert.equal(r.inline.italic.action,'set');assert.equal(r.inline.underline.action,'set');assert.equal(r.inline.color.value,'#112233');assert.deepEqual(r.unsupportedNames,[]);
  const direct=await scan(styles,'<w:pStyle w:val="Derived"/><w:jc w:val="left"/><w:outlineLvl w:val="9"/>','<w:rStyle w:val="Char"/><w:b/><w:u w:val="none"/><w:color w:val="auto"/>');
- assert.deepEqual(direct.paragraphs[0].paragraphState,{textAlign:'left'});assert.deepEqual(direct.paragraphs[0].paragraphStructure,{nodeType:'paragraph'});
+ assert.deepEqual(direct.paragraphs[0].paragraphState,{textAlign:'left',wordParagraphMarkTypography:{bold:true}});assert.deepEqual(direct.paragraphs[0].paragraphStructure,{nodeType:'paragraph'});
  assert.equal(direct.paragraphs[0].formattedRuns[0].inline.bold.action,'set');assert.equal(direct.paragraphs[0].formattedRuns[0].inline.underline.action,'remove');assert.equal(direct.paragraphs[0].formattedRuns[0].inline.color.action,'remove');
 });
 test('default style is active without pStyle and explicit style does not invent an implicit basedOn',async()=>{
@@ -132,5 +132,12 @@ test('direct table spacing uses the same strict shape gate without admitting tab
   const xml=`<w:document xmlns:w="${W}"><w:body><w:tbl><w:tblGrid><w:gridCol w:w="2000"/></w:tblGrid><w:tr><w:tc><w:p><w:pPr>${spacing}</w:pPr><w:r><w:t>x</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>`;
   const result=(await scanner).extractReviewTransportFormattingRunsV2(xml,{cryptoPort});
   assert.equal(result.ok,true);assert.ok(result.paragraphs[0].unsupportedParagraphNames.includes('propertyShape'));
+ }
+});
+
+test('Paragraph mark typography: effective return preserves authored font slots and refuses conflicting scalar sizes',async()=>{
+ const styles='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>';
+ for(const [property,invalid]of [['<w:rFonts w:ascii="Georgia"/>',false],['<w:rFonts w:ascii="Arial"/>',false],['<w:rFonts w:asciiTheme="minorHAnsi"/>',true],['<w:sz w:val="28"/>',true],['<w:sz w:val="24"/>',false]]){
+  const result=await scan(styles,`<w:rPr>${property}</w:rPr>`);assert.equal(result.ok,true);assert.equal(result.paragraphs[0].paragraphFormattingInvalid,invalid,property);if(!invalid&&property.includes('rFonts'))assert.deepEqual(result.paragraphs[0].paragraphState.wordParagraphMarkTypography,{fontSlots:{ascii:property.includes('Georgia')?'Georgia':'Arial'}});
  }
 });

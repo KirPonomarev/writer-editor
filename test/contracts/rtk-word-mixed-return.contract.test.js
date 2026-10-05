@@ -10,8 +10,11 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
-async function fixture(clean=false) {
+async function fixture(clean=false,markChange=false) {
   const source={type:'doc',content:['oldnew','tail AAA BBB'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
+  if(markChange)source.content.push({type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}},content:[]});
+  if(markChange)source.content[1].attrs={wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}};
+  if(markChange==='font-slots')for(const index of [1,2])source.content[index].attrs.wordParagraphMarkTypography={fontSlots:{ascii:'Arial',hAnsi:'Georgia'}};
   const revisions=['delete','insert'].map((operation,i)=>({id:'revision-'+(i+1),nativeId:''+i,operation,author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from:i*3,to:i*3+3,state:'pending',groupId:'group-1'}));
   let beforeDoc=review.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]});
   if(clean)beforeDoc=review.normalizeNode(beforeDoc);
@@ -22,13 +25,15 @@ async function fixture(clean=false) {
   const exported=makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail AAA BBB',doc:beforeDoc,observableContent:beforeContent}]});
   const ledger=structuredClone(review.readLedger(beforeDoc)||{schemaVersion:2,source:beforeDoc,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});ledger.source.content[1].content[0].text='tail AAAZZZ BBB';
   ledger.revisions.push(...['delete','insert'].map((operation,i)=>({id:'revision-'+(3+i),nativeId:''+(2+i),operation,author:'Editor',date:'',dateUtc:'',paragraphIndex:1,from:5+i*3,to:8+i*3,state:'pending',groupId:'group-2'})));
+  if(markChange)for(const index of [1,2]){const before=review.paragraphProperties(ledger.source.content[index]);ledger.source.content[index].attrs.wordParagraphMarkTypography=markChange==='font-slots'?{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}}:{bold:markChange!=='omit-off',fontFamily:'Georgia',fontSize:'14pt'};ledger.revisions.push({id:'revision-'+(5+index),nativeId:String(4+index),operation:'format',author:'Editor',date:'',dateUtc:'',paragraphIndex:index,from:0,to:(ledger.source.content[index].content||[]).map(n=>n.text).join('').length,state:'pending',groupId:null,format:{kind:'paragraph',before,after:review.paragraphProperties(ledger.source.content[index])}});}ledger.revisions.sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);
   const returnedDoc=review.bindLedger(ledger),afterState=structuredClone(state);
   afterState.threads.forEach((t,i)=>t.messages.push({commentId:'reply-'+i,kind:'reply',body:'Answer '+i,provenance:{author:'Editor'}}));
   afterState.threads[0].messages[0].body='Edited query';
   afterState.threads[1].anchor=exactAnchor({paragraphIndex:1,startUtf16:9,selectedText:'BBB'},sceneId,['new','tail ZZZ BBB']);
   afterState.threads.push({threadId:'new-root-thread',rootCommentId:'new-root',sceneId,status:'open',anchor:exactAnchor({paragraphIndex:1,startUtf16:6,selectedText:'ZZ'},sceneId,['new','tail ZZZ BBB']),messages:[{commentId:'new-root',kind:'root',body:'Fresh insertion query',provenance:{author:'Editor'}}]});
-  const bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]}));
+  let bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]}));
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),cryptoPort={sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)};
+  if(markChange==='omit-off'){const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;parts['word/document.xml']=parts['word/document.xml'].replaceAll('<w:b w:val="0"/>','');bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));}
   const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
   const capsule=exported.localAuthorityCapsule;
   const documents=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:[{sceneId,document:beforeDoc}],documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest,retainPendingSceneId:sceneId});assert.equal(documents.ok,true,JSON.stringify(documents));
@@ -39,7 +44,7 @@ async function fixture(clean=false) {
 const plan=f=>planMixedPendingReturn({...f,returnProofJson:JSON.stringify(f.proof)});
 async function assertDiscussionReadback(doc,state) {
  const canonical=JSON.parse(state),bridge=await import('../../src/io/revisionBridge/index.mjs');
- const bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:canonical,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc}]}));
+ const bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:canonical,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:envelope.deriveVisibleTextFromDocument(doc),doc}]}));
  const result=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)}});
  assert.equal(result.ok,true);const active=canonical.threads.filter(t=>t.status!=='deleted');assert.equal(result.reviewIr.commentThreads.length,active.length);
  for(const expected of active) {
@@ -64,7 +69,7 @@ test('mixed Word replacement preserves old partitions, rich source, multiple dis
     assert.equal(JSON.parse(state).threads.at(-1).status,action==='undo'?'deleted':'open');
   }
   assert.equal(review.projection(doc).current,'new\ntail ZZZ BBB');
-  const reexport=makeSource({projectId,projectRoot:'/project',nonTextReturnState:JSON.parse(state),scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc}]});
+  const reexport=makeSource({projectId,projectRoot:'/project',nonTextReturnState:JSON.parse(state),scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:envelope.deriveVisibleTextFromDocument(doc),doc}]});
   assert.ok(build(reexport).length>0);
 });
 for(const [name,mutate] of Object.entries({
@@ -104,7 +109,7 @@ test('mixed comment starting at replacement insertion keeps its explicit Word un
  thread.anchorRange.startUtf16=8;thread.anchorRange.endUtf16=11;thread.anchorRange.selectedText='ZZZ';thread.quotedAnchorText='ZZZ';
  thread.finalTextAnchorRange.startUtf16=5;thread.finalTextAnchorRange.endUtf16=8;thread.finalTextAnchorRange.selectedText='ZZZ';
  const p=plan(f),decisions=require('../../src/core/word-pending-comment-decisions-v1.cjs');let doc=p.replacement.doc,state=p.afterText;
- const exported=()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:JSON.parse(state),scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc}]});
+ const exported=()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:JSON.parse(state),scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:envelope.deriveVisibleTextFromDocument(doc),doc}]});
  assert.ok(build(exported()).length);await assertDiscussionReadback(doc,state);
  for(const action of ['undo','redo']) {const next=review.decide(doc,{action}).doc;state=decisions.planPendingCommentDecision({beforeText:state,projectId,sceneId,beforeContent:encode(doc),afterContent:encode(next),decision:{action}}).afterText;doc=next;assert.ok(build(exported()).length);await assertDiscussionReadback(doc,state);}
 });
@@ -141,4 +146,30 @@ for(const placement of ['span','paragraph'])test('mixed Core orders fresh insert
  const derived=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:before,returnedDocument:review.bindLedger(incoming),binding,anchors:[]});
  const rows=review.readLedger(derived.document).revisions;assert.deepEqual(rows.map(r=>r.id),['revision-3','revision-1','revision-2']);
  for(const previous of old.revisions){const retained=rows.find(r=>r.id===previous.id);assert.deepEqual(retained,{...previous,from:previous.from+(placement==='span'?1:0),to:previous.to+(placement==='span'?1:0)});}
+});
+
+test('Paragraph mark typography: mixed tracked replacement plus replies preserves empty/nonempty mark changes and round inverse',async()=>{
+ const f=await fixture(false,true),p=plan(f),doc=p.replacement.doc;
+ assert.equal(review.projection(doc).current,'new\ntail ZZZ BBB\n');
+ assert.deepEqual(review.paragraphs(review.normalizeNode(doc)).slice(1).map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:true,fontFamily:'Georgia',fontSize:'14pt'}));
+ assert.deepEqual(review.paragraphs(review.materialize(review.readLedger(doc),'original')).slice(1).map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:false,fontFamily:'Arial',fontSize:'12pt'}));
+ await assertDiscussionReadback(doc,p.afterText);
+ let inverse=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(inverse),review.normalizeNode(f.beforeDoc));
+ inverse=review.decide(envelope.parseObservablePayload(encode(inverse)).doc,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(inverse),review.normalizeNode(doc));
+ for(const revision of review.readLedger(doc).revisions.filter(review.isParagraphFormat)){for(const action of ['accept','reject']){const decided=review.decide(doc,{action,revisionId:revision.id}).doc;assert.deepEqual(review.paragraphs(review.normalizeNode(decided))[revision.paragraphIndex].attrs.wordParagraphMarkTypography,action==='accept'?{bold:true,fontFamily:'Georgia',fontSize:'14pt'}:{bold:false,fontFamily:'Arial',fontSize:'12pt'});}}
+});
+
+test('Paragraph mark typography: Word omission of effective off retains canonical false during a genuine size/family change',async()=>{
+ const f=await fixture(false,'omit-off'),p=plan(f);
+ assert.deepEqual(review.normalizeNode(p.replacement.doc).content.slice(1).map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:false,fontFamily:'Georgia',fontSize:'14pt'}));
+ assert.deepEqual(review.normalizeNode(review.decide(p.replacement.doc,{action:'undo'}).doc),review.normalizeNode(f.beforeDoc));
+ const forged=structuredClone(f),l=review.readLedger(forged.proof.returnedDocument),r=l.revisions.find(review.isParagraphFormat);r.format.before.attrs.wordParagraphMarkTypography.bold=true;forged.proof.returnedDocument=review.bindLedger(l);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
+});
+
+test('Paragraph mark fontSlots: compound text discussions retain source slots through UndoRedo and reject forged previous slots',async()=>{
+ const f=await fixture(false,'font-slots'),p=plan(f),before=review.normalizeNode(f.beforeDoc),doc=p.replacement.doc;
+ assert.deepEqual(review.normalizeNode(doc).content.slice(1).map(p=>p.attrs.wordParagraphMarkTypography),[{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}},{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}}]);
+ const undone=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(undone),before);
+ const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(redone),review.normalizeNode(doc));await assertDiscussionReadback(redone,p.afterText);
+ const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument);ledger.revisions.find(review.isParagraphFormat).format.before.attrs.wordParagraphMarkTypography.fontSlots.ascii='Courier New';forged.proof.returnedDocument=review.bindLedger(ledger);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
 });

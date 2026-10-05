@@ -1,6 +1,6 @@
 'use strict';
 const { escapeXml } = require('./docxTextXml.js');
-const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
+const { buildDocxWordLanguageXml, buildDocxParagraphMarkTypographyXml } = require('./docxInlineTypography.js');
 const layout = require('../../core/word-paragraph-layout-v1.cjs');
 const { normalizeWordParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
 function buildDocxWordParagraphSpacingXml(value) {
@@ -26,7 +26,8 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
   let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang|ind)\b[^>]*\/>/gu, '');
   protectedProperties=protectedProperties.replace(/<w:tabs\b[^>]*>[\s\S]*?<\/w:tabs>|<w:tabs\b[^>]*\/>/gu,'');
-  const oldLanguage = buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
+  protectedProperties = protectedProperties.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/gu, '');
+  const oldLanguage = buildDocxParagraphMarkTypographyXml(before.attrs?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
   if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
   else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
   protectedProperties = protectedProperties.replace(/<w:rPr><\/w:rPr>/gu, '');

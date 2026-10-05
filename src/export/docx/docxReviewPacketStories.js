@@ -1,3 +1,4 @@
+const { buildDocxParagraphMarkTypographyXml } = require('./docxInlineTypography.js');
 const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml } = require('./docxPendingRevisions.js');
 const { buildDocxWordLanguageXml } = require('./docxInlineTypography.js');
 'use strict';
@@ -98,7 +99,7 @@ function storyPackageParts(projection, {firstNumId=1}={}) {
         return `<w:hyperlink r:id="${links.get(href)}">${xml}</w:hyperlink>`;
       }).join('');
       const align=paragraph.attrs?.textAlign;
-      const spacing=buildDocxWordParagraphSpacingXml(paragraph.attrs?.wordParagraphSpacing)+buildDocxWordParagraphLayoutXml(paragraph.attrs),language=buildDocxWordLanguageXml(paragraph.attrs?.wordParagraphMarkLanguage);
+      const spacing=buildDocxWordParagraphSpacingXml(paragraph.attrs?.wordParagraphSpacing)+buildDocxWordParagraphLayoutXml(paragraph.attrs),language=buildDocxParagraphMarkTypographyXml(paragraph.attrs?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(paragraph.attrs?.wordParagraphMarkLanguage);
       const pr=spacing+(language?`<w:rPr>${language}</w:rPr>`:'')+(list?`<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${numbers.get(list.numId)}"/></w:numPr>`:'')+(align?`<w:jc w:val="${align==='justify'?'both':align}"/>`:'');
       return `<w:p>${pr?`<w:pPr>${pr}</w:pPr>`:''}${runs}</w:p>`;
     });

@@ -1,0 +1,154 @@
+{
+  "taskId": "WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005",
+  "objective": "Preserve bounded paragraph-mark typography distinct from visible run formatting across import, save, genuine Word mark and tracked-text/comment changes, governed Apply, restart and UndoRedo, and both DOCX exports; preserve original Mac plan.; repair exact native script-font compatibility failures without weakening no-loss gates in isolated linked worktree; transfer reviewed patch to original task branch after baseline finishes; preserve literal paragraph-mark fontSlots without scalar expansion, using 1-4 ascii/hAnsi/eastAsia/cs validated names, mutually exclusive fontFamily; uniform four slots keep prior scalar representation",
+  "productAuthority": "Core owns canonical paragraph-mark properties, revision before/after state, required scene features, no-loss authoring persistence and atomic transactions. Renderer carries working-state projections only; import/provider metadata never grants write authority. Optional closed fontSlots preserves exact authored direct slot keys and literal names only; absent inherited theme/catalog identity is not admitted truth.",
+  "commandAuthority": "Existing authenticated Main return dispatcher and Kernel pending revision decisions; existing private Apply capability revalidated against project, lifecycle, source/comment CAS and generation under lease.",
+  "designAuthority": "Existing computed editor and review surfaces. Mechanical schema roundtrip of authoring metadata only; no new surface, composition, styling system, command availability or UI flow.",
+  "operationKinds": [
+    "COMMAND",
+    "QUERY",
+    "EFFECT"
+  ],
+  "writePaths": [
+    "src/io/inlineTypography.cjs",
+    "src/io/inlineTypography.mjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "src/core/word-user-bookmarks-v1.cjs",
+    "src/renderer/tiptap/documentParagraphAlignment.mjs",
+    "src/renderer/editor.bundle.js",
+    "src/io/revisionBridge/index.mjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/utils/docxImportLocalFilePreview.js",
+    "src/main.js",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+    "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+    "src/core/word-pending-comment-return-v1.cjs",
+    "src/export/docx/docxInlineTypography.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/export/docx/docxMinBuilder.js",
+    "src/export/docx/docxPendingRevisions.js",
+    "src/core/word-rich-body-projection-v1.cjs",
+    "src/export/docx/docxReviewPacketComments.js",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "src/export/docx/docxReviewPacketStories.js",
+    "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+    "test/contracts/rtk-word-review-default-typography.contract.test.js",
+    "test/contracts/rtk-word-effective-style-return.contract.test.js",
+    "test/contracts/rtk-word-composite-fidelity.contract.test.js",
+    "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
+    "test/contracts/rtk-word-pending-formatting.contract.test.js",
+    "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
+    "test/contracts/rtk-word-mixed-return.contract.test.js",
+    "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
+    "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "docs/tasks/2026-10-05--word-paragraph-mark-typography-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_MARK_TYPOGRAPHY_V1.json",
+    "docs/CONTEXT.md",
+    "docs/HANDOFF.md",
+    "docs/WORKLOG.md",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/ARCH_DIFF_LOG.md",
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "src/core/word-pending-comment-decisions-v1.cjs",
+    "src/core/word-pending-recording-comments-v1.cjs"
+  ],
+  "productPorts": [
+    "Existing governed local DOCX import/create, leased source save, signed export, authenticated return preparation and atomic Apply; no new writer or port",
+    "Existing Kernel pending-revision decisions and source-changing round UndoRedo; strict source/comment/ledger bindings and recovery retained"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact base/build/profile/project/entity/lifecycle/source revision/generation and signed round bindings; no stale preview publication",
+    "Closed paragraph-mark values never mutate visible run formatting or infer values from last run",
+    "Both native pPrChange and paragraph-owned rPrChange bind original/current paragraph properties and exact author/date/UTC provenance",
+    "Required feature detection includes current source, pending before/after properties and retained history; absence stays absent and null editor default normalizes away"
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
+  "fallbacks": [
+    "Unknown, malformed, unbounded or unsupported effective properties refuse without write",
+    "Legacy scenes without new field remain byte/semantically unchanged; old readers typed-refuse scenes that require new feature",
+    "Auxiliary rich-body consumers preserve admitted metadata coherently or explicitly refuse; never silently omit new fields"
+  ],
+  "recoveryAndNegativeChecks": [
+    "First literal red fixtures: empty/nonempty paragraph-mark bold+Georgia14pt distinct from styled italic text; both paragraph-owned revision shapes",
+    "Real TipTap schema/save/reopen retains values including explicit false; no visible-text property leak",
+    "Actual Main short chapter: paragraph-mark change plus tracked text plus comment reply; Cancel no-write; real atomic Apply/reopen/UndoRedo; exact prior identities/anchors/messages/provenance",
+    "Independent XML readback compares paragraph-mark and visible-run Current/Original tuples separately, including empty paragraphs; genuine Word changed-save in SOURCE and PACKAGED before full gates",
+    "Malformed keys, value bounds, getters/symbols/prototypes and forged/stale property bindings refuse without canonical writes",
+    "Required-feature old-reader refusal covers metadata retained only in pending and history; no read-time migration or history pruning",
+    "Mandatory affected whole suites, stable maintained graphs/baseline, audit/policy/build/guardrails, all CI, complete delivery and exact merged verification",
+    "Mixed paragraph-mark formats must retain generic discussion extraction, individual pending-comment decisions and source-changing round inverse history through existing typed paragraph-format ledger; do not relax structural/move or unbound-property refusal.",
+    "Exact authored font-slot equality in empty/nonempty Current/Original, both property-change owners, both exports and save/reopen; preserve untouched native cell-shift contracts; replace scalar-refusal oracle only with stronger exact slot preservation assertion, never silent flattening"
+  ],
+  "securityAndInputBoundary": "Reuse existing pure typography normalizers with a closed bounded paragraph property; supported booleans preserve false, validated fonts/sizes/colors only. No raw XML stash, arbitrary style catalog, link/path/command authority, new dependency, runtime network or enlarged source/ledger/proof budgets. fontSlots accepts only plain own enumerable data with 1-4 ascii/hAnsi/eastAsia/cs keys and validated literal family names. Reject symbols/accessors/prototype/unknowns and scalar+slot conflict; direct unresolved theme attributes remain typed unsupported.",
+  "performanceAndAccessibility": "Short chapter first; preserve existing bounded 100k route. No full-manuscript reanalysis per keystroke, new visual surface or altered keyboard/accessibility flow. Broad/five-round graphs run only on stable candidate, never during each small repair.",
+  "currentReality": [
+    "PR2086 merged at4b9fb5f3f: CI19/19; twoRTK3462/3462zero skip/todo; baseline2199executed passes+59configuredskips; exact tracked tree equals52a native06 runtime",
+    "Read-only literal probe reports generic-import/export loss of paragraph-mark font/bold/size; authenticated scanner rejects paragraph-owned formatting; next assertions require executed exact-base red evidence",
+    "Native06 existing100k profiles preserve200roots400messages,1741Current/Originalparagraphs and prior rounds through reopen/export/UndoRedo; this does not establish full novel launch",
+    "Frozen04 bounded SOURCE native mixed marker/text/reply Apply, restart, independent revision Undo14/Redo16 and both exports observed; optional admission focused19/19 and whole17files307/307 pass. Final packaged/global/delivery acceptance remains pending at candidate checkpoint."
+  ],
+  "targetOnly": [
+    "No whole-feature/novel-launch completion percentage",
+    "Named style identity/name/catalog/basedOn and direct-versus-inherited semantics remain OPEN; effective appearance is a separate claim",
+    "Complex table/media operations and original full Mac-plan remainder remain separate; this packet never replaces their denominator",
+    "Inherited absent theme/catalog identity and typing into unresolved slots remain OPEN."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core owns canonical paragraph-mark properties, revision before/after state, required scene features, no-loss authoring persistence and atomic transactions. Renderer carries working-state projections only; import/provider metadata never grants write authority.",
+  "interfacePlane": "Existing computed editor and review surfaces. Mechanical schema roundtrip of authoring metadata only; no new surface, composition, styling system, command availability or UI flow.",
+  "commands": [
+    "cmd.project.docx.previewLocalFile",
+    "cmd.project.docx.previewImportPlan",
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.review.exportDocxReviewPacket",
+    "cmd.project.review.applyExactTextChange",
+    "cmd.project.review.decidePendingRevision"
+  ],
+  "queries": [
+    "Existing immutable content/import/review and command capability projections; query never grants mutation authority"
+  ],
+  "events": [
+    "Existing saved-scene and atomic project-saved domain events"
+  ],
+  "effects": [
+    "Existing governed local DOCX import/create, leased source save, signed export, authenticated return preparation and atomic Apply; no new writer or port",
+    "Existing Kernel pending-revision decisions and source-changing round UndoRedo; strict source/comment/ledger bindings and recovery retained"
+  ],
+  "hotPathBoundary": "No full-document formatting/history reanalysis per keystroke. Values are admitted at import/save/return and existing explicit decision boundaries.",
+  "migrationRollbackEvidence": "Preserve canonical files and readable recovery with the current reader. Optional new required feature can make old binaries refuse marked scenes including history-only data; code-only downgrade is not data-compatible rollback. No silent data restore or pruning.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_MECHANICAL_SCHEMA_AND_DOCX_PRESERVATION",
+  "fontSlotsCompatibilityRepair": {
+    "candidateFailureSha": "7b9411040c9162f15807c625339299f6453e6a5f",
+    "representation": "optional fontSlots plain own enumerable data object, 1-4 ascii/hAnsi/eastAsia/cs validated literal names; mutually exclusive fontFamily; four identical explicit literals keep existing scalar shape",
+    "truthBoundary": "preserve authored direct slots exactly; never invent absent slots or retain raw XML; direct unresolved theme fields typed unsupported; absent inherited theme/catalog identity and typing inheritance remain OPEN",
+    "proof": "unchanged native cell-shift whole contracts plus exact authored-slot OOXML equality empty/nonempty and Current/Original across both emitters and revision owners; malformed and scalar+slots negative checks",
+    "delivery": "same task and same original PR; no new table capability, dependency, command, port, UI flow or writer"
+  }
+}

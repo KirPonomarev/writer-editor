@@ -302,3 +302,55 @@ test('Pending paragraph layout retains root default and distinct before/current 
  const changed=model.setDefaultTabStop(doc,851);assert.equal(changed.attrs.wordDefaultTabStop,851);
  for(const action of ['acceptAll','rejectAll']){const decided=model.decide(changed,{action}).doc;assert.equal(decided.attrs.wordDefaultTabStop,851);const undone=model.decide(decided,{action:'undo'}).doc;assert.equal(undone.attrs.wordDefaultTabStop,851);assert.deepEqual(model.readLedger(undone).revisions,model.readLedger(changed).revisions);}
 });
+
+for(const owner of ['paragraph-mark','paragraph']) test(`Paragraph mark typography: ${owner} property change binds empty/nonempty Current and Original`,async()=>{
+ const old='<w:b w:val="0"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/>';
+ const next='<w:b/><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/><w:szCs w:val="28"/>';
+ const property=id=>owner==='paragraph-mark'?`<w:rPr>${next}${change('rPr',id,old)}</w:rPr>`:`<w:rPr>${next}</w:rPr>${change('pPr',id,`<w:rPr>${old}</w:rPr>`)}`;
+ const doc=await parse(pack(`<w:p><w:pPr>${property(40)}</w:pPr>${run('Unchanged italic','<w:i/>')}</w:p><w:p><w:pPr>${property(41)}</w:pPr></w:p>`));
+ const ledger=model.readLedger(doc);assert.equal(ledger.revisions.length,2);assert.ok(ledger.revisions.every(model.isParagraphFormat));
+ for(const mode of ['current','original']){const result=materialized(doc,mode);const expected=mode==='current'?{bold:true,fontFamily:'Georgia',fontSize:'14pt'}:{bold:false,fontFamily:'Arial',fontSize:'12pt'};assert.deepEqual(result.content.map(p=>p.attrs.wordParagraphMarkTypography),[expected,expected]);assert.ok(result.content[0].content[0].marks.some(m=>m.type==='italic'));}
+ for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));}
+});
+
+test('Paragraph mark typography: foreign owner and malformed property carriers refuse before import',async()=>{
+ const [bridge]=await modules;const source=`<w:p><w:pPr><w:rPr><w:b/>${change('rPr',8,'<w:b w:val="0"/>')}</w:rPr></w:pPr>${run('text')}</w:p>`;
+ for(const bad of [source.replaceAll('w:pPr','x:pPr').replace('<x:pPr>','<x:pPr xmlns:x="urn:foreign">'),source.replaceAll('<w:rPr>','<x:rPr xmlns:x="urn:foreign">').replaceAll('</w:rPr>','</x:rPr>'),source.replace('<w:b/>','<w:b ignored="1"/>'),source.replace('<w:b/>','<w:b/><w:b/>'),source.replace('<w:b/>','<w:unknown/>'),source.replace('<w:b/>','<w:b><w:i/></w:b>'),source.replace('<w:b/>','<w:rFonts w:asciiTheme="minorHAnsi"/>')])assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(bad)).ok,false,bad);
+});
+
+test('Paragraph mark typography: complete supported scalar catalog and explicit resets survive both owner forms and exports',async()=>{
+ const cases=[
+  ['bold','<w:b/>','<w:b w:val="0"/>',true,false],
+  ['italic','<w:i w:val="0"/>','<w:i/>',false,true],
+  ['underline','<w:u w:val="single"/>','<w:u w:val="none"/>',true,false],
+  ['strike','<w:strike w:val="0"/>','<w:strike/>',false,true],
+  ['color','<w:color w:val="112233"/>','<w:color w:val="auto"/>','#112233',null],
+  ['highlight','<w:shd w:val="clear" w:fill="123456"/>','<w:highlight w:val="none"/>','#123456',null],
+ ];
+ for(const owner of ['rPr','pPr'])for(const [key,old,next,before,after]of cases){
+  const property=owner==='rPr'?`<w:rPr>${next}${change('rPr',61,old)}</w:rPr>`:`<w:rPr>${next}</w:rPr>${change('pPr',61,`<w:rPr>${old}</w:rPr>`)}`;
+  const doc=await parse(pack(`<w:p><w:pPr>${property}</w:pPr>${run('Visible untouched','<w:i/>')}</w:p>`));
+  const ledger=model.readLedger(doc);assert.equal(ledger.revisions.length,1);assert.equal(ledger.revisions[0].author,'Reviewer');assert.equal(ledger.revisions[0].date,'2026-09-29T02:21:00Z');
+  assert.equal(materialized(doc,'original').content[0].attrs.wordParagraphMarkTypography[key],before,`${owner} ${key} before`);
+  assert.equal(materialized(doc,'current').content[0].attrs.wordParagraphMarkTypography[key],after,`${owner} ${key} after`);
+  for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode),`${owner} ${key} ${profile} ${mode}`);}
+ }
+});
+
+test('Paragraph mark fontSlots: authored keys survive empty/nonempty Current Original and both revision owners and exporters',async()=>{
+ const slots=[{ascii:'Arial'},{ascii:'Aptos',hAnsi:'Aptos'},{ascii:'Arial',hAnsi:'Georgia'},{ascii:'Arial',hAnsi:'Georgia',eastAsia:'Aptos',cs:'Courier New'}];
+ const before={ascii:'Georgia',cs:'Courier New'},xml=value=>'<w:rFonts'+Object.entries(value).map(([k,v])=>` w:${k}="${v}"`).join('')+'/>';
+ const [bridge]=await modules;
+ for(const owner of ['rPr','pPr'])for(const after of slots){
+  const property=id=>owner==='rPr'?`<w:rPr>${xml(after)}${change('rPr',id,xml(before))}</w:rPr>`:`<w:rPr>${xml(after)}</w:rPr>${change('pPr',id,`<w:rPr>${xml(before)}</w:rPr>`)}`;
+  const doc=await parse(pack(`<w:p><w:pPr>${property(70)}</w:pPr>${run('Unchanged','<w:i/>')}</w:p><w:p><w:pPr>${property(71)}</w:pPr></w:p>`));
+  for(const [mode,expected]of [['original',before],['current',after]])assert.deepEqual(materialized(doc,mode).content.map(p=>p.attrs.wordParagraphMarkTypography),[{fontSlots:expected},{fontSlots:expected}]);
+  for(const profile of ['minimum','full']){
+   const bytes=await exportDoc(doc,profile),documentXml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+   // Independent authored-attribute oracle: no inferred slots may be emitted.
+   const actual=[...documentXml.matchAll(/<w:pPr>[\s\S]*?<\/w:pPr>/gu)].flatMap(p=>[...p[0].matchAll(/<w:rFonts\b([^>]*)\/>/gu)].map(m=>Object.fromEntries([...m[1].matchAll(/w:([A-Za-z]+)="([^"]*)"/gu)].map(a=>[a[1],a[2]]))));
+   assert.deepEqual(actual,[after,before,after,before],`${owner} ${profile} authored slots`);
+   const returned=await parse(bytes);for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+  }
+ }
+});

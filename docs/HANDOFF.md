@@ -1,3 +1,23 @@
+## 2026-10-05 — frozen05 literal-font-slot compatibility repair; delivery pending
+
+WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: PR2087 candidate7b full RTK failed3467/3474 (six unchanged native cell-shift regressions and one concurrent-baseline-generated path). Baseline7b separately passes2199 with59 configured skips. Frozen05 closes literal authored marker slots without inventing absent slots or admitting unresolved themes. Unchanged cell-shift suite21/21; final six affected whole suites153/153, zero skip/todo. Earlier wider26-suite518/518 predates only the added redundant-four-uniform-slot rejection; final global graph must execute it. Renderer build passes. SOURCE04/PACKAGED04 scalar routes and all four Word export reopens remain qualified7b evidence. Fresh repaired SOURCE05/PACKAGED05, isolated exact-head RTK/baseline, CI and full delivery gate closure. No whole-novel or whole-Mac-plan completion claim.
+
+## 2026-10-05 — frozen04 candidate checkpoint
+
+WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: five auxiliary regressions repaired; final whole17files307/307 and focused19/19, build pass. SOURCE04 native genuine mark/text/reply return, Save/restart, independent Undo14/Redo16, Review and Minimal exports observed. PACKAGED04 from same source is in native acceptance. Global exact-candidate checks and commit/push/PR/CI/merge/exact merged verification still gate closure. Earlier pending checkpoint paragraphs remain historical evidence. No whole-plan percentage or completion claim.
+
+## 2026-10-05 — paragraph-mark return native checkpoint
+
+WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: SOURCE03 real Word mixed return, Cancel no-write, Apply, Save/restart, revision-round Undo/Redo and independent Review export observed. Exact source03 evidence only; five auxiliary compatibility/diagnostic regressions require the declared envelope repair before final acceptance. Next: repaired frozen candidate, fresh PACKAGED native route, mandatory proofs and delivery closure. No full novel-launch percentage or whole-plan completion is claimed.
+
+## 2026-10-05 — PR2086 delivered; paragraph-mark typography declared
+
+PR2086 merged4b9fb5f3ff3029d85722a4655ca47cc0c3cfb583 equals frozen52a tracked tree. CI19/19; bothRTK3462/3462 zero skip/todo; baseline2199 executed passes plus59 configured skips; C1C328/328. Native06 both existing100k profiles reopen/export/UndoRedo; all prior rounds,1741 Current/Original paragraphs and200roots400messages persist. Both exports open in real Word without repair. One genuine changed Word round per origin is native03; five generated Main exchanges are separate evidence. No full novel-launch claim.
+
+Merged proof retained the initial782pass7missing-ESM-dependency FAIL. Verified dependency linking fixes all7; three whole files replay287/287 with0skip/todo. Nineteen unaffected whole files contain502passes;789 distinct selected oracles are covered across22whole files. OPS5/5 and guardrails pass, tree clean. DELIVERY_RECEIPT.json hashes exact evidence outside repository.
+
+Active next contour WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005 uses exact merged base and clean51path preflight. Target: empty/nonempty paragraph-mark typography distinct from visible text, including mark-property change+tracked text+reply and native Apply/restart/UndoRedo/export. Short literal/editor/Main/native route comes before broad gates. Named style identity/catalog and the complete original Mac-plan remainder remain OPEN. Code is delegated; no new dependency or UI contract.
+
 ## 2026-10-05 — authority migration serialization repair; final delivery pending
 
 Actual race reproduction on bc9 resurrects EXPIRED/version3 as ACTIVE/version2 after a late unleased migration; bc9 is superseded. The same bounded61path contour now routes oversized legacy recovery through the existing disk queue and trusted project lease/publish, re-reading the original record inside serialization. The addressed real atomic-write race regression passes, retaining both terminal round graphs and a newly signed independently published active round. Whole affected Main/neighbor checks are ongoing; no broad result is attributed to these new bytes yet.

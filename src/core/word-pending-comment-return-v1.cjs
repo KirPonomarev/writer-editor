@@ -102,6 +102,24 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
   const source=clone(oldLedger.source),sourceParagraphs=review.paragraphs(source),revisions=[];let nextId=Math.max(0,...oldLedger.revisions.map(r=>Number(r.id.slice(9))))+1;
   let changes=0;
   basis.returned.segments.forEach((segments,p)=>{
+    const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===p&&review.isParagraphFormat(r));
+    const returnedFormat=basis.returned.paragraphFormats.find(r=>r.paragraphIndex===p);
+    if(!oldFormat&&returnedFormat){
+      const before=review.paragraphProperties(sourceParagraphs[p]),after=clone(before);
+      const previous=returnedFormat.format.before.attrs?.wordParagraphMarkTypography||{},next=returnedFormat.format.after.attrs?.wordParagraphMarkTypography||{},value=clone(before.attrs?.wordParagraphMarkTypography||{});
+      for(const key of new Set([...Object.keys(previous),...Object.keys(next)])){
+        const boolean=['bold','italic','underline','strike'].includes(key);
+        if(equal(boolean?(previous[key]??false):previous[key],boolean?(next[key]??false):next[key]))continue;
+        if(boolean)value[key]=next[key]??false;else if(next[key]===undefined)delete value[key];else value[key]=clone(next[key]);
+      }
+      if(Object.keys(value).length)after.attrs={...after.attrs,wordParagraphMarkTypography:value};
+      else if(after.attrs){delete after.attrs.wordParagraphMarkTypography;if(!Object.keys(after.attrs).length)delete after.attrs;}
+      const previousLanguage=returnedFormat.format.before.attrs?.wordParagraphMarkLanguage||{},nextLanguage=returnedFormat.format.after.attrs?.wordParagraphMarkLanguage||{},language=clone(before.attrs?.wordParagraphMarkLanguage||{});
+      for(const key of new Set([...Object.keys(previousLanguage),...Object.keys(nextLanguage)]))if(!equal(previousLanguage[key],nextLanguage[key])){if(nextLanguage[key]===undefined)delete language[key];else language[key]=nextLanguage[key];}
+      if(Object.keys(language).length)after.attrs={...after.attrs,wordParagraphMarkLanguage:language};else if(after.attrs){delete after.attrs.wordParagraphMarkLanguage;if(!Object.keys(after.attrs).length)delete after.attrs;}
+      if(after.attrs)sourceParagraphs[p].attrs=clone(after.attrs);else delete sourceParagraphs[p].attrs;
+      revisions.push({...clone(returnedFormat),id:'revision-'+nextId++,format:{kind:'paragraph',before,after}});changes++;
+    }
     if(equal(oldComparison[p],newComparison[p])&&equal(partitionMeaning(basis.before.segments[p]),partitionMeaning(segments))) {
       revisions.push(...oldLedger.revisions.filter(r=>r.paragraphIndex===p).map(clone));return;
     }
@@ -134,6 +152,8 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       offset+=text(node).length;
     });
     sourceParagraphs[p].content=nodes;
+    if(oldFormat)revisions.push({...clone(oldFormat),to:offset});
+    else if(returnedFormat)revisions.find(r=>r.paragraphIndex===p&&review.isParagraphFormat(r)).to=offset;
   });
   // Existing IDs and groups remain canonical; interval order follows the new source.
   const ordered=[...oldLedger.revisions.map(old=>{const r=revisions.find(r=>r.id===old.id);need(r,'MIXED_RETURN_OLD_REVISION_LOST');return r;}),...revisions.filter(r=>!oldLedger.revisions.some(old=>old.id===r.id))].sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);

@@ -1,3 +1,4 @@
+const {normalizeParagraphMarkTypography}=require('../../io/inlineTypography.cjs');
 const paragraphLayout = require('../../core/word-paragraph-layout-v1.cjs');
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
 function bookmarkDomain() { return require('../../core/word-user-bookmarks-v1.cjs'); }
@@ -221,10 +222,10 @@ function buildFormatIrParagraphs(scene) {
     const paragraphOrdinal = result.length;
     const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
     const allowedAttrs = node.type === 'heading'
-      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs'])
+      ? new Set(['textAlign', 'level', 'wordParagraphMarkLanguage', 'wordParagraphMarkTypography', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs'])
       : node.type === 'codeBlock'
         ? new Set(['language'])
-        : new Set(['textAlign', 'wordParagraphMarkLanguage', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs']);
+        : new Set(['textAlign', 'wordParagraphMarkLanguage', 'wordParagraphMarkTypography', 'wordParagraphSpacing','wordParagraphIndent','wordParagraphTabs']);
     const unknownAttrs = Object.keys(attrs).filter((key) => (
       !allowedAttrs.has(key) && attrs[key] !== null && attrs[key] !== undefined
     ));
@@ -239,6 +240,7 @@ function buildFormatIrParagraphs(scene) {
     if(attrs.wordParagraphIndent!=null)paragraphFormat.wordParagraphIndent=paragraphLayout.normalizeWordParagraphIndent(attrs.wordParagraphIndent);
     if(attrs.wordParagraphTabs!=null)paragraphFormat.wordParagraphTabs=paragraphLayout.normalizeWordParagraphTabs(attrs.wordParagraphTabs);
     if (attrs.wordParagraphSpacing != null) paragraphFormat.wordParagraphSpacing = normalizeWordParagraphSpacing(attrs.wordParagraphSpacing);
+    if (attrs.wordParagraphMarkTypography != null) paragraphFormat.wordParagraphMarkTypography = normalizeParagraphMarkTypography(attrs.wordParagraphMarkTypography);
     if (attrs.wordParagraphMarkLanguage != null) paragraphFormat.wordParagraphMarkLanguage = normalizeWordLanguage(attrs.wordParagraphMarkLanguage);
     if (node.type === 'heading') {
       const headingLevel = Number(attrs.level);

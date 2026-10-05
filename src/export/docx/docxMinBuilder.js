@@ -1,3 +1,4 @@
+const { buildDocxParagraphMarkTypographyXml } = require('./docxInlineTypography.js');
 const pendingTextRevisions = require('../../core/word-pending-text-revisions-v1.cjs');
 const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { normalizeDocxHttpHref } = require('../../io/docxHyperlinks.cjs');
@@ -223,7 +224,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
         if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
         const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
         if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
-        blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), ...(firstParagraph ? {numbering} : {listContinuationLevel:numbering.level}), textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent ?? (firstParagraph ? undefined : {left:docxListTextIndent(numbering.level)}), wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
+        blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), ...(firstParagraph ? {numbering} : {listContinuationLevel:numbering.level}), textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent ?? (firstParagraph ? undefined : {left:docxListTextIndent(numbering.level)}), wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkTypography: paragraph.attrs?.wordParagraphMarkTypography, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
         firstParagraph = false;
       }
     }
@@ -275,7 +276,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
-      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkTypography: node.attrs?.wordParagraphMarkTypography, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
       return;
     }
     if (node.type === 'codeBlock') {
@@ -288,7 +289,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       return;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
+      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign), wordParagraphSpacing: node.attrs?.wordParagraphSpacing, wordParagraphIndent: node.attrs?.wordParagraphIndent, wordParagraphTabs: node.attrs?.wordParagraphTabs, wordParagraphMarkTypography: node.attrs?.wordParagraphMarkTypography, wordParagraphMarkLanguage: node.attrs?.wordParagraphMarkLanguage });
     }
   };
   for (const node of doc.content) visit(node);
@@ -457,7 +458,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if(continuationLevel!==undefined)blockStyles.add(`YalkenListContinuation${continuationLevel}`);
       if (numbering) numberings.set(numbering.numId, numbering);
       const textAlign = semanticBlocks?.[index]?.textAlign;
-      const markLanguage = buildDocxWordLanguageXml(semanticBlocks?.[index]?.wordParagraphMarkLanguage);
+      const markLanguage = buildDocxParagraphMarkTypographyXml(semanticBlocks?.[index]?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(semanticBlocks?.[index]?.wordParagraphMarkLanguage);
       const properties = (continuationLevel!==undefined ? `<w:pStyle w:val="YalkenListContinuation${continuationLevel}"/>` : styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
