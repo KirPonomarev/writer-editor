@@ -1,3 +1,39 @@
+## 2026-10-05 10:57 EEST — tracked recording with comments: both Mac routes observed
+
+WORD_RECORDING_COMMENTS_MAC_20261005; native candidate
+cd6d410f130ff45f70f1db0d4dc2ce74819cb221. Previous PR2083 delivered at
+ebab94902555af261a89ce18e06940234eccd5a5; CI19/19 and exact merged920/920.
+
+Priority remains complete novel/large-text author, editor and proofreader work
+on Mac. The original plan remains open; complex non-text cases do not displace
+this priority and are not silently counted as complete.
+
+Core/Main now admit exact inline recording with existing comments through the
+existing leased atomic writer: bounded position intents, exact occurrence
+identity, disjoint changes, autosave prefixes and reversible comment anchors.
+SOURCE01 found a real Word return blocker early. Signed v2 exports explicitly
+pin missing font/language and native timestamp precision; legacy v1 remains
+strict. Authored properties and local full-precision history stay intact.
+SOURCE02 and clean PACKAGED02 both observed native recording, real Word reply
+Apply, process restart and source-changing round Undo/Redo. Apply retained
+exact scene bytes and all6old messages, adding1reply. Undo restored original
+rich document and all3anchors/statuses; Redo retained all7messages. Ordinary
+and Review exports preserve pending edits and active replies. Seven actual
+DOCX artifacts pass production rich-projection/partition readback; this is not
+an independent implementation oracle. Canonical byte and anchor comparisons
+were checked separately. Native fixture is187words, not large-book acceptance.
+
+Whole affected4files:281/281,zero skip/todo at42480c35e; renderer regenerated
+and exact source/package bytes bound at nativecd6d410f1. Native profiles copied
+with byte equality and owned Yalken processes stopped. Evidence folder:
+word-recording-comments-mac-ebab94902, SOURCE02-observations.json,
+PACKAGED02-observations.json, main-affected-03.log.
+
+Next: mandatory stable CI and complete delivery chain, then paragraph-mark
+typography, named style identity and full large-book/five-cycle Mac acceptance.
+Structural/format/move/notes mixtures in comment recording remain explicit
+unsupported cases. No whole-plan percentage or completion is claimed.
+
 ## 2026-10-05 09:26 EEST — inline decisions with comments: both Mac routes observed
 
 WORD_COMMENT_DECISIONS_MAC_20261005; native candidate

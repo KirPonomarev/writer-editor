@@ -2522,15 +2522,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b9559318efb208cd9eb2748630c40617976a33fd399517246feb82451d9eb4fb"
+        "sha256": "e6bef1ef74156758ba404fa52a305952bf99ae755e634da6656d3ed8cd67a5ad"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "cfa74ba1918c3870d322a7629c678a61300cbe22cb1df5b562a50e5b6ae8222c"
+        "sha256": "14351cb8d2e97ed9760a2ce41464461ff2e02bd7d3b1af53d65d912944d1c268"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2b57e5e3cf40203837148b4a3ce88ffc934ff16ce5c331059fecfa9d805ed494"
+        "sha256": "458638baf167fd346ff6af25d749a1b5acf53d8b149a4795804c350ca28b0702"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2630,7 +2630,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-recording-comments-mac.md",
-        "sha256": "803b6ce6de2711efb331d047186b018ae5451b144ffd8db6f9a739973f1e17db"
+        "sha256": "4ebadb67c00c787bf92445477dd4f6d03991f8f0e83530ae92783b22ee957646"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_RECORDING_COMMENTS_V1.json",
