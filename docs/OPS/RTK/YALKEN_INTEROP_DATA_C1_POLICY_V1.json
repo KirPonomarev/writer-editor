@@ -2530,15 +2530,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "aa0fef1851492a99a55bde0252c3fe1806f872e30e052bc935227b4090538610"
+        "sha256": "a6770bd1c6d0a52f974ea2c289bf2e0b8837dca93b1b730c8e3a9983d663fda2"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "4e154e8653ed6034935b098559475d167b6f5b4bd3cf1787558f6584fcc9415d"
+        "sha256": "c2d8173af4676e47dfcb2f7e0791e0154bef4beeea899d901b5ab622648745fa"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2dfc75d35fca9d23f1036e9b181da81b685f5df69ebb99132cb7207bfc1b193e"
+        "sha256": "875c12f2b97d09e531d8a4424a5abd6d4704453d3300921965680c59e8460f80"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2606,11 +2606,11 @@
       },
       {
         "path": "src/core/word-pending-comment-decisions-v1.cjs",
-        "sha256": "8cf91528d815472ead72154be007482223d3142a46ec8aa441b89aeee0d7ad35"
+        "sha256": "3adffe506dab6d8831885d818ec47a18ef14541bbf3c0695484ed05e7924822c"
       },
       {
         "path": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
-        "sha256": "d7169d2ab85e0c734565168a9ef59fea0377706d87d9829b69dc607d5f7b96bf"
+        "sha256": "19f8703afc4ec85b199ac87441f8ef0a1e899799aebf05d887331fcd15962608"
       },
       {
         "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
@@ -2626,7 +2626,7 @@
       },
       {
         "path": "src/core/word-pending-recording-comments-v1.cjs",
-        "sha256": "ecf09ae4ea2080e654ce03356dee0bf69210fabeeeca9fe2f1c495e7da1997d0"
+        "sha256": "52d69da6f1033bdc097226bf8b6ffc9fd4fde4c4b608c7795f96884f09149a71"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
@@ -2634,7 +2634,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
-        "sha256": "61652d6f50edf1ff4259be2d066685b88cae1a33c34339123735992f42a42a9c"
+        "sha256": "15a71fa9237694ef674415ca22df74adc69c7b81c56d4ead999d501692c64cfb"
       },
       {
         "path": "docs/tasks/2026-10-05--word-recording-comments-mac.md",
@@ -2666,11 +2666,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-        "sha256": "231376abde05c42582e54c6c808f1e2366fc6e2ca9d85c82c06d3cf012d05f57"
+        "sha256": "e875df364404e3e1630e91f3fa84afc89c05000b001c46b1da1158c5ee8d2edf"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
-        "sha256": "cafe235c70e904afa72b78324df0480e3ba253fce2a652f1e8e2b8a6ab761b58"
+        "sha256": "d9472128f7338178554b9218d1112919bb3f61aca3728df8ab9373f601ed3d3b"
       },
       {
         "path": "test/contracts/scene-document-admission.contract.test.js",

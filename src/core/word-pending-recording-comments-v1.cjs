@@ -36,7 +36,8 @@ const snapshotDigest = s => s.status === 'deleted' ? s.liveLocator.blockTextSha2
 // of inserted nodes reconstructs the original rich source before using them.
 function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'forward') {
   const oldIds = new Set(baseline.revisions.map(r => r.id));
-  if (recorded.revisions.some(r => !['insert', 'delete'].includes(r.operation) || review.isStructural(r) || r.moveName))
+  if (recorded.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
+    || r.operation === 'format' && r.format.kind !== 'run'))
     fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const fresh = recorded.revisions.filter(r => !oldIds.has(r.id));
   if (!fresh.length || fresh.some(r => r.state !== 'pending')) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
@@ -49,8 +50,8 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
     let cursor = 0, position = 0;
     for (const r of revisions) {
       position += r.from - cursor;
-      const isFresh = !oldIds.has(r.id), shown = r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected';
-      if (isFresh) edits.push({ id: 'round-splice-' + edits.length, ...identity, direction: 'forward',
+      const isFresh = !oldIds.has(r.id), shown = r.operation === 'format' || (r.operation === 'insert' ? r.state !== 'rejected' : r.state === 'rejected');
+      if (isFresh && r.operation !== 'format') edits.push({ id: 'round-splice-' + edits.length, ...identity, direction: 'forward',
         fromParagraphIndex: paragraphIndex, toParagraphIndex: paragraphIndex, fromUtf16: position,
         toUtf16: position + (r.operation === 'delete' ? r.to - r.from : 0),
         removedParagraphs: [r.operation === 'delete' ? value.slice(r.from, r.to) : ''],
@@ -59,12 +60,19 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
       cursor = r.to;
     }
     const insertions = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'insert');
+    const formats = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'format');
     let offset = 0; const nodes = [];
     for (const node of paragraph.content || []) {
       const size = node.type === 'hardBreak' ? 1 : node.text.length, end = offset + size;
-      const cuts = [...new Set([offset, end, ...insertions.flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a,b) => a-b);
-      for (let i = 1; i < cuts.length; i++) if (!insertions.some(r => r.from <= cuts[i-1] && r.to >= cuts[i]))
-        nodes.push(node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: node.text.slice(cuts[i-1]-offset, cuts[i]-offset) });
+      const cuts = [...new Set([offset, end, ...[...insertions,...formats].flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a,b) => a-b);
+      for (let i = 1; i < cuts.length; i++) if (!insertions.some(r => r.from <= cuts[i-1] && r.to >= cuts[i])) {
+        const restored = node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: node.text.slice(cuts[i-1]-offset, cuts[i]-offset) };
+        const format = formats.find(r => r.from <= cuts[i-1] && r.to >= cuts[i]);
+        if (format && restored.type === 'text') {
+          if (format.format.before.length) restored.marks = clone(format.format.before); else delete restored.marks;
+        }
+        nodes.push(restored);
+      }
       offset = end;
     }
     paragraph.content = nodes;

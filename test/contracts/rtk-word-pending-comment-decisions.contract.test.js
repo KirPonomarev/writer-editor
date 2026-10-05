@@ -27,6 +27,31 @@ function decide(doc, state, decision) {
     beforeContent: encode(doc), afterContent: encode(after), decision });
   return { doc: JSON.parse(JSON.stringify(after)), state: plan.afterText, plan };
 }
+test('language property decisions are text-neutral while mixed text decisions shift exact anchors',()=>{
+ const base=document('XXhello tail',[['insert',0,2]]),ledger=review.readLedger(base);
+ const marks=[{type:'textStyle',attrs:{wordLanguage:{val:'ru-RU'}}}];
+ ledger.source.content[0].content=[{type:'text',text:'XX'},{type:'text',text:'hello',marks},{type:'text',text:' tail'}];
+ ledger.revisions.push({id:'revision-2',nativeId:'2',operation:'format',from:2,to:7,paragraphIndex:0,
+  author:'Word reviewer',date:'',dateUtc:'',state:'pending',groupId:null,format:{kind:'run',before:[],after:marks}});
+ const doc=review.bindLedger(ledger),state=add(doc,null,{paragraphIndex:0,startUtf16:8,selectedText:'tail'}),original=JSON.parse(state).threads[0];
+ for(const action of ['accept','reject']) {
+  const selected=decide(doc,state,{action,revisionId:'revision-2'});
+  assert.equal(review.projection(selected.doc).current,'XXhello tail');
+  assert.equal(selected.state,state);
+  assert.deepEqual(review.normalizeNode(selected.doc),action==='accept'?review.normalizeNode(doc):{type:'doc',content:[p('XXhello tail')]});
+  const undone=decide(selected.doc,selected.state,{action:'undo'});
+  assert.deepEqual(review.readLedger(undone.doc).revisions,ledger.revisions);
+  assert.equal(undone.state,state);
+ }
+ const rejected=decide(doc,state,{action:'rejectAll'});
+ assert.equal(review.projection(rejected.doc).current,'hello tail');
+ assert.equal(JSON.parse(rejected.state).threads[0].anchor.startUtf16,6);
+ assert.deepEqual(JSON.parse(rejected.state).threads[0].messages,original.messages);
+ const undone=decide(rejected.doc,rejected.state,{action:'undo'});
+ assert.deepEqual(JSON.parse(undone.state).threads[0].anchor,original.anchor);
+ const redone=decide(undone.doc,undone.state,{action:'redo'});
+ assert.equal(JSON.parse(redone.state).threads[0].anchor.startUtf16,6);
+});
 test('selected rejection, saved restart Undo/Redo and all decisions preserve exact comment identity', () => {
   const doc = document(), state = add(doc), original = JSON.parse(state).threads[0];
   const rejected = decide(doc, state, { action: 'reject', revisionId: 'revision-1' });

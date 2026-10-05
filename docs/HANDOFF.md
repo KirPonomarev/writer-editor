@@ -1,3 +1,5 @@
+2026-10-05 native SOURCE02: actual100229-word mixed Word Apply independently verified1741paragraphs,200roots/400messages,3pending revisions. Restart Undo refused run-language round; corrected inverse restores exact prior rich source with format-neutral anchor steps,18/18focused whole tests. Native successor and delivery pending.
+
 ## 2026-10-05 — capacity native language-return repair; acceptance pending
 
 Native SOURCE01 import/export verified1741paragraphs and400messages; native Apply blocked. Same capacity packet repairs pending run-property/comment binding and standalone-break language preservation. Task contract retains exact negative artifacts and supersedes the earlier recording-mode hypothesis. Corrected candidate needs fresh native both origins, exact affected proof and full delivery. Original novel launch/full Mac plans remain open; no completion claim.

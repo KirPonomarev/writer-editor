@@ -89,3 +89,23 @@ test('manual tombstone stays deleted across recording round Undo',()=>{
  const manual=JSON.parse(saved.afterText);manual.threads[0].status='deleted';delete manual.threads[0].anchorEditHistory;
  const undone=decide(a,JSON.stringify(manual),'undo');assert.equal(JSON.parse(undone.state).threads[0].status,'deleted');
 });
+
+for (const insert of ['', 'XX']) test(`Word language round with ${insert ? 'text insertion' : 'only formatting'} restores exact rich source and anchors after restart`,()=>{
+ const base=doc('hello tail'), marks=[{type:'textStyle',attrs:{wordLanguage:{val:'ru-RU'}}}];
+ const incoming=review.bindLedger({schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[
+  ...(insert?[{type:'text',text:insert}]:[]),{type:'text',text:'hello',marks},{type:'text',text:' tail'}]}]},
+  revisions:[...(insert?[{id:'revision-1',nativeId:'1',operation:'insert',paragraphIndex:0,from:0,to:insert.length,state:'pending',groupId:null,author:'Word',date:'',dateUtc:''}]:[]),
+  {id:'revision-2',nativeId:'2',operation:'format',paragraphIndex:0,from:insert.length,to:insert.length+5,state:'pending',groupId:null,author:'Word',date:'',dateUtc:'',format:{kind:'run',before:[],after:marks}}],undo:[],redo:[]});
+ const returned=review.replaceFromReturn(base,incoming,{roundId:'language-round',artifactSha256:'a'.repeat(64)}).doc;
+ const state=add(returned,null,insert.length+6,'tail'), original=JSON.parse(state).threads[0];
+ const undone=decide(JSON.parse(JSON.stringify(returned)),state,'undo');
+ assert.deepEqual(review.normalizeNode(undone.doc),base);
+ assert.equal(JSON.parse(undone.state).threads[0].anchor.startUtf16,6);
+ assert.deepEqual(JSON.parse(undone.state).threads[0].messages,original.messages);
+ const redone=decide(JSON.parse(JSON.stringify(undone.doc)),undone.state,'redo');
+ assert.deepEqual(review.normalizeNode(redone.doc),review.normalizeNode(returned));
+ assert.deepEqual(JSON.parse(redone.state).threads[0].anchor,original.anchor);
+ assert.deepEqual(review.readLedger(redone.doc).revisions,review.readLedger(returned).revisions);
+ const forged=review.readLedger(returned);forged.revisions.find(r=>r.operation==='format').format.before=[{type:'bold'}];
+ assert.throws(()=>decide(review.bindLedger(forged),state,'undo'),/RECORDING_COMMENT_ROUND_SOURCE_MISMATCH/);
+});
