@@ -252,8 +252,18 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
   const pendingCommentBindings = [];
   if(!projection?.threads?.length)return {commentExport:projection,pendingCommentBindings};
   for (const scene of scenes) {
-    if (!pending.readLedger(scene.doc)) continue;
     const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
+    if (!pending.readLedger(scene.doc)) {
+      // A standalone break otherwise inherits the document-wide Word style,
+      // which may differ from this paragraph and the signed comment basis.
+      for(const block of sceneBlocks)for(const run of block.formatIr?.runs||[]) {
+        if(run.text!=='\n'||block.formatIr.paragraph?.nodeType==='codeBlock')continue;
+        run.inline={fontFamily:'Times New Roman',fontSize:'12pt',...run.inline,
+          wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US',
+            ...block.formatIr.paragraph?.wordParagraphMarkLanguage,...run.inline?.wordLanguage}};
+      }
+      continue;
+    }
     const rows = sceneBlocks.map(block => ({text:block.text,...(block.formatIr?.table?{table:block.formatIr.table}:{})}));
     const threads = (projection?.threads || []).filter(thread => thread.sceneId === scene.sceneId);
     const anchors = threads.map(thread => {

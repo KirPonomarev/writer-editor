@@ -811,6 +811,11 @@ function commentTransportSegments(segments, paragraph = {}) {
     }
     if(result.revision) {
       const r=result.revision;
+      if(r.operation==='format' && r.format?.kind==='run') {
+        for(const side of ['before','after'])r.format[side]=commentTransportSegments([
+          {node:{type:'text',text:'x',marks:r.format[side]},revision:null}
+        ],paragraph)[0].node.marks;
+      }
       if(r.dateUtc && Number.isFinite(Date.parse(r.dateUtc))) {
         r.dateUtc=new Date(r.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
         if(r.date && Number.isFinite(Date.parse(r.date)))r.date=new Date(r.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
@@ -821,7 +826,8 @@ function commentTransportSegments(segments, paragraph = {}) {
 }
 function commentBasis(document,exportTypography,schemaVersion=1) {
   const ledger=readLedger(document);
-  assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete'].includes(r.operation)), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
+  assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete','format'].includes(r.operation)
+    && (r.operation !== 'format' || r.format.kind === 'run')), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
   const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], rows=[];
   const exportedParagraphs=paragraphs(exported.doc);
   exported.paragraphs.forEach((p,paragraphIndex)=>{
@@ -840,7 +846,13 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
   });
   const project=mode=>{
     const doc=clone(exported.doc);
-    paragraphs(doc).forEach((p,index)=>{p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>clone(s.node));});
+    paragraphs(doc).forEach((p,index)=>{p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>{
+      const node=clone(s.node);
+      if(mode==='original' && s.revision?.operation==='format') {
+        if(s.revision.format.before.length)node.marks=clone(s.revision.format.before);else delete node.marks;
+      }
+      return node;
+    });});
     return doc;
   };
   const union=project('union'),current=project('current'),original=project('original');
@@ -1003,7 +1015,19 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
   const left=commentLeftDefaults(before.projection.union,exportParagraphs);
   const indents=commentExportIndents(before.projection.union,exportParagraphs);
   const old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
-  const next=commentRich(incoming.union,incoming.size,null,left);
+  // Match a fresh property change against its checked previous rich snapshot.
+  // The published Current and Original projections remain separate and exact.
+  const comparison=clone(incoming.union);
+  const sameRevision=(a,b)=>a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
+    && stable(a.format)===stable(b.format);
+  paragraphs(comparison).forEach((p,index)=>{p.content=incoming.rows[index].map(segment=>{
+    const node=clone(segment.node),revision=segment.revision;
+    if(revision?.operation==='format' && !before.projection.segments[index].some(old=>old.revision && sameRevision(old.revision,revision))) {
+      node.marks=commentTransportSegments([{node:{type:'text',text:'x',marks:revision.format.before},revision:null}],p)[0].node.marks;
+    }
+    return node;
+  });});
+  const next=commentRich(comparison,incoming.size,null,left);
   const shape=doc=>{const copy=clone(doc);paragraphs(copy).forEach(p=>{p.content=[];});return normalizeNode(copy);};
   assert(stable(shape(old))===stable(shape(next)),'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
   return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows},

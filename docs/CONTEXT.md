@@ -1,3 +1,7 @@
+## 2026-10-05 — capacity native language-return repair; acceptance pending
+
+Native SOURCE01 import/export verified1741paragraphs and400messages; native Apply blocked. Same capacity packet repairs pending run-property/comment binding and standalone-break language preservation. Task contract retains exact negative artifacts and supersedes the earlier recording-mode hypothesis. Corrected candidate needs fresh native both origins, exact affected proof and full delivery. Original novel launch/full Mac plans remain open; no completion claim.
+
 ## 2026-10-05 — PR2085 delivered;100k editorial capacity active
 
 PR2085 is merged at89dd736b2a72bbe9335a2b7baa014fe62866c3de. CI19/19; both

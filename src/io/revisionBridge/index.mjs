@@ -12487,7 +12487,9 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   const importedText = importParagraphs.map((paragraph) => paragraph.text).join('\n');
   let richContent;
   try {
-    richContent = docxInlineCanonicalContent(importParagraphs);
+    richContent = docxInlineCanonicalContent(importParagraphs, {
+      preserveCommentBreakMarks: !!contentPreview.genericComments?.length,
+    });
     if (contentPreview.wordSections) {
       const doc = richContent ? parseObservablePayload(richContent).doc : buildParagraphDocumentFromText(importedText);
       richContent = composeObservablePayload({ doc: wordSections.bind(doc, contentPreview.wordSections) });

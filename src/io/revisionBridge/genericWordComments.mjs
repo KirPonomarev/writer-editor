@@ -43,10 +43,21 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
   demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= commentBodyModel.COMMENT_CAPACITY.threads
     && Array.isArray(paragraphs), 'BUDGET');
   const pendingLedger = pendingDocument ? pendingTextRevisions.readLedger(pendingDocument) : null;
-  demand(!(ir.moveRevisions?.length || ir.propertyRevisions?.length)
-    && (!ir.textRevisions?.length || pendingLedger), 'TRACKED_UNSUPPORTED');
+  demand(!ir.moveRevisions?.length
+    && (!(ir.textRevisions?.length || ir.propertyRevisions?.length) || pendingLedger), 'TRACKED_UNSUPPORTED');
   if(pendingLedger) {
-    demand(pendingLedger.revisions.every(r=>['insert','delete'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName),'TRACKED_UNSUPPORTED');
+    demand(pendingLedger.revisions.every(r=>['insert','delete','format'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName
+      && (r.operation !== 'format' || r.format.kind === 'run')),'TRACKED_UNSUPPORTED');
+    // Formatting cannot move an anchor, but it must remain a pending operation
+    // in the independently validated rich ledger rather than disappear here.
+    const formats = pendingLedger.revisions.filter(r => r.operation === 'format');
+    const properties = ir.propertyRevisions || [];
+    demand(properties.length === formats.length && formats.every(revision =>
+      properties.filter(property => property.nativeRevisionId === revision.nativeId
+        && property.propertyKind === (revision.format.kind === 'run' ? 'rPrChange' : 'pPrChange')
+        && (property.author ?? '') === revision.author
+        && (property.date ?? '') === revision.date
+        && (property.dateUtc ?? '') === revision.dateUtc).length === 1), 'TRACKED_UNSUPPORTED');
     const current=pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(pendingLedger));
     demand(current.length===paragraphs.length && current.every((p,i)=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')===paragraphs[i].text),'PENDING_CURRENT');
   }

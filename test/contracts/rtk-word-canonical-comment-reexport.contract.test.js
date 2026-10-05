@@ -38,6 +38,25 @@ async function parsed(buffer) {
   return result.reviewIr.commentThreads;
 }
 
+test('clean comment export gives a standalone break its paragraph language despite another document default',async()=>{
+  const env=require('../../src/core/document-content-envelope-v1.cjs'),review=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const doc={type:'doc',content:[
+    {type:'paragraph',attrs:{wordParagraphMarkLanguage:{val:'ru-FI'}},content:[{type:'text',text:'First'}]},
+    {type:'paragraph',attrs:{wordParagraphMarkLanguage:{val:'en-US'}},content:[{type:'text',text:'Before'},{type:'hardBreak'},{type:'text',text:'After'}]},
+  ]};
+  const sceneId='roman/break.txt',anchor=require('../../src/core/word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId,paragraphs:['First','Before\nAfter'],input:{paragraphIndex:1,startUtf16:0,selectedText:'Before'}});
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'break',revision:0,events:[],threads:[{threadId:'t',rootCommentId:'m',sceneId,status:'open',anchor,messages:[{commentId:'m',kind:'root',body:'Query'}]}]};
+  const source=makeSource({projectId:'break',projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'First\nBefore\nAfter',doc,observableContent:env.composeObservablePayload({doc})}]});
+  const bytes=buildDocxReviewPacketBuffer(source),xml=parts(bytes)['word/document.xml'];
+  assert.match(xml,/<w:r><w:rPr>(?=[\s\S]*?<w:lang w:val="en-US")(?:(?!<\/w:rPr>)[\s\S])*<\/w:rPr><w:br\/><\/w:r>/u);
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(preview.ok,true,JSON.stringify(preview));
+  const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);
+  const parsed=env.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  const hardBreak=review.paragraphs(parsed)[1].content.find(n=>n.type==='hardBreak');
+  assert.equal(hardBreak.marks.find(m=>m.type==='textStyle').attrs.wordLanguage.val,'en-US');
+});
+
 // Independent minimal ZIP reader for assertions on actual emitted parts.
 function parts(buffer) {
   const result = {};

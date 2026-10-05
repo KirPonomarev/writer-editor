@@ -2870,7 +2870,7 @@ export const R24_INTEROP_WORD_NOVEL_EDITORIAL_CAPACITY_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ded4ee149908813367f02b47ab9b37bb2133e0307979241865e25e403150c66c"
+      "sha256": "b4769cfc9b4e23a82ad643f6da637510698cbe9fac61549322fef7cae99f1dea"
     }
   ]
 });
