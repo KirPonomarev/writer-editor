@@ -56,6 +56,7 @@ production code, contract tests and bound native SOURCE/PACKAGED observations.
 - `test/contracts/rtk-word-generic-comments.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `test/contracts/rtk-word-comment-authoring.contract.test.js`
 - `test/unit/docx-scene-comments.test.js`
 - `test/contracts/rtk-word-scene-comment-export.contract.test.js`
 - `docs/tasks/2026-10-05--word-pending-comments-mac.md`
@@ -245,6 +246,29 @@ profile and13 files safely copied on exit; revision2/newreply confirmed by
 explicit profile-bound filesystem read. Next native snapshot helper takes
 mode/version explicitly and records launch SHA, absolute root and scene names;
 no hidden captured profile. SOURCE03 does not provide zero-write acceptance.
+
+SOURCE04/PACKAGED04 native on53285be1e63607691020ea9982d96d7e28e0ebd9:
+real early-v04 input -> generic import -> ordinary and Review export -> actual
+Word reply -> explicit Apply -> both reexports -> replay -> process restart.
+Both profiles retain six pending fragments, three roots and exactly six messages
+after one reply. Explicit launch-bound snapshots prove preview zero-write,
+unchanged scene/ledger bytes on Apply, only comment state/recovery changes, and
+no writes on confirmed replay. Both reexports contain new reply exactly once;
+PACKAGED reexport after restart retains it. SOURCE UI displays all revisions
+and the new reply. All owned native processes stopped with verified byte copies.
+
+PACKAGED WRITER_LOCAL_V1 deliberately hides comment/review tabs in flags.js.
+Menu-based exchange works, but visible comment authoring is NOT accepted for
+that profile. This pre-existing product limitation is the next delivery packet,
+not silently bypassed by launch flags or claimed fixed by data roundtrip.
+Import preview text-char count reports serialized envelope length; separate
+existing presentation limitation, not a100k native proof.
+
+Stable direct consumers on53285be1:803/804,zero skips; sole failure was the
+existing Main ordinary-comment VM harness missing the newly called production
+buildAuthenticatedPendingCommentScenes function. Clean checkpoint preflight
+expanded to41paths before test edit. Extract actual helper, no stub/bypass;
+whole authoring file24/24 passes. Runtime unchanged; final CI/delivery pending.
 
 ## STOP_CONDITION
 
