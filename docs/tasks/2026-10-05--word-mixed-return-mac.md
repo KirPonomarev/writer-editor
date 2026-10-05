@@ -236,3 +236,35 @@ These189/190-word fixtures establish this packet only.100000-word five-cycle
 native acceptance remains open; measured third-cycle full-source Undo growth is
 the next launch blocker, followed by discussion capacity and remaining composed
 novel requirements. Original Mac plan remains intact; complex objects deferred.
+
+
+## Full RTK legacy-route regression at4c1ac4178
+
+CI37304924977 executes3400 RTK tests:3395pass,5fail,zero skips/todo.
+Four existing pending-notes tests fail because every export carries a commentExport
+object, including an empty one; the new mixed predicate mistakes it for discussions
+and blocks the existing atomic notes route as MIXED_RETURN_COMPOSITE_UNSUPPORTED.
+The fifth expects complete canonical leaves in legacy unchanged confirmation;
+the new changed-only summary displays none. Focused reproduction:31tests26pass5fail.
+Remaining CI was cancelled after confirmed failure, never treated as acceptance.
+
+Repair scope is Main routing and existing affected contracts. Genuine signed or
+incoming discussions must retain strict mixed proof; empty export metadata must
+retain existing note binding, atomic writer, rollback, restart and replay behavior.
+Legacy unchanged previews retain their full snapshot; genuinely changed100k
+previews remain bounded. Required gates run only after all affected neighboring
+Main routes and new candidate native revalidation pass. Prior native05 results
+are retained with their original SHA, not relabelled as the repaired candidate.
+
+## 2026-10-05 — legacy route repair; native06 revalidation pending
+
+CI37304924977 at4c1ac4178 found5 failures out of3400; cancelled after diagnosis.
+Main now distinguishes empty comment export metadata from actual signed or
+incoming discussions, preserving the atomic pending-notes route. Unchanged legacy
+confirmation retains canonical leaves; changed100k text keeps bounded preview.
+First incoming discussion on an empty export still uses atomic mixed return.
+Focused74/74 and33 affected files1054/1054 pass, zero fail/skip/todo. Existing rich
+snapshot and100k preview expectations are unchanged. Native05 retains its own SHA.
+Native06 will replay genuine preApply captures and real Word05 changed files on
+both repaired Mac builds, then restart/Undo/Redo/reexport. CI, merge and exact
+merged verification remain required. Original plan and100k launch blockers unchanged.

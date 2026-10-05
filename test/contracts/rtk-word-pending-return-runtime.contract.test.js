@@ -18,7 +18,7 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early } = {}) {
+async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
   let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
@@ -31,7 +31,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
   if (mixed) {
     const { exactAnchor } = require('../../src/core/word-comment-authoring-v1.cjs');
     h.commentText = JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'p',revision:0,events:[],
-      threads:[0,1].map(i=>({threadId:'thread-'+i,rootCommentId:'root-'+i,sceneId:'roman/a.txt',status:'open',
+      threads:(firstDiscussion?[]:[0,1]).map(i=>({threadId:'thread-'+i,rootCommentId:'root-'+i,sceneId:'roman/a.txt',status:'open',
         anchor:exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'ew'},'roman/a.txt',['new']),
         messages:[{commentId:'root-'+i,kind:'root',body:'Discussion '+i,provenance:{author:'Writer'}}]}))});
   }
@@ -402,4 +402,17 @@ for(const early of ['span','paragraph'])test('actual Main mixed insertion before
   for(const t of active){const actual=parsed.reviewIr.commentThreads.find(n=>n.body===t.messages[0].body);assert.ok(actual);assert.equal(actual.finalTextAnchorRange.selectedText,t.anchor.selectedText);assert.deepEqual([actual.body,...actual.replies.map(r=>r.body)],t.messages.map(m=>m.body));}
   assert.deepEqual(model.normalizeNode(doc),model.normalizeNode(action==='undo'?before:after));
  }
+});
+
+
+test('first incoming discussion uses mixed route despite empty signed comment export',async t=>{
+ const h=await harness(t,{mixed:true,clean:true,firstDiscussion:true});
+ assert.equal(h.input.context.reviewTransportAuthorityCapsule.commentExport.threads.length,0);
+ assert.equal(h.input.context.reviewTransportReturnIntake.parserResult.reviewIr.commentThreads.length,1);
+ const routed=await h.route();assert.equal(routed.pendingProductPath?.status,'preview-ready',JSON.stringify(routed));
+ assert.equal(h.writes,0);assert.equal(h.prepared.changes.commentChanges.length,1);
+ assert.equal((await h.prepared.apply()).ok,true);assert.equal(h.writes,1);
+ assert.equal(JSON.parse(h.commentText).threads[0].messages[0].body,'On added text');
+ assert.equal((await h.command('undo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'deleted');
+ assert.equal((await h.command('redo')).ok,true);assert.equal(JSON.parse(h.commentText).threads[0].status,'open');
 });

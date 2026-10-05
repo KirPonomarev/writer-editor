@@ -6185,7 +6185,9 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
-    const mixedComments = Boolean(capsule.commentExport && scenes.length===1);
+    const mixedComments = Boolean(capsule.commentExport && scenes.length===1
+      && (capsule.commentExport.threads?.length || capsule.commentExport.tombstones?.length
+        || intake.parserResult?.reviewIr?.commentThreads?.length));
     if (intake.parserResult?.reviewIr?.commentThreads?.length && !mixedComments)
       throw Error('PENDING_RETURN_ANNOTATION_UNDO_REQUIRED');
     const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
@@ -11777,6 +11779,10 @@ async function confirmLocalWordPendingReturn({ fileName, changes }) {
   const beforeRevisions=pendingTextRevisions.readLedger(changes.before)?.revisions||[],afterRevisions=pendingTextRevisions.readLedger(changes.after)?.revisions||[];
   const retained=new Set(beforeRevisions.filter(r=>afterRevisions.some(next=>next.id===r.id&&JSON.stringify(next)===JSON.stringify(r))).map(r=>r.id));
   for(const r of [...beforeRevisions,...afterRevisions])if(!retained.has(r.id))changed.add(r.paragraphIndex);
+  // An unchanged legacy snapshot still describes every canonical leaf. Mixed
+  // discussion returns and changed text keep the bounded delta-only preview.
+  const legacySnapshot = changed.size === 0 && !Array.isArray(changes.commentChanges);
+  if (legacySnapshot) { beforeRows.forEach((_row, index) => changed.add(index)); retained.clear(); }
   const describe = doc => {
     const ledger = pendingTextRevisions.readLedger(doc);
     const source = ledger?.source || doc;
@@ -11789,8 +11795,8 @@ async function confirmLocalWordPendingReturn({ fileName, changes }) {
       : (value.type === 'heading' ? 'заголовок' : 'абзац') + (attrs(value.attrs) ? ', ' + attrs(value.attrs) : ', выравнивание по умолчанию');
     const revisions = (ledger?.revisions || []).filter(r=>!retained.has(r.id)).map(r => `${r.structure?.kind === 'tableRow' ? (r.operation === 'insert' ? 'Вставка строки таблицы' : 'Удаление строки таблицы') : r.boundary === 'paragraph' ? (r.operation === 'insert' ? 'Разделение абзаца' : 'Объединение абзацев') : r.operation === 'format' ? (r.format.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}${r.format ? `; было: ${formatDescription(r.format.before)}; стало: ${formatDescription(r.format.after)}` : ''}`);
     const projected=mode=>pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(ledger,mode)).flatMap((p,i)=>changed.has(i)?[`Абзац ${i+1}: `+(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')]:[]).join('\n');
-    const view = ledger ? {original:projected('original'),current:projected('current')} : null;
-    return `Изменённых абзацев: ${changed.size}. Сохранено прежних исправлений: ${retained.size}. Всего исправлений: ${(ledger?.revisions||[]).length}.\n`+paragraphs.join('\n') + '\nИзменённые исправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
+    const view = ledger ? (legacySnapshot ? pendingTextRevisions.projection(doc) : {original:projected('original'),current:projected('current')}) : null;
+    return (legacySnapshot ? '' : `Изменённых абзацев: ${changed.size}. Сохранено прежних исправлений: ${retained.size}. Всего исправлений: ${(ledger?.revisions||[]).length}.\n`)+paragraphs.join('\n') + (legacySnapshot ? '\nИсправления:\n' : '\nИзменённые исправления:\n') + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
   };
   const describeThread=t=>t?`${t.status}; абзац ${t.anchor.sceneParagraphIndex+1}; «${t.anchor.selectedText}»: `+t.messages.map(m=>`${m.provenance?.author||'автор не указан'}: ${m.body}`).join(' → '):'нет обсуждения';
   const discussionDetail=changes.comments?'\nИзменения обсуждений:\n'+(changes.commentChanges||[]).map(c=>

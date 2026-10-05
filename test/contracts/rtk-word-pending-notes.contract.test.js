@@ -164,6 +164,9 @@ async function runtimeFixture(t, insertion = false) {
 }
 test('authenticated Main preparation, Kernel and actual atomic scene/notes writer apply, restart, decide and replay together',async t=>{
   const h=await runtimeFixture(t);
+  assert.deepEqual(h.input.context.reviewTransportAuthorityCapsule.commentExport.threads,[]);
+  assert.deepEqual(h.input.context.reviewTransportAuthorityCapsule.commentExport.tombstones,[]);
+  assert.deepEqual(h.input.context.reviewTransportReturnIntake.parserResult.reviewIr.commentThreads,[]);
   assert.equal((await h.prepare()).status,'preview-ready');assert.equal(h.writes,0);
   assert.equal((await h.prepared.apply()).ok,true);assert.deepEqual(h.offsets(),[1,1]);
   for(const [action,expected]of [['rejectAll',[1,3]],['undo',[1,1]],['acceptAll',[1,1]],['undo',[1,1]],['undo',[1,3]],['redo',[1,1]]]){

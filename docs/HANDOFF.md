@@ -1,3 +1,16 @@
+## 2026-10-05 — legacy route repair; native06 revalidation pending
+
+CI37304924977 at4c1ac4178 found5 failures out of3400; cancelled after diagnosis.
+Main now distinguishes empty comment export metadata from actual signed or
+incoming discussions, preserving the atomic pending-notes route. Unchanged legacy
+confirmation retains canonical leaves; changed100k text keeps bounded preview.
+First incoming discussion on an empty export still uses atomic mixed return.
+Focused74/74 and33 affected files1054/1054 pass, zero fail/skip/todo. Existing rich
+snapshot and100k preview expectations are unchanged. Native05 retains its own SHA.
+Native06 will replay genuine preApply captures and real Word05 changed files on
+both repaired Mac builds, then restart/Undo/Redo/reexport. CI, merge and exact
+merged verification remain required. Original plan and100k launch blockers unchanged.
+
 ## 2026-10-05 — mixed return native05 complete; delivery pending
 
 Frozen ce26c8d1474ae16f279138cdf58d626de552d0c3 passes both SOURCE05 and
