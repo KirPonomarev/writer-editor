@@ -490,7 +490,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -913,7 +913,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1003,7 +1003,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1021,7 +1021,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/export/docx/docxReviewPacketComments.js",
@@ -1320,7 +1320,7 @@
       "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
       "sha256": "f8d4a53f117cb5e3e7f674d36a76df50c0c33d74e335a09e1ac790415b5783d2",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1509,7 +1509,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "391e55ee38f9917cad16c085ab03108c37663a65b8aa8f54f251c32ad2d7257c",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1599,7 +1599,7 @@
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "sha256": "7f2467f5372876ce4a6737e995aa6589d07509994ea92d1977a88b6d7c813c0e",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1635,7 +1635,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "6d285d07f1083215e2c4d0eb781162e546f1c34eb7f40a251856699bbc5e4bce",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1644,16 +1644,16 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "5e5b18e4c9bce05f262d85097c8ba41500c4ebfa155ccd0a4c2ff2546dfaff19",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "3033eb9ab1d0b5dd4e9e6a4edadbb11b62f662bbff3c6910ee63a9f323283789",
+      "sha256": "b2fbb57875031b9d43c816b3807c59852574822b672c4247ca45a63ce2dbb541",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1662,7 +1662,7 @@
       "filePath": "src/renderer/editor.bundle.js",
       "sha256": "fba9815128ad4d607874638bf6ad0703f76f7c8a97177ada13722a6a2512ce26",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1707,7 +1707,7 @@
       "filePath": "src/utils/docxImportSafeCreate.js",
       "sha256": "6fc7d6d8711be1f38b81f2f1af8f5e27b65efdcf7a968b75f93e9abf8b1ce26e",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1725,7 +1725,7 @@
       "filePath": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
       "sha256": "993f395f3ae004b23dad6c0bd4dacaa1b859f6d1140ffa6ab5309bf95d5cee35",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "68cf223c905b5af295fc0796d20bd00ce0ce674b3caf06a2f7b30cc6d4df18af",
+      "sha256": "c37d431dcf66fc95ae6669d6003c101cca3d9b818c297d4ec33d0f9aa6ed2256",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "d061412c664a99ee1543fb219a74996a757ec2ec17892833f3bfc81ba916614a",
+      "sha256": "43f88bb77fb0951dbc4efddd91eea2dbf533b5f7563cbe2ea7fe52a34ec75b6a",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "a29f99e4bd2e33721711518aa21eac631050fb5dde56a9d25c343f304db9b361",
+      "sha256": "1189f283f218c69b6411f2ca9aeff8acca07695424f8d0230d4e850c7cb17581",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -2345,7 +2345,7 @@
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
       "sha256": "35dee7a5271b1088584063e2f8f64dc3824ede2f6c717e1e83eb6be8105157d2",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2354,7 +2354,7 @@
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
       "sha256": "3db278a1f7aba2091526edc11454f45294e9b2e9292a4f6d0ec51f6998fb2305",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2372,7 +2372,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
       "sha256": "272d39052e69b63d6415bb42ac3118ed4e4d57dd0aad747403baa4fe88a48160",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2381,7 +2381,7 @@
     {
       "filePath": "src/core/word-comment-authoring-v1.cjs",
       "sha256": "6b47fa6c3199e4a1dcef5fda5402f8e25d867df2f4b1ebc3c5caa7b3198dc88a",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2444,7 +2444,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
       "sha256": "11272d7dc75758bae295f6234c58d1e018bdf78c36d5a2385fc99facb1647148",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2453,7 +2453,7 @@
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
       "sha256": "70d2d67930d4cc9cc7513d3b8431e2b2fe81be4d2be45efa73dc007d01c84111",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2462,7 +2462,7 @@
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
       "sha256": "e3a4281666cc096ca0664e0a2c49b62d67ddb4c9ad83068c9822768ecaa837cf",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2498,7 +2498,7 @@
     {
       "filePath": "src/core/word-comment-return-delta-v1.cjs",
       "sha256": "91889f8be07da8e2cc83d1ee26306b7c2381eb860ff86abd7bdb701ae2687062",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2507,7 +2507,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
       "sha256": "1bd82a3538b7f11318a90b260a007941dd00ab13c9bf77d9f5673f163dae81bc",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a3425869fec7b8ceacca0bf53bc8a09c7afa530fd26e1785bcc2e58badd80684",
+      "sha256": "43958b38904a635e7b62a1b3db30aa5a3ada75c1bb21f765ee37a17324a48c4f",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_PANEL_FIT_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ea634d2406273ea430dff78c3e97f0a391e06c170e1130837a35e9222612eeed",
+      "sha256": "84ba1af86e46a8e826fd809b92e162cc9b505d54325a2d5e5fd8b6c28e706050",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "72f34d6d88cea6469c11479307c51761a3e10475e293cff692b200a6e1261bbc",
+      "sha256": "c34598b1528251b7bfb58528fcc120fc5569a07f2724577449510b4a434c9925",
       "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_SCENE_DEFAULT_PROFILE_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_SCENE_FIRST_NOTE_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLE_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_BOOKMARK_PARAGRAPHS_MAC_20261002|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_MAC_SECURITY_SQUASH_PROVENANCE_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate."
@@ -2777,7 +2777,7 @@
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "sha256": "b9d78a6edaf66525ecb1c65802c2d24ae1d7499a31bdb12318584dd189f675e7",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2894,7 +2894,7 @@
     {
       "filePath": "src/core/word-pending-text-revisions-v1.cjs",
       "sha256": "7877a5cfaabe0356c649ff09c60dcae12c98bfff41c2157b7d3cd20a1632533c",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2903,7 +2903,7 @@
     {
       "filePath": "src/export/docx/docxPendingRevisions.js",
       "sha256": "9d82bca4ead1d032ba5c81a9277ede4457947d508762a2773c19022dff756c9c",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2921,7 +2921,7 @@
     {
       "filePath": "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
       "sha256": "b717cc1455c7ca7d9f36719616b2fea1ab519fbcff72f2b6ba12b7f0b02e8c5b",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -2984,7 +2984,7 @@
     {
       "filePath": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
       "sha256": "e6f501ff002d04f7ee67af0cddf5ef14ee64420bed465055e208d97327b6fa00",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -3002,7 +3002,7 @@
     {
       "filePath": "src/core/word-pending-recording-v1.cjs",
       "sha256": "296f2be1f5c7b53756c430ef3eba21086de782ef37e78a7ced02ddf222188e57",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -3721,8 +3721,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "4632c9ed30111a8150970be73557a62df1c1ef498b58b19ec4586232559f3035",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "sha256": "c7c50313402393ad5227945b89aa0b94ebbbd42e184dee96ebe4b88310c96182",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -3758,7 +3758,7 @@
     {
       "filePath": "test/helpers/main-docx-round-authority.js",
       "sha256": "90d150c19bf05975667f5c635e1cf969f083722aa8f72d2d4d74eb27a4871123",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4559,7 +4559,7 @@
     {
       "filePath": "src/core/word-comment-body-v1.cjs",
       "sha256": "3d974251d6159283f8ec993f4dbdbb2b1cb6fd27dbce0d49f4105b89c0fd686c",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4730,7 +4730,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-points.contract.test.js",
       "sha256": "bbc02da95fe4b3e1b0184352f622450551eae61a1a6799120d1ccefed94a9877",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4838,7 +4838,7 @@
     {
       "filePath": "src/core/word-comment-ranges-v1.cjs",
       "sha256": "e9c3d1a6effa5e7e5ab7c8172d3c9bf0f4faf575ae50dd11efb9a60412318a11",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4847,7 +4847,7 @@
     {
       "filePath": "test/contracts/rtk-word-comment-ranges.contract.test.js",
       "sha256": "c7522ca8b109f546c48e341ad8087f9eca490ce4b897a0166001b584349eecbb",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4982,7 +4982,7 @@
     {
       "filePath": "src/core/word-pending-comment-decisions-v1.cjs",
       "sha256": "3adffe506dab6d8831885d818ec47a18ef14541bbf3c0695484ed05e7924822c",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -4991,7 +4991,7 @@
     {
       "filePath": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
       "sha256": "19f8703afc4ec85b199ac87441f8ef0a1e899799aebf05d887331fcd15962608",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5027,7 +5027,7 @@
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
       "sha256": "52d69da6f1033bdc097226bf8b6ffc9fd4fde4c4b608c7795f96884f09149a71",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5045,7 +5045,7 @@
     {
       "filePath": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
       "sha256": "15a71fa9237694ef674415ca22df74adc69c7b81c56d4ead999d501692c64cfb",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5072,7 +5072,7 @@
     {
       "filePath": "src/core/word-pending-comment-return-v1.cjs",
       "sha256": "052318c7de3a015519563011bd3f6df3ba9cbbccf7f67a77ed3f6832d54ec90a",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5090,7 +5090,7 @@
     {
       "filePath": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
       "sha256": "38fe2a8cbbec12689e5cd9b644635b90226111ebf1d4e32b2bc776c8cba5bb7e",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5116,8 +5116,8 @@
     },
     {
       "filePath": "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-      "sha256": "8336522826dcfedb4a29caf270800429d8e3cd3ae2d605923aed10a2af42f495",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "sha256": "ad0655c4184bafca1eb54ae3112da39ec26d62775eaeb162e799fc19d96d98fd",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5125,8 +5125,8 @@
     },
     {
       "filePath": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
-      "sha256": "874d51b6485653958c15146b37768703f5033e6fe9997fb846c76f9ba3ec84fa",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "sha256": "0b95c8f5a6550e0a692a639d3092a9955bb1448dbb8ac059aae0cb17068b3b32",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5135,7 +5135,7 @@
     {
       "filePath": "src/core/word-review-authority-codec-v1.cjs",
       "sha256": "1db5cffa659fed08fe6a0730fd5666a8a90d24e10683a70343668acf3ab54216",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5144,7 +5144,7 @@
     {
       "filePath": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
       "sha256": "92e7c3ebf8c848417cc613be73c93c331cd71a3498ed3c0ea09a1e099513f355",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
@@ -5153,7 +5153,7 @@
     {
       "filePath": "test/contracts/scene-document-admission.contract.test.js",
       "sha256": "6518d994649f86c61601fe9de3d045f07ac5092905178200dfd08d97e1ac9469",
-      "approvedAtUtc": "2026-10-05T16:55:33.774299Z",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
       "approvedBy": "owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
       "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,

@@ -2627,15 +2627,15 @@ test('authority V4 actual Main rejects output budgets before creating directorie
   const store = { lastRoundId: 'one', roundsById: { one: { ...capsule, padding: 'x'.repeat(17 * 1024 * 1024) } } };
   fs.mkdirSync(parent, { recursive: true }); const legacy = JSON.stringify(f.probe.buildAuthority(store)); fs.writeFileSync(target, legacy);
   assert.throws(() => f.probe.strict(f.root), /STORE_PATH_UNSAFE/);
-  await assert.rejects(f.probe.migrate(f.root, () => { throw Error('STALE_SOURCE'); }), /STALE_SOURCE/);
+  await assert.rejects(f.probe.migrate(f.root, f.query.projectId, () => { throw Error('STALE_SOURCE'); }), /STALE_SOURCE/);
   assert.equal(read(target), legacy);
   const forged = JSON.parse(legacy); forged.roundsById.one.recordVersion++; fs.writeFileSync(target, JSON.stringify(forged));
-  const invalidBefore = read(target); await assert.rejects(f.probe.migrate(f.root, () => {}), /STORE_INVALID/); assert.equal(read(target), invalidBefore);
+  const invalidBefore = read(target); await assert.rejects(f.probe.migrate(f.root, f.query.projectId, () => {}), /STORE_INVALID/); assert.equal(read(target), invalidBefore);
   fs.writeFileSync(target, legacy);
-  await f.probe.migrate(f.root, () => {});
+  await f.probe.migrate(f.root, f.query.projectId, () => {});
   assert.deepEqual(f.probe.strict(f.root).record, f.probe.buildAuthority(store)); assert.ok(fs.statSync(target).size < codec.ENCODED_MAX_BYTES);
   const valid = read(target); fs.unlinkSync(target); fs.writeFileSync(path.join(f.temp, 'foreign-store'), valid); fs.symlinkSync(path.join(f.temp, 'foreign-store'), target);
-  await assert.rejects(f.probe.migrate(f.root, () => {}), /STORE_PATH_UNSAFE/);
+  await assert.rejects(f.probe.migrate(f.root, f.query.projectId, () => {}), /STORE_PATH_UNSAFE/);
   assert.equal(read(path.join(f.temp, 'foreign-store')), valid);
 });
 
@@ -2687,4 +2687,54 @@ test('authority V4 five fresh signed 100000 word Main exports retain every prior
   }
   const fresh = await fixture(t, false, '01_Alpha.txt', false, temp);
   assert.deepEqual(fresh.probe.strict(fresh.root).record.roundsById, prior);
+});
+
+
+test('authority legacy migrations serialize with actual tree expiry and preserve every terminal round', async t => {
+  const f = await fixture(t), round = f.installRound();
+  const second = { ...round.capsule, roundId: 'round-second', keyRef: 'keyref:round-second' };
+  const record = f.probe.buildAuthority({ lastRoundId: second.roundId, roundsById: {
+    'round-one': { ...round.capsule, padding: 'x'.repeat(17 * 1024 * 1024) },
+    [second.roundId]: second,
+  } });
+  fs.writeFileSync(round.target, JSON.stringify(record)); f.probe.setReviewStore(null);
+  const manager = require('../../src/utils/fileManager'), original = manager.writeFileAtomic;
+  let enter, release, calls = 0, secondChecks = 0;
+  const entered = new Promise(resolve => { enter = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  manager.writeFileAtomic = async (target, content) => {
+    if (target === round.target && ++calls === 1) { enter(); await gate; }
+    return original(target, content);
+  };
+  const operations = [];
+  try {
+    operations.push(f.probe.migrate(f.root, f.query.projectId, () => {})); await entered;
+    operations.push(f.probe.migrate(f.root, f.query.projectId, () => { secondChecks++; }));
+    // Both calls start from the same oversized legacy bytes. The second must
+    // not enter publication while the first atomic writer is paused.
+    assert.equal(secondChecks, 0, 'second migration must await shared disk serialization');
+    const expiry = f.move(); operations.push(expiry); release();
+    await Promise.all(operations); assert.equal((await expiry).ok, true);
+    const after = f.probe.strict(f.root).record;
+    assert.deepEqual(Object.keys(after.roundsById).sort(), Object.keys(record.roundsById).sort());
+    for (const [id, before] of Object.entries(record.roundsById)) {
+      const actual = after.roundsById[id]; assert.equal(actual.lifecycleState, 'EXPIRED');
+      assert.equal(actual.recordVersion, before.recordVersion + 1);
+      for (const key of Object.keys(before).filter(key => !['lifecycleState','recordVersion'].includes(key))) assert.deepEqual(actual[key], before[key]);
+      assert.throws(() => f.probe.fresh(before), /LIFECYCLE_NOT_ELIGIBLE/);
+    }
+    assert.equal(calls, 2, 'one encoding migration and one terminal expiry; second migration must only reread');
+    f.probe.state({ projectName: 'Роман' });
+    const source = await f.probe.fullSource(), built = await f.probe.reviewBuild(source);
+    assert.equal(built.publicationGate.publishAllowed, true, JSON.stringify(built.publicationGate));
+    await f.probe.activate(source.pendingAuthorityStore);
+    const published = f.probe.strict(f.root);
+    for (const [id, expired] of Object.entries(after.roundsById)) assert.deepEqual(published.record.roundsById[id], expired);
+    assert.equal(Object.keys(published.record.roundsById).length, 3);
+    assert.equal(published.record.roundsById[published.record.lastRoundId].lifecycleState, 'PUBLISHED_ACTIVE');
+    await f.probe.migrate(f.root, f.query.projectId, () => {});
+    assert.equal(f.probe.strict(f.root).text, published.text, 'a later migration must not replace the newly published round');
+    assert.equal(calls, 3, 'only the independently signed new publication may add another write');
+  } finally {
+    release(); await Promise.allSettled(operations); manager.writeFileAtomic = original;
+  }
 });

@@ -840,7 +840,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "3033eb9ab1d0b5dd4e9e6a4edadbb11b62f662bbff3c6910ee63a9f323283789"
+        "sha256": "b2fbb57875031b9d43c816b3807c59852574822b672c4247ca45a63ce2dbb541"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2028,7 +2028,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "4632c9ed30111a8150970be73557a62df1c1ef498b58b19ec4586232559f3035"
+        "sha256": "c7c50313402393ad5227945b89aa0b94ebbbd42e184dee96ebe4b88310c96182"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2532,15 +2532,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "298ccf6aba59778a290ec128a40567013f24f77c6e140e794cbc7d836680953d"
+        "sha256": "14264dfdb4fc37a0c0c602a7ab0c433649bf1b12e3fca2e95d055d12aa0c9910"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6e095b6327e65363e8f8cc32a6ae7b8d6439fda05c9dd377bff437ed28f45b9f"
+        "sha256": "4615d52c9aed543e6894ec723483ea423bff70a732a3726a9c5d8136e4fba48a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e722bbc5a2b21fcfa582397586f4c733e29b1f9dbe2ff61a73517123f4cdafe6"
+        "sha256": "a265cbfbd199abfee58b450bb52cac007555aa61b93e8a25005d9ebf7ff0378b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2668,11 +2668,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-        "sha256": "8336522826dcfedb4a29caf270800429d8e3cd3ae2d605923aed10a2af42f495"
+        "sha256": "ad0655c4184bafca1eb54ae3112da39ec26d62775eaeb162e799fc19d96d98fd"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
-        "sha256": "874d51b6485653958c15146b37768703f5033e6fe9997fb846c76f9ba3ec84fa"
+        "sha256": "0b95c8f5a6550e0a692a639d3092a9955bb1448dbb8ac059aae0cb17068b3b32"
       },
       {
         "path": "src/core/word-review-authority-codec-v1.cjs",

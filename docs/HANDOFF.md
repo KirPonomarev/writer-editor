@@ -1,3 +1,11 @@
+## 2026-10-05 — authority migration serialization repair; final delivery pending
+
+Actual race reproduction on bc9 resurrects EXPIRED/version3 as ACTIVE/version2 after a late unleased migration; bc9 is superseded. The same bounded61path contour now routes oversized legacy recovery through the existing disk queue and trusted project lease/publish, re-reading the original record inside serialization. The addressed real atomic-write race regression passes, retaining both terminal round graphs and a newly signed independently published active round. Whole affected Main/neighbor checks are ongoing; no broad result is attributed to these new bytes yet.
+
+Prior bc9 localRTK3461/3461 and native05 SOURCE/PACKAGED reopen/export/UndoRedo remain pinned to that earlier runtime and do not establish race safety. Native05 preserves both prior round graphs,1741 Current/Original paragraphs,200roots/400messages, all discussion ranges and run-property provenance; both new DOCX files open in real Word without repair,253pages/100233 Word-tokenizer words. Five fresh signed100001-word exports/clean changed returns are a separate actual-Main oracle; native proof has one previously genuine Word changed round per origin. Original composed/multi-scene novel launch and full Mac plan remain open.
+
+Obsolete local baseline was explicitly aborted as superseded, not PASS; owned scratch is preserved outside repo and no child remains. Final candidate must pass corrected native06, mandatory broad baseline, both RTK CI graphs, all remaining checks, merge and exact merged verification. No new dependency or UI contract is introduced.
+
 ## 2026-10-05 — native04 authority-store refusal isolated; bounded recovery active
 
 Exact869 local maintained graph passes3444/3444 with zero fail/skip/todo and clean owned process/lease cleanup; six whole affected consumer files pass346/346. Native04 both origins reopen the same native03 saved projects without reseeding and complete text/format Undo/Redo; independently verified1741 paragraphs,200 roots/400 messages and all anchors persist. SOURCE Undo retains its separately durable discussion body edit. Corrected runtime DOCX reexport remains blocked, not PASS.

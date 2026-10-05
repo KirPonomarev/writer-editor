@@ -4853,7 +4853,7 @@ async function readDocxReviewPacketExportSource() {
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
   // rounds are retained so multi-round retention holds and each round carries
   // an independent lifecycleState.
-  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, checkSource);
+  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, projectId, checkSource);
   const priorRoundsById = Object.fromEntries(Object.entries(
     readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
   ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
@@ -5016,7 +5016,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   source.localAuthorityCapsule.recordVersion = 1;
   source.localAuthorityCapsule.formattingOperationIdentityVersion = 2;
   // ROUND-01 (V3): MERGE — full-manuscript round must not evict prior rounds.
-  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, () => {
+  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, projectId, () => {
     revalidateFullManuscriptProjectBinding(scope.projectBinding);
     userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
   });
@@ -9324,13 +9324,24 @@ function readDurableDocxReviewReturnAuthorityStore(options = {}) {
 // Only governed export source creation may recover an oversized record written
 // by the legacy publisher. Decode is read-only; migration retains every round
 // and uses the same atomic publisher and exact original-text CAS as publication.
-async function migrateLegacyDocxReviewAuthorityForExport(projectRoot, revalidate) {
-  const disk = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: true });
-  if (!disk.text || Buffer.byteLength(disk.text) <= reviewAuthorityCodec.ENCODED_MAX_BYTES) return;
-  revalidate();
-  await persistDocxReviewReturnAuthorityStore(disk.record, {
-    expectedText: disk.text, allowLegacyRecovery: true, revalidate,
-  });
+async function migrateLegacyDocxReviewAuthorityForExport(projectRoot, projectId, revalidate) {
+  // The first read is only a no-write fast path. Never carry its snapshot into
+  // publication: every authority writer must share the disk queue and lease.
+  const admission = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: true });
+  if (!admission.text || Buffer.byteLength(admission.text) <= reviewAuthorityCodec.ENCODED_MAX_BYTES) return;
+  return queueDiskOperation(async () => {
+    revalidate();
+    const authority = await getMainProjectManifestAuthority();
+    return authority.withProjectLease(projectId, lease => lease.publish(async () => {
+      revalidate();
+      const disk = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: true });
+      if (!disk.text || Buffer.byteLength(disk.text) <= reviewAuthorityCodec.ENCODED_MAX_BYTES) return;
+      await persistDocxReviewReturnAuthorityStore(disk.record, {
+        expectedText: disk.text, allowLegacyRecovery: true, revalidate,
+      });
+      revalidate();
+    }));
+  }, 'migrate legacy review authority');
 }
 
 function docxReviewReturnIntakeBlocked(reason, details = {}) {
