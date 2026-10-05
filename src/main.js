@@ -11979,7 +11979,8 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
         activationResult.commentProductPath = await prepared.apply();
         if (activationResult.commentProductPath?.ok === true) {
           const canonical = handleWorkspaceRtkNonTextReturnStateQuery();
-          if (canonical?.ok === true && canonical.reviewSurface?.commentSurvivalPreview) {
+          if (canonical?.ok === true && canonical.reviewSurface?.commentSurvivalPreview
+            && isPlainObjectValue(activationResult.reviewSurface)) {
             const surface = cloneJsonSafe(activationResult.reviewSurface);
             surface.commentSurvivalPreview = cloneJsonSafe(canonical.reviewSurface.commentSurvivalPreview);
             activationResult.reviewSurface = surface;
@@ -29145,7 +29146,7 @@ async function handleExportDocxMin(payloadRaw) {
     const activeComments = comments?.threads?.some(thread => thread.sceneId === sceneId && thread.status !== 'deleted');
     let noteBlocks, documentNotes;
     if (active || activeComments) {
-      manuscriptNoteModel.sceneText(snapshot.content);
+      if (active) manuscriptNoteModel.sceneText(snapshot.content);
       let paragraphDocument = snapshot.doc ? pendingTextRevisions.normalizeNode(snapshot.doc) : null;
       if (paragraphDocument?.attrs?.wordUserBookmarks !== undefined) {
         // Validate the canonical registry before removing this recognized root

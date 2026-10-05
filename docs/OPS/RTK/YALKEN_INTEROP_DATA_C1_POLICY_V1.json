@@ -820,7 +820,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "70172666a760f1b5e606ad1d1ab7b1d1eb31fe490965b6ba7eb9db1e9e20b4bc"
+        "sha256": "8da1e1ec5cc2c8ed2f1b6bae5c73beee969d07874f6bff8ed68fac4e1525e008"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1516,11 +1516,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "545fd68fa7b3d712c5d95944e0b767ea6d7806d3d527fc905bd6ff6579c2fc0e"
+        "sha256": "0187d43e86ff37223fdd0735bfce7d72005a026c4fa709a296281a6028907af7"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "e4a219e3eebfadc32ef089d2f0ca73e66778b57e2cd6a38bc05960f17920d738"
+        "sha256": "ff098fd5b5e7ee2f1c3840dc912ac5cb75daa254bef7bbb4c04dcb033924c243"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -2008,7 +2008,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "012421256acf629a305f48657f735134d55c24a2811d7a6010d2b9d7406cf545"
+        "sha256": "2e9c658d809a2cc47eaa553d088234eaf30ad9ed987ff3d994169d3b910a7567"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2580,11 +2580,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-        "sha256": "d43e1c5b416d6762ca974fda813fb78c483665468099e9d07efc124d68a1747f"
+        "sha256": "ddd00ada2f3668c66889e95534d95ea6a2182f722d96941a8cae2df8a27356e4"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
-        "sha256": "6ae82da48fd3952126d4db8683d4d58a8b3dd919cf61c04ebe28ea6ecefb7c60"
+        "sha256": "262615711a9f1476de0102f893924111cf20c099c48dd0c180328c07f4424a07"
       }
     ],
     "followupRepair": {

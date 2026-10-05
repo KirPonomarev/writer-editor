@@ -23,13 +23,20 @@ function paragraphs(content) {
   if (!parsed.doc) return parsed.text.split('\n').map(text => ({ type: 'paragraph', text }));
   if (parsed.doc.type !== 'doc' || !Array.isArray(parsed.doc.content)
     || parsed.doc.content.length > 10000) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
-  const result = []; let lists = 0, nextTable = 0;
+  const result = []; let lists = 0, quotes = 0, nextTable = 0;
   const append = (block, table) => {
     if (!block || !['paragraph', 'heading', 'codeBlock'].includes(block.type) || result.length >= 10000) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
     result.push({ type: block.type, text: textOf(block), ...(table ? { table } : {}) });
   };
-  const visit = (block, depth = 0) => {
+  const visit = (block, depth = 0, quoteDepth = 0) => {
     if (['paragraph', 'heading', 'codeBlock'].includes(block?.type)) { append(block); return; }
+    if (block?.type === 'blockquote') {
+      if (quoteDepth >= 8 || ++quotes > 2048 || !Array.isArray(block.content) || !block.content.length
+        || (block.attrs != null && (typeof block.attrs !== 'object' || Array.isArray(block.attrs) || Object.keys(block.attrs).length))
+        || Object.keys(block).some(key => !['type', 'attrs', 'content'].includes(key))) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+      for (const child of block.content) visit(child, depth, quoteDepth + 1);
+      return;
+    }
     if (block?.type === 'table') {
       for (const leaf of tableParagraphs(block, `comment-table-${nextTable++}`)) append(leaf.node, leaf.table);
       return;
@@ -39,7 +46,7 @@ function paragraphs(content) {
     for (const item of block.content) {
       if (item?.type !== 'listItem' || !Array.isArray(item.content) || !['paragraph', 'heading'].includes(item.content[0]?.type)
         || item.content.slice(1).some(child => !['paragraph', 'heading', 'bulletList', 'orderedList'].includes(child?.type))) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
-      append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1);
+      append(item.content[0]); for (const child of item.content.slice(1)) visit(child, depth + 1, quoteDepth);
     }
   };
   parsed.doc.content.forEach(block => visit(block));

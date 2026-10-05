@@ -63,7 +63,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
-    reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,reviewLocalFile:handleDocxReviewPreviewSessionLocalFileCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     publishReview:publishReviewSceneWithProjectTransaction,
     failAfterReviewPublication() { const original=publishReviewSceneWithProjectTransaction;let armed=true;
@@ -2380,7 +2380,7 @@ for(const variant of ['line','page','column','inherited','type-spoof'])test(`act
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'break-replay'});await settle();assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
 });
 
-async function pendingCommentMainFixture(t,{scope='full',tamper=null}={}) {
+async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=false}={}) {
   const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
   const comments=require('../../src/core/word-comment-authoring-v1.cjs');
   const generated=(await import('../../scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')).buildWordManuscriptFixture('MULTI_SCENE','C2','DEFAULT');
@@ -2389,10 +2389,16 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null}={}) {
   const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]});
   docs[0].content.push({type:'orderedList',attrs:{start:1},content:[{type:'listItem',content:[paragraph('List owner retained'),paragraph('List continuation retained')]}]},
     {type:'paragraph',content:[{type:'text',text:'Marked break '},{type:'hardBreak',marks:[{type:'textStyle',attrs:{fontFamily:'Georgia',wordLanguage:{val:'en-US'}}}]},{type:'text',text:'retained'}]});
-  const union='Before OLD new inside tail after.',index=pending.paragraphs(docs[2]).length;
+  const union='Before OLD new inside tail after.';let index=pending.paragraphs(docs[2]).length;
   docs[2].content.push(paragraph(union));
   const revision=(id,operation,from,to)=>({id:'revision-'+id,nativeId:String(id),operation,author:'Pending author',date:'2026-10-05T07:00:00Z',dateUtc:'2026-10-05T07:00:00Z',groupId:null,paragraphIndex:index,from,to,state:'pending'});
   docs[2]=pending.bindLedger({schemaVersion:1,source:docs[2],revisions:[revision(1,'delete',union.indexOf('OLD'),union.indexOf('OLD')+3),revision(2,'insert',union.indexOf('new'),union.indexOf('tail')+4)],undo:[],redo:[]});
+  if(combined) {
+    const ledger=pending.readLedger(docs[2]),offset=pending.paragraphs(docs[0]).length+pending.paragraphs(docs[1]).length;
+    docs[2]=pending.bindLedger({...ledger,source:{...ledger.source,content:[...docs[0].content,...docs[1].content,...ledger.source.content]},
+      revisions:ledger.revisions.map(revision=>({...revision,paragraphIndex:revision.paragraphIndex+offset}))});
+    index+=offset;
+  }
   const third=path.join(f.imported,'03_Gamma.txt'),paths=[f.alpha,f.beta,third],sceneIds=paths.map(file=>path.relative(f.root,file).split(path.sep).join('/'));
   paths.forEach((file,i)=>fs.writeFileSync(file,envelope.composeObservablePayload({doc:docs[i]})));
   await f.main.buildProjectTreeRootsWithIdentities('Роман');
@@ -2435,12 +2441,19 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null}={}) {
   return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
 }
 
-for(const scope of ['full','scene'])test(`actual Main signed three-scene C2 pending ${scope} scope reply preserves every scene byte and replays`,async t=>{
-  const x=await pendingCommentMainFixture(t,{scope});
+for(const scope of ['full','scene','imported'])test(`actual Main signed three-scene C2 pending ${scope} scope reply preserves every scene byte and replays`,async t=>{
+  const x=await pendingCommentMainFixture(t,{scope:scope==='imported'?'scene':scope,combined:scope==='imported'});
   assert.equal(x.activated.ok,true,JSON.stringify(x.activated));assert.equal(x.activated.commentProductPath?.status,'preview-ready',JSON.stringify(x.activated));
   assert.ok(x.prepared);assert.deepEqual(x.f.capture(),x.before,'preview is read-only');
   const beforeScenes=x.paths.map(read),beforeManifest=read(x.f.manifestPath);
-  const applied=await x.prepared.apply();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.status,'applied');
+  let confirmed=0,failed=0;
+  const local=await x.f.probe.reviewLocalFile({requestId:'pending-reply-local-file'},{allowInlineDocxReturnIntakeParserForTests:true,
+    pickLocalFile:async()=>({path:path.join(x.f.temp,'word-reply.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes,
+    confirmCommentDelta:async()=>{confirmed++;assert.deepEqual(x.paths.map(read),beforeScenes);return true;},
+    notifyCommentDeltaFailure:async()=>{failed++;}});
+  assert.equal(local.ok,true,JSON.stringify(local));assert.equal(confirmed,1);assert.equal(failed,0,JSON.stringify(local));
+  assert.equal(local.commentProductPath?.status,'applied',JSON.stringify(local));
+  const projection=await x.f.probe.commentProjection();assert.equal(projection.available,true,JSON.stringify(projection));
   assert.deepEqual(x.paths.map(read),beforeScenes);assert.equal(read(x.f.manifestPath),beforeManifest);
   const graph=JSON.parse(read(x.commentPath));assert.equal(graph.threads.length,x.state.threads.length);
   for(const original of x.state.threads){const actual=graph.threads.find(t=>t.threadId===original.threadId);assert.deepEqual(actual.anchor,original.anchor);assert.deepEqual(actual.messages.slice(0,original.messages.length),original.messages);}

@@ -33,6 +33,8 @@ production code, contract tests and bound native SOURCE/PACKAGED observations.
 
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/word-comment-return-delta-v1.cjs`
+- `src/core/word-comment-anchor-save-v1.cjs`
+- `test/contracts/rtk-word-comment-anchor-save.contract.test.js`
 - `src/export/docx/docxPendingRevisions.js`
 - `src/export/docx/docxReviewPacketComments.js`
 - `src/export/docx/docxMinBuilder.js`
@@ -223,6 +225,26 @@ rich Current/Original/union proof6038ms, six revision partitions exact. Peak
 RSS733568KiB. This is runtime-bound programmatic evidence, not native100k or
 whole-plan acceptance. Original corpus label mismatch is explicitly corrected
 in the immutable external proof; measured source and generator retained.
+
+SOURCE03 f20964: import opens without ACK error; native Review DOCX contains
+six revisions and five messages. Actual Word adds one reply. Return preview
+recognizes one changed thread and Apply durably commits revision2/six messages,
+but local-file completion throws while consuming absent reviewSurface and
+reports a false failure. Fix the completion path using committed result.
+Ordinary export incorrectly invokes note-only scene validation for comments;
+canonical comment projection still rejects the finite C2 blockquote wrapper.
+Clean f20964 preflight40paths admitted anchor-save and its contract before edit.
+Anchor-save47/47 zero skips passes; actual native scene yields40 correct leaves.
+Actual local-file wrapper fullbook/scene/combinedC2 positives pass, including
+confirmation, comment projection, scene byte identity, both reexports and replay.
+
+Evidence correction: SOURCE03 zero-write/unchanged-file snapshots collected by
+node_repl closure actually point to SOURCE02; explicitly INVALID, not accepted.
+Their retained relative filenames prove the wrong identity. Actual SOURCE03
+profile and13 files safely copied on exit; revision2/newreply confirmed by
+explicit profile-bound filesystem read. Next native snapshot helper takes
+mode/version explicitly and records launch SHA, absolute root and scene names;
+no hidden captured profile. SOURCE03 does not provide zero-write acceptance.
 
 ## STOP_CONDITION
 

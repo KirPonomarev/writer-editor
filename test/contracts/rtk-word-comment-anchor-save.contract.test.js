@@ -513,3 +513,28 @@ test('actual Main structural V2 Save and saved Undo publish one exact scene-comm
  const current=observed(f);const stale=await f.save(multi,{commentEditIntentsJson:ledger(['foreign'],forward)});
  assert.equal(stale.success,false);assert.match(stale.code,/COMMENT_EDIT_BASELINE_STALE/);assert.deepEqual(observed(f),current);
 });
+
+test('comment traversal preserves finite quote, code, continuation and table ownership without treating quotes as root paragraphs',()=>{
+  const model=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const p=text=>({type:'paragraph',content:[{type:'text',text}]});
+  const doc={type:'doc',content:[{type:'blockquote',content:[p('Left anchor right'),{type:'blockquote',content:[{type:'codeBlock',content:[{type:'text',text:'code\nline'}]}]}]},
+    {type:'orderedList',content:[{type:'listItem',content:[p('Item'),p('Continuation')]}]},
+    {type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[p('Cell A')]},{type:'tableCell',content:[p('Cell B')]}]}]}]};
+  const raw=envelope.composeObservablePayload({doc}),rows=model.paragraphs(raw);
+  assert.deepEqual(rows.map(r=>r.text),['Left anchor right','code\nline','Item','Continuation','Cell A','Cell B']);
+  assert.notDeepEqual(rows[4].table,rows[5].table);
+  const changed=structuredClone(doc);changed.content[0].content[0].content[0].text='PREFIX Left anchor right';
+  const saved=model.planCommentAnchorSave({beforeText:graph(),projectId,sceneId,beforeContent:raw,afterContent:envelope.composeObservablePayload({doc:changed})});
+  assert.equal(JSON.parse(saved.afterText).threads[0].anchor.startUtf16,12);
+  assert.deepEqual(JSON.parse(saved.afterText).threads[0].messages,JSON.parse(graph()).threads[0].messages);
+  for(const value of [{type:'blockquote',content:[]},{type:'blockquote',attrs:{unknown:true},content:[p('x')]},
+    {type:'blockquote',content:[{type:'future-widget',content:[p('x')]}]},
+    {type:'blockquote',extra:true,content:[p('x')]}]) {
+    assert.throws(()=>model.paragraphs(envelope.composeObservablePayload({doc:{type:'doc',content:[value]}})),/COMMENT_SAVE_STRUCTURE_UNSUPPORTED/);
+  }
+  let nested=p('x');for(let i=0;i<9;i++)nested={type:'blockquote',content:[nested]};
+  assert.throws(()=>model.paragraphs(envelope.composeObservablePayload({doc:{type:'doc',content:[nested]}})),/COMMENT_SAVE_STRUCTURE_UNSUPPORTED/);
+  const split=structuredClone(doc);split.content[0].content.splice(0,1,p('Left'),p(' anchor right'));
+  const intent={schemaVersion:2,baselineTextSha256:sha(JSON.stringify(rows.map(r=>r.text))),edits:[{id:'split',historyId:'h1',direction:'forward',fromParagraphIndex:0,fromUtf16:4,toParagraphIndex:0,toUtf16:4,removedParagraphs:[''],insertedParagraphs:['','']}]};
+  assert.throws(()=>model.planCommentAnchorSave({beforeText:graph(),projectId,sceneId,beforeContent:raw,afterContent:envelope.composeObservablePayload({doc:split}),editIntents:intent,sessionId:'quote-session'}),/COMMENT_SAVE_STRUCTURE_UNSUPPORTED/);
+});
