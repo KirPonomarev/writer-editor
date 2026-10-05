@@ -5068,6 +5068,24 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       ? authority.formatIr
       : docxReviewFormattingLegacyFormatIr(paragraph.paragraphText);
     const baselineRuns = Array.isArray(formatIr.runs) ? formatIr.runs : [];
+    // Equal LF text does not prove equal line/page/column meaning. Bind the
+    // entire vector before admitting any paragraph or inline formatting action.
+    try {
+      if(paragraph.typedBreakInvalid) throw Error('typed-break-invalid');
+      const baselineBreaks=[];
+      for(const run of baselineRuns) {
+        if(run.wordBreakType!==undefined && (!['page','column'].includes(run.wordBreakType)||run.text!=='\n')) throw Error('typed-break-baseline-invalid');
+        for(const match of String(run.text??'').matchAll(/\n/gu)) {
+          if(!Number.isSafeInteger(run.from)) throw Error('typed-break-baseline-invalid');
+          baselineBreaks.push({offset:run.from+match.index,type:run.wordBreakType||'line'});
+        }
+      }
+      const returnedBreaks=wordTypedBreaks.textBreaks(paragraph.paragraphText,paragraph.typedBreaks);
+      if(hashCanonicalValue(baselineBreaks)!==hashCanonicalValue(returnedBreaks)) throw Error('typed-break-topology-changed');
+    } catch {
+      diagnostics.push({code:'RTK_FORMATTING_RETURN_TYPED_BREAK_TOPOLOGY_CHANGED',sceneId:authority.sceneId,blockId:authority.blockId,paragraphIndex});
+      continue;
+    }
     const baselineParagraphRecord = isPlainObject(formatIr.paragraph) ? formatIr.paragraph : {};
     const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
     const baselineStructure = baselineParagraphRecord.nodeType === 'heading'
@@ -5201,7 +5219,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       const inline = docxReviewFormattingDiffActions(baselineState, returnedState);
       if (Object.keys(inline).length === 0) continue;
       const selectedText = paragraph.paragraphText.slice(from, to);
-      if (!selectedText || selectedText === '\n') {
+      if (!selectedText) {
         diagnostics.push({
           code: 'RTK_FORMATTING_RETURN_BREAK_ONLY_RANGE_BLOCKED',
           sceneId: authority.sceneId,

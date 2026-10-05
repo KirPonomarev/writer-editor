@@ -1,5 +1,32 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 06:12 EEST — CI consumer expectation repair
+
+- CI37257433260 failed both RTK lanes3294/3295 on the same stale valid-language
+  refusal assertion; dependent merge gates correctly failed. No success claim.
+- Test-only correction preserves valid manuscript break marks and strengthens
+  malformed language negatives. Full file14/14, zero skips; runtime unchanged.
+  Exact amended preflight passed at1f57fa059. Repeat mandatory CI before merge.
+
+## 2026-10-05 05:53 EEST — break formatting native and focused proof
+
+- SOURCE/PACKAGED fc9aa9f56 actual Word edits three break types; Apply, ordinary
+  and Review reexport, restart observed. Exact literal/mark checks and16 artifact
+  hashes external. Packaged journal query needs explicit restored scene selection.
+- Nine affected files387/387 zero skips,120.85s, unchanged bindings; OSS/audit pass.
+  Full CI and delivery pending. Select-all paragraph-mark font/size is an explicit
+  original-plan residual; raw failed example retained, no parser guard bypass.
+
+## 2026-10-05 05:18 EEST — structural delivery and break formatting
+
+- PR2080 merged60a22cd0f; CI19/19, both RTK3284/3284, merged428/428 and exact
+  Git/OPS/guardrails. Baseline59 historical skips remain excluded. Native proof
+  and runtime equivalence retain exact identities; whole plan remains open.
+- Admitted next break font/language + typed-topology packet on clean merged
+  base. Actual retained Word file exposes inherited language in addition to
+  font; guard deletion alone is insufficient. Root/parsers/PM ownership split,
+  early native route, existing shared novel corpus for subsequent mixture.
+
 ## 2026-10-05 04:52 EEST — structural comments native route
 
 - Candidate19ae1ccc4 observed in SOURCE and packaged Mac app: split/join/Delete,

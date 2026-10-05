@@ -45,7 +45,7 @@ function inspectDocumentLanguage(doc) {
       if (!d) continue;
       if (!Object.hasOwn(d, 'value')) fail();
       if (d.value == null) continue; // Pinned editor schema's absent-value default.
-      if (key === 'wordLanguage' ? !mark || type !== 'textStyle' || parentType !== 'text'
+      if (key === 'wordLanguage' ? !mark || type !== 'textStyle' || !['text', 'hardBreak'].includes(parentType)
         : mark || !['paragraph', 'heading'].includes(type)) fail();
       normalizeWordLanguage(d.value);
       present = true;
@@ -80,13 +80,12 @@ function applyParagraphLanguage(paragraph, change) {
   else if (out.attrs) delete out.attrs.wordParagraphMarkLanguage;
   const next = []; let offset = 0, ri = 0;
   for (const node of out.content || []) {
-    // A break occupies one coordinate but contains no language-bearing glyph.
-    // Keep its structure untouched while proofing applies to adjacent text.
-    if (node.type === 'hardBreak') { next.push(node); offset++; continue; }
-    const limit = offset + node.text.length; let local = offset;
+    const isBreak = node.type === 'hardBreak';
+    const limit = offset + (isBreak ? 1 : node.text.length); let local = offset;
     while (local < limit) {
       while (runs[ri].to <= local) ri++;
-      const run = runs[ri], to = Math.min(limit, run.to), part = { ...node, text: node.text.slice(local-offset, to-offset) };
+      const run = runs[ri], to = Math.min(limit, run.to);
+      const part = isBreak ? { ...node } : { ...node, text: node.text.slice(local-offset, to-offset) };
       const marks = (node.marks || []).map(m => ({ ...m, ...(m.attrs ? { attrs: { ...m.attrs } } : {}) }));
       const styles = marks.filter(m => m.type === 'textStyle');
       if (styles.length > 1) fail();
@@ -98,7 +97,7 @@ function applyParagraphLanguage(paragraph, change) {
       const retained = marks.filter(m => m.type !== 'textStyle' || Object.values(m.attrs || {}).some(v => v != null));
       if (retained.length) part.marks = retained; else delete part.marks;
       const previous = next.at(-1);
-      if (previous && JSON.stringify({ ...previous, text: '' }) === JSON.stringify({ ...part, text: '' })) previous.text += part.text;
+      if (!isBreak && previous?.type === 'text' && JSON.stringify({ ...previous, text: '' }) === JSON.stringify({ ...part, text: '' })) previous.text += part.text;
       else next.push(part);
       local = to;
     }

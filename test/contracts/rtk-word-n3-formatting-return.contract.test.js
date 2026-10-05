@@ -1471,3 +1471,25 @@ test('N3 root layout rollback and abrupt recovery retain paragraph topology and 
     assertRaw(after);
   }
 });
+
+test('N3 signed break formatting requires exact typed topology before any inline or paragraph operation',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href);
+ const text='A\nB',formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{},runs:[{from:0,to:1,text:'A',inline:{}},{from:1,to:2,text:'\n',inline:{}},{from:2,to:3,text:'B',inline:{}}]},map=richExportMap(text,formatIr);
+ const extract=br=>bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(docx('<w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>A</w:t></w:r><w:r><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr>'+br+'</w:r><w:r><w:t>B</w:t></w:r></w:p>'),{fullManuscriptExportMap:map,cryptoPort});
+ const positive=extract('<w:br/>');assert.ok(positive.candidates.some(c=>c.selectedText==='\n'&&c.inline.fontFamily?.value==='Georgia'&&c.inline.wordLanguage?.value.val==='ru-FI'),JSON.stringify(positive));
+ for(const br of ['<w:br w:type="page"/>','<w:br w:type="column"/>','<w:br w:clear="all"/>']) {
+  const bad=extract(br);assert.equal(bad.candidates.length,0,JSON.stringify(bad));assert.ok(bad.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_TYPED_BREAK_TOPOLOGY_CHANGED'),JSON.stringify(bad));
+ }
+});
+
+test('N3 compares ordered break positions and kinds even when all selected text is unchanged LF',async()=>{
+ const bridge=await import(pathToFileURL(BRIDGE_PATH).href),text='A\n\nB';
+ const formatIr={schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{},runs:[{from:0,to:1,text:'A',inline:{}},{from:1,to:2,text:'\n',wordBreakType:'page',inline:{}},{from:2,to:3,text:'\n',wordBreakType:'column',inline:{}},{from:3,to:4,text:'B',inline:{}}]};
+ const map=richExportMap(text,formatIr);
+ const extract=body=>bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(docx('<w:p w14:paraId="A1B2C3D4" w14:textId="D4C3B2A1"><w:pPr><w:jc w:val="right"/></w:pPr>'+body+'</w:p>'),{fullManuscriptExportMap:map,cryptoPort});
+ const a='<w:r><w:t>A</w:t></w:r>',b='<w:r><w:t>B</w:t></w:r>',page='<w:r><w:br w:type="page"/></w:r>',column='<w:r><w:br w:type="column"/></w:r>';
+ assert.ok(extract(a+page+column+b).candidates.some(c=>c.paragraph.textAlign?.value==='right'));
+ for(const body of [a+column+page+b,page+a+column+b,a+page+page+b,a+page+column+column+b]) {
+  const denied=extract(body);assert.equal(denied.candidates.length,0,JSON.stringify(denied));assert.ok(denied.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_TYPED_BREAK_TOPOLOGY_CHANGED'));
+ }
+});

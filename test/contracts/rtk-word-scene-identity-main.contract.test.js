@@ -2349,3 +2349,33 @@ test('formatting break font preserves typed break and unrelated marks with exact
   const invalid=runtime.applyFormattingOperationsToObservableContent(raw,[{...operation,selectedText:'X'}]);assert.equal(invalid.ok,false);assert.equal(invalid.code,'RTK_FORMATTING_EXPECTED_TEXT_MISMATCH');assert.deepEqual(doc.content[0].content[1],br);
  }
 });
+
+for(const variant of ['line','page','column','inherited','type-spoof'])test(`actual Main signed break-only formatting ${variant} applies exact marks and replays without writes`,async t=>{
+ const f=await fixture(t),language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'},inherited=variant==='inherited';
+ const style={type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:language}};
+ const br={type:'hardBreak',...(['page','column'].includes(variant)?{attrs:{wordBreakType:variant}}:{})};
+ const doc={type:'doc',content:[{type:'paragraph',...(inherited?{attrs:{wordParagraphMarkLanguage:language}}:{}),content:[{type:'text',text:'Alpha',...(inherited?{marks:[style]}:{})},br,{type:'text',text:'Beta',...(inherited?{marks:[style]}:{})}]}]};
+ let observed=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,observed);
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ if(inherited)parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>');
+ else {const original=parts['word/document.xml'];parts['word/document.xml']=original.replace(/<w:r>(<w:br\b[^>]*\/>).*?<\/w:r>/u,'<w:r><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="36"/><w:szCs w:val="36"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr>$1</w:r>');assert.notEqual(parts['word/document.xml'],original);}
+ if(variant==='type-spoof'){assert.match(parts['word/document.xml'],/<w:br\/>/u);parts['word/document.xml']=parts['word/document.xml'].replace('<w:br/>','<w:br w:type="page"/>');}
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),before=f.capture(),sibling=read(f.beta);
+ const activated=await f.probe.reviewActivate({requestId:'break-intake',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.deepEqual(f.capture(),before);
+ if(variant==='type-spoof'){
+  assert.ok(JSON.stringify(activated).includes('TYPED_BREAK_TOPOLOGY_CHANGED'),JSON.stringify(activated));
+  const denied=await f.probe.formatApply({requestId:'break-spoof-apply'});assert.notEqual(denied.ok,true,JSON.stringify(denied));assert.deepEqual(f.capture(),before);return;
+ }
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath?.prepared,true,JSON.stringify(activated));assert.equal(activated.formattingProductPath.diagnosticCount,0);
+ const settle=f.probe.observeDeferredEditorSync(),applied=await f.probe.formatApply({requestId:'break-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.replayVerified,true);
+ const parsed=envelope.parseObservablePayload(read(f.alpha)),out=parsed.doc.content[0].content[1];assert.equal(out.type,'hardBreak');assert.deepEqual(out.attrs,br.attrs);
+ const attrs=out.marks.find(m=>m.type==='textStyle').attrs;assert.equal(attrs.fontFamily,inherited?'Times New Roman':'Georgia');if(!inherited)assert.equal(attrs.fontSize,'18pt');assert.deepEqual(attrs.wordLanguage,language);
+ assert.deepEqual(parsed.doc.content[0].content[0],doc.content[0].content[0]);assert.deepEqual(parsed.doc.content[0].content[2],doc.content[0].content[2]);assert.equal(read(f.beta),sibling);assert.equal(observed,read(f.alpha));
+ const again=await f.probe.reviewBuild(await f.probe.sceneSource());assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:again.documentBuffer}).parts['word/document.xml'];
+ const run=[...xml.matchAll(/<w:r>[\s\S]*?<\/w:r>/gu)].map(m=>m[0]).find(r=>r.includes('<w:br'));assert.ok(run.includes('w:lang w:val="ru-FI"'),run);assert.ok(run.includes(inherited?'Times New Roman':'Georgia'),run);
+ const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'break-replay'});await settle();assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
+});

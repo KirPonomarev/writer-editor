@@ -185,7 +185,7 @@ test('table comment paragraphs resolve owned default and paragraph styles, refus
 test('ordinary and review export preserve nondefault marks on line page and column breaks',async()=>{
  const [bridge,docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/io/revisionBridge/index.mjs'),import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
  const env=require('../../src/core/document-content-envelope-v1.cjs');
- const marks=[{type:'textStyle',attrs:{fontFamily:'Courier New',fontSize:'18pt',color:'#123456'}},{type:'bold'}];
+ const marks=[{type:'textStyle',attrs:{fontFamily:'Courier New',fontSize:'18pt',color:'#123456',wordLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}}},{type:'bold'}];
  for(const kind of ['line','page','column']){
   const br={type:'hardBreak',...(kind==='line'?{}:{attrs:{wordBreakType:kind}}),marks};
   const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'},br,{type:'text',text:'B'}]}]};
@@ -197,7 +197,7 @@ test('ordinary and review export preserve nondefault marks on line page and colu
    assert.ok(xml.includes('Courier New'));assert.ok(xml.includes('w:val="36"'));
    const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},ports);assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));
    const paragraph=analysis.reviewIr.formattingParagraphs[0],run=paragraph.formattedRuns.find(run=>run.text==='\n');
-   assert.equal(paragraph.paragraphText,'A\nB');assert.equal(run.inlineState.fontFamily,'Courier New');assert.equal(run.inlineState.fontSize,'18pt');assert.equal(run.inlineState.bold,true);assert.equal(run.inlineState.color,'#123456');
+   assert.equal(paragraph.paragraphText,'A\nB');assert.equal(run.inlineState.fontFamily,'Courier New');assert.equal(run.inlineState.fontSize,'18pt');assert.equal(run.inlineState.bold,true);assert.equal(run.inlineState.color,'#123456');assert.deepEqual(run.wordLanguage,{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'});assert.match(xml,/<w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"\/>/u);
    assert.deepEqual(paragraph.typedBreaks,kind==='line'?undefined:[{offset:1,type:kind}]);
   }
  }

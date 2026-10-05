@@ -277,7 +277,7 @@ test('Save serializes the live rich editor and refuses update errors instead of 
   await ctx.handleWordCommentAction(button); assert.equal(calls.length, 1); assert.deepEqual(JSON.parse(calls[0].richBodyJson).document, live);
 });
 
-test('comment break projection retains adjacent marks and rejects unknown fields without relaxing manuscript language checks', async () => {
+test('comment and manuscript break projections preserve valid language and adjacent marks while malformed metadata refuses', async () => {
   const ui = await import('../../src/renderer/tiptap/manuscriptNotes.mjs');
   const core = require('../../src/core/word-comment-body-v1.cjs');
   const languageMark = { type: 'textStyle', attrs: { wordLanguage: { val: 'en-US' } } };
@@ -297,5 +297,11 @@ test('comment break projection retains adjacent marks and rejects unknown fields
     const bad = structuredClone(doc); bad.content[0].content[1].marks.push(mark);
     assert.throws(() => core.validateCommentRichBody(rich(read(bad))));
   }
-  assert.throws(() => ui.readManuscriptBodyDocument({ getJSON: () => structuredClone(doc) }), /WORD_LANGUAGE_INVALID/);
+  const manuscript = ui.readManuscriptBodyDocument({ getJSON: () => structuredClone(doc) });
+  assert.deepEqual(manuscript.content[0].content, doc.content[0].content);
+  for (const language of [{ val: '../../invalid' }, { val: 'en-US', unknown: 'value' }, {}]) {
+    const malformed = structuredClone(doc);
+    malformed.content[0].content[1].marks[0].attrs.wordLanguage = language;
+    assert.throws(() => ui.readManuscriptBodyDocument({ getJSON: () => malformed }), /WORD_LANGUAGE_INVALID/);
+  }
 });

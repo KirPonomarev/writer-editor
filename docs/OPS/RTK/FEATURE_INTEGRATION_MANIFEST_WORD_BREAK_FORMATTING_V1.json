@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_BREAK_FORMATTING_MAC_20261005",
+  "bindingBaseSha": "60a22cd0ff93e47104ac7d78980c7cf17a71b476",
+  "productPlane": "Core owns typed hardBreak nodes and validated finite language tuples. Signed export format IR and exact raw returned DOCX supply bounded evidence; existing canonical scene bytes remain authoritative.",
+  "interfacePlane": "Existing formatting and review surfaces only; mechanical preservation of existing run metadata, no composition, flow, palette or visual design change.",
+  "commands": [
+    "cmd.project.review.applyFormattingReturn",
+    "cmd.rtk.review.applyMultiSceneFormattingReturn",
+    "cmd.project.review.inspectFormattingReturnReplay",
+    "cmd.project.save",
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.export.docxMin",
+    "cmd.project.review.exportDocxReviewPacket"
+  ],
+  "queries": [
+    "Existing formatting and command capability projections"
+  ],
+  "events": [
+    "Existing scene/journal publication and replay outcome"
+  ],
+  "effects": [
+    "Existing native DOCX and leased atomic scene I/O"
+  ],
+  "productPorts": [
+    "Existing native DOCX chooser/read/export, scene snapshot, leased atomic formatting write/journal/recovery ports"
+  ],
+  "designOsPorts": [
+    "Existing immutable review preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing revision-bound formatting preview, supported delta and explicit rejection diagnostics"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "writePaths": [
+    "Actual Word DOCX -> validated returned runs and exact signed baseline topology/marks -> existing private preview -> explicit Kernel/Main Apply -> existing Core validation, lease/CAS and atomic scene/journal write",
+    "Existing import/editor/Save/ordinary and Review export retain validated language and font on hardBreak; no alternate writer"
+  ],
+  "identityGuards": [
+    "Compare complete ordered offset/type break vectors before ANY candidate for a paragraph; LF text equality never implies topology equality",
+    "Keep project/scene/revision/generation, signed map identity, raw artifact hash, current scene CAS and journal/replay identities",
+    "Validate complete finite language tuple before admission; never drop unsupported keys or infer external mutation authority"
+  ],
+  "capabilityRevalidation": "Unchanged Kernel/Main dispatch revalidation and leased current-state CAS; selection visibility or external ranges never grant mutation authority.",
+  "fallbacks": [
+    "Changed/malformed typed-break vector or unsupported formatting rejects before mutation",
+    "Unresolved inherited style or malformed language remains explicit blocked diagnostic; no silent property loss",
+    "Unchanged legacy unmarked breaks remain valid; no new schema, writer or dependency"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Actual signed native inherited TNR plus language tuple on one line break passes preview -> Main Apply -> journal -> reopen -> ordinary and Review reexport -> replay",
+    "Explicit font/language set/remove on line/page/column and adjacent breaks; neighboring text, marks, comments and type unchanged",
+    "Actual PM schema and HTML parse/serialize/paste retain break language and type; malformed tuple rejected",
+    "Same LF with line/page/column change, swapped/moved/duplicate breaks or typedBreakInvalid refuses before any paragraph formatting candidate",
+    "Stale scene/raw SHA/signed map/forged offsets or changed text preserve canonical bytes",
+    "Native SOURCE/PACKAGED route before broad stable gates; mandatory CI, independent review and exact merged verification"
+  ],
+  "securityAndInputBoundary": "No dependencies, runtime network, new IPC, generic writer or private corpus. Existing byte/entity budgets retained. External tuples and break vectors validated before interpretation.",
+  "performanceAndAccessibility": "Reuse bounded formatting parser and explicit preview/apply; no new work per keystroke. Existing native keyboard and review controls unchanged.",
+  "currentReality": [
+    "Native fc9aa9f56 SOURCE/PACKAGED actual Word break-only font18pt and full language, Apply, both exports and restart observed; explicit scene selection required for packaged restored journal query",
+    "Affected387/387 zero skips, OSS/audit pass; full CI/delivery pending"
+  ],
+  "targetOnly": [
+    "Original full novel plan and mixed pending text/comments remain open",
+    "Paragraph-mark font axes and separate normal/complex-script sizes remain unsupported; preserve explicit refusal",
+    "No whole-plan percentage or fullnovelacceptance inferred from bounded native route"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "hotPathBoundary": "No full-document operation per keystroke; bounded parsing and topology validation only on explicit import/preview/apply/export.",
+  "migrationRollbackEvidence": "Revert this bounded PR. Preserve all project bytes and journal. Existing feature-tag validation must reject any unsupported old-reader case; never strip newly preserved metadata.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_REVIEW_SURFACE_NO_DESIGN_CHANGE"
+}
