@@ -2145,7 +2145,12 @@ function paragraphMarkTypography(scan, owner, xml, excluded=null) {
     if(action.action==='set')result[key]=action.value;
     else result[key]=['bold','italic','underline','strike'].includes(key)?false:null;
   }
-  for(const [name,key]of [['b','bold'],['i','italic'],['strike','strike'],['u','underline'],['color','color'],['highlight','highlight'],['shd','highlight'],['rFonts','fontFamily'],['sz','fontSize'],['szCs','fontSize']])if(seen.has(name)&&!Object.hasOwn(result,key))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_INVALID');
+  const fonts=direct.find(t=>isWordToken(t,'rFonts'));
+  if(fonts){const slots=Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].filter(key=>fonts.attributes.some(a=>a.namespaceUri===W_NS&&a.localName===key)).map(key=>[key,attr(fonts,key)]));
+    if(!Object.keys(slots).length)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_INVALID');
+    if(Object.keys(slots).length!==4||new Set(Object.values(slots)).size!==1){delete result.fontFamily;result.fontSlots=slots;}
+  }
+  for(const [name,key]of [['b','bold'],['i','italic'],['strike','strike'],['u','underline'],['color','color'],['highlight','highlight'],['shd','highlight'],['sz','fontSize'],['szCs','fontSize']])if(seen.has(name)&&!Object.hasOwn(result,key))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_INVALID');
   return Object.keys(result).length?normalizeParagraphMarkTypography(result):null;
 }
 
@@ -3079,7 +3084,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         const effectiveTokens=effectiveStyles.run(paragraphStyle,direct,true),effectiveActions=formattingInlineActions(effectiveTokens);
         // A scalar marker family/size cannot flatten heterogeneous inherited
         // script slots when a direct property overrides only one slot.
-        if(direct.some(t=>isWordToken(t,'rFonts'))&&!effectiveActions.fontFamily)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
+        if(value?.fontFamily&&!effectiveActions.fontFamily)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
         if(direct.some(t=>isWordToken(t,'sz')||isWordToken(t,'szCs'))&&!effectiveActions.fontSize)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');
         const effective=formattingInlineState(effectiveActions);
         const inherited=Object.fromEntries(['bold','italic','underline','strike'].filter(key=>effective[key]===true).map(key=>[key,true]));

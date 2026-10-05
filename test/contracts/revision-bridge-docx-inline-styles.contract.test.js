@@ -219,13 +219,13 @@ test('C1 used typography slots refuse unresolved mixed scripts and missing force
   assert.deepEqual(doc.content[0].content[0].marks,[{type:'italic'}]);assert.deepEqual(doc.content[1].content,[]);
  });
 
-test('Paragraph mark typography: partial font and size slots cannot overwrite different inherited script properties',async()=>{
+test('Paragraph mark typography: partial authored font slots stay exact and conflicting scalar sizes refuse',async()=>{
   const [bridge]=await modules;
   const styles=styleXml('<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>');
-  for(const [property,valid] of [['<w:rFonts w:ascii="Georgia"/>',false],['<w:rFonts w:ascii="Arial"/>',true],['<w:sz w:val="28"/>',false],['<w:sz w:val="24"/>',true]]){
+  for(const [property,valid] of [['<w:rFonts w:ascii="Georgia"/>',true],['<w:rFonts w:ascii="Arial"/>',true],['<w:rFonts w:asciiTheme="minorHAnsi"/>',false],['<w:sz w:val="28"/>',false],['<w:sz w:val="24"/>',true]]){
     const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes(`<w:p><w:pPr><w:rPr>${property}</w:rPr></w:pPr>${r('x')}</w:p>`,styles));
     assert.equal(report.ok,valid,property);
     if(!valid){assert.equal(report.code,'DOCX_CONTENT_PREVIEW_CONTENT_INVALID');assert.match(report.diagnostics[0].sourceCode,/WORD_PARAGRAPH_MARK_(FONT|SIZE)_UNSUPPORTED/);}
-    if(valid){const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true);const [,envelope]=await modules;const p=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc.content[0];assert.deepEqual(p.attrs.wordParagraphMarkTypography,property.includes('rFonts')?{fontFamily:'Arial'}:{fontSize:'12pt'});}
+    if(valid){const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true);const [,envelope]=await modules;const p=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc.content[0];assert.deepEqual(p.attrs.wordParagraphMarkTypography,property.includes('rFonts')?{fontSlots:{ascii:property.includes('Georgia')?'Georgia':'Arial'}}:{fontSize:'12pt'});}
   }
 });

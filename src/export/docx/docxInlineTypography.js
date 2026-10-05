@@ -45,6 +45,7 @@ function buildDocxParagraphMarkTypographyXml(value) {
   for(const [key,tag]of [['bold','b'],['italic','i'],['underline','u'],['strike','strike']])if(Object.hasOwn(v,key))xml+=`<w:${tag} w:val="${key==='underline'?(v[key]?'single':'none'):(v[key]?'1':'0')}"/>`;
   if(Object.hasOwn(v,'color'))xml+=`<w:color w:val="${v.color===null?'auto':v.color.slice(1)}"/>`;
   if(Object.hasOwn(v,'highlight'))xml+=v.highlight===null?'<w:highlight w:val="none"/>':`<w:shd w:val="clear" w:fill="${v.highlight.slice(1)}"/>`;
+  if(v.fontSlots)xml+=`<w:rFonts${Object.entries(v.fontSlots).map(([key,family])=>` w:${key}="${escapeXml(family)}"`).join('')}/>`;
   return xml+buildDocxTypographyPropertiesXml(v);
 }
 module.exports = { buildDocxParagraphMarkTypographyXml, buildDocxTypographyPropertiesXml, readRunTypography, buildDocxWordLanguageXml };

@@ -2897,7 +2897,7 @@ export const R24_INTEROP_WORD_PARAGRAPH_MARK_TYPOGRAPHY_SUCCESSOR=Object.freeze(
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "17318d175576db42fa6df245a280da00b5440e7736e4c333b516455113fc2bdf"
+      "sha256": "30d102eddcc8202fc4765ea6b113ab242f3eafbed44237e87def0bbbd8aa9891"
     }
   ]
 });

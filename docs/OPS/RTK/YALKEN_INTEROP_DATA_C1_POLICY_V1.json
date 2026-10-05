@@ -854,7 +854,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "ed4ff73728046ee4cd286e888b9be707bdf3f936296d210e5ff906354eaf6c9c"
+        "sha256": "dacb2376d6822d23167d40eaed04552a7503a323e3202e79ccfae434a0b075a1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -878,7 +878,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "63c2cff8a3587cd677b4e5a3a8e02f90a67f93b9955e7c01a2de8e11166b7ca2"
+        "sha256": "5aca683dab3fd38360dc18f088e3b7065f7541397ebd42e6b3af0e010fb818d2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -890,7 +890,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-        "sha256": "6c2170ba44d18d7cc2035e74398a7a94fda080cc77141a904ab16b6b7e0c7f2d"
+        "sha256": "b4393073b2cc486d952b72c5b8a3e56ffe3d57ea104d699200579daff7fdf840"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -958,7 +958,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "6cf50c73cd186a951d33693b4fcef1cc618d1dfea362e0369b9c1278edc6df72"
+        "sha256": "3aaeaff99ba611d30e92fa4629bc9949b8bddc9a88edda9a49f2638a40795b28"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -974,7 +974,7 @@
       },
       {
         "path": "src/export/docx/docxInlineTypography.js",
-        "sha256": "c11d2dc4c54ad19cb7b61a4b31676a86bdcee8e040d271dafe3766b800c4e8f4"
+        "sha256": "23009b1ec293f8e1618a59e1cefb3679ff263ffea598d810db3a5b43c68d8388"
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
@@ -1002,7 +1002,7 @@
       },
       {
         "path": "src/io/inlineTypography.cjs",
-        "sha256": "532db7874b8d35f89f561886ab078e19a053caa2bddc6e4c6c3bae061b84bb79"
+        "sha256": "6c7c0f7ad34b60a22fcfe205bf5e2ab5858ca3c167c6a17e94efc04008129d0d"
       },
       {
         "path": "src/io/paragraphAlignment.cjs",
@@ -1486,7 +1486,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "b2e0db8a31a776f37b1ae29eab40f604f2d62a3f2e9e81b93ddfd8ffbb160e16"
+        "sha256": "e70a447f6831ed708a298a31c5aa07966304ef3232a94825fea986c8f95a278e"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -1770,7 +1770,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-        "sha256": "7eae5c56be7e7a4ab7cc01aa541da3344e3da4296495ae83d6c1e2501b06aa37"
+        "sha256": "28e907914d7189ea57924f3aff5a24aebf268f5804e35cf91f0f25e712b52917"
       },
       {
         "path": "test/contracts/rtk-word-move-recording.contract.test.js",
@@ -2314,7 +2314,7 @@
       },
       {
         "path": "test/contracts/rtk-word-effective-style-return.contract.test.js",
-        "sha256": "067926ecd3db646008c379a802fb03b982a869329021fc133d5f5dbb498c0459"
+        "sha256": "eb1fde7105befca289d12662bc277c81db01361f185b4061c31b5a35056f7a43"
       },
       {
         "path": "docs/tasks/2026-10-03--word-effective-style-return-mac.md",
@@ -2534,15 +2534,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3ca82e7a4c44ebf2df1bddaf77448701706a6a6d381a1b1c3955f20b648dd480"
+        "sha256": "9bb68274955313f2e6209577bb49dcb000f827f7fa12c1012598df26654cbbe7"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ebe5b8123ae5870b3e6a8b9d252cc7c496b0fa882bf49f54e7b007c9edb2ee03"
+        "sha256": "dfe11b8874e721fd5e2e783f678581d8a6760d3d714ffa7de2aab5e887e70338"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0e2136a9f56b7b223076e55a55f744243e85bc85f9a8371ca418e7f1cf86bdcf"
+        "sha256": "82432e7b3e91089a653d7faa21fca0046a823ba0d25b4a6271c5ba2a35ab3f9c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2654,7 +2654,7 @@
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
-        "sha256": "26c5b04919cd26dcbd0695b9b75e08123fbdeac4bc4822bf4b9f7a82c73b29f0"
+        "sha256": "73dfcca6ec3133ec773cec9e07d3ab9e0f8e4417fd40d5e91a3718a99f667319"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
@@ -2690,11 +2690,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-paragraph-mark-typography-mac.md",
-        "sha256": "bf409a21a88db3e8560accd7410243706f146e35631e97bd745c38d7c53112ae"
+        "sha256": "5b69f5c87386860419c78c78a12986cf058ec735de8323b446c95bc29351f17b"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_MARK_TYPOGRAPHY_V1.json",
-        "sha256": "bf4742e6ce1f226c11d984de9e956e2af93d33ae3e74bf62271de0374985b410"
+        "sha256": "6915c4a20e630b0dd78fb6208146f16c3b3850a8c5aafa60148fe5eaad359a33"
       }
     ],
     "followupRepair": {

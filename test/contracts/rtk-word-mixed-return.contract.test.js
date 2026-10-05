@@ -14,6 +14,7 @@ async function fixture(clean=false,markChange=false) {
   const source={type:'doc',content:['oldnew','tail AAA BBB'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
   if(markChange)source.content.push({type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}},content:[]});
   if(markChange)source.content[1].attrs={wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}};
+  if(markChange==='font-slots')for(const index of [1,2])source.content[index].attrs.wordParagraphMarkTypography={fontSlots:{ascii:'Arial',hAnsi:'Georgia'}};
   const revisions=['delete','insert'].map((operation,i)=>({id:'revision-'+(i+1),nativeId:''+i,operation,author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from:i*3,to:i*3+3,state:'pending',groupId:'group-1'}));
   let beforeDoc=review.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]});
   if(clean)beforeDoc=review.normalizeNode(beforeDoc);
@@ -24,7 +25,7 @@ async function fixture(clean=false,markChange=false) {
   const exported=makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail AAA BBB',doc:beforeDoc,observableContent:beforeContent}]});
   const ledger=structuredClone(review.readLedger(beforeDoc)||{schemaVersion:2,source:beforeDoc,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});ledger.source.content[1].content[0].text='tail AAAZZZ BBB';
   ledger.revisions.push(...['delete','insert'].map((operation,i)=>({id:'revision-'+(3+i),nativeId:''+(2+i),operation,author:'Editor',date:'',dateUtc:'',paragraphIndex:1,from:5+i*3,to:8+i*3,state:'pending',groupId:'group-2'})));
-  if(markChange)for(const index of [1,2]){const before=review.paragraphProperties(ledger.source.content[index]);ledger.source.content[index].attrs.wordParagraphMarkTypography={bold:markChange!=='omit-off',fontFamily:'Georgia',fontSize:'14pt'};ledger.revisions.push({id:'revision-'+(5+index),nativeId:String(4+index),operation:'format',author:'Editor',date:'',dateUtc:'',paragraphIndex:index,from:0,to:(ledger.source.content[index].content||[]).map(n=>n.text).join('').length,state:'pending',groupId:null,format:{kind:'paragraph',before,after:review.paragraphProperties(ledger.source.content[index])}});}ledger.revisions.sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);
+  if(markChange)for(const index of [1,2]){const before=review.paragraphProperties(ledger.source.content[index]);ledger.source.content[index].attrs.wordParagraphMarkTypography=markChange==='font-slots'?{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}}:{bold:markChange!=='omit-off',fontFamily:'Georgia',fontSize:'14pt'};ledger.revisions.push({id:'revision-'+(5+index),nativeId:String(4+index),operation:'format',author:'Editor',date:'',dateUtc:'',paragraphIndex:index,from:0,to:(ledger.source.content[index].content||[]).map(n=>n.text).join('').length,state:'pending',groupId:null,format:{kind:'paragraph',before,after:review.paragraphProperties(ledger.source.content[index])}});}ledger.revisions.sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);
   const returnedDoc=review.bindLedger(ledger),afterState=structuredClone(state);
   afterState.threads.forEach((t,i)=>t.messages.push({commentId:'reply-'+i,kind:'reply',body:'Answer '+i,provenance:{author:'Editor'}}));
   afterState.threads[0].messages[0].body='Edited query';
@@ -163,4 +164,12 @@ test('Paragraph mark typography: Word omission of effective off retains canonica
  assert.deepEqual(review.normalizeNode(p.replacement.doc).content.slice(1).map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:false,fontFamily:'Georgia',fontSize:'14pt'}));
  assert.deepEqual(review.normalizeNode(review.decide(p.replacement.doc,{action:'undo'}).doc),review.normalizeNode(f.beforeDoc));
  const forged=structuredClone(f),l=review.readLedger(forged.proof.returnedDocument),r=l.revisions.find(review.isParagraphFormat);r.format.before.attrs.wordParagraphMarkTypography.bold=true;forged.proof.returnedDocument=review.bindLedger(l);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
+});
+
+test('Paragraph mark fontSlots: compound text discussions retain source slots through UndoRedo and reject forged previous slots',async()=>{
+ const f=await fixture(false,'font-slots'),p=plan(f),before=review.normalizeNode(f.beforeDoc),doc=p.replacement.doc;
+ assert.deepEqual(review.normalizeNode(doc).content.slice(1).map(p=>p.attrs.wordParagraphMarkTypography),[{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}},{fontSlots:{ascii:'Aptos',hAnsi:'Georgia',cs:'Arial'}}]);
+ const undone=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(undone),before);
+ const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(redone),review.normalizeNode(doc));await assertDiscussionReadback(redone,p.afterText);
+ const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument);ledger.revisions.find(review.isParagraphFormat).format.before.attrs.wordParagraphMarkTypography.fontSlots.ascii='Courier New';forged.proof.returnedDocument=review.bindLedger(ledger);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
 });

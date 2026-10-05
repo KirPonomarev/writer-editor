@@ -29,14 +29,23 @@ function normalizeFontSize(value) {
 
 // Paragraph-mark scope is separate from visible text marks. Explicit off/reset
 // values are data: removing them would reveal an inherited Word style.
-const PARAGRAPH_MARK_KEYS = Object.freeze(['bold','italic','underline','strike','fontFamily','fontSize','color','highlight']);
+const PARAGRAPH_MARK_KEYS = Object.freeze(['bold','italic','underline','strike','fontFamily','fontSlots','fontSize','color','highlight']);
 function normalizeParagraphMarkTypography(value) {
   const fail=()=>{throw Object.assign(Error('WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID'),{code:'WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID'});};
   if(!value||typeof value!=='object'||Array.isArray(value)||![Object.prototype,null].includes(Object.getPrototypeOf(value)))fail();
   const keys=Reflect.ownKeys(value);if(!keys.length||keys.length>PARAGRAPH_MARK_KEYS.length||keys.some(k=>!PARAGRAPH_MARK_KEYS.includes(k)))fail();
+  if(Object.hasOwn(value,'fontFamily')&&Object.hasOwn(value,'fontSlots'))fail();
   const result={};
   for(const key of PARAGRAPH_MARK_KEYS){const d=Object.getOwnPropertyDescriptor(value,key);if(!d)continue;if(!d.enumerable||!Object.hasOwn(d,'value'))fail();const v=d.value;
     if(['bold','italic','underline','strike'].includes(key)){if(typeof v!=='boolean')fail();result[key]=v;}
+    else if(key==='fontSlots'){
+      if(!v||typeof v!=='object'||Array.isArray(v)||![Object.prototype,null].includes(Object.getPrototypeOf(v)))fail();
+      const names=Reflect.ownKeys(v),allowed=['ascii','hAnsi','eastAsia','cs'];
+      if(!names.length||names.length>4||names.some(k=>!allowed.includes(k)))fail();
+      const slots={};for(const name of allowed){const item=Object.getOwnPropertyDescriptor(v,name);if(!item)continue;if(!item.enumerable||!Object.hasOwn(item,'value'))fail();slots[name]=normalizeFontFamily(item.value);}
+      // Four equal explicit slots have one canonical spelling: fontFamily.
+      if(names.length===4&&new Set(Object.values(slots)).size===1)fail();result.fontSlots=slots;
+    }
     else if(key==='fontFamily')result[key]=normalizeFontFamily(v);
     else if(key==='fontSize')result[key]=normalizeFontSize(v);
     else {if(v!==null&&(typeof v!=='string'||!/^#[a-f0-9]{6}$/iu.test(v)))fail();result[key]=v===null?null:v.toLowerCase();}

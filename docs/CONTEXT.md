@@ -1,3 +1,7 @@
+## 2026-10-05 — frozen05 literal-font-slot compatibility repair; delivery pending
+
+WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: PR2087 candidate7b full RTK failed3467/3474 (six unchanged native cell-shift regressions and one concurrent-baseline-generated path). Baseline7b separately passes2199 with59 configured skips. Frozen05 closes literal authored marker slots without inventing absent slots or admitting unresolved themes. Unchanged cell-shift suite21/21; final six affected whole suites153/153, zero skip/todo. Earlier wider26-suite518/518 predates only the added redundant-four-uniform-slot rejection; final global graph must execute it. Renderer build passes. SOURCE04/PACKAGED04 scalar routes and all four Word export reopens remain qualified7b evidence. Fresh repaired SOURCE05/PACKAGED05, isolated exact-head RTK/baseline, CI and full delivery gate closure. No whole-novel or whole-Mac-plan completion claim.
+
 ## 2026-10-05 — frozen04 candidate checkpoint
 
 WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: five auxiliary regressions repaired; final whole17files307/307 and focused19/19, build pass. SOURCE04 native genuine mark/text/reply return, Save/restart, independent Undo14/Redo16, Review and Minimal exports observed. PACKAGED04 from same source is in native acceptance. Global exact-candidate checks and commit/push/PR/CI/merge/exact merged verification still gate closure. Earlier pending checkpoint paragraphs remain historical evidence. No whole-plan percentage or completion claim.

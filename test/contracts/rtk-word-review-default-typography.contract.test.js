@@ -271,3 +271,12 @@ test('Paragraph mark typography: optional raw detection rejects hidden/getter fi
  for(const attrs of [undefined,{wordParagraphMarkTypography:null}])assert.doesNotThrow(()=>sandbox.module.exports.canonicalizeDocumentJson({type:'doc',content:[{type:'paragraph',...(attrs?{attrs}:{}),content:[]}]}));
  assert.equal(loads,0);assert.throws(()=>sandbox.module.exports.canonicalizeDocumentJson({type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false}},content:[]}]}),/MARK_VALIDATOR_NOT_COPIED/);assert.equal(loads,1);
 });
+
+test('Paragraph mark fontSlots: closed literal tuple rejects malformed hidden accessor symbol theme and scalar conflict',()=>{
+ const v=require('../../src/io/inlineTypography.cjs');let calls=0;
+ const accessor={};Object.defineProperty(accessor,'ascii',{enumerable:true,get(){calls++;return 'Arial';}});
+ const hidden={};Object.defineProperty(hidden,'ascii',{value:'Arial'});const symbol={ascii:'Arial'};symbol[Symbol('slot')]='Georgia';
+ for(const slots of [{},{ascii:'Arial',hAnsi:'Arial',eastAsia:'Arial',cs:'Arial'},[],{ascii:'serif'},{asciiTheme:'minorHAnsi'},{ascii:{theme:'minorHAnsi'}},{ascii:'Arial',extra:'Georgia'},Object.create({ascii:'Arial'}),accessor,hidden,symbol])assert.throws(()=>v.normalizeParagraphMarkTypography({fontSlots:slots}));
+ assert.equal(calls,0);assert.throws(()=>v.normalizeParagraphMarkTypography({fontFamily:'Arial',fontSlots:{ascii:'Arial'}}));
+ assert.deepEqual(v.normalizeParagraphMarkTypography({fontSlots:{hAnsi:'Georgia',ascii:'Arial'}}),{fontSlots:{ascii:'Arial',hAnsi:'Georgia'}});
+});

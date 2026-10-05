@@ -135,9 +135,9 @@ test('direct table spacing uses the same strict shape gate without admitting tab
  }
 });
 
-test('Paragraph mark typography: effective return refuses conflicting partial font or size slots',async()=>{
+test('Paragraph mark typography: effective return preserves authored font slots and refuses conflicting scalar sizes',async()=>{
  const styles='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>';
- for(const [property,invalid]of [['<w:rFonts w:ascii="Georgia"/>',true],['<w:rFonts w:ascii="Arial"/>',false],['<w:sz w:val="28"/>',true],['<w:sz w:val="24"/>',false]]){
-  const result=await scan(styles,`<w:rPr>${property}</w:rPr>`);assert.equal(result.ok,true);assert.equal(result.paragraphs[0].paragraphFormattingInvalid,invalid,property);
+ for(const [property,invalid]of [['<w:rFonts w:ascii="Georgia"/>',false],['<w:rFonts w:ascii="Arial"/>',false],['<w:rFonts w:asciiTheme="minorHAnsi"/>',true],['<w:sz w:val="28"/>',true],['<w:sz w:val="24"/>',false]]){
+  const result=await scan(styles,`<w:rPr>${property}</w:rPr>`);assert.equal(result.ok,true);assert.equal(result.paragraphs[0].paragraphFormattingInvalid,invalid,property);if(!invalid&&property.includes('rFonts'))assert.deepEqual(result.paragraphs[0].paragraphState.wordParagraphMarkTypography,{fontSlots:{ascii:property.includes('Georgia')?'Georgia':'Arial'}});
  }
 });

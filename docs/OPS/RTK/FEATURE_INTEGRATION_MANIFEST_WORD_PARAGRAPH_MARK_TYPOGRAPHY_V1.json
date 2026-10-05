@@ -1,7 +1,7 @@
 {
   "taskId": "WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005",
-  "objective": "Preserve bounded paragraph-mark typography distinct from visible run formatting across import, save, genuine Word mark and tracked-text/comment changes, governed Apply, restart and UndoRedo, and both DOCX exports; preserve original Mac plan.",
-  "productAuthority": "Core owns canonical paragraph-mark properties, revision before/after state, required scene features, no-loss authoring persistence and atomic transactions. Renderer carries working-state projections only; import/provider metadata never grants write authority.",
+  "objective": "Preserve bounded paragraph-mark typography distinct from visible run formatting across import, save, genuine Word mark and tracked-text/comment changes, governed Apply, restart and UndoRedo, and both DOCX exports; preserve original Mac plan.; repair exact native script-font compatibility failures without weakening no-loss gates in isolated linked worktree; transfer reviewed patch to original task branch after baseline finishes; preserve literal paragraph-mark fontSlots without scalar expansion, using 1-4 ascii/hAnsi/eastAsia/cs validated names, mutually exclusive fontFamily; uniform four slots keep prior scalar representation",
+  "productAuthority": "Core owns canonical paragraph-mark properties, revision before/after state, required scene features, no-loss authoring persistence and atomic transactions. Renderer carries working-state projections only; import/provider metadata never grants write authority. Optional closed fontSlots preserves exact authored direct slot keys and literal names only; absent inherited theme/catalog identity is not admitted truth.",
   "commandAuthority": "Existing authenticated Main return dispatcher and Kernel pending revision decisions; existing private Apply capability revalidated against project, lifecycle, source/comment CAS and generation under lease.",
   "designAuthority": "Existing computed editor and review surfaces. Mechanical schema roundtrip of authoring metadata only; no new surface, composition, styling system, command availability or UI flow.",
   "operationKinds": [
@@ -101,9 +101,10 @@
     "Malformed keys, value bounds, getters/symbols/prototypes and forged/stale property bindings refuse without canonical writes",
     "Required-feature old-reader refusal covers metadata retained only in pending and history; no read-time migration or history pruning",
     "Mandatory affected whole suites, stable maintained graphs/baseline, audit/policy/build/guardrails, all CI, complete delivery and exact merged verification",
-    "Mixed paragraph-mark formats must retain generic discussion extraction, individual pending-comment decisions and source-changing round inverse history through existing typed paragraph-format ledger; do not relax structural/move or unbound-property refusal."
+    "Mixed paragraph-mark formats must retain generic discussion extraction, individual pending-comment decisions and source-changing round inverse history through existing typed paragraph-format ledger; do not relax structural/move or unbound-property refusal.",
+    "Exact authored font-slot equality in empty/nonempty Current/Original, both property-change owners, both exports and save/reopen; preserve untouched native cell-shift contracts; replace scalar-refusal oracle only with stronger exact slot preservation assertion, never silent flattening"
   ],
-  "securityAndInputBoundary": "Reuse existing pure typography normalizers with a closed bounded paragraph property; supported booleans preserve false, validated fonts/sizes/colors only. No raw XML stash, arbitrary style catalog, link/path/command authority, new dependency, runtime network or enlarged source/ledger/proof budgets.",
+  "securityAndInputBoundary": "Reuse existing pure typography normalizers with a closed bounded paragraph property; supported booleans preserve false, validated fonts/sizes/colors only. No raw XML stash, arbitrary style catalog, link/path/command authority, new dependency, runtime network or enlarged source/ledger/proof budgets. fontSlots accepts only plain own enumerable data with 1-4 ascii/hAnsi/eastAsia/cs keys and validated literal family names. Reject symbols/accessors/prototype/unknowns and scalar+slot conflict; direct unresolved theme attributes remain typed unsupported.",
   "performanceAndAccessibility": "Short chapter first; preserve existing bounded 100k route. No full-manuscript reanalysis per keystroke, new visual surface or altered keyboard/accessibility flow. Broad/five-round graphs run only on stable candidate, never during each small repair.",
   "currentReality": [
     "PR2086 merged at4b9fb5f3f: CI19/19; twoRTK3462/3462zero skip/todo; baseline2199executed passes+59configuredskips; exact tracked tree equals52a native06 runtime",
@@ -114,7 +115,8 @@
   "targetOnly": [
     "No whole-feature/novel-launch completion percentage",
     "Named style identity/name/catalog/basedOn and direct-versus-inherited semantics remain OPEN; effective appearance is a separate claim",
-    "Complex table/media operations and original full Mac-plan remainder remain separate; this packet never replaces their denominator"
+    "Complex table/media operations and original full Mac-plan remainder remain separate; this packet never replaces their denominator",
+    "Inherited absent theme/catalog identity and typing into unresolved slots remain OPEN."
   ],
   "designToolRouter": "NOT_APPLICABLE",
   "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
@@ -141,5 +143,12 @@
   ],
   "hotPathBoundary": "No full-document formatting/history reanalysis per keystroke. Values are admitted at import/save/return and existing explicit decision boundaries.",
   "migrationRollbackEvidence": "Preserve canonical files and readable recovery with the current reader. Optional new required feature can make old binaries refuse marked scenes including history-only data; code-only downgrade is not data-compatible rollback. No silent data restore or pruning.",
-  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_MECHANICAL_SCHEMA_AND_DOCX_PRESERVATION"
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_MECHANICAL_SCHEMA_AND_DOCX_PRESERVATION",
+  "fontSlotsCompatibilityRepair": {
+    "candidateFailureSha": "7b9411040c9162f15807c625339299f6453e6a5f",
+    "representation": "optional fontSlots plain own enumerable data object, 1-4 ascii/hAnsi/eastAsia/cs validated literal names; mutually exclusive fontFamily; four identical explicit literals keep existing scalar shape",
+    "truthBoundary": "preserve authored direct slots exactly; never invent absent slots or retain raw XML; direct unresolved theme fields typed unsupported; absent inherited theme/catalog identity and typing inheritance remain OPEN",
+    "proof": "unchanged native cell-shift whole contracts plus exact authored-slot OOXML equality empty/nonempty and Current/Original across both emitters and revision owners; malformed and scalar+slots negative checks",
+    "delivery": "same task and same original PR; no new table capability, dependency, command, port, UI flow or writer"
+  }
 }

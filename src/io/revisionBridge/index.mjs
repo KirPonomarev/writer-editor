@@ -10024,8 +10024,14 @@ function docxResolveParagraphAlignment(metadata, catalog) {
     for(const key of ['bold','italic','underline','strike','color','highlight'])if(Object.hasOwn(raw,key))value[key]=raw[key];
     if(Object.hasOwn(raw,'shading')&&!Object.hasOwn(raw,'highlight'))value.highlight=raw.shading;
     const effectiveMark={...markProperties,...raw};
-    const slots=DOCX_FONT_SLOTS.some(slot=>raw[`font_${slot}`]!==undefined)?DOCX_FONT_SLOTS.map(slot=>effectiveMark[`font_${slot}`]).filter(v=>v!==undefined).map(v=>docxFontResolveTheme(v,catalog.themeFonts)):[];
-    if(slots.length){if(slots.some(v=>typeof v!=='string'||v===DOCX_UNSUPPORTED_FONT)||new Set(slots).size!==1)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');value.fontFamily=slots[0];}
+    // Preserve authored slots; absence is inherited context, never permission
+    // to expand a western font over undeclared East Asian/complex-script slots.
+    const slots=Object.fromEntries(DOCX_FONT_SLOTS.filter(slot=>raw[`font_${slot}`]!==undefined).map(slot=>[slot,raw[`font_${slot}`]]));
+    if(Object.keys(slots).length){
+      if(Object.values(slots).some(v=>typeof v!=='string'||v===DOCX_UNSUPPORTED_FONT))throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
+      if(Object.keys(slots).length===4&&new Set(Object.values(slots)).size===1)value.fontFamily=slots.ascii;
+      else value.fontSlots=slots;
+    }
     if(raw.font_size!==undefined||raw.font_sizeCs!==undefined){if(effectiveMark.font_size!==undefined&&effectiveMark.font_sizeCs!==undefined&&effectiveMark.font_size!==effectiveMark.font_sizeCs)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');value.fontSize=effectiveMark.font_size??effectiveMark.font_sizeCs;}
     if(Object.keys(value).length)metadata.wordParagraphMarkTypography=normalizeParagraphMarkTypography(value);
   }
