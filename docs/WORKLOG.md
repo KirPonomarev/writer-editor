@@ -1,5 +1,15 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 05:18 EEST — structural delivery and break formatting
+
+- PR2080 merged60a22cd0f; CI19/19, both RTK3284/3284, merged428/428 and exact
+  Git/OPS/guardrails. Baseline59 historical skips remain excluded. Native proof
+  and runtime equivalence retain exact identities; whole plan remains open.
+- Admitted next break font/language + typed-topology packet on clean merged
+  base. Actual retained Word file exposes inherited language in addition to
+  font; guard deletion alone is insufficient. Root/parsers/PM ownership split,
+  early native route, existing shared novel corpus for subsequent mixture.
+
 ## 2026-10-05 04:52 EEST — structural comments native route
 
 - Candidate19ae1ccc4 observed in SOURCE and packaged Mac app: split/join/Delete,

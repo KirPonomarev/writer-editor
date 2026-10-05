@@ -100,3 +100,63 @@ test('typed breaks require explicit scene feature admission and unknown kinds re
  assert.equal(envelope.parseObservablePayload(saved.replace('word-typed-breaks.v1','word-typed-Xreaks.v1')).issue.reason,'DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
  assert.doesNotMatch(envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[text('A'),br(),text('B')]}]}}),/word-typed-breaks.v1/);
 });
+
+// Existing XML DOM supplies real nodes/serialization. This bounded compatibility
+// layer supplies browser Element APIs consumed by the pinned PM HTML parser;
+// it is not a native clipboard/browser oracle.
+function clipboardDom() {
+ const {DOMImplementation,DOMParser,XMLSerializer}=require('@xmldom/xmldom');
+ const document=new DOMImplementation().createDocument(null,null,null);
+ const decorate=root=>{
+  if(root.nodeType===1){
+   Object.defineProperty(root,'children',{get:()=>Array.from(root.childNodes).filter(n=>n.nodeType===1)});
+   const values=()=>Object.fromEntries((root.getAttribute('style')||'').split(';').filter(Boolean).map(p=>{const i=p.indexOf(':');return [p.slice(0,i).trim(),p.slice(i+1).trim()];}));
+   Object.defineProperty(root,'style',{get:()=>({get length(){return Object.keys(values()).length;},getPropertyValue:key=>values()[key]||'',get fontFamily(){return values()['font-family']||'';},get fontSize(){return values()['font-size']||'';},get whiteSpace(){return values()['white-space']||'';},get cssText(){return root.getAttribute('style')||'';},set cssText(value){root.setAttribute('style',value);}})});
+   root.matches=selector=>{
+    const match=/^([a-z][a-z0-9]*)(?:\[([\w-]+)(?:="([^"]*)")?\])?$/iu.exec(selector);
+    assert.ok(match,`Unhandled fixture selector: ${selector}`);
+    return root.tagName.toLowerCase()===match[1].toLowerCase()&&(!match[2]||(root.hasAttribute(match[2])&&(match[3]===undefined||root.getAttribute(match[2])===match[3])));
+   };
+  }
+  for(const child of Array.from(root.childNodes||[]))decorate(child);
+  return root;
+ };
+ const create=document.createElement.bind(document);document.createElement=name=>decorate(create(name));
+ return {document,serialize:node=>new XMLSerializer().serializeToString(node),parse:html=>decorate(new DOMParser().parseFromString(`<div>${html}</div>`,'application/xhtml+xml').documentElement)};
+}
+
+for(const languageOnly of [false,true])test(`actual PM HTML serialization and paste retain break metadata (${languageOnly?'language only':'font and language'})`,async()=>{
+ const [{getSchema},{default:StarterKit},{DocumentBreaks},{DocumentTextStyle},{DOMSerializer,DOMParser},{EditorState,TextSelection}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentBreaks.mjs'),import('../../src/renderer/tiptap/documentTextStyle.mjs'),import('@tiptap/pm/model'),import('@tiptap/pm/state')]);
+ const schema=getSchema([StarterKit.configure({hardBreak:false,trailingNode:false}),DocumentBreaks,DocumentTextStyle]);
+ const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ const marks=[{type:'textStyle',attrs:{wordLanguage:language,...(languageOnly?{}:{fontFamily:'Times New Roman',fontSize:'12pt'})}}];
+ const input={type:'doc',content:[{type:'paragraph',content:[text('Before'),...['line','page','column'].map(type=>({...br(type==='line'?null:type),marks})),text('After')]}]};
+ const original=schema.nodeFromJSON(input);original.check();
+ const dom=clipboardDom(),serialized=DOMSerializer.fromSchema(schema).serializeFragment(original.content,{document:dom.document});
+ const html=dom.serialize(serialized);
+ assert.match(html,/data-word-language=/);assert.match(html,/data-word-break="page"/);assert.match(html,/data-word-break="column"/);
+ const parser=DOMParser.fromSchema(schema),parsed=parser.parse(dom.parse(html));
+ assert.deepEqual(parsed.toJSON(),original.toJSON());
+ // The clipboard parser returns a Slice; apply it through the real PM replace
+ // transaction, retaining surrounding authored text and all inline metadata.
+ const target=schema.nodeFromJSON({type:'doc',content:[{type:'paragraph',content:[text('LR')]}]});
+ let state=EditorState.create({schema,doc:target,selection:TextSelection.create(target,2)});
+ state=state.apply(state.tr.replaceSelection(parser.parseSlice(dom.parse(html))));
+ const expected=schema.nodeFromJSON({...input,content:[{...input.content[0],content:[text('LBefore'),...input.content[0].content.slice(1,-1),text('AfterR')]}]});
+ assert.deepEqual(state.doc.toJSON(),expected.toJSON());
+ assert.deepEqual(breaks.paragraphBreaks(state.doc.toJSON().content[0]).map(item=>item.type),['line','page','column']);
+});
+
+test('PM clipboard parser does not grant language metadata to malformed tuples or plain spans',async()=>{
+ const [{getSchema},{default:StarterKit},{DocumentBreaks},{DocumentTextStyle},{DOMParser}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentBreaks.mjs'),import('../../src/renderer/tiptap/documentTextStyle.mjs'),import('@tiptap/pm/model')]);
+ const schema=getSchema([StarterKit.configure({hardBreak:false,trailingNode:false}),DocumentBreaks,DocumentTextStyle]);
+ const dom=clipboardDom(),parser=DOMParser.fromSchema(schema);
+ for(const raw of [null,'not-json','null','[]','{}','{"val":"ru RU"}','{"val":"ru-RU","extra":"forged"}']){
+  const p=dom.document.createElement('p'),span=dom.document.createElement('span'),line=dom.document.createElement('br');
+  if(raw!==null)span.setAttribute('data-word-language',raw);
+  line.setAttribute('data-word-break','page');span.appendChild(line);p.appendChild(dom.document.createTextNode('Before'));p.appendChild(span);p.appendChild(dom.document.createTextNode('After'));
+  const parsed=parser.parse(dom.parse(dom.serialize(p)));
+  assert.deepEqual(parsed.toJSON(),schema.nodeFromJSON({type:'doc',content:[{type:'paragraph',content:[text('Before'),br('page'),text('After')]}]}).toJSON(),String(raw));
+ }
+ assert.throws(()=>parser.parse(dom.parse('<p><span data-word-language="{&quot;val&quot;:&quot;ru-RU&quot;}"><br data-word-break="section" /></span></p>')),/WORD_TYPED_BREAK_INVALID/);
+});

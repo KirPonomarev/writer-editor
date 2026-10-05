@@ -11,6 +11,20 @@ function readStyle(element, property, normalize) {
 // Document marks retain their own typography. Shell font preferences continue
 // to apply to unmarked text through the existing editor root styles.
 export const DocumentTextStyle = TextStyle.extend({
+  parseHTML() {
+    return [{
+      // Language-only marks have no CSS style, so the upstream span[style]
+      // rule cannot read our own serialized clipboard representation.
+      tag: 'span[data-word-language]',
+      consuming: false,
+      getAttrs: element => {
+        try {
+          wordLanguage.normalizeWordLanguage(JSON.parse(element.getAttribute('data-word-language')));
+          return {};
+        } catch { return false; }
+      },
+    }, ...(this.parent?.() || [])];
+  },
   addAttributes() {
     return {
       ...this.parent?.(),

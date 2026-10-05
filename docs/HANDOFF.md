@@ -1,6 +1,18 @@
 # HANDOFF (Yalken Writer)
 
-## Active implementation — 2026-10-05 04:52 EEST
+## Active implementation — 2026-10-05 05:18 EEST
+
+PR2080 full delivery closed at60a22cd0ff93e47104ac7d78980c7cf17a71b476:
+CI19/19; RTK3284/3284 twice; baseline2199passed,59historicalskips excluded;
+merged428/428 plus exact Git/OPS and guardrails, clean identical tree.
+Native19ae1ccc4 SOURCE/PACKAGED proof and572-file runtime equality are explicit.
+Next admitted contract: `docs/tasks/2026-10-05--word-break-formatting-mac.md`.
+Preserve font/language on hardBreak and reject changed complete typed topology
+before any signed formatting candidate. Early native first; then stable gates.
+Next substantive mixture uses shared3scene C2 and100k novel bases, pending text
+plus comments. Whole Mac plan remains open; continue autonomously.
+
+## Historical native candidate — 2026-10-05 04:52 EEST
 
 Structural-comment candidate `19ae1ccc4` completed native SOURCE/PACKAGED split,
 join, whole Delete, saved Undo/Redo, real Word reply, explicit Apply, exact no-op

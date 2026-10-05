@@ -206,3 +206,27 @@ test('table font defaults remain digest-bound inheritance and competing table te
  assert.ok(competing.reviewIr.formattingParagraphs[0].unsupportedParagraphNames.includes('styleResolution'));
  assert.equal(Object.hasOwn(competing.reviewIr.formattingParagraphs[0].formattedRuns[0],'resolvedFontFamily'),false);
 });
+
+test('language set and removal preserve typed break metadata and adjacent text exactly',()=>{
+ const core=require('../../src/core/word-language-v1.cjs'),env=require('../../src/core/document-content-envelope-v1.cjs');
+ const tuple={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+ for(const kind of ['line','page','column']){
+  const paragraph={type:'paragraph',content:[{type:'text',text:'A',marks:[{type:'italic'}]},{type:'hardBreak',...(kind==='line'?{}:{attrs:{wordBreakType:kind}}),marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',color:'#123456'}}]},{type:'text',text:'B',marks:[{type:'underline'}]}]};
+  const before=structuredClone(paragraph);
+  const change={schemaVersion:1,paragraphMark:null,runs:[{from:0,to:1,language:null},{from:1,to:2,language:tuple},{from:2,to:3,language:null}]};
+  const applied=core.applyParagraphLanguage(paragraph,change);
+  const expected=structuredClone(before);expected.content[1].marks[1].attrs.wordLanguage=tuple;
+  assert.deepEqual(applied,expected);assert.deepEqual(paragraph,before);
+  const doc={type:'doc',content:[applied]},raw=env.composeObservablePayload({doc,metaEnabled:false});
+  assert.deepEqual(env.parseObservablePayload(raw).doc,env.canonicalizeDocumentJson(doc));
+  assert.match(raw,/word-language.v1/u);
+  const removal=structuredClone(change);removal.runs[1].language=null;
+  assert.deepEqual(core.applyParagraphLanguage(applied,removal),before);
+  for(const bad of [{val:'ru_FI'},{val:'ru-FI',unknown:'x'},[],{}]){
+   const invalid=structuredClone(change);invalid.runs[1].language=bad;
+   assert.throws(()=>core.applyParagraphLanguage(paragraph,invalid),/WORD_LANGUAGE/u);assert.deepEqual(paragraph,before);
+   const malformed=structuredClone(doc);malformed.content[0].content[1].marks[1].attrs.wordLanguage=bad;
+   assert.throws(()=>env.composeObservablePayload({doc:malformed}),/WORD_LANGUAGE/u);
+  }
+ }
+});
