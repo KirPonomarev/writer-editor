@@ -5,10 +5,10 @@ const core = require('../../src/core/word-list-numbering-v1.cjs');
 const p = text => ({type:'paragraph',content:[{type:'text',text}]});
 const doc = (...content) => ({type:'doc',content});
 let projectNumberingJSON;
-async function harness(content, extraExtensions = []) {
+async function harness(content, extraExtensions = [], starterKitOptions = {}) {
   const [{Editor}, {default:StarterKit}, ui] = await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentListNumbering.mjs')]);
   projectNumberingJSON=ui.numberingDocumentJSON;
-  const editor = new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false}),ui.DocumentListNumbering,...extraExtensions],content});
+  const editor = new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false,...starterKitOptions}),ui.DocumentListNumbering,...extraExtensions],content});
   // A headless editor has no mounted view: install the real extension plugins
   // and model view lifecycle only, retaining actual transactions/history.
   editor.view.updateState(editor.state.reconfigure({plugins:editor.extensionManager.plugins}));
@@ -525,11 +525,11 @@ test('actual checked scene replacement preserves imported skipped levels despite
   }
 });
 
-async function scenePublicationHarness() {
+async function scenePublicationHarness(extraExtensions = [], starterKitOptions = {}) {
   const [pending,sections,stories,bookmarks,{history,closeHistory}]=await Promise.all([
     import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),import('../../src/renderer/tiptap/documentSections.mjs'),
     import('../../src/renderer/tiptap/documentStories.mjs'),import('../../src/renderer/tiptap/userBookmarks.mjs'),import('@tiptap/pm/history')]);
-  const {editor}=await harness(doc(p('Scene A')),[pending.WordPendingRevisions,sections.DocumentSections,stories.DocumentStories,bookmarks.UserBookmarks]);
+  const {editor}=await harness(doc(p('Scene A')),[pending.WordPendingRevisions,sections.DocumentSections,stories.DocumentStories,bookmarks.UserBookmarks,...extraExtensions],starterKitOptions);
   const source=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
   const code=source.slice(source.indexOf('function setCheckedDocument(editor, doc) {'),source.indexOf('export function applyTiptapUserBookmarkPublication'))
     +source.slice(source.indexOf('export function setTiptapDocumentSnapshot('),source.indexOf('// A dialog owns only')).replace('export ','');
@@ -697,4 +697,65 @@ test('actual status callback reveals bounded Word return codes and keeps hostile
  for(const status of hidden){callback(status);assert.deepEqual(updates.at(-1),{text:status,visible:false});}
  const count=updates.length;callback({type:'manuscript-notes-published',projectId:'foreign'});assert.equal(updates.length,count);assert.equal(notes,0);
  callback({type:'manuscript-notes-published',projectId:'project'});assert.equal(notes,2);assert.equal(updates.at(-1).text,'Сноски обновлены');
+});
+
+test('actual pending scene publication commits root settings with ledger atomically and passes Main import ACK comparison',async()=>{
+  const {DocumentParagraphAlignment}=await import('../../src/renderer/tiptap/documentParagraphAlignment.mjs');
+  const {UserBookmarkLink}=await import('../../src/renderer/tiptap/userBookmarks.mjs');
+  const {editor,context}=await scenePublicationHarness([DocumentParagraphAlignment,UserBookmarkLink],{link:false});
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const sections=require('../../src/core/word-sections-v1.cjs');
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  try {
+    const externalLink={type:'link',attrs:{href:'https://example.test/research?a=1&b=%D1%91#chapter-2',target:'_blank',rel:'noopener noreferrer nofollow'}};
+    let source={type:'doc',attrs:{wordDefaultTabStop:708},content:[p('Before inserted after'),p('Second paragraph'),
+      {type:'paragraph',content:[{type:'text',text:'C2 external link',marks:[externalLink]}]}]};
+    source=sections.bind(source,{schemaVersion:1,boundaries:[],final:{type:'continuous',docGrid:{type:'default',linePitch:360}}});
+    const incoming=pending.bindLedger({schemaVersion:2,source,revisions:[{id:'revision-1',nativeId:'51',operation:'insert',author:'Reviewer',date:'',dateUtc:'',paragraphIndex:0,from:7,to:15,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+    const original=JSON.stringify(incoming),expected=editor.schema.nodeFromJSON(incoming);
+    assert.equal(context.setTiptapDocumentSnapshot({doc:incoming,resetHistory:true}),true);
+    assert.equal(editor.state.doc.eq(expected),true);
+    assert.equal(editor.state.doc.attrs.wordDefaultTabStop,708);
+    assert.deepEqual(pending.readLedger(editor.getJSON()),pending.readLedger(incoming));
+    assert.deepEqual(sections.read(editor.getJSON()),sections.read(incoming));
+    assert.equal(JSON.stringify(incoming),original);
+    const main=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+    const ack=main.slice(main.indexOf('async function docxImportOpenedSnapshotMatches('),main.indexOf('async function handleDocxImportOpenAcknowledgement('));
+    const comparator=main.slice(main.indexOf('async function treeSceneSnapshotsEqual('),main.indexOf('async function assertTreeEditorSnapshotIdentity('));
+    const ackContext=vm.createContext({loadDocumentContentEnvelopeModule:async()=>envelope,
+      loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+      userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),pendingTextRevisions:pending});
+    vm.runInContext(comparator+ack,ackContext);
+    const raw=envelope.composeObservablePayload({doc:incoming});
+    const live=envelope.composeObservablePayload({doc:editor.getJSON(),metaEnabled:true});
+    assert.equal(await ackContext.docxImportOpenedSnapshotMatches(raw,live),true);
+    const review=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+    const savedDoc=envelope.parseObservablePayload(raw).doc,liveDoc=envelope.parseObservablePayload(live).doc;
+    assert.equal(review.commentSceneSnapshotsEqual(savedDoc,liveDoc),true);
+    const link=liveDoc.content[2].content[0].marks.find(mark=>mark.type==='link');
+    for(const key of ['class','title','wordBookmarkId','wordBookmarkName'])assert.equal(link.attrs[key],null);
+    for(const [key,value] of [['href','https://example.test/changed'],['title','Changed'],['class','changed'],
+      ['wordBookmarkId','foreign'],['wordBookmarkName','foreign'],['target','_self'],['rel','changed'],['unknown',null]]) {
+      const changed=structuredClone(liveDoc);changed.content[2].content[0].marks.find(mark=>mark.type==='link').attrs[key]=value;
+      assert.equal(review.commentSceneSnapshotsEqual(savedDoc,changed),false,`${key} remains exact`);
+    }
+    for(const attrs of [null,[], 'malformed',7]) {
+      const malformed={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Link',marks:[{type:'link',attrs}]}]}]};
+      const object=structuredClone(malformed);object.content[0].content[0].marks[0].attrs={class:null,title:null,wordBookmarkId:null,wordBookmarkName:null,...attrs};
+      assert.equal(review.commentSceneSnapshotsEqual(malformed,object),false,'malformed attributes cannot become an object through defaults');
+    }
+    const metadata={type:'doc',attrs:{privateMetadata:{type:'link',attrs:{href:'https://example.test/'}}},content:[p('Metadata')]};
+    const metadataDefaults=structuredClone(metadata);Object.assign(metadataDefaults.attrs.privateMetadata.attrs,{class:null,title:null,wordBookmarkId:null,wordBookmarkName:null});
+    assert.equal(review.commentSceneSnapshotsEqual(metadata,metadataDefaults),false,'type-shaped metadata is not a document mark');
+    const alteredLedger=structuredClone(liveDoc);
+    Object.assign(alteredLedger.attrs.wordPendingRevisions.source.content[2].content[0].marks[0].attrs,{class:null,title:null,wordBookmarkId:null,wordBookmarkName:null});
+    assert.equal(review.commentSceneSnapshotsEqual(liveDoc,alteredLedger),false,'pending source metadata remains byte-structurally exact');
+    const state=editor.state,malformed=structuredClone(incoming);malformed.attrs.wordDefaultTabStop=720;
+    assert.equal(context.setTiptapDocumentSnapshot({doc:malformed,resetHistory:true}),false);
+    assert.equal(editor.state,state,'inconsistent projection cannot publish or clear history');
+    assert.equal(context.setTiptapDocumentSnapshot({doc:doc(p('Next scene')),resetHistory:true}),true);
+    assert.equal(editor.state.doc.attrs.wordPendingRevisions,null);
+    assert.equal(editor.state.doc.attrs.wordDefaultTabStop,null);
+    assert.equal(editor.state.doc.attrs.wordSections,null);
+  }finally{editor.destroy();}
 });

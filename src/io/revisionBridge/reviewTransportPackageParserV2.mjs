@@ -5848,6 +5848,17 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     'tblPrChange', 'tblGridChange', 'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge',
     'hyperlink', 'fldSimple', 'fldChar', 'drawing', 'pict', 'object', 'sdt',
     'commentRangeStart', 'commentRangeEnd', 'commentReference', 'ruby', 'sym', 'ptab']);
+  if (options.allowCommentMarkers === true) {
+    for (const name of ['commentRangeStart','commentRangeEnd','commentReference','hyperlink']) unsupported.delete(name);
+    for (const marker of scan.tokens.filter(t => ['commentRangeStart','commentRangeEnd','commentReference'].includes(t.localName))) {
+      const parent = scan.tokens.find(t => t.depth === marker.depth - 1 && t.openEnd <= marker.openStart && t.closeStart >= marker.closeEnd);
+      if (marker.namespaceUri !== W_NS || !marker.selfClosing || !/^\d+$/u.test(attr(marker,'id',W_NS))
+        || marker.attributes.some(a => a.qName !== 'xmlns' && a.prefix !== 'xmlns' && !(a.namespaceUri === W_NS && a.localName === 'id'))
+        || !parent || parent.namespaceUri !== W_NS
+        || !(marker.localName === 'commentReference' ? parent.localName === 'r' : ['p','ins','del'].includes(parent.localName)))
+        throw Error('PENDING_COMMENT_MARKER_INVALID');
+    }
+  }
   if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
   const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
   if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
@@ -5921,6 +5932,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   for (const token of moveMarkers) edits.push({ from: token.openStart, to: token.closeEnd, text: '' });
   const allowed = new Set(['r', 'rPr', 't', 'delText', 'tab', 'br', 'cr', 'noBreakHyphen', 'softHyphen', 'lastRenderedPageBreak',
     'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
+  if (options.allowCommentMarkers === true) for (const name of ['commentRangeStart','commentRangeEnd','commentReference','hyperlink']) allowed.add(name);
   for (const token of tokens.sort((a, b) => a.openStart - b.openStart)) {
     const paragraphIndex = paragraphs.findIndex(p => p.openEnd <= token.openStart && p.closeStart >= token.closeEnd);
     const p = paragraphs[paragraphIndex];

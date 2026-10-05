@@ -183,9 +183,9 @@ function yrtk2CarrierDocxZip(paragraphs = ['Carrier scene one']) {
   ]);
 }
 
-function lossyDocxZip({ orphanComment = false, pendingRevision = false } = {}) {
-  // A valid DOCX with preserved table and HTTP link. Mixed pending revisions
-  // require a typed block until their composite grammar is supported. Orphan comments
+function lossyDocxZip({ orphanComment = false, pendingRevision = false, linkTarget = 'https://example.invalid/generic01' } = {}) {
+  // A valid DOCX with preserved table, HTTP link and optional pending insertion.
+  // Their bounded composite grammar now preserves all three. Orphan comments
   // block intake rather than becoming silent text-only imports.
   // The receipt must preserve every typed item across the apply boundary.
   const body = [
@@ -200,7 +200,7 @@ function lossyDocxZip({ orphanComment = false, pendingRevision = false } = {}) {
     {
       name: 'word/_rels/document.xml.rels',
       method: 8,
-      body: '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid/generic01" TargetMode="External"/></Relationships>',
+      body: `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${linkTarget}" TargetMode="External"/></Relationships>`,
     },
   ]);
 }
@@ -697,7 +697,36 @@ test('GENERIC01 orphan comment markers without a body part block intake', async 
   assert.equal(plan.candidateCreatePlan, null);
 });
 
-test('GENERIC01 mixed pending revisions with tables and links block without a create candidate', async () => {
+test('GENERIC01 mixed pending revisions preserve table, HTTP link and both text views through actual create', async () => {
   const plan = await previewPlanFromBytes(lossyDocxZip({ pendingRevision: true }));
-  assert.equal(plan.ok, false); assert.equal(plan.candidateCreatePlan, null);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  const projectRoot = makeProjectRoot(), romanRoot = makeRomanRoot(projectRoot);
+  const applied = await applyPlan(plan, projectRoot, romanRoot);
+  assert.equal(applied.ok, true, JSON.stringify(applied));
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const review = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const parsed = envelope.parseObservablePayload(readSingleCreatedScene(romanRoot).content);
+  assert.equal(parsed.issue, null);
+  const projection = review.projection(parsed.doc);
+  assert.equal(projection.current, 'Has table below\ncell\ninserted\nunannotated\nlinked');
+  assert.equal(projection.original, 'Has table below\ncell\n\nunannotated\nlinked');
+  assert.equal(projection.revisions.length, 1);
+  assert.equal(projection.revisions[0].operation, 'insert');
+  assert.equal(projection.revisions[0].text, 'inserted');
+  assert.equal(parsed.doc.content[1].type, 'table');
+  assert.equal(parsed.doc.content[1].content[0].content[0].content[0].content[0].text, 'cell');
+  const link = parsed.doc.content.at(-1).content[0].marks.find(mark => mark.type === 'link');
+  assert.equal(link.attrs.href, 'https://example.invalid/generic01');
+  const rejected = review.decide(parsed.doc, { action: 'rejectAll' }).doc;
+  assert.equal(review.projection(rejected).current, projection.original);
+  assert.deepEqual(rejected.content[1], parsed.doc.content[1]);
+  assert.deepEqual(rejected.content.at(-1), parsed.doc.content.at(-1));
+});
+
+test('GENERIC01 pending revisions do not authorize unsafe links or orphan comments', async () => {
+  for (const extra of [{ linkTarget: 'file:///private/manuscript' }, { linkTarget: 'javascript:alert(1)' }, { orphanComment: true }]) {
+    const plan = await previewPlanFromBytes(lossyDocxZip({ pendingRevision: true, ...extra }));
+    assert.equal(plan.ok, false);
+    assert.equal(plan.candidateCreatePlan, null);
+  }
 });

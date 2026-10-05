@@ -946,7 +946,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
     ? source.localAuthorityCapsule.exportMap
     : (isPlainObjectValue(source?.exportMap) ? source.exportMap : {});
   const sceneProjection = typeof revisionBridge.visibleSceneTextsFromWordDocumentXml === 'function'
-    ? revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets() })
+    ? revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, exportMap, { cryptoPort, stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, budgets: docxReviewReturnIntakeProductBudgets() })
     : { ok: false, code: 'RTK_V4_PUBLICATION_GATE_SCENE_PROJECTION_REQUIRED' };
   if (!sceneProjection.ok) {
     return {
@@ -4626,9 +4626,11 @@ async function readDocxReviewPacketExportSource() {
   const storySourceScenes = [{ sceneId, doc: parsedDocument.doc || envelopeModule.buildParagraphDocumentFromText(parsedDocument.text) }];
   const documentSections = buildFullManuscriptDocumentSections(storySourceScenes, blocks, cryptoPort);
   const documentStories = require('./export/docx/docxReviewPacketStories').buildDocumentStoriesExport(storySourceScenes, documentSections, {includeEmpty:true,blocks});
-  const commentExport = buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId, exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
-  if (commentExport.threads.length && pendingTextRevisions.readLedger(parsedDocument.doc)?.revisions.some(item => item.state === 'pending'))
-    throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+  const pendingComments = require('./export/docx/docxReviewPacketComments').bindPendingCommentExport({
+    commentExport: buildCanonicalCommentExport(commentState, blocks, projectId, { sceneId, exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS }),
+    scenes: [{ sceneId, doc: parsedDocument.doc }], blocks, exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
+  const commentExport = pendingComments.commentExport;
+  const pendingCommentBinding = pendingComments.pendingCommentBindings.find(item => item.sceneId === sceneId)?.binding;
   const commentSummary = { stateRevision: commentExport.stateRevision, exportedThreadCount: commentExport.threads.length,
     exportedMessageCount: commentExport.threads.reduce((sum, thread) => sum + thread.messages.length, 0),
     intentionalDeletionCount: commentExport.tombstones.length };
@@ -4676,6 +4678,7 @@ async function readDocxReviewPacketExportSource() {
         sceneOrdinal: 0,
         sceneRevision,
         rawSha256,
+        ...(pendingCommentBinding ? { pendingCommentBinding } : {}),
         documentFormatIr:{wordDefaultTabStop:wordDefaultTabStop??720,explicit:wordDefaultTabStop!=null},
         blocks: blocks.map((block, blockIndex) => ({
           blockId: block.blockId,
@@ -4871,6 +4874,8 @@ async function readDocxReviewPacketExportSource() {
 
   return {
     documentNotes, documentSections, documentStories, wordDefaultTabStop, sceneNoteBinding, notesDocument, localAuthorityCapsule, commentExport,
+    ...(pendingCommentBinding ? { pendingCommentAnchors: commentState.threads.filter(thread => thread.sceneId === sceneId && thread.status !== 'deleted')
+      .map(thread => ({ threadId: thread.threadId, anchor: thread.anchor })) } : {}),
     provisionalSelfParseArtifact: { bytes: provisionalBuffer },
     sceneText,
     blocks,
@@ -5217,6 +5222,27 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const baselineDocument = envelope.parseObservablePayload(source.sceneNoteBinding.raw);
   if (baselineDocument.issue) throw Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
   const ledger = pendingTextRevisions.readLedger(baselineDocument.doc);
+  const pendingCommentBinding = source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding;
+  if (ledger && source.commentExport?.threads.length && !pendingCommentBinding)
+    throw Error('PENDING_COMMENT_EXPORT_BINDING_REQUIRED');
+  if (pendingCommentBinding && source.commentExport?.threads.length) {
+    if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
+      throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+    const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer,
+      exportMap: source.localAuthorityCapsule.exportMap,
+      baselineDocuments: [{sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId, document: baselineDocument.doc}],
+      documentSections: source.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
+      signedSectionsDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest,
+      allowOfficeDefaultOmissions: source.officeModeTransport === true });
+    if (!returned?.ok || returned.scenes?.length !== 1 || returned.scenes[0].sceneId !== source.localAuthorityCapsule.exportMap.scenes[0].sceneId)
+      throw Error(returned?.code || 'REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
+    pendingTextRevisions.verifyCommentReturnBinding({ document: baselineDocument.doc, binding: pendingCommentBinding,
+      returnedDocument: returned.scenes[0].returnedDocument, anchors: source.pendingCommentAnchors,
+      exportTypography: source.localAuthorityCapsule.exportMap.exportTypography,
+      exportParagraphs: source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(block => block.formatIr.paragraph) });
+    return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED',
+      pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
+  }
   if (ledger?.schemaVersion === 3) {
     if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest
       || (parsed.reviewIr.commentThreads || []).length) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
@@ -6343,6 +6369,50 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
+async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge) {
+  const scenes = capsule?.exportMap?.scenes;
+  const signedScenes = scenes?.filter(scene => scene.pendingCommentBinding);
+  if (!signedScenes?.length) return null;
+  if (capsule.exportMapAuthority !== 'main-owned-active-export-authority-store-after-return-authentication'
+    || capsule.returnedArtifactExportMapAccepted !== false) throw Error('COMMENT_RETURN_AUTHORITY_REQUIRED');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const baselineDocuments = scenes.map(scene => {
+    const raw = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
+      ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId];
+    if (typeof raw !== 'string' || `sha256:${computeHash(raw)}` !== scene.rawSha256)
+      throw Error('PENDING_COMMENT_RETURN_BASELINE_STALE');
+    const source = envelope.parseObservablePayload(raw);
+    if (source.issue || !source.doc) throw Error('PENDING_COMMENT_RETURN_BASELINE_INVALID');
+    return { sceneId: scene.sceneId, document: source.doc };
+  });
+  const parsed = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: docxBytes,
+    exportMap: capsule.exportMap, baselineDocuments, documentSections: capsule.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
+    signedSectionsDigest: capsule.documentSections?.protectedDigest,
+    allowOfficeDefaultOmissions: capsule.officeModeTransport === true });
+  if (parsed?.ok !== true || !Array.isArray(parsed.scenes) || parsed.scenes.length !== scenes.length)
+    throw Error(parsed?.code || 'PENDING_COMMENT_RETURN_DOCUMENT_REQUIRED');
+  const pending = require('./core/word-pending-text-revisions-v1.cjs'), seen = new Set(), result = [];
+  for (const scene of scenes) {
+    const rows = parsed.scenes.filter(item => item.sceneId === scene.sceneId);
+    if (rows.length !== 1 || seen.has(scene.sceneId)) throw Error('PENDING_COMMENT_RETURN_SCENE_BINDING');
+    seen.add(scene.sceneId);
+    const document = baselineDocuments.find(item => item.sceneId === scene.sceneId).document;
+    const returnedDocument = rows[0].returnedDocument;
+    if (scene.pendingCommentBinding) result.push({ sceneId: scene.sceneId, document, returnedDocument });
+    else {
+      // Reuse the same strict three-projection law with an ephemeral empty
+      // ledger; this comparison does not create a canonical revision ledger.
+      const wrap = source => pending.bindLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+      const baseline = wrap(document), returned = wrap(returnedDocument);
+      const { binding } = pending.buildCommentExportBinding({ document: baseline, exportTypography: capsule.exportMap.exportTypography,
+        exportParagraphs: scene.blocks.map(block => block.formatIr.paragraph) });
+      pending.verifyCommentReturnBinding({ document: baseline, binding, returnedDocument: returned,
+        exportTypography: capsule.exportMap.exportTypography, exportParagraphs: scene.blocks.map(block => block.formatIr.paragraph) });
+    }
+  }
+  return result;
+}
+
 async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge, onPrepared }) {
   const rejected = code => Object.assign(new Error(code), { code });
   try {
@@ -6367,12 +6437,27 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     if (!['PLAIN_TEXT_V1', 'RICH_INLINE_V1'].includes(grammar?.profile) || (grammar?.status !== 'SUPPORTED' && !completeAbsence)) {
       throw rejected('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
     }
+    if (capsule.exportMap?.scenes?.some(scene => scene.pendingCommentBinding)) {
+      // This lane publishes comments only. Other authenticated changes must
+      // remain explicit and cannot disappear behind a successful reply Apply.
+      if (capsule.cleanTextChanges?.length || capsule.userBookmarksCandidate || capsule.mediaReturnCandidate
+        || capsule.storyReturnCandidate || capsule.cleanLinkLabel?.ok
+        || intake.parserResult?.documentSectionsBinding?.inactiveGridAdditions?.length) {
+        throw rejected('PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED');
+      }
+      const noteProof = validateDocumentNotesReturn({ expected: capsule.documentNotes,
+        returned: intake.parserResult?.reviewIr?.documentNotes,
+        signedDigest: intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest });
+      if (!noteProof.ok) throw rejected('PENDING_COMMENT_RETURN_NOTES_CHANGED');
+    }
+    const pendingScenes = await buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge);
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
       exportMap: capsule.exportMap, returnedThreads: intake.parserResult?.reviewIr?.commentThreads,
       commentReturnInventory: inventory,
-      returnedParagraphs: intake.parserResult?.reviewIr?.formattingParagraphs };
+      returnedParagraphs: intake.parserResult?.reviewIr?.formattingParagraphs,
+      ...(pendingScenes ? { pendingScenes } : {}) };
     const checkIdentity = () => {
       assertFreshDocxReviewRoundAuthority(capsule);
       if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
@@ -10967,6 +11052,19 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       ...context,
       reviewTransportReturnIntake: returnIntake,
     };
+  if (returnIntake.authenticated === true && returnIntake.localAuthorityCapsule?.commentExport?.threads?.length
+    && returnIntake.localAuthorityCapsule?.exportMap?.scenes
+    ?.some(scene => scene.pendingCommentBinding)) {
+    // Signed unchanged-pending proof is rechecked by the comment planner and
+    // publisher. A failure stays here; it cannot fall into a scene text writer.
+    const commentProductPath = await applyAuthenticatedCommentDelta({ context: activeContext, requestId,
+      explicitCanonicalApplyConfirmed: false, isCurrent, docxBytes: decoded.bytes, revisionBridge,
+      onPrepared: options.onCommentDeltaPrepared });
+    if (commentProductPath.ok !== true) return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED', commentProductPath.code);
+    return { ok: true, commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
+      requestId, activated: false, commentProductPath };
+  }
   const pendingProductPath = await prepareAuthenticatedPendingReturn({ context: activeContext, requestId,
     isCurrent, docxBytes: decoded.bytes, revisionBridge, onPrepared: options.onPendingReturnPrepared });
   if (pendingProductPath) {
@@ -11881,7 +11979,8 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
         activationResult.commentProductPath = await prepared.apply();
         if (activationResult.commentProductPath?.ok === true) {
           const canonical = handleWorkspaceRtkNonTextReturnStateQuery();
-          if (canonical?.ok === true && canonical.reviewSurface?.commentSurvivalPreview) {
+          if (canonical?.ok === true && canonical.reviewSurface?.commentSurvivalPreview
+            && isPlainObjectValue(activationResult.reviewSurface)) {
             const surface = cloneJsonSafe(activationResult.reviewSurface);
             surface.commentSurvivalPreview = cloneJsonSafe(canonical.reviewSurface.commentSurvivalPreview);
             activationResult.reviewSurface = surface;
@@ -29047,7 +29146,7 @@ async function handleExportDocxMin(payloadRaw) {
     const activeComments = comments?.threads?.some(thread => thread.sceneId === sceneId && thread.status !== 'deleted');
     let noteBlocks, documentNotes;
     if (active || activeComments) {
-      manuscriptNoteModel.sceneText(snapshot.content);
+      if (active) manuscriptNoteModel.sceneText(snapshot.content);
       let paragraphDocument = snapshot.doc ? pendingTextRevisions.normalizeNode(snapshot.doc) : null;
       if (paragraphDocument?.attrs?.wordUserBookmarks !== undefined) {
         // Validate the canonical registry before removing this recognized root
@@ -29059,12 +29158,17 @@ async function handleExportDocxMin(payloadRaw) {
       const paragraphs = pendingTextRevisions.readLedger(snapshot.doc)
         ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''))
         : commentSceneParagraphs(snapshot.content).map(block => block.text);
+      const paragraphFormats = pendingTextRevisions.readLedger(snapshot.doc)
+        ? buildFormatIrParagraphs({ sceneId, doc: paragraphDocument, text: paragraphs.join('\n') }) : null;
       noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
+        ...(paragraphFormats ? { formatIr: paragraphFormats[index] } : {}),
         ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
           .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
       if (active) documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
     }
-    const commentExport = comments ? buildCanonicalCommentExport(comments,noteBlocks || [],projectId,{sceneId}) : null;
+    const commentExport = comments ? require('./export/docx/docxReviewPacketComments').bindPendingCommentExport({
+      commentExport: buildCanonicalCommentExport(comments,noteBlocks || [],projectId,{sceneId}),
+      scenes:[{sceneId,doc:snapshot.doc}],blocks:noteBlocks || [] }).commentExport : null;
     assertSceneDocxExportCohort(sourceCohort, 'DOCX_SOURCE_CHANGED', 'DOCX_NOTES_CHANGED', 'DOCX_COMMENTS_CHANGED');
     if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() || owner !== activeStage10ApplicationBootstrap
       || generation !== lastSignaledEditGeneration || projectRoot !== getProjectRootPath() || isDirty || autoSaveInProgress)

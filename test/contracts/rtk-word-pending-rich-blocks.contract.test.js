@@ -292,3 +292,30 @@ test('Preferred width scalar bounds never invalidate a supported merged-cell gri
     }
   }
 });
+
+test('Pending list continuation uses explicit owner marker in both DOCX profiles and preserves authored quote indent', async () => {
+  const quote=p('Authored quote.');quote.attrs={wordParagraphIndent:{left:1234,right:55,hanging:80}};
+  const source={type:'doc',content:[ordered(1,item('first',p('continuation oldNEW')),item('second')),{type:'blockquote',content:[quote]}]};
+  const doc=model.bindLedger({schemaVersion:2,source,revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Reviewer',date:'',dateUtc:'',paragraphIndex:1,from:16,to:19,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+  const [bridge]=await modules;
+  for(const profile of ['minimum','full']){
+    const bytes=await exportDoc(doc,profile),result=await parse(bytes),ledger=model.readLedger(result);
+    assert.equal(ledger.source.content[0].type,'orderedList');
+    assert.equal(ledger.source.content[0].content.length,2);
+    assert.deepEqual(ledger.source.content[0].content[0].content.map(text),['first','continuation oldNEW']);
+    assert.deepEqual(model.projection(result).original,model.projection(doc).original);
+    const parsedQuote=ledger.source.content.find(n=>n.type==='blockquote');
+    assert.deepEqual(parsedQuote.content[0].attrs.wordParagraphIndent,{left:1234,right:55,hanging:80});
+    const expected=model.buildCommentExportBinding({document:result}).binding;
+    const changed=structuredClone(model.readLedger(result));
+    changed.source.content.find(n=>n.type==='blockquote').content[0].attrs.wordParagraphIndent.right=56;
+    assert.throws(()=>model.verifyCommentReturnBinding({document:result,binding:expected,returnedDocument:model.bindLedger(changed)}),/PENDING_COMMENT_PROJECTION_CHANGED/);
+    const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+    assert.match(parts['word/document.xml'],/YalkenListContinuation0/);
+    const paragraphXml=parts['word/document.xml'].match(/<w:p\b[\s\S]*?<\/w:p>/g).find(xml=>xml.includes('Authored quote.'));
+    assert.equal((paragraphXml.match(/<w:ind\b/g)||[]).length,1,profile+' duplicate paragraph indent');
+    const invalid={...parts,'word/document.xml':parts['word/document.xml'].replace(/<w:pStyle w:val="YalkenListContinuation0"\/>/,'<w:pStyle w:val="YalkenListContinuation1"/>'),'word/styles.xml':parts['word/styles.xml'].replaceAll('YalkenListContinuation0','YalkenListContinuation1').replaceAll('Yalken List Continuation 0','Yalken List Continuation 1')};
+    const malformed=buildStoredZip(Object.entries(invalid).map(([name,value])=>({name,data:Buffer.from(value)})));
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(malformed).ok,false,'no inferred missing level owner');
+  }
+});

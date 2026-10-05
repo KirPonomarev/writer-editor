@@ -127,7 +127,7 @@ async function preparedHarness(t, { deletion = false, addition = false, replyDel
   installMainDocxRoundAuthority(sandbox, { projectRoot: root, references: [context.reviewTransportAuthorityCapsule], publishAllocated: true });
   const ctx = vm.createContext(sandbox);
   vm.runInContext('const authenticatedCommentDeltaAdmissions = new WeakMap();\n'
-    + extract('applyAuthenticatedCommentDelta') + '\n' + extract('handleRtkCommentLifecycleReturnCommandSurface'), ctx);
+    + extract('buildAuthenticatedPendingCommentScenes') + '\n' + extract('applyAuthenticatedCommentDelta') + '\n' + extract('handleRtkCommentLifecycleReturnCommandSurface'), ctx);
   const kernel = require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({
     'cmd.rtk.review.applyCommentLifecycleReturn': ctx.handleRtkCommentLifecycleReturnCommandSurface,
   });

@@ -142,7 +142,7 @@ test('selected resolved root and deleted replies retain semantics; sibling and d
   assert.doesNotMatch(bytes.toString(), /private|SECRET_DELETED/);
 });
 
-test('Minimal refuses missing, stale, wrong-index blocks and unsupported pending comments', async () => {
+test('Minimal refuses missing, stale and wrong-index blocks while preserving bound pending comments', async () => {
   const projection = comments.buildCanonicalCommentExport(state(), [block], projectId, { sceneId }), deps = await dependencies();
   const snapshot = { doc: doc(), plainText: paragraphText, bookProfile: { formatId: 'A4' } };
   for (const blocks of [undefined, [], [{ ...block, text: 'changed' }], [{ ...block, documentParagraphIndex: 1 }], [{ ...block, blockId: 'wrong' }]]) {
@@ -152,8 +152,14 @@ test('Minimal refuses missing, stale, wrong-index blocks and unsupported pending
   const pendingDoc = pending.bindLedger({ schemaVersion: 2, source: doc(), revisions: [{ id: 'revision-1', nativeId: '1', operation: 'insert',
     author: 'Reviewer', date: '', dateUtc: '', paragraphIndex: 0, from: 0, to: 1, state: 'pending', groupId: null }],
     undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
-  assert.throws(() => buildDocxMinBuffer({ ...snapshot, doc: pendingDoc }, { ...deps, commentExport: projection, commentBlocks: [block] }),
-    /PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED/);
+  const mixedBytes = buildDocxMinBuffer({ ...snapshot, doc: pendingDoc }, { ...deps, commentExport: projection, commentBlocks: [block] });
+  const mixed = await read(mixedBytes);
+  assert.equal(mixed.result.reviewIr.commentThreads.length, 1);
+  assert.equal(mixed.result.reviewIr.commentThreads[0].quotedAnchorText, '🧭 anchor');
+  assert.equal((mixed.parts['word/document.xml'].match(/<w:ins\b/g)||[]).length, 1);
+  for (const commentBlocks of [undefined, [{...block,sceneId:'foreign'}], [{...block,text:'forged'}]]) {
+    assert.throws(() => buildDocxMinBuffer({ ...snapshot, doc: pendingDoc }, { ...deps, commentExport: projection, commentBlocks }));
+  }
   const noSelected = comments.buildCanonicalCommentExport(state(), [], projectId, { sceneId: 'roman/empty.txt' });
   assert.ok(buildDocxMinBuffer({ ...snapshot, doc: pendingDoc }, { ...deps, commentExport: noSelected }));
 });

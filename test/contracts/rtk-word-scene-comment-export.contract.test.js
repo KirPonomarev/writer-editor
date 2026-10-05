@@ -193,14 +193,33 @@ test('actual Review Main gate rejects a forged full-state digest and foreign sel
   const foreign=structuredClone(source.commentExport);foreign.threads[0].sceneId=f.siblingId;
   await assert.rejects(f.probe.reviewCheck({...source,commentExport:foreign}),/COMMENTS_STALE/);assert.deepEqual(f.capture(),before);
 });
-for(const mode of ['review','minimal'])test(`actual ${mode} rejects active pending revisions plus comments explicitly before artifact publication`,async t=>{
+async function pendingCommentExportFixture(t) {
   const f=await fixture(t), pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
   const original=envelope.parseObservablePayload(read(f.alpha)).doc;
   const doc=pending.bindLedger({schemaVersion:2,source:original,revisions:[{id:'revision-1',nativeId:'51',operation:'insert',author:'Reviewer',
     date:'',dateUtc:'',paragraphIndex:1,from:12,to:13,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
   assert.ok(pending.readLedger(doc));fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc}));
-  const before=f.capture(), target=path.join(f.temp,'pending-comments.docx');f.chooseSavePath(target);
+  return {...f,pending,doc};
+}
+for(const mode of ['review','minimal'])test(`actual ${mode} publishes unchanged pending revisions and selected comments with native readback`,async t=>{
+  const f=await pendingCommentExportFixture(t),beforeScenes=[read(f.alpha),read(f.beta)],beforeState=read(f.statePath);
+  const target=path.join(f.temp,'pending-comments.docx');f.chooseSavePath(target);
   const result=mode==='review'?await f.probe.reviewExport({path:target}):await f.probe.exportMin({path:target});
-  assert.equal(Boolean(result.ok),false,JSON.stringify(result));assert.match(JSON.stringify(result),/PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED/);
-  assert.equal(fs.existsSync(target),false);assert.deepEqual(f.capture(),before);
+  assert.equal(Boolean(result.ok),true,JSON.stringify(result));assert.equal(fs.existsSync(target),true);
+  const bytes=fs.readFileSync(target),decoded=parsed(f,bytes);
+  assert.equal(decoded.reviewIr.commentThreads.length,2);
+  assert.equal(decoded.reviewIr.commentThreads[0].replies[0].body,'Reply selected\n尾');
+  const preview=f.bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+  const ledger=f.pending.readLedger(preview.contentPreview.pendingRevisionDocument);
+  assert.equal(ledger.revisions.length,1);assert.equal(ledger.revisions[0].operation,'insert');
+  assert.deepEqual([read(f.alpha),read(f.beta)],beforeScenes);assert.equal(read(f.statePath),beforeState);
+});
+for(const mutation of ['missing','forged'])test(`actual Review pending comment export rejects ${mutation} signed binding`,async t=>{
+  const f=await pendingCommentExportFixture(t),source=await f.probe.reviewSource(),before=f.capture();
+  const forged={...source,localAuthorityCapsule:structuredClone(source.localAuthorityCapsule)};
+  const scene=forged.localAuthorityCapsule.exportMap.scenes[0];assert.ok(scene.pendingCommentBinding);
+  if(mutation==='missing')delete scene.pendingCommentBinding;
+  else scene.pendingCommentBinding.basisSha256='a'.repeat(64);
+  await assert.rejects(f.probe.reviewBuild(forged),/PENDING|BINDING|MISMATCH/);
+  assert.deepEqual(f.capture(),before);
 });

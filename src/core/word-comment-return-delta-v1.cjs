@@ -56,7 +56,7 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [] }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [] }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
@@ -76,6 +76,27 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       && typeof block.text === 'string', 'COMMENT_RETURN_EXPORT_MAP_INVALID');
     byParagraph.set(block.documentParagraphIndex, block);
   }
+  // Correlation never authorizes revision changes: reconstruct every signed
+  // pending scene from its canonical ledger and independently parsed return.
+  demand(Array.isArray(pendingScenes) && pendingScenes.length <= exportMap.scenes.length, 'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  const pendingModel=require('./word-pending-text-revisions-v1.cjs');
+  const pendingByScene=new Map();
+  const pendingBound=exportMap.scenes.filter(s=>s.pendingCommentBinding!==undefined);
+  demand(pendingBound.length===pendingScenes.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  for(const item of pendingScenes) {
+    demand(plain(item) && Reflect.ownKeys(item).every(k=>typeof k==='string' && Object.hasOwn(Object.getOwnPropertyDescriptor(item,k),'value')) && Object.keys(item).sort().join(',')==='document,returnedDocument,sceneId'
+      && typeof item.sceneId==='string' && !pendingByScene.has(item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const scene=pendingBound.find(s=>s.sceneId===item.sceneId);
+    demand(scene,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const anchors=before.threads.filter(t=>t.sceneId===item.sceneId && t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
+    demand(anchors.every(entry=>entry.anchor?.sceneId===item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const checked=pendingModel.verifyCommentReturnBinding({document:item.document,binding:scene.pendingCommentBinding,
+      returnedDocument:item.returnedDocument,anchors,exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
+    const texts=pendingModel.paragraphs(checked.projection.current).map(p=>p.content.map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
+    demand(texts.length===scene.blocks.length && scene.blocks.every((b,i)=>b.formatIr?.runs?.map(r=>r.text).join('')===texts[i]),'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    pendingByScene.set(item.sceneId,checked);
+  }
+  demand(!pendingScenes.length || textChanges.length===0,'COMMENT_RETURN_PENDING_TEXT_CHANGED');
   // Private clean-text admission is explicit and complete; returned marker data
   // cannot itself grant permission to change manuscript text.
   demand(Array.isArray(textChanges) && textChanges.length <= blocks.length, 'COMMENT_RETURN_TEXT_PROOF_INVALID');
@@ -95,7 +116,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const block = byParagraph.get(p?.paragraphIndex);
     demand(block && !seenParagraphs.has(p.paragraphIndex)
       && p.paragraphText === (textProof.get(p.paragraphIndex)?.newText ?? block.text)
-      && p.trackedRevision === false, 'COMMENT_RETURN_MANUSCRIPT_CHANGED');
+      && (p.trackedRevision === false || pendingByScene.has(block.sceneId)), 'COMMENT_RETURN_MANUSCRIPT_CHANGED');
     returnedText.set(p.paragraphIndex, p.paragraphText);
     seenParagraphs.add(p.paragraphIndex);
   }
@@ -146,7 +167,22 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     demand(block?.sceneId === expected.sceneId, 'COMMENT_RETURN_SCENE_MISMATCH');
     const a = actual.finalTextAnchorRange;
     const multi=a?.kind==='multi-paragraph-range';
-    demand(plain(a) && a.blockTextSha256 === hash(returnedText.get(block.documentParagraphIndex)) && a.selectedText === actual.quotedAnchorText
+    const pendingProof=pendingByScene.get(expected.sceneId);
+    if(pendingProof) {
+      const bound=pendingProof.anchors.find(v=>v.threadId===expected.threadId), union=actual.anchorRange;
+      demand(bound && plain(union),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
+      const sceneRows=blocks.filter(b=>b.sceneId===expected.sceneId);
+      const localIndex=global=>sceneRows.findIndex(b=>b.documentParagraphIndex===global);
+      const endpoint=(range,last)=>({paragraphIndex:localIndex(last?(range.endParagraphIndex??actual.paragraphIndex):actual.paragraphIndex),offsetUtf16:last?range.endUtf16:range.startUtf16});
+      demand(stable(endpoint(a,false))===stable(bound.currentStart) && stable(endpoint(a,true))===stable(bound.currentEnd)
+        && stable(endpoint(union,false))===stable(bound.unionStart) && stable(endpoint(union,true))===stable(bound.unionEnd),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
+      const unionTexts=pendingModel.paragraphs(pendingProof.projection.union).map(p=>p.content.map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
+      const {unionStart:start,unionEnd:end}=bound;
+      const quote=start.paragraphIndex===end.paragraphIndex?unionTexts[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)
+        :[unionTexts[start.paragraphIndex].slice(start.offsetUtf16),...unionTexts.slice(start.paragraphIndex+1,end.paragraphIndex),unionTexts[end.paragraphIndex].slice(0,end.offsetUtf16)].join('\n');
+      demand(union.selectedText===quote && actual.quotedAnchorText===quote && union.blockTextSha256===hash(unionTexts[start.paragraphIndex]),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
+    }
+    demand(plain(a) && a.blockTextSha256 === hash(returnedText.get(block.documentParagraphIndex)) && (pendingProof || a.selectedText === actual.quotedAnchorText)
       && (multi || a.endUtf16 === a.startUtf16 + a.selectedText.length), 'COMMENT_RETURN_ANCHOR_INVALID');
     const sceneBlocks=blocks.filter(b=>b.sceneId===expected.sceneId);
     const paragraphs=sceneBlocks.map(b=>({text:returnedText.get(b.documentParagraphIndex),...(b.formatIr?.table?{table:b.formatIr.table}:{})}));
@@ -189,7 +225,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       ...(deletedMessageIds.length ? { deletedMessageIds } : {}),
       status: actual.status === 'RESOLVED' ? 'resolved' : 'open', anchor, messages: mapped });
   }
-  const inputDigest = hash(stable({ projectId, roundId, artifactSha256, baselineDigest: baseline.stateDigest, ...(textChanges.length ? {textChanges} : {}), projection }));
+  const inputDigest = hash(stable({ projectId, roundId, artifactSha256, baselineDigest: baseline.stateDigest, ...(textChanges.length ? {textChanges} : {}), ...(pendingScenes.length ? {pendingBindings:pendingBound.map(s=>[s.sceneId,s.pendingCommentBinding])} : {}), projection }));
   const operationId = `word-comment-return-${hash(roundId + '\n' + artifactSha256)}`;
   const prior = before.events.find(e => e?.type === 'WORD_COMMENT_RETURN_APPLIED' && e.operationId === operationId);
   if (prior) {
@@ -259,6 +295,18 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       thread.messages = candidate.messages; thread.status = candidate.status;
       if (anchorChanged) thread.anchor = candidate.anchor;
     }
+  }
+  if(pendingScenes.length) {
+    demand(after.threads.length===before.threads.length,'COMMENT_RETURN_PENDING_REPLY_ONLY');
+    let added=0;
+    for(let i=0;i<before.threads.length;i++) {
+      const old=before.threads[i],next=after.threads[i];
+      demand(stable({...old,messages:[]})===stable({...next,messages:[]}) && next.messages.length>=old.messages.length
+        && old.messages.every((m,j)=>stable(m)===stable(next.messages[j])),'COMMENT_RETURN_PENDING_REPLY_ONLY');
+      const extra=next.messages.slice(old.messages.length);
+      demand(extra.every(m=>m.kind==='reply'),'COMMENT_RETURN_PENDING_REPLY_ONLY');added+=extra.length;
+    }
+    demand(added<=1 && (changes.length===0 || added===1),'COMMENT_RETURN_PENDING_REPLY_ONLY');
   }
   if (!changes.length) return { replay: false, unchanged: true, afterText: beforeText, operationId, changes };
   demand(before.revision < Number.MAX_SAFE_INTEGER && before.events.length < 512, 'COMMENT_RETURN_STATE_BUDGET');

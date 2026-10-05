@@ -52,8 +52,15 @@ test('format-only edits become reversible decisions; structure failures preserve
   assert.equal(review.projection(recorded).revisions[0].operation, 'format');
   assert.deepEqual(review.normalizeNode(review.decide(recorded, { action: 'rejectAll' }).doc), review.normalizeNode(base));
   assert.deepEqual(review.normalizeNode(review.decide(recorded, { action: 'acceptAll' }).doc), review.normalizeNode(formatted));
-  const unsupported = structuredClone(formatted); unsupported.content[0].content[0].marks = [{ type: 'link', attrs: { href: 'https://example.com' } }];
-  assert.throws(() => recording.derive(base, unsupported, meta), /MARK_UNSUPPORTED/);
+  const linked = structuredClone(formatted); linked.content[0].content[0].marks = [{ type: 'link', attrs: { href: 'https://example.com' } }];
+  const linkRecorded = recording.derive(base, linked, meta).doc;
+  assert.equal(review.projection(linkRecorded).revisions[0].operation, 'format');
+  assert.deepEqual(review.normalizeNode(review.decide(linkRecorded, { action: 'rejectAll' }).doc), review.normalizeNode(base));
+  assert.deepEqual(review.normalizeNode(review.decide(linkRecorded, { action: 'acceptAll' }).doc), review.normalizeNode(linked));
+  for (const href of ['javascript:alert(1)', 'file:///private/manuscript', '#unbound-bookmark']) {
+    const unsupported = structuredClone(linked); unsupported.content[0].content[0].marks[0].attrs.href = href;
+    assert.throws(() => recording.derive(base, unsupported, meta), /MARK_UNSUPPORTED/);
+  }
   assert.equal(JSON.stringify({ base, formatted }), frozen);
   assert.throws(() => recording.derive(base, { type: 'doc', content: [{ type: 'bulletList', content: [{ type: 'listItem', content: doc('abc').content }] }] }, meta), /STRUCTURE_UNSUPPORTED/);
   assert.throws(() => recording.derive(base, { type: 'doc', content: [{ type: 'table', content: [] }] }, meta), /PENDING_REVISIONS/);

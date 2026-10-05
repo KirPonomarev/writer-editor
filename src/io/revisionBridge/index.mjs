@@ -1,3 +1,4 @@
+import fullManuscriptSource from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { analyzeListNumberingReturn, createLegacyNumberingProofComparator, documentPropertyReturnOperation, cleanFormattingConsumptionDigest } from './reviewTransportUserBookmarksV1.mjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
@@ -3867,6 +3868,7 @@ function visiblePendingParagraphReturn(pending, exportMap, options) {
 }
 
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
+  if(exportMap?.scenes?.some(scene=>scene.pendingCommentBinding)) options={...options,allowCommentMarkers:true};
   let xml = normalizeString(documentXml);
   let hasPendingRevisions = false;
   let hasParagraphBoundaries = false;
@@ -4309,6 +4311,7 @@ export function extractDocxReviewTransportWordDocumentProjection(input, options 
     code: extracted.code,
     documentXml: normalizeString(extracted.parts?.['word/document.xml']),
     stylesXml: normalizeString(extracted.parts?.['word/styles.xml']),
+    relationshipsXml: normalizeString(extracted.parts?.['word/_rels/document.xml.rels']),
     zipEntryCount: Array.isArray(extracted.zipInventory?.entries) ? extracted.zipInventory.entries.length : 0,
   };
 }
@@ -9825,6 +9828,10 @@ function docxInlineStyleCatalog(bytes) {
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
       if (type === 'character' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultCharacter = id;
       if (type === 'table' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultTable = id;
+    } else if (current && tag === 'w:name' && parent === 'w:style') {
+      const name=docxContentPreviewWordAttributeValue(token,parsed.namespaceMap,'val');
+      const match=/^Yalken List Continuation ([0-8])$/u.exec(name);
+      if(match){if(current.type!=='paragraph')throw Error('DOCX_LIST_CONTINUATION_STYLE');current.listContinuationLevel=Number(match[1]);}
     } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
       current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
     } else if (parent === 'w:numPr' && stack.at(-2)?.tag === 'w:pPr') {
@@ -10202,6 +10209,11 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
   const append = (index, target, listStack) => {
     const block = blocks[index];
     const list = paragraphs[index].list;
+    if(paragraphs[index].listContinuationLevel!==undefined){
+      const level=paragraphs[index].listContinuationLevel,owner=listStack[level];
+      if(list!==undefined||!Number.isInteger(level)||level<0||level>8||!owner?.node.content.length||!['paragraph','heading'].includes(block.type))throw Error('DOCX_LIST_CONTINUATION_OWNER');
+      owner.node.content.at(-1).content.push(block);listStack.length=level+1;needsRichContent=true;return;
+    }
     if (list === undefined) {
       listStack.length = 0;
       target.push(block);
@@ -10300,6 +10312,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if(metadata.wordParagraphSpacing!==undefined)paragraph.wordParagraphSpacing=metadata.wordParagraphSpacing;
   if(metadata.wordParagraphMarkLanguage!==undefined)paragraph.wordParagraphMarkLanguage=metadata.wordParagraphMarkLanguage;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
+  if(metadata.listContinuationLevel!==undefined)paragraph.listContinuationLevel=metadata.listContinuationLevel;
   if (metadata.typedBreaks?.length) paragraph.typedBreaks = metadata.typedBreaks;
   if (metadata.blockKind !== undefined) paragraph.blockKind = metadata.blockKind;
   if (metadata.blockquoteDepth !== undefined) paragraph.blockquoteDepth = metadata.blockquoteDepth;
@@ -10339,6 +10352,11 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
     }));
   }
   if (numberingCatalog) docxResolveParagraphList(metadata, styleCatalog, numberingCatalog, diagnostics, paragraphs.length);
+  const continuationStyle=styleCatalog?.styles.get(metadata.paragraphStyleId);
+  if(continuationStyle?.listContinuationLevel!==undefined){
+    if(metadata.list||metadata.blockKind||metadata.blockquoteDepth)throw Error('DOCX_LIST_CONTINUATION_CONFLICT');
+    metadata.listContinuationLevel=continuationStyle.listContinuationLevel;
+  }
   if ((metadata.blockKind || metadata.blockquoteDepth) && metadata.list) throw new Error('DOCX_BLOCK_STYLE_LIST_CONFLICT');
   if (metadata.blockKind === 'codeBlock' && (metadata.headingLevel !== undefined
     || metadata.unsupportedAlignment || metadata.unsupportedColor || metadata.unsupportedTypography
@@ -11098,6 +11116,61 @@ export function parseDocumentNotesRichReturn(bytes, notes) {
   return result;
 }
 
+// Reparse the actual bounded package. Scene slicing follows authenticated
+// complete paragraph occurrences; an ancestor crossing a scene boundary is not
+// flattened into a different document shape.
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,cryptoPort}) {
+  try {
+    if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
+    const preview=buildDocxContentPreviewFromZipBytes(bytes);
+    if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
+    let sectionsVerified=false;
+    if(baselineDocuments!==undefined){
+      if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
+        ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
+      const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:cryptoPort||{sha256Text:value=>`sha256:${sha256Hex(value)}`,sha256Json:value=>`sha256:${sha256Hex(JSON.stringify(value))}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const proof=analysis.ok&&fullManuscriptSource.validateFullManuscriptDocumentSectionsReturn({expected:documentSections,returned:analysis.reviewIr.documentSections,
+        signedDigest:signedSectionsDigest,allowOfficeDefaultOmissions});
+      if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
+      sectionsVerified=true;
+    }
+    const document=preview.contentPreview?.pendingRevisionDocument;
+    const ledger=pendingTextRevisions.readLedger(document);
+    if(!ledger)throw Error('PENDING_COMMENT_LEDGER_REQUIRED');
+    const leaves=pendingTextRevisions.paragraphs(ledger.source), index=new Map(leaves.map((p,i)=>[p,i]));
+    const seen=new Set(),scenes=[];
+    for(const scene of exportMap.scenes){
+      if(!Array.isArray(scene.blocks)||!scene.blocks.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
+      const indices=scene.blocks.map(b=>b.documentParagraphIndex),from=indices[0],to=from+indices.length;
+      if(indices.some((value,i)=>!Number.isSafeInteger(value)||value!==from+i||!leaves[value]||seen.has(value)))throw Error('PENDING_COMMENT_EXPORT_MAP');
+      indices.forEach(value=>seen.add(value));
+      const slice=node=>{
+        if(index.has(node)){const n=index.get(node);return n>=from&&n<to?JSON.parse(JSON.stringify(node)):null;}
+        const children=(node.content||[]).map(slice),present=children.filter(Boolean);
+        if(!present.length)return null;
+        if(node.type!=='doc'&&present.length!==children.length)throw Error('PENDING_COMMENT_SCENE_OWNER');
+        return {...JSON.parse(JSON.stringify(node)),content:present};
+      };
+      const source=slice(ledger.source);
+      if(sectionsVerified){
+        const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId)?.document;
+        if(!baseline)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
+        const registry=wordSections.read(baseline);
+        source.attrs={...source.attrs};delete source.attrs.wordSections;
+        if(registry)source.attrs.wordSections=JSON.parse(JSON.stringify(registry));
+        const format=scene.documentFormatIr;
+        if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
+        if(format?.explicit===false)delete source.attrs.wordDefaultTabStop;
+        if(!Object.keys(source.attrs).length)delete source.attrs;
+      }else if(exportMap.scenes.length!==1 && source.attrs?.wordSections)throw Error('PENDING_COMMENT_SECTION_BINDING_REQUIRED');
+      const revisions=ledger.revisions.filter(r=>r.paragraphIndex>=from&&r.paragraphIndex<to).map(r=>({...r,paragraphIndex:r.paragraphIndex-from}));
+      scenes.push({sceneId:scene.sceneId,returnedDocument:scene.pendingCommentBinding?pendingTextRevisions.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]}):source});
+    }
+    if(seen.size!==leaves.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
+    return {ok:true,scenes};
+  }catch(error){return {ok:false,code:error.message||'PENDING_COMMENT_RETURN_INVALID'};}
+}
+
 export function buildDocxContentPreviewFromZipBytes(input) {
   const preflight = buildDocxIntakePreflightReportFromZipBytes(input);
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
@@ -11246,7 +11319,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
     const inlineStyles = docxInlineStyleCatalog(bytes);
     namedStylesNormalized = inlineStyles.styles.size > 0;
-    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { cryptoPort: {
+    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { allowCommentMarkers: true, cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
       byteLength: value => new TextEncoder().encode(value).length,
     } });
@@ -11257,7 +11330,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const sections = docxSectionInventory(bytes, parsed, Boolean(stories));
       if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
       if (sections) {
-        if (pendingSource.revisions.length) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
+        if (pendingSource.revisions.some(r=>!['insert','delete'].includes(r.operation)||r.boundary||r.structure||r.moveName)) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
         parsed.contentPreview.wordSections = sections;
         parsed.diagnostics = parsed.diagnostics.filter(item => item.code !== DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC);
       }
@@ -11273,20 +11346,22 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       }
     }
     if (!parsed.failure && pendingSource.revisions.length) {
+      const pendingSections=parsed.contentPreview.wordSections;
       const supported = result => !result.failure
-        && !result.diagnostics.some(d => !['w:bookmarkStart', 'w:bookmarkEnd', 'w:footnoteReference', 'w:endnoteReference'].includes(d.tagName))
-        && !result.contentPreview.paragraphs.some(p => p.blockKind || p.blockquoteDepth || p.sectionBreakType);
+        && !result.diagnostics.some(d => !(d.code==='DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC' && ['DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE','DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE','DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'].includes(d.sourceCode)) && !['w:bookmarkStart', 'w:bookmarkEnd', 'w:footnoteReference', 'w:endnoteReference','w:commentRangeStart','w:commentRangeEnd','w:commentReference'].includes(d.tagName))
+        && !result.contentPreview.paragraphs.some(p => p.sectionBreakType);
       if (!supported(parsed) || parsed.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
-      const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs);
+      const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
       const source = pendingTextRevisions.normalizeNode(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n')));
       if(defaultTabs.explicit)source.attrs={...source.attrs,wordDefaultTabStop:defaultTabs.effective};
+      if(pendingSections)source.attrs={...source.attrs,wordSections:pendingSections};
       pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
       const canonicalParse = (xml, expectedCount = pendingSource.paragraphCount) => {
         const result = docxContentPreviewParseMainDocumentXml(xml, inlineStyles, docxNumberingCatalog(bytes));
         if (!supported(result) || result.sourceParagraphCount !== expectedCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
-        const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs);
+        const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
         const doc=rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
-        if(defaultTabs.explicit)doc.attrs={...doc.attrs,wordDefaultTabStop:defaultTabs.effective};return doc;
+        if(defaultTabs.explicit)doc.attrs={...doc.attrs,wordDefaultTabStop:defaultTabs.effective};if(pendingSections)doc.attrs={...doc.attrs,wordSections:pendingSections};return doc;
       };
       const beforeFormatting = pendingSource.formatBeforeXml ? canonicalParse(pendingSource.formatBeforeXml) : null;
       const beforeLeaves = beforeFormatting ? pendingTextRevisions.paragraphs(beforeFormatting) : null;
@@ -11326,10 +11401,11 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       // rich runs. A ledger never substitutes for a checked content projection.
       const currentParsed = docxContentPreviewParseMainDocumentXml(pendingSource.currentXml, inlineStyles, docxNumberingCatalog(bytes));
       if (!supported(currentParsed)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
-      const currentRich = docxInlineCanonicalContent(currentParsed.contentPreview.paragraphs);
+      const currentRich = docxInlineCanonicalContent(currentParsed.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
       const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
         : buildParagraphDocumentFromText(currentParsed.contentPreview.paragraphs.map(p => p.text).join('\n'));
       if(defaultTabs.explicit)currentDoc.attrs={...currentDoc.attrs,wordDefaultTabStop:defaultTabs.effective};
+      if(pendingSections)currentDoc.attrs={...currentDoc.attrs,wordSections:pendingSections};
       if (hashCanonicalValue(pendingTextRevisions.normalizeNode(currentDoc)) !== hashCanonicalValue(pendingTextRevisions.normalizeNode(current))) throw Error('PENDING_REVISIONS_CURRENT_BINDING');
       if (pendingSource.originalXml && hashCanonicalValue(pendingTextRevisions.normalizeNode(canonicalParse(pendingSource.originalXml, pendingSource.originalParagraphCount)))
         !== hashCanonicalValue(pendingTextRevisions.normalizeNode(pendingTextRevisions.materialize(ledger, 'original'))))
@@ -11337,6 +11413,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       parsed = currentParsed;
       if(defaultTabs.explicit)parsed.contentPreview.wordDefaultTabStop=defaultTabs.effective;
       parsed.contentPreview.pendingRevisionDocument = doc;
+      if(pendingSections)parsed.contentPreview.wordSections=pendingSections;
       parsed.contentPreview.pendingNoteReferences = pendingSource.noteReferences.map(ref => {
         const paragraphIndex = occurrenceToLeaf.get(ref.paragraphIndex);
         if (paragraphIndex === undefined) throw Error('PENDING_NOTE_PARAGRAPH_REMOVED');
@@ -11398,7 +11475,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         if (grammar?.profile !== 'RICH_INLINE_V1' || grammar.status !== 'SUPPORTED') {
           throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
         }
-        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true });
+        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true, pendingDocument: parsed.contentPreview.pendingRevisionDocument });
         parsed.contentPreview.commentNormalizationLedger = (grammar.normalizationLedger || []).map(item => ({
           sourcePart: item.part, xmlElement: item.path, offset: item.offset,
           attribute: item.attribute, value: item.value, disposition: item.disposition, reason: item.reason,

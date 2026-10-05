@@ -1,4 +1,54 @@
+## 2026-10-05 — PR2082 CI consumer repair, product runtime unchanged
+
+CI37266596060 on6af552590 found two obsolete HTTP-link refusal assertions and
+one actual-Main VM missing production require. Clean44-path preflight preceded
+repair. Full affected files95/95, zero skips: actual generic create preserves
+table/link/Current/Original; link format accept/reject stays reversible; unsafe
+links/orphan comments still refuse; whole export handler loads real modules.
+No production source change since native53285be1. CI must pass on successor
+before merge and exact merged verification. Next genuine text gap is pending
+revision decisions/recording with active comments, not comment-panel access.
+
+## 2026-10-05 08:08 EEST — pending comments: native routes observed, delivery pending
+
+WORD_PENDING_COMMENTS_MAC_20261005; native53285be1e63607691020ea9982d96d7e28e0ebd9.
+SOURCE/PACKAGED imported shared C2 input, both exports, actual Word reply,
+explicit Apply, both reexports, replay and restart. Scene/ledger bytes unchanged;
+three roots/five messages become six exactly once; preview and confirmed replay
+zero-write proved with explicit profile/root/launch binding. Source panel shows
+reply and six revisions; packaged post-restart export retains all six messages.
+Correction observed after08:08: PACKAGED WRITER_LOCAL_V1 hides sidebar tabs,
+but the existing Comments card above the editor opens the canonical panel with
+six revisions and the new reply. No separate access repair is needed. Evidence:
+PACKAGED04-alternate-comments-visible-ax.txt.100k remains programmatic only.
+Direct803/804 failed solely on VM missing production helper; actual-helper
+extraction repaired, full authoring24/24 zero skips. Runtime unchanged since
+native SHA; clean41-path amendment admitted before test edit. Required CI,
+commit/push/PR/merge and merged exact checks still pending. SOURCE03 wrong-profile
+closure snapshots remain explicitly invalid; use SOURCE04/PACKAGED04 bindings.
+
+## 2026-10-05 — pending comments: bounded integration checkpoint (not accepted)
+
+WORD_PENDING_COMMENTS_MAC_20261005: Core focused49/49 passed; real Word v03
+retained Current/Original text and one new reply on the shared novel corpus.
+Generic decoding is available, but strict full rich correspondence still
+refuses derived quote/list-continuation indent representation. Main C2 export
+passes publication; reply Apply and SOURCE/PACKAGED acceptance remain open.
+Intermediate commit preserves coherent owned WIP and permits clean preflight
+for two obsolete blanket-refusal test consumers. No delivery/whole-plan PASS.
+Initial task prose was corrected to required ten-section HARD presentation.
+
 # WORKLOG (Craftsman)
+
+## 2026-10-05 06:34 EEST — break delivery; pending/comment implementation
+
+- PR2081 mergedf557f7cb0, CI19/19 and both RTK3295/3295. Baseline2199pass,
+  59historical skips excluded. Exact merged401/4010skip plus real Git/OPS and
+  guardrails; candidate tree equal, native572runtimeinputhashes retained.
+- New34-path clean preflight admits mixed pending insert/delete and comments.
+  Early independent Word reply/save calibrated5native wrappers becoming6
+  without changed Current/Original; implement semantic span partition proof.
+  Same shared novel corpus, generic and signed routes, no wholeplan claim.
 
 ## 2026-10-05 06:12 EEST — CI consumer expectation repair
 
