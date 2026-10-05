@@ -1,3 +1,4 @@
+const reviewAuthorityCodec = require('./core/word-review-authority-codec-v1.cjs');
 const pendingTextRevisions = require('./core/word-pending-text-revisions-v1.cjs');
 const pendingRecordingModel = require('./core/word-pending-recording-v1.cjs');
 const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
@@ -4852,6 +4853,7 @@ async function readDocxReviewPacketExportSource() {
   // ROUND-01 (V3): MERGE — a new round must never evict prior rounds. Existing
   // rounds are retained so multi-round retention holds and each round carries
   // an independent lifecycleState.
+  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, checkSource);
   const priorRoundsById = Object.fromEntries(Object.entries(
     readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
   ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
@@ -5014,6 +5016,10 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   source.localAuthorityCapsule.recordVersion = 1;
   source.localAuthorityCapsule.formattingOperationIdentityVersion = 2;
   // ROUND-01 (V3): MERGE — full-manuscript round must not evict prior rounds.
+  await migrateLegacyDocxReviewAuthorityForExport(projectRoot, () => {
+    revalidateFullManuscriptProjectBinding(scope.projectBinding);
+    userBookmarkCapability(REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID);
+  });
   const priorFullManuscriptRoundsById = Object.fromEntries(Object.entries(
     readActiveDocxReviewReturnAuthorityStore({ projectRoot })?.roundsById || {},
   ).filter(([, value]) => value?.projectRoot === projectRoot).map(([id, value]) => [id, cloneJsonSafe(value)]));
@@ -9237,7 +9243,7 @@ function checkDocxReviewPublicationIdentity(bound, pending) {
     || activeReviewDocxExportAuthorityStore !== pending) throw Error('RTK_ROUND_PUBLICATION_STALE');
 }
 
-function readStrictDocxReviewAuthorityStore(projectRoot) {
+function readStrictDocxReviewAuthorityStore(projectRoot, options = {}) {
   const storePath = docxReviewReturnAuthorityStorePath(projectRoot);
   if (!storePath) throw Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_PATH_INVALID');
   const parts = path.relative(projectRoot, storePath).split(path.sep);
@@ -9248,19 +9254,23 @@ function readStrictDocxReviewAuthorityStore(projectRoot) {
     try { stat = fsSync.lstatSync(entry); }
     catch (error) { if (error.code === 'ENOENT') return { text: null, record: null }; throw error; }
     if (stat.isSymbolicLink() || (i === parts.length - 1
-      ? !stat.isFile() || stat.nlink !== 1 || stat.size > 16 * 1024 * 1024 : !stat.isDirectory())) throw Error('RTK_ROUND_STORE_PATH_UNSAFE');
+      ? !stat.isFile() || stat.nlink !== 1 || stat.size > (options.allowLegacyRecovery === true ? reviewAuthorityCodec.LEGACY_RECOVERY_MAX_BYTES : reviewAuthorityCodec.ENCODED_MAX_BYTES) : !stat.isDirectory())) throw Error('RTK_ROUND_STORE_PATH_UNSAFE');
   }
   const text = fsSync.readFileSync(storePath, 'utf8');
-  let record;
-  try { record = validateDocxReviewReturnAuthorityStoreRecord(JSON.parse(text)); } catch { /* typed below */ }
+  const decoded = reviewAuthorityCodec.decode(text, { allowLegacyRecovery: options.allowLegacyRecovery === true });
+  const record = validateDocxReviewReturnAuthorityStoreRecord(decoded);
   if (!record || !isPlainObjectValue(record.roundsById) || !Object.keys(record.roundsById).length) throw Error('RTK_ROUND_STORE_INVALID');
+  validateDocxReviewAuthorityRoundBindings(record, projectRoot);
+  return { text, record };
+}
+
+function validateDocxReviewAuthorityRoundBindings(record, projectRoot) {
   const states = ['ALLOCATED', 'ARTIFACT_STAGED', 'PUBLISHED_ACTIVE', 'RETURN_VERIFIED', 'APPLY_RESERVED', 'CONSUMED', 'REVOKED', 'EXPIRED', 'ABORTED'];
   for (const [id, round] of Object.entries(record.roundsById)) {
     if (!isPlainObjectValue(round) || round.roundId !== id || round.projectRoot !== projectRoot
       || typeof round.keyRef !== 'string' || !round.keyRef || !states.includes(round.lifecycleState)
       || !Number.isSafeInteger(round.recordVersion) || round.recordVersion < 1) throw Error('RTK_ROUND_STORE_INVALID');
   }
-  return { text, record };
 }
 
 function assertFreshDocxReviewRoundAuthority(reference) {
@@ -9279,9 +9289,10 @@ async function persistDocxReviewReturnAuthorityStore(store = {}, options = {}) {
   if (!storePath) {
     throw new Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_PATH_INVALID');
   }
-  await fs.mkdir(path.dirname(storePath), { recursive: true });
   const record = buildDocxReviewReturnAuthorityStoreRecord(store);
-  const disk = readStrictDocxReviewAuthorityStore(projectRoot);
+  validateDocxReviewAuthorityRoundBindings(record, projectRoot);
+  const encoded = reviewAuthorityCodec.encode(record);
+  const disk = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: options.allowLegacyRecovery === true });
   if (Object.hasOwn(options, 'expectedText') && disk.text !== options.expectedText) throw Error('RTK_ROUND_CAS_CONFLICT');
   // Retention and terminal monotonicity hold for every durable publisher.
   for (const [id, before] of Object.entries(disk.record?.roundsById || {})) {
@@ -9291,44 +9302,35 @@ async function persistDocxReviewReturnAuthorityStore(store = {}, options = {}) {
         && JSON.stringify(after) !== JSON.stringify(before))) throw Error('RTK_ROUND_CAS_CONFLICT');
   }
   if (typeof options.revalidate === 'function') options.revalidate();
-  const written = await fileManager.writeFileAtomic(storePath, `${JSON.stringify(record, null, 2)}\n`);
+  await fs.mkdir(path.dirname(storePath), { recursive: true });
+  // Re-read after the asynchronous boundary: encoded disk bytes are the CAS token.
+  const latest = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: options.allowLegacyRecovery === true });
+  if (latest.text !== disk.text) throw Error('RTK_ROUND_CAS_CONFLICT');
+  if (typeof options.revalidate === 'function') options.revalidate();
+  const written = await fileManager.writeFileAtomic(storePath, encoded);
   if (written?.success !== true) throw Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_WRITE_FAILED');
-  const reopened = validateDocxReviewReturnAuthorityStoreRecord(
-    JSON.parse(await fs.readFile(storePath, 'utf8')),
-  );
+  const reopened = readStrictDocxReviewAuthorityStore(projectRoot).record;
   if (!reopened || reopened.authorityStoreDigest !== record.authorityStoreDigest) throw new Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_VERIFY_FAILED');
   return { storePath, authorityStoreDigest: record.authorityStoreDigest };
 }
 
 function readDurableDocxReviewReturnAuthorityStore(options = {}) {
   const projectRoot = docxReviewPreviewSessionDetailString(options.projectRoot || getProjectRootPath());
-  const storePath = docxReviewReturnAuthorityStorePath(projectRoot);
-  if (!storePath || !fsSync.existsSync(storePath)) return null;
-  try {
-    const stat = fsSync.lstatSync(storePath);
-    if (stat.isSymbolicLink() || !stat.isFile()) return null;
-    const record = validateDocxReviewReturnAuthorityStoreRecord(
-      JSON.parse(fsSync.readFileSync(storePath, 'utf8')),
-    );
-    if (!record || record.ok === false) return null;
-    // ROUND-01 (V3): validate ALL rounds, not only lastRoundId, so a stale or
-    // foreign non-last round can never survive the durable read silently.
-    const durableRoundsById = isPlainObjectValue(record.roundsById) ? record.roundsById : {};
-    const durableRoundEntries = Object.entries(durableRoundsById);
-    if (durableRoundEntries.length === 0) return null;
-    for (const [roundId, roundEntry] of durableRoundEntries) {
-      if (!isPlainObjectValue(roundEntry)) return null;
-      const roundProjectRoot = docxReviewPreviewSessionDetailString(roundEntry.projectRoot);
-      // A full-manuscript round has no single scenePath; its projectRoot is the
-      // authority anchor. A scene round must match the durable project root.
-      if (roundProjectRoot && roundProjectRoot !== projectRoot) return null;
-      if (typeof roundEntry.keyRef !== 'string' || !roundEntry.keyRef) return null;
-      if (typeof roundEntry.lifecycleState !== 'string' || !roundEntry.lifecycleState) return null;
-    }
-    return record;
-  } catch {
-    return null;
-  }
+  if (!projectRoot) return null;
+  // Invalid encoded stores must not become an empty legacy authority fallback.
+  return readStrictDocxReviewAuthorityStore(projectRoot).record;
+}
+
+// Only governed export source creation may recover an oversized record written
+// by the legacy publisher. Decode is read-only; migration retains every round
+// and uses the same atomic publisher and exact original-text CAS as publication.
+async function migrateLegacyDocxReviewAuthorityForExport(projectRoot, revalidate) {
+  const disk = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: true });
+  if (!disk.text || Buffer.byteLength(disk.text) <= reviewAuthorityCodec.ENCODED_MAX_BYTES) return;
+  revalidate();
+  await persistDocxReviewReturnAuthorityStore(disk.record, {
+    expectedText: disk.text, allowLegacyRecovery: true, revalidate,
+  });
 }
 
 function docxReviewReturnIntakeBlocked(reason, details = {}) {

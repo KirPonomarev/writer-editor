@@ -38,6 +38,7 @@ function installMainDocxRoundAuthority(context, { projectRoot, projectId = 'fixt
   const hash = value => 'sha256:' + crypto.createHash('sha256').update(value).digest('hex');
   Object.assign(context, {
     path, fsSync: { lstatSync: target => fs.lstatSync(remap(target)), readFileSync: (target, ...args) => fs.readFileSync(remap(target), ...args) },
+    reviewAuthorityCodec: require('../../src/core/word-review-authority-codec-v1.cjs'),
     REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA: 'yalken.rtk.word.product-review-docx-export.authority-store.v2',
     REVIEW_DOCX_RETURN_AUTHORITY_STORE_RELATIVE_SEGMENTS: ['.yalken', 'word-review', 'return-authority-store.v1.json'],
   });
@@ -54,8 +55,8 @@ function installMainDocxRoundAuthority(context, { projectRoot, projectId = 'fixt
   vm.runInContext([
     'docxReviewPreviewSessionDetailString', 'docxReviewReturnAuthorityStorePath',
     'buildDocxReviewReturnAuthorityStoreRecord', 'validateDocxReviewReturnAuthorityStoreRecord',
-    'findDocxReviewReturnIntakeRoundAuthority', 'readStrictDocxReviewAuthorityStore',
-    'assertFreshDocxReviewRoundAuthority', 'bindPendingDocxReviewPublication', 'checkDocxReviewPublicationIdentity',
+    'findDocxReviewReturnIntakeRoundAuthority', 'validateDocxReviewAuthorityRoundBindings', 'readStrictDocxReviewAuthorityStore',
+    'migrateLegacyDocxReviewAuthorityForExport', 'assertFreshDocxReviewRoundAuthority', 'bindPendingDocxReviewPublication', 'checkDocxReviewPublicationIdentity',
   ].map(actualFunction).join('\n'), context);
   const roundsById = {};
   for (const reference of references) {

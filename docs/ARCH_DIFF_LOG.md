@@ -147,3 +147,12 @@ Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word retu
 - Observation: accepted provider changes report both timestamps, an explicit loss entry and coreMetadataPreserved:false through the read-only projection; they cannot count as full preservation of the redundant core carrier.
 - Risk and rollback: accepting arbitrary unvalidated metadata or enabling this before authentication would cross authority boundaries and is prohibited. Revert this opt-in and its projection while retaining original documents and failed/successful evidence. No migration or new writer.
 - Closure: this evidence-backed distinction replaces the historical carrier assumption for authenticated Word SaveAs only; it does not change frozen acceptance denominators or grant any whole-plan completion claim.
+
+## 2026-10-05 — bounded recovery of writer-produced oversized Word authority
+
+- Context: WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005; native03 wrote22.8MiB-ish legacy pretty JSON while its strict reader admits16MiB, breaking the next governed export. Exact byte/read-only diagnosis retained; actual file22812767B.
+- Deviation: temporary recovery admission for fully validated existing logical legacy authority up to32MiB raw. Ordinary new encoded authority remains16MiB; expanded storage representation has explicit64MiB/depth64/1million-node limits. This does not authorize external input, stale publication, missing digest, path bypass or extra rounds.
+- Reason: preserve all saved round identities, snapshots, lifecycle and provenance without snapshot restoration or pruning; use existing governed Main exporter and atomic writer.
+- Risk: compression/expansion and unknown format need bounded validation; old readers must refuse new encoded storage. Independent corrupted/oversized/stale/no-write and strict reopen proofs required.
+- Rollback: preserve readable decoded recovery and original files; code rollback alone is insufficient for new storage. Never silently restore old scenes or discard rounds.
+- Removal: legacy oversize recovery is only compatibility admission for existing writer-produced records; remove after an explicit no-loss migration/sunset task verifies their absence. This packet makes no full novel release claim.

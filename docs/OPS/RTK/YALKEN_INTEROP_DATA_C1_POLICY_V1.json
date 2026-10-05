@@ -609,7 +609,9 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MIXED_RETURN_V1.json",
     "test/contracts/scene-document-admission.contract.test.js",
     "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
+    "src/core/word-review-authority-codec-v1.cjs",
+    "test/contracts/rtk-word-review-authority-codec.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -838,7 +840,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f6923e44a3b9bbe8252b387d066d8fe2ca1e3199a3b83710f8c46ab5e2893be9"
+        "sha256": "3033eb9ab1d0b5dd4e9e6a4edadbb11b62f662bbff3c6910ee63a9f323283789"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1686,7 +1688,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "f19cb2a61d951e29134224e5e447cd4d20d865089cd706b536bb3cb0be1ee3c3"
+        "sha256": "391e55ee38f9917cad16c085ab03108c37663a65b8aa8f54f251c32ad2d7257c"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2026,7 +2028,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "784e9b8a2b48e097488d761c38f5d8610a2c324e9d31d71fb58ee7bd8d9244c3"
+        "sha256": "4632c9ed30111a8150970be73557a62df1c1ef498b58b19ec4586232559f3035"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2042,7 +2044,7 @@
       },
       {
         "path": "test/helpers/main-docx-round-authority.js",
-        "sha256": "0b408e2f472db3b08f6d5feab827216b6610dad4814e4031ed30aa850c3b560b"
+        "sha256": "90d150c19bf05975667f5c635e1cf969f083722aa8f72d2d4d74eb27a4871123"
       },
       {
         "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
@@ -2082,7 +2084,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "6dffc547284731af67c4377ea97b47ae93ccb206212cf69389fdbffc30b6d21e"
+        "sha256": "efdadee930c62d64d78f0887c4e9c1f9f073ac6ffd72047e45064eb9df1792b0"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2530,15 +2532,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1c2f96cd2144c85926cfc044dd3931b9110ac4a53b589369eead5c69b0be76de"
+        "sha256": "298ccf6aba59778a290ec128a40567013f24f77c6e140e794cbc7d836680953d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "aaf627f0de41dc341df7aedb016cb137335d527108372006e865b2bdc3fcbb30"
+        "sha256": "6e095b6327e65363e8f8cc32a6ae7b8d6439fda05c9dd377bff437ed28f45b9f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c4d98535520d6597f79ce3a9ab7e9bffdff1c4a9a0aac3039bbf3291fe1335fb"
+        "sha256": "e722bbc5a2b21fcfa582397586f4c733e29b1f9dbe2ff61a73517123f4cdafe6"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2666,11 +2668,19 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
-        "sha256": "eea4d7f792b76d53ddd33af1d4339d6c5bbd4cabad7c92feec1a602e266b48b2"
+        "sha256": "8336522826dcfedb4a29caf270800429d8e3cd3ae2d605923aed10a2af42f495"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
-        "sha256": "7c28ae164afc66101495e4235bbb267fa3cb195e5f130254724689f8eefded73"
+        "sha256": "874d51b6485653958c15146b37768703f5033e6fe9997fb846c76f9ba3ec84fa"
+      },
+      {
+        "path": "src/core/word-review-authority-codec-v1.cjs",
+        "sha256": "1db5cffa659fed08fe6a0730fd5666a8a90d24e10683a70343668acf3ab54216"
+      },
+      {
+        "path": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
+        "sha256": "92e7c3ebf8c848417cc613be73c93c331cd71a3498ed3c0ea09a1e099513f355"
       },
       {
         "path": "test/contracts/scene-document-admission.contract.test.js",

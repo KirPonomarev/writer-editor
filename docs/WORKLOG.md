@@ -1,3 +1,11 @@
+## 2026-10-05 — native04 authority-store refusal isolated; bounded recovery active
+
+Exact869 local maintained graph passes3444/3444 with zero fail/skip/todo and clean owned process/lease cleanup; six whole affected consumer files pass346/346. Native04 both origins reopen the same native03 saved projects without reseeding and complete text/format Undo/Redo; independently verified1741 paragraphs,200 roots/400 messages and all anchors persist. SOURCE Undo retains its separately durable discussion body edit. Corrected runtime DOCX reexport remains blocked, not PASS.
+
+Read-only production Main diagnosis isolates RTK_ROUND_STORE_PATH_UNSAFE: native03 publisher wrote22812767 bytes of pretty-JSON authority while strict reader caps16777216. Two active round records and the complete native03/native04 exit stores are byte-identical; no failed native04 attempt published a new round. Pure source/builder on saved source succeeds, excluding the emission-only IR repair as cause. Compact JSON alone would barely fit two rounds and fail the required five-export use case.
+
+Same capacity packet introduces a private lossless versioned storage codec under the existing encoded16MiB limit, with separate explicit expanded64MiB/depth64/1million-node bounds and full logical round/digest/lifecycle/CAS retention. Existing writer-produced oversized legacy JSON has bounded32MiB recovery admission, full semantic validation and governed atomic migration; no scene restore, round pruning or dependency. Conservative repeated-capture54.84MB decoded is sizing only, not five-round acceptance. Actual Main five fresh export/persist/reopen rounds, adversarial codec/no-write proofs, corrected native export, baseline/CI/merge and merged checks remain required. Preflight60 paths passes on clean exact89dd before codec and recovery edits. Original full Mac plan and composed/multi-scene novel launch remain open.
+
 ## 2026-10-05 — exact consumer regressions addressed; final freeze pending
 
 Clean-break export now computes only emission language while keeping canonical

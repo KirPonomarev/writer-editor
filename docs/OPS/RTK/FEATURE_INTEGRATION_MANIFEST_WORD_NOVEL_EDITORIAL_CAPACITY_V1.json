@@ -2,10 +2,71 @@
   "taskId": "WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
   "objective": "100000-word text with finite editorial discussion volume can pass5authenticated changed exchanges, persist/reopen and5Undo/5Redo without duplicate whole-source frames or dropping protected comment history; original Mac plan remains intact.",
   "writePaths": [
-    "Locally exported signed baseline plus validated Word return -> existing Main-owned preview reference admission and closed mixed-proof v2 carrying validated returned ledger without duplicated projection -> explicit Apply and Kernel revalidation -> recomputed compact history and capacity-aware comment state -> existing atomic scene/manifest/comment transaction -> exact saved-data readback -> guarded publication"
+    "src/core/word-pending-comment-return-v1.cjs",
+    "src/main.js",
+    "src/core/word-pending-text-revisions-v1.cjs",
+    "src/core/word-pending-recording-v1.cjs",
+    "src/core/word-pending-recording-comments-v1.cjs",
+    "src/core/word-manuscript-notes-v1.cjs",
+    "src/core/document-content-envelope-v1.cjs",
+    "src/core/word-comment-body-v1.cjs",
+    "src/core/word-comment-authoring-v1.cjs",
+    "src/core/word-comment-return-delta-v1.cjs",
+    "src/core/word-comment-anchor-save-v1.cjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "src/io/revisionBridge/genericWordComments.mjs",
+    "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
+    "src/utils/docxImportSafeCreate.js",
+    "src/export/docx/docxReviewPacketComments.js",
+    "src/renderer/editor.bundle.js",
+    "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
+    "test/contracts/rtk-word-pending-return.contract.test.js",
+    "test/contracts/rtk-word-pending-recording.contract.test.js",
+    "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
+    "test/contracts/rtk-word-pending-notes.contract.test.js",
+    "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+    "test/contracts/scene-document-admission.contract.test.js",
+    "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
+    "test/contracts/rtk-word-pending-text-revisions.contract.test.js",
+    "test/contracts/rtk-word-comment-authoring.contract.test.js",
+    "test/contracts/rtk-word-rich-comment-body.contract.test.js",
+    "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+    "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+    "test/contracts/rtk-word-generic-comments.contract.test.js",
+    "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+    "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
+    "docs/tasks/2026-10-05--word-novel-editorial-capacity-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_EDITORIAL_CAPACITY_V1.json",
+    "docs/CONTEXT.md",
+    "docs/HANDOFF.md",
+    "docs/WORKLOG.md",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "src/core/word-comment-ranges-v1.cjs",
+    "test/contracts/rtk-word-comment-ranges.contract.test.js",
+    "src/export/docx/docxPendingRevisions.js",
+    "src/io/revisionBridge/index.mjs",
+    "src/core/word-pending-comment-decisions-v1.cjs",
+    "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "test/contracts/rtk-word-comment-points.contract.test.js",
+    "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+    "src/core/word-review-authority-codec-v1.cjs",
+    "test/contracts/rtk-word-review-authority-codec.contract.test.js",
+    "docs/ARCH_DIFF_LOG.md",
+    "test/helpers/main-docx-round-authority.js"
   ],
   "productPorts": [
-    "Existing leased scene/manifest/comment writer, readable recovery, DOCX exports and reference admission; no new writer"
+    "Existing leased scene/manifest/comment writer, readable recovery, DOCX exports and reference admission; no new writer",
+    "Existing private Main export-authority atomic file port; codec is pure Core representation, no filesystem or command authority."
   ],
   "designOsPorts": [
     "Existing immutable import/return preview and capability projections"
@@ -23,13 +84,15 @@
     "Exact project/entity/lifecycle/revision/generation and signed baseline; no carried reference or WeakMap capability after reopening",
     "Compact history base/target versioned source fingerprints bind exact ancestor topology and ordered SHA256 of every complete rich paragraph; only closed synchronous stack validation reuses paragraph digests; public mutable inputs always recompute. Unique ordered replacement indices; canonical reconstructed full frame owns semantic round identity",
     "Exact scene/comment CAS, typed capacity version, all retained revision and discussion provenance; no pruning to satisfy bounds",
-    "Closed mixed return proof v2 reconstructs returnedDocument from fully validated returnedLedger; binds/materializes source and pending revisions independently under existing4MiB ledger limit. Exact legacy proof1 remains readable; no caller-selected proof context or fallback."
+    "Closed mixed return proof v2 reconstructs returnedDocument from fully validated returnedLedger; binds/materializes source and pending revisions independently under existing4MiB ledger limit. Exact legacy proof1 remains readable; no caller-selected proof context or fallback.",
+    "Lossless storage envelope carries exact decoded byte length and SHA256; existing logical authorityStoreDigest, every round ID, recordVersion, keyRef, lifecycle, full snapshots and publication identity remain exact. CAS compares original encoded durable text."
   ],
   "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
   "fallbacks": [
     "Structural topology changes retain existing full frames within unchanged byte budgets",
     "Unsupported future frame/capacity versions or unprovable deltas refuse before mutation; legacy reads are pure",
-    "Thread/message/event/state/ref/scene/proof/ledger/transaction limits remain explicit finite refusals with no partial writes"
+    "Thread/message/event/state/ref/scene/proof/ledger/transaction limits remain explicit finite refusals with no partial writes",
+    "Old readers reject unknown storage envelope. Existing oversized pretty-JSON output may be read only through explicit bounded legacy migration admission, never snapshot restoration or protected-round pruning."
   ],
   "recoveryAndNegativeChecks": [
     "Compact all eligible legacy frames before new after-ledger budget validation",
@@ -54,9 +117,10 @@
     "Retain explicitly parsed rich standalone-break marks when materializing an ordinary comment-bearing import; export standalone breaks with the same explicit paragraph/run language as the signed pending-comment comparison. Original SOURCE01 export omitted break properties and is a retained negative artifact, not evidence for corrected runtime. Fresh exact frozen candidate imports/exports required.",
     "Native SOURCE02 actual mixed Apply preserves1741paragraphs and400messages; round Undo refuses RECORDING_COMMENT_ROUND_UNSUPPORTED for2run-language revisions. Allow only validated nonstructural run-property revisions as text-neutral anchor steps, independently reconstruct exact baseline rich source before inverse plan; reject forged before properties and retained provenance changes. Selected/all format decisions preserve comment offsets while text revisions alone own splices. Pure format rounds require truthful empty edit history. No structural/move broadening.",
     "Whole maintained graph reveals private-format-binding regression: clean standalone-break export defaults must be computed at serialization, never written into canonical signed formatIR. Preserve exact baseline format binding, native language break return, unresolved text-font and lost explicit break-font refusal. Positive changed text return with fontless boundary breaks and an unchanged empty paragraph must pass; stronger existing negative oracles stay unchanged.",
-    "Preserve complete actual Main clean/table continuation and signed full three-scene pending comment consumers; all-decided full Accept/Reject replies retain local Undo history. Existing native-georgia test must mutate the actual emitted break run properties with meaningful changed-font assertion, not rely on old bare XML spelling. Same strengthened semantic and stale no-write oracles remain."
+    "Preserve complete actual Main clean/table continuation and signed full three-scene pending comment consumers; all-decided full Accept/Reject replies retain local Undo history. Existing native-georgia test must mutate the actual emitted break run properties with meaningful changed-font assertion, not rely on old bare XML spelling. Same strengthened semantic and stale no-write oracles remain.",
+    "Observed SOURCE03 writer stored22812767B authority then later SOURCE04 strict reader refuses16MiBcap; exact old/new snapshots are identical. Codec keeps16MiBencoded limit, independently caps64MiBdecoded/depth64/1millionnodes, strict schema/base64/length/hash/deflate end, legacy recovery max32MiB fully existing semantic validation. Writer checks encoding/budgets before mkdir/write, verifies strict reopened bytes, preserves old durable state on limits/CAS/stale/recovery failure. Six measured representative rounds54.84MBdecoded fit64MiB; count-only duplicated fixtures are sizing only. Required actualMain five fresh export/persist/reopen rounds plus unknown/decompression/corruption/no-write negatives and same native saved projects migration/export."
   ],
-  "securityAndInputBoundary": "No dependency or runtime network. Retain ledger4MiB,scene/proof8MiB,128frames,depth256 and bounded cumulative traversal; one reconstructed source at a time. Finite discussion envelope512threads,2048messages/events,2MiBstate/candidates; individual rich body64KiB and plain16KiB remain. Main wire4M UTF16chars remains; existing reference snapshot8MiB/cache16MiB and transaction32MiB measured, not blindly widened.",
+  "securityAndInputBoundary": "No dependency or runtime network. Retain ledger4MiB,scene/proof8MiB,128frames,depth256 and bounded cumulative traversal; one reconstructed source at a time. Finite discussion envelope512threads,2048messages/events,2MiBstate/candidates; individual rich body64KiB and plain16KiB remain. Main wire4M UTF16chars remains; existing reference snapshot8MiB/cache16MiB and transaction32MiB measured, not blindly widened. Private durable round encoding additionally retains16MiBencoded and introduces explicit64MiBexpanded/depth64/1millionnodes bounds; legacy oversized writer recovery is separately32MiBraw and fully existing semantic/digest/project/lifecycle-validated, no runtime network or external input authority. Encoded and expanded budgets are distinct and never silently widened.",
   "performanceAndAccessibility": "Bounded five-exchange100000-word editorial acceptance, measuring actual UTF8 serialized scene/history/discussion/proof/reference/journal and peak memory; no per-keystroke full-history reconstruction or new UI. Profile-driven endpoint check removes full grapheme-set allocation while retaining exact Unicode boundaries; source and history are still validated.",
   "currentReality": [
     "PR2085 delivered at89dd736b2:CI19/19,bothRTK3415/3415,merged42wholefiles1259/1259 withzero fail/skip/todo; exactnative07 runtime bytes equal merged",
@@ -64,8 +128,7 @@
     "Owner-approved100000-word novel launch priority; original full Mac plan preserved and complex objects deferred",
     "Corrected CRC-valid dense test refuses exact89dd parser grammar and current working-tree actual Main references/create-only atomic writer stores200roots+200replies as V6. This is intermediate working-tree evidence; no delivery/native Yalken PASS claimed.",
     "Actual retained100229-word dense proof is8807162 UTF8bytes>8MiB and heavy100k proof9604346bytes; both actualMain zero-write refusals. Closed proof2 removes duplicated materialized returned document without widening gates.",
-    "Exact8ba observes both Mac source/packaged real Word return, restart,text/format Undo/Redo and final DOCX readback at100229words/1741paragraphs/200roots400messages; independent effectiveproperty provenance preserved. ActualMain five100krounds andfiveUndo/Redo pass as one subtest, but fullRTK3429pass15fail of3444 zero skip/todo; failed graph does not admit delivery. Serialization-only correction preserves canonicalformatIR and all exact binding/negative predicates; stable final acceptance remains pending.",
-    "Same-contour clean-break serializer keeps canonical formatIR immutable and explicit partial language/font exact;21addressed consumers pass before the stable full graph. Both native04 saved-project reopen and final delivery gates remain required; no self-PASS or whole-launch claim."
+    "Exact869 maintained graph3444/3444zero skip/todo andCLEANcleanup; native04same-project reopen/UndoRedoverifiedbothorigins, butexportblockedby22812767Bexistingauthoritystore with16MiBreaderlimit. Not delivery/productPASS."
   ],
   "targetOnly": [
     "Capacity claim limited to100k200roots+200replies,400Cyrilliccharacters/message and5changed exchanges with5Undo5Redo actually proved",
