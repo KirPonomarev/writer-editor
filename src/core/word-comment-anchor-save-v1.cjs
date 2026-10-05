@@ -6,6 +6,7 @@ const { textOf } = require('./word-user-bookmarks-v1.cjs');
 const { tableParagraphs } = require('../io/documentTables.js');
 const { replayEditIntents, mapAnchorSplice } = require('./word-comment-edit-intents-v1.cjs');
 const { serializeCommentState, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { COMMENT_CAPACITY } = require('./word-comment-body-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
 const { mapCommentEndpoint, rebaseStructuralCommentAnchor, MULTI, deriveCommentAnchor, validateCommentAnchor, rebaseCommentAnchorSplice } = require('./word-comment-ranges-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
@@ -143,7 +144,7 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   if (before.revision === Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');
   after.revision++;
   const afterText = serializeCommentState(after, 'COMMENT_SAVE_STATE_BUDGET');
-  if (Buffer.byteLength(afterText) > 65536) fail('COMMENT_SAVE_STATE_BUDGET');
+  if (Buffer.byteLength(afterText) > COMMENT_CAPACITY.stateBytes) fail('COMMENT_SAVE_STATE_BUDGET');
   return { mode: MODE, beforeText, afterText };
 }
 
@@ -297,7 +298,7 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
         // A whole recording round replaces its transient PM group cursor. Those
         // later snapshots describe the superseded working document, not the
         // restored round endpoint (notably a new comment inside an insertion).
-        if(sessionId.startsWith('recording-round:')) thread.anchorEditHistory=history.slice(0,history.indexOf(entry)+1);
+        if(sessionId.startsWith('recording-round:')) thread.anchorEditHistory=history.filter((h,i)=>i<=history.indexOf(entry)||h.sessionId.startsWith('recording-round:'));
         continue;
       }
       const continuing=direction==='forward'&&entry===last&&entry&&!entry.undone;
@@ -323,7 +324,8 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       } else {
         // Coordinates/kind changes also need history: an inverse separator edit
         // must restore the pre-edit interval, not guess its boundary affinity.
-        thread.anchorEditHistory=history.filter(h=>!h.undone&&(h.sessionId===sessionId||h.sessionId.startsWith('recording-round:'))).slice(-31);
+        thread.anchorEditHistory=history.filter(h=>h.sessionId.startsWith('recording-round:')||!h.undone&&h.sessionId===sessionId);
+        thread.anchorEditHistory=reserveAnchorHistory(thread.anchorEditHistory);
         // A comment may have been created after the original edit. Its first
         // observed action can be Undo; store forward-oriented endpoints so a
         // later Redo replays that exact observation instead of reporting stale.
@@ -336,16 +338,23 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
   }
   const changed=JSON.stringify(after)!==JSON.stringify(before);
   if(changed) {if(before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');after.revision++;upgradeCommentState(after);}
-  let afterText=changed?JSON.stringify(after,null,2)+'\n':beforeText;
-  if(Buffer.byteLength(afterText)>65536) afterText=JSON.stringify(after)+'\n';
-  while(Buffer.byteLength(afterText)>65536) {
-    const candidate=after.threads.filter(t=>t.anchorEditHistory?.length>1).sort((a,b)=>b.anchorEditHistory.length-a.anchorEditHistory.length)[0];
-    if(!candidate) fail('COMMENT_SAVE_STATE_BUDGET');candidate.anchorEditHistory.shift();afterText=JSON.stringify(after)+'\n';
-  }
+  let afterText=changed?serializeCommentState(after,'COMMENT_SAVE_STATE_BUDGET'):beforeText;
+  if(Buffer.byteLength(afterText)>COMMENT_CAPACITY.stateBytes) afterText=JSON.stringify(after)+'\n';
+  if(Buffer.byteLength(afterText)>COMMENT_CAPACITY.stateBytes)fail('COMMENT_SAVE_STATE_BUDGET');
   readState(afterText,before.projectId);
   return changed||includeUnchanged?{mode:MODE,beforeText,afterText,editIntents:plan,sessionId}:null;
 }
 
+// Keep the existing manual typing window, but never evict a durable round
+// whose Undo/Redo still depends on its exact anchor endpoints.
+function reserveAnchorHistory(history) {
+  const kept=history.slice();
+  while(kept.length>=32) {
+    const index=kept.findIndex(h=>!h.sessionId.startsWith('recording-round:'));
+    if(index<0)fail('COMMENT_HISTORY_INVALID');kept.splice(index,1);
+  }
+  return kept;
+}
 function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
   const checked=require('./word-comment-edit-intents-v1.cjs').validateEditIntents(editIntents);
   if(checked.schemaVersion===2) {
@@ -456,10 +465,11 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
         && JSON.stringify(last.after)===JSON.stringify(prior) && last.afterTextSha256===sha(selected[0].before)) {
         last.after=result; last.afterTextSha256=sha(selected[selected.length-1].after);
       } else {
-        thread.anchorEditHistory=history.filter(h=>!h.undone);
+        thread.anchorEditHistory=history.filter(h=>!h.undone||h.sessionId.startsWith('recording-round:'));
         // Bounded recent destructive undo window; obsolete entries never grant
         // authority to revive a tombstone after their window has expired.
-        thread.anchorEditHistory=thread.anchorEditHistory.filter(h=>h.sessionId===sessionId).slice(-31);
+        thread.anchorEditHistory=thread.anchorEditHistory.filter(h=>h.sessionId===sessionId||h.sessionId.startsWith('recording-round:'));
+        thread.anchorEditHistory=reserveAnchorHistory(thread.anchorEditHistory);
         thread.anchorEditHistory.push({historyId,sessionId,before:prior,after:result,
           beforeTextSha256:sha(selected[0].before),afterTextSha256:sha(selected[selected.length-1].after),undone:false});
       }
@@ -467,20 +477,16 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
   }
   const changed=JSON.stringify(after)!==JSON.stringify(before);
   if (changed) { if (before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW'); after.revision++; upgradeCommentState(after); }
-  let afterText=changed?JSON.stringify(after,null,2)+'\n':beforeText;
-  if(Buffer.byteLength(afterText)>65536) afterText=JSON.stringify(after)+'\n';
-  while(Buffer.byteLength(afterText)>65536) {
-    const candidate=after.threads.filter(t=>t.anchorEditHistory?.length>1).sort((a,b)=>b.anchorEditHistory.length-a.anchorEditHistory.length)[0];
-    if(!candidate) fail('COMMENT_SAVE_STATE_BUDGET');
-    candidate.anchorEditHistory.shift();afterText=JSON.stringify(after)+'\n';
-  }
+  let afterText=changed?serializeCommentState(after,'COMMENT_SAVE_STATE_BUDGET'):beforeText;
+  if(Buffer.byteLength(afterText)>COMMENT_CAPACITY.stateBytes) afterText=JSON.stringify(after)+'\n';
+  if(Buffer.byteLength(afterText)>COMMENT_CAPACITY.stateBytes)fail('COMMENT_SAVE_STATE_BUDGET');
   return changed || includeUnchanged ? {mode:MODE,beforeText,afterText,editIntents:plan,sessionId} : null;
 }
 
 function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
   if(typeof returnProofJson!=='string' || Buffer.byteLength(returnProofJson)>8*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
   let proof;try {proof=JSON.parse(returnProofJson);} catch {fail('COMMENT_TEXT_RETURN_PROOF_INVALID');}
-  if(proof?.schemaVersion===1&&proof.returnedDocument) {
+  if(proof?.schemaVersion===1&&Object.hasOwn(proof,'returnedDocument')||proof?.schemaVersion===2&&Object.hasOwn(proof,'returnedLedger')) {
     const plan=require('./word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson});
     return {mode:RETURN_MODE,beforeText,afterText:plan.afterText,returnProofJson};
   }

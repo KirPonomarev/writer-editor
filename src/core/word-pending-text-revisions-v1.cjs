@@ -240,6 +240,7 @@ function inspectLedgerData(input) {
       pending.push({ value: descriptor.value, depth: depth + 1 });
     }
   }
+  return count;
 }
 function validateState(input, frame = false) {
   if (!frame) inspectLedgerData(input);
@@ -357,9 +358,16 @@ function validateState(input, frame = false) {
     }
   }
   if (input.schemaVersion >= 2 && !frame) {
+    let historyWork=0;
+    const initialFingerprint=[...(input.roundUndo||[]),...(input.roundRedo||[])].some(f=>f?.schemaVersion===4)?sourceFingerprint(input.source):null;
     for (const rounds of [input.roundUndo, input.roundRedo]) {
       assert(Array.isArray(rounds) && rounds.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
-      for (const previous of rounds) validateState(previous, true);
+      let base=input.source;const context={fingerprint:initialFingerprint};
+      for (let i=rounds.length-1;i>=0;i--) {
+        const previous=decodeRoundFrame(rounds[i],base,context);
+        historyWork+=inspectLedgerData(previous);assert(historyWork<=1000000,'PENDING_REVISIONS_DATA_INVALID');
+        validateState(previous,true);base=previous.source;
+      }
     }
     assert(Array.isArray(input.returnReceipts) && input.returnReceipts.length <= 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
     const receipts = new Set();
@@ -423,6 +431,76 @@ function noteProjection(doc, mode = 'current') {
 function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
   return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(ledger.schemaVersion === 3 ? ['noteSourcePoints'] : [])].map(key => [key, ledger[key]])));
+}
+// A round stores the prior rich paragraphs relative to the immediately newer
+// source. Identity remains the reconstructed canonical frame, never its codec.
+const digestSourcePart=value=>require('./browser-safe-hash.cjs').sha256UpdateCompatible(stable(value));
+// Version 1 hashes a closed tree fingerprint: exact ancestor topology and every
+// complete rich paragraph. Only this synchronous stack walk reuses its hashes.
+function sourceFingerprint(source) {
+  return finishFingerprint({topology:sourceTopology(source),paragraphDigests:paragraphs(source).map(paragraphSourceDigest)});
+}
+function paragraphSourceDigest(paragraph){return digestSourcePart({domain:'yalken.pending-round-paragraph.v1',paragraph});}
+function finishFingerprint(parts) {return {...parts,hash:digestSourcePart({domain:'yalken.pending-round-source.v1',...parts})};}
+
+function sourceTopology(source) {
+  const leaves=new Set(paragraphs(source));
+  const visit=node=>leaves.has(node)?{paragraph:true}:Object.fromEntries(Object.entries(node).map(([key,value])=>[key,key==='content'?value.map(visit):value]));
+  return stable(visit(source));
+}
+function decodeRoundFrame(frame,base,context) {
+  if(frame?.schemaVersion!==4){if(context)context.fingerprint=null;return frame;}
+  assert(exact(frame,['schemaVersion','restoredSchemaVersion','sourceDelta','revisions','undo','redo','noteSourcePoints'])
+    && [1,2,3].includes(frame.restoredSchemaVersion),'PENDING_ROUND_DELTA_INVALID');
+  const delta=frame.sourceDelta;
+  assert(exact(delta,['schemaVersion','baseSourceSha256','targetSourceSha256','replacements']) && delta.schemaVersion===1
+    && /^[a-f0-9]{64}$/u.test(delta.baseSourceSha256) && /^[a-f0-9]{64}$/u.test(delta.targetSourceSha256)
+    && Array.isArray(delta.replacements) && delta.replacements.length<=10000,'PENDING_ROUND_DELTA_INVALID');
+  const fingerprint=context?.fingerprint||sourceFingerprint(base),paragraphDigests=fingerprint.paragraphDigests.slice();
+  assert(fingerprint.hash===delta.baseSourceSha256,'PENDING_ROUND_DELTA_BASE_MISMATCH');
+  const source=clone(base),rows=paragraphs(source);let previous=-1;
+  for(const replacement of delta.replacements) {
+    assert(exact(replacement,['paragraphIndex','previousParagraph']) && Number.isSafeInteger(replacement.paragraphIndex)
+      && replacement.paragraphIndex>previous && replacement.paragraphIndex<rows.length,'PENDING_ROUND_DELTA_INDEX_INVALID');
+    previous=replacement.paragraphIndex;
+    paragraphDigests[previous]=paragraphSourceDigest(replacement.previousParagraph);
+    assert(['paragraph','heading','codeBlock'].includes(replacement.previousParagraph?.type),'PENDING_ROUND_DELTA_TOPOLOGY_INVALID');
+    validateSource({type:'doc',content:[replacement.previousParagraph]});
+    const row=rows[previous];for(const key of Object.keys(row))delete row[key];Object.assign(row,clone(replacement.previousParagraph));
+  }
+  const nextFingerprint=finishFingerprint({topology:fingerprint.topology,paragraphDigests});
+  assert(nextFingerprint.hash===delta.targetSourceSha256,'PENDING_ROUND_DELTA_TARGET_MISMATCH');
+  if(context)context.fingerprint=nextFingerprint;
+  const {sourceDelta,restoredSchemaVersion,...metadata}=frame;
+  return {...metadata,schemaVersion:restoredSchemaVersion,source};
+}
+function encodeRoundFrame(frame,base,baseFingerprint,targetFingerprint) {
+  // Small existing histories retain their representation. Large same-topology
+  // sources use the reversible delta; structural changes keep full frames.
+  if(new TextEncoder().encode(JSON.stringify(frame.source)).length<65536)return clone(frame);
+  baseFingerprint ||= sourceFingerprint(base);targetFingerprint ||= sourceFingerprint(frame.source);
+  if(baseFingerprint.topology!==targetFingerprint.topology)return clone(frame);
+  const current=paragraphs(base),prior=paragraphs(frame.source),replacements=[];
+  for(let i=0;i<current.length;i++)if(stable(current[i])!==stable(prior[i]))replacements.push({paragraphIndex:i,previousParagraph:clone(prior[i])});
+  const {source,schemaVersion,...metadata}=frame;
+  const compact={schemaVersion:4,restoredSchemaVersion:schemaVersion,...clone(metadata),sourceDelta:{schemaVersion:1,
+    baseSourceSha256:baseFingerprint.hash,targetSourceSha256:targetFingerprint.hash,replacements}};
+  return JSON.stringify(compact).length<JSON.stringify(frame).length?compact:clone(frame);
+}
+function compactRoundHistory(ledger) {
+  for(const key of ['roundUndo','roundRedo']) {
+    if(!ledger[key])continue;
+    let base=ledger.source;const rounds=ledger[key].slice(),context={fingerprint:null};
+    for(let i=rounds.length-1;i>=0;i--) {
+      const baseFingerprint=context.fingerprint;const full=decodeRoundFrame(rounds[i],base,context);validateState(full,true);
+      rounds[i]=encodeRoundFrame(full,base,baseFingerprint,context.fingerprint);base=full.source;
+    }
+    ledger[key]=rounds;
+  }
+  return ledger;
+}
+function lastRoundFrame(ledger,key='roundUndo') {
+  const frame=ledger?.[key]?.at(-1);return frame?decodeRoundFrame(frame,ledger.source):null;
 }
 function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex) {
   // A paragraph property's identity covers the paragraph, not its changing text.
@@ -518,7 +596,7 @@ function replaceFromReturn(doc, returnedDoc, receipt, paragraphBindings) {
   preserveReturnedIdentities(before, proposed, paragraphBindings);
   const previous = roundFrame(before); previous.redo = [];
   after.roundUndo.push(previous);
-  return { changed: true, replay: false, doc: bindLedger(after) };
+  return { changed: true, replay: false, doc: bindLedger(compactRoundHistory(after)) };
 }
 function includeRevision(revision, mode) {
   if (revision.operation === 'format') return true;
@@ -558,7 +636,10 @@ function paragraphSegments(ledger, p, paragraphIndex, mode) {
   return result;
 }
 function materialize(input, mode = 'current') {
-  const ledger = validateLedger(input);
+  return materializeValidated(validateLedger(input),mode);
+}
+// Private, synchronous reuse only. Public callers always revalidate mutable data.
+function materializeValidated(ledger,mode='current') {
   assert(['current', 'original'].includes(mode));
   const doc = clone(ledger.source);
   const sourceParagraphs = paragraphs(ledger.source);
@@ -579,21 +660,30 @@ function materialize(input, mode = 'current') {
 }
 function bindLedger(input) {
   const ledger = clone(validateLedger(input));
-  const materialized=materialize(ledger);
+  const materialized=materializeValidated(ledger);
   return { ...materialized, attrs: { ...materialized.attrs,[KEY]: ledger } };
 }
 function readLedger(doc) {
   const ledger = doc?.attrs?.[KEY];
   if (ledger === undefined || ledger === null) return null;
   validateLedger(ledger);
-  assert(stable(normalizeNode(doc)) === stable(normalizeNode(materialize(ledger))), 'PENDING_REVISIONS_PROJECTION_MISMATCH');
+  assert(stable(normalizeNode(doc)) === stable(normalizeNode(materializeValidated(ledger))), 'PENDING_REVISIONS_PROJECTION_MISMATCH');
   return ledger;
 }
 function setDefaultTabStop(doc,value) {
   const checked=require('./word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(value);
   const ledger=readLedger(doc);if(!ledger)return {...clone(doc),attrs:{...clone(doc.attrs||{}),wordDefaultTabStop:checked}};
-  const next=clone(ledger),pending=[next];
-  while(pending.length){const frame=pending.pop();frame.source.attrs={...frame.source.attrs,wordDefaultTabStop:checked};for(const key of ['roundUndo','roundRedo'])for(const prior of frame[key]||[])pending.push(prior);}
+  const next=clone(ledger),original=ledger.source;
+  const rewrite=source=>{const copied=clone(source);copied.attrs={...copied.attrs,wordDefaultTabStop:checked};return copied;};
+  for(const key of ['roundUndo','roundRedo']) {
+    if(!next[key])continue;
+    let base=original,newBase=rewrite(original);
+    for(let i=next[key].length-1;i>=0;i--) {
+      const full=decodeRoundFrame(next[key][i],base),updated={...full,source:rewrite(full.source)};
+      next[key][i]=encodeRoundFrame(updated,newBase);base=full.source;newBase=updated.source;
+    }
+  }
+  next.source=rewrite(original);
   return bindLedger(next);
 }
 function decide(doc, input) {
@@ -608,7 +698,7 @@ function decide(doc, input) {
       const other = input.action === 'undo' ? ledger.roundRedo : ledger.roundUndo;
       if (!rounds?.length) return { changed: false, doc };
       assert(other.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
-      const next = rounds.pop(); other.push(roundFrame(ledger));
+      const next = decodeRoundFrame(rounds.pop(),ledger.source); other.push(encodeRoundFrame(roundFrame(ledger),next.source));
       if (next.schemaVersion !== 3) delete ledger.noteSourcePoints;
       return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: next.schemaVersion === 3 ? 3 : 2,
         roundUndo: ledger.roundUndo, roundRedo: ledger.roundRedo, returnReceipts: ledger.returnReceipts }) };
@@ -636,7 +726,7 @@ function projection(doc) {
   const ledger = readLedger(doc); if (!ledger) return null;
   const sourceParagraphs = paragraphs(ledger.source);
   const text = value => paragraphs(value).map(p => (p.content || []).map(textOf).join('')).join('\n');
-  return { original: text(materialize(ledger, 'original')), current: text(materialize(ledger)),
+  return { original: text(materializeValidated(ledger, 'original')), current: text(materializeValidated(ledger)),
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
     revisions: ledger.revisions.map(r => ({ ...clone(r), text: isTableRow(r) ? tableRows(ledger.source).filter(row => row.tableIndex === r.structure.tableIndex && row.rowIndex === r.structure.rowIndex).flatMap(row => sourceParagraphs.slice(row.paragraphIndex, row.paragraphIndex + row.paragraphCount)).map(p => (p.content || []).map(textOf).join('')).join('\t') : isParagraphBoundary(r) ? '\n' : (sourceParagraphs[r.paragraphIndex].content || []).map(textOf).join('').slice(r.from, r.to) })) };
 }
@@ -771,8 +861,7 @@ function basisEndpoint(basis,paragraphIndex,offsetUtf16,mode='current',inverse=f
     return {paragraphIndex,offsetUtf16:offsetUtf16-removed};
   }
   const currentText=row.filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':s.revision.operation!=='insert')).map(s=>textOf(s.node)).join('');
-  const edges=new Set([currentText.length,...Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(currentText),s=>s.index)]);
-  assert(edges.has(offsetUtf16),'PENDING_COMMENT_ENDPOINT_INVALID');
+  assert(offsetUtf16===currentText.length || new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(currentText).containing(offsetUtf16)?.index===offsetUtf16,'PENDING_COMMENT_ENDPOINT_INVALID');
   const candidates=[]; let projected=0;
   for(const s of row) {
     const hidden=s.revision && (mode==='current'?s.revision.operation==='delete':s.revision.operation==='insert');
@@ -838,7 +927,7 @@ function createCommentUnionLocator({document,projection,anchor,unionStart,unionE
 }
 function validateCommentUnionLocator({document,projection,anchor,locator}) {return checkedCommentLocator(projection?{rows:projection.segments}:commentBasis(document),anchor,locator);}
 function commentAnchorBindings(basis,anchors) {
-  assert(Array.isArray(anchors) && anchors.length<=128,'PENDING_COMMENT_ANCHORS_INVALID');
+  assert(Array.isArray(anchors) && anchors.length<=require('./word-comment-body-v1.cjs').COMMENT_CAPACITY.threads,'PENDING_COMMENT_ANCHORS_INVALID');
   const seen=new Set(), ownerByNode=new Map(); let tableId=0;
   const visit=(node,owner=null)=>{
     if(node.type==='table') {
@@ -923,4 +1012,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

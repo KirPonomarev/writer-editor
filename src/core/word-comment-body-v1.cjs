@@ -6,6 +6,9 @@ const STATE_V2 = 'yalken.rtk.word.non-text-return-state.v2';
 const STATE_V3 = 'yalken.rtk.word.non-text-return-state.v3';
 const STATE_V5 = 'yalken.rtk.word.non-text-return-state.v5';
 const STATE_V4 = 'yalken.rtk.word.non-text-return-state.v4';
+const STATE_V6 = 'yalken.rtk.word.non-text-return-state.v6';
+const COMMENT_CAPACITY=Object.freeze({stateBytes:2*1024*1024,threads:512,messages:2048,events:2048});
+const LEGACY_COMMENT_CAPACITY=Object.freeze({stateBytes:65536,threads:128,messages:2048,events:512});
 const SCHEMA = 'yalken.word.comment-body.v1';
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const fail = code => { throw Object.assign(new Error(code), { code }); };
@@ -136,17 +139,36 @@ function commentBodyEqual(left, right) {
 // Serialize already validated canonical state without spending its byte budget
 // on indentation. The graph and all history entries remain unchanged.
 function serializeCommentState(state, budgetCode = 'COMMENT_STATE_BUDGET') {
+  upgradeCommentState(state,budgetCode);
+  assertCommentCapacity(state,budgetCode);
   let text = JSON.stringify(state, null, 2) + '\n';
-  if (bytes(text) > 65536) text = JSON.stringify(state) + '\n';
-  if (bytes(text) > 65536) fail(budgetCode);
+  const limit=state.schemaVersion===STATE_V6?COMMENT_CAPACITY.stateBytes:LEGACY_COMMENT_CAPACITY.stateBytes;
+  if (bytes(text) > limit) text = JSON.stringify(state) + '\n';
+  if (bytes(text) > limit) fail(budgetCode);
   return text;
 }
-function upgradeCommentState(state) {
-  if (![STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5].includes(state.schemaVersion)) fail('COMMENT_STATE_INVALID');
-  if (state.schemaVersion === STATE_V5 || state.threads.some(t=>t.anchorEditHistory?.some(h=>h.schemaVersion===2))) state.schemaVersion=STATE_V5;
+function upgradeCommentState(state,code='COMMENT_STATE_BUDGET') {
+  if (![STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, STATE_V6].includes(state.schemaVersion)) fail('COMMENT_STATE_INVALID');
+  assertCommentCollections(state,COMMENT_CAPACITY,code);
+  if(state.schemaVersion===STATE_V6 || state.threads.length>LEGACY_COMMENT_CAPACITY.threads || state.events.length>LEGACY_COMMENT_CAPACITY.events || bytes(JSON.stringify(state))>LEGACY_COMMENT_CAPACITY.stateBytes)state.schemaVersion=STATE_V6;
+  else if (state.schemaVersion === STATE_V5 || state.threads.some(t=>t.anchorEditHistory?.some(h=>h.schemaVersion===2))) state.schemaVersion=STATE_V5;
   else if (state.schemaVersion === STATE_V4 || state.threads.some(t => t.anchor?.kind === 'multi-paragraph-range')) state.schemaVersion = STATE_V4;
   else if (state.schemaVersion === STATE_V3 || state.threads.some(t => t.anchor?.kind === 'point' || t.anchorEditHistory !== undefined)) state.schemaVersion = STATE_V3;
   else if (state.threads.some(t => [...t.messages, ...(t.deletedMessages || [])].some(m => m.richBody !== undefined))) state.schemaVersion = STATE_V2;
   return state;
 }
-module.exports = { serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };
+function assertCommentCollections(state,limits,code){
+  if(!Array.isArray(state.threads)||!Array.isArray(state.events)||state.threads.length>limits.threads||state.events.length>limits.events)fail(code);
+  let count=0;
+  for(const thread of state.threads) {
+    if(!plain(thread)||!Array.isArray(thread.messages)||thread.deletedMessages!==undefined&&!Array.isArray(thread.deletedMessages))fail(code);
+    count+=thread.messages.length+(thread.deletedMessages?.length||0);if(count>limits.messages)fail(code);
+  }
+}
+function assertCommentCapacity(state,code='COMMENT_STATE_BUDGET') {
+  const limits=state.schemaVersion===STATE_V6?COMMENT_CAPACITY:LEGACY_COMMENT_CAPACITY;
+  assertCommentCollections(state,limits,code);
+  if(bytes(JSON.stringify(state))>limits.stateBytes)fail(code);
+  return state;
+}
+module.exports = { STATE_V6, COMMENT_CAPACITY, LEGACY_COMMENT_CAPACITY, assertCommentCapacity, serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };

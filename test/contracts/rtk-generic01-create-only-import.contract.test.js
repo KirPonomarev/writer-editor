@@ -730,3 +730,85 @@ test('GENERIC01 pending revisions do not authorize unsafe links or orphan commen
     assert.equal(plan.candidateCreatePlan, null);
   }
 });
+
+test('editorial capacity 200 discussions use actual Main references and real create-only transaction',async t=>{
+ const vm=require('node:vm'),{createDocxImportPreviewReferences}=require('../../src/utils/docxImportPreviewReferences'),admission=require('../../src/utils/docxImportSafeCreate'),{withRealDocxImportAuthority}=require('../fixtures/docx-import-real-authority.cjs');
+ const main=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8'),root=ROOT,copy=v=>JSON.parse(JSON.stringify(v)),record=v=>Boolean(v)&&typeof v==='object'&&!Array.isArray(v),bridge=loadBridge;
+function section(name) {
+  const begin = main.indexOf('// ' + name + '_START');
+  const end = main.indexOf('// ' + name + '_END', begin);
+  assert.ok(begin >= 0 && end > begin, name);
+  return main.slice(begin, end);
+}
+
+function harness(t, options = {}) {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docx-reference-'));
+  t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
+  const state = { writes: 0, beforeLoad: null, beforeQueue: null, beforeEnsure: null, beforeActivate: null };
+  const sandbox = {
+    Buffer, createDocxImportPreviewReferences, cloneJsonSafe: copy, isPlainObjectValue: record,
+    ...admission, currentProjectName: 'A', path, sanitizeFilename: value => value,
+    recoverPendingWriterProjectTransaction: async () => {
+      const core = require('../../src/core/project-transaction-v1.cjs');
+      const binding = await core.readPendingProjectTransactionBinding({ manifestPath: path.join(sandbox.getProjectRootPath(), 'project.craftsman.json') });
+      assert.equal(binding.pending, false, 'reference-only fixture must not bypass a real pending transaction');
+      return { recovered: false, outcome: 'NO_JOURNAL' };
+    },
+    loadRevisionBridgeModule: async () => { await state.beforeLoad?.(); return bridge(); },
+    getProjectRootPath: () => path.join(tempRoot, sandbox.currentProjectName),
+    getProjectSectionPath: () => path.join(sandbox.getProjectRootPath(), 'roman'),
+    ensureProjectStructure: async () => {
+      await state.beforeEnsure?.();
+      fs.mkdirSync(sandbox.getProjectSectionPath(), { recursive: true });
+    },
+    resolveProjectBindingForFile: async () => {
+      const projectRoot = sandbox.getProjectRootPath();
+      state.binding = await withRealDocxImportAuthority({ projectRoot, projectId: 'docx-reference-project' });
+      return state.binding;
+    },
+    getMainProjectManifestAuthority: async () => {
+      const real = state.binding.transactionAuthority;
+      return { ...real, commitManifestText: async args => {
+        await state.beforeActivate?.();
+        const result = await real.commitManifestText(args);
+        state.writes += 1;
+        return result;
+      } };
+    },
+    queueDiskOperation: async operation => { await state.beforeQueue?.(); return operation(); },
+    module: { exports: {} },
+    ...options,
+  };
+  const setter = main.slice(main.indexOf('function setActiveProjectNameFromRoot('), main.indexOf('function makeProjectLifecycleError('));
+  const source = ['DOCX_IMPORT_PREVIEW_REFERENCES', 'DOCX_CONTENT_PREVIEW_COMMAND_SURFACE', 'DOCX_IMPORT_PREVIEW_COMMAND_SURFACE', 'DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE'].map(section).join('\n');
+  vm.runInNewContext(source + '\n' + setter + '\nmodule.exports = { handleDocxContentPreviewCommandSurface, handleDocxImportPreviewCommandSurface, handleDocxImportSafeCreateCommandSurface, invalidateDocxImportPreviewReferences, setActiveProjectNameFromRoot };', sandbox);
+  return { ...sandbox.module.exports, state, sandbox, tempRoot };
+}
+
+
+ const port=harness(t),body='Редакторская работа '.repeat(22).slice(0,400),W='http://schemas.openxmlformats.org/wordprocessingml/2006/main',W14='http://schemas.microsoft.com/office/word/2010/wordml',W15='http://schemas.microsoft.com/office/word/2012/wordml',O='http://schemas.openxmlformats.org/officeDocument/2006/relationships',P='http://schemas.openxmlformats.org/package/2006/relationships';
+ const hex=i=>(i+1).toString(16).padStart(8,'0').toUpperCase();
+ const denseBytes=(count=200,replies=1)=>{const stride=replies+1;return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip([
+  {name:'word/document.xml',body:documentXml(Array.from({length:count},(_,i)=>`<w:p><w:commentRangeStart w:id="${stride*i}"/><w:r><w:t>anchor ${i}</w:t></w:r><w:commentRangeEnd w:id="${stride*i}"/><w:r><w:commentReference w:id="${stride*i}"/></w:r></w:p>`).join(''))},
+  {name:'word/comments.xml',body:`<w:comments xmlns:w="${W}" xmlns:w14="${W14}">`+Array.from({length:count*stride},(_,i)=>`<w:comment w:id="${i}" w:author="Editor"><w:p w14:paraId="${hex(i)}"><w:r><w:t>${body}</w:t></w:r></w:p></w:comment>`).join('')+'</w:comments>'},
+  {name:'word/commentsExtended.xml',body:`<w15:commentsEx xmlns:w15="${W15}">`+Array.from({length:count*stride},(_,i)=>`<w15:commentEx w15:paraId="${hex(i)}"${i%stride?` w15:paraIdParent="${hex(i-i%stride)}"`:''} w15:done="0"/>`).join('')+'</w15:commentsEx>'},
+  {name:'word/_rels/document.xml.rels',body:`<Relationships xmlns="${P}"><Relationship Id="c" Type="${O}/comments" Target="comments.xml"/><Relationship Id="ex" Type="http://schemas.microsoft.com/office/2011/relationships/commentsExtended" Target="commentsExtended.xml"/></Relationships>`}
+ ].map(({name,body})=>({name,data:body})));};
+ const bytes=denseBytes();
+ const parsed=(await loadBridge()).buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:v=>crypto.createHash('sha256').update(v).digest('hex'),sha256Json:v=>'sha256:'+crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex'),byteLength:v=>Buffer.byteLength(v)}});t.diagnostic(JSON.stringify({grammar:parsed.reviewIr?.commentBodyGrammar,threads:parsed.reviewIr?.commentThreads?.length,code:parsed.code}));
+ const content=await port.handleDocxContentPreviewCommandSurface({requestId:'dense-content',bufferSource:bytes.toString('base64')});
+ assert.equal(port.state.writes,0);assert.equal(content.previewOk,true,JSON.stringify(content));assert.match(content.docxContentPreviewRef,/^[a-f0-9]{64}$/);
+ const plan=await port.handleDocxImportPreviewCommandSurface({requestId:'dense-plan',docxContentPreviewRef:content.docxContentPreviewRef});
+ assert.equal(port.state.writes,0);assert.equal(plan.importPreviewOk,true,JSON.stringify(plan));assert.match(plan.docxImportPreviewRef,/^[a-f0-9]{64}$/);
+ const result=await port.handleDocxImportSafeCreateCommandSurface({requestId:'dense-apply',docxImportPreviewRef:plan.docxImportPreviewRef});
+ assert.equal(result.safeCreateOk,true,JSON.stringify(result));assert.equal(port.state.writes,1);
+ const saved=JSON.parse(fs.readFileSync(path.join(port.tempRoot,'A/.yalken/word-review/non-text-return-state.v1.json'),'utf8'));
+ assert.equal(saved.schemaVersion,'yalken.rtk.word.non-text-return-state.v6');assert.equal(saved.threads.length,200);
+ for(const thread of saved.threads){assert.equal(thread.messages.length,2);assert.ok(thread.messages.every(m=>m.body===body));}
+ const savedPath=path.join(port.tempRoot,'A/.yalken/word-review/non-text-return-state.v1.json'),before=fs.readFileSync(savedPath,'utf8');
+ for(const [roots,replies] of [[513,1],[17,128]]) {
+  const refusal=await port.handleDocxContentPreviewCommandSurface({requestId:'over-'+roots,bufferSource:denseBytes(roots,replies).toString('base64')});
+  assert.equal(refusal.previewOk,false,JSON.stringify(refusal));assert.equal(refusal.docxContentPreviewRef,undefined);assert.equal(port.state.writes,1);assert.equal(fs.readFileSync(savedPath,'utf8'),before);
+ }
+
+});

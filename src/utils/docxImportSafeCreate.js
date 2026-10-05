@@ -1,3 +1,4 @@
+const { COMMENT_CAPACITY } = require('../core/word-comment-body-v1.cjs');
 const importAttempt = require('../core/word-import-attempt-v1.cjs');
 const { documentMedia, MEDIA_LIMITS } = require('../io/documentMedia.js');
 const fs = require('node:fs').promises;
@@ -496,7 +497,7 @@ function validateDocxImportPreviewPlan(plan) {
     } catch (error) { return buildError('DOCX_SAFE_CREATE_NOTES_INVALID', 'docx_import_notes_invalid', { code: error.code || error.message }); }
   }
   if (entry.comments !== undefined && (!Array.isArray(entry.comments) || !entry.comments.length
-    || entry.comments.length > 128 || Buffer.byteLength(JSON.stringify(entry.comments)) > 65536)) {
+    || entry.comments.length > COMMENT_CAPACITY.threads || Buffer.byteLength(JSON.stringify(entry.comments)) > COMMENT_CAPACITY.stateBytes)) {
     return buildError('DOCX_SAFE_CREATE_COMMENTS_INVALID', 'docx_import_comments_invalid');
   }
   if (entry.contentTextHash !== docxStableHash(content)) {
@@ -1392,7 +1393,7 @@ async function readGenericCommentState(projectRoot) {
     try {
       const stat = await fs.lstat(target);
       if (stat.isSymbolicLink() || (part.endsWith('.json')
-        ? !stat.isFile() || stat.nlink !== 1 || stat.size > 65536 : !stat.isDirectory())) throw Error('DOCX_GENERIC_COMMENT_STATE_BOUNDARY');
+        ? !stat.isFile() || stat.nlink !== 1 || stat.size > COMMENT_CAPACITY.stateBytes : !stat.isDirectory())) throw Error('DOCX_GENERIC_COMMENT_STATE_BOUNDARY');
     } catch (error) {
       if (error.code === 'ENOENT') return { path: path.join(projectRoot, ...relative), text: null };
       throw error;

@@ -2,6 +2,7 @@
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
 const { serializeCommentState, validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { COMMENT_CAPACITY } = require('./word-comment-body-v1.cjs');
 const { readState, exactAnchor } = require('./word-comment-authoring-v1.cjs');
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const clone = v => JSON.parse(JSON.stringify(v));
@@ -60,10 +61,12 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
-    && Array.isArray(baseline.threads) && baseline.threads.length <= 128,
+    && Array.isArray(baseline.threads) && baseline.threads.length <= COMMENT_CAPACITY.threads,
   'COMMENT_RETURN_BASELINE_REQUIRED');
-  demand(Array.isArray(returnedThreads) && returnedThreads.length <= 128
+  demand(Array.isArray(returnedThreads) && returnedThreads.length <= COMMENT_CAPACITY.threads
     && Array.isArray(returnedParagraphs) && Array.isArray(exportMap?.scenes), 'COMMENT_RETURN_GRAPH_INCOMPLETE');
+  demand(returnedThreads.every(t=>plain(t)&&Array.isArray(t.replies)) && returnedThreads.reduce((n,t)=>n+1+t.replies.length,0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_GRAPH_UNSAFE');
+  demand(baseline.threads.reduce((n,t)=>n+(t?.messages?.length||0),0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_BASELINE_REQUIRED');
   const before = readState(beforeText, projectId);
   const blocks = exportMap.scenes.flatMap(scene => (scene.blocks || []).map((block, sceneParagraphIndex) => ({
     ...block, sceneId: scene.sceneId, sceneParagraphIndex,
@@ -267,7 +270,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     if (candidate.created) {
       demand(!thread && candidate.messages.every(message => !after.threads.some(t =>
         t.messages.some(m => m.commentId === message.commentId))), 'COMMENT_RETURN_IDENTITY_COLLISION');
-      demand(after.threads.length < 128, 'COMMENT_RETURN_STATE_BUDGET');
+      demand(after.threads.length < COMMENT_CAPACITY.threads, 'COMMENT_RETURN_STATE_BUDGET');
       const { created, ...newThread } = candidate;
       newThread.rootCommentId = newThread.messages[0].commentId;
       after.threads.push(newThread);
@@ -277,7 +280,9 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       continue;
     }
     demand(thread && thread.sceneId === candidate.sceneId && thread.status !== 'deleted', 'COMMENT_RETURN_TARGET_INVALID');
+    const protectedHistory=thread.anchorEditHistory?.some(h=>h.sessionId?.startsWith('recording-round:'));
     if (candidate.status === 'deleted') {
+      demand(!protectedHistory,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
       changes.push({ threadId: thread.threadId, messageIds: [], anchorChanged: false,
         statusBefore: thread.status, statusAfter: 'deleted',
         deletionDecision: 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION' });
@@ -317,7 +322,10 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       // A remote anchor/status decision supersedes local text-history restore
       // coordinates. Keeping them could revive a remotely deleted/resolved
       // thread or make a moved anchor's persisted graph unreadable.
-      if (anchorChanged || thread.status !== candidate.status) delete thread.anchorEditHistory;
+      if (anchorChanged || thread.status !== candidate.status) {
+        demand(!protectedHistory,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
+        delete thread.anchorEditHistory;
+      }
       thread.messages = candidate.messages; thread.status = candidate.status;
       if (anchorChanged) thread.anchor = candidate.anchor;
     }
@@ -335,13 +343,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     demand(added<=1 && (changes.length===0 || added===1),'COMMENT_RETURN_PENDING_REPLY_ONLY');
   }
   if (!changes.length) return { replay: false, unchanged: true, afterText: beforeText, operationId, changes };
-  demand(before.revision < Number.MAX_SAFE_INTEGER && before.events.length < 512, 'COMMENT_RETURN_STATE_BUDGET');
+  demand(before.revision < Number.MAX_SAFE_INTEGER && before.events.length < COMMENT_CAPACITY.events, 'COMMENT_RETURN_STATE_BUDGET');
   upgradeCommentState(after);
   after.revision++;
   after.events.push({ type: 'WORD_COMMENT_RETURN_APPLIED', operationId, inputDigest,
     roundId, artifactSha256, resultingRevision: after.revision, threadDigest: hash(stable(after.threads)), changes });
   const afterText = serializeCommentState(after, 'COMMENT_RETURN_STATE_BUDGET');
-  demand(Buffer.byteLength(afterText) <= 65536, 'COMMENT_RETURN_STATE_BUDGET');
+  demand(Buffer.byteLength(afterText) <= COMMENT_CAPACITY.stateBytes, 'COMMENT_RETURN_STATE_BUDGET');
   readState(afterText, projectId);
   return { replay: false, afterText, operationId, changes, revision: after.revision };
 }

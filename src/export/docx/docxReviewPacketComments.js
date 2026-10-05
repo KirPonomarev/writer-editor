@@ -114,10 +114,10 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
     && require('../../io/inlineTypography.cjs').normalizeFontSize(exportTypography.fontSize) === exportTypography.fontSize),
   'DOCX_COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   if (state === undefined) return null;
-  demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(state.schemaVersion) && state.projectId === projectId
+  demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5, commentBody.STATE_V6].includes(state.schemaVersion) && state.projectId === projectId
     && Number.isSafeInteger(state.revision) && state.revision >= 0
     && Array.isArray(state.threads) && Array.isArray(state.events), 'DOCX_COMMENT_STATE_INVALID');
-  if (state.schemaVersion === commentBody.STATE_V5 || state.threads.some(thread => thread.anchorEditHistory?.some(entry => entry.schemaVersion === 2))) require('../../core/word-comment-authoring-v1.cjs').readState(JSON.stringify(state), projectId);
+  if ([commentBody.STATE_V5,commentBody.STATE_V6].includes(state.schemaVersion) || state.threads.some(thread => thread.anchorEditHistory?.some(entry => entry.schemaVersion === 2))) require('../../core/word-comment-authoring-v1.cjs').readState(JSON.stringify(state), projectId);
   const ids = new Set();
   const paraIds = new Set();
   const durableIds = new Set();
@@ -147,7 +147,7 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
         && Buffer.byteLength(message.body, 'utf8') <= 16384, 'DOCX_COMMENT_MESSAGE_INVALID');
       segmentDocxTextForSerialization(message.body);
       const content = commentBody.validateCommentMessageContent(message);
-      demand(!content.richBody || [commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(state.schemaVersion), 'COMMENT_RICH_STATE_VERSION_REQUIRED');
+      demand(!content.richBody || [commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5, commentBody.STATE_V6].includes(state.schemaVersion), 'COMMENT_RICH_STATE_VERSION_REQUIRED');
       reserve(ids, message.commentId);
       demand(!message.body.includes('\r'), 'DOCX_COMMENT_BODY_NON_CANONICAL_NEWLINE');
       const transportRichBody = exportTypography ? commentBody.commentBodyWithTypography(content, exportTypography) : null;
@@ -168,11 +168,11 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
     if (thread.status !== 'deleted') {
       demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
       const anchor = plain(thread.anchor) ? thread.anchor : {};
-      demand(anchor.kind !== 'point' || [commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(state.schemaVersion), 'COMMENT_POINT_STATE_VERSION_REQUIRED');
+      demand(anchor.kind !== 'point' || [commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5, commentBody.STATE_V6].includes(state.schemaVersion), 'COMMENT_POINT_STATE_VERSION_REQUIRED');
       demand(anchor.sceneId === thread.sceneId && (anchor.kind === 'point'
         ? anchor.affinity === 'right' && anchor.selectedText === '' && Number.isSafeInteger(anchor.startUtf16) : !!text(anchor.selectedText))
         && anchor.selectedTextSha256 === digest(anchor.selectedText), 'DOCX_COMMENT_ANCHOR_INVALID');
-      demand(anchor.kind !== 'multi-paragraph-range' || [commentBody.STATE_V4, commentBody.STATE_V5].includes(state.schemaVersion), 'COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+      demand(anchor.kind !== 'multi-paragraph-range' || [commentBody.STATE_V4, commentBody.STATE_V5, commentBody.STATE_V6].includes(state.schemaVersion), 'COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
       segmentDocxTextForSerialization(anchor.selectedText);
     }
     return { thread, allMessages, messages, deletedMessages };

@@ -197,7 +197,7 @@ function deriveParagraphBoundaries(doc, before, working, metadata) {
   after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
   const previous = frame(before); previous.redo = [];
   after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
-  const result = review.bindLedger(after);
+  const result = review.bindLedger(review.compactRoundHistory(after));
   if (!equal(result, working)) fail('RECORDING_CURRENT_PROJECTION_MISMATCH');
   if (!equal(review.materialize(after, 'original'), review.materialize(before, 'original'))) fail('RECORDING_ORIGINAL_PROJECTION_MISMATCH');
   return { changed: true, doc: result };
@@ -278,7 +278,7 @@ function deriveTableRows(doc, before, working, metadata) {
   after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
   const previous = frame(before); previous.redo = [];
   after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
-  const result = review.bindLedger(after);
+  const result = review.bindLedger(review.compactRoundHistory(after));
   if (!equal(result, working)) fail('RECORDING_CURRENT_PROJECTION_MISMATCH');
   if (!equal(review.materialize(after, 'original'), review.materialize(before, 'original'))) fail('RECORDING_ORIGINAL_PROJECTION_MISMATCH');
   return { changed: true, doc: result };
@@ -454,7 +454,7 @@ function derive(doc, workingDoc, metadata, editIntents) {
   after.revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
   const previous = frame(before); previous.redo = [];
   after.roundUndo.push(previous); after.roundRedo = []; after.undo = []; after.redo = [];
-  const result = review.bindLedger(after);
+  const result = review.bindLedger(review.compactRoundHistory(after));
   if (!equal(review.materialize(after), working)) fail('RECORDING_PROJECTION_MISMATCH');
   return { changed: true, doc: result };
 }

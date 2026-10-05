@@ -553,13 +553,14 @@ test('compact imported graph remains writable through authoring, anchor save, si
  await runtime.commitCommentAuthoring(call,{publish:op=>op(),revalidate:async()=>{}});
  assert.deepEqual(author.readState(fs.readFileSync(recovery.recoveryPath,'utf8'),'p'),final,'authoring recovery never expands the compact graph');
  const oversized=structuredClone(final);oversized.threads[0].messages[0].body='x'.repeat(16384);oversized.threads[1].messages[0].body='y'.repeat(16384);
- assert.ok(Buffer.byteLength(JSON.stringify(oversized))>65536);let writes=0;
+ assert.ok(Buffer.byteLength(JSON.stringify(oversized))>65536);oversized.schemaVersion=body.STATE_V6;
+ oversized.extra='x'.repeat(body.COMMENT_CAPACITY.stateBytes);let writes=0;
  const guarded=runtime.createRtkNonTextReturnFilePort({atomicWriteFile:async()=>{writes++;}});
  await assert.rejects(guarded.writeRecovery({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);await assert.rejects(guarded.writeCanonical({projectRoot:root,state:oversized}),/COMMENT_STATE_BUDGET/);assert.equal(writes,0);
  assert.throws(()=>body.serializeCommentState(oversized,'CUSTOM_BUDGET'),error=>error.code==='CUSTOM_BUDGET');
  const overCount={...original,threads:Array.from({length:128},(_,i)=>({threadId:'t'+i,sceneId:'s',status:'open',rootCommentId:'m'+i,anchor:{},messages:[{commentId:'m'+i,kind:'root',body:'x'}]}))};
  const atLimit=materializeGenericComments({...input,candidates:[candidate()],beforeText:JSON.stringify({...overCount,threads:overCount.threads.slice(0,127)})});assert.equal(author.readState(atLimit.afterText,'p').threads.length,128);
- const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);assert.throws(()=>materializeGenericComments({...input,candidates:[candidate()],beforeText:old}),/DOCX_GENERIC_COMMENT_STATE/);assert.equal(JSON.stringify(overCount),old);
+ const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);const expanded=materializeGenericComments({...input,candidates:[candidate()],beforeText:old});assert.equal(author.readState(expanded.afterText,'p').threads.length,129);assert.equal(JSON.parse(expanded.afterText).schemaVersion,body.STATE_V6);assert.equal(JSON.stringify(overCount),old);
 });
 
 test('generic import retains a comment at the start of a pending insertion for exact reexport',async()=>{

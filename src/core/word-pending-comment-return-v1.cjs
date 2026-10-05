@@ -105,8 +105,13 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
 function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
   need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=8*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
   let proof;try{proof=JSON.parse(returnProofJson);}catch{fail('MIXED_RETURN_PROOF_INVALID');}
-  need(proof&&Object.keys(proof).sort().join(',')==='artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedDocument,returnedParagraphs,returnedThreads,roundId,schemaVersion'
-    &&proof.schemaVersion===1&&proof.projectId===projectId,'MIXED_RETURN_PROOF_INVALID');
+  need(proof&&[1,2].includes(proof.schemaVersion)&&Object.keys(proof).sort().join(',')===
+    (proof.schemaVersion===2?'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedLedger,returnedParagraphs,returnedThreads,roundId,schemaVersion':'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedDocument,returnedParagraphs,returnedThreads,roundId,schemaVersion')
+    &&proof.projectId===projectId,'MIXED_RETURN_PROOF_INVALID');
+  // Version 2 stores one canonical source; its visible document is an exact
+  // checked materialization, not a separately supplied transport projection.
+  if(proof.schemaVersion===2)need(proof.exportMap&&!Object.hasOwn(proof.exportMap,'commentExport'),'MIXED_RETURN_PROOF_INVALID');
+  const returnedDocument=proof.schemaVersion===2?review.bindLedger(proof.returnedLedger):proof.returnedDocument;
   const scene=proof.exportMap?.scenes?.[0];need(proof.exportMap?.scenes?.length===1&&scene.sceneId===sceneId,'MIXED_RETURN_SCENE_REQUIRED');
   const parsed=envelope.parseObservablePayload(beforeContent);need(!parsed.issue&&parsed.doc,'MIXED_RETURN_DOCUMENT_REQUIRED');
   const sha=require('./browser-safe-hash.cjs').sha256UpdateCompatible;
@@ -114,13 +119,13 @@ function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afte
   const state=readState(beforeText,projectId),anchors=state.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
   const baselineRows=review.paragraphs(review.normalizeNode(parsed.doc));
   need(baselineRows.length===scene.blocks.length&&scene.blocks.every((b,i)=>b.formatIr?.runs?.map(r=>r.text).join('')===(baselineRows[i].content||[]).map(text).join('')),'MIXED_RETURN_EXPORT_TEXT_STALE');
-  const derived=deriveMixedPendingDocument({document:parsed.doc,returnedDocument:proof.returnedDocument,binding:scene.pendingCommentBinding,anchors,
+  const derived=deriveMixedPendingDocument({document:parsed.doc,returnedDocument,binding:scene.pendingCommentBinding,anchors,
     exportTypography:proof.exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
   const replacement=review.replaceFromReturn(canonicalPendingBasis(parsed.doc),derived.document,{roundId:proof.roundId,artifactSha256:proof.artifactSha256.replace(/^sha256:/u,'')});
   const content=envelope.composeObservablePayload({...parsed,doc:replacement.doc});
   if(afterContent!==undefined)need(content===afterContent,'MIXED_RETURN_TARGET_MISMATCH');
   const delta=require('./word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText,
-    mixedPendingScene:{sceneId,document:parsed.doc,returnedDocument:proof.returnedDocument}});
+    mixedPendingScene:{sceneId,document:parsed.doc,returnedDocument}});
   need(equal(readState(delta.afterText,projectId).threads.filter(t=>t.sceneId!==sceneId),state.threads.filter(t=>t.sceneId!==sceneId)),'MIXED_RETURN_FOREIGN_SCENE');
   return {mode:RETURN_MODE,beforeText,afterText:delta.afterText,returnProofJson,content,replacement,changes:delta.changes};
 }

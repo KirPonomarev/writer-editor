@@ -1,3 +1,23 @@
+## 2026-10-05 — PR2085 delivered;100k editorial capacity active
+
+PR2085 is merged at89dd736b2a72bbe9335a2b7baa014fe62866c3de. CI19/19; both
+full RTK3415/3415, zero fail/skip/todo. Inventory2199 executed passes and59
+configured skips remain separate. Exact merged42wholefiles1259/1259, zero
+fail/skip/todo; clean detached tree equals candidate20538947c; OPS5 and
+guardrails pass. Native07 runtime08d27bdfb has identical src/package bytes;
+both Mac origins completed genuine Word05 artifact replay, Apply, restart,
+UndoRedo and finished DOCX readback. First absent-comment creation has actual
+Main plus real atomic transaction proof. DELIVERY_RECEIPT.json retains hashes.
+
+Active WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005 starts from that exact base.
+One outcome combines compact paragraph round history and finite discussion
+capacity:100k text,200 roots+200 replies,400 Cyrillic characters per message,
+5 changed exchanges with disk reopen,5 Undo and5 Redo without history pruning
+or identity/message loss. Bootstrap/preflight45paths pass before first edit.
+Original full Mac plan remains; complex objects deferred. Single-scene capacity
+proof does not close multi-scene, composed styles/notes/structure/conflict and
+other required novel launch scenarios. No new completion percentage claimed.
+
 ## 2026-10-05 — mixed-return native07 complete; final delivery gates pending
 
 Runtime08d27bdfb330a61b58ffa1b3b5738db83a6c713b completes actual SOURCE07

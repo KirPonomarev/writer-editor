@@ -1,0 +1,88 @@
+{
+  "taskId": "WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
+  "objective": "100000-word text with finite editorial discussion volume can pass5authenticated changed exchanges, persist/reopen and5Undo/5Redo without duplicate whole-source frames or dropping protected comment history; original Mac plan remains intact.",
+  "writePaths": [
+    "Locally exported signed baseline plus validated Word return -> existing Main-owned preview reference admission and closed mixed-proof v2 carrying validated returned ledger without duplicated projection -> explicit Apply and Kernel revalidation -> recomputed compact history and capacity-aware comment state -> existing atomic scene/manifest/comment transaction -> exact saved-data readback -> guarded publication"
+  ],
+  "productPorts": [
+    "Existing leased scene/manifest/comment writer, readable recovery, DOCX exports and reference admission; no new writer"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact project/entity/lifecycle/revision/generation and signed baseline; no carried reference or WeakMap capability after reopening",
+    "Compact history base/target versioned source fingerprints bind exact ancestor topology and ordered SHA256 of every complete rich paragraph; only closed synchronous stack validation reuses paragraph digests; public mutable inputs always recompute. Unique ordered replacement indices; canonical reconstructed full frame owns semantic round identity",
+    "Exact scene/comment CAS, typed capacity version, all retained revision and discussion provenance; no pruning to satisfy bounds",
+    "Closed mixed return proof v2 reconstructs returnedDocument from fully validated returnedLedger; binds/materializes source and pending revisions independently under existing4MiB ledger limit. Exact legacy proof1 remains readable; no caller-selected proof context or fallback."
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
+  "fallbacks": [
+    "Structural topology changes retain existing full frames within unchanged byte budgets",
+    "Unsupported future frame/capacity versions or unprovable deltas refuse before mutation; legacy reads are pure",
+    "Thread/message/event/state/ref/scene/proof/ledger/transaction limits remain explicit finite refusals with no partial writes"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Compact all eligible legacy frames before new after-ledger budget validation",
+    "Reconstructed canonical frames must own semantic round identity for comment undo/redo",
+    "Rebase delta hashes when default tab stop rewrites source roots",
+    "Persist actual scene and comment files and recreate Main VM on reopen",
+    "Corrupt base/target hashes, duplicate indices, topology differences and budgets refuse without write",
+    "Existing atomic recovery and real transaction injected failure remain valid",
+    "No protected anchor history is pruned to satisfy byte budget; all5round histories retained through5Undo/Redo",
+    "Independent byte/thread/message/event refusal and stale CAS; real transaction rollback/crash recovery with greater than64KiB state",
+    "500/1000 roots measured stress only, typed no-write refusal allowed and never advertised as capacityPASS",
+    "Actual native100k200-discussion intake uses existing Main-owned preview-reference path: retained snapshot8MiB,totalcache16MiB; wire4M UTF16-char request cap stays unchanged and is not resolved-manuscript byte bound. Measure ref path admission before any scope change.",
+    "Actual Main+real atomic writer with100k200roots/200replies;5fresh signed changed returns,5fresh disk-based contexts,5Undo5Redo; exact Original/Current/revision provenance and discussion messages/status/anchors",
+    "Total byte/thread/message/event limits include tombstones, independently reject; malformed version/delta/hash/topology, stale CAS and injected crash/rollback retain before state",
+    "Build both Mac origins and perform early actual100k Word changed-return before full gates; final strict CI, merge and relevant exact merged checks",
+    "Actual Main dense reference intake validates 400 rich message bodies under shared 2048 total message cap; parser traversal and individual body bounds remain; overflow and malformed metadata refuse without write.",
+    "Protected recording-round entries never expire even when undone; established32-group manual typing window may expire unrelated manual entries only. All32 protected refuses before write. Mutated-after-read and root/ancestor/empty paragraph/ordering changes reject delta binding; domain-separated fingerprint version is explicit.",
+    "Measure all5 serialized mixed proofs under unchanged8MiB gate and32MiB atomic packet. Exact proof2 key/schema admission; ledger malformed/hash/projection/oversize and extra keys refuse zero writes. Legacy proof1 and nullable first-comment behavior preserved; transaction independently recomputes identical source and delta.",
+    "Endpoint grapheme check uses uncached Segmenter.containing offset equality or exact text length under existing integer and range guards; compare every UTF16 offset with the previous full segmentation oracle for combining marks, ZWJ, regional indicators, surrogate pairs and CRLF. No Unicode boundary relaxation or shared mutable cache."
+  ],
+  "securityAndInputBoundary": "No dependency or runtime network. Retain ledger4MiB,scene/proof8MiB,128frames,depth256 and bounded cumulative traversal; one reconstructed source at a time. Finite discussion envelope512threads,2048messages/events,2MiBstate/candidates; individual rich body64KiB and plain16KiB remain. Main wire4M UTF16chars remains; existing reference snapshot8MiB/cache16MiB and transaction32MiB measured, not blindly widened.",
+  "performanceAndAccessibility": "Bounded five-exchange100000-word editorial acceptance, measuring actual UTF8 serialized scene/history/discussion/proof/reference/journal and peak memory; no per-keystroke full-history reconstruction or new UI. Profile-driven endpoint check removes full grapheme-set allocation while retaining exact Unicode boundaries; source and history are still validated.",
+  "currentReality": [
+    "PR2085 delivered at89dd736b2:CI19/19,bothRTK3415/3415,merged42wholefiles1259/1259 withzero fail/skip/todo; exactnative07 runtime bytes equal merged",
+    "Measured200roots/400messages exceeds legacy64KiB;100k full-source history reaches4MiB ledger refusal on round3",
+    "Owner-approved100000-word novel launch priority; original full Mac plan preserved and complex objects deferred",
+    "Corrected CRC-valid dense test refuses exact89dd parser grammar and current working-tree actual Main references/create-only atomic writer stores200roots+200replies as V6. This is intermediate working-tree evidence; no delivery/native Yalken PASS claimed.",
+    "Actual retained100229-word dense proof is8807162 UTF8bytes>8MiB and heavy100k proof9604346bytes; both actualMain zero-write refusals. Closed proof2 removes duplicated materialized returned document without widening gates."
+  ],
+  "targetOnly": [
+    "Capacity claim limited to100k200roots+200replies,400Cyrilliccharacters/message and5changed exchanges with5Undo5Redo actually proved",
+    "Whole novel composition, multi-scene workflows and original complete Mac plan remain outside this capacity packet",
+    "Existing100k corpus is1741paragraphs/100229words flattened toONEscene; this packet does not prove21scene mixed atomic return."
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core owns canonical document source, bounded pending revision history, durable discussions and atomic scene/comment persistence. Compact representation never changes semantic identity or grants authority.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.review.decidePendingRevision",
+    "Existing authenticated DOCX return preview and explicit Apply"
+  ],
+  "queries": [
+    "Existing immutable pending revision and discussion projections"
+  ],
+  "events": [
+    "Existing atomic project-saved event"
+  ],
+  "effects": [
+    "Existing leased scene/manifest/comment writer, readable recovery, DOCX exports and reference admission; no new writer"
+  ],
+  "hotPathBoundary": "Import/return and explicit governed history commands only; no full-history reconstruction per keystroke",
+  "migrationRollbackEvidence": "Current readable recovery snapshots retained. Code rollback alone does not make new-format scenes old-reader-compatible. Never silently restore older data or drop history.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_MECHANICAL_CAPACITY_REPAIR"
+}

@@ -9,8 +9,8 @@ function data(value) {
     || !Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'))) fail('COMMENT_ANCHOR_INVALID');
   return value;
 }
-const boundaries = text => new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
-  { granularity: 'grapheme' }).segment(text), item => item.index)]);
+const graphemeBoundary = (text, offset) => Number.isSafeInteger(offset) && offset >= 0 && offset <= text.length
+  && (offset === text.length || new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text).containing(offset)?.index === offset);
 const textOf = row => typeof row === 'string' ? row : data(row).text;
 function textsOf(paragraphs) {
   if (!Array.isArray(paragraphs) || paragraphs.length > 10000) fail('COMMENT_ANCHOR_INVALID');
@@ -45,7 +45,7 @@ function deriveCommentAnchor({ sceneId, paragraphs, input }) {
   const from = input.startUtf16, to = multi ? input.endUtf16 : from + (typeof input.selectedText === 'string' ? input.selectedText.length : -1);
   if (!Number.isSafeInteger(to) || to < 0 || from > texts[start].length || to > texts[end].length
     || (!multi && (to < from || (!point && to === from)))) fail('COMMENT_ANCHOR_STALE');
-  if (!boundaries(texts[start]).has(from) || !boundaries(texts[end]).has(to)) fail('COMMENT_ANCHOR_GRAPHEME');
+  if (!graphemeBoundary(texts[start],from) || !graphemeBoundary(texts[end],to)) fail('COMMENT_ANCHOR_GRAPHEME');
   const selectedText = multi ? [texts[start].slice(from), ...texts.slice(start + 1, end), texts[end].slice(0, to)].join('\n') : texts[start].slice(from, to);
   if (new TextEncoder().encode(selectedText).length > 16384 || (input.selectedText !== undefined && input.selectedText !== selectedText)) fail('COMMENT_ANCHOR_STALE');
   const anchor = { ...(multi ? { kind: MULTI } : point ? { kind: 'point', affinity: 'right' } : {}), sceneId,
@@ -85,12 +85,12 @@ function mapAnchorSplice(anchor, edit, afterText) {
   const from = edit.fromUtf16, to = edit.toUtf16, added = edit.insertText.length, delta = added - (to - from);
   const endpoint = (position, right) => position < from ? position : position > to ? position + delta : from + (right ? added : 0);
   if (anchor.kind === 'point' && from < start && to > start) return { anchor: { ...anchor, blockTextSha256: sha(afterText) }, deleted: true };
-  if (anchor.kind === 'point' && !boundaries(afterText).has(endpoint(start, true))) fail('COMMENT_EDIT_GRAPHEME');
+  if (anchor.kind === 'point' && !graphemeBoundary(afterText,endpoint(start, true))) fail('COMMENT_EDIT_GRAPHEME');
   if (anchor.kind === 'point') return { anchor: { ...anchor, startUtf16: endpoint(start, true), blockTextSha256: sha(afterText) }, deleted: false };
   if (from <= start && to >= end && to > from) return { anchor: { ...anchor, blockTextSha256: sha(afterText) }, deleted: true };
   const nextStart = endpoint(start, true), nextEnd = endpoint(end, false);
   if (nextEnd <= nextStart) fail('COMMENT_EDIT_RANGE_INVALID');
-  if (!boundaries(afterText).has(nextStart) || !boundaries(afterText).has(nextEnd)) fail('COMMENT_EDIT_GRAPHEME');
+  if (!graphemeBoundary(afterText,nextStart) || !graphemeBoundary(afterText,nextEnd)) fail('COMMENT_EDIT_GRAPHEME');
   const selectedText = afterText.slice(nextStart, nextEnd);
   return { anchor: { ...anchor, startUtf16: nextStart, selectedText, selectedTextSha256: sha(selectedText), blockTextSha256: sha(afterText) }, deleted: false };
 }
@@ -102,7 +102,7 @@ function rebaseCommentAnchorSplice({ anchor, beforeParagraphs, afterParagraphs, 
     || typeof edit.insertText !== 'string' || before[index].slice(edit.fromUtf16, edit.toUtf16) !== edit.removedText
     || after[index] !== before[index].slice(0, edit.fromUtf16) + edit.insertText + before[index].slice(edit.toUtf16)
     || before.some((text, i) => i !== index && text !== after[i])) fail('COMMENT_EDIT_REPLAY_MISMATCH');
-  if (!boundaries(before[index]).has(edit.fromUtf16) || !boundaries(before[index]).has(edit.toUtf16)) fail('COMMENT_EDIT_GRAPHEME');
+  if (!graphemeBoundary(before[index],edit.fromUtf16) || !graphemeBoundary(before[index],edit.toUtf16)) fail('COMMENT_EDIT_GRAPHEME');
   if (anchor.kind !== MULTI) return index === anchor.sceneParagraphIndex ? mapAnchorSplice(anchor, edit, after[index]) : { anchor: { ...anchor }, deleted: false };
   const from = edit.fromUtf16, to = edit.toUtf16, added = edit.insertText.length;
   const endpoint = (position, right) => position < from ? position : position > to ? position + added - (to - from) : from + (right ? added : 0);
@@ -136,7 +136,7 @@ function rebaseStructuralCommentAnchor({anchor,beforeParagraphs,afterParagraphs,
   const a=mapCommentEndpoint(start,edit,true),b=mapCommentEndpoint(end,edit,false);
   if(deleted) {
     const text=textsOf(afterParagraphs)[a.paragraphIndex];
-    if(typeof text!=='string'||!boundaries(text).has(a.offsetUtf16)) fail('COMMENT_EDIT_GRAPHEME');
+    if(typeof text!=='string'||!graphemeBoundary(text,a.offsetUtf16)) fail('COMMENT_EDIT_GRAPHEME');
     return {anchor:{...anchor},deleted:true,liveLocator:{sceneParagraphIndex:a.paragraphIndex,startUtf16:a.offsetUtf16,blockTextSha256:sha(text)}};
   }
   const input={paragraphIndex:a.paragraphIndex,startUtf16:a.offsetUtf16};

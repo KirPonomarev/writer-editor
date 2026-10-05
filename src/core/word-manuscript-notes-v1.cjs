@@ -147,7 +147,7 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
     // First admission includes the exact previous baseline frame. It is checked
     // against the saved canonical reference below, not trusted as an offset hint.
     if (!beforePoints && afterLedger?.roundUndo?.length) {
-      const frame = afterLedger.roundUndo.at(-1);
+      const frame = pending.lastRoundFrame(afterLedger);
       const frameDoc = pending.bindLedger({ ...frame, roundUndo: [], roundRedo: [], returnReceipts: [] });
       need(sceneText(require('./document-content-envelope-v1.cjs').composeObservablePayload({ doc: frameDoc })) === before, 'NOTE_PENDING_BASELINE_MISMATCH');
       beforePoints = pending.noteProjection(frameDoc);

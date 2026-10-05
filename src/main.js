@@ -6229,8 +6229,11 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
         baselineDocuments:[{sceneId,document:current.parsed.doc}],retainPendingSceneId:sceneId,documentSections:capsule.documentSections,
         signedSectionsDigest:capsule.documentSections?.protectedDigest,allowOfficeDefaultOmissions:capsule.officeModeTransport===true,cryptoPort});
       if(!parsedScenes.ok||parsedScenes.scenes.length!==1)throw Error(parsedScenes.code||'MIXED_RETURN_PARSE_FAILED');
-      const proof={schemaVersion:1,projectId:current.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
-        baseline:capsule.commentExport,exportMap:capsule.exportMap,returnedDocument:parsedScenes.scenes[0].returnedDocument,
+      const proofExportMap=JSON.parse(JSON.stringify(capsule.exportMap));
+      if(Object.hasOwn(proofExportMap,'commentExport') && stableRtkReviewTransportJson(proofExportMap.commentExport)!==stableRtkReviewTransportJson(capsule.commentExport))throw Error('MIXED_RETURN_COMMENT_BASELINE_MISMATCH');
+      delete proofExportMap.commentExport;
+      const proof={schemaVersion:2,projectId:current.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
+        baseline:capsule.commentExport,exportMap:proofExportMap,returnedLedger:pendingTextRevisions.readLedger(parsedScenes.scenes[0].returnedDocument),
         returnedThreads:intake.parserResult?.reviewIr?.commentThreads,returnedParagraphs:intake.parserResult?.reviewIr?.formattingParagraphs?.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),
         commentReturnInventory:intake.parserResult?.reviewIr?.commentReturnInventory};
       mixedPlan=require('./core/word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText:current.saved?.text??null,
