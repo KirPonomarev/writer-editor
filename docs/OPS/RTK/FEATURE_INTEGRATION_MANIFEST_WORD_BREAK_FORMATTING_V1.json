@@ -63,12 +63,13 @@
   "securityAndInputBoundary": "No dependencies, runtime network, new IPC, generic writer or private corpus. Existing byte/entity budgets retained. External tuples and break vectors validated before interpretation.",
   "performanceAndAccessibility": "Reuse bounded formatting parser and explicit preview/apply; no new work per keystroke. Existing native keyboard and review controls unchanged.",
   "currentReality": [
-    "PR2080 delivered root paragraph comment editing at60a22cd0f with CI19/19 and merged428/428 plus exact OPS proof",
-    "Standalone formatting rejects LF-only intervals and lacks typed-break-vector guard; canonical language currently restricted to text marks"
+    "Native fc9aa9f56 SOURCE/PACKAGED actual Word break-only font18pt and full language, Apply, both exports and restart observed; explicit scene selection required for packaged restored journal query",
+    "Affected387/387 zero skips, OSS/audit pass; full CI/delivery pending"
   ],
   "targetOnly": [
-    "Break-only font/language roundtrip and exact topology admission remain TARGET until this packet executes",
-    "Pending text+comments mixed shared novel, crossscene, rich notes/custom markers, structural lists/cells/headings and original Mac plan remain open"
+    "Original full novel plan and mixed pending text/comments remain open",
+    "Paragraph-mark font axes and separate normal/complex-script sizes remain unsupported; preserve explicit refusal",
+    "No whole-plan percentage or fullnovelacceptance inferred from bounded native route"
   ],
   "designToolRouter": "NOT_APPLICABLE",
   "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",

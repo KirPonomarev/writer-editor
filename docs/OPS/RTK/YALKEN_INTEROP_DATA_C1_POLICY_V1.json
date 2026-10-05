@@ -2510,15 +2510,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b100400602128aae0e2bb5afd3caa04d39b5084047d10d34b57d1a0200ccd92d"
+        "sha256": "fcaaaa3c5ff41131b456951494e6f2a6ab41450d032eb32bc630484e4edaa581"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b77c4f1c350881255606286509c0b3ef4104de03a2ae3ed20a2b110cc2b1be4b"
+        "sha256": "ea02083af295eeaf18af78c45cd3a0a05f9243622135bb3e9abb6bc145ecb386"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4e6b3caefe0c65236f72e7fc879d6776ab7606c53bb7058231a3a8ede7daddf0"
+        "sha256": "1119822cf986c0ddac2aaf3123496ab3f691cfa274e665bdca2cd13a71fe2231"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2570,11 +2570,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-break-formatting-mac.md",
-        "sha256": "6f6c9d056343a1809ce7ebbdaae17ef4d769c4d41956c16ff6ee087c3acbf12b"
+        "sha256": "e90c09f95c69aa866ead001dc4b82ba48b7aed01fffd401b9f514a799bdcb579"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BREAK_FORMATTING_V1.json",
-        "sha256": "ad81cad4b49d10e6d0e007d26b01051db9fad6055c47e9e98b38dc834b9a6a64"
+        "sha256": "7b6c7467fb4d939a645259a8fd8cae5358ab7802f971f9cf7fc77ff15ec97427"
       }
     ],
     "followupRepair": {

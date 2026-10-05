@@ -1,5 +1,17 @@
 # HANDOFF (Yalken Writer)
 
+## Stable candidate observations — 2026-10-05 05:53 EEST
+
+Break-formatting native SHAfc9aa9f56: SOURCE/PACKAGED actual Word break-only
+Georgia18pt + inherited language ->15opsApply; three exact types/text retained;
+both reexports raw XML; real restart exact scene bytes, saved journal inspected.
+PACKAGED query required explicit scene selection. Old return after reexport
+stale-refused; no second Apply. External proof binds16 artifacts. Nine affected
+files387/387 zero skips; OSS/audit pass. Full CI/delivery still pending.
+Retain original-plan gap: select-all paragraph-mark fonts and separate sz/szCs
+remain unsupported; do not flatten into inline marks or remove refusal. Shared
+novel pending-text+comments mixture remains next after current delivery closure.
+
 ## Active implementation — 2026-10-05 05:18 EEST
 
 PR2080 full delivery closed at60a22cd0ff93e47104ac7d78980c7cf17a71b476:

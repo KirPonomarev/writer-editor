@@ -3,7 +3,7 @@
 TASK_ID: WORD_BREAK_FORMATTING_MAC_20261005
 TYPE: PRODUCT_CODE
 BASE: 60a22cd0ff93e47104ac7d78980c7cf17a71b476
-STATUS: FOCUSED_CANDIDATE_READY_NATIVE_PENDING
+STATUS: NATIVE_SOURCE_PACKAGED_OBSERVED_DELIVERY_PENDING
 
 Original owner priority remains complete Mac novel-text portability. PR2080 is
 delivered: CI19/19, both RTK3284/3284, exact merged428/428 plus real Git/OPS
@@ -89,3 +89,40 @@ span loss because upstream textStyle parsing required CSS. The declared adapter
 repair accepts a validated data-word-language span while retaining upstream
 rules. XML DOM compatibility used in the test is bounded; no native clipboard
 proof is claimed. Exporters and formatting writer needed no change.
+
+## Stable native and affected-chain observations
+
+Native candidate `fc9aa9f56530bcb3375dc1dcf2732a8ff3a0443b` was executed in
+SOURCE and PACKAGED on macOS27 arm64 with Word16.112. Each used a fresh signed
+export and real Word selections of line, page and column breaks at UTF16[1,2)
+in three separate paragraphs. Georgia18pt changes plus the inherited complete
+language tuple returned as15 operations through explicit Apply. Literal text,
+paragraph count and break kinds remained equal. Neighbors retained inherited
+Times New Roman; Georgia did not spread into adjacent text. Both ordinary and
+Review reexports preserve all three break fonts, sizes and language tuples in
+raw XML. Each app really restarted; canonical scene bytes remained exact and
+the saved formatting journal was inspected. PACKAGED required explicit scene
+selection before that query; the earlier unbound view is retained as evidence.
+Reopening the old return AFTER a new export is stale-refused without a second
+write; this is distinct from an idempotent fresh-session Apply claim.
+External NATIVE_OBSERVATIONS_VERIFIED.json binds16 artifacts and literal checks.
+
+Nine complete affected test files passed387/387, zero skipped/todo/cancelled,
+on the native SHA in120.85s; source/test hashes stayed unchanged. OSS policy
+and npm audit passed. Mandatory CI and delivery remain pending.
+
+### Discovered original-plan residual, not silently accepted
+
+Actual Word Select All -> Georgia18 also writes pPr/rPr rFonts(ascii,hAnsi),
+sz and szCs. The current paragraph-mark model only carries language, so all
+four paragraphs correctly refuse that unmodeled typography. Retained Word
+artifact297b4b6ddab4532bd186f3dc0384fa0a1c800fc85e8cfdea8badaa2d99855bcc
+and baseline d9e85fdc848588db0d7d2682f77dd63802aed8df18246abd6315600d4e6e1c4f
+bind this gap. No guard was removed; break-only native scope is explicit.
+Future complete novel typography needs a finite paragraph-mark carrier with
+separate script font axes and normal/complex-script sizes, preserved on empty
+paragraphs, both exports and subsequent authoring. Also retain the packaged
+restart binding presentation issue. These join the original residual plan.
+Fixture setup initially used an incomplete sectPr, rejected WORD_SECTIONS_INVALID;
+a minimal corrected seed passed before positive execution. One Word focus error
+was undone and the failed artifact retained. Neither is product success evidence.

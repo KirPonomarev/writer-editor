@@ -1,5 +1,14 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 05:53 EEST — break formatting native and focused proof
+
+- SOURCE/PACKAGED fc9aa9f56 actual Word edits three break types; Apply, ordinary
+  and Review reexport, restart observed. Exact literal/mark checks and16 artifact
+  hashes external. Packaged journal query needs explicit restored scene selection.
+- Nine affected files387/387 zero skips,120.85s, unchanged bindings; OSS/audit pass.
+  Full CI and delivery pending. Select-all paragraph-mark font/size is an explicit
+  original-plan residual; raw failed example retained, no parser guard bypass.
+
 ## 2026-10-05 05:18 EEST — structural delivery and break formatting
 
 - PR2080 merged60a22cd0f; CI19/19, both RTK3284/3284, merged428/428 and exact
