@@ -184,3 +184,30 @@ before the fix;81/81 affected checks then passed, no skips/todo, including
 explicit Apply, round Undo/Redo and finished DOCX discussion readback.
 CI37294887991 was cancelled after this confirmed finding; it is not green
 acceptance. Native04 verifies earlier edits before the next full candidate gate.
+
+
+## Native04 changed-save comment-survival blocker
+
+On frozen e3d7d189a, actual Word replaced the earliest INS with EARLY and
+added a new discussion. Return preview correctly showed the old beta discussion
+as deleted; Apply was cancelled. Canonical scene and comment bytes are unchanged;
+only one normal scene backup was added before process stop. Native04 is FAIL for
+reexport survival, not a passed mixed round. Evidence:
+SOURCE04_COMMENT_SURVIVAL_BLOCKER.json and SOURCE04-cancel-readback.json.
+
+The exported SOURCE03 beta comment has its end and reference inside the following
+w:del alpha; PACKAGED03 gamma has the same structure. Word initially displays the
+comment, but its changed save removes that discussion. A no-edit CmdS leaves the
+package byte-identical and therefore is not a serialization oracle. The bounded
+repair moves comment markers outside deleted wrappers in the shared pending-run
+emitter, preserving union positions and Current quotes. The next native proof
+must perform a changed Word save and compare every prior message, status and quote.
+Clean e3d7d189a preflight passes with the shared emitter and affected test added to
+scope; no new feature or writer. Full gates wait for repaired native success.
+
+Shared-emitter repair adds a deletion flush at live comment markers. Regression
+cases at deletion end and interior failed before the repair, then passed;109/109
+affected checks pass without fail/skip/todo. Finished DOCX readback preserves
+Current/Original, messages, exact union endpoint and signed canonical revision
+identity/provenance even when a deletion wrapper is split. Native changed-save
+survival remains pending and is not inferred from these programmatic checks.

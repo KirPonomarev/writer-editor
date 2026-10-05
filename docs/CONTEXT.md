@@ -1,3 +1,20 @@
+## 2026-10-05 13:26 EEST — mixed-return native reexport survival repair
+
+PR2085 remains unmerged. SOURCE03/PACKAGED03 Apply, restart, round Undo/Redo
+and parser readback passed on frozen04d11c474; these are small fixtures.
+Position-order repair e3d7d189a passed81 affected checks. Native04 then found
+that Word drops the prior beta discussion on its next changed save: the exported
+comment endpoint/reference is inside deleted alpha. Apply was cancelled; scene
+and comment state are unchanged. Shared emitter repair and both Mac native
+changed-save checks are required before final CI/delivery. CI37294887991 was
+cancelled after the earlier position-order finding and is not acceptance.
+
+The100000-word launch subset is unchanged. Measured five-exchange probe completes
+2 exchanges and fails the third at the4MiB pending-ledger cap from repeated full
+source Undo frames; compact history is the next bounded packet after PR2085.
+Whole-book native acceptance and comment capacity remain open. Original Mac plan
+and deferred tables/objects remain intact. No updated completion percentage.
+
 ## 2026-10-05 11:59 EEST — owner-approved100000-word novel priority; PR2084 delivered
 
 The owner explicitly resumed work and selected the100000-word novel editorial
