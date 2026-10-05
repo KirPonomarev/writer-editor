@@ -2527,15 +2527,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "032e5258978228d8e02711b2aecfbf1263241e644b9956eee91b3f08f5389520"
+        "sha256": "1cf17f883e9e1a5bb8f9a9b796c1d07f7e6ed01594744725b984e9d1f4f344d4"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "276a87c5103b5c4496bb2d3327fb9740a3c09a7ac3465387409e9eda4a4f40bf"
+        "sha256": "a8d36eab851208f51b0902b7c0e720a9de3d31818c20f0e1a3f67d542325f0ce"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "a418eeac7a31210a567d1c51497e2eaf5cc9aab83ffbf2904e1aef61a1947005"
+        "sha256": "be3092313e1ff437f6fc2f4b9ad9e2fc227b3a6561cc8f74d9c043b2ff6b90f2"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2655,7 +2655,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-mixed-return-mac.md",
-        "sha256": "706a5b5a8f82030137a6f1f15f2f5f5e8f47bcae50030f3d5463fbe781e28743"
+        "sha256": "d6cdc57eeb5785a2b15353e78991b87809007a25d580643b18c91ec21e06201d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MIXED_RETURN_V1.json",

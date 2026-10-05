@@ -1,3 +1,27 @@
+## 2026-10-05 — mixed return native05 complete; delivery pending
+
+Frozen ce26c8d1474ae16f279138cdf58d626de552d0c3 passes both SOURCE05 and
+PACKAGED05 real Word changed-save, native Apply, restart, round Undo/Redo and
+native Review DOCX reexport. Early INS-to-EARLY replacement precedes existing
+pending changes. All prior discussion durable identities, bodies, statuses and
+Current quotes survive Word save and the final reexport. SOURCE retains5 old
+revisions and adds2,4 threads/7 messages; PACKAGED retains9 old revisions and
+adds2,5 threads/10 messages. Undo restores prior Current and revision ledger while
+retaining messages and tombstoning only the added root; Redo restores exact
+applied scene bytes and reopens it. Normal stop archives saved profiles byte-exact.
+
+The shared emitter now keeps live comment markers outside deleted wrappers;
+109 affected checks pass, including deletion-end/interior and signed revision
+identity reconstruction. Earlier position-order repair is included. PR2085 must
+still receive the final successor, complete required CI, merge and exact merged
+verification. Previous cancelled CI is not acceptance. Evidence:
+word-mixed-return-mac-8449a73a4 NATIVE05_RECEIPT.json and stage readbacks.
+
+These189/190-word fixtures establish this packet only.100000-word five-cycle
+native acceptance remains open; measured third-cycle full-source Undo growth is
+the next launch blocker, followed by discussion capacity and remaining composed
+novel requirements. Original Mac plan remains intact; complex objects deferred.
+
 ## 2026-10-05 13:26 EEST — mixed-return native reexport survival repair
 
 PR2085 remains unmerged. SOURCE03/PACKAGED03 Apply, restart, round Undo/Redo
