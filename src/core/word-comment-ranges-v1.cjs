@@ -100,4 +100,43 @@ function rebaseCommentAnchorSplice({ anchor, beforeParagraphs, afterParagraphs, 
     endParagraphIndex: anchor.endSceneParagraphIndex, endUtf16: index === anchor.endSceneParagraphIndex ? endpoint(anchor.endUtf16, false) : anchor.endUtf16 } });
   return { anchor: { ...anchor, ...next }, deleted: false };
 }
-module.exports = { MULTI, deriveCommentAnchor, validateCommentAnchor, validateCommentAnchorOwners, rebaseCommentAnchorSplice, mapAnchorSplice };
+// V2 paragraph replacement uses explicit segment arrays; LF within a segment
+// remains a hardBreak. Linear positions are internal coordinates, never proof.
+function mapCommentEndpoint(endpoint,edit,right=true) {
+  const compare=(a,b)=>a.paragraphIndex-b.paragraphIndex||a.offsetUtf16-b.offsetUtf16;
+  const from={paragraphIndex:edit.fromParagraphIndex,offsetUtf16:edit.fromUtf16};
+  const to={paragraphIndex:edit.toParagraphIndex,offsetUtf16:edit.toUtf16};
+  const end={paragraphIndex:edit.fromParagraphIndex+edit.insertedParagraphs.length-1,
+    offsetUtf16:edit.insertedParagraphs.length===1?edit.fromUtf16+edit.insertedParagraphs[0].length:edit.insertedParagraphs.at(-1).length};
+  if(compare(endpoint,from)<0) return {...endpoint};
+  if(compare(endpoint,to)>0) return endpoint.paragraphIndex===to.paragraphIndex
+    ? {paragraphIndex:end.paragraphIndex,offsetUtf16:end.offsetUtf16+endpoint.offsetUtf16-to.offsetUtf16}
+    : {paragraphIndex:endpoint.paragraphIndex+end.paragraphIndex-to.paragraphIndex,offsetUtf16:endpoint.offsetUtf16};
+  return {...(right?end:from)};
+}
+function rebaseStructuralCommentAnchor({anchor,beforeParagraphs,afterParagraphs,edit}) {
+  validateCommentAnchor({sceneId:anchor.sceneId,paragraphs:beforeParagraphs,anchor});
+  const start={paragraphIndex:anchor.sceneParagraphIndex,offsetUtf16:anchor.startUtf16};
+  const end={paragraphIndex:anchor.kind===MULTI?anchor.endSceneParagraphIndex:start.paragraphIndex,
+    offsetUtf16:anchor.kind===MULTI?anchor.endUtf16:anchor.startUtf16+anchor.selectedText.length};
+  const cmp=(a,b)=>a.paragraphIndex-b.paragraphIndex||a.offsetUtf16-b.offsetUtf16;
+  const from={paragraphIndex:edit.fromParagraphIndex,offsetUtf16:edit.fromUtf16},to={paragraphIndex:edit.toParagraphIndex,offsetUtf16:edit.toUtf16};
+  const deleted=anchor.kind==='point'?cmp(from,start)<0&&cmp(to,start)>0:cmp(from,start)<=0&&cmp(to,end)>=0&&cmp(from,to)<0;
+  const a=mapCommentEndpoint(start,edit,true),b=mapCommentEndpoint(end,edit,false);
+  if(deleted) {
+    const text=textsOf(afterParagraphs)[a.paragraphIndex];
+    if(typeof text!=='string'||!boundaries(text).has(a.offsetUtf16)) fail('COMMENT_EDIT_GRAPHEME');
+    return {anchor:{...anchor},deleted:true,liveLocator:{sceneParagraphIndex:a.paragraphIndex,startUtf16:a.offsetUtf16,blockTextSha256:sha(text)}};
+  }
+  const input={paragraphIndex:a.paragraphIndex,startUtf16:a.offsetUtf16};
+  if(anchor.kind==='point') Object.assign(input,{kind:'point',affinity:'right',selectedText:''});
+  else if(a.paragraphIndex!==b.paragraphIndex) Object.assign(input,{kind:MULTI,endParagraphIndex:b.paragraphIndex,endUtf16:b.offsetUtf16});
+  else {
+    if(b.offsetUtf16<=a.offsetUtf16) fail('COMMENT_EDIT_RANGE_INVALID');
+    input.selectedText=textsOf(afterParagraphs)[a.paragraphIndex].slice(a.offsetUtf16,b.offsetUtf16);
+  }
+  const derived=deriveCommentAnchor({sceneId:anchor.sceneId,paragraphs:afterParagraphs,input});
+  const provenance=Object.fromEntries(Object.entries(anchor).filter(([key])=>!['kind','affinity','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256'].includes(key)));
+  return {anchor:{...provenance,...derived},deleted:false};
+}
+module.exports = { mapCommentEndpoint, rebaseStructuralCommentAnchor, MULTI, deriveCommentAnchor, validateCommentAnchor, validateCommentAnchorOwners, rebaseCommentAnchorSplice, mapAnchorSplice };

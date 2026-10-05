@@ -97,16 +97,16 @@ test('Word transaction: symlinked companion parent and pre-existing file are nev
   assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)), false);
 });
 
-for(const beforeVersion of [1,2,3,4]) test(`Word comment graph transaction admits monotonic v${beforeVersion} to v4 append and rejects downgrade`,async t=>{
+for(const [beforeVersion,afterVersion] of [...[1,2,3,4].map(v=>[v,4]),...[1,2,3,4,5].map(v=>[v,5])]) test(`Word comment graph transaction admits monotonic v${beforeVersion} to v${afterVersion} append and rejects downgrade`,async t=>{
  const f=fixture(t),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
  const {deriveCommentAnchor}=require('../../src/core/word-comment-ranges-v1.cjs');
  const sceneId='roman/imported.txt',before={schemaVersion:`yalken.rtk.word.non-text-return-state.v${beforeVersion}`,projectId:'tx-resources',revision:0,threads:[],events:[]};
- const after={...before,schemaVersion:'yalken.rtk.word.non-text-return-state.v4',revision:1,threads:[{threadId:'multi',sceneId,rootCommentId:'root',status:'open',messages:[{commentId:'root',kind:'root',body:'Retained'}],anchor:deriveCommentAnchor({sceneId,paragraphs:['Alpha','Beta'],input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:0,endParagraphIndex:1,endUtf16:4}})}]};
+ const after={...before,schemaVersion:`yalken.rtk.word.non-text-return-state.v${afterVersion}`,revision:1,threads:[{threadId:'multi',sceneId,rootCommentId:'root',status:'open',messages:[{commentId:'root',kind:'root',body:'Retained'}],anchor:deriveCommentAnchor({sceneId,paragraphs:['Alpha','Beta'],input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:0,endParagraphIndex:1,endUtf16:4}})}]};
  fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,JSON.stringify(before));
  const priorManifest=fs.readFileSync(f.manifestPath,'utf8');let published=0;
  const request={scenePath:f.scenePath,manifestPath:f.manifestPath,sceneContent:'Alpha\nBeta',expectedSceneContent:null,expectedManifestContent:priorManifest,manifestContent:JSON.stringify({projectId:'tx-resources',revision:1}),revision:1,createResources:[{path:path.join(f.root,'.yalken/receipts/multi.json'),content:'receipt'}],commentState:{beforeText:JSON.stringify(before),afterText:JSON.stringify(after)},publishManifest:async({expectedText,nextText})=>{assert.equal(fs.readFileSync(f.manifestPath,'utf8'),expectedText);published++;fs.writeFileSync(f.manifestPath,nextText);}};
- if(beforeVersion===4) {
-  for(const downgrade of [1,2,3]) {const bad={...after,schemaVersion:`yalken.rtk.word.non-text-return-state.v${downgrade}`};await assert.rejects(tx.commitProjectTransaction({...request,commentState:{...request.commentState,afterText:JSON.stringify(bad)}}),/COMMENT_STATE/);}
+ if(beforeVersion===afterVersion) {
+  for(const downgrade of Array.from({length:beforeVersion-1},(_,i)=>i+1)) {const bad={...after,schemaVersion:`yalken.rtk.word.non-text-return-state.v${downgrade}`};await assert.rejects(tx.commitProjectTransaction({...request,commentState:{...request.commentState,afterText:JSON.stringify(bad)}}),/COMMENT_STATE/);}
   assert.equal(published,0);assert.equal(fs.existsSync(f.scenePath),false);assert.equal(fs.readFileSync(commentPath,'utf8'),JSON.stringify(before));
  }
  const result=await tx.commitProjectTransaction(request);assert.equal(result.success,true,JSON.stringify(result));

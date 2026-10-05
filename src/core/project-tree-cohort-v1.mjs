@@ -249,10 +249,17 @@ function topologyNote(note, topology, identityMap) {
 function validateTreeCommentAnchor(thread, paragraphs) {
   const anchor = thread.anchor;
   need(anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
+  const structuralHistory = thread.anchorEditHistory?.some(entry => entry.schemaVersion === 2);
+  if (structuralHistory && thread.status === 'deleted') {
+    const snapshot = commentAnchors.currentStructuralHistorySnapshot(thread);
+    need(snapshot, 'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED');
+    commentAnchors.validateStructuralSnapshot(snapshot, paragraphs);
+    return;
+  }
   if (anchor.kind === commentRanges.MULTI) {
     // Historical ranges need their own topology proof. Never infer an owner
     // for an old range from the current first leaf or resurrect a tombstone.
-    need(thread.status !== 'deleted' && !(thread.anchorEditHistory?.length), 'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED');
+    need(thread.status !== 'deleted' && (structuralHistory || !(thread.anchorEditHistory?.length)), 'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED');
     commentRanges.validateCommentAnchor({ sceneId: thread.sceneId, paragraphs, anchor });
     return;
   }
@@ -272,8 +279,16 @@ function topologyComment(thread, topology) {
   if (thread.status !== 'deleted') {
     partition = topology.locate(source.relativePath, anchor.sceneParagraphIndex); need(partition, 'E_TREE_TOPOLOGY_COMMENT_OWNER');
   }
+  if (thread.anchorEditHistory?.some(entry => entry.schemaVersion === 2)) {
+    // Retained local history has no historical scene-topology authority. A
+    // whole-source zero-offset move leaves every old coordinate meaningful;
+    // partitioning or shifting it cannot be inferred from the current anchor.
+    need(topology.partitions.filter(p => p.sourceRelativePath === source.relativePath).length === 1
+      && partition.leafFrom === 0 && partition.leafTo === source.leafTexts.length
+      && partition.targetLeafFrom === 0, 'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED');
+  }
   const out = clone(thread); out.sceneId = partition.targetRelativePath; out.anchor.sceneId = out.sceneId;
-  if (anchor.kind === commentRanges.MULTI) {
+  if (anchor.kind === commentRanges.MULTI && thread.status !== 'deleted') {
     for (let index = anchor.sceneParagraphIndex; index <= anchor.endSceneParagraphIndex; index++) {
       need(topology.locate(source.relativePath, index) === partition, 'E_TREE_TOPOLOGY_COMMENT_RANGE_CROSSES_SCENES');
     }

@@ -216,7 +216,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
       && Buffer.byteLength(value[key]) <= 65536)) fail();
   let before, after;
   try { before = JSON.parse(value.beforeText); after = JSON.parse(value.afterText); } catch { fail(); }
-  const commentVersions = ['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3', 'yalken.rtk.word.non-text-return-state.v4'];
+  const commentVersions = ['yalken.rtk.word.non-text-return-state.v1', 'yalken.rtk.word.non-text-return-state.v2', 'yalken.rtk.word.non-text-return-state.v3', 'yalken.rtk.word.non-text-return-state.v4', 'yalken.rtk.word.non-text-return-state.v5'];
   if (!before || !after || !commentVersions.includes(before.schemaVersion)
     || !commentVersions.includes(after.schemaVersion) || commentVersions.indexOf(after.schemaVersion) < commentVersions.indexOf(before.schemaVersion) || typeof before.projectId !== 'string' || !before.projectId
     || after.projectId !== before.projectId || !Number.isSafeInteger(before.revision) || before.revision < 0

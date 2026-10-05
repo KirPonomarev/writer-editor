@@ -50,6 +50,35 @@ function paragraphs(doc) {
   if (result.length > 10000) throw new Error('COMMENT_EDIT_BUDGET');
   return result;
 }
+// Structural coordinates come from the actual replacement StepMap on both
+// documents. Paragraph boundaries are array edges; hardBreak remains a LF.
+function rootParagraphRange(doc, fromPosition, toPosition) {
+  const endpoint = position => {
+    const at = doc.resolve(position);
+    let index, offset;
+    if (at.depth === 1 && at.parent.type.name === 'paragraph') {
+      index = at.index(0); offset = at.parentOffset;
+    } else if (at.depth === 0) {
+      index = at.index(0);
+      if (index === doc.childCount) { index--; offset = doc.child(index).content.size; }
+      else offset = 0;
+    } else throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+    const node = doc.child(index);
+    if (node.type.name !== 'paragraph') throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+    let paragraphIndex = 0;
+    countLeaves(doc);
+    paragraphIndex = leafPrefixes.get(doc)[index];
+    return { index, paragraphIndex, offset };
+  };
+  const from = endpoint(fromPosition), to = endpoint(toPosition), parts = [];
+  for (let index = from.index; index <= to.index; index++) {
+    const node = doc.child(index);
+    if (node.type.name !== 'paragraph') throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+    const text = inlineText(node);
+    parts.push(text.slice(index === from.index ? from.offset : 0, index === to.index ? to.offset : text.length));
+  }
+  return { from, to, parts };
+}
 function eventBookmark(branch) {
   for (let index = branch?.items?.length - 1; index >= 0; index--) {
     const bookmark = branch.items.get(index).selection;
@@ -88,14 +117,31 @@ function capture(tr, previous, oldState, newState) {
     for (let index = 0; index < tr.steps.length; index++) {
       const step = tr.steps[index], kind = step.toJSON().stepType;
       if (['addMark', 'removeMark', 'attr', 'docAttr'].includes(kind)) continue;
-      if (kind !== 'replace' || step.slice.openStart || step.slice.openEnd)
-        throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
-      const before = tr.docs[index], from = paragraphAt(before, step.from, previous.baseline), to = paragraphAt(before, step.to, previous.baseline);
-      if (from.node !== to.node) throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
-      const text = inlineText(from.node), insertText = inlineText(step.slice.content);
-      const removedText = text.slice(from.offset, to.offset);
-      if (removedText === insertText) continue;
-      edits.push({ paragraphIndex: from.paragraphIndex, fromUtf16: from.offset, toUtf16: to.offset, removedText, insertText });
+      if (kind !== 'replace') throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+      const before = tr.docs[index], after = tr.docs[index + 1] || tr.doc;
+      const atFrom = before.resolve(step.from), atTo = before.resolve(step.to);
+      let from, to, removedParagraphs, insertedParagraphs;
+      if (!step.slice.openStart && !step.slice.openEnd && atFrom.sameParent(atTo)
+        && paragraphTypes.has(atFrom.parent.type.name)
+        && [...Array(step.slice.content.childCount).keys()].every(i => {
+          const child = step.slice.content.child(i); return child.isText || child.type.name === 'hardBreak';
+        })) {
+        from = paragraphAt(before, step.from); to = paragraphAt(before, step.to);
+        removedParagraphs = [inlineText(from.node).slice(from.offset, to.offset)];
+        insertedParagraphs = [inlineText(step.slice.content)];
+      } else {
+        const ranges = [];
+        step.getMap().forEach((oldFrom, oldTo, newFrom, newTo) => ranges.push({oldFrom,oldTo,newFrom,newTo}));
+        if (ranges.length !== 1 || ranges[0].oldFrom !== step.from || ranges[0].oldTo !== step.to)
+          throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+        const oldRange = rootParagraphRange(before, step.from, step.to);
+        const newRange = rootParagraphRange(after, ranges[0].newFrom, ranges[0].newTo);
+        from = oldRange.from; to = oldRange.to;
+        removedParagraphs = oldRange.parts; insertedParagraphs = newRange.parts;
+      }
+      if (JSON.stringify(removedParagraphs) === JSON.stringify(insertedParagraphs)) continue;
+      edits.push({ fromParagraphIndex: from.paragraphIndex, fromUtf16: from.offset,
+        toParagraphIndex: to.paragraphIndex, toUtf16: to.offset, removedParagraphs, insertedParagraphs });
     }
     if (!edits.length) return previous;
     const before = historyState(oldState), after = historyState(newState);
@@ -147,7 +193,7 @@ export function getCommentEditIntentsJson(editor) {
   const ledger = ledgerKey.getState(editor.state);
   if (!ledger || ledger.invalid) return null;
   try {
-    const wire = JSON.stringify({ schemaVersion: 1,
+    const wire = JSON.stringify({ schemaVersion: 2,
       baselineTextSha256: sha256Hex(JSON.stringify(paragraphs(ledger.baseline))), edits: ledger.edits });
     if (new TextEncoder().encode(wire).length > 65536) return null;
     let snapshots = capturedSnapshots.get(editor);

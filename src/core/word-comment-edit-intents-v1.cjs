@@ -23,10 +23,22 @@ function validateEditIntents(input) {
     try { value = JSON.parse(value); } catch { fail('COMMENT_EDIT_INTENT_INVALID'); }
   }
   data(value);
-  if (!keys(value,['schemaVersion','baselineTextSha256','edits']) || value.schemaVersion !== 1 || !digest(value.baselineTextSha256)
+  if (!keys(value,['schemaVersion','baselineTextSha256','edits']) || ![1,2].includes(value.schemaVersion) || !digest(value.baselineTextSha256)
     || !Array.isArray(value.edits) || value.edits.length > 256) fail('COMMENT_EDIT_INTENT_INVALID');
   const ids = new Set();
   for (const e of value.edits) {
+    if (value.schemaVersion === 2) {
+      if (!keys(e,['id','historyId','direction','fromParagraphIndex','fromUtf16','toParagraphIndex','toUtf16','removedParagraphs','insertedParagraphs'])
+        || typeof e.id !== 'string' || typeof e.historyId !== 'string' || !ID.test(e.id) || !ID.test(e.historyId) || ids.has(e.id)
+        || !['forward','undo','redo'].includes(e.direction)
+        || !Number.isSafeInteger(e.fromParagraphIndex) || e.fromParagraphIndex<0 || !Number.isSafeInteger(e.toParagraphIndex)
+        || e.toParagraphIndex<e.fromParagraphIndex || e.toParagraphIndex>=10000
+        || !Number.isSafeInteger(e.fromUtf16) || e.fromUtf16<0 || !Number.isSafeInteger(e.toUtf16) || e.toUtf16<0
+        || (e.fromParagraphIndex===e.toParagraphIndex && e.toUtf16<e.fromUtf16)
+        || [e.removedParagraphs,e.insertedParagraphs].some(a=>!Array.isArray(a)||!a.length||a.length>10000||a.some(t=>typeof t!=='string'||!t.isWellFormed()||/\r/u.test(t)))
+        || e.removedParagraphs.length!==e.toParagraphIndex-e.fromParagraphIndex+1
+        || JSON.stringify(e.removedParagraphs)===JSON.stringify(e.insertedParagraphs)) fail('COMMENT_EDIT_INTENT_INVALID');
+    } else {
     if (!keys(e,['id','historyId','direction','paragraphIndex','fromUtf16','toUtf16','removedText','insertText'])
       || typeof e.id !== 'string' || typeof e.historyId !== 'string' || !ID.test(e.id) || !ID.test(e.historyId) || ids.has(e.id) || !['forward','undo','redo'].includes(e.direction)
       || !Number.isSafeInteger(e.paragraphIndex) || e.paragraphIndex < 0 || e.paragraphIndex >= 10000
@@ -34,6 +46,7 @@ function validateEditIntents(input) {
       || typeof e.removedText !== 'string' || typeof e.insertText !== 'string'
       || e.removedText.length !== e.toUtf16-e.fromUtf16 || e.removedText === e.insertText
       || !e.removedText.isWellFormed() || !e.insertText.isWellFormed() || /\r/u.test(e.removedText + e.insertText)) fail('COMMENT_EDIT_INTENT_INVALID');
+    }
     ids.add(e.id);
   }
   const json = JSON.stringify(value);
@@ -44,20 +57,37 @@ const textDigest = texts => sha(JSON.stringify(texts));
 const boundaries = text => new Set([text.length,...Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(text),x=>x.index)]);
 function replayEditIntents(beforeTexts, afterTexts, input) {
   const plan = validateEditIntents(input);
-  if (!Array.isArray(beforeTexts) || !Array.isArray(afterTexts) || beforeTexts.length !== afterTexts.length
+  if (!Array.isArray(beforeTexts) || !Array.isArray(afterTexts) || beforeTexts.length>10000 || afterTexts.length>10000
     || beforeTexts.some(x=>typeof x!=='string') || afterTexts.some(x=>typeof x!=='string')
     || textDigest(beforeTexts) !== plan.baselineTextSha256) fail('COMMENT_EDIT_BASELINE_STALE');
   const current = beforeTexts.slice(), steps = [];
   for (const edit of plan.edits) {
-    const before = current[edit.paragraphIndex];
-    if (typeof before !== 'string' || edit.toUtf16 > before.length || before.slice(edit.fromUtf16,edit.toUtf16) !== edit.removedText
-      || !boundaries(before).has(edit.fromUtf16) || !boundaries(before).has(edit.toUtf16)) fail('COMMENT_EDIT_SPLICE_STALE');
-    const after = before.slice(0,edit.fromUtf16)+edit.insertText+before.slice(edit.toUtf16);
-    if (!boundaries(after).has(edit.fromUtf16) || !boundaries(after).has(edit.fromUtf16+edit.insertText.length)) fail('COMMENT_EDIT_GRAPHEME');
-    current[edit.paragraphIndex] = after;
-    steps.push({edit,before,after});
+    if(plan.schemaVersion===2) {
+      const f=edit.fromParagraphIndex,t=edit.toParagraphIndex,first=current[f],last=current[t];
+      if(typeof first!=='string'||typeof last!=='string'||edit.fromUtf16>first.length||edit.toUtf16>last.length
+        || !boundaries(first).has(edit.fromUtf16)||!boundaries(last).has(edit.toUtf16)) fail('COMMENT_EDIT_SPLICE_STALE');
+      const removed=f===t?[first.slice(edit.fromUtf16,edit.toUtf16)]:[first.slice(edit.fromUtf16),...current.slice(f+1,t),last.slice(0,edit.toUtf16)];
+      if(JSON.stringify(removed)!==JSON.stringify(edit.removedParagraphs)) fail('COMMENT_EDIT_SPLICE_STALE');
+      const replacement=edit.insertedParagraphs.slice();
+      replacement[0]=first.slice(0,edit.fromUtf16)+replacement[0];
+      replacement[replacement.length-1]+=last.slice(edit.toUtf16);
+      const insertedEnd=edit.insertedParagraphs.length===1?edit.fromUtf16+edit.insertedParagraphs[0].length:edit.insertedParagraphs.at(-1).length;
+      if(!boundaries(replacement[0]).has(edit.fromUtf16)||!boundaries(replacement.at(-1)).has(insertedEnd)) fail('COMMENT_EDIT_GRAPHEME');
+      const beforeParagraphs=current.slice();
+      current.splice(f,t-f+1,...replacement);
+      if(current.length>10000) fail('COMMENT_EDIT_INTENT_BUDGET');
+      steps.push({edit,beforeParagraphs,afterParagraphs:current.slice()});
+    } else {
+      const before = current[edit.paragraphIndex];
+      if (typeof before !== 'string' || edit.toUtf16 > before.length || before.slice(edit.fromUtf16,edit.toUtf16) !== edit.removedText
+        || !boundaries(before).has(edit.fromUtf16) || !boundaries(before).has(edit.toUtf16)) fail('COMMENT_EDIT_SPLICE_STALE');
+      const after = before.slice(0,edit.fromUtf16)+edit.insertText+before.slice(edit.toUtf16);
+      if (!boundaries(after).has(edit.fromUtf16) || !boundaries(after).has(edit.fromUtf16+edit.insertText.length)) fail('COMMENT_EDIT_GRAPHEME');
+      current[edit.paragraphIndex] = after;
+      steps.push({edit,before,after});
+    }
   }
-  if (current.some((text,i)=>text!==afterTexts[i])) fail('COMMENT_EDIT_REPLAY_MISMATCH');
+  if (current.length!==afterTexts.length || current.some((text,i)=>text!==afterTexts[i])) fail('COMMENT_EDIT_REPLAY_MISMATCH');
   return {plan,steps};
 }
 const { mapAnchorSplice } = require('./word-comment-ranges-v1.cjs');

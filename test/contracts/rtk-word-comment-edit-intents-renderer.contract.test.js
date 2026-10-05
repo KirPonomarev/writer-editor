@@ -17,10 +17,10 @@ test('real typing captures exact splices and actual merged history group across 
     editor.commands.insertContent({type:'text',text:'Y'});
     const forward=wire();assert.ok(forward);assert.equal(forward.edits.length,2);
     assert.equal(forward.edits[0].historyId,forward.edits[1].historyId);
-    assert.deepEqual(forward.edits.map(({fromUtf16,insertText})=>({fromUtf16,insertText})),[{fromUtf16:2,insertText:'X'},{fromUtf16:3,insertText:'Y'}]);
+    assert.deepEqual(forward.edits.map(({fromUtf16,insertedParagraphs})=>({fromUtf16,insertedParagraphs})),[{fromUtf16:2,insertedParagraphs:['X']},{fromUtf16:3,insertedParagraphs:['Y']}]);
     assert.equal(editor.commands.undo(),true);
     const undo=wire().edits.at(-1);assert.equal(undo.direction,'undo');assert.equal(undo.historyId,forward.edits[0].historyId);
-    assert.equal(undo.removedText,'XY');assert.equal(undo.insertText,'');
+    assert.deepEqual(undo.removedParagraphs,['XY']);assert.deepEqual(undo.insertedParagraphs,['']);
     checkpoint(ui,editor);assert.equal(wire().edits.length,0);
     assert.equal(editor.commands.redo(),true);
     assert.equal(wire().edits[0].direction,'redo');assert.equal(wire().edits[0].historyId,undo.historyId);
@@ -36,8 +36,8 @@ test('collapsed empty paragraph and repeated text selection preserve actual para
     assert.deepEqual(ui.commentSelectionIntent(editor),{paragraphIndex:2,startUtf16:0,selectedText:'same'});
   } finally {editor.destroy();}
 });
-test('unsupported paragraph split invalidates proof and checked scene replacement resets it',async()=>{
-  const {editor,ui,wire}=await harness([p('Alpha')]);
+test('unsupported heading split invalidates proof and checked scene replacement resets it',async()=>{
+  const {editor,ui,wire}=await harness([{...p('Alpha'),type:'heading',attrs:{level:1}}]);
   try {
     editor.commands.setTextSelection(3);assert.equal(editor.commands.splitBlock(),true);
     assert.equal(ui.getCommentEditIntentsJson(editor),null);
@@ -59,7 +59,7 @@ test('actual continuation and table cell edits replay through Core without confu
     editor.commands.setTextSelection(shifted[3]+2);editor.commands.insertContent({type:'text',text:'Y'});
     const current=[];editor.state.doc.descendants(node=>{if(node.type.name==='paragraph')current.push(node.textContent);});
     assert.deepEqual(current,['same','saXme','same','saYme']);
-    assert.deepEqual(wire().edits.map(e=>e.paragraphIndex),[1,3]);
+    assert.deepEqual(wire().edits.map(e=>e.fromParagraphIndex),[1,3]);
     assert.equal(core.replayEditIntents(['same','same','same','same'],current,ui.getCommentEditIntentsJson(editor)).steps.length,2);
     const expected=editor.getJSON();assert.equal(editor.commands.undo(),true);assert.equal(editor.commands.redo(),true);
     assert.deepEqual(editor.getJSON(),expected);
@@ -136,7 +136,7 @@ test('delayed saved-prefix receipt retains newer real input and next Save replay
     const secondHash=wireHash(ui.getCommentEditIntentsJson(editor));
     assert.equal(ui.checkpointCommentEditIntents(editor,firstHash),true);
     assert.equal(editor.state.doc.textContent,'AlBCpha');assert.equal(wire().edits.length,1);
-    assert.equal(wire().edits[0].insertText,'C');
+    assert.deepEqual(wire().edits[0].insertedParagraphs,['C']);
     core.replayEditIntents(['AlBpha'],['AlBCpha'],ui.getCommentEditIntentsJson(editor));
     // A second save captured before the first acknowledgement still admits only
     // its remaining suffix, never clears later edits or reverts the baseline.
@@ -167,8 +167,8 @@ test('soft-break insertion remains one paragraph intent and exact leading/traili
   const {editor,ui,wire}=await harness([{type:'paragraph',content:[{type:'hardBreak'},{type:'text',text:'Alpha'},{type:'hardBreak'}]}]);
   try {
     editor.commands.setTextSelection(4);assert.equal(editor.commands.setHardBreak(),true);
-    assert.equal(wire().edits.length,1);assert.equal(wire().edits[0].insertText,'\n');
-    assert.equal(wire().edits[0].paragraphIndex,0);assert.equal(wire().edits[0].fromUtf16,3);
+    assert.equal(wire().edits.length,1);assert.deepEqual(wire().edits[0].insertedParagraphs,['\n']);
+    assert.equal(wire().edits[0].fromParagraphIndex,0);assert.equal(wire().edits[0].fromUtf16,3);
     core.replayEditIntents(['\nAlpha\n'],['\nAl\npha\n'],ui.getCommentEditIntentsJson(editor));
     assert.equal(editor.commands.undo(),true);core.replayEditIntents(['\nAlpha\n'],['\nAlpha\n'],ui.getCommentEditIntentsJson(editor));
   } finally {editor.destroy();}
@@ -254,7 +254,7 @@ test('exact structural Undo recovers pending multi-range save proof and prior sa
   const {closeHistory}=await import('@tiptap/pm/history');
   const author=require('../../src/core/word-comment-authoring-v1.cjs'),save=require('../../src/core/word-comment-anchor-save-v1.cjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
-  const {editor,ui,wire}=await harness([p('Alpha one.'),p('Beta two.')]);
+  const {editor,ui,wire}=await harness([p('Alpha one.'),{...p('Beta two.'),type:'heading',attrs:{level:1}}]);
   const projectId='recovered-ledger',sceneId='scene',sessionId='session';
   const content=()=>envelope.composeObservablePayload({doc:editor.getJSON()});
   let raw=content(),state=author.planCommentAuthoring({beforeText:null,projectId,sceneId,sceneSha256:wireHash(raw),paragraphs:['Alpha one.','Beta two.'],now:'2026-10-05T00:00:00Z',input:{requestId:'root',action:'create',projectId,sceneId,expectedStateSha256:'',expectedSceneSha256:wireHash(raw),body:'root',anchor:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:0,endParagraphIndex:1,endUtf16:4,selectedText:'Alpha one.\nBeta'}}}).afterText;
@@ -276,7 +276,7 @@ test('exact structural Undo recovers pending multi-range save proof and prior sa
 test('inflight save ACK during invalid topology preserves pending suffix and rejects stale checkpoint',async()=>{
   const {closeHistory}=await import('@tiptap/pm/history');
   const core=require('../../src/core/word-comment-edit-intents-v1.cjs');
-  const {editor,ui,wire}=await harness([p('Alpha'),p('Beta')]);
+  const {editor,ui,wire}=await harness([p('Alpha'),{...p('Beta'),type:'heading',attrs:{level:1}}]);
   try {
     editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'B'});
     const first=wireHash(ui.getCommentEditIntentsJson(editor));
@@ -295,7 +295,7 @@ test('inflight save ACK during invalid topology preserves pending suffix and rej
 
 test('unsupported Redo and nonexact or manual recreation never recover edit proof',async()=>{
   const {closeHistory}=await import('@tiptap/pm/history');
-  const {editor,ui}=await harness([p('Alpha'),p('Beta')]);
+  const {editor,ui}=await harness([p('Alpha'),{...p('Beta'),type:'heading',attrs:{level:1}}]);
   try {
     const original=editor.state.doc;
     editor.view.dispatch(editor.state.tr.join(original.child(0).nodeSize));
@@ -336,4 +336,137 @@ test('AllSelection retains exact nested cell ownership and refuses foreign owner
       if(expected instanceof RegExp)assert.throws(()=>ui.commentSelectionIntent(editor),expected);else assert.deepEqual(ui.commentSelectionIntent(editor),expected);
     }finally{editor.destroy();}
   }
+});
+
+test('actual root Enter, join and whole-document Delete emit exact V2 paragraph boundaries',async()=>{
+  const {AllSelection}=await import('@tiptap/pm/state'),core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const {editor,ui,wire}=await harness([p('Alpha'),p('Beta')]);
+  const texts=()=>editor.state.doc.content.content.map(node=>node.textContent);
+  try {
+    editor.commands.setTextSelection(3);editor.commands.splitBlock();
+    assert.equal(wire().schemaVersion,2);const split=wire().edits[0];
+    assert.deepEqual({...split,id:undefined,historyId:undefined},{id:undefined,historyId:undefined,direction:'forward',fromParagraphIndex:0,fromUtf16:2,toParagraphIndex:0,toUtf16:2,removedParagraphs:[''],insertedParagraphs:['','']});
+    assert.deepEqual(texts(),['Al','pha','Beta']);core.replayEditIntents(['Alpha','Beta'],texts(),ui.getCommentEditIntentsJson(editor));
+    editor.view.dispatch(editor.state.tr.join(editor.state.doc.child(0).nodeSize));
+    assert.deepEqual(wire().edits.at(-1).removedParagraphs,['','']);assert.deepEqual(wire().edits.at(-1).insertedParagraphs,['']);
+    core.replayEditIntents(['Alpha','Beta'],texts(),ui.getCommentEditIntentsJson(editor));
+    editor.view.dispatch(editor.state.tr.setSelection(new AllSelection(editor.state.doc)));editor.commands.deleteSelection();
+    assert.deepEqual(texts(),['']);assert.deepEqual(wire().edits.at(-1).removedParagraphs,['Alpha','Beta']);assert.deepEqual(wire().edits.at(-1).insertedParagraphs,['']);
+    core.replayEditIntents(['Alpha','Beta'],texts(),ui.getCommentEditIntentsJson(editor));
+  }finally{editor.destroy();}
+});
+
+test('actual multi-paragraph replacement uses current ordinal and preserves hardBreak inside a segment',async()=>{
+  const core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const {editor,ui,wire}=await harness([p('same'),{type:'paragraph',content:[{type:'text',text:'B'},{type:'hardBreak'},{type:'text',text:'C'}]},p('same')]);
+  try {
+    editor.commands.setTextSelection(3);editor.commands.splitBlock();
+    const positions=[];editor.state.doc.descendants((node,pos)=>{if(node.type.name==='paragraph')positions.push(pos+1);});
+    editor.commands.setTextSelection({from:positions[1]+1,to:positions[3]+2});editor.commands.insertContent({type:'text',text:'X'});
+    const edit=wire().edits.at(-1);assert.equal(edit.fromParagraphIndex,1);assert.equal(edit.toParagraphIndex,3);
+    assert.deepEqual(edit.removedParagraphs,['e','B\nC','sa']);assert.deepEqual(edit.insertedParagraphs,['X']);
+    core.replayEditIntents(['same','B\nC','same'],['sa','mXme'],ui.getCommentEditIntentsJson(editor));
+  }finally{editor.destroy();}
+});
+
+test('structural list and cross-cell edits retain author text but never emit V2 proof',async()=>{
+  const {DocumentTables}=await import('../../src/renderer/tiptap/documentTables.mjs');
+  for(const content of [[{type:'bulletList',content:[{type:'listItem',content:[p('Alpha'),p('Beta')]}]}],
+    [{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[p('Alpha')]},{type:'tableCell',content:[p('Beta')]}]}]}]]){
+    const {editor,ui}=await harness(content,[DocumentTables]);
+    try {const positions=[];editor.state.doc.descendants((node,pos)=>{if(node.type.name==='paragraph')positions.push(pos+1);});
+      editor.commands.setTextSelection(positions[0]+2);editor.commands.splitBlock();assert.equal(ui.getCommentEditIntentsJson(editor),null);assert.ok(editor.state.doc.textContent.includes('Alpha'));assert.equal(editor.commands.undo(),true);assert.equal(typeof ui.getCommentEditIntentsJson(editor),'string');
+      editor.commands.setTextSelection({from:positions[0]+2,to:positions[1]+2});editor.commands.deleteSelection();assert.equal(ui.getCommentEditIntentsJson(editor),null);
+    }finally{editor.destroy();}
+  }
+});
+
+async function structuralSaveHarness(anchor={paragraphIndex:0,startUtf16:0,selectedText:'Alpha'}) {
+  const author=require('../../src/core/word-comment-authoring-v1.cjs'),save=require('../../src/core/word-comment-anchor-save-v1.cjs'),env=require('../../src/core/document-content-envelope-v1.cjs');
+  const h=await harness([p('Alpha suffix'),p('Beta two'),p('Gamma end')]),{editor,ui}=h;
+  const projectId='structural-pm',sceneId='scene',sessionId='actual-editor-session';
+  const content=()=>env.composeObservablePayload({doc:editor.getJSON()});
+  let raw=content(),planned=author.planCommentAuthoring({beforeText:null,projectId,sceneId,sceneSha256:wireHash(raw),paragraphs:['Alpha suffix','Beta two','Gamma end'],now:'2026-10-05T00:00:00Z',input:{requestId:'create',action:'create',projectId,sceneId,expectedSceneSha256:wireHash(raw),expectedStateSha256:'',body:'Original root',anchor}});
+  planned=author.planCommentAuthoring({beforeText:planned.afterText,projectId,sceneId,sceneSha256:wireHash(raw),paragraphs:['Alpha suffix','Beta two','Gamma end'],now:'2026-10-05T00:00:01Z',input:{requestId:'reply',action:'reply',projectId,sceneId,expectedSceneSha256:wireHash(raw),expectedStateSha256:wireHash(planned.afterText),threadId:planned.threadId,body:'Original reply'}});
+  let state=planned.afterText;const original=JSON.parse(state).threads[0];
+  const persist=(expectedTexts,quote,status='open',ack=true)=>{
+    const next=content(),proof=ui.getCommentEditIntentsJson(editor);assert.equal(typeof proof,'string');
+    assert.deepEqual(editor.state.doc.content.content.map(node=>node.textContent),expectedTexts);
+    const result=save.planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:raw,afterContent:next,editIntents:proof,sessionId});
+    state=result?.afterText||state;raw=next;author.readState(state,projectId);
+    const thread=JSON.parse(state).threads[0];assert.equal(thread.status,status);assert.equal(thread.anchor.selectedText,quote);assert.equal(thread.threadId,original.threadId);assert.deepEqual(thread.messages,original.messages);
+    if(ack)assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(proof)),true);
+    return {proof,thread};
+  };
+  return {...h,persist,original,getState:()=>state};
+}
+
+for(const first of ['typing','split'])test(`actual mixed ${first} first and structural save shares history through saved Undo and Redo`,async()=>{
+  const h=await structuralSaveHarness(),{editor,persist,wire}=h;
+  try {
+    editor.commands.setTextSelection(3);
+    if(first==='typing')editor.commands.insertContent({type:'text',text:'X'});else editor.commands.splitBlock();
+    const id=wire().edits[0].historyId;
+    persist(first==='typing'?['AlXpha suffix','Beta two','Gamma end']:['Al','pha suffix','Beta two','Gamma end'],first==='typing'?'AlXpha':'Al\npha');
+    if(first==='typing')editor.commands.splitBlock();else editor.commands.insertContent({type:'text',text:'X'});
+    assert.equal(wire().edits[0].historyId,id,'real PM group continues across Save');
+    const expected=first==='typing'?['AlX','pha suffix','Beta two','Gamma end']:['Al','Xpha suffix','Beta two','Gamma end'],quote=first==='typing'?'AlX\npha':'Al\nXpha';
+    persist(expected,quote);assert.equal(editor.commands.undo(),true);persist(['Alpha suffix','Beta two','Gamma end'],'Alpha');
+    assert.equal(editor.commands.redo(),true);persist(expected,quote);
+  }finally{editor.destroy();}
+});
+
+test('actual whole multi-range Delete and same-group typing retain tombstone then exact saved Undo and Redo',async()=>{
+  const quote='pha suffix\nBeta two\nGam',h=await structuralSaveHarness({kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:2,endUtf16:3,selectedText:quote}),{editor,persist,wire}=h;
+  try {
+    const last=editor.state.doc.child(0).nodeSize+editor.state.doc.child(1).nodeSize+1;
+    editor.commands.setTextSelection({from:3,to:last+3});editor.commands.deleteSelection();const id=wire().edits[0].historyId;
+    persist(['Alma end'],quote,'deleted');editor.commands.insertContent({type:'text',text:'X'});assert.equal(wire().edits[0].historyId,id);
+    persist(['AlXma end'],quote,'deleted');assert.equal(editor.commands.undo(),true);persist(['Alpha suffix','Beta two','Gamma end'],quote);
+    assert.equal(editor.commands.redo(),true);persist(['AlXma end'],quote,'deleted');
+  }finally{editor.destroy();}
+});
+
+test('actual partial multi-range Delete and Enter before an anchor map every downstream ordinal',async()=>{
+  const h=await structuralSaveHarness({kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:2,endUtf16:3,selectedText:'pha suffix\nBeta two\nGam'}),{editor,persist}=h;
+  try {
+    editor.commands.setTextSelection({from:4,to:editor.state.doc.child(0).nodeSize+3});editor.commands.deleteSelection();
+    persist(['Alpta two','Gamma end'],'pta two\nGam');assert.equal(editor.commands.undo(),true);persist(['Alpha suffix','Beta two','Gamma end'],'pha suffix\nBeta two\nGam');
+    editor.commands.setTextSelection(2);editor.commands.splitBlock();const {thread}=persist(['A','lpha suffix','Beta two','Gamma end'],'pha suffix\nBeta two\nGam');
+    assert.equal(thread.anchor.sceneParagraphIndex,1);assert.equal(thread.anchor.endSceneParagraphIndex,3);
+  }finally{editor.destroy();}
+});
+
+test('delayed typing-prefix ACK retains actual pending structural replacement with exact replay',async()=>{
+  const {editor,ui,wire}=await harness([p('Alpha'),p('Beta')]),core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  try {
+    editor.commands.setTextSelection(3);editor.commands.insertContent({type:'text',text:'X'});const typing=ui.getCommentEditIntentsJson(editor);
+    editor.commands.splitBlock();const both=ui.getCommentEditIntentsJson(editor),structural=wire().edits[1];
+    assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(typing)),true);assert.deepEqual(wire().edits,[structural]);
+    core.replayEditIntents(['AlXpha','Beta'],['AlX','pha','Beta'],ui.getCommentEditIntentsJson(editor));
+    assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(both)),true);assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(typing)),false);
+    assert.equal(editor.commands.undo(),true);core.replayEditIntents(['AlX','pha','Beta'],['Alpha','Beta'],ui.getCommentEditIntentsJson(editor));
+  }finally{editor.destroy();}
+});
+
+test('delayed structural-prefix ACK retains later typing and saved Undo spans both operations',async()=>{
+  const {editor,ui,wire}=await harness([p('Alpha'),p('Beta')]),core=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  try {
+    editor.commands.setTextSelection(3);editor.commands.splitBlock();const split=ui.getCommentEditIntentsJson(editor);
+    editor.commands.insertContent({type:'text',text:'X'});const both=ui.getCommentEditIntentsJson(editor),typing=wire().edits[1];
+    assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(split)),true);assert.deepEqual(wire().edits,[typing]);
+    core.replayEditIntents(['Al','pha','Beta'],['Al','Xpha','Beta'],ui.getCommentEditIntentsJson(editor));
+    assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(both)),true);assert.equal(ui.checkpointCommentEditIntents(editor,wireHash(split)),false);
+    assert.equal(editor.commands.undo(),true);core.replayEditIntents(['Al','Xpha','Beta'],['Alpha','Beta'],ui.getCommentEditIntentsJson(editor));
+  }finally{editor.destroy();}
+});
+
+test('actual Backspace join persists a multi-range and saved Undo Redo keeps exact comment graph',async()=>{
+  const original='pha suffix\nBeta two\nGam',h=await structuralSaveHarness({kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:2,endUtf16:3,selectedText:original}),{editor,persist}=h;
+  try {
+    editor.commands.setTextSelection(editor.state.doc.child(0).nodeSize+1);assert.equal(editor.commands.joinBackward(),true);
+    persist(['Alpha suffixBeta two','Gamma end'],'pha suffixBeta two\nGam');
+    assert.equal(editor.commands.undo(),true);persist(['Alpha suffix','Beta two','Gamma end'],original);
+    assert.equal(editor.commands.redo(),true);persist(['Alpha suffixBeta two','Gamma end'],'pha suffixBeta two\nGam');
+  }finally{editor.destroy();}
 });

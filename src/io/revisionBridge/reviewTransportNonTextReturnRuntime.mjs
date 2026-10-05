@@ -220,18 +220,19 @@ function emptyState(projectId) {
 }
 
 function validateState(value, projectId) {
-  if (!isPlainObject(value) || ![RTK_NON_TEXT_RETURN_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) {
+  if (!isPlainObject(value) || ![RTK_NON_TEXT_RETURN_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(value.schemaVersion)) {
     throw new Error('RTK_NON_TEXT_STATE_SCHEMA_INVALID');
   }
   if (normalizeString(value.projectId) !== projectId) throw new Error('RTK_NON_TEXT_STATE_PROJECT_MISMATCH');
   if (!Number.isSafeInteger(value.revision) || value.revision < 0) throw new Error('RTK_NON_TEXT_STATE_REVISION_INVALID');
   if (!Array.isArray(value.threads) || !Array.isArray(value.events)) throw new Error('RTK_NON_TEXT_STATE_COLLECTION_INVALID');
+  if (value.schemaVersion === commentBody.STATE_V5 || value.threads.some(thread => thread.anchorEditHistory?.some(entry => entry.schemaVersion === 2))) commentAuthoring.readState(JSON.stringify(value), projectId);
   for (const thread of value.threads) {
-    if (thread.anchor?.kind === 'multi-paragraph-range' && value.schemaVersion !== commentBody.STATE_V4) throw Error('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
-    if (thread.anchor?.kind === 'point' && ![commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) throw Error('COMMENT_POINT_STATE_VERSION_REQUIRED');
+    if (thread.anchor?.kind === 'multi-paragraph-range' && ![commentBody.STATE_V4, commentBody.STATE_V5].includes(value.schemaVersion)) throw Error('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+    if (thread.anchor?.kind === 'point' && ![commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(value.schemaVersion)) throw Error('COMMENT_POINT_STATE_VERSION_REQUIRED');
   }
   for (const thread of value.threads) for (const message of [...(thread.messages || []), ...(thread.deletedMessages || [])]) {
-    if (message.richBody !== undefined && ![commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4].includes(value.schemaVersion)) throw Error('COMMENT_RICH_STATE_VERSION_REQUIRED');
+    if (message.richBody !== undefined && ![commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5].includes(value.schemaVersion)) throw Error('COMMENT_RICH_STATE_VERSION_REQUIRED');
     commentBody.validateCommentMessageContent(message);
   }
   return clone(value);

@@ -484,3 +484,30 @@ test('point comment anchors remain refused without source mutation', () => {
   assert.deepEqual(input, rejected);
   assert.notDeepEqual(input, original);
 });
+
+test('structural V5 history survives DOCX projection, generic append and unchanged authenticated return without downgrade',async()=>{
+ const authoring=require('../../src/core/word-comment-authoring-v1.cjs');
+ const {planCommentAnchorSave}=require('../../src/core/word-comment-anchor-save-v1.cjs');
+ const {STATE_V5}=require('../../src/core/word-comment-body-v1.cjs');
+ const projectId='v5-compat',sceneId='roman/a.txt',before='AlphaBeta',after='Alpha\nBeta';
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'thread',sceneId,rootCommentId:'root',status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'lphaBe'},sceneId,[before]),messages:[{commentId:'root',kind:'root',body:'Root',provenance:{}},{commentId:'reply',kind:'reply',body:'Reply',provenance:{}}]}]};
+ const saved=planCommentAnchorSave({beforeText:JSON.stringify(state),projectId,sceneId,beforeContent:before,afterContent:after,sessionId:'s',editIntents:{schemaVersion:2,baselineTextSha256:sha(JSON.stringify([before])),edits:[{id:'split',historyId:'h',direction:'forward',fromParagraphIndex:0,fromUtf16:5,toParagraphIndex:0,toUtf16:5,removedParagraphs:[''],insertedParagraphs:['','']}]}});
+ const v5=authoring.readState(saved.afterText,projectId);assert.equal(v5.schemaVersion,STATE_V5);assert.equal(v5.threads[0].anchorEditHistory[0].schemaVersion,2);
+ const doc={type:'doc',content:['Alpha','Beta'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
+ const source=makeSource({projectId,projectRoot:'/project',nonTextReturnState:v5,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:after,doc}]});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),bytes=buildDocxReviewPacketBuffer(source),analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});
+ assert.equal(analysis.ok,true);assert.equal(compareCommentExportReadback(source.commentExport,analysis.reviewIr.commentThreads).ok,true);
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const ordinaryProjection=require('../../src/export/docx/docxReviewPacketComments.js').buildCanonicalCommentExport(v5,source.blocks,projectId);
+ const ordinary=require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,plainText:after,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule,commentExport:ordinaryProjection,commentBlocks:source.blocks});
+ assert.equal(compareCommentExportReadback(ordinaryProjection,bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:ordinary},{cryptoPort}).reviewIr.commentThreads).ok,true);
+ const delta=require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({projectId,beforeText:saved.afterText,baseline:source.commentExport,exportMap:source.localAuthorityCapsule.exportMap,roundId:'v5-round',artifactSha256:sha(bytes),returnedThreads:analysis.reviewIr.commentThreads,returnedParagraphs:analysis.reviewIr.formattingParagraphs,commentReturnInventory:analysis.reviewIr.commentReturnInventory});
+ assert.equal(delta.unchanged,true,JSON.stringify(delta));assert.equal(delta.afterText,saved.afterText);
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+ assert.equal(runtime.computeExactTextCommentRebase({projectId,sceneId,beforeContent:after,afterContent:after,beforeText:saved.afterText}),null);
+ const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));const entry=bridge.buildDocxImportPreviewPlanFromContentPreview(preview).candidateCreatePlan.entries[0];
+ const generic=await import('../../src/io/revisionBridge/genericWordComments.mjs');
+ const appended=generic.materializeGenericComments({candidates:entry.comments,paragraphs:require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(entry.content),projectId,sceneId:'roman/imported.txt',importOperationId:'v5-import',beforeText:saved.afterText});
+ const newState=authoring.readState(appended.afterText,projectId);assert.equal(newState.schemaVersion,STATE_V5);assert.deepEqual(newState.threads[0],v5.threads[0]);assert.equal(newState.threads.length,2);
+ for(const downgrade of [1,2,3,4])assert.throws(()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:{...v5,schemaVersion:`yalken.rtk.word.non-text-return-state.v${downgrade}`},scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:after,doc}]}),/COMMENT/);
+});

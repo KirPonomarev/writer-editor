@@ -1,5 +1,11 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 04:27 EEST — Mac novel structural-comment slice
+
+- PR2079 delivered at555717390; exactCI19/19, RTK3254/3254 twice, merged700/7000skip. Native19d runtime equality retained; whole plan remains open.
+- Begin declared structural Enter/join/Delete and saved comment history packet on exact merged base. V2 observations, Core replay, additive V5 readers and existing atomic transaction; no new UI or writer. Outcome remains TARGET until actual native proof.
+
+
 ## 2026-10-05 03:37 EEST — multi-paragraph comment native candidate
 
 Candidate 19d025661 completed fresh rich import → immediate export → actual Word

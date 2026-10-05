@@ -7,7 +7,7 @@ const { tableParagraphs } = require('../io/documentTables.js');
 const { replayEditIntents, mapAnchorSplice } = require('./word-comment-edit-intents-v1.cjs');
 const { serializeCommentState, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
-const { MULTI, deriveCommentAnchor, validateCommentAnchor, rebaseCommentAnchorSplice } = require('./word-comment-ranges-v1.cjs');
+const { mapCommentEndpoint, rebaseStructuralCommentAnchor, MULTI, deriveCommentAnchor, validateCommentAnchor, rebaseCommentAnchorSplice } = require('./word-comment-ranges-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
 const RETURN_MODE = 'WORD_COMMENT_TEXT_RETURN_V1';
 const sha = text => sha256UpdateCompatible(text);
@@ -156,7 +156,7 @@ function applyMultiGroup(thread,group,beforeRows,afterRows,sessionId) {
   const digest=rows=>sha(JSON.stringify(rows.slice(a.sceneParagraphIndex,a.endSceneParagraphIndex+1).map(r=>r.text)));
   if(direction!=='forward' && entry) {
     const undo=direction==='undo',source=undo?entry.after:entry.before,target=undo?entry.before:entry.after;
-    if(entry.undone!==!undo || JSON.stringify(prior)!==JSON.stringify(source)
+    if(entry.undone!==!undo || !historyEqual(prior,source)
       || digest(beforeRows)!==(undo?entry.afterTextSha256:entry.beforeTextSha256)
       || digest(afterRows)!==(undo?entry.beforeTextSha256:entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
     const restored=deriveCommentAnchor({sceneId:thread.sceneId,paragraphs:afterRows,input:{kind:MULTI,
@@ -171,7 +171,7 @@ function applyMultiGroup(thread,group,beforeRows,afterRows,sessionId) {
     return e.fromUtf16===e.toUtf16 ? e.fromUtf16>start && e.fromUtf16<end : e.fromUtf16<end && e.toUtf16>start;
   })) fail('COMMENT_EDIT_HISTORY_EXPIRED');
   const continuing=direction==='forward' && entry && entry===last && !entry.undone;
-  if(continuing && (JSON.stringify(prior)!==JSON.stringify(entry.after) || digest(beforeRows)!==entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
+  if(continuing && (!historyEqual(prior,entry.after) || digest(beforeRows)!==entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
   let rows=beforeRows;
   for(const step of group) {
     const next=rows.map(row=>({...row}));next[step.edit.paragraphIndex].text=step.after;
@@ -185,7 +185,163 @@ function applyMultiGroup(thread,group,beforeRows,afterRows,sessionId) {
     beforeTextSha256:digest(beforeRows),afterTextSha256:digest(afterRows),undone:false});
 }
 
+// Structural snapshots remain local: no historical whole-scene hash is invented.
+function structuralSnapshot(thread,liveLocator) {
+  const a=thread.anchor;
+  return {sceneParagraphIndex:a.sceneParagraphIndex,startUtf16:a.startUtf16,length:a.selectedText.length,
+    status:thread.status,blockTextSha256:a.blockTextSha256,
+    ...(a.kind==='point'?{kind:'point',affinity:'right'}:a.kind===MULTI?{kind:MULTI,endSceneParagraphIndex:a.endSceneParagraphIndex,
+      endUtf16:a.endUtf16,endBlockTextSha256:a.endBlockTextSha256,coveredParagraphsSha256:a.coveredParagraphsSha256}:{}),
+    ...(thread.status==='deleted'?{deletedText:a.selectedText,liveLocator}: {})};
+}
+const historyEqual=(a,b)=>{const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;return JSON.stringify(stable(a))===JSON.stringify(stable(b));};
+const snapshotDigest=s=>s.status==='deleted'?s.liveLocator.blockTextSha256:s.kind===MULTI?s.coveredParagraphsSha256:s.blockTextSha256;
+function currentStructuralHistorySnapshot(thread) {
+  const history=thread.anchorEditHistory||[];
+  const last=history.filter(h=>!h.undone).at(-1);
+  const snapshot=last?last.after:history[0]?.before;
+  return snapshot?.status===thread.status?snapshot:null;
+}
+function validateStructuralSnapshot(snapshot,rows) {
+  if(snapshot.status==='deleted') {
+    const l=snapshot.liveLocator,text=rows[l?.sceneParagraphIndex]?.text;
+    if(typeof text!=='string'||sha(text)!==l.blockTextSha256||!edges(text).has(l.startUtf16)) fail('COMMENT_EDIT_HISTORY_STALE');
+    return;
+  }
+  const input={paragraphIndex:snapshot.sceneParagraphIndex,startUtf16:snapshot.startUtf16};
+  if(snapshot.kind===MULTI) Object.assign(input,{kind:MULTI,endParagraphIndex:snapshot.endSceneParagraphIndex,endUtf16:snapshot.endUtf16});
+  else if(snapshot.kind==='point') Object.assign(input,{kind:'point',affinity:'right',selectedText:''});
+  else input.selectedText=rows[snapshot.sceneParagraphIndex]?.text.slice(snapshot.startUtf16,snapshot.startUtf16+snapshot.length);
+  const anchor=deriveCommentAnchor({sceneId:'history-validation',paragraphs:rows,input});
+  if(anchor.selectedText.length!==snapshot.length||anchor.blockTextSha256!==snapshot.blockTextSha256
+    ||(snapshot.kind===MULTI&&(anchor.endBlockTextSha256!==snapshot.endBlockTextSha256||anchor.coveredParagraphsSha256!==snapshot.coveredParagraphsSha256))) fail('COMMENT_EDIT_HISTORY_STALE');
+  return anchor;
+}
+function structuralOwners(content,rows) {
+  const parsed=parseObservablePayload(content);
+  if(!parsed.doc) return rows.map(row=>({...row,root:true}));
+  const result=[];
+  const walk=(node,root=false)=>{
+    if(['paragraph','heading','codeBlock'].includes(node?.type)) {result.push(root&&node.type==='paragraph');return;}
+    for(const child of node?.content||[]) walk(child,false);
+  };
+  for(const child of parsed.doc.content) walk(child,true);
+  if(result.length!==rows.length) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+  return rows.map((row,i)=>({...row,root:result[i]}));
+}
+function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
+  if(typeof sessionId!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/u.test(sessionId)) fail('COMMENT_EDIT_SESSION_INVALID');
+  let rows=structuralOwners(beforeContent,paragraphs(beforeContent));
+  const finalRows=structuralOwners(afterContent,paragraphs(afterContent));
+  for(const thread of before.threads.filter(t=>t.sceneId===sceneId)) {
+    const a=thread.anchor;
+    if(!a||a.sceneId!==sceneId||typeof a.selectedText!=='string'||!a.selectedText.isWellFormed()
+      ||a.selectedTextSha256!==sha(a.selectedText)) fail('COMMENT_SAVE_ANCHOR_STALE');
+    if(thread.status!=='deleted') validateCommentAnchor({sceneId,paragraphs:rows,anchor:a});
+  }
+  const {plan,steps}=replayEditIntents(rows.map(r=>r.text),finalRows.map(r=>r.text),editIntents);
+  const after=JSON.parse(JSON.stringify(before)), groups=[];
+  for(const step of steps) {
+    const e=step.edit,structural=e.fromParagraphIndex!==e.toParagraphIndex||e.insertedParagraphs.length!==1;
+    if(structural && rows.slice(e.fromParagraphIndex,e.toParagraphIndex+1).some(r=>!r.root||r.type!=='paragraph')) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+    const next=rows.slice();
+    next.splice(e.fromParagraphIndex,e.toParagraphIndex-e.fromParagraphIndex+1,
+      ...step.afterParagraphs.slice(e.fromParagraphIndex,e.fromParagraphIndex+e.insertedParagraphs.length).map(text=>({...rows[e.fromParagraphIndex],text})));
+    step.beforeRows=rows;step.afterRows=next;rows=next;
+    const last=groups.at(-1);
+    if(last && last[0].edit.historyId===e.historyId && last[0].edit.direction===e.direction) last.push(step);else groups.push([step]);
+  }
+  const shape=rs=>JSON.stringify(rs.map(({text,...r})=>r));
+  if(shape(rows)!==shape(finalRows)) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+  for(const group of groups) {
+    const beforeRows=group[0].beforeRows,afterRows=group.at(-1).afterRows,{historyId,direction}=group[0].edit;
+    for(const thread of after.threads.filter(t=>t.sceneId===sceneId)) {
+      const history=thread.anchorEditHistory||[],last=history.at(-1),entry=history.slice().reverse().find(h=>h.sessionId===sessionId&&h.historyId===historyId);
+      // Only an already recorded authoring tombstone has a live coordinate.
+      let locator=thread.status==='deleted'?currentStructuralHistorySnapshot(thread)?.liveLocator:undefined;
+      if(thread.status==='deleted'&&!locator) {
+        if(direction!=='forward'&&entry) fail('COMMENT_EDIT_HISTORY_STALE');
+        continue;
+      }
+      const prior=structuralSnapshot(thread,locator),priorQuote=thread.anchor.selectedText;
+      validateStructuralSnapshot(prior,beforeRows);
+      if(direction!=='forward'&&entry) {
+        const undo=direction==='undo',source=undo?entry.after:entry.before,target=undo?entry.before:entry.after;
+        if(entry.undone!==!undo||!historyEqual(prior,source)) fail('COMMENT_EDIT_HISTORY_STALE');
+        validateStructuralSnapshot(source,beforeRows);const restored=validateStructuralSnapshot(target,afterRows);
+        if(target.status==='deleted') {
+          const a=thread.anchor;thread.anchor={...a,sceneParagraphIndex:target.sceneParagraphIndex,paragraphIndex:target.sceneParagraphIndex,startUtf16:target.startUtf16,
+            selectedText:target.deletedText,selectedTextSha256:sha(target.deletedText),blockTextSha256:target.blockTextSha256};
+          for(const key of ['kind','affinity','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256']) delete thread.anchor[key];
+          if(target.kind==='point') Object.assign(thread.anchor,{kind:'point',affinity:'right'});
+          if(target.kind===MULTI) Object.assign(thread.anchor,{kind:MULTI,endSceneParagraphIndex:target.endSceneParagraphIndex,endParagraphIndex:target.endSceneParagraphIndex,endUtf16:target.endUtf16,endBlockTextSha256:target.endBlockTextSha256,coveredParagraphsSha256:target.coveredParagraphsSha256});
+        } else {
+          const provenance=Object.fromEntries(Object.entries(thread.anchor).filter(([k])=>['authoritySource','sourceChangeId'].includes(k)));
+          thread.anchor={...provenance,...restored,sceneId};
+        }
+        thread.status=target.status;entry.undone=undo;continue;
+      }
+      const continuing=direction==='forward'&&entry===last&&entry&&!entry.undone;
+      if(continuing&&!historyEqual(prior,entry.after)) fail('COMMENT_EDIT_HISTORY_STALE');
+      for(const step of group) {
+        if(thread.status==='deleted') {
+          const mapped=mapCommentEndpoint({paragraphIndex:locator.sceneParagraphIndex,offsetUtf16:locator.startUtf16},step.edit,true);
+          const text=step.afterRows[mapped.paragraphIndex]?.text;
+          if(typeof text!=='string'||!edges(text).has(mapped.offsetUtf16)) fail('COMMENT_EDIT_GRAPHEME');
+          locator={sceneParagraphIndex:mapped.paragraphIndex,startUtf16:mapped.offsetUtf16,blockTextSha256:sha(text)};
+        } else {
+          const mapped=rebaseStructuralCommentAnchor({anchor:thread.anchor,beforeParagraphs:step.beforeRows,afterParagraphs:step.afterRows,edit:step.edit});
+          thread.anchor=mapped.anchor;if(mapped.deleted) {thread.status='deleted';locator=mapped.liveLocator;}
+        }
+      }
+      const result=structuralSnapshot(thread,locator);
+      if(JSON.stringify(prior)===JSON.stringify(result)) continue;
+      if(direction!=='forward'&&!entry && history.some(h=>h.sessionId===sessionId)
+        &&(prior.status==='deleted'||prior.status!==result.status||priorQuote!==thread.anchor.selectedText||prior.length!==result.length)) fail('COMMENT_EDIT_HISTORY_EXPIRED');
+      if(continuing) {
+        entry.schemaVersion=2;entry.after=result;entry.afterTextSha256=snapshotDigest(result);
+      } else {
+        // Coordinates/kind changes also need history: an inverse separator edit
+        // must restore the pre-edit interval, not guess its boundary affinity.
+        thread.anchorEditHistory=history.filter(h=>!h.undone&&h.sessionId===sessionId).slice(-31);
+        thread.anchorEditHistory.push({schemaVersion:2,historyId,sessionId,before:prior,after:result,
+          beforeTextSha256:snapshotDigest(prior),afterTextSha256:snapshotDigest(result),undone:false});
+      }
+    }
+  }
+  const changed=JSON.stringify(after)!==JSON.stringify(before);
+  if(changed) {if(before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');after.revision++;upgradeCommentState(after);}
+  let afterText=changed?JSON.stringify(after,null,2)+'\n':beforeText;
+  if(Buffer.byteLength(afterText)>65536) afterText=JSON.stringify(after)+'\n';
+  while(Buffer.byteLength(afterText)>65536) {
+    const candidate=after.threads.filter(t=>t.anchorEditHistory?.length>1).sort((a,b)=>b.anchorEditHistory.length-a.anchorEditHistory.length)[0];
+    if(!candidate) fail('COMMENT_SAVE_STATE_BUDGET');candidate.anchorEditHistory.shift();afterText=JSON.stringify(after)+'\n';
+  }
+  readState(afterText,before.projectId);
+  return changed||includeUnchanged?{mode:MODE,beforeText,afterText,editIntents:plan,sessionId}:null;
+}
+
 function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
+  const checked=require('./word-comment-edit-intents-v1.cjs').validateEditIntents(editIntents);
+  if(checked.schemaVersion===2) {
+    for(const thread of before.threads.filter(t=>t.sceneId===sceneId)) {
+      const a=thread.anchor;
+      if(!a||a.sceneId!==sceneId||typeof a.selectedText!=='string'||!a.selectedText.isWellFormed()
+        ||a.selectedTextSha256!==sha(a.selectedText)) fail('COMMENT_SAVE_ANCHOR_STALE');
+    }
+    const legacyDeleted=before.threads.some(t=>t.sceneId===sceneId&&t.status==='deleted'&&t.anchorEditHistory?.length&&!t.anchorEditHistory.some(h=>h.schemaVersion===2));
+    if(legacyDeleted) {
+      // Old tombstones have truthful single-block history but no collapsed
+      // locator. Reuse that exact law, never fabricate historical coordinates.
+      if(checked.edits.some(e=>e.fromParagraphIndex!==e.toParagraphIndex||e.insertedParagraphs.length!==1)
+        ||before.threads.some(t=>t.sceneId===sceneId&&t.anchorEditHistory?.some(h=>h.schemaVersion===2))) fail('COMMENT_EDIT_HISTORY_STALE');
+      const legacy={schemaVersion:1,baselineTextSha256:checked.baselineTextSha256,edits:checked.edits.map(e=>({id:e.id,historyId:e.historyId,direction:e.direction,
+        paragraphIndex:e.fromParagraphIndex,fromUtf16:e.fromUtf16,toUtf16:e.toUtf16,removedText:e.removedParagraphs[0],insertText:e.insertedParagraphs[0]}))};
+      const result=planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents:legacy,sessionId,includeUnchanged});
+      return result?{...result,editIntents:checked}:result;
+    }
+    return planStructuralIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents:checked,sessionId,includeUnchanged});
+  }
   if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_.:-]{1,160}$/u.test(sessionId)) fail('COMMENT_EDIT_SESSION_INVALID');
   const old = paragraphs(beforeContent), next = paragraphs(afterContent);
   const shape = rows => JSON.stringify(rows.map(({text,...owner})=>owner));
@@ -321,4 +477,4 @@ function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,after
   return plan;
 }
 
-module.exports = { MODE, RETURN_MODE, paragraphs, planCommentAnchorSave, planCommentTextReturn };
+module.exports = { currentStructuralHistorySnapshot, validateStructuralSnapshot, MODE, RETURN_MODE, paragraphs, planCommentAnchorSave, planCommentTextReturn };
