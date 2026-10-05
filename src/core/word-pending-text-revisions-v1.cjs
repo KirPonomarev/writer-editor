@@ -853,4 +853,22 @@ function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[
   assert(cursor===returned.spans.length,'PENDING_COMMENT_PARTITION_CHANGED');
   return {partitions,projection:before.projection,anchors:binding.anchors};
 }
-module.exports = { commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+// A checked, transport-normalized basis for the separate changed-pending proof.
+// This does not relax the unchanged-return verifier above.
+function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs}) {
+  const before=buildCommentExportBinding({document,binding,anchors,exportTypography,exportParagraphs,schemaVersion:binding?.schemaVersion});
+  assert(stable(before.binding)===stable(binding),'PENDING_COMMENT_BINDING_CHANGED');
+  const incoming=commentBasis(returnedDocument,exportTypography);
+  const left=commentLeftDefaults(before.projection.union,exportParagraphs);
+  const indents=commentExportIndents(before.projection.union,exportParagraphs);
+  const old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
+  const next=commentRich(incoming.union,incoming.size,null,left);
+  const shape=doc=>{const copy=clone(doc);paragraphs(copy).forEach(p=>{p.content=[];});return normalizeNode(copy);};
+  assert(stable(shape(old))===stable(shape(next)),'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
+  return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows},
+    oldComparison:old,newComparison:next};
+}
+function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
+  return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
+}
+module.exports = { mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

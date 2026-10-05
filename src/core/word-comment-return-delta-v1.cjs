@@ -56,7 +56,7 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [] }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
@@ -82,7 +82,19 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   const pendingModel=require('./word-pending-text-revisions-v1.cjs');
   const pendingByScene=new Map();
   const pendingBound=exportMap.scenes.filter(s=>s.pendingCommentBinding!==undefined);
-  demand(pendingBound.length===pendingScenes.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  demand(mixedPendingScene?exportMap.scenes.length===1:pendingBound.length===pendingScenes.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  if(mixedPendingScene) {
+    demand(pendingScenes.length===0&&textChanges.length===0&&exportMap.scenes.length===1
+      &&Object.keys(mixedPendingScene).sort().join(',')==='document,returnedDocument,sceneId'
+      &&mixedPendingScene.sceneId===exportMap.scenes[0].sceneId,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const scene=exportMap.scenes[0],anchors=before.threads.filter(t=>t.sceneId===scene.sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
+    const checked=require('./word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({...mixedPendingScene,binding:scene.pendingCommentBinding,anchors,
+      exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
+    const texts=pendingModel.paragraphs(checked.projection.current).map(p=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
+    demand(texts.length===scene.blocks.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    textChanges=scene.blocks.flatMap((b,i)=>{const oldText=b.formatIr.runs.map(r=>r.text).join('');return oldText===texts[i]?[]:[{sceneId:scene.sceneId,paragraphIndex:i,oldText,newText:texts[i]}];});
+    pendingByScene.set(scene.sceneId,{...checked,mixed:true,returnedDocument:mixedPendingScene.returnedDocument});
+  }
   for(const item of pendingScenes) {
     demand(plain(item) && Reflect.ownKeys(item).every(k=>typeof k==='string' && Object.hasOwn(Object.getOwnPropertyDescriptor(item,k),'value')) && Object.keys(item).sort().join(',')==='document,returnedDocument,sceneId'
       && typeof item.sceneId==='string' && !pendingByScene.has(item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
@@ -96,6 +108,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     demand(texts.length===scene.blocks.length && scene.blocks.every((b,i)=>b.formatIr?.runs?.map(r=>r.text).join('')===texts[i]),'COMMENT_RETURN_PENDING_PROOF_INVALID');
     pendingByScene.set(item.sceneId,checked);
   }
+  for(const checked of pendingByScene.values())checked.unionTexts=pendingModel.paragraphs(checked.projection.union).map(p=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
   demand(!pendingScenes.length || textChanges.length===0,'COMMENT_RETURN_PENDING_TEXT_CHANGED');
   // Private clean-text admission is explicit and complete; returned marker data
   // cannot itself grant permission to change manuscript text.
@@ -169,18 +182,24 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const multi=a?.kind==='multi-paragraph-range';
     const pendingProof=pendingByScene.get(expected.sceneId);
     if(pendingProof) {
-      const bound=pendingProof.anchors.find(v=>v.threadId===expected.threadId), union=actual.anchorRange;
-      demand(bound && plain(union),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
+      const union=actual.anchorRange;
+      let bound=pendingProof.anchors?.find(v=>v.threadId===expected.threadId);
+      demand((bound||pendingProof.mixed)&&plain(union)&&plain(a),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
       const sceneRows=blocks.filter(b=>b.sceneId===expected.sceneId);
       const localIndex=global=>sceneRows.findIndex(b=>b.documentParagraphIndex===global);
       const endpoint=(range,last)=>({paragraphIndex:localIndex(last?(range.endParagraphIndex??actual.paragraphIndex):actual.paragraphIndex),offsetUtf16:last?range.endUtf16:range.startUtf16});
+      if(pendingProof.mixed) {
+        const unionStart=endpoint(union,false),unionEnd=endpoint(union,true);
+        const map=e=>pendingModel.mapCheckedCommentProjectionEndpoint({projection:pendingProof.projection,paragraphIndex:e.paragraphIndex,offsetUtf16:e.offsetUtf16});
+        bound={unionStart,unionEnd,currentStart:map(unionStart),currentEnd:map(unionEnd)};
+      }
       demand(stable(endpoint(a,false))===stable(bound.currentStart) && stable(endpoint(a,true))===stable(bound.currentEnd)
-        && stable(endpoint(union,false))===stable(bound.unionStart) && stable(endpoint(union,true))===stable(bound.unionEnd),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
-      const unionTexts=pendingModel.paragraphs(pendingProof.projection.union).map(p=>p.content.map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
+        && stable(endpoint(union,false))===stable(bound.unionStart) && stable(endpoint(union,true))===stable(bound.unionEnd),'COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT');
+      const unionTexts=pendingProof.unionTexts;
       const {unionStart:start,unionEnd:end}=bound;
       const quote=start.paragraphIndex===end.paragraphIndex?unionTexts[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)
         :[unionTexts[start.paragraphIndex].slice(start.offsetUtf16),...unionTexts.slice(start.paragraphIndex+1,end.paragraphIndex),unionTexts[end.paragraphIndex].slice(0,end.offsetUtf16)].join('\n');
-      demand(union.selectedText===quote && actual.quotedAnchorText===quote && union.blockTextSha256===hash(unionTexts[start.paragraphIndex]),'COMMENT_RETURN_PENDING_ANCHOR_INVALID');
+      demand(union.selectedText===quote && actual.quotedAnchorText===quote && union.blockTextSha256===hash(unionTexts[start.paragraphIndex]),'COMMENT_RETURN_PENDING_ANCHOR_QUOTE');
     }
     demand(plain(a) && a.blockTextSha256 === hash(returnedText.get(block.documentParagraphIndex)) && (pendingProof || a.selectedText === actual.quotedAnchorText)
       && (multi || a.endUtf16 === a.startUtf16 + a.selectedText.length), 'COMMENT_RETURN_ANCHOR_INVALID');

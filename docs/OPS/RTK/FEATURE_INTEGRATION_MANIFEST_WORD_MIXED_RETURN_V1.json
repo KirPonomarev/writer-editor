@@ -1,0 +1,72 @@
+{
+  "taskId": "WORD_MIXED_RETURN_MAC_20261005",
+  "objective": "Atomic authenticated Word return with inline tracked text edits and multiple discussion changes, restart-safe round decisions and reexport; first bounded prerequisite for the100000-word novel launch.",
+  "writePaths": [
+    "Authenticated DOCX bytes and locally signed baseline -> bounded rich partition and full discussion proof -> explicit Pending Apply -> Kernel and Main revalidation -> existing atomic scene/comment transaction -> exact readback -> guarded editor publication"
+  ],
+  "productPorts": [
+    "Existing project lease, atomic scene/manifest/comment transaction, readable recovery and guarded editor publication; existing native DOCX exports"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact baseline SHA, DOCX artifact hash, scene and project identity, round receipt, lifecycle and edit generation",
+    "Preserved old pending partitions and rich provenance, returned union/Current coordinates; repeated text never establishes occurrence identity",
+    "Exact comment CAS and scene CAS revalidated under project lease; private proof independently recomputed by transaction"
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
+  "fallbacks": [
+    "Unsupported structure, format, move, notes mixtures remain explicit no-write refusal",
+    "Old unchanged verifier remains strict; changed pending path requires its own complete proof",
+    "No comment-only partial success hiding text changes; no silent drops or budget removal"
+  ],
+  "recoveryAndNegativeChecks": [
+    "First actual Main executable route: pending baseline plus2threads, Word replacement2replies newroot, zero preview writes, explicit atomic Apply",
+    "Repeated strings, forged source/partitions/provenance and anchor coordinates, missing inventory, malicious/unknown fields",
+    "Stale comment/scene/lifecycle/generation, forged admission, rollback and partial write failure",
+    "Restart round Undo/Redo retains messages, reversible new-root-on-insert locator, pending decisions and reexport",
+    "Early real Word SOURCE and PACKAGED native before full stable required gates; exact merged verification"
+  ],
+  "securityAndInputBoundary": "No new dependencies or runtime network. Mixed proof is separately capped at8MiB (existing scene/recording ceiling); clean legacy proof retains2MiB. Untrusted DOCX validated before target/path/mutation decisions. Existing file ports and readable recovery only.",
+  "performanceAndAccessibility": "No new surface or visual design; same confirmation dialog must disclose discussion delta. Bounded paragraph and revision walks outside per-keystroke path;100000-word combined acceptance remains a separate required launch proof.",
+  "currentReality": [
+    "PR2084 merged8449a73a4; CI19/19, RTK3358/3358 each, merged957/957 zero skips",
+    "Signed pending+comment return currently routes comment-only, forbids text changes, permits one appended reply",
+    "User2026-10-05 approves100000-word novel launch priority; original Mac plan preserved and complex tables deferred"
+  ],
+  "targetOnly": [
+    "Mixed return becomes CURRENT only after observed native SOURCE and PACKAGED scenarios and full delivery",
+    "Whole novel launch,100k combined five-cycle acceptance, comment capacity and remaining style/structure composition still open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core owns canonical scene envelope, pending ledger, comment state and reversible anchor history. Authenticated external Word payload is validated data, never mutation authority.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.review.decidePendingRevision",
+    "Existing authenticated DOCX return preview"
+  ],
+  "queries": [
+    "Existing pending revision and comment projections"
+  ],
+  "events": [
+    "Existing atomic project saved event"
+  ],
+  "effects": [
+    "Existing leased scene/comment transaction and guarded editor publication"
+  ],
+  "hotPathBoundary": "Return preparation and explicit Apply only; no new per-keystroke work",
+  "migrationRollbackEvidence": "Revert this bounded packet; retain original signed artifacts, prior scene rounds and canonical messages; existing atomic recovery restores all companions. No destructive migration.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_CONFIRMATION_NO_DESIGN_CHANGE"
+}

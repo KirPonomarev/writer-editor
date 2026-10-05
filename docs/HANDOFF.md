@@ -1,3 +1,34 @@
+## 2026-10-05 11:59 EEST — owner-approved100000-word novel priority; PR2084 delivered
+
+The owner explicitly resumed work and selected the100000-word novel editorial
+roundtrip as the current launch subset. Keep the original Mac plan intact;
+complex tables and objects are deferred, not removed or counted as delivered.
+
+PR2084 is merged at8449a73a42d4f4b057f52a3db6e76e37c1afebd6.
+CI19/19; both full RTK3358/3358. Clean detached exact merged verification:
+957/957, zero fail/cancel/skip/todo; tree equals candidate697ae143e.
+Guardrails and exact OPS admission pass. Native scope remains the previously
+observed187-word SOURCE/PACKAGED recording/comment scenario, not100k acceptance.
+
+Active task: WORD_MIXED_RETURN_MAC_20261005. Existing pending+comments route
+forbids changed text and permits one reply. Implement complete authenticated
+inline text plus multiple discussions through one explicit atomic Apply,
+restart-safe round decisions and reexport. First actual Main red route reports
+PENDING_RETURN_ANNOTATION_UNDO_REQUIRED without writes. Native Word fixture
+already contains a new tracked replacement,two replies and a new discussion.
+
+Next measured blocker: pure current comment model reaches64KiB at58 roots
+with40-character bodies,54 with120-character bodies,44 with400-character bodies.
+These are synthetic capacity probes, not market norms or native acceptance.
+The unchanged authoring source hash is
+95f034ed633b9c08204813a2b9aca0d110c2798e8f6c3b34e5da2bd5097224b2.
+Capacity needs a coherent bounded persistence/import/export fix after this
+packet, followed by composed100k native acceptance. No new completion percent.
+
+Evidence: word-recording-comments-mac-ebab94902 DELIVERY_RECEIPT.json;
+word-mixed-return-mac-8449a73a4 comment-capacity-observation.json and native
+Word artifacts. Task contract:2026-10-05--word-mixed-return-mac.md.
+
 ## 2026-10-05 10:57 EEST — tracked recording with comments: both Mac routes observed
 
 WORD_RECORDING_COMMENTS_MAC_20261005; native candidate

@@ -6182,10 +6182,11 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, allowPendingParagraphSplits: true, allowPendingTableRows: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
-    if (intake.parserResult?.reviewIr?.commentThreads?.length)
+    const mixedComments = Boolean(capsule.commentExport && scenes.length===1);
+    if (intake.parserResult?.reviewIr?.commentThreads?.length && !mixedComments)
       throw Error('PENDING_RETURN_ANNOTATION_UNDO_REQUIRED');
     const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
     if (!plan.ok || plan.candidateCreatePlan?.entries?.length !== 1) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
@@ -6218,7 +6219,22 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
     }
     notesDigest = notesStateDigest(notesState.document);
-    const replacement = pendingTextRevisions.replaceFromReturn(beforeDoc, returnedDoc, receipt,
+    let mixedPlan=null;
+    if(mixedComments&&!replay) {
+      if(capsule.userBookmarksCandidate||capsule.mediaReturnCandidate||capsule.storyReturnCandidate||capsule.cleanLinkLabel?.ok
+        ||activeNotes.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length)throw Error('MIXED_RETURN_COMPOSITE_UNSUPPORTED');
+      const parsedScenes=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
+        baselineDocuments:[{sceneId,document:current.parsed.doc}],retainPendingSceneId:sceneId,documentSections:capsule.documentSections,
+        signedSectionsDigest:capsule.documentSections?.protectedDigest,allowOfficeDefaultOmissions:capsule.officeModeTransport===true,cryptoPort});
+      if(!parsedScenes.ok||parsedScenes.scenes.length!==1)throw Error(parsedScenes.code||'MIXED_RETURN_PARSE_FAILED');
+      const proof={schemaVersion:1,projectId:current.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
+        baseline:capsule.commentExport,exportMap:capsule.exportMap,returnedDocument:parsedScenes.scenes[0].returnedDocument,
+        returnedThreads:intake.parserResult?.reviewIr?.commentThreads,returnedParagraphs:intake.parserResult?.reviewIr?.formattingParagraphs?.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),
+        commentReturnInventory:intake.parserResult?.reviewIr?.commentReturnInventory};
+      mixedPlan=require('./core/word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText:current.saved?.text??null,
+        projectId:current.projectId,sceneId,beforeContent:current.raw,returnProofJson:JSON.stringify(proof)});
+    }
+    const replacement = mixedPlan?.replacement || pendingTextRevisions.replaceFromReturn(beforeDoc, returnedDoc, receipt,
       mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
         ? mapped.paragraphBindings : undefined));
     // Compare exact paragraph occurrences. The envelope's legacy display text
@@ -6232,7 +6248,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       consumed = true; check();
       const payload = { action: 'authenticated-pending-return', projectId: current.projectId,
         sceneId, subjectId: current.subjectId, expectedSceneSha256: current.sceneSha256 };
-      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest });
+      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest, mixedPlan });
       let result;
       try { result = await dispatchMenuCommand('cmd.project.review.decidePendingRevision', payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedPendingReturnAdmissions.delete(payload); }
@@ -6241,7 +6257,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
         pendingProductApplyLane: false };
     };
     if (replacement.replay) return await apply();
-    const changes = { before: current.parsed.doc, after: replacement.doc };
+    const changes = { before: current.parsed.doc, after: replacement.doc, ...(mixedPlan?{comments:JSON.parse(mixedPlan.afterText).threads.filter(t=>t.sceneId===sceneId),commentsBefore:JSON.parse(mixedPlan.beforeText).threads.filter(t=>t.sceneId===sceneId),commentChanges:mixedPlan.changes}:{}) };
     if (typeof onPrepared === 'function') onPrepared({ apply, changes });
     return { ok: true, status: 'preview-ready', code: 'PENDING_RETURN_EXPLICIT_APPLY_REQUIRED',
       writerCalled: false, pendingProductApplyLane: true };
@@ -11060,6 +11076,13 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     const commentProductPath = await applyAuthenticatedCommentDelta({ context: activeContext, requestId,
       explicitCanonicalApplyConfirmed: false, isCurrent, docxBytes: decoded.bytes, revisionBridge,
       onPrepared: options.onCommentDeltaPrepared });
+    if(commentProductPath.ok!==true&&returnIntake.localAuthorityCapsule.exportMap.scenes.length===1
+      &&['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)) {
+      // These typed outcomes require the separate complete mixed proof. All
+      // identity, capability, stale and package failures remain terminal.
+      const mixedPath=await prepareAuthenticatedPendingReturn({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
+      if(mixedPath)return {ok:true,commandId:DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,requestId,activated:false,pendingProductPath:mixedPath};
+    }
     if (commentProductPath.ok !== true) return makeDocxReviewPreviewSessionTypedError(
       'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED', commentProductPath.code);
     return { ok: true, commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
@@ -11748,21 +11771,31 @@ async function notifyLocalWordCommentDeltaFailure() {
 
 async function confirmLocalWordPendingReturn({ fileName, changes }) {
   if (!mainWindow || mainWindow.isDestroyed() || !changes?.before || !changes?.after) return false;
+  const sourceRows=doc=>pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(pendingTextRevisions.readLedger(doc)?.source||doc));
+  const beforeRows=sourceRows(changes.before),afterRows=sourceRows(changes.after),changed=new Set();
+  for(let i=0;i<Math.max(beforeRows.length,afterRows.length);i++)if(JSON.stringify(beforeRows[i])!==JSON.stringify(afterRows[i]))changed.add(i);
+  const beforeRevisions=pendingTextRevisions.readLedger(changes.before)?.revisions||[],afterRevisions=pendingTextRevisions.readLedger(changes.after)?.revisions||[];
+  const retained=new Set(beforeRevisions.filter(r=>afterRevisions.some(next=>next.id===r.id&&JSON.stringify(next)===JSON.stringify(r))).map(r=>r.id));
+  for(const r of [...beforeRevisions,...afterRevisions])if(!retained.has(r.id))changed.add(r.paragraphIndex);
   const describe = doc => {
     const ledger = pendingTextRevisions.readLedger(doc);
     const source = ledger?.source || doc;
     const names = { bold: 'полужирное', italic: 'курсив', underline: 'подчёркивание', strike: 'зачёркивание',
       textAlign: 'выравнивание', level: 'уровень заголовка', fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет' };
     const attrs = value => Object.entries(value || {}).map(([key, val]) => `${names[key] || key}: ${val}`).join(', ');
-    const paragraphs = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(source)).map((p, index) => `Абзац ${index + 1} (${p.type === 'heading' ? 'заголовок' : 'текст'}${attrs(p.attrs) ? ', ' + attrs(p.attrs) : ''}):\n` +
-      (p.content || []).map(n => n.type === 'hardBreak' ? '[перенос строки]' : `«${n.text}» — ${(n.marks || []).map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычный'}`).join('\n'));
+    const paragraphs = pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(source)).flatMap((p, index) => !changed.has(index)?[]:[`Абзац ${index + 1} (${p.type === 'heading' ? 'заголовок' : 'текст'}${attrs(p.attrs) ? ', ' + attrs(p.attrs) : ''}):\n` +
+      (p.content || []).map(n => n.type === 'hardBreak' ? '[перенос строки]' : `«${n.text}» — ${(n.marks || []).map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычный'}`).join('\n')]);
     const formatDescription = value => Array.isArray(value) ? value.map(m => names[m.type] || (m.type === 'highlight' ? 'выделение: ' + m.attrs.color : attrs(m.attrs))).join(', ') || 'обычное'
       : (value.type === 'heading' ? 'заголовок' : 'абзац') + (attrs(value.attrs) ? ', ' + attrs(value.attrs) : ', выравнивание по умолчанию');
-    const revisions = (ledger?.revisions || []).map(r => `${r.structure?.kind === 'tableRow' ? (r.operation === 'insert' ? 'Вставка строки таблицы' : 'Удаление строки таблицы') : r.boundary === 'paragraph' ? (r.operation === 'insert' ? 'Разделение абзаца' : 'Объединение абзацев') : r.operation === 'format' ? (r.format.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}${r.format ? `; было: ${formatDescription(r.format.before)}; стало: ${formatDescription(r.format.after)}` : ''}`);
-    const view = ledger ? pendingTextRevisions.projection(doc) : null;
-    return paragraphs.join('\n') + '\nИсправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
+    const revisions = (ledger?.revisions || []).filter(r=>!retained.has(r.id)).map(r => `${r.structure?.kind === 'tableRow' ? (r.operation === 'insert' ? 'Вставка строки таблицы' : 'Удаление строки таблицы') : r.boundary === 'paragraph' ? (r.operation === 'insert' ? 'Разделение абзаца' : 'Объединение абзацев') : r.operation === 'format' ? (r.format.kind === 'paragraph' ? 'Форматирование абзаца' : 'Форматирование текста') : r.moveName ? (r.operation === 'insert' ? 'Перенос сюда' : 'Перенос отсюда') : (r.operation === 'insert' ? 'Вставка' : 'Удаление')}: абзац ${r.paragraphIndex + 1}, ${r.from}–${r.to}; ${r.author || 'автор не указан'}; ${r.dateUtc || r.date || 'дата не указана'}; ${{pending:'ожидает решения',accepted:'принято',rejected:'отклонено'}[r.state]}${r.format ? `; было: ${formatDescription(r.format.before)}; стало: ${formatDescription(r.format.after)}` : ''}`);
+    const projected=mode=>pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(ledger,mode)).flatMap((p,i)=>changed.has(i)?[`Абзац ${i+1}: `+(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')]:[]).join('\n');
+    const view = ledger ? {original:projected('original'),current:projected('current')} : null;
+    return `Изменённых абзацев: ${changed.size}. Сохранено прежних исправлений: ${retained.size}. Всего исправлений: ${(ledger?.revisions||[]).length}.\n`+paragraphs.join('\n') + '\nИзменённые исправления:\n' + (revisions.join('\n') || 'нет') + (view ? `\nИсходный текст:\n${view.original}\nТекущий текст:\n${view.current}` : '');
   };
-  const detail = `${fileName}\nДо возврата:\n${describe(changes.before)}\nПосле возврата:\n${describe(changes.after)}\nВозврат можно отменить и повторить в панели исправлений, в том числе после перезапуска.`;
+  const describeThread=t=>t?`${t.status}; абзац ${t.anchor.sceneParagraphIndex+1}; «${t.anchor.selectedText}»: `+t.messages.map(m=>`${m.provenance?.author||'автор не указан'}: ${m.body}`).join(' → '):'нет обсуждения';
+  const discussionDetail=changes.comments?'\nИзменения обсуждений:\n'+(changes.commentChanges||[]).map(c=>
+    'До: '+describeThread(changes.commentsBefore?.find(t=>t.threadId===c.threadId))+'\nПосле: '+describeThread(changes.comments.find(t=>t.threadId===c.threadId))).join('\n'):'';
+  const detail = `${fileName}\nДо возврата:\n${describe(changes.before)}\nПосле возврата:\n${describe(changes.after)}${discussionDetail}\nВозврат можно отменить и повторить в панели исправлений, в том числе после перезапуска.`;
   if (detail.length > 32000) throw Error('PENDING_RETURN_PREVIEW_BUDGET');
   const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Исправления из Word',
     message: 'Применить возврат Word к этой сцене?', detail, buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true });
@@ -23365,7 +23398,9 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
                 beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true,
                 ...(options.commentEditIntentsJson != null ? {editIntents:options.commentEditIntentsJson,sessionId:commentAuthoringSessionId} : {}) };
               if (recordingAdmission?.session.commentRecording && current.text !== recordingAdmission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
-              commentState = recordingAdmission?.recordingProofJson
+              commentState = options.pendingCommentReturnProofJson
+                ? require('./core/word-comment-anchor-save-v1.cjs').planCommentTextReturn({...commentSaveInput,returnProofJson:options.pendingCommentReturnProofJson})
+                : recordingAdmission?.recordingProofJson
                 ? require('./core/word-pending-recording-comments-v1.cjs').planRecordingCommentSave({
                   ...commentSaveInput, recordingProofJson: recordingAdmission.recordingProofJson })
                 : options.pendingCommentDecision
@@ -25452,7 +25487,8 @@ async function handlePendingRevisionCommand(payload = {}) {
         const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
         if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_SCENE_CHANGED');
         if ((fresh.saved?.text ?? null) !== expectedCommentsText) throw Error('PENDING_REVISION_COMMENTS_CHANGED');
-        if (admission && hasDecisionComments) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+        if (admission && hasDecisionComments && !admission.mixedPlan && !admission.replacement.replay) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+        if(admission?.mixedPlan&&expectedCommentsText!==admission.mixedPlan.beforeText)throw Error('PENDING_REVISION_COMMENTS_CHANGED');
         const storage = await loadNotesStorageModule();
         const notes = await storage.readNotesStorage({ projectRoot: context.projectRoot, projectId: context.projectId });
         if (!notes.ok) throw Error('PENDING_REVISION_NOTES_UNAVAILABLE');
@@ -25472,6 +25508,7 @@ async function handlePendingRevisionCommand(payload = {}) {
       const content = envelope.composeObservablePayload({ ...context.parsed, doc: decided.doc });
       const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
         'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true,
+          ...(admission?.mixedPlan ? {pendingCommentReturnProofJson:admission.mixedPlan.returnProofJson}:{}),
           ...(!admission && hasDecisionComments ? { pendingCommentDecision: { action: payload.action,
             ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) } } : {}) });
       if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });

@@ -18,16 +18,23 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false } = {}) {
+async function harness(t, { clean = false, savedDefaults = false, mixed = false } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
-  const initial = clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
+  const initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
   if (savedDefaults) initial.attrs = { wordPendingRevisions: null };
   fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
   const h = { writes: 0, opens: 0, snapshot: null, race: null };
+  if (mixed) {
+    const { exactAnchor } = require('../../src/core/word-comment-authoring-v1.cjs');
+    h.commentText = JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'p',revision:0,events:[],
+      threads:[0,1].map(i=>({threadId:'thread-'+i,rootCommentId:'root-'+i,sceneId:'roman/a.txt',status:'open',
+        anchor:exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'ew'},'roman/a.txt',['new']),
+        messages:[{commentId:'root-'+i,kind:'root',body:'Discussion '+i,provenance:{author:'Writer'}}]}))});
+  }
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
-    subjectId: 'life:session', saved: { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
-  const c = { notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+    subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
+  const c = { require: value => require(path.resolve(__dirname,'../../src',value)), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => context(), requestEditorSnapshot: async () => {
       const value = h.snapshot || { generation: 0, content: fs.readFileSync(file, 'utf8') }; if (h.afterSnapshot) h.afterSnapshot(); return value;
     }, loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises,
@@ -38,6 +45,14 @@ async function harness(t, { clean = false, savedDefaults = false } = {}) {
       assert.equal(target, file); assert.equal(options.pendingRevisionDecision, true);
       if (h.race) h.race(); await options.beforeScenePublish();
       assert.equal(fs.readFileSync(file, 'utf8'), options.expectedSceneContent);
+      if (options.pendingCommentReturnProofJson) {
+        const plan = require('../../src/core/word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText:h.commentText,
+          projectId:'p',sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content,returnProofJson:options.pendingCommentReturnProofJson});
+        h.commentText=plan.afterText;
+      } else if (options.pendingCommentDecision) {
+        h.commentText=require('../../src/core/word-pending-comment-decisions-v1.cjs').planPendingCommentDecision({beforeText:h.commentText,
+          projectId:'p',sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content,decision:options.pendingCommentDecision}).afterText;
+      }
       h.writes++; fs.writeFileSync(file, content); return { success: true, projectTransaction: true };
     }, openProjectDocumentFile: async () => { throw Error('nested navigation would deadlock disk queue'); },
     getProjectDocumentIdentityPayload: async () => ({ documentId: 'd' }),
@@ -51,7 +66,7 @@ async function harness(t, { clean = false, savedDefaults = false } = {}) {
     getProductEntitlementTier: () => 'free', E_COMMAND_DISABLED_FOR_ENTITLEMENT: 'ENTITLEMENT_DENIED', isMenuLocalCustomizationCommandId: () => false,
   };
   Object.assign(c, { Buffer, activeStage10ApplicationBootstrap: {}, getProjectRootPath: () => root,
-    createRtkReviewTransportCryptoPort: () => ({ sha256Text: text => 'sha256:' + hash(text), sha256Json: v => 'sha256:' + hash(JSON.stringify(v)), byteLength: v => Buffer.byteLength(v) }),
+    createRtkReviewTransportCryptoPort: () => ({ sha256Text: text => hash(text), sha256Json: v => 'sha256:' + hash(JSON.stringify(v)), byteLength: v => Buffer.byteLength(v) }),
     docxReviewReturnIntakeProductBudgets: () => ({}), resetActiveReviewSessionStore: () => { h.reset = (h.reset || 0) + 1; },
   });
   vm.createContext(c); vm.runInContext(source + '\n' + bus + '\n' + prepareSource, c);
@@ -69,17 +84,52 @@ async function harness(t, { clean = false, savedDefaults = false } = {}) {
     doc.content[0].content.push({ type: 'text', text: ' added' });
     doc.attrs.wordPendingRevisions.source.content[0].content.push({ type: 'text', text: ' added' });
   }
-  const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root,
-    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: clean ? 'new' : 'new added', doc, order: 0 }] });
-  const bytes = buildDocxReviewPacketBuffer(exported);
-  const capsule = { ...exported.localAuthorityCapsule, projectRoot: root, roundId: 'round-1',
+  let returnedComments;
+  if (mixed) {
+    if(clean)doc=model.bindLedger({schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'new added'}]}]},
+      revisions:[{id:'revision-1',nativeId:'0',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:0,from:3,to:9,state:'pending',groupId:null}],undo:[],redo:[]});
+    const ledger=model.readLedger(doc);
+    if(!clean)ledger.revisions.push({id:'revision-3',nativeId:'2',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:0,from:6,to:12,state:'pending',groupId:null});
+    doc=model.bindLedger(ledger);
+    returnedComments=JSON.parse(h.commentText);
+    returnedComments.threads.forEach((thread,i)=>{thread.anchor.blockTextSha256=hash('new added');thread.messages.push({commentId:'reply-'+i,kind:'reply',body:'Reply '+i,provenance:{author:'Editor'}});});
+    returnedComments.threads.push({threadId:'insert-discussion',rootCommentId:'insert-root',sceneId:'roman/a.txt',status:'open',
+      anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'added'},'roman/a.txt',['new added']),
+      messages:[{commentId:'insert-root',kind:'root',body:'On added text',provenance:{author:'Editor'}}]});
+  }
+  const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root, ...(mixed?{nonTextReturnState:returnedComments}:{}),
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
+  let bytes = buildDocxReviewPacketBuffer(exported);
+  const baselineSource=mixed?buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:JSON.parse(h.commentText),
+    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
+  if(mixed) {
+    const baseBytes=buildDocxReviewPacketBuffer(baselineSource);
+    const baseParts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:baseBytes}).parts;
+    const parts={...b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts};
+    const names=xml=>[...xml.matchAll(/w:name="([^"]+)"/gu)].map(m=>m[1]);
+    const oldNames=names(baseParts['word/document.xml']),newNames=names(parts['word/document.xml']);
+    newNames.forEach((name,i)=>{parts['word/document.xml']=parts['word/document.xml'].replaceAll(name,oldNames[i]);});
+    bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  }
+  const capsule = { ...baselineSource.localAuthorityCapsule, projectRoot: root, roundId: 'round-1',
     exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication', returnedArtifactExportMapAccepted: false,
     scenePathBySceneId: { 'roman/a.txt': file }, baselineObservableContentBySceneId: { 'roman/a.txt': context().raw } };
   h.input = { context: { projectId: 'p', projectRoot: root, reviewTransportAuthorityCapsule: capsule,
-    reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes) } },
+    reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: 'sha256:' + hash(bytes), ...(mixed?{parserResult:b.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:c.createRtkReviewTransportCryptoPort()})}:{}) } },
     requestId: 'return-test', isCurrent: () => h.current !== false, docxBytes: bytes, revisionBridge: b,
     onPrepared: value => { h.prepared = value; } };
   h.authority = installMainDocxRoundAuthority(c, { projectRoot: root, projectId: 'p', references: [capsule], publishAllocated: true, t });
+  if(mixed) {
+    const commentFile=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentFile),{recursive:true});fs.writeFileSync(commentFile,h.commentText);
+    Object.assign(c,{path,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+      validateDocumentNotesReturn:require('../../src/export/docx/docxReviewPacketNotes.js').validateDocumentNotesReturn,
+      DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID:'preview',makeDocxReviewPreviewSessionTypedError:(_type,code)=>({ok:false,code})});
+    h.input.context.reviewTransportReturnIntake.parserResult.authorityCarrier={selectedCarrier:{payload:{...(capsule.documentNotes?{documentNotesDigest:capsule.documentNotes.protectedDigest}:{})}}};
+    const commentSource=main.slice(main.indexOf('const authenticatedCommentDeltaAdmissions ='),main.indexOf('async function applyAuthenticatedDocxCommentProductPath('));
+    const route=main.slice(main.indexOf('  if (returnIntake.authenticated === true && returnIntake.localAuthorityCapsule?.commentExport?.threads?.length'),main.indexOf('  const pendingProductPath = await prepareAuthenticatedPendingReturn('));
+    vm.runInContext(commentSource+'\nasync function mixedRoute(input) { const activeContext=input.context,returnIntake={...input.context.reviewTransportReturnIntake,localAuthorityCapsule:input.context.reviewTransportAuthorityCapsule},requestId=input.requestId,isCurrent=input.isCurrent,decoded={bytes:input.docxBytes},revisionBridge=input.revisionBridge,options={onPendingReturnPrepared:input.onPrepared};\n'+route+'\nreturn {pendingProductPath:await prepareAuthenticatedPendingReturn(input)};}',c);
+    h.route=()=>c.mixedRoute(h.input);
+  }
   h.prepare = () => c.prepareAuthenticatedPendingReturn(h.input);
   return h;
 }
@@ -271,4 +321,41 @@ test('saved null-ledger source rejects inconsistent returned projection before p
   assert.equal(h.opens, 0);
   assert.equal(h.reset || 0, 0);
   assert.equal(fs.readFileSync(h.file, 'utf8'), before);
+});
+
+test('mixed pending text and three discussions apply atomically, restart and undo redo without lost messages', async t => {
+  const h=await harness(t,{mixed:true});
+  const routed=await h.route(),result=routed.pendingProductPath; assert.equal(result?.status,'preview-ready',JSON.stringify(routed));
+  assert.equal(h.writes,0);
+  assert.equal((await h.prepared.apply()).ok,true);
+  assert.equal(h.writes,1); assert.equal(model.projection(h.context().parsed.doc).current,'new added');
+  let state=JSON.parse(h.commentText); assert.equal(state.threads.length,3); assert.equal(state.threads.reduce((n,t)=>n+t.messages.length,0),5);
+  assert.equal((await h.command('undo')).ok,true); assert.equal(model.projection(h.context().parsed.doc).current,'new');
+  state=JSON.parse(h.commentText); assert.equal(state.threads.reduce((n,t)=>n+t.messages.length,0),5);
+  assert.equal((await h.command('redo')).ok,true); assert.equal(model.projection(h.context().parsed.doc).current,'new added');
+  assert.equal(JSON.parse(h.commentText).threads.filter(t=>t.status!=='deleted').length,3);
+});
+
+test('native pending confirmation presents one changed paragraph in a 100000 word scene',async t=>{
+  const h=await harness(t);
+  const text=Array(100).fill('manuscript').join(' '),source={type:'doc',content:Array.from({length:1000},()=>({type:'paragraph',content:[{type:'text',text}]}))};
+  const before=structuredClone(source);
+  const next=structuredClone(source);next.content[500].content[0].text+=' added';
+  const after=model.bindLedger({schemaVersion:1,source:next,revisions:[{id:'revision-1',nativeId:'0',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:500,from:text.length,to:text.length+6,state:'pending',groupId:null}],undo:[],redo:[]});
+  let seen;
+  Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{seen=options;return {response:0};}}});
+  const sourceText=main.slice(main.indexOf('async function confirmLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta('));vm.runInContext(sourceText,h.c);
+  assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'100k.docx',changes:{before,after}}),false);
+  assert.ok(seen.detail.length<15000);assert.match(seen.detail,/Абзац 501/);assert.doesNotMatch(seen.detail,/Абзац 500/);assert.match(seen.detail,/added/);assert.equal(seen.cancelId,0);
+});
+
+test('first clean writer export returns first tracked insertion and multiple discussions through actual Main route',async t=>{
+  const h=await harness(t,{mixed:true,clean:true});
+  assert.equal(model.readLedger(h.context().parsed.doc),null);
+  const routed=await h.route();assert.equal(routed.pendingProductPath?.status,'preview-ready',JSON.stringify(routed));
+  assert.equal(h.writes,0);assert.equal((await h.prepared.apply()).ok,true);assert.equal(h.writes,1);
+  assert.equal(model.projection(h.context().parsed.doc).current,'new added');
+  assert.equal((await h.command('undo')).ok,true);assert.equal(model.projection(h.context().parsed.doc).current,'new');
+  assert.equal(JSON.parse(h.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
+  assert.equal((await h.command('redo')).ok,true);assert.equal(JSON.parse(h.commentText).threads.filter(t=>t.status!=='deleted').length,3);
 });

@@ -470,8 +470,13 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
 }
 
 function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
-  if(typeof returnProofJson!=='string' || Buffer.byteLength(returnProofJson)>2*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
+  if(typeof returnProofJson!=='string' || Buffer.byteLength(returnProofJson)>8*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
   let proof;try {proof=JSON.parse(returnProofJson);} catch {fail('COMMENT_TEXT_RETURN_PROOF_INVALID');}
+  if(proof?.schemaVersion===1&&proof.returnedDocument) {
+    const plan=require('./word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson});
+    return {mode:RETURN_MODE,beforeText,afterText:plan.afterText,returnProofJson};
+  }
+  if(Buffer.byteLength(returnProofJson)>2*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
   if(!proof || Array.isArray(proof) || Object.keys(proof).sort().join(',')!==
     'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedParagraphs,returnedThreads,roundId,textChanges'
     || proof.projectId!==projectId || !Array.isArray(proof.textChanges) || !proof.textChanges.length
