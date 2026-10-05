@@ -236,4 +236,3 @@ These189/190-word fixtures establish this packet only.100000-word five-cycle
 native acceptance remains open; measured third-cycle full-source Undo growth is
 the next launch blocker, followed by discussion capacity and remaining composed
 novel requirements. Original Mac plan remains intact; complex objects deferred.
-
