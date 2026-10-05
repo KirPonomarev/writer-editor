@@ -88,6 +88,8 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     commentProjection: readCommentAuthoringProjection, authorComment: handleCommentAuthoringCommand,
     pendingContext: () => readCommentAuthoringContext({pendingRichBlocks:true}),
     pendingDecision: payload => dispatchMenuCommand('cmd.project.review.decidePendingRevision',payload,{route:COMMAND_BUS_ROUTE}),
+    beforeNextCommit(callback) { const original=commitWriterProjectSnapshot;
+      commitWriterProjectSnapshot=async(...args)=>{commitWriterProjectSnapshot=original;await callback();return original(...args);}; },
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -2466,6 +2468,57 @@ test('actual Main pending decisions and comments commit together, restore after 
     const built=await x.f.probe.reviewBuild(await x.f.probe.sceneSource());
     assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
   }
+});
+
+for(const boundary of ['comments','scene','generation','session'])test(`actual Main pending decision refuses stale ${boundary} before atomic publication`,async t=>{
+  const x=await pendingCommentMainFixture(t,{scope:'scene'}),c=await x.f.probe.pendingContext();let afterExternal;
+  x.f.probe.beforeNextCommit(()=>{
+    if(boundary==='comments'){const state=JSON.parse(read(x.commentPath));state.revision++;fs.writeFileSync(x.commentPath,JSON.stringify(state));}
+    else if(boundary==='scene')fs.appendFileSync(x.third,' external edit');
+    else if(boundary==='generation')x.f.probe.state({generation:10});
+    else x.f.probe.changeSession();
+    afterExternal=x.f.capture();
+  });
+  const result=await x.f.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action:'rejectAll'});
+  assert.equal(result.ok,false,JSON.stringify(result));assert.ok(afterExternal,'commit boundary reached');
+  assert.deepEqual(x.f.capture(),afterExternal,'no scene, comments or manifest published after stale observation');
+});
+
+for(const scope of ['full','combined']) for(const action of ['acceptAll','rejectAll']) for(const tamper of [null,'unsupported run property'])
+test(`actual Main all-decided ${scope} ${action} Word reply ${tamper || 'keeps local Undo history and replays'}`,async t=>{
+  const x=await pendingCommentMainFixture(t,{scope:scope==='full'?'full':'scene',combined:scope==='combined'}),c=await x.f.probe.pendingContext();
+  const decided=await x.f.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action});
+  assert.equal(decided.ok,true,JSON.stringify(decided));
+  const source=await (scope==='full'?x.f.probe.fullSource():x.f.probe.sceneSource()),built=await x.f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  await x.f.probe.activate(source.pendingAuthorityStore);
+  const parts={...x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
+  assert.equal(/<w:(?:ins|del)\b/u.test(parts['word/document.xml']),false);
+  const projection=structuredClone(source.commentExport),thread=projection.threads.find(t=>t.threadId==='pending-spanning'),root=thread.messages[0];
+  thread.messages.push({canonicalCommentId:'after-decision-reply',commentId:'900',kind:'reply',body:'Reply after all decisions',provenance:{author:'Word reader'},paraId:'6A012345',durableId:'EB012345'});
+  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="900"/>`)
+    .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="900"/><w:r><w:commentReference w:id="900"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
+  if(tamper){const prior=parts['word/document.xml'];parts['word/document.xml']=prior.replace('<w:r>','<w:r><w:rPr><w:vanish/></w:rPr>');assert.notEqual(parts['word/document.xml'],prior);}
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const before=x.f.capture(),sceneBefore=read(x.third);let prepared;
+  const opened=await x.f.probe.reviewActivate({requestId:'decided-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;}});
+  assert.deepEqual(x.f.capture(),before,'preview never writes');
+  if(tamper){assert.equal(opened.ok,false,JSON.stringify(opened));assert.equal(prepared,undefined);return;}
+  assert.equal(opened.ok,true,JSON.stringify(opened));assert.ok(prepared);
+  const applied=await prepared.apply();assert.equal(applied.status,'applied',JSON.stringify(applied));
+  assert.equal(read(x.third),sceneBefore,'reply preserves the entire local ledger and Undo stack');
+  assert.equal(JSON.parse(read(x.commentPath)).threads.find(t=>t.threadId==='pending-spanning').messages.at(-1).body,'Reply after all decisions');
+  const after=x.f.capture();let replay;
+  const reopened=await x.f.probe.reviewActivate({requestId:'decided-replay',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{replay=value;}});
+  assert.equal(reopened.ok,true,JSON.stringify(reopened));assert.ok(replay);
+  assert.equal((await replay.apply()).status,'replayed');assert.deepEqual(x.f.capture(),after);
+  x.f.probe.changeSession();const fresh=await x.f.probe.pendingContext();
+  const undone=await x.f.probe.pendingDecision({projectId:fresh.projectId,sceneId:fresh.sceneId,subjectId:fresh.subjectId,expectedSceneSha256:fresh.sceneSha256,action:'undo'});
+  assert.equal(undone.ok,true,JSON.stringify(undone));
+  const state=JSON.parse(read(x.commentPath));
+  assert.deepEqual(state.threads.map(t=>t.anchor),x.state.threads.map(t=>t.anchor));
+  assert.equal(state.threads.find(t=>t.threadId==='pending-spanning').messages.at(-1).body,'Reply after all decisions');
 });
 
 for(const scope of ['full','scene','imported'])test(`actual Main signed three-scene C2 pending ${scope} scope reply preserves every scene byte and replays`,async t=>{

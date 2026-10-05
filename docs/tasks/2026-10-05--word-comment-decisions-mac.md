@@ -39,6 +39,7 @@ regressions, feature manifest and exact native/delivery evidence.
 - `src/core/word-pending-comment-decisions-v1.cjs`
 - `src/core/word-comment-anchor-save-v1.cjs`
 - `src/main.js`
+- `src/io/revisionBridge/index.mjs`
 - `test/contracts/rtk-word-pending-comment-decisions.contract.test.js`
 - `test/contracts/rtk-word-comment-anchor-save.contract.test.js`
 - `test/contracts/rtk-word-pending-revisions-runtime.contract.test.js`
@@ -105,8 +106,16 @@ commit/push/PR/CI/merge, exact-head proof, residuals, next step.
 Preserve evidence and user data. Repair in admitted scope; new paths require
 clean checkpoint and amended preflight. Do not certify a partial route.
 
-Checkpoint: first Core5/5 passes; actual entire Main decision commit succeeds,
-but following Review export fails PENDING_COMMENT_LEDGER_REQUIRED after all
-revisions decided. Parser currently requires a native pending ledger even when
-signed expected spans are empty. This is a known open failure, not acceptance.
-Clean checkpoint required before admitting index.mjs parser correction.
+Early route: Core8/8 covers grouped and independent decisions, exact repeated
+occurrences, new roots, resolved point/multi anchors, durable inverse history,
+manual tombstones and forged inputs. Main9/9 covers real atomic decisions,
+stale scene/comment/generation/session refusal, both exports, all-decided reply
+return/replay and subsequent Undo preserving the new reply. Unsupported run
+properties refuse. Native SOURCE/PACKAGED acceptance and delivery remain open.
+
+Checkpoint e18d907 admitted a known all-decided Review export failure. Amended
+preflight binds that clean checkpoint and includes index.mjs. The parser now
+admits an ephemeral schema2 empty ledger only for signed zero-span bindings;
+local durable history is never replaced by it. Full rich projections, scene
+ownership and section proofs remain mandatory. Missing expected pending
+revisions continue to refuse. This is an implementation, not native acceptance.

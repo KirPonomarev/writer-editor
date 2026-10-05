@@ -81,3 +81,31 @@ test('forged scene delta, stale anchor and unknown decision refuse instead of pu
   assert.throws(() => planPendingCommentDecision({ ...args, beforeText: JSON.stringify(stale) }), /ANCHOR/);
   assert.throws(() => planPendingCommentDecision({ ...args, projectId: 'foreign' }), /STATE_INVALID/);
 });
+
+for(const kind of ['point','multi-paragraph-range'])test(`resolved ${kind} restores exact anchors through saved decision Undo and Redo`,()=>{
+  const ledger=review.readLedger(document());ledger.source.content.push(p('Second paragraph'));
+  const doc=review.bindLedger(ledger);
+  const anchor=kind==='point'?{kind,paragraphIndex:0,startUtf16:1,selectedText:'',affinity:'right'}
+    :{kind,paragraphIndex:0,startUtf16:1,endParagraphIndex:1,endUtf16:6,selectedText:'ew tail\nSecond'};
+  const state=JSON.parse(add(doc,null,anchor));state.threads[0].status='resolved';
+  const saved=JSON.stringify(state),original=state.threads[0];
+  const rejected=decide(doc,saved,{action:'rejectAll'});
+  const undone=decide(rejected.doc,rejected.state,{action:'undo'}),restored=JSON.parse(undone.state).threads[0];
+  assert.deepEqual(restored.anchor,original.anchor);assert.equal(restored.status,'resolved');assert.deepEqual(restored.messages,original.messages);
+  const redone=decide(undone.doc,undone.state,{action:'redo'});
+  assert.deepEqual(JSON.parse(redone.state).threads[0].anchor,JSON.parse(rejected.state).threads[0].anchor);
+  assert.equal(JSON.parse(redone.state).threads[0].status,JSON.parse(rejected.state).threads[0].status);
+});
+
+test('independent inline decisions Undo in reverse order preserve multiple exact occurrences',()=>{
+  const doc=document('oldnew tail',[['delete',0,3],['insert',3,6]]),state=add(doc);
+  const first=decide(doc,state,{action:'reject',revisionId:'revision-1'});
+  assert.equal(review.projection(first.doc).current,'oldnew tail');
+  assert.equal(JSON.parse(first.state).threads[0].anchor.startUtf16,3);
+  const second=decide(first.doc,first.state,{action:'reject',revisionId:'revision-2'});
+  assert.equal(JSON.parse(second.state).threads[0].status,'deleted');
+  const undoSecond=decide(second.doc,second.state,{action:'undo'});
+  assert.deepEqual(JSON.parse(undoSecond.state).threads[0].anchor,JSON.parse(first.state).threads[0].anchor);
+  const undoFirst=decide(undoSecond.doc,undoSecond.state,{action:'undo'});
+  assert.deepEqual(JSON.parse(undoFirst.state).threads[0].anchor,JSON.parse(state).threads[0].anchor);
+});

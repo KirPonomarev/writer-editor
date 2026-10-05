@@ -860,7 +860,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "4ff288580d8513b34aace1a321427392b6bb9dfada9a6c42c312286789a2593c"
+        "sha256": "df50f6215d5345d815d9d6bafa628d3baad8b0df1aa7e71130eddc890cd5d3a7"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -2012,7 +2012,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "a3cafb6389515868d48555d9bae8bb05683cbb1fb80b14eef024c20a3b578397"
+        "sha256": "9cfeb38bf45f42bdaf2268365cd6be667c821b43118cafdedb2488afdb1784c0"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2596,15 +2596,15 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
-        "sha256": "40d3a011adc24d295bf19f3b1fe04c2c2fb0730a7545ce62f31ac0fac865c64b"
+        "sha256": "0fb68803ab08f5b6878a0a299f0b1e058a287ddec194338ce42c078db3e414cf"
       },
       {
         "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
-        "sha256": "29ec9b966eb3f10a4aa9c0c1424ca58b53cf083d67584b470aafc7df4cce061c"
+        "sha256": "f6d933c6ae951e42a9013f5c79d3cce86577836f929a61e70c2369d273e3aeda"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json",
-        "sha256": "13b0e99b6e3bccda63e5883c3c0aec4b6bb26af4e63fbf3d3c79c1976835b414"
+        "sha256": "5ce4d743c98889a8474a391df5e9c2778d05cc8386e01ee864a1121fca5e361b"
       }
     ],
     "followupRepair": {
