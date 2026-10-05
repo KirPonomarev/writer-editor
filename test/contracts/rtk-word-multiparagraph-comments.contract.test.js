@@ -8,7 +8,7 @@ const {parseObservablePayload,deriveVisibleTextFromDocument}=require('../../src/
 const {paragraphs}=require('../../src/core/word-comment-anchor-save-v1.cjs');
 const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
 const ports={cryptoPort:{sha256Text:sha,sha256Json:x=>sha(JSON.stringify(x)),byteLength:x=>Buffer.byteLength(x)}};
-const hashes={root:'1611fb0b9bd1908c7745fc5dd64151fda9f0d3b1fbf07b921e0f56228c92f8c2',reply:'fd67b0dbfa55659c4bd44d298fff0bc04c09f8b7f14e9f5f355c82db9476d3dd','rich-ru':'6d615064f9e12ea00d99d36cf24df59bb934a05b47cb30f428d2c3229a3d3e3a'};
+const hashes={'empty-end':'77fba3ad26bf7414827b923ef36d8303193c5f3426abf36ceaf437226b5364b7',root:'1611fb0b9bd1908c7745fc5dd64151fda9f0d3b1fbf07b921e0f56228c92f8c2',reply:'fd67b0dbfa55659c4bd44d298fff0bc04c09f8b7f14e9f5f355c82db9476d3dd','rich-ru':'6d615064f9e12ea00d99d36cf24df59bb934a05b47cb30f428d2c3229a3d3e3a'};
 function native(name){const bytes=fs.readFileSync(require('node:path').join(__dirname,'../fixtures/word-multiparagraph-'+name+'-native.docx'));assert.equal(sha(bytes),hashes[name]);return bytes;}
 async function setup(name){const bridge=await import('../../src/io/revisionBridge/index.mjs'),generic=await import('../../src/io/revisionBridge/genericWordComments.mjs');const preview=bridge.buildDocxContentPreviewFromZipBytes(native(name));assert.equal(preview.ok,true,JSON.stringify(preview));const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true,JSON.stringify(plan));const entry=plan.candidateCreatePlan.entries[0],rows=paragraphs(entry.content),sceneId='roman/native.txt';const args={candidates:entry.comments,paragraphs:rows,projectId:'p',sceneId,importOperationId:'native-'+name,beforeText:null};const state=JSON.parse(generic.materializeGenericComments(args).afterText);const doc=parseObservablePayload(entry.content).doc;const input={projectId:'p',projectRoot:'/synthetic',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,order:0,text:deriveVisibleTextFromDocument(doc),doc}]};return {bridge,generic,entry,rows,state,doc,input,args};}
 for(const name of ['root','reply'])test('native Word '+name+' range imports and survives ordinary and Review export',async()=>{
@@ -101,4 +101,31 @@ test('multi exact rebase refuses repeated-text ambiguous edits at final endpoint
  assert.throws(()=>computeExactTextCommentRebase({projectId:'p',sceneId:'roman/native.txt',beforeContent:'Alpha\naaa',afterContent:'Alpha\naaaa',beforeText:JSON.stringify(f.state)}),/RANGE_CHANGED/);
  f.state.threads[0].anchor=deriveCommentAnchor({sceneId:'roman/native.txt',paragraphs:['Alpha','aaa'],input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:1,endUtf16:1}});
  assert.throws(()=>computeExactTextCommentRebase({projectId:'p',sceneId:'roman/native.txt',beforeContent:'Alpha\naaa',afterContent:'Alpha\naa',beforeText:JSON.stringify(f.state)}),/RANGE_CHANGED/);
+});
+
+
+test('actual Word empty-final-paragraph boundary retains both roots and reply; forged boundary ownership refuses',async()=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),bytes=native('empty-end');
+ const parse=b=>bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:b},ports);
+ const result=parse(bytes);assert.equal(result.ok,true);
+ const original=result.reviewIr.commentThreads.find(t=>t.commentId==='3'),root=result.reviewIr.commentThreads.find(t=>t.commentId==='1');
+ assert.equal(original.status,'ANCHORED');assert.equal(original.anchorRange.startUtf16,10);assert.equal(original.anchorRange.endParagraphIndex,2);assert.equal(original.anchorRange.endUtf16,16);
+ assert.equal(root.status,'ANCHORED');assert.equal(root.paragraphIndex,0);assert.equal(root.anchorRange.startUtf16,0);assert.equal(root.anchorRange.endParagraphIndex,4);assert.equal(root.anchorRange.endUtf16,0);assert.equal(root.replies.length,1);
+ assert.equal(root.anchorRange.endBlockTextSha256,sha(''));
+ const f=await setup('empty-end');assert.equal(f.state.threads.length,2);assert.deepEqual(f.state.threads.map(t=>t.messages.length),[1,2]);
+ const projection=source(f.input),again=parse(review(projection));assert.equal(compareCommentExportReadback(projection.commentExport,again.reviewIr.commentThreads).ok,true);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts,xml=parts['word/document.xml'];
+ const marker='<w:commentRangeEnd w:id="1"/>',ref='<w:commentReference w:id="1"/>';
+ assert.ok(xml.includes(marker));assert.ok(xml.includes(ref));
+ const lastP=xml.indexOf('<w:p ',xml.indexOf(marker)+marker.length);assert.ok(lastP>0);
+ const negatives=[
+  xml.replace(ref,''),
+  xml.replace(ref,ref+ref),
+  xml.replace(ref,'<w:smartTag>'+ref+'</w:smartTag>'),
+  xml.replace(marker,marker+'<w:p><w:r><w:t>foreign intervening text</w:t></w:r></w:p>'),
+  xml.replace(marker,marker+'<w:tbl><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl>'),
+  xml.slice(0,lastP)+xml.slice(lastP).replace(ref,ref+'<w:t>not empty</w:t>'),
+  xml.replace(marker,marker+marker),
+ ];
+ for(const document of negatives){const altered=buildStoredZip(Object.entries({...parts,'word/document.xml':document}).map(([name,data])=>({name,data})));const parsed=parse(altered);assert.notEqual(parsed.reviewIr?.commentThreads?.find(t=>t.commentId==='1')?.status,'ANCHORED');}
 });

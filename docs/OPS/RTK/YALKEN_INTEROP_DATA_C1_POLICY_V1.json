@@ -583,7 +583,8 @@
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",
     "test/fixtures/word-multiparagraph-root-native.docx",
     "test/fixtures/word-multiparagraph-reply-native.docx",
-    "test/fixtures/word-multiparagraph-rich-ru-native.docx"
+    "test/fixtures/word-multiparagraph-rich-ru-native.docx",
+    "test/fixtures/word-multiparagraph-empty-end-native.docx"
   ],
   "protectedFiles": [
     {
@@ -812,7 +813,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "286e4c20bf9767bbb4b3db484bd0ae277df057eb896d62c8577f31b1fb0787b9"
+        "sha256": "75f3a3e28a321cd25b46aaf7b997f76dc576f70f044c59256b9e978e4a8a0bbe"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -928,7 +929,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "0f671e47cf6599f72d4a57d00302621c823af4fb5c7c0338580137158e56fd18"
+        "sha256": "4e03fef08408bbf0fefd86eba4f8984c9d2f9883b3144aa78acc87628c9b2422"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1256,7 +1257,7 @@
       },
       {
         "path": "test/unit/docx-import-safe-create.test.js",
-        "sha256": "d64d42ff3166513d054a4890a36e5d455ff299b04f5ef7b27454b85955142e1c"
+        "sha256": "090ee436996f20558d8e7423de9d51c889b8aa002bb86544015a80d42d57de98"
       },
       {
         "path": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -2524,11 +2525,11 @@
       },
       {
         "path": "test/contracts/rtk-word-multiparagraph-comments.contract.test.js",
-        "sha256": "7461ecf27b19f4106157329b075191db5962d08dc13e68216beab4613c4c373c"
+        "sha256": "8c8eb0c045bc13da3d31129b5fa8917c2b8904c7fcc72a85d5be8d44e6dc2832"
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "93a77ba10928c445b48778dbba27c275b28657e1e41b108348529057623197d5"
+        "sha256": "f1efdc1bbb35f1d2d3451a7cbbb9e35f1f86491c753193728423991aa25bb631"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",
@@ -2545,6 +2546,10 @@
       {
         "path": "test/fixtures/word-multiparagraph-rich-ru-native.docx",
         "sha256": "6d615064f9e12ea00d99d36cf24df59bb934a05b47cb30f428d2c3229a3d3e3a"
+      },
+      {
+        "path": "test/fixtures/word-multiparagraph-empty-end-native.docx",
+        "sha256": "77fba3ad26bf7414827b923ef36d8303193c5f3426abf36ceaf437226b5364b7"
       }
     ],
     "followupRepair": {

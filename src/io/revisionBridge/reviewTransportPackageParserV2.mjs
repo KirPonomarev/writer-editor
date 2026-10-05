@@ -3388,7 +3388,23 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
   const semanticRange = (startToken, endToken, finalText = false) => {
     if (!endToken || endToken.openStart < startToken.closeEnd) return null;
     const startIndex = paragraphs.findIndex(token => token.openEnd <= startToken.openStart && token.closeStart >= startToken.closeEnd);
-    const endIndex = paragraphs.findIndex(token => token.openEnd <= endToken.openStart && token.closeStart >= endToken.closeEnd);
+    let endIndex = paragraphs.findIndex(token => token.openEnd <= endToken.openStart && token.closeStart >= endToken.closeEnd);
+    // Word may serialize an empty final paragraph's range end immediately
+    // before that paragraph. Its matching reference supplies the endpoint;
+    // neither arbitrary body offsets nor a nearby nonempty paragraph do.
+    if (endIndex < 0 && endToken.path.length === 3 && endToken.path[1] === 'body') {
+      const nextIndex = paragraphs.findIndex(token => token.openStart >= endToken.closeEnd);
+      const next = paragraphs[nextIndex], previous = paragraphs[nextIndex - 1];
+      const reference = refsById.get(attr(endToken, 'id', W_NS));
+      if (next && previous && next.path.length === 3 && next.path[1] === 'body'
+        && previous.path.length === 3 && previous.path[1] === 'body'
+        && previous.closeEnd <= endToken.openStart
+        && documentXml.slice(previous.closeEnd, endToken.openStart).trim() === ''
+        && documentXml.slice(endToken.closeEnd, next.openStart).trim() === ''
+        && reference && reference.path.length === 5 && reference.path.at(-2) === 'r' && reference.path.at(-3) === 'p'
+        && next.openEnd <= reference.openStart && reference.closeEnd <= next.closeStart
+        && semanticAtomsToText(extractSemanticAtoms(documentXml, documentScan, next)) === '') endIndex = nextIndex;
+    }
     if (startIndex < 0 || endIndex < startIndex) return null;
     if (endIndex > startIndex) {
       try { commentRanges.validateCommentAnchorOwners({anchor:{kind:'multi-paragraph-range',paragraphIndex:startIndex,endParagraphIndex:endIndex},

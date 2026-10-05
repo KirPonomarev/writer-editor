@@ -13253,20 +13253,36 @@ async function docxImportOpenedSnapshotMatches(raw, live) {
   // ProseMirror omits an empty paragraph's content array on toJSON. Normalize
   // only that representation on private parsed copies, preserving every attr,
   // mark and nonempty child. The shared tree comparator remains unchanged.
+  const supportedMarks = new Set(['bold', 'italic', 'strike', 'code', 'textStyle', 'highlight', 'underline', 'link']);
+  let invalidMarks = false;
   const paragraphRepresentation = node => {
     if (!node || typeof node !== 'object') return node;
+    // PM sorts the unique marks on each node by schema rank. Their order is
+    // representational; their type, attributes and multiplicity remain exact.
+    if (Object.prototype.hasOwnProperty.call(node, 'marks')) {
+      const seen = new Set();
+      if (!Array.isArray(node.marks) || node.marks.some(mark => {
+        if (!mark || typeof mark !== 'object' || Array.isArray(mark)
+          || !supportedMarks.has(mark.type) || seen.has(mark.type)) return true;
+        seen.add(mark.type); return false;
+      })) invalidMarks = true;
+      else node.marks.sort((left, right) => left.type < right.type ? -1 : left.type > right.type ? 1 : 0);
+    }
     if (node.type === 'paragraph' && Array.isArray(node.content) && node.content.length === 0) delete node.content;
     if (Array.isArray(node.content)) node.content.forEach(paragraphRepresentation);
     return node;
   };
   // The existing scene-open adapter enables metadata and the editor materializes
   // a paragraph document for plain text. Receipt checks retain exact disk bytes.
+  const savedDoc = paragraphRepresentation(saved.doc || envelope.buildParagraphDocumentFromText(saved.text));
+  const observedDoc = paragraphRepresentation(observed.doc);
+  if (invalidMarks) return false;
   const opened = envelope.composeObservablePayload({
-    doc: paragraphRepresentation(saved.doc || envelope.buildParagraphDocumentFromText(saved.text)),
+    doc: savedDoc,
     text: saved.text, metaEnabled: true, meta: saved.meta, cards: saved.cards,
   });
   const composedLive = envelope.composeObservablePayload({
-    doc: paragraphRepresentation(observed.doc), text: observed.text,
+    doc: observedDoc, text: observed.text,
     metaEnabled: observed.hasMetaBlock, meta: observed.meta, cards: observed.cards,
   });
   return treeSceneSnapshotsEqual(opened, composedLive);

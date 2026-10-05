@@ -188,3 +188,45 @@ and grapheme checks. Unsupported selected atoms and mixed cell ownership still
 refuse. The renderer contract first reproduced the failures, then passed all
 21 cases including actual history and Core save. Build and exact native
 rerun are required before calling the candidate accepted.
+
+## Rich native return findings on 6689b1344
+
+SOURCE candidate 6689b1344882717a68ab8354ca0af17d9aa5daed completed the actual
+Word reply return through explicit native Apply, preserved both local thread
+identities and five messages, and reopened correctly. Native point/single/multi
+reanchor operations preserved messages. This is bounded SOURCE observation.
+
+PACKAGED imported the independent Cyrillic input with its hardBreak and italic
+run, saved a middle edit after join/Undo, executed saved Undo/Redo and created
+an AllSelection discussion including its empty final paragraph. Two further
+findings keep this candidate unaccepted. The import wrote coherent data but
+logged E_DOCX_IMPORT_ACK_CONTENT_MISMATCH: actual production ProseMirror schema
+reorders the unique italic and textStyle marks. The ACK comparison must account
+only for semantically identical mark order, preserving all attributes, text,
+receipt and lifecycle bindings; duplicate/unknown marks still refuse.
+
+Actual Word reply artifact
+77fba3ad26bf7414827b923ef36d8303193c5f3426abf36ceaf437226b5364b7
+retains exact paragraphs but moves the full-range root comment end to body
+level immediately before the empty final paragraph, keeping its reference in
+that paragraph. The reply end remains inside the empty paragraph. The current
+parser treats this as crossing and no native Apply is offered. The refusal
+leaves canonical scene and comment state hashes unchanged. Preserve this
+independent artifact and admit boundary equivalence only with exact adjacent
+same-owner paragraph/reference proof and strict negative cases.
+
+The separate RTK_FORMATTING_RETURN_BREAK_ONLY_RANGE_BLOCKED observation remains
+an explicit formatting-lane limitation; it must not be silently claimed fixed
+by a comment-range repair. Clean 6689b1344 passed the 53-path rich-native-repair
+declaration before changes, adding only the independent Word fixture path to
+the existing contour. Final native rerun and delivery remain pending.
+
+Focused rich repairs passed the actual-schema import-ACK suite (12 cases) and
+the multi-paragraph contract (10 cases). The native return fixture proves both
+roots and all three messages through the retained private export map and Core
+delta; only the new full-range discussion gains one reply. Missing, duplicate,
+nested or misplaced references, nonempty endpoints and nonadjacent paragraphs
+remain refused. The endpoint reference must be a direct Word run child of the
+adjacent empty body paragraph. Independent review found no blocking issue in
+either bounded repair. Main prepares comments independently before formatting;
+the break-only formatting warning remains typed and is not a comment veto.
