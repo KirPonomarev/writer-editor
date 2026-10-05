@@ -11135,8 +11135,23 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       sectionsVerified=true;
     }
     const document=preview.contentPreview?.pendingRevisionDocument;
-    const ledger=pendingTextRevisions.readLedger(document);
-    if(!ledger)throw Error('PENDING_COMMENT_LEDGER_REQUIRED');
+    let ledger=pendingTextRevisions.readLedger(document);
+    if(!ledger) {
+      // Decided revisions remain in local Undo history, but their DOCX has no
+      // pending wrappers. Admit that representation only for an exact signed
+      // zero-span expectation; a missing outstanding revision still refuses.
+      const bindings=exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
+      if(!bindings.length || bindings.some(binding=>!Array.isArray(binding.revisionSpans)||binding.revisionSpans.length))
+        throw Error('PENDING_COMMENT_LEDGER_REQUIRED');
+      const plan=buildDocxImportPreviewPlanFromContentPreview(preview);
+      if(!plan.ok || plan.candidateCreatePlan?.entries?.length!==1)throw Error('PENDING_COMMENT_CLEAN_DOCUMENT_INVALID');
+      const parsed=parseObservablePayload(plan.candidateCreatePlan.entries[0].content);
+      if(parsed.issue)throw Error('PENDING_COMMENT_CLEAN_DOCUMENT_INVALID');
+      const rich=docxInlineCanonicalContent(preview.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
+      const source=rich?parseObservablePayload(rich).doc:buildParagraphDocumentFromText(parsed.text);
+      if(parsed.doc?.attrs)source.attrs=JSON.parse(JSON.stringify(parsed.doc.attrs));
+      ledger=pendingTextRevisions.validateLedger({schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+    }
     const leaves=pendingTextRevisions.paragraphs(ledger.source), index=new Map(leaves.map((p,i)=>[p,i]));
     const seen=new Set(),scenes=[];
     for(const scene of exportMap.scenes){
@@ -11164,7 +11179,9 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         if(!Object.keys(source.attrs).length)delete source.attrs;
       }else if(exportMap.scenes.length!==1 && source.attrs?.wordSections)throw Error('PENDING_COMMENT_SECTION_BINDING_REQUIRED');
       const revisions=ledger.revisions.filter(r=>r.paragraphIndex>=from&&r.paragraphIndex<to).map(r=>({...r,paragraphIndex:r.paragraphIndex-from}));
-      scenes.push({sceneId:scene.sceneId,returnedDocument:scene.pendingCommentBinding?pendingTextRevisions.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]}):source});
+      scenes.push({sceneId:scene.sceneId,returnedDocument:scene.pendingCommentBinding?pendingTextRevisions.bindLedger({
+        schemaVersion:revisions.length?1:2,source,revisions,undo:[],redo:[],
+        ...(!revisions.length?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})}):source});
     }
     if(seen.size!==leaves.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
     return {ok:true,scenes};

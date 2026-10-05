@@ -311,8 +311,13 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
         // Coordinates/kind changes also need history: an inverse separator edit
         // must restore the pre-edit interval, not guess its boundary affinity.
         thread.anchorEditHistory=history.filter(h=>!h.undone&&h.sessionId===sessionId).slice(-31);
-        thread.anchorEditHistory.push({schemaVersion:2,historyId,sessionId,before:prior,after:result,
-          beforeTextSha256:snapshotDigest(prior),afterTextSha256:snapshotDigest(result),undone:false});
+        // A comment may have been created after the original edit. Its first
+        // observed action can be Undo; store forward-oriented endpoints so a
+        // later Redo replays that exact observation instead of reporting stale.
+        const inverse=direction==='undo';
+        const historyBefore=inverse?result:prior,historyAfter=inverse?prior:result;
+        thread.anchorEditHistory.push({schemaVersion:2,historyId,sessionId,before:historyBefore,after:historyAfter,
+          beforeTextSha256:snapshotDigest(historyBefore),afterTextSha256:snapshotDigest(historyAfter),undone:inverse});
       }
     }
   }

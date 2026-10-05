@@ -1,0 +1,73 @@
+{
+  "taskId": "WORD_COMMENT_DECISIONS_MAC_20261005",
+  "objective": "Mac inline pending revision decisions with canonical comments: preserve exact anchors, bodies, statuses and restart-safe Undo/Redo through existing atomic transaction and both DOCX exports.",
+  "writePaths": [
+    "Main explicit revision decision -> Core exact decision + identity-derived splice plan -> existing leased commitWriterProjectSnapshot -> independently recomputed SAFE_ANCHOR_REBASE_V1 -> atomic scene/manifest/comment journal -> exact readback and guarded editor publication"
+  ],
+  "productPorts": [
+    "Existing project lease, atomic scene/manifest/comment transaction, readable recovery and guarded editor publication; existing native DOCX exports"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact decision output and unchanged source/revision definitions for state-only inline insert/delete decisions",
+    "Known union intervals determine splices; repeated text is never searched for identity",
+    "Stable scene/source/definition session and forward transition identity across Undo/Redo and restart",
+    "Raw scene and comment-state CAS plus lifecycle/project/generation/draft guards before every publication"
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main entitlement and profile checks plus under-lease exact source/comment/notes and editor freshness checks. Internal options cannot be injected through closed renderer payload.",
+  "fallbacks": [
+    "Source-changing round history, structural/move/format mixtures with comments remain refused until separately qualified",
+    "Expired/mismatched history, grapheme splits, metadata drift, unsafe unknown inputs and budget exhaustion refuse without write",
+    "Manual comment deletion/reanchor/status decisions never grant authority to revive superseded anchors"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Core selected/all decisions, Undo/Redo/restart, repeated text, insertion-internal/deletion-spanning/point/multi anchors; preserve bodies and sibling scenes",
+    "Existing v2 first inverse history orientation counterexample: new root after decision, Undo then Redo",
+    "Actual entire Main and real transaction normal and stale comment/scene/generation/capability cases; independent journal replay rejects forged comment graph",
+    "Early SOURCE/PACKAGED native decisions and Undo before broad stable suite; both DOCX reexports and real Word reply return even after all decisions",
+    "Mandatory CI, full delivery chain and merged exact-head checks; no stale/skip/self-PASS credit",
+    "Signed zero-span bindings alone admit a validated rich clean DOCX as an ephemeral schema2 empty ledger. All three projections, complete scene ownership and section bindings remain required; local decision history is preserved by comment-only Apply."
+  ],
+  "securityAndInputBoundary": "No new dependencies, runtime network, UI/IPC writers, private owner data or budget inflation. External DOCX and proof fields validated before semantic use; compact signed binding avoids manuscript duplication.",
+  "performanceAndAccessibility": "Reuse existing controls, no UI design changes. Bounded ledger and existing256-intent/32-comment-history budgets; no per-keystroke new work.",
+  "currentReality": [
+    "PR2082 fully delivered at8e038139a; CI19/19 bothRTK3319/3319, merged899/899 zero skips and exact Git/OPS/guardrails. Native53285be1 source/package bytes equal.",
+    "Main currently refuses active comments on pending decisions; existing Core structural intent planner supports exact reversible anchors and atomic transaction recomputes it.",
+    "Read-only existing Core counterexample: new comment after a decision, first Undo then Redo yields COMMENT_EDIT_HISTORY_STALE due to first inverse history orientation."
+  ],
+  "targetOnly": [
+    "Comment-preserving inline decisions and native route remain TARGET until observed",
+    "Recording with comments, paragraph-mark typography, named style identity and final largebook/fivecycle Mac acceptance remain open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core pending ledger owns revision identity and states; canonical comment state owns anchors/messages/status/history. Actual Core decide result determines allowed scene delta; neither matching text nor renderer supplied intents authorize this decision.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.review.decidePendingRevision"
+  ],
+  "queries": [
+    "Existing pending revision and comment projections"
+  ],
+  "events": [
+    "Existing atomic saved scene and comment publication"
+  ],
+  "effects": [
+    "Existing leased atomic project transaction and guarded editor publication"
+  ],
+  "hotPathBoundary": "Explicit user decision only; no new per-keystroke work",
+  "migrationRollbackEvidence": "Revert this bounded packet; preserve source, comments, ledger/history and recovery. Existing v2 comment history schema and journal remain readable; unsupported routes refuse before mutation.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_NO_DESIGN_CHANGE"
+}

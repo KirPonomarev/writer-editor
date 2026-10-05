@@ -591,7 +591,11 @@
     "docs/tasks/2026-10-05--word-break-formatting-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BREAK_FORMATTING_V1.json",
     "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
+    "src/core/word-pending-comment-decisions-v1.cjs",
+    "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
+    "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json"
   ],
   "protectedFiles": [
     {
@@ -820,7 +824,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8da1e1ec5cc2c8ed2f1b6bae5c73beee969d07874f6bff8ed68fac4e1525e008"
+        "sha256": "0f40c4ec5bd84e055120a14a2547c504acd9be7e36855a42b1545d863a50b9ba"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -856,7 +860,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "4ff288580d8513b34aace1a321427392b6bb9dfada9a6c42c312286789a2593c"
+        "sha256": "df50f6215d5345d815d9d6bafa628d3baad8b0df1aa7e71130eddc890cd5d3a7"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1520,7 +1524,7 @@
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "ff098fd5b5e7ee2f1c3840dc912ac5cb75daa254bef7bbb4c04dcb033924c243"
+        "sha256": "dcb36596555c83f5afe94334864c49814ccf3390f6546b9352f896da14dd5532"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1668,7 +1672,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b2d7d0ebfa17688e3a4606541c4e55978276150bfd3732b9f62bf0833e69669d"
+        "sha256": "8b4364f40f173ad6114931fc7704390c58a2478e3aef5f0665d04583d97a388e"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2008,7 +2012,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "2e9c658d809a2cc47eaa553d088234eaf30ad9ed987ff3d994169d3b910a7567"
+        "sha256": "9cfeb38bf45f42bdaf2268365cd6be667c821b43118cafdedb2488afdb1784c0"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2512,15 +2516,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "014fd443e907fca6f4eeaae03f1400be6ad2a725d112aa8b68a3fdcae9af8013"
+        "sha256": "b9559318efb208cd9eb2748630c40617976a33fd399517246feb82451d9eb4fb"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e89ec60a142a500703c17c42b3d3c2fd31c6c94354afee73791a36cf0b2abd6e"
+        "sha256": "cfa74ba1918c3870d322a7629c678a61300cbe22cb1df5b562a50e5b6ae8222c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "dd5e5dc5bf5602df74e4ccd8e815b0587d31f5141c9462e9fa952a6527cbb242"
+        "sha256": "2b57e5e3cf40203837148b4a3ce88ffc934ff16ce5c331059fecfa9d805ed494"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2585,6 +2589,22 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
         "sha256": "262615711a9f1476de0102f893924111cf20c099c48dd0c180328c07f4424a07"
+      },
+      {
+        "path": "src/core/word-pending-comment-decisions-v1.cjs",
+        "sha256": "3a5f4abb2030be09327bb1c6f9868eae04b499314b31fb8aed76709827f83952"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
+        "sha256": "0fb68803ab08f5b6878a0a299f0b1e058a287ddec194338ce42c078db3e414cf"
+      },
+      {
+        "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
+        "sha256": "9582e622443d3846e15c625025356327a68b19d6bd31685860bbf108050a3a8f"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json",
+        "sha256": "5ce4d743c98889a8474a391df5e9c2778d05cc8386e01ee864a1121fca5e361b"
       }
     ],
     "followupRepair": {

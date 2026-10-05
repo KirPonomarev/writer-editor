@@ -1,3 +1,44 @@
+## 2026-10-05 09:26 EEST — inline decisions with comments: both Mac routes observed
+
+WORD_COMMENT_DECISIONS_MAC_20261005; native candidate
+057cde135d90b028583d36733778d305c2609855. Core/Main implementation supports
+single/all inline insert/delete decisions with exact reversible comment anchors.
+SOURCE: rejectAll, Undo/Redo, real Word reply, explicit Apply, restart Undo,
+acceptAll and both reexports. PACKAGED WRITER_LOCAL_V1: selected rejection,
+Undo, acceptAll, real Word reply, restart Undo/Redo and both reexports.
+Reply Apply leaves scene/ledger byteexact; three roots/five messages become six.
+Exact anchors/statuses and all old/new messages survive restart Undo. Six actual
+DOCX artifacts pass production rich three-projection/section readback (not an
+independent implementation oracle); separate saved byte/anchor checks retained.
+Whole four affected test files:320/320,0skip/todo at native SHA.
+Evidence folder: word-comment-decisions-mac-8e038139a; NATIVE01_OBSERVATIONS.json,
+NATIVE01_RICH_READBACK.json, focused-stable-01.log. Owned native apps stopped;
+profile copies byteverified. Full CI, merge and merged exact checks remain open.
+
+Priority after this chain closes: recording new tracked edits with comments,
+including source-changing round Undo and exact document metadata preservation.
+Paragraph-mark typography, named styles and final large-book/five-cycle Mac
+acceptance remain open. This packet is not whole-plan completion.
+
+## 2026-10-05 08:57 EEST — PR2082 delivered; comment decisions started
+
+PR2082 merged at8e038139ad3b0f0236140b5641a266924d48d255. CI37267780453:
+19/19 jobs, bothRTK3319/3319 zero skips; baseline2199 passed,59 historical skips
+excluded. Clean exact merged899/899 zero skips, Git/OPS/guardrails passed.
+SOURCE04/PACKAGED04 native53285be1 source/package bytes equal merged version;
+reply-only Apply preserves scene and ledger, replay/restart and both exports.
+Packaged Comments card access confirmed. Original whole Mac plan remains open.
+
+Current WORD_COMMENT_DECISIONS_MAC_20261005: explicit inline accept/reject and
+restart-safe Undo/Redo with comments through existing atomic project writer.
+Core5/5 initial checks pass including new-root inverse-history counterexample.
+Actual entire Main commits decision but next Review export currently fails
+PENDING_COMMENT_LEDGER_REQUIRED when all native revisions have been decided.
+Checkpoint is NOT accepted; expand parser scope from clean preflight then
+repair exact zero-pending readback. No broad/native acceptance claim yet.
+Recording with comments, paragraph-mark typography, named styles and final
+largebook/fivecycle acceptance remain open; no percentage claim.
+
 ## 2026-10-05 — PR2082 CI consumer repair, product runtime unchanged
 
 CI37266596060 on6af552590 found two obsolete HTTP-link refusal assertions and

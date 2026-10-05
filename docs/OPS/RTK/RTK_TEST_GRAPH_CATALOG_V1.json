@@ -163,6 +163,7 @@
     "rtk-word-p0-scale-envelope-terminal-audit.contract.test.js",
     "rtk-word-paragraph-layout.contract.test.js",
     "rtk-word-paragraph-spacing.contract.test.js",
+    "rtk-word-pending-comment-decisions.contract.test.js",
     "rtk-word-pending-formatting.contract.test.js",
     "rtk-word-pending-moves.contract.test.js",
     "rtk-word-pending-notes.contract.test.js",
