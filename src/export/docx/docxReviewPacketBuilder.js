@@ -389,7 +389,8 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   const blockquoteDepth = Number(block.formatIr?.paragraph?.blockquoteDepth || 0);
   const blockStyleId = docxBlockStyleId(block.formatIr?.paragraph?.nodeType === 'codeBlock', blockquoteDepth);
   if (blockStyleId) paragraphPropertyParts.unshift(`<w:pStyle w:val="${blockStyleId}"/>`);
-  if (Number.isSafeInteger(blockquoteDepth) && blockquoteDepth > 0 && blockquoteDepth <= 8) {
+  if (Number.isSafeInteger(blockquoteDepth) && blockquoteDepth > 0 && blockquoteDepth <= 8
+    && block.formatIr?.paragraph?.wordParagraphIndent == null) {
     paragraphPropertyParts.push(`<w:ind w:left="${blockquoteDepth * 720}"/>`);
   }
   const list = block.formatIr?.paragraph?.list;

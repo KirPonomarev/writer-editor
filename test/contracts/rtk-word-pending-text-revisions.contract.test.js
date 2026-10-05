@@ -117,3 +117,49 @@ test('pending source retains validated section and disabled grid metadata',()=>{
     const bad=structuredClone(l);bad.source.attrs.wordSections=value;assert.throws(()=>model.bindLedger(bad));
   }
 });
+
+test('signed emitted indentation applies only to absent source properties at exact quote and continuation occurrences',()=>{
+  const l=ledger();l.source.content.push({type:'blockquote',content:[{type:'paragraph',content:[{type:'text',text:'Quote'}]}]},
+    {type:'orderedList',content:[{type:'listItem',content:[{type:'paragraph',content:[{type:'text',text:'Item'}]},{type:'paragraph',content:[{type:'text',text:'Continuation'}]}]}]});
+  const document=model.bindLedger(l), exportParagraphs=[{nodeType:'paragraph'},{nodeType:'paragraph',blockquoteDepth:1},
+    {nodeType:'paragraph',list:{kind:'ordered',level:0}},{nodeType:'paragraph',list:{kind:'ordered',level:0,continuation:true},wordParagraphIndent:{left:720}}];
+  const {binding}=model.buildCommentExportBinding({document,exportParagraphs});
+  const returned=structuredClone(l), leaves=model.paragraphs(returned.source);
+  leaves[1].attrs={wordParagraphIndent:{left:720}};leaves[3].attrs={wordParagraphIndent:{left:720}};
+  const returnedDocument=model.bindLedger(returned), before=JSON.stringify(document);
+  assert.ok(model.verifyCommentReturnBinding({document,binding,returnedDocument,exportParagraphs}));
+  assert.equal(JSON.stringify(document),before);
+  for(const mutate of [p=>p.reverse(),p=>p[1].blockquoteDepth=2,p=>p[3].list.continuation=false,p=>p[3].list.level=1,
+    p=>p[0].wordParagraphIndent={left:720},p=>p[3].wordParagraphIndent.right=100]) {
+    const bad=structuredClone(exportParagraphs);mutate(bad);assert.throws(()=>model.buildCommentExportBinding({document,exportParagraphs:bad}),/EXPORT_LAYOUT/);
+  }
+  for(const indent of [{left:721},{left:720,right:100},{left:720,hanging:100}]) {
+    const bad=structuredClone(returned);model.paragraphs(bad.source)[1].attrs.wordParagraphIndent=indent;
+    assert.throws(()=>model.verifyCommentReturnBinding({document,binding,returnedDocument:model.bindLedger(bad),exportParagraphs}),/PROJECTION_CHANGED/);
+  }
+  const authored=structuredClone(l);model.paragraphs(authored.source)[1].attrs={wordParagraphIndent:{left:960,right:120}};
+  const authoredDoc=model.bindLedger(authored), authoredProfile=structuredClone(exportParagraphs);
+  authoredProfile[1].wordParagraphIndent={left:960,right:120};
+  const own=model.buildCommentExportBinding({document:authoredDoc,exportParagraphs:authoredProfile});
+  const exact=structuredClone(authored);model.paragraphs(exact.source)[3].attrs={wordParagraphIndent:{left:720}};
+  assert.ok(model.verifyCommentReturnBinding({document:authoredDoc,binding:own.binding,returnedDocument:model.bindLedger(exact),exportParagraphs:authoredProfile}));
+  model.paragraphs(exact.source)[1].attrs.wordParagraphIndent={left:720};
+  assert.throws(()=>model.verifyCommentReturnBinding({document:authoredDoc,binding:own.binding,returnedDocument:model.bindLedger(exact),exportParagraphs:authoredProfile}),/PROJECTION_CHANGED/);
+});
+
+test('signed explicit left may return implicit left without admitting other alignment or language changes',()=>{
+  const l=ledger();l.source.content[0].attrs={textAlign:'left',wordParagraphMarkLanguage:{val:'en-US'}};
+  const document=model.bindLedger(l),exportParagraphs=[{nodeType:'paragraph',textAlign:'left'}];
+  const {binding}=model.buildCommentExportBinding({document,exportParagraphs});
+  const returned=structuredClone(l);delete returned.source.content[0].attrs.textAlign;
+  assert.ok(model.verifyCommentReturnBinding({document,binding,returnedDocument:model.bindLedger(returned),exportParagraphs}));
+  assert.equal(document.content[0].attrs.textAlign,'left');
+  for(const align of ['right','center','justify','unknown']) {
+    const bad=structuredClone(returned);bad.source.content[0].attrs.textAlign=align;
+    assert.throws(()=>model.verifyCommentReturnBinding({document,binding,returnedDocument:model.bindLedger(bad),exportParagraphs}));
+  }
+  const changed=structuredClone(returned);changed.source.content[0].attrs.wordParagraphMarkLanguage.val='ru-RU';
+  assert.throws(()=>model.verifyCommentReturnBinding({document,binding,returnedDocument:model.bindLedger(changed),exportParagraphs}),/PROJECTION_CHANGED/);
+  const noBound=model.buildCommentExportBinding({document});
+  assert.throws(()=>model.verifyCommentReturnBinding({document,binding:noBound.binding,returnedDocument:model.bindLedger(returned)}),/PROJECTION_CHANGED/);
+});

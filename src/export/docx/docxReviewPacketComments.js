@@ -263,9 +263,9 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
           : a.kind === 'point' ? {kind:'point',affinity:'right'} : {})};
       return {threadId:thread.threadId,anchor:commentRanges.deriveCommentAnchor({sceneId:scene.sceneId,paragraphs:rows,input})};
     });
-    const {binding} = pending.buildCommentExportBinding({document:scene.doc,anchors,exportTypography});
+    const {binding,projection:pendingProjection} = pending.buildCommentExportBinding({document:scene.doc,anchors,exportTypography,exportParagraphs:sceneBlocks.every(block=>block.formatIr?.paragraph)?sceneBlocks.map(block=>block.formatIr.paragraph):undefined});
     pendingCommentBindings.push({sceneId:scene.sceneId,binding});
-    const union = pending.exportSegments(pending.readLedger(scene.doc)).map(segments=>segments.map(s=>s.node.type==='hardBreak'?'\n':s.node.text).join(''));
+    const union = pending.paragraphs(pendingProjection.union).map(paragraph=>(paragraph.content||[]).map(node=>node.type==='hardBreak'?'\n':node.text).join(''));
     for (const thread of threads) {
       const occurrence = binding.anchors.find(a=>a.threadId===thread.threadId);
       demand(occurrence,'PENDING_COMMENT_BINDING_REQUIRED');

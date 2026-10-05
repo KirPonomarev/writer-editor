@@ -91,7 +91,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const anchors=before.threads.filter(t=>t.sceneId===item.sceneId && t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
     demand(anchors.every(entry=>entry.anchor?.sceneId===item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
     const checked=pendingModel.verifyCommentReturnBinding({document:item.document,binding:scene.pendingCommentBinding,
-      returnedDocument:item.returnedDocument,anchors,exportTypography:exportMap.exportTypography});
+      returnedDocument:item.returnedDocument,anchors,exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
     const texts=pendingModel.paragraphs(checked.projection.current).map(p=>p.content.map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
     demand(texts.length===scene.blocks.length && scene.blocks.every((b,i)=>b.formatIr?.runs?.map(r=>r.text).join('')===texts[i]),'COMMENT_RETURN_PENDING_PROOF_INVALID');
     pendingByScene.set(item.sceneId,checked);

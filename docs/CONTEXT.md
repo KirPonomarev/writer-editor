@@ -1,3 +1,18 @@
+## 2026-10-05 — pending revisions + comments: candidate awaiting native acceptance
+
+WORD_PENDING_COMMENTS_MAC_20261005; checkpoint8039bf18f; original deliverybasef557f7cb0.
+Actual Main scene/full-book tests observed preview no-write, exactly one reply
+Apply, unchanged three-scene/manifest bytes, both reexports and replay. Focused
+Main13/13, scene consumers33/33, Core51/51; final broad and native gates pending.
+Real Word v04 altered language on multilingual C2 paragraphs; strict signed
+return correctly refuses that compound change. Use unchanged real Word v04 as
+GENERIC initial-import input for native SOURCE/PACKAGED. Never label v04's
+refused signed return as a success or erase its en-US→ru-RU differences.
+Continuation ownership and authored quote indentation are now validated;
+source files frozen while parent builds and exercises exact runtime candidate.
+Original Mac plan, compound revision decisions/comments/format changes and
+largebook/five-cycle final acceptance remain open. No percentage claim.
+
 # CONTEXT (Yalken Writer)
 
 ## Продолжение Mac-плана — 2026-10-05 06:34 EEST

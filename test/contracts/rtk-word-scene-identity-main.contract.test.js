@@ -2435,8 +2435,8 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null}={}) {
   return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
 }
 
-test('actual Main signed three-scene C2 pending insertion/deletion plus one reply preserves every scene byte and replays',async t=>{
-  const x=await pendingCommentMainFixture(t);
+for(const scope of ['full','scene'])test(`actual Main signed three-scene C2 pending ${scope} scope reply preserves every scene byte and replays`,async t=>{
+  const x=await pendingCommentMainFixture(t,{scope});
   assert.equal(x.activated.ok,true,JSON.stringify(x.activated));assert.equal(x.activated.commentProductPath?.status,'preview-ready',JSON.stringify(x.activated));
   assert.ok(x.prepared);assert.deepEqual(x.f.capture(),x.before,'preview is read-only');
   const beforeScenes=x.paths.map(read),beforeManifest=read(x.f.manifestPath);
@@ -2467,6 +2467,18 @@ for (const [name, mutate] of [
     parts['word/document.xml']=before.replace(/(<w:ins\b[^>]*w:author=")[^"]*/u,'$1Different author');
     assert.notEqual(parts['word/document.xml'],before);
   }],
+  ['added footnote', parts => {
+    parts['word/document.xml']=parts['word/document.xml'].replace('</w:r>','</w:r><w:r><w:footnoteReference w:id="1"/></w:r>');
+    parts['word/footnotes.xml']='<?xml version="1.0"?><w:footnotes xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote><w:footnote w:id="1"><w:p><w:r><w:footnoteRef/></w:r><w:r><w:t>New note must not disappear</w:t></w:r></w:p></w:footnote></w:footnotes>';
+    parts['word/_rels/document.xml.rels']=parts['word/_rels/document.xml.rels'].replace('</Relationships>','<Relationship Id="rAddedFootnote" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/></Relationships>');
+    parts['[Content_Types].xml']=parts['[Content_Types].xml'].replace('</Types>','<Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/></Types>');
+  }],
+  ['added header story', parts => {
+    parts['word/document.xml']=parts['word/document.xml'].replace('<w:sectPr>','<w:sectPr><w:headerReference w:type="default" r:id="rAddedHeader"/>');
+    parts['word/header99.xml']='<?xml version="1.0"?><w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:r><w:t>New header must not disappear</w:t></w:r></w:p></w:hdr>';
+    parts['word/_rels/document.xml.rels']=parts['word/_rels/document.xml.rels'].replace('</Relationships>','<Relationship Id="rAddedHeader" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header99.xml"/></Relationships>');
+    parts['[Content_Types].xml']=parts['[Content_Types].xml'].replace('</Types>','<Override PartName="/word/header99.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/></Types>');
+  }],
   ['section geometry', parts => {
     const before=parts['word/document.xml'];
     parts['word/document.xml']=before.replace(/(<w:pgMar\b[^>]*w:top=")\d+/u,(_all,prefix)=>prefix+'1234');
@@ -2482,6 +2494,7 @@ for(const target of ['sibling scene','comment state'])test(`actual Main pending 
   const x=await pendingCommentMainFixture(t);assert.equal(x.activated.ok,true,JSON.stringify(x.activated));assert.ok(x.prepared);
   if(target==='sibling scene')fs.appendFileSync(x.paths[1],' external edit');
   else {const graph=JSON.parse(read(x.commentPath));graph.revision++;fs.writeFileSync(x.commentPath,JSON.stringify(graph));}
-  const before=x.f.capture(),result=await x.prepared.apply();assert.equal(result.ok,false,JSON.stringify(result));
+  const before=x.f.capture();
+  await assert.rejects(x.prepared.apply(),target==='sibling scene'?/COMMENT_RETURN_SCENE_CONFLICT/:/COMMENT_RETURN_BASELINE_CONFLICT/);
   assert.deepEqual(x.f.capture(),before);
 });

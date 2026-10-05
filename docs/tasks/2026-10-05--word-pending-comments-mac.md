@@ -52,6 +52,8 @@ production code, contract tests and bound native SOURCE/PACKAGED observations.
 - `test/contracts/rtk-word-generic-comments.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `test/unit/docx-scene-comments.test.js`
+- `test/contracts/rtk-word-scene-comment-export.contract.test.js`
 - `docs/tasks/2026-10-05--word-pending-comments-mac.md`
 - `docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json`
 - `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
@@ -117,6 +119,12 @@ are outside scope. Revert one packet, preserve readable data/recovery.
 - Every baseline pending scene is accounted, even without changed comments.
   Keep original canonical ledger bytes/history; only one new reply admitted
   for first signed mixed route. All foreign or changed states no-write.
+- Emitted paragraph layout is bound by exact original signed exportParagraphs
+  and independently verified canonical quote/list role. Missing canonical
+  indentation may acquire only the producer's proven effective default in an
+  ephemeral comparison projection. Authored indentation is never replaced;
+  returned full indent object must equal expected, including absence of extra
+  right/hanging/firstLine properties. No normalization of arbitrary indent.
 - Effective typography may normalize ONLY explicitly signed emitted defaults.
   Existing exportTypography binds fontSize only; no guessed font/language.
   Actual explicit font/language positive corpus; unresolved inheritance stays
@@ -159,6 +167,9 @@ CHECK_01_PRE_ADMISSION: completed before first edit: verified T7 UUID,
 encryption/unlocked/writable state, canonical worktree identity, bootstrap,
 canon reads and clean exact-base 34-path preflight. PR2081 already delivered
 with CI19/19, fullRTK3295/3295 twice and merged401/401 plus Git/OPS/guardrails.
+Scope amendment: clean checkpoint8039bf18f, preflight36paths PASS before edits
+to the two direct consumer tests. The original delivery base remains f557f7cb0.
+
 CHECK_02_POST_VERTICAL: actual generic import and Main signed reply-only Apply;
 normal, boundary, foreign/stale inputs; no writes on refusal, complete retention.
 CHECK_03_POST_NATIVE: real Word reply on immutable exported artifacts; SOURCE
@@ -176,6 +187,11 @@ nonpending scene formatting, notes and stories. These are checked before CI.
 The first preliminary export was overwritten by its generator; retained native
 file is diagnostic only, with original observed hash and explicit missing-pair
 qualification. Subsequent native artifacts use immutable generation names.
+
+Candidate-focused evidence: actual Main13/13, scene consumers33/33, Core51/51;
+no full candidate acceptance from these counts. Native Word v04 true language
+changes refused; preserved as negative and separate original-plan residual.
+Actual Word v04 file is next generic input baseline, never edited to fit proof.
 
 ## STOP_CONDITION
 

@@ -648,7 +648,52 @@ function commentTypography(value) {
   assert(value === undefined || exact(value,['schemaVersion','fontSize']) && value.schemaVersion === 'yalken.review-docx.typography-defaults.v1' && value.fontSize === '12pt', 'PENDING_COMMENT_TYPOGRAPHY_INVALID');
   return value?.fontSize || null;
 }
-function commentRich(doc, fontSize) {
+// Export defaults are properties of a proven source occurrence, never a
+// tolerance applied to returned data. Authored indentation always wins.
+function commentExportIndents(doc, exportParagraphs) {
+  if(exportParagraphs===undefined)return null;
+  const leaves=paragraphs(doc), roles=[];
+  const visit=(node,quoteDepth=0,stack=[])=>{
+    if(['paragraph','heading','codeBlock'].includes(node.type)) {roles.push({node,quoteDepth,list:stack.at(-1)});return;}
+    if(node.type==='blockquote') {for(const child of node.content)visit(child,quoteDepth+1,stack);return;}
+    if(['orderedList','bulletList'].includes(node.type)) {
+      const list={kind:node.type==='orderedList'?'ordered':'bullet',level:node.attrs?.wordNumbering?.level??stack.length,numbering:Boolean(node.attrs?.wordNumbering)};
+      for(const item of node.content) {
+        let direct=0;
+        for(const child of item.content) {
+          const leaf=['paragraph','heading'].includes(child.type);
+          visit(child,quoteDepth,[...stack,{...list,continuation:leaf&&direct++>0}]);
+        }
+      }
+      return;
+    }
+    for(const child of node.content||[])visit(child,quoteDepth,node.type==='table'?[]:stack);
+  };
+  visit(doc);
+  assert(Array.isArray(exportParagraphs) && exportParagraphs.length===leaves.length && roles.length===leaves.length,'PENDING_COMMENT_EXPORT_LAYOUT_INVALID');
+  return roles.map(({node,quoteDepth,list},index)=>{
+    const emitted=exportParagraphs[index];
+    assert(object(emitted) && emitted.nodeType===node.type && (emitted.blockquoteDepth??0)===quoteDepth
+      && (list ? emitted.list?.kind===list.kind && emitted.list.level===list.level && (emitted.list.continuation===true)===list.continuation
+        && Boolean(emitted.list.wordNumbering)===list.numbering : emitted.list===undefined),'PENDING_COMMENT_EXPORT_LAYOUT_INVALID');
+    const authored=node.attrs?.wordParagraphIndent;
+    const normalized=value=>require('./word-paragraph-layout-v1.cjs').normalizeWordParagraphIndent(value);
+    if(authored!=null) {
+      assert(emitted.wordParagraphIndent!=null && stable(normalized(authored))===stable(normalized(emitted.wordParagraphIndent)),'PENDING_COMMENT_EXPORT_LAYOUT_INVALID');
+      return null;
+    }
+    let expected=null;
+    if(list?.continuation) expected={left:list.numbering?(list.level+1)*720:720+list.level*360};
+    else if(quoteDepth) expected={left:quoteDepth*720};
+    if(emitted.wordParagraphIndent!=null) assert(expected && stable(normalized(emitted.wordParagraphIndent))===stable(expected),'PENDING_COMMENT_EXPORT_LAYOUT_INVALID');
+    return expected;
+  });
+}
+function commentLeftDefaults(doc, exportParagraphs) {
+  if(exportParagraphs===undefined)return null;
+  return paragraphs(doc).map((p,index)=>p.attrs?.textAlign==='left' && exportParagraphs[index]?.textAlign==='left');
+}
+function commentRich(doc, fontSize, indents=null, leftDefaults=null) {
   const copy=clone(doc);
   const visit=n=>{
     if(fontSize && ['text','hardBreak'].includes(n.type)) {
@@ -658,7 +703,10 @@ function commentRich(doc, fontSize) {
     }
     for(const child of n.content||[]) visit(child);
   };
-  visit(copy); return normalizeNode(copy);
+  visit(copy);
+  if(indents) paragraphs(copy).forEach((p,index)=>{if(indents[index])p.attrs={...p.attrs,wordParagraphIndent:clone(indents[index])};});
+  if(leftDefaults) paragraphs(copy).forEach((p,index)=>{if(leftDefaults[index] && p.attrs?.textAlign==='left')delete p.attrs.textAlign;});
+  return normalizeNode(copy);
 }
 function commentBasis(document,exportTypography) {
   const ledger=readLedger(document);
@@ -743,29 +791,31 @@ function commentAnchorBindings(basis,anchors) {
       originalStart:basisEndpoint(basis,start,unionStart.offsetUtf16,'original'),originalEnd:basisEndpoint(basis,end,unionEnd.offsetUtf16,'original')};
   }).sort((a,b)=>a.threadId<b.threadId?-1:a.threadId>b.threadId?1:0);
 }
-function buildCommentExportBinding({document,anchors=[],exportTypography}={}) {
-  inspectLedgerData({document,anchors,exportTypography});
+function buildCommentExportBinding({document,anchors=[],exportTypography,exportParagraphs}={}) {
+  inspectLedgerData({document,anchors,exportTypography,exportParagraphs});
   const basis=commentBasis(document,exportTypography);
+  const indents=commentExportIndents(basis.union,exportParagraphs), leftDefaults=commentLeftDefaults(basis.union,exportParagraphs);
   const projection={union:basis.union,current:basis.current,original:basis.original,segments:basis.rows};
   const binding={schemaVersion:1,ledgerSha256:commentHash(basis.ledger),
-    basisSha256:commentHash({union:commentRich(basis.union,basis.size),current:commentRich(basis.current,basis.size),original:commentRich(basis.original,basis.size)}),
+    basisSha256:commentHash({union:commentRich(basis.union,basis.size,indents,leftDefaults),current:commentRich(basis.current,basis.size,indents,leftDefaults),original:commentRich(basis.original,basis.size,indents,leftDefaults)}),
     paragraphCount:basis.rows.length,revisionSpans:basis.spans,anchors:commentAnchorBindings(basis,anchors)};
   return {binding,projection};
 }
-function mapCommentExportEndpoint({document,binding,anchors=[],exportTypography,paragraphIndex,offsetUtf16,affinity}={}) {
+function mapCommentExportEndpoint({document,binding,anchors=[],exportTypography,exportParagraphs,paragraphIndex,offsetUtf16,affinity}={}) {
   inspectLedgerData(binding);
   assert(['left','right'].includes(affinity),'PENDING_COMMENT_ENDPOINT_INVALID');
-  const actual=buildCommentExportBinding({document,anchors,exportTypography});
+  const actual=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs});
   assert(stable(binding)===stable(actual.binding),'PENDING_COMMENT_BINDING_CHANGED');
   return basisEndpoint({rows:actual.projection.segments},paragraphIndex,offsetUtf16,'current',true);
 }
-function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[],exportTypography}={}) {
+function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs}={}) {
   inspectLedgerData({binding,returnedDocument});
-  const before=buildCommentExportBinding({document,anchors,exportTypography});
+  const before=buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs});
   assert(stable(binding)===stable(before.binding),'PENDING_COMMENT_BINDING_CHANGED');
   const returned=commentBasis(returnedDocument,exportTypography);
   assert(returned.ledger.revisions.every(r=>r.state==='pending'),'PENDING_COMMENT_REVISION_CHANGED');
-  assert(commentHash({union:commentRich(returned.union,returned.size),current:commentRich(returned.current,returned.size),original:commentRich(returned.original,returned.size)})===binding.basisSha256,'PENDING_COMMENT_PROJECTION_CHANGED');
+  const leftDefaults=commentLeftDefaults(before.projection.union,exportParagraphs);
+  assert(commentHash({union:commentRich(returned.union,returned.size,null,leftDefaults),current:commentRich(returned.current,returned.size,null,leftDefaults),original:commentRich(returned.original,returned.size,null,leftDefaults)})===binding.basisSha256,'PENDING_COMMENT_PROJECTION_CHANGED');
   const partitions=[];let cursor=0;
   for(const span of binding.revisionSpans) {
     let offset=span.fromUtf16;const fragments=[];

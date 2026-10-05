@@ -5223,6 +5223,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (baselineDocument.issue) throw Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
   const ledger = pendingTextRevisions.readLedger(baselineDocument.doc);
   const pendingCommentBinding = source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding;
+  if (ledger && source.commentExport?.threads.length && !pendingCommentBinding)
+    throw Error('PENDING_COMMENT_EXPORT_BINDING_REQUIRED');
   if (pendingCommentBinding && source.commentExport?.threads.length) {
     if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
       throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
@@ -5236,7 +5238,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       throw Error(returned?.code || 'REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
     pendingTextRevisions.verifyCommentReturnBinding({ document: baselineDocument.doc, binding: pendingCommentBinding,
       returnedDocument: returned.scenes[0].returnedDocument, anchors: source.pendingCommentAnchors,
-      exportTypography: source.localAuthorityCapsule.exportMap.exportTypography });
+      exportTypography: source.localAuthorityCapsule.exportMap.exportTypography,
+      exportParagraphs: source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(block => block.formatIr.paragraph) });
     return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED',
       pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
   }
@@ -6401,9 +6404,10 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
       // ledger; this comparison does not create a canonical revision ledger.
       const wrap = source => pending.bindLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
       const baseline = wrap(document), returned = wrap(returnedDocument);
-      const { binding } = pending.buildCommentExportBinding({ document: baseline, exportTypography: capsule.exportMap.exportTypography });
+      const { binding } = pending.buildCommentExportBinding({ document: baseline, exportTypography: capsule.exportMap.exportTypography,
+        exportParagraphs: scene.blocks.map(block => block.formatIr.paragraph) });
       pending.verifyCommentReturnBinding({ document: baseline, binding, returnedDocument: returned,
-        exportTypography: capsule.exportMap.exportTypography });
+        exportTypography: capsule.exportMap.exportTypography, exportParagraphs: scene.blocks.map(block => block.formatIr.paragraph) });
     }
   }
   return result;
@@ -29153,7 +29157,10 @@ async function handleExportDocxMin(payloadRaw) {
       const paragraphs = pendingTextRevisions.readLedger(snapshot.doc)
         ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''))
         : commentSceneParagraphs(snapshot.content).map(block => block.text);
+      const paragraphFormats = pendingTextRevisions.readLedger(snapshot.doc)
+        ? buildFormatIrParagraphs({ sceneId, doc: paragraphDocument, text: paragraphs.join('\n') }) : null;
       noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
+        ...(paragraphFormats ? { formatIr: paragraphFormats[index] } : {}),
         ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
           .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
       if (active) documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
