@@ -230,7 +230,7 @@ for (const kind of ['project', 'hash', 'untrustedMap', 'wrongScene', 'multipleSc
 
 test('native confirmation describes complete semantics, defaults to Cancel, and refuses truncated previews', async t => {
   const h = await harness(t); assert.equal((await h.prepare()).status, 'preview-ready');
-  const dialogSource = main.slice(main.indexOf('async function confirmLocalWordPendingReturn('), main.indexOf('async function confirmLocalWordNoteDelta('));
+  const dialogSource = main.slice(main.indexOf('function describeLocalWordPendingReturn('), main.indexOf('async function confirmLocalWordNoteDelta('));
   let calls = 0;
   Object.assign(h.c, { mainWindow: { isDestroyed: () => false }, dialog: { showMessageBox: async (_window, options) => {
     calls++; assert.equal(options.cancelId, 0); assert.equal(options.defaultId, 0);
@@ -379,7 +379,7 @@ test('native pending confirmation presents one changed paragraph in a 100000 wor
   const after=model.bindLedger({schemaVersion:1,source:next,revisions:[{id:'revision-1',nativeId:'0',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:500,from:text.length,to:text.length+6,state:'pending',groupId:null}],undo:[],redo:[]});
   let seen;
   Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{seen=options;return {response:0};}}});
-  const sourceText=main.slice(main.indexOf('async function confirmLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta('));vm.runInContext(sourceText,h.c);
+  const sourceText=main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta('));vm.runInContext(sourceText,h.c);
   assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'100k.docx',changes:{before,after}}),false);
   assert.ok(seen.detail.length<15000);assert.match(seen.detail,/Абзац 501/);assert.doesNotMatch(seen.detail,/Абзац 500/);assert.match(seen.detail,/added/);assert.equal(seen.cancelId,0);
 });
@@ -522,7 +522,7 @@ test('editorial capacity actual Main disk route completes five 100000 word excha
   const result=await h.route();assert.equal(result.pendingProductPath?.status,'preview-ready','round '+(round+1)+': '+JSON.stringify(result));
   const prepareMs=performance.now()-prepareStarted;
   assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);
-  if(round===0){let preview;Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{preview=options;return {response:0};}}});vm.runInContext(main.slice(main.indexOf('async function confirmLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),h.c);assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'novel.docx',changes:h.prepared.changes}),false);assert.equal(preview.cancelId,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);}
+  if(round===0){let preview;Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{preview=options;return {response:0};}}});vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),h.c);assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'novel.docx',changes:h.prepared.changes}),false);assert.equal(preview.cancelId,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);}
   const applyStarted=performance.now();assert.equal((await h.prepared.apply()).ok,true);const applyMs=performance.now()-applyStarted;assert.equal(h.writes,1);
   states.push(model.projection(h.context().parsed.doc));ledgers.push(model.readLedger(h.context().parsed.doc));
   const record={round:round+1,prepareMs,applyMs,journalBytes:h.journalBytes,proofBytes:h.proofMetrics.bytes,elapsedMs:performance.now()-start,sceneBytes:Buffer.byteLength(fs.readFileSync(h.file,'utf8')),ledgerBytes:Buffer.byteLength(JSON.stringify(ledgers.at(-1))),commentsBytes:Buffer.byteLength(h.commentText),rss:process.memoryUsage().rss};measurements.push(record);console.log('CAPACITY_ROUND '+JSON.stringify(record));

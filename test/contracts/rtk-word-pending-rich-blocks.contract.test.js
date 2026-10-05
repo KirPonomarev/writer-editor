@@ -267,7 +267,7 @@ test('Pending rich export binds cell preferred widths to the retained grid inclu
 
 test('Native pending confirmation names all canonical paragraph leaves without exposing container objects', async () => {
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
-  const start = main.indexOf('async function confirmLocalWordPendingReturn(');
+  const start = main.indexOf('function describeLocalWordPendingReturn(');
   let shown;
   const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, pendingTextRevisions: model,
     dialog: { showMessageBox: async (_window, options) => { shown = options; return { response: 1 }; } } });

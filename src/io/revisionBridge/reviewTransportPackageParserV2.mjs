@@ -2154,6 +2154,32 @@ function paragraphMarkTypography(scan, owner, xml, excluded=null) {
   return Object.keys(result).length?normalizeParagraphMarkTypography(result):null;
 }
 
+// A paragraph-mark change owns only its prior rPr; the surrounding current
+// paragraph properties stay current. Validate both snapshots before excluding
+// this container from the read-only current formatting projection.
+function checkedParagraphMarkChange(scan, owner, xml) {
+  if(!owner)return null;
+  const changes=childTokensWithin(scan,owner).filter(t=>t.localName==='rPrChange');
+  if(!changes.length)return null;
+  const parent=scan.tokens.find(t=>t.depth===owner.depth-1&&t.openEnd<=owner.openStart&&t.closeStart>=owner.closeEnd);
+  const paragraph=parent&&scan.tokens.find(t=>t.depth===parent.depth-1&&t.openEnd<=parent.openStart&&t.closeStart>=parent.closeEnd);
+  if(changes.length!==1||!isWordToken(parent,'pPr')||!isWordToken(paragraph,'p')
+    ||owner.depth!==parent.depth+1||parent.depth!==paragraph.depth+1
+    ||childTokensWithin(scan,parent).some(t=>t.localName==='pPrChange'))throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
+  const change=changes[0],previous=childTokensWithin(scan,change).filter(t=>t.depth===change.depth+1);
+  if(!isWordToken(change,'rPrChange')||change.selfClosing||change.depth!==owner.depth+1
+    ||!attr(change,'id',W_NS)||previous.length!==1||!isWordToken(previous[0],'rPr')
+    ||change.attributes.some(a=>a.qName!=='xmlns'&&a.prefix!=='xmlns'
+      &&!(a.namespaceUri===W_NS&&['id','author','date'].includes(a.localName))
+      &&!(a.namespaceUri===W16DU_NS&&a.localName==='dateUtc'))
+    ||xml.slice(change.openEnd,previous[0].openStart).trim()
+    ||xml.slice(previous[0].closeEnd,change.closeStart).trim())throw Error('PENDING_FORMAT_PREVIOUS_INVALID');
+  paragraphMarkTypography(scan,owner,xml,change);paragraphMarkTypography(scan,previous[0],xml);
+  if(readWordLanguageProperties(scan,owner,xml).invalid||readWordLanguageProperties(scan,previous[0],xml).invalid)
+    throw Error('WORD_LANGUAGE_INVALID');
+  return change;
+}
+
 function formattingParagraphState(children) {
   const state = {};
   const alignments = children.filter((item) => item.localName === 'jc');
@@ -3079,7 +3105,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     let markTypographyInvalid=false;
     try {
       if(markProperties.length>1)throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
-      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml);
+      const markChange=checkedParagraphMarkChange(paragraphScan,markProperties[0],documentXml);
+      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml,markChange);
       if(paragraphStyle){const direct=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
         const effectiveTokens=effectiveStyles.run(paragraphStyle,direct,true),effectiveActions=formattingInlineActions(effectiveTokens);
         // A scalar marker family/size cannot flatten heterogeneous inherited
@@ -5984,7 +6011,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     || attr(pair.moveFrom, 'author', W_NS) !== attr(pair.moveTo, 'author', W_NS)) throw Error('PENDING_MOVE_PAIR_INVALID');
   for (const token of moveMarkers) edits.push({ from: token.openStart, to: token.closeEnd, text: '' });
   const allowed = new Set(['r', 'rPr', 't', 'delText', 'tab', 'br', 'cr', 'noBreakHyphen', 'softHyphen', 'lastRenderedPageBreak',
-    'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden']);
+    'b', 'bCs', 'i', 'iCs', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs', 'rStyle', 'lang', 'rtl', 'vanish', 'webHidden', 'rPrChange']);
   if (options.allowCommentMarkers === true) for (const name of ['commentRangeStart','commentRangeEnd','commentReference','hyperlink']) allowed.add(name);
   for (const token of tokens.sort((a, b) => a.openStart - b.openStart)) {
     const paragraphIndex = paragraphs.findIndex(p => p.openEnd <= token.openStart && p.closeStart >= token.closeEnd);
@@ -6021,7 +6048,9 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     if(markChange){const paragraphProperties=scan.tokens.find(t=>t.depth===parent?.depth-1&&t.openEnd<=parent.openStart&&t.closeStart>=parent.closeEnd);if(!isWordToken(paragraphProperties,'pPr')||!owner||paragraphProperties.depth!==owner.depth+1)throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');}
     const paragraphIndex = paragraphs.findIndex(p => owner && (p === owner || p.openEnd <= owner.openStart && p.closeStart >= owner.closeEnd));
     const p = paragraphs[paragraphIndex];
-    if (!p || !parent || !owner || token.selfClosing || (kind === 'run' && owner.depth !== p.depth + 1))
+    const wrapper=kind==='run'&&owner&&tokens.find(t=>t.openEnd<=owner.openStart&&t.closeStart>=owner.closeEnd);
+    const nested=wrapper && wrapper.localName==='ins' && owner.depth===wrapper.depth+1 && wrapper.depth===p?.depth+1;
+    if (!p || !parent || !owner || token.selfClosing || (kind === 'run' && owner.depth !== p.depth + 1 && !nested))
       throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
     const previous = scan.tokens.filter(t => t.depth === token.depth + 1 && t.openStart >= token.openEnd && t.closeEnd <= token.closeStart);
     if (previous.length !== 1 || !isWordToken(previous[0], propertyName)) throw Error('PENDING_FORMAT_PREVIOUS_INVALID');
@@ -6064,6 +6093,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     if(kind==='paragraph'){
       // Validate current and previous mark payloads after excluding the checked
       // revision container. Unknown nested owners/properties stay blocked.
+      if(markChange&&checkedParagraphMarkChange(scan,parent,documentXml)!==token)throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
       const marks=markChange?[parent,previous[0]]:children.filter(t=>isWordToken(t,'rPr'));
       for(const mark of marks)paragraphMarkTypography(scan,mark,documentXml,token);
     }
@@ -6075,7 +6105,8 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     if (kind === 'run' && !length) throw Error('PENDING_FORMAT_EMPTY_RUN');
     revisions.push({ id: `revision-${revisions.length + 1}`, nativeId, operation: 'format', propertyKind: kind,
       author: attr(token, 'author', W_NS), date: attr(token, 'date', W_NS), dateUtc: attr(token, 'dateUtc', W16DU_NS),
-      groupId: null, paragraphIndex, from, to: from + length, state: 'pending' });
+      groupId: null, paragraphIndex, from, to: from + length, state: 'pending',
+      ...(nested?{parentRevisionId:revisions.find(r=>r.nativeId===attr(wrapper,'id',W_NS))?.id}:{}) });
     propertyRemovals.push({ from: token.openStart, to: token.closeEnd, text: '' });
     propertyReplacements.push({ from: parent.openStart, to: parent.closeEnd,
       text: documentXml.slice(previous[0].openStart, previous[0].closeEnd) });
@@ -6104,7 +6135,8 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     return result;
   };
   const xml = applyEdits(edits);
-  const beforeProperties = list => [...list.filter(e => !propertyReplacements.some(p => e.from >= p.from && e.to <= p.to)), ...propertyReplacements];
+  const beforeProperties = list => [...list.filter(e => !propertyReplacements.some(p => e.from >= p.from && e.to <= p.to)),
+    ...propertyReplacements.filter(p=>!list.some(e=>e.from<=p.from&&e.to>=p.to&&e.text===undefined))];
   const formatBeforeXml = propertyTokens.length ? applyEdits(beforeProperties(edits)) : null;
   let currentXml = documentXml;
   const currentEdits = tokens.flatMap(token => ['del', 'moveFrom'].includes(token.localName)

@@ -285,6 +285,32 @@ test('ops gate accepts exact pure runtime imports in admitted core modules', (t)
   assert.equal(result.status, 0, result.stderr);
 });
 
+test('ops gate accepts the delivered bounded authority codec without admitting new effects', (t) => {
+  const root = makeFixture(t);
+  const codec = 'src/core/word-review-authority-codec-v1.cjs';
+  const actual = fs.readFileSync(path.join(repoRoot, codec), 'utf8');
+  writeFile(root, codec, actual);
+  assert.equal(runGate(root).status, 0);
+  for (const extra of [
+    "const fs = require('node:fs');",
+    "const { randomBytes } = require('node:crypto');",
+    "const { spawnSync } = require('node:child_process');",
+    "process.cwd();",
+    "fs.writeFileSync('foreign', 'data');",
+    "const { createHash } = require('node:crypto'); fs.writeFileSync('foreign', 'data');",
+  ]) {
+    writeFile(root, codec, actual + '\n' + extra);
+    const result = runGate(root);
+    assert.equal(result.status, 1, extra);
+    assert.match(result.stderr, /CORE_PURITY_VIOLATION/u);
+  }
+  writeFile(root, codec, actual);
+  writeFile(root, 'src/core/foreign-codec.cjs', "const { createHash } = require('node:crypto');\n");
+  const result = runGate(root);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /foreign-codec/u);
+});
+
 test('ops gate rejects deterministic hash imports outside the admitted scene modules', (t) => {
   const root = makeFixture(t);
   writeFile(root, 'src/core/otherAdmission.mjs', "import { createHash } from 'node:crypto';\n");

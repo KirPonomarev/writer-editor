@@ -209,3 +209,18 @@ test('normal return compacts eligible legacy stack before a third full source ex
  assert.equal(JSON.stringify(before),serialized);assert.ok(review.readLedger(doc).roundUndo.every(f=>f.schemaVersion===4));
  for(const expected of [second,first,initial]){doc=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.readLedger(doc).source,expected.source);}
 });
+test('schema5 and note-point histories declare features and preserve geometry after restore',()=>{
+ const review=require('../../src/core/word-pending-text-revisions-v1.cjs'),envelope=require('../../src/core/document-content-envelope-v1.cjs');
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'x'}]}]},common={nativeId:'1',author:'A',date:'',dateUtc:'',paragraphIndex:0,from:0,to:1,state:'pending',groupId:null};
+ const nested={schemaVersion:5,source:{...source,content:[{type:'paragraph',content:[{type:'text',text:'x',marks:[{type:'bold'}]}]}]},revisions:[{...common,id:'revision-1',operation:'insert'},{...common,id:'revision-2',operation:'format',parentRevisionId:'revision-1',format:{kind:'run',before:[],after:[{type:'bold'}]}}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]};
+ const old={schemaVersion:3,source,revisions:[{...common,id:'revision-1',operation:'insert'}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[{noteId:'note-one',paragraphIndex:0,offsetUtf16:0}]};
+ assert.throws(()=>review.replaceFromReturn(review.bindLedger(old),review.bindLedger(nested),{roundId:'notes-nested-refuse',artifactSha256:'a'.repeat(64)}),/PENDING_NOTE_REVISION_UNSUPPORTED/u);
+ const current={schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[review.roundFrame(old),review.roundFrame(nested)],roundRedo:[],returnReceipts:[]};
+ const doc=review.bindLedger(current),raw=envelope.composeObservablePayload({doc});assert.match(raw,/word-pending-nested-run-format.v1/u);assert.match(raw,/word-pending-note-points.v1/u);assert.equal(envelope.parseObservablePayload(raw).issue,null);
+ let restored=review.decide(doc,{action:'undo'}).doc;assert.equal(review.readLedger(restored).schemaVersion,5);restored=review.decide(restored,{action:'undo'}).doc;
+ assert.equal(review.readLedger(restored).schemaVersion,3);assert.deepEqual(review.readLedger(restored).noteSourcePoints,old.noteSourcePoints);
+ restored=review.decide(restored,{action:'redo'}).doc;assert.equal(review.readLedger(restored).schemaVersion,5);assert.equal(review.readLedger(restored).noteSourcePoints,undefined);
+ for(const malformed of [{operation:'format',format:{kind:'paragraph',before:{type:'paragraph'},after:{type:'paragraph',attrs:{textAlign:'center'}}}},{operation:'insert',boundary:'paragraph'},{operation:'insert',structure:{kind:'tableRow',tableIndex:0,rowIndex:0}}]) {
+  const value=structuredClone(nested);Object.assign(value.revisions[1],malformed);assert.throws(()=>review.validateLedger(value),/PENDING_FORMAT_PARENT_INVALID/u);
+ }
+});

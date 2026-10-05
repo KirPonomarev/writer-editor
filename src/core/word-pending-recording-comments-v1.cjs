@@ -18,6 +18,24 @@ const frame = review.roundFrame;
 const texts = content => anchors.paragraphs(content).map(p => p.text);
 const definitions = ledger => ledger.revisions.map(({ state, ...r }) => r);
 const rowText = p => (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('');
+// Anchor geometry does not depend on a returned style underlay. This projection
+// is used only after a round decision restored its exact Core-owned frame; the
+// recorded source, prior rich snapshot and persisted formatting stay intact.
+function withoutReturnedStyleUnderlay(document) {
+  const result=clone(document);
+  for(const p of review.paragraphs(result)) {
+    if(p.attrs){delete p.attrs.wordParagraphSpacing;delete p.attrs.wordParagraphMarkLanguage;
+      if(!Object.keys(p.attrs).length)delete p.attrs;}
+    for(const n of p.content||[])if(n.marks){
+      n.marks=n.marks.filter(m=>{
+        if(m.type!=='textStyle')return true;
+        for(const key of ['fontFamily','fontSize','wordLanguage'])delete m.attrs[key];
+        return Object.keys(m.attrs).length>0;
+      });if(!n.marks.length)delete n.marks;
+    }
+  }
+  return review.normalizeNode(result);
+}
 function roundIdentity(ledger) {
   const baseline = review.lastRoundFrame(ledger);
   if (!baseline) return null;
@@ -34,13 +52,17 @@ const snapshotDigest = s => s.status === 'deleted' ? s.liveLocator.blockTextSha2
 
 // The recorded source itself carries the exact new intervals. Verify removal
 // of inserted nodes reconstructs the original rich source before using them.
-function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'forward') {
+function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'forward', allowReturnedStyleUnderlay = false) {
   const oldIds = new Set(baseline.revisions.map(r => r.id));
   if (recorded.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
     || r.operation === 'format' && !['run','paragraph'].includes(r.format.kind)))
     fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const fresh = recorded.revisions.filter(r => !oldIds.has(r.id));
-  if (!fresh.length || fresh.some(r => r.state !== 'pending')) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
+  const styleOnly = !fresh.length && allowReturnedStyleUnderlay
+    && !equal(review.normalizeNode(recorded.source), review.normalizeNode(baseline.source))
+    && equal(withoutReturnedStyleUnderlay(recorded.source), withoutReturnedStyleUnderlay(baseline.source))
+    && equal(beforeTexts, afterTexts);
+  if ((!fresh.length && !styleOnly) || fresh.some(r => r.state !== 'pending')) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const identity = roundIdentity(recorded), edits = [], source = clone(recorded.source);
   const sourceRows = review.paragraphs(source), expectedRows = review.paragraphs(baseline.source);
   if (sourceRows.length !== expectedRows.length) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
@@ -84,7 +106,14 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
       const shift = insertions.filter(i => i.to <= r.from).reduce((n,i) => n+i.to-i.from,0); r.from -= shift; r.to -= shift;
     }
   });
-  if (!equal(review.normalizeNode(source), review.normalizeNode(baseline.source)) || !equal(shifted, baseline.revisions))
+  const restoredSource=allowReturnedStyleUnderlay?withoutReturnedStyleUnderlay(source):review.normalizeNode(source);
+  const expectedSource=allowReturnedStyleUnderlay?withoutReturnedStyleUnderlay(baseline.source):review.normalizeNode(baseline.source);
+  const retainedMeaning=revisions=>revisions.map(revision=>revision.format
+    ? {...revision,format:review.formatTransitionMeaning(revision.format)} : revision);
+  const retainedExact=allowReturnedStyleUnderlay
+    ? equal(retainedMeaning(shifted),retainedMeaning(baseline.revisions))
+    : equal(shifted,baseline.revisions);
+  if (!equal(restoredSource, expectedSource) || !retainedExact)
     fail('RECORDING_COMMENT_ROUND_SOURCE_MISMATCH');
   // sessionId belongs to the plan; it is never accepted as an edit field.
   edits.forEach(e => { delete e.sessionId; });
@@ -167,7 +196,7 @@ function planRecordingRoundDecision(input, oldLedger, newLedger) {
   if (!['undo', 'redo'].includes(direction)) fail('PENDING_COMMENT_DECISION_UNSUPPORTED');
   const recorded = direction === 'undo' ? oldLedger : newLedger, baseline = direction === 'undo' ? newLedger : oldLedger;
   if (!equal(review.lastRoundFrame(recorded), frame(baseline))) fail('RECORDING_COMMENT_ROUND_SOURCE_MISMATCH');
-  const bound = roundEdits(recorded, frame(baseline), texts(input.beforeContent), texts(input.afterContent), direction);
+  const bound = roundEdits(recorded, frame(baseline), texts(input.beforeContent), texts(input.afterContent), direction, true);
   return anchors.planCommentAnchorSave({ ...input, includeUnchanged: true, sessionId: bound.sessionId, editIntents: bound.plan });
 }
 

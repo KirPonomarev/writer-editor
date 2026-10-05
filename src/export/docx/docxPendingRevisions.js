@@ -64,8 +64,18 @@ function buildPendingRowParagraphXml(xml, revision, counter) {
 // Export segments have already been validated against canonical scene truth.
 // Keep rich runs together; live comment markers may split a deletion wrapper.
 function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map(), commentMarkers = new Map()) {
-  let output = '', active = null, body = '', formatText = '';
+  let output = '', active = null, body = '', formatText = '', nested=null,nestedText='';
+  const formattedRun=(revision,value)=>{
+    if(revision.format?.kind!=='run')throw Error('PENDING_FORMAT_EXPORT_INVALID');
+    const previous=renderRun({type:'text',text:'x',marks:revision.format.before});
+    const oldProperties=previous.match(/<w:rPr>([\s\S]*?)<\/w:rPr>/u)?.[1]||'';
+    const change=`<w:rPrChange${revisionAttributes(revision,counter)}><w:rPr>${oldProperties}</w:rPr></w:rPrChange>`;
+    const current=renderRun({type:'text',text:value,marks:revision.format.after});
+    return current.includes('</w:rPr>')?current.replace('</w:rPr>',change+'</w:rPr>'):current.replace('<w:r>',`<w:r><w:rPr>${change}</w:rPr>`);
+  };
+  const flushNested=()=>{if(nested){body+=formattedRun(nested,nestedText);nested=null;nestedText='';}};
   const flush = () => {
+    flushNested();
     if (!active) { output += body; body = ''; return; }
     if (active.operation === 'format') {
       if (active.format?.kind !== 'run') throw Error('PENDING_FORMAT_EXPORT_INVALID');
@@ -99,6 +109,7 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   const remainingComments = new Map(commentMarkers);
   const emit = point => {
     if (remainingComments.has(point)) {
+      flushNested();
       // Word discards comment references contained in deleted content when it
       // saves an edited document. Preserve the exact union endpoint, but close
       // the deletion first; the next segment resumes it if this point is inside.
@@ -118,6 +129,11 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
       if ((active?.id || null) !== (segment.revision?.id || null)) { flush(); active = segment.revision; }
       const node = segment.node.type === 'hardBreak' ? segment.node : { ...segment.node, text: value.slice(cuts[i] - offset, cuts[i + 1] - offset) };
       if (active?.operation === 'format') { formatText += node.type === 'hardBreak' ? '\n' : node.text; continue; }
+      if(segment.formatRevision){
+        if(nested?.id!==segment.formatRevision.id){flushNested();nested=segment.formatRevision;}
+        nestedText+=node.type==='hardBreak'?'\n':node.text;continue;
+      }
+      flushNested();
       let xml = renderRun(node);
       if (active?.operation === 'delete' && !active.moveName) xml = xml.replace(/<w:t(?=[ >])/gu, '<w:delText').replaceAll('</w:t>', '</w:delText>');
       body += xml;
