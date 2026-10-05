@@ -11119,9 +11119,10 @@ export function parseDocumentNotesRichReturn(bytes, notes) {
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,cryptoPort}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,cryptoPort,retainPendingSceneId}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
+    if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
     const preview=buildDocxContentPreviewFromZipBytes(bytes);
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
     let sectionsVerified=false;
@@ -11179,7 +11180,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         if(!Object.keys(source.attrs).length)delete source.attrs;
       }else if(exportMap.scenes.length!==1 && source.attrs?.wordSections)throw Error('PENDING_COMMENT_SECTION_BINDING_REQUIRED');
       const revisions=ledger.revisions.filter(r=>r.paragraphIndex>=from&&r.paragraphIndex<to).map(r=>({...r,paragraphIndex:r.paragraphIndex-from}));
-      scenes.push({sceneId:scene.sceneId,returnedDocument:scene.pendingCommentBinding?pendingTextRevisions.bindLedger({
+      scenes.push({sceneId:scene.sceneId,returnedDocument:(scene.pendingCommentBinding||scene.sceneId===retainPendingSceneId)?pendingTextRevisions.bindLedger({
         schemaVersion:revisions.length?1:2,source,revisions,undo:[],redo:[],
         ...(!revisions.length?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})}):source});
     }

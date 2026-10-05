@@ -561,3 +561,26 @@ test('compact imported graph remains writable through authoring, anchor save, si
  const atLimit=materializeGenericComments({...input,candidates:[candidate()],beforeText:JSON.stringify({...overCount,threads:overCount.threads.slice(0,127)})});assert.equal(author.readState(atLimit.afterText,'p').threads.length,128);
  const old=JSON.stringify(overCount);assert.ok(Buffer.byteLength(old)<65536);assert.throws(()=>materializeGenericComments({...input,candidates:[candidate()],beforeText:old}),/DOCX_GENERIC_COMMENT_STATE/);assert.equal(JSON.stringify(overCount),old);
 });
+
+test('generic import retains a comment at the start of a pending insertion for exact reexport',async()=>{
+ const review=require('../../src/core/word-pending-text-revisions-v1.cjs'),ranges=require('../../src/core/word-comment-ranges-v1.cjs');
+ const make=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+ const build=require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer;
+ const env=require('../../src/core/document-content-envelope-v1.cjs');
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),api=await import('../../src/io/revisionBridge/genericWordComments.mjs');
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'oldnew'}]}]};
+ const doc=review.bindLedger({schemaVersion:1,source,revisions:['delete','insert'].map((operation,i)=>({id:'revision-'+(i+1),nativeId:String(i),operation,author:'A',date:'',dateUtc:'',paragraphIndex:0,from:i*3,to:i*3+3,state:'pending',groupId:null})),undo:[],redo:[]});
+ const sceneId='roman/a.txt',anchor=ranges.deriveCommentAnchor({sceneId,paragraphs:['new'],input:{paragraphIndex:0,startUtf16:0,selectedText:'new'}});
+ anchor.pendingUnionLocator=review.createCommentUnionLocator({document:doc,anchor,unionStart:{paragraphIndex:0,offsetUtf16:3},unionEnd:{paragraphIndex:0,offsetUtf16:6}});
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'p',revision:0,events:[],threads:[{threadId:'t',rootCommentId:'m',sceneId,status:'open',anchor,messages:[{commentId:'m',kind:'root',body:'Insertion discussion'}]}]};
+ const exported=(d,s)=>make({projectId:'p',projectRoot:'/synthetic',nonTextReturnState:s,scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,order:0,text:'new',doc:d}]});
+ const bytes=build(exported(doc,state)),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true);
+ const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);const entry=plan.candidateCreatePlan.entries[0],parsed=env.parseObservablePayload(entry.content).doc;
+ assert.ok(entry.comments[0].pendingUnionLocator);
+ const input={candidates:entry.comments,paragraphs:['new'],pendingDocument:parsed,projectId:'p',sceneId,importOperationId:'boundary-import',beforeText:null};
+ const imported=api.materializeGenericComments(input),round=exported(parsed,JSON.parse(imported.afterText));assert.ok(build(round).length);
+ assert.equal(round.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.anchors[0].unionStart.offsetUtf16,3);
+ assert.throws(()=>api.materializeGenericComments({...input,pendingDocument:undefined}),/PENDING_DOCUMENT_REQUIRED/);
+ const forged=structuredClone(entry.comments);forged[0].pendingUnionLocator.geometrySha256='0'.repeat(64);
+ assert.throws(()=>api.materializeGenericComments({...input,candidates:forged}),/LOCATOR_STALE/);
+});

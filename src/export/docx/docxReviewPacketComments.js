@@ -79,7 +79,7 @@ function exactCommentAnchor(thread, blocks) {
       documentParagraphIndex: first.documentParagraphIndex, endDocumentParagraphIndex: last.documentParagraphIndex,
       startUtf16: derived.startUtf16, endUtf16: derived.endUtf16, selectedText: derived.selectedText,
       blockTextSha256: derived.blockTextSha256, endBlockTextSha256: derived.endBlockTextSha256,
-      coveredParagraphsSha256: derived.coveredParagraphsSha256 };
+      coveredParagraphsSha256: derived.coveredParagraphsSha256, ...(anchor.pendingUnionLocator?{pendingUnionLocator:anchor.pendingUnionLocator}:{}) };
   }
   let block;
   if (Number.isSafeInteger(anchor.sceneParagraphIndex) && anchor.blockTextSha256) {
@@ -100,7 +100,7 @@ function exactCommentAnchor(thread, blocks) {
   }
   demand(isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_UTF16_BOUNDARY');
   return { ...(anchor.kind === 'point' ? {kind: 'point', affinity: 'right'} : {}), blockId: block.blockId, sceneId: block.sceneId, documentParagraphIndex: block.documentParagraphIndex,
-    startUtf16: start, endUtf16: end, selectedText };
+    startUtf16: start, endUtf16: end, selectedText, ...(anchor.pendingUnionLocator?{pendingUnionLocator:anchor.pendingUnionLocator}:{}) };
 }
 
 function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
@@ -261,7 +261,7 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
       const input = {paragraphIndex:first,startUtf16:a.startUtf16,selectedText:a.selectedText,
         ...(a.kind === 'multi-paragraph-range' ? {kind:a.kind,endParagraphIndex:sceneBlocks.findIndex(b=>b.blockId===a.endBlockId),endUtf16:a.endUtf16}
           : a.kind === 'point' ? {kind:'point',affinity:'right'} : {})};
-      return {threadId:thread.threadId,anchor:commentRanges.deriveCommentAnchor({sceneId:scene.sceneId,paragraphs:rows,input})};
+      return {threadId:thread.threadId,anchor:{...commentRanges.deriveCommentAnchor({sceneId:scene.sceneId,paragraphs:rows,input}),...(a.pendingUnionLocator?{pendingUnionLocator:a.pendingUnionLocator}:{})}};
     });
     const {binding,projection:pendingProjection} = pending.buildCommentExportBinding({schemaVersion:2,document:scene.doc,anchors,exportTypography,exportParagraphs:sceneBlocks.every(block=>block.formatIr?.paragraph)?sceneBlocks.map(block=>block.formatIr.paragraph):undefined});
     pendingCommentBindings.push({sceneId:scene.sceneId,binding});

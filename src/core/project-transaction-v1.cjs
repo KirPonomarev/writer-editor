@@ -176,7 +176,7 @@ async function verifyRetainedResources(resources, scenePath, manifestPath, fsAda
 }
 
 const commentStatePath = manifestPath => path.join(path.dirname(manifestPath), '.yalken', 'word-review', 'non-text-return-state.v1.json');
-const commentBinding = value => value ? { beforeDigest: sha256hex(value.beforeText), afterDigest: sha256hex(value.afterText), ...(value.mode ? { mode: value.mode } : {}) } : null;
+const commentBinding = value => value ? { beforeDigest: digestOptional(value.beforeText), afterDigest: sha256hex(value.afterText), ...(value.mode ? { mode: value.mode } : {}) } : null;
 
 // A single existing canonical comment file, not an arbitrary replacement port.
 // Ordinary import may append new-scene threads; it cannot alter older threads.
@@ -185,7 +185,7 @@ function normalizeCommentState(value, scenePath, manifestPath, scenePair = null)
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
   if(value?.mode===COMMENT_TEXT_RETURN_MODE) {
     if(!scenePair || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
-      || !['beforeText','afterText'].every(k=>typeof value[k]==='string' && Buffer.byteLength(value[k])<=65536)) fail();
+      || !['beforeText','afterText'].every(k=>(k==='beforeText' && value[k]===null) || typeof value[k]==='string' && Buffer.byteLength(value[k])<=65536)) fail();
     try {
       const projectId=JSON.parse(scenePair.before.manifest).projectId;
       const expected=planCommentTextReturn({beforeText:value.beforeText,projectId,
@@ -252,7 +252,7 @@ async function inspectCommentState(change, manifestPath, fsAdapter) {
   const target = commentStatePath(manifestPath);
   await assertResourceBoundary(target, manifestPath, fsAdapter);
   const current = await readResource({ path: target }, manifestPath, fsAdapter);
-  const text = current?.toString('utf8');
+  const text = current === null ? null : current.toString('utf8');
   if (text !== change.beforeText && text !== change.afterText) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_CAS', TRANSACTION_PHASES.RECOVER);
   }
@@ -261,7 +261,10 @@ async function inspectCommentState(change, manifestPath, fsAdapter) {
 
 async function publishCommentState(change, manifestPath, nextText, revision, fsAdapter) {
   const current = await inspectCommentState(change, manifestPath, fsAdapter);
-  if (current !== nextText) await durableSaveTransaction({ filePath: commentStatePath(manifestPath), content: nextText, revision, fsAdapter });
+  if (current !== nextText) {
+    if (nextText === null) await removeDurably(commentStatePath(manifestPath), fsAdapter);
+    else await durableSaveTransaction({ filePath: commentStatePath(manifestPath), content: nextText, revision, fsAdapter });
+  }
   if (await inspectCommentState(change, manifestPath, fsAdapter) !== nextText) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_READBACK', TRANSACTION_PHASES.READBACK);
   }
@@ -582,7 +585,7 @@ async function readCommitRecordState({
   } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
   if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || ([NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) && record.commentState !== undefined)) {
-    if (!record.commentState || !isDigest(record.commentState.beforeDigest) || !isDigest(record.commentState.afterDigest)
+    if (!record.commentState || (!(record.commentState.mode === COMMENT_TEXT_RETURN_MODE && record.commentState.beforeDigest === null) && !isDigest(record.commentState.beforeDigest)) || !isDigest(record.commentState.afterDigest)
       || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? ![COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode)
         : record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE, 'PROJECT_TREE_COHORT_V1'].includes(record.commentState.mode)
         : [NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode) : record.commentState.mode !== undefined)) {
@@ -1514,7 +1517,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
         current = path.join(current, part); const stat = fs.lstatSync(current);
         if (stat.isSymbolicLink() || (current === target ? !stat.isFile() || stat.nlink !== 1 || stat.size > 65536 : !stat.isDirectory())) throw Error('BOUNDARY');
       }
-      if (!isDigest(record.commentState?.beforeDigest) || !isDigest(record.commentState?.afterDigest)
+      if ((!(record.commentState?.mode === COMMENT_TEXT_RETURN_MODE && record.commentState.beforeDigest === null) && !isDigest(record.commentState?.beforeDigest)) || !isDigest(record.commentState?.afterDigest)
         || sha256hex(fs.readFileSync(target)) !== record.commentState.afterDigest) throw Error('DIGEST');
     } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMENT_BINDING_MISMATCH' }; }
   }

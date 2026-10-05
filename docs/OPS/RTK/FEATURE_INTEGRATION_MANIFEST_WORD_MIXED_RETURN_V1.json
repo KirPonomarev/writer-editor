@@ -1,0 +1,79 @@
+{
+  "taskId": "WORD_MIXED_RETURN_MAC_20261005",
+  "objective": "Atomic authenticated Word return with inline tracked text edits and multiple discussion changes, restart-safe round decisions and reexport; first bounded prerequisite for the100000-word novel launch. Complete this same mixed-return outcome by preserving checked union comment endpoints through import, atomic publication, round history and reexport; supply validated package relationships to the existing Main parser. Repair within same outcome: preserve position-sorted ledger while retaining old identities when new Word edits precede existing pending revisions. Complete same mixed-return reexport invariant: prevent comment endpoints and references from being serialized as deleted content, which Word drops on a later changed save. Final documentation and exact-byte OPS successor after both native05 Mac changed-save/Apply/restart/Undo/Redo/reexport observations; no runtime edits in this successor. Repair confirmed5full-RTK regressions: empty comment export must retain legacy notes route; retain meaningful legacy unchanged rich-leaf confirmation while changed whole-book confirmation stays bounded. Final docs and exact-byte OPS successor only after repaired candidate native06 Apply/restart/UndoRedo/export replay in bothMacbuilds. Runtime source unchanged in finalsuccessor. Same mixed-return first-discussion invariant: actual missing comment state must prepare preview without JSON null dereference, preserve no-write and atomic first creation; meaningful actual Main regression. Final documentation and exact-byte OPS successor after observed SOURCE07 and PACKAGED07 Apply, restart, UndoRedo, reexport; actual Main and atomic missing-file creation proven175tests. No runtime edits in this successor.",
+  "writePaths": [
+    "Authenticated DOCX bytes and locally signed baseline -> bounded rich partition and full discussion proof -> explicit Pending Apply -> Kernel and Main revalidation -> existing atomic scene/comment transaction -> exact readback -> guarded editor publication"
+  ],
+  "productPorts": [
+    "Existing project lease, atomic scene/manifest/comment transaction, readable recovery and guarded editor publication; existing native DOCX exports"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact baseline SHA, DOCX artifact hash, scene and project identity, round receipt, lifecycle and edit generation",
+    "Preserved old pending partitions and rich provenance, returned union/Current coordinates; repeated text never establishes occurrence identity",
+    "Exact comment CAS and scene CAS revalidated under project lease; private proof independently recomputed by transaction",
+    "Optional closed-schema pending union locator must match exact ledger geometry and Current anchor; no ambiguous inverse guessing or stale locator fallback."
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
+  "fallbacks": [
+    "Unsupported structure, format, move, notes mixtures remain explicit no-write refusal",
+    "Old unchanged verifier remains strict; changed pending path requires its own complete proof",
+    "No comment-only partial success hiding text changes; no silent drops or budget removal"
+  ],
+  "recoveryAndNegativeChecks": [
+    "First actual Main executable route: pending baseline plus2threads, Word replacement2replies newroot, zero preview writes, explicit atomic Apply",
+    "Repeated strings, forged source/partitions/provenance and anchor coordinates, missing inventory, malicious/unknown fields",
+    "Stale comment/scene/lifecycle/generation, forged admission, rollback and partial write failure",
+    "Restart round Undo/Redo retains messages, reversible new-root-on-insert locator, pending decisions and reexport",
+    "Early real Word SOURCE and PACKAGED native before full stable required gates; exact merged verification",
+    "Native SOURCE01 ambiguous deleted-text boundary and SOURCE02 unchanged hyperlinks reproduce failures; exact endpoints survive mixed Apply, restart, Undo/Redo and reexport; forged/stale locators reject before write.",
+    "Earlier-paragraph and before-old-span new tracked edits: exact identities/provenance, real Main route, round Undo/Redo, native Apply and finished DOCX readback.",
+    "Actual Word changed-save must retain every prior comment body, durable identity, status and Current quote; union endpoints outside deleted wrapper, including endpoint at deletion end and interior split, without changed text or revision provenance.",
+    "All former pending-note atomic/restart/replay/rollback routes pass with empty comment-export envelope; genuine incoming/baseline discussions still require strict mixed proof. Legacy unchanged rich-leaf confirmation and bounded100k changed preview both remain tested.",
+    "Absent first-discussion file: typed null admitted only COMMENT_TEXT_RETURN_MODE; real Main+atomic ApplyUndoRedo; seven SIGKILL boundaries recover exact absence/after-state, idempotent retry; concurrent creation, forged null, present corrupt state and symlinks reject. Missing parent dirs remain existing ENOENT refusal and absent after recovery."
+  ],
+  "securityAndInputBoundary": "No new dependencies or runtime network. Mixed proof is separately capped at8MiB (existing scene/recording ceiling); clean legacy proof retains2MiB. Untrusted DOCX validated before target/path/mutation decisions. Existing file ports and readable recovery only.",
+  "performanceAndAccessibility": "No new surface or visual design; same confirmation dialog must disclose discussion delta. Bounded paragraph and revision walks outside per-keystroke path;100000-word combined acceptance remains a separate required launch proof.",
+  "currentReality": [
+    "Base main8449a73a4 from delivered PR2084; original signed pending/comment route blocked mixed text edits",
+    "Mixed-return runtime08d27bdfb passes SOURCE07 and PACKAGED07 existing-state native replay with exact persistence, restart, UndoRedo and DOCX; genuine Word changed-save artifacts remain bound to native05",
+    "Absent first-comment Main plus real atomic writer passes175 tests; final CI, merge and exact merged affected suites pending",
+    "Owner-approved100000-word novel launch priority; original Mac plan preserved and complex objects deferred"
+  ],
+  "targetOnly": [
+    "Mixed return becomes CURRENT only after observed native SOURCE and PACKAGED scenarios and full delivery",
+    "Whole novel launch,100k combined five-cycle acceptance, comment capacity and remaining style/structure composition still open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core owns canonical scene envelope, pending ledger, comment state and reversible anchor history. Authenticated external Word payload is validated data, never mutation authority.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.review.decidePendingRevision",
+    "Existing authenticated DOCX return preview"
+  ],
+  "queries": [
+    "Existing pending revision and comment projections"
+  ],
+  "events": [
+    "Existing atomic project saved event"
+  ],
+  "effects": [
+    "Existing leased scene/comment transaction and guarded editor publication"
+  ],
+  "hotPathBoundary": "Return preparation and explicit Apply only; no new per-keystroke work",
+  "migrationRollbackEvidence": "Preserve original signed artifacts and canonical scene/comment/manifest plus transaction receipts. Current atomic recovery restores companions and exact missing first-comment before-state. Older decoders refuse null-before receipts; code-only downgrade is not an established recovery proof. No destructive migration.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_CONFIRMATION_NO_DESIGN_CHANGE"
+}

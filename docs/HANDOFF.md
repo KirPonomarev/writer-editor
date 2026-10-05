@@ -1,3 +1,160 @@
+## 2026-10-05 — mixed-return native07 complete; final delivery gates pending
+
+Runtime08d27bdfb330a61b58ffa1b3b5738db83a6c713b completes actual SOURCE07
+and PACKAGED07 Apply, restart, round Undo/Redo and Review DOCX reexport. Genuine
+native05 preApply captures and real Word05 changed files were replayed; saved
+post06 profiles are archived. No new Word edit is claimed for native07. SOURCE
+retains5 old revisions and adds2,4 roots/7 messages; PACKAGED retains9 and adds2,
+5 roots/10 messages. Original text, prior identities/provenance and every prior
+message/status/Current quote survive. Restart hashes equal Apply; Redo scene
+bytes equal Apply. Independent ZIP/XML readback matches all40 Original and40
+Current paragraphs per finished DOCX, including internal hard breaks. Both owned
+processes stop normally and saved-profile copies are byte-exact.
+
+The absent-file first-comment edge is separately proven by actual Main with the
+real atomic writer and175 affected tests, zero fail/skip/todo, including7 fresh
+process SIGKILL recoveries. Null source is restricted to the typed mixed mode;
+malformed present state and concurrent-file/forged-null/symlink attacks refuse.
+Missing parent directories retain existing refusal and exact recovery to absence.
+Older transaction decoders do not admit null-before receipts: preserve canonical
+files and receipts and complete current recovery before a code downgrade; a
+code-only revert is not an established recovery proof for this new edge.
+
+NATIVE07_RECEIPT.json binds28 hashed artifacts. Required final CI, merge and42
+unique affected whole suites on the exact merged SHA remain pending. Earlier
+cancelled CI is not acceptance. These189/190-word fixtures do not accept100k.
+Next packet combines100k five-cycle history capacity and finite discussion
+capacity; original full Mac plan remains intact with complex objects deferred.
+
+## 2026-10-05 — absent first-discussion state repaired; native07 pending
+
+The first returned Word discussion now prepares without writes when the canonical
+comment file is absent. Main uses the canonical empty-state decoder. The existing
+atomic transaction permits a null before-state only for COMMENT_TEXT_RETURN_MODE,
+binds absence in its journal and commit receipt, and restores exact absence on
+rollback. Present malformed state, concurrent creation, forged null and symlinks
+remain refusals. Missing parent directories retain the existing ENOENT refusal;
+recovery leaves them absent. No new writer, dependency, UI or runtime network.
+
+Actual Main with the real atomic writer completes first creation, Undo and Redo.
+Six affected whole files execute175 tests, all pass with zero fail/skip/todo;
+seven SIGKILL boundaries recover in fresh processes, with idempotent retry.
+The original null dereference and transaction admission refusal were reproduced
+before the repair. Runtime changes are Main normalization and nullable lifecycle
+in the existing transaction. Native07 will replay genuine native05 captures and
+Word05 changed files through both Mac builds; this tests the existing-state route,
+while the absent-state edge is proven by actual Main and transaction tests.
+Native06 and its receipts retain their original runtime SHA. Final required CI,
+merge and exact merged verification remain pending. The100k five-cycle novel
+acceptance and finite discussion capacity are the next combined launch packet.
+
+## 2026-10-05 — repaired mixed return native06 complete; final CI pending
+
+Repaired ae19881ec00e0bc96cc83b453b0adc8af09e8bcf completes actual native
+Apply, restart, round Undo/Redo and Review DOCX reexport in SOURCE06 and PACKAGED06.
+Preparation replays genuine native05 preApply captures and real changed Word05
+files; original post05 profiles are archived byte-exact. This is repaired Main
+route revalidation, with Word changed-save proof retained at its originalce26 SHA.
+All prior revision IDs/provenance, discussion bodies/statuses/Current quotes and
+Original/Current text pass saved-data readback; restart hashes equal Apply and
+Redo scene bytes equal Apply. SOURCE7revisions/4roots/7messages; PACKAGED11/5/10.
+Final native export retains all old discussions and the added EARLY root. Both
+owned runtimes stop normally with byte-exact saved-profile snapshots.
+
+Empty export metadata now preserves existing pending-notes route; genuine first
+incoming discussion still uses atomic mixed route. Legacy unchanged rich snapshot
+is preserved and changed100k preview remains bounded.74focused and1054affected
+checks pass, no skips/todo. CI37304924977 failures are repaired, not acceptance.
+NATIVE06_RECEIPT.json binds this observation; final CI, merge and exact merged
+verification remain required. These189/190-word fixtures do not accept100k.
+Next declared packet should combine measured full-source history growth and finite
+discussion capacity, followed by native100k composed acceptance. Original plan intact.
+
+## 2026-10-05 — legacy route repair; native06 revalidation pending
+
+CI37304924977 at4c1ac4178 found5 failures out of3400; cancelled after diagnosis.
+Main now distinguishes empty comment export metadata from actual signed or
+incoming discussions, preserving the atomic pending-notes route. Unchanged legacy
+confirmation retains canonical leaves; changed100k text keeps bounded preview.
+First incoming discussion on an empty export still uses atomic mixed return.
+Focused74/74 and33 affected files1054/1054 pass, zero fail/skip/todo. Existing rich
+snapshot and100k preview expectations are unchanged. Native05 retains its own SHA.
+Native06 will replay genuine preApply captures and real Word05 changed files on
+both repaired Mac builds, then restart/Undo/Redo/reexport. CI, merge and exact
+merged verification remain required. Original plan and100k launch blockers unchanged.
+
+## 2026-10-05 — mixed return native05 complete; delivery pending
+
+Frozen ce26c8d1474ae16f279138cdf58d626de552d0c3 passes both SOURCE05 and
+PACKAGED05 real Word changed-save, native Apply, restart, round Undo/Redo and
+native Review DOCX reexport. Early INS-to-EARLY replacement precedes existing
+pending changes. All prior discussion durable identities, bodies, statuses and
+Current quotes survive Word save and the final reexport. SOURCE retains5 old
+revisions and adds2,4 threads/7 messages; PACKAGED retains9 old revisions and
+adds2,5 threads/10 messages. Undo restores prior Current and revision ledger while
+retaining messages and tombstoning only the added root; Redo restores exact
+applied scene bytes and reopens it. Normal stop archives saved profiles byte-exact.
+
+The shared emitter now keeps live comment markers outside deleted wrappers;
+109 affected checks pass, including deletion-end/interior and signed revision
+identity reconstruction. Earlier position-order repair is included. PR2085 must
+still receive the final successor, complete required CI, merge and exact merged
+verification. Previous cancelled CI is not acceptance. Evidence:
+word-mixed-return-mac-8449a73a4 NATIVE05_RECEIPT.json and stage readbacks.
+
+These189/190-word fixtures establish this packet only.100000-word five-cycle
+native acceptance remains open; measured third-cycle full-source Undo growth is
+the next launch blocker, followed by discussion capacity and remaining composed
+novel requirements. Original Mac plan remains intact; complex objects deferred.
+
+## 2026-10-05 13:26 EEST — mixed-return native reexport survival repair
+
+PR2085 remains unmerged. SOURCE03/PACKAGED03 Apply, restart, round Undo/Redo
+and parser readback passed on frozen04d11c474; these are small fixtures.
+Position-order repair e3d7d189a passed81 affected checks. Native04 then found
+that Word drops the prior beta discussion on its next changed save: the exported
+comment endpoint/reference is inside deleted alpha. Apply was cancelled; scene
+and comment state are unchanged. Shared emitter repair and both Mac native
+changed-save checks are required before final CI/delivery. CI37294887991 was
+cancelled after the earlier position-order finding and is not acceptance.
+
+The100000-word launch subset is unchanged. Measured five-exchange probe completes
+2 exchanges and fails the third at the4MiB pending-ledger cap from repeated full
+source Undo frames; compact history is the next bounded packet after PR2085.
+Whole-book native acceptance and comment capacity remain open. Original Mac plan
+and deferred tables/objects remain intact. No updated completion percentage.
+
+## 2026-10-05 11:59 EEST — owner-approved100000-word novel priority; PR2084 delivered
+
+The owner explicitly resumed work and selected the100000-word novel editorial
+roundtrip as the current launch subset. Keep the original Mac plan intact;
+complex tables and objects are deferred, not removed or counted as delivered.
+
+PR2084 is merged at8449a73a42d4f4b057f52a3db6e76e37c1afebd6.
+CI19/19; both full RTK3358/3358. Clean detached exact merged verification:
+957/957, zero fail/cancel/skip/todo; tree equals candidate697ae143e.
+Guardrails and exact OPS admission pass. Native scope remains the previously
+observed187-word SOURCE/PACKAGED recording/comment scenario, not100k acceptance.
+
+Active task: WORD_MIXED_RETURN_MAC_20261005. Existing pending+comments route
+forbids changed text and permits one reply. Implement complete authenticated
+inline text plus multiple discussions through one explicit atomic Apply,
+restart-safe round decisions and reexport. First actual Main red route reports
+PENDING_RETURN_ANNOTATION_UNDO_REQUIRED without writes. Native Word fixture
+already contains a new tracked replacement,two replies and a new discussion.
+
+Next measured blocker: pure current comment model reaches64KiB at58 roots
+with40-character bodies,54 with120-character bodies,44 with400-character bodies.
+These are synthetic capacity probes, not market norms or native acceptance.
+The unchanged authoring source hash is
+95f034ed633b9c08204813a2b9aca0d110c2798e8f6c3b34e5da2bd5097224b2.
+Capacity needs a coherent bounded persistence/import/export fix after this
+packet, followed by composed100k native acceptance. No new completion percent.
+
+Evidence: word-recording-comments-mac-ebab94902 DELIVERY_RECEIPT.json;
+word-mixed-return-mac-8449a73a4 comment-capacity-observation.json and native
+Word artifacts. Task contract:2026-10-05--word-mixed-return-mac.md.
+
 ## 2026-10-05 10:57 EEST — tracked recording with comments: both Mac routes observed
 
 WORD_RECORDING_COMMENTS_MAC_20261005; native candidate

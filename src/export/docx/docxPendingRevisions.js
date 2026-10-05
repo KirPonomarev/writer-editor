@@ -61,7 +61,7 @@ function buildPendingRowParagraphXml(xml, revision, counter) {
     : `<w:pPr><w:rPr>${mark}</w:rPr></w:pPr>${xml}`;
 }
 // Export segments have already been validated against canonical scene truth.
-// One native wrapper per revision, even when its body has several rich runs.
+// Keep rich runs together; live comment markers may split a deletion wrapper.
 function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map(), commentMarkers = new Map()) {
   let output = '', active = null, body = '', formatText = '';
   const flush = () => {
@@ -99,6 +99,10 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   const emit = point => {
     if (remainingComments.has(point)) {
       if (active?.operation === 'format') throw Error('PENDING_COMMENT_FORMAT_UNSUPPORTED');
+      // Word discards comment references contained in deleted content when it
+      // saves an edited document. Preserve the exact union endpoint, but close
+      // the deletion first; the next segment resumes it if this point is inside.
+      if (active?.operation === 'delete') { flush(); active = null; }
       body += remainingComments.get(point); remainingComments.delete(point);
     }
     if (!remaining.has(point)) return;

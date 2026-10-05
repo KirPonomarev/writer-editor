@@ -511,3 +511,51 @@ test('structural V5 history survives DOCX projection, generic append and unchang
  const newState=authoring.readState(appended.afterText,projectId);assert.equal(newState.schemaVersion,STATE_V5);assert.deepEqual(newState.threads[0],v5.threads[0]);assert.equal(newState.threads.length,2);
  for(const downgrade of [1,2,3,4])assert.throws(()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:{...v5,schemaVersion:`yalken.rtk.word.non-text-return-state.v${downgrade}`},scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:after,doc}]}),/COMMENT/);
 });
+
+for (const end of [9, 6]) test(`pending replacement discussion remains outside deleted content at union endpoint ${end}`, async () => {
+  const review = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const { exactAnchor } = require('../../src/core/word-comment-authoring-v1.cjs');
+  const sceneId = 'roman/a.md', projectId = 'pending-boundary';
+  const revisions = ['insert', 'delete'].map((operation, i) => ({ id: `revision-${i + 1}`, nativeId: String(i),
+    operation, author: 'Editor', date: '', dateUtc: '', paragraphIndex: 0, from: i ? 4 : 0, to: i ? 9 : 4,
+    state: 'pending', groupId: 'group-1' }));
+  const doc = review.bindLedger({ schemaVersion: 1, source: { type: 'doc', content: [{ type: 'paragraph',
+    content: [{ type: 'text', text: 'betaalpha tail' }] }] }, revisions, undo: [], redo: [] });
+  const anchor = exactAnchor({ paragraphIndex: 0, startUtf16: 0, selectedText: 'beta' }, sceneId, ['beta tail']);
+  anchor.pendingUnionLocator = review.createCommentUnionLocator({ document: doc, anchor,
+    unionStart: { paragraphIndex: 0, offsetUtf16: 0 }, unionEnd: { paragraphIndex: 0, offsetUtf16: end } });
+  const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId, revision: 0, events: [], threads: [{
+    threadId: 'thread', rootCommentId: 'root', sceneId, status: 'open', anchor,
+    messages: [{ commentId: 'root', kind: 'root', body: 'Replacement query', provenance: { author: 'Editor' } },
+      { commentId: 'reply', kind: 'reply', body: 'Keep this discussion', provenance: { author: 'Writer' } }] }] };
+  const before = JSON.stringify(doc), source = makeSource({ projectId, projectRoot: '/project', nonTextReturnState: state,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text: 'beta tail', doc }] });
+  const bytes = buildDocxReviewPacketBuffer(source), xml = parts(bytes)['word/document.xml'];
+  let deletionDepth = 0, markerCount = 0;
+  for (const tag of xml.matchAll(/<\/?w:(?:del|commentRangeStart|commentRangeEnd|commentReference)\b[^>]*>/gu)) {
+    if (tag[0].startsWith('</w:del')) deletionDepth--;
+    else if (tag[0].startsWith('<w:del ')) deletionDepth++;
+    else { markerCount++; assert.equal(deletionDepth, 0, `comment marker is deleted: ${tag[0]}`); }
+  }
+  assert.equal(markerCount, 6); assert.equal(deletionDepth, 0);
+  assert.doesNotMatch(xml, /<w:del\b[^>]*><\/w:del>/u);
+  const threads = await parsed(bytes); assert.equal(threads.length, 1);
+  assert.equal(threads[0].finalTextAnchorRange.selectedText, 'beta');
+  assert.equal(threads[0].anchorRange.endUtf16, end);
+  assert.deepEqual([threads[0].body, ...threads[0].replies.map(r => r.body)], ['Replacement query', 'Keep this discussion']);
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const capsule = source.localAuthorityCapsule;
+  const readback = bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes, exportMap: capsule.exportMap,
+    baselineDocuments: [{ sceneId, document: doc }], documentSections: capsule.documentSections,
+    signedSectionsDigest: capsule.documentSections.protectedDigest, retainPendingSceneId: sceneId });
+  assert.equal(readback.ok, true, JSON.stringify(readback));
+  const returned = readback.scenes[0].returnedDocument;
+  assert.equal(review.projection(returned).current, 'beta tail');
+  assert.equal(review.projection(returned).original, 'alpha tail');
+  // Signed baseline mapping must recover the original partitions even if a
+  // deletion wrapper was split to keep a comment reference live in Word.
+  const derived = require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({ document: doc,
+    returnedDocument: returned, binding: review.buildCommentExportBinding({ document: doc, schemaVersion: 2 }).binding, anchors: [] });
+  assert.deepEqual(review.readLedger(derived.document).revisions, revisions);
+  assert.equal(JSON.stringify(doc), before);
+});

@@ -1415,7 +1415,7 @@ async function prepareGenericCommentState({ entry, projectRoot, targetPath, proj
   };
   if (parsed.doc) visit(parsed.doc); else paragraphs.push(...parsed.text.split('\n').map(text => ({ text })));
   const saved = await readGenericCommentState(projectRoot);
-  return { path: saved.path, ...materializeGenericComments({ candidates: entry.comments, paragraphs, projectId,
+  return { path: saved.path, ...materializeGenericComments({ candidates: entry.comments, paragraphs, pendingDocument:parsed.doc, projectId,
     sceneId: path.relative(projectRoot, targetPath).split(path.sep).join('/'), importOperationId,
     beforeText: empty ? null : saved.text }) };
 }

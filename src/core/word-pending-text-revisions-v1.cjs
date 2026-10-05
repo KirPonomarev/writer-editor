@@ -786,6 +786,57 @@ function basisEndpoint(basis,paragraphIndex,offsetUtf16,mode='current',inverse=f
   assert(unique.length===1,'PENDING_COMMENT_ENDPOINT_AMBIGUOUS');
   return basisEndpoint(basis,paragraphIndex,unique[0],'union');
 }
+// Locator coordinates belong to the canonical union source, before revision
+// decisions remove wrappers or text from the exported representation.
+function commentLocatorRows(basis) {
+  if(basis.locatorRows)return basis.locatorRows;
+  if(!basis.ledger)return basis.rows;
+  const allPending={...basis.ledger,revisions:basis.ledger.revisions.map(r=>({...r,state:'pending'}))};
+  return basis.locatorRows=exportSegments(allPending).map(row=>{let offset=0;return row.map(s=>{const fromUtf16=offset;offset+=textOf(s.node).length;return {...s,fromUtf16,toUtf16:offset};});});
+}
+function commentLocatorGeometry(basis,start,end) {
+  return commentHash(commentLocatorRows(basis).slice(start.paragraphIndex,end.paragraphIndex+1).map(row=>{
+    const spans=[];
+    for(const s of row)if(s.revision) {
+      const last=spans.at(-1),operation=s.revision.operation;
+      if(last&&last[1]===s.fromUtf16&&last[2]===operation)last[1]=s.toUtf16;else spans.push([s.fromUtf16,s.toUtf16,operation]);
+    }
+    return {text:row.map(s=>textOf(s.node)).join(''),spans};
+  }));
+}
+function locatorPoint(basis,point,mode) {
+  if(!basis.ledger)return mode==='export'?point:basisEndpoint(basis,point.paragraphIndex,point.offsetUtf16);
+  const text=commentLocatorRows(basis)[point.paragraphIndex]?.map(s=>textOf(s.node)).join('');
+  assert(typeof text==='string'&&safeBoundary(text,point.offsetUtf16),'PENDING_COMMENT_ENDPOINT_INVALID');
+  let removed=0;
+  for(const r of basis.ledger.revisions)if(r.paragraphIndex===point.paragraphIndex) {
+    const visible=mode==='export'&&r.state==='pending'||(r.operation==='insert'?r.state!=='rejected':r.state==='rejected');
+    if(!visible)removed+=Math.max(0,Math.min(point.offsetUtf16,r.to)-r.from);
+  }
+  return {...point,offsetUtf16:point.offsetUtf16-removed};
+}
+function checkedCommentLocator(basis,anchor,locator) {
+  require('./word-comment-ranges-v1.cjs').validatePendingUnionLocator(locator);
+  const start={paragraphIndex:anchor.sceneParagraphIndex,offsetUtf16:anchor.startUtf16};
+  const end={paragraphIndex:anchor.endSceneParagraphIndex??start.paragraphIndex,offsetUtf16:anchor.endUtf16??anchor.startUtf16+anchor.selectedText.length};
+  assert(locator.geometrySha256===commentLocatorGeometry(basis,locator.unionStart,locator.unionEnd),'PENDING_COMMENT_LOCATOR_STALE');
+  for(const [current,union] of [[start,locator.unionStart],[end,locator.unionEnd]])
+    assert(stable(locatorPoint(basis,union,'current'))===stable(current),'PENDING_COMMENT_LOCATOR_ENDPOINT');
+  return {...locator,unionStart:locatorPoint(basis,locator.unionStart,'export'),unionEnd:locatorPoint(basis,locator.unionEnd,'export')};
+}
+function createCommentUnionLocator({document,projection,anchor,unionStart,unionEnd}) {
+  const basis=projection?{rows:projection.segments}:commentBasis(document);
+  const locator={schemaVersion:1,geometrySha256:commentLocatorGeometry(basis,unionStart,unionEnd),unionStart:clone(unionStart),unionEnd:clone(unionEnd)};
+  checkedCommentLocator(basis,anchor,locator);
+  try {
+    for(const [current,union] of [[{paragraphIndex:anchor.sceneParagraphIndex,offsetUtf16:anchor.startUtf16},unionStart],
+      [{paragraphIndex:anchor.endSceneParagraphIndex??anchor.sceneParagraphIndex,offsetUtf16:anchor.endUtf16??anchor.startUtf16+anchor.selectedText.length},unionEnd]])
+      assert(stable(basisEndpoint(basis,current.paragraphIndex,current.offsetUtf16,'current',true))===stable(union),'PENDING_COMMENT_LOCATOR_ENDPOINT');
+    return undefined;
+  } catch(error) {if(error.code!=='PENDING_COMMENT_ENDPOINT_AMBIGUOUS')throw error;}
+  return locator;
+}
+function validateCommentUnionLocator({document,projection,anchor,locator}) {return checkedCommentLocator(projection?{rows:projection.segments}:commentBasis(document),anchor,locator);}
 function commentAnchorBindings(basis,anchors) {
   assert(Array.isArray(anchors) && anchors.length<=128,'PENDING_COMMENT_ANCHORS_INVALID');
   const seen=new Set(), ownerByNode=new Map(); let tableId=0;
@@ -808,7 +859,8 @@ function commentAnchorBindings(basis,anchors) {
     const a=entry.anchor, start=a?.sceneParagraphIndex, end=a?.endSceneParagraphIndex ?? start;
     require('./word-comment-ranges-v1.cjs').validateCommentAnchor({sceneId:a?.sceneId,paragraphs:texts,anchor:a});
     const currentStart={paragraphIndex:start,offsetUtf16:a.startUtf16},currentEnd={paragraphIndex:end,offsetUtf16:a.endUtf16 ?? a.startUtf16+a.selectedText.length};
-    const unionStart=basisEndpoint(basis,start,currentStart.offsetUtf16,'current',true),unionEnd=basisEndpoint(basis,end,currentEnd.offsetUtf16,'current',true);
+    const locator=a.pendingUnionLocator&&checkedCommentLocator(basis,a,a.pendingUnionLocator);
+    const unionStart=locator?.unionStart??basisEndpoint(basis,start,currentStart.offsetUtf16,'current',true),unionEnd=locator?.unionEnd??basisEndpoint(basis,end,currentEnd.offsetUtf16,'current',true);
     return {threadId:entry.threadId,currentStart,currentEnd,unionStart,unionEnd,
       originalStart:basisEndpoint(basis,start,unionStart.offsetUtf16,'original'),originalEnd:basisEndpoint(basis,end,unionEnd.offsetUtf16,'original')};
   }).sort((a,b)=>a.threadId<b.threadId?-1:a.threadId>b.threadId?1:0);
@@ -853,4 +905,22 @@ function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[
   assert(cursor===returned.spans.length,'PENDING_COMMENT_PARTITION_CHANGED');
   return {partitions,projection:before.projection,anchors:binding.anchors};
 }
-module.exports = { commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+// A checked, transport-normalized basis for the separate changed-pending proof.
+// This does not relax the unchanged-return verifier above.
+function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs}) {
+  const before=buildCommentExportBinding({document,binding,anchors,exportTypography,exportParagraphs,schemaVersion:binding?.schemaVersion});
+  assert(stable(before.binding)===stable(binding),'PENDING_COMMENT_BINDING_CHANGED');
+  const incoming=commentBasis(returnedDocument,exportTypography);
+  const left=commentLeftDefaults(before.projection.union,exportParagraphs);
+  const indents=commentExportIndents(before.projection.union,exportParagraphs);
+  const old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
+  const next=commentRich(incoming.union,incoming.size,null,left);
+  const shape=doc=>{const copy=clone(doc);paragraphs(copy).forEach(p=>{p.content=[];});return normalizeNode(copy);};
+  assert(stable(shape(old))===stable(shape(next)),'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
+  return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows},
+    oldComparison:old,newComparison:next};
+}
+function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
+  return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
+}
+module.exports = { createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

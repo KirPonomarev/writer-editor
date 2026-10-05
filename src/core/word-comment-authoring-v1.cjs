@@ -28,9 +28,10 @@ function readState(text, projectId) {
       || !['open', 'resolved', 'deleted'].includes(thread.status)) fail('COMMENT_STATE_INVALID');
     if ((thread.anchor?.kind === 'point' || thread.anchorEditHistory !== undefined) && ![STATE_V3, STATE_V4, STATE_V5].includes(state.schemaVersion)) fail('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
     if (thread.anchor?.kind === MULTI && ![STATE_V4,STATE_V5].includes(state.schemaVersion)) fail('COMMENT_ANCHOR_STATE_VERSION_REQUIRED');
+    if(thread.anchor?.pendingUnionLocator!==undefined)require('./word-comment-ranges-v1.cjs').validatePendingUnionLocator(thread.anchor.pendingUnionLocator);
     if(thread.anchor?.kind===MULTI) {
       const a=thread.anchor;
-      const allowed=['kind','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256','authoritySource','sourceChangeId'];
+      const allowed=['kind','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256','authoritySource','sourceChangeId','pendingUnionLocator'];
       if(Object.keys(a).some(k=>!allowed.includes(k)) || a.sceneId!==thread.sceneId
         || !Number.isSafeInteger(a.sceneParagraphIndex) || a.sceneParagraphIndex<0 || a.paragraphIndex!==a.sceneParagraphIndex
         || !Number.isSafeInteger(a.endSceneParagraphIndex) || a.endSceneParagraphIndex<=a.sceneParagraphIndex || a.endSceneParagraphIndex>=10000 || a.endParagraphIndex!==a.endSceneParagraphIndex
@@ -48,7 +49,8 @@ function readState(text, projectId) {
         histories.add(h.sessionId+'|'+h.historyId);
         for (const [key,digestKey] of [['before','beforeTextSha256'],['after','afterTextSha256']]) {
           const p=h[key], point=p?.kind==='point', multi=p?.kind===MULTI;
-          if (!plain(p) || Object.keys(p).sort().join(',') !== [...(multi?['kind','endSceneParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256']:point?['kind','affinity']:[]),...(p.status==='deleted'?['deletedText',...(structural?['liveLocator']:[])]:[]),'blockTextSha256','length','sceneParagraphIndex','startUtf16','status'].sort().join(',')
+          if(p?.pendingUnionLocator!==undefined)require('./word-comment-ranges-v1.cjs').validatePendingUnionLocator(p.pendingUnionLocator);
+          if (!plain(p) || Object.keys(p).sort().join(',') !== [...(p.pendingUnionLocator!==undefined?['pendingUnionLocator']:[]),...(multi?['kind','endSceneParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256']:point?['kind','affinity']:[]),...(p.status==='deleted'?['deletedText',...(structural?['liveLocator']:[])]:[]),'blockTextSha256','length','sceneParagraphIndex','startUtf16','status'].sort().join(',')
             || !Number.isSafeInteger(p.sceneParagraphIndex) || p.sceneParagraphIndex<0 || p.sceneParagraphIndex>=10000 || (state.schemaVersion!==STATE_V5 && !structural && p.sceneParagraphIndex!==thread.anchor?.sceneParagraphIndex)
             || !Number.isSafeInteger(p.startUtf16) || p.startUtf16<0 || !Number.isSafeInteger(p.length) || p.length<0
             || (point ? p.length!==0 || p.affinity!=='right' : p.length===0)
