@@ -128,3 +128,45 @@ individual old/new accept/reject and Undo/Redo; generic import revalidates the
 source locator. This remains programmatic proof until native Apply completes.
 The repaired isolated100k plan measured3.15s, peak483,917,824B; input proof size
 5,642,258B. No whole-book native or five-cycle claim follows from this result.
+
+
+## Native outcome on frozen04d11c474
+
+SOURCE03 used the unchanged native-created SOURCE02 project and actual Word
+return: alpha to beta, two replies and a new root on beta. Explicit native Apply
+succeeded; canonical readback verifies exact Current/Original, all3 old revision
+records,5 pending revisions and3 threads/6 messages. Normal stop/reopen preserved
+identical scene/comment hashes. Native round Undo restored prior Current and3
+revisions while retaining messages and tombstoning the new root; Redo restored
+exact applied scene bytes and reopened the root. Both native Review reexports
+parsed successfully with3 roots,40 paragraphs and exact beta quote.
+
+PACKAGED03 used a fresh isolated WRITER_LOCAL_V1 profile. Native generic import
+of early-mixed-word.docx retained7 pending revisions,3 threads/6 messages; immediate
+native Review export now succeeds for the former ambiguous endpoint case.
+Real Word changed alpha to gamma, added two replies and a new root on gamma;
+saved package has6ins/3del,9 messages and zero rPrChange/pPrChange. Native Apply,
+normal stop/reopen, Undo and Redo succeeded. Canonical readback verifies exact
+Current/Original, all7 old records,9 pending revisions,4 threads/9 messages;
+post-Redo native Review DOCX parses with4 roots and exact gamma quote.
+
+Evidence packet: word-mixed-return-mac-8449a73a4. SOURCE03 and PACKAGED03 stage
+readbacks bind build SHA, profile, scene/comment hashes and actual saved data;
+launcher receipts preserve immutable runtime copies and native-created snapshots.
+These189/190-word scenarios do not establish100k or whole-plan acceptance.
+Native confirmation still renders nested language/spacing values as object labels;
+explicit before/after text and discussion content are readable. Presentation debt
+remains; no new UI surface is claimed. Mandatory final checks/delivery pending.
+
+## Measured100k capacity blocker
+
+Exact04d11c474 read-only synthetic five-exchange export/parse/plan probe completed
+2 exchanges; the third refused PENDING_REVISIONS_BUDGET. Remaining two were not
+executed. Round1 scene5982270B and ledger2456194B; round2 scene8181213B and
+ledger3684679B. Round3 proof5651062B is within the mixed8MiB cap; its refusal is
+cumulative roundUndo full-source duplication against the existing4MiB ledger cap.
+Each Undo frame adds about1.23MB. Round2 already leaves only207395B under the
+Main8MiB scene cap. Evidence: mixed-100k-five-rounds.json. This is a launch blocker,
+not a native100k success. Next bounded packet must avoid repeated unchanged source
+storage while preserving exact history, hashes, comments and atomic recovery;
+simply raising limits does not resolve the measured mechanism.
