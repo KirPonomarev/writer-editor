@@ -10028,7 +10028,8 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
           // the original signed source and full formatting capsule remain intact.
           const commentExportMap={...proof.exportMap,scenes:proof.exportMap.scenes.map(scene=>({
             sceneId:scene.sceneId,rawSha256:scene.rawSha256,blocks:scene.blocks.map(block=>({
-              documentParagraphIndex:block.documentParagraphIndex,formatIr:{runs:block.formatIr.runs.map(run=>({text:run.text}))}
+              documentParagraphIndex:block.documentParagraphIndex,formatIr:{runs:block.formatIr.runs.map(run=>({text:run.text})),
+                ...(block.formatIr.table ? {table:cloneJsonSafe(block.formatIr.table)} : {})}
             }))
           }))};
           if(commentExportMap.commentExport!==undefined) {
@@ -13249,23 +13250,14 @@ async function docxImportOpenedSnapshotMatches(raw, live) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const saved = envelope.parseObservablePayload(raw), observed = envelope.parseObservablePayload(live);
   if (saved.issue || observed.issue) return false;
-  // ProseMirror omits an empty paragraph's content array on toJSON. Normalize
-  // only that representation on private parsed copies, preserving every attr,
-  // mark and nonempty child. The shared tree comparator remains unchanged.
-  const paragraphRepresentation = node => {
-    if (!node || typeof node !== 'object') return node;
-    if (node.type === 'paragraph' && Array.isArray(node.content) && node.content.length === 0) delete node.content;
-    if (Array.isArray(node.content)) node.content.forEach(paragraphRepresentation);
-    return node;
-  };
-  // The existing scene-open adapter enables metadata and the editor materializes
-  // a paragraph document for plain text. Receipt checks retain exact disk bytes.
+  // Scene opening enables metadata and materializes plain-text paragraphs.
+  // The shared snapshot law owns bounded editor schema representations.
   const opened = envelope.composeObservablePayload({
-    doc: paragraphRepresentation(saved.doc || envelope.buildParagraphDocumentFromText(saved.text)),
+    doc: saved.doc || envelope.buildParagraphDocumentFromText(saved.text),
     text: saved.text, metaEnabled: true, meta: saved.meta, cards: saved.cards,
   });
   const composedLive = envelope.composeObservablePayload({
-    doc: paragraphRepresentation(observed.doc), text: observed.text,
+    doc: observed.doc, text: observed.text,
     metaEnabled: observed.hasMetaBlock, meta: observed.meta, cards: observed.cards,
   });
   return treeSceneSnapshotsEqual(opened, composedLive);
@@ -15363,6 +15355,8 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
       sceneId: docxReviewPreviewSessionDetailString(anchor.sceneId || thread.sceneId),
       blockId: docxReviewPreviewSessionDetailString(anchor.blockId),
       paragraphIndex: Number.isSafeInteger(anchor.paragraphIndex) ? anchor.paragraphIndex : -1,
+      ...(anchor.kind === 'multi-paragraph-range' ? { kind: anchor.kind,
+        startUtf16: anchor.startUtf16, endParagraphIndex: anchor.endParagraphIndex, endUtf16: anchor.endUtf16 } : {}),
       selectedText: typeof anchor.selectedText === 'string' ? anchor.selectedText : '',
       selectedTextSha256: docxReviewPreviewSessionDetailString(anchor.selectedTextSha256),
       authoritySource: docxReviewPreviewSessionDetailString(anchor.authoritySource),
@@ -25384,7 +25378,7 @@ async function handleCommentAuthoringCommand(payload = {}) {
           if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw new Error('COMMENT_SCENE_CHANGED');
         };
         return module.commitCommentAuthoring({ projectRoot: context.projectRoot, projectId: context.projectId,
-          sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: context.paragraphs,
+          sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: commentSceneParagraphs(context.raw),
           input: payload, now: new Date().toISOString() }, { publish: operation => lease.publish(operation), revalidate });
       });
     }, 'canonical comment authoring');

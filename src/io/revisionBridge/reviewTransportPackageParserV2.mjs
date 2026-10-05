@@ -1,3 +1,4 @@
+import commentRanges from '../../core/word-comment-ranges-v1.cjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
@@ -3386,19 +3387,45 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
   const paragraphAtoms = new Map();
   const semanticRange = (startToken, endToken, finalText = false) => {
     if (!endToken || endToken.openStart < startToken.closeEnd) return null;
-    const paragraph = paragraphs.find((token) => token.openEnd <= startToken.openStart
-      && token.closeStart >= endToken.closeEnd);
-    if (!paragraph) return null;
-    if (!paragraphAtoms.has(paragraph.openStart)) {
-      paragraphAtoms.set(paragraph.openStart, extractSemanticAtoms(documentXml, documentScan, paragraph));
+    const startIndex = paragraphs.findIndex(token => token.openEnd <= startToken.openStart && token.closeStart >= startToken.closeEnd);
+    let endIndex = paragraphs.findIndex(token => token.openEnd <= endToken.openStart && token.closeStart >= endToken.closeEnd);
+    // Word may serialize an empty final paragraph's range end immediately
+    // before that paragraph. Its matching reference supplies the endpoint;
+    // neither arbitrary body offsets nor a nearby nonempty paragraph do.
+    if (endIndex < 0 && endToken.path.length === 3 && endToken.path[1] === 'body') {
+      const nextIndex = paragraphs.findIndex(token => token.openStart >= endToken.closeEnd);
+      const next = paragraphs[nextIndex], previous = paragraphs[nextIndex - 1];
+      const reference = refsById.get(attr(endToken, 'id', W_NS));
+      if (next && previous && next.path.length === 3 && next.path[1] === 'body'
+        && previous.path.length === 3 && previous.path[1] === 'body'
+        && previous.closeEnd <= endToken.openStart
+        && documentXml.slice(previous.closeEnd, endToken.openStart).trim() === ''
+        && documentXml.slice(endToken.closeEnd, next.openStart).trim() === ''
+        && reference && reference.path.length === 5 && reference.path.at(-2) === 'r' && reference.path.at(-3) === 'p'
+        && next.openEnd <= reference.openStart && reference.closeEnd <= next.closeStart
+        && semanticAtomsToText(extractSemanticAtoms(documentXml, documentScan, next)) === '') endIndex = nextIndex;
     }
-    const atoms = paragraphAtoms.get(paragraph.openStart).filter((atom) => !finalText || atom.kind !== 'DeletedText');
-    const before = atoms.filter((atom) => atom.order < startToken.openStart);
-    const within = atoms.filter((atom) => atom.order >= startToken.closeEnd && atom.order < endToken.openStart);
-    const startUtf16 = semanticAtomsToText(before).length;
-    const selectedText = semanticAtomsToText(within);
-    return { startUtf16, endUtf16: startUtf16 + selectedText.length, selectedText,
-      blockTextSha256: cryptoPort.sha256Text(semanticAtomsToText(atoms)) };
+    if (startIndex < 0 || endIndex < startIndex) return null;
+    if (endIndex > startIndex) {
+      try { commentRanges.validateCommentAnchorOwners({anchor:{kind:'multi-paragraph-range',paragraphIndex:startIndex,endParagraphIndex:endIndex},
+        paragraphs:documentScan.logicalTableParagraphs || paragraphs.map(() => ({text:''}))}); }
+      catch { return null; }
+    }
+    const atomsFor = paragraph => {
+      if (!paragraphAtoms.has(paragraph.openStart)) paragraphAtoms.set(paragraph.openStart,
+        extractSemanticAtoms(documentXml, documentScan, paragraph));
+      return paragraphAtoms.get(paragraph.openStart).filter(atom => !finalText || atom.kind !== 'DeletedText');
+    };
+    const firstAtoms = atomsFor(paragraphs[startIndex]), lastAtoms = atomsFor(paragraphs[endIndex]);
+    const startUtf16 = semanticAtomsToText(firstAtoms.filter(atom => atom.order < startToken.openStart)).length;
+    const endUtf16 = semanticAtomsToText(lastAtoms.filter(atom => atom.order < endToken.openStart)).length;
+    const texts = paragraphs.slice(startIndex, endIndex + 1).map(p => semanticAtomsToText(atomsFor(p)));
+    const selectedText = startIndex === endIndex ? texts[0].slice(startUtf16, endUtf16)
+      : [texts[0].slice(startUtf16), ...texts.slice(1, -1), texts.at(-1).slice(0, endUtf16)].join('\n');
+    return { startUtf16, endUtf16, selectedText, blockTextSha256: cryptoPort.sha256Text(texts[0]),
+      ...(endIndex > startIndex ? { kind: 'multi-paragraph-range', endParagraphIndex: endIndex,
+        endBlockTextSha256: cryptoPort.sha256Text(texts.at(-1)),
+        coveredParagraphsSha256: cryptoPort.sha256Text(JSON.stringify(texts)) } : {}) };
   };
   for (const token of documentScan.tokens) {
     if (token.namespaceUri !== W_NS) continue;
@@ -3437,12 +3464,14 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
       const overlaps = Math.max(a.start, b.start) < Math.min(a.end, b.end);
       const nested = (a.start <= b.start && a.end >= b.end) || (b.start <= a.start && b.end >= a.end);
       const sameTextRange = a.semantic && b.semantic && a.paragraphIndex === b.paragraphIndex
-        && a.semantic.startUtf16 === b.semantic.startUtf16 && a.semantic.endUtf16 === b.semantic.endUtf16;
+        && a.semantic.startUtf16 === b.semantic.startUtf16 && a.semantic.endUtf16 === b.semantic.endUtf16
+        && a.semantic.endParagraphIndex === b.semantic.endParagraphIndex;
       // Word may open a point marker before closing a range at the same
       // character boundary. Its XML interval has width, its text interval does
       // not: a proved point inside this same paragraph cannot cross a range.
       const sameParagraphPoint = a.semantic && b.semantic && a.paragraphIndex === b.paragraphIndex
-        && (a.semantic.startUtf16 === a.semantic.endUtf16 || b.semantic.startUtf16 === b.semantic.endUtf16);
+        && (a.semantic.kind !== 'multi-paragraph-range' && a.semantic.startUtf16 === a.semantic.endUtf16
+          || b.semantic.kind !== 'multi-paragraph-range' && b.semantic.startUtf16 === b.semantic.endUtf16);
       if (overlaps && !nested && !sameTextRange && !sameParagraphPoint) {
         crossingIds.add(a.id); crossingIds.add(b.id);
         reasons.push(reason('RTK_COMMENT_ANCHOR_CROSSING', `comments.${a.id}.${b.id}`, 'Crossing comment anchor intervals are typed, not exact.', { commentIdA: a.id, commentIdB: b.id }));
@@ -3479,7 +3508,7 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
     if (anchored && (!hasRef || !anchorRange)) {
       anchored = false;
       diagnostic = 'RTK_COMMENT_ANCHOR_LONE';
-      reasons.push(reason(diagnostic, `comments.${id}`, 'A complete single-paragraph range and reference are required.', { commentId: id }));
+      reasons.push(reason(diagnostic, `comments.${id}`, 'A complete supported paragraph range and reference are required.', { commentId: id }));
     }
     const relatedReplacementGroup = relatedReplacementGroupForCommentAnchor({
       anchorStart: startToken.openStart,

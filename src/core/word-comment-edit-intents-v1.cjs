@@ -60,19 +60,5 @@ function replayEditIntents(beforeTexts, afterTexts, input) {
   if (current.some((text,i)=>text!==afterTexts[i])) fail('COMMENT_EDIT_REPLAY_MISMATCH');
   return {plan,steps};
 }
-// Word-calibrated affinities: points/right, range start/right and end/left.
-function mapAnchorSplice(anchor, edit, afterText) {
-  const start = anchor.startUtf16, end = start+anchor.selectedText.length;
-  const from = edit.fromUtf16, to = edit.toUtf16, added = edit.insertText.length, delta = added-(to-from);
-  const endpoint = (position,right) => position < from ? position : position > to ? position+delta : from+(right?added:0);
-  if (anchor.kind === 'point' && from < start && to > start) return {anchor:{...anchor,blockTextSha256:sha(afterText)},deleted:true};
-  if (anchor.kind === 'point' && !boundaries(afterText).has(endpoint(start,true))) fail('COMMENT_EDIT_GRAPHEME');
-  if (anchor.kind === 'point') return {anchor:{...anchor,startUtf16:endpoint(start,true),blockTextSha256:sha(afterText)},deleted:false};
-  if (from <= start && to >= end && to > from) return {anchor:{...anchor,blockTextSha256:sha(afterText)},deleted:true};
-  let nextStart = endpoint(start,true), nextEnd = endpoint(end,false);
-  if (nextEnd <= nextStart) fail('COMMENT_EDIT_RANGE_INVALID');
-  if (!boundaries(afterText).has(nextStart) || !boundaries(afterText).has(nextEnd)) fail('COMMENT_EDIT_GRAPHEME');
-  const selectedText = afterText.slice(nextStart,nextEnd);
-  return {anchor:{...anchor,startUtf16:nextStart,selectedText,selectedTextSha256:sha(selectedText),blockTextSha256:sha(afterText)},deleted:false};
-}
+const { mapAnchorSplice } = require('./word-comment-ranges-v1.cjs');
 module.exports = {validateEditIntents,replayEditIntents,mapAnchorSplice,textDigest};

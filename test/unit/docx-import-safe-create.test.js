@@ -544,3 +544,289 @@ test('DOCX safe-create preserves exact table continuation hardBreak and blockquo
     const rejected=await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},{...options,importRequestNonce:'malformed-anchor-'+(++malformedAttempt)});assert.equal(rejected.ok,false);assert.equal(rejected.error.code,'DOCX_SAFE_CREATE_COMMENTS_INVALID');assert.equal(rejected.error.details.code,'DOCX_GENERIC_COMMENT_ANCHOR');assert.deepEqual(snapshot(),beforeRepeat);
   }
 });
+
+async function importAckSchemaHarness() {
+  const {getSchema}=await import('@tiptap/core'),{default:StarterKit}=await import('@tiptap/starter-kit');
+  const extensions=[StarterKit.configure({trailingNode:false,heading:false,listItem:false,hardBreak:false,link:false,underline:false})];
+  const modules={documentListNumbering:['DocumentListNumbering'],documentCommentEditIntents:['DocumentCommentEditIntents'],documentSections:['DocumentSections'],documentStories:['DocumentStories'],documentHeadings:['DocumentHeadings'],documentListItems:['DocumentListItems'],documentBreaks:['DocumentBreaks'],documentTextStyle:['DocumentTextStyle'],documentParagraphAlignment:['DocumentParagraphAlignment'],documentTables:['DocumentTables'],documentMedia:['DocumentMedia'],manuscriptNotes:['ManuscriptNoteReferences'],wordPendingRevisions:['WordPendingRevisions'],userBookmarks:['UserBookmarks']};
+  for(const [file,names] of Object.entries(modules)){const module=await import(pathToFileURL(path.join(REPO_ROOT,'src/renderer/tiptap',file+'.mjs')));for(const name of names)extensions.push(module[name]);}
+  for(const name of ['color','highlight','underline']){const module=await import('@tiptap/extension-'+name);extensions.push(name==='highlight'?module.default.configure({multicolor:true}):module.default);}
+  const {UserBookmarkLink}=await import('../../src/renderer/tiptap/userBookmarks.mjs');extensions.push(UserBookmarkLink.configure({autolink:false,linkOnPaste:false,openOnClick:false}));
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs'),review=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+  const source=fs.readFileSync(path.join(REPO_ROOT,'src/main.js'),'utf8');
+  const extract=(name,next)=>{const start=source.indexOf('async function '+name+'(');assert.ok(start>=0);const end=source.indexOf('\nasync function '+next+'(',start);assert.ok(end>start);return source.slice(start,end);};
+  const context=require('node:vm').createContext({loadDocumentContentEnvelopeModule:async()=>envelope,loadRtkNonTextReturnModule:async()=>review,userBookmarkModel:require('../../src/core/word-user-bookmarks-v1.cjs'),pendingTextRevisions:require('../../src/core/word-pending-text-revisions-v1.cjs')});
+  require('node:vm').runInContext(extract('docxImportOpenedSnapshotMatches','handleDocxImportOpenAcknowledgement')+'\n'+extract('treeSceneSnapshotsEqual','assertTreeEditorSnapshotIdentity'),context);
+  return {schema:getSchema(extensions),envelope,matches:context.docxImportOpenedSnapshotMatches};
+}
+
+// Exact imported rich document from the native PACKAGED02 failure, before edits.
+const nativeRichImportAckDocument = {
+  "attrs": {
+    "wordDefaultTabStop": 708,
+    "wordSections": {
+      "boundaries": [],
+      "final": {
+        "columns": {
+          "count": 1,
+          "spaceTwips": 708
+        },
+        "docGrid": {
+          "linePitch": 360,
+          "type": "default"
+        },
+        "margins": {
+          "bottomTwips": 1440,
+          "footerTwips": 708,
+          "gutterTwips": 0,
+          "headerTwips": 708,
+          "leftTwips": 1440,
+          "rightTwips": 1440,
+          "topTwips": 1440
+        },
+        "pageSize": {
+          "heightTwips": 16838,
+          "orientation": "portrait",
+          "widthTwips": 11906
+        },
+        "type": "nextPage"
+      },
+      "schemaVersion": 1
+    }
+  },
+  "content": [
+    {
+      "attrs": {
+        "wordParagraphMarkLanguage": {
+          "bidi": "ar-SA",
+          "eastAsia": "en-US",
+          "val": "ru-FI"
+        },
+        "wordParagraphSpacing": {
+          "after": 160,
+          "line": 278,
+          "lineRule": "auto"
+        }
+      },
+      "content": [
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "Текст до. Начало диапазона.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "wordParagraphMarkLanguage": {
+          "bidi": "ar-SA",
+          "eastAsia": "en-US",
+          "val": "ru-FI"
+        },
+        "wordParagraphSpacing": {
+          "after": 160,
+          "line": 278,
+          "lineRule": "auto"
+        }
+      },
+      "content": [
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "Средний абзац с ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "italic"
+            },
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "курсивом",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": " и строкой",
+          "type": "text"
+        },
+        {
+          "type": "hardBreak"
+        },
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "после мягкого переноса.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "wordParagraphMarkLanguage": {
+          "bidi": "ar-SA",
+          "eastAsia": "en-US",
+          "val": "ru-FI"
+        },
+        "wordParagraphSpacing": {
+          "after": 160,
+          "line": 278,
+          "lineRule": "auto"
+        }
+      },
+      "content": [
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "Конец диапазона. Текст после.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "wordParagraphMarkLanguage": {
+          "bidi": "ar-SA",
+          "eastAsia": "en-US",
+          "val": "ru-FI"
+        },
+        "wordParagraphSpacing": {
+          "after": 160,
+          "line": 278,
+          "lineRule": "auto"
+        }
+      },
+      "content": [
+        {
+          "marks": [
+            {
+              "attrs": {
+                "fontFamily": "Aptos",
+                "fontSize": "12pt",
+                "wordLanguage": {
+                  "bidi": "ar-SA",
+                  "eastAsia": "en-US",
+                  "val": "ru-FI"
+                }
+              },
+              "type": "textStyle"
+            }
+          ],
+          "text": "Защищённый хвост рукописи.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "wordParagraphMarkLanguage": {
+          "bidi": "ar-SA",
+          "eastAsia": "en-US",
+          "val": "ru-FI"
+        },
+        "wordParagraphSpacing": {
+          "after": 160,
+          "line": 278,
+          "lineRule": "auto"
+        }
+      },
+      "content": [],
+      "type": "paragraph"
+    }
+  ],
+  "type": "doc"
+};
+test('import ACK accepts exact production-schema rich mark ordering without accepting changed author content',async()=>{
+  const {schema,envelope,matches}=await importAckSchemaHarness();
+  const saved=structuredClone(nativeRichImportAckDocument),observed=schema.nodeFromJSON(saved).toJSON();
+  assert.deepEqual(saved.content[1].content[1].marks.map(mark=>mark.type),['italic','textStyle']);
+  assert.deepEqual(observed.content[1].content[1].marks.map(mark=>mark.type),['textStyle','italic']);
+  const raw=envelope.composeObservablePayload({doc:saved}),live=doc=>envelope.composeObservablePayload({doc,metaEnabled:true});
+  assert.equal(await matches(raw,live(observed)),true);
+  for(const mutate of [doc=>{doc.content[1].content[1].text+='changed';},doc=>{doc.content[1].content[1].marks[0].attrs.fontFamily='Different';},doc=>{doc.content[1].content[1].marks[0].attrs.wordLanguage.val='en-US';},doc=>{doc.content[1].content[1].marks.pop();},doc=>{doc.content[1].content.splice(3,1);}]){
+    const changed=structuredClone(observed);mutate(changed);assert.equal(await matches(raw,live(changed)),false);
+  }
+  for(const malformed of [marks=>marks.push(structuredClone(marks[0])),marks=>marks.push({type:'unregistered-format',attrs:{flag:true}})]){
+    const changed=structuredClone(observed);malformed(changed.content[1].content[1].marks);
+    assert.equal(await matches(live(changed),live(changed)),false,'unknown or duplicate marks do not become valid through equal inputs');
+  }
+  assert.deepEqual(saved,nativeRichImportAckDocument,'comparison preserves source object');
+});

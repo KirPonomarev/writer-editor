@@ -129,3 +129,17 @@ test('actual whole-selection underline preserves marked line breaks and rejects 
  }
  const shared=require('../../src/core/word-rich-body-projection-v1.cjs');assert.throws(()=>shared.validateRichBody(checked.richBody.document),/NOTE_BODY_BREAK/);
 });
+
+test('V4 multi anchors upgrade monotonically and old schema or malformed span refuse',()=>{
+ const {upgradeCommentState,STATE_V1,STATE_V2,STATE_V3,STATE_V4}=require('../../src/core/word-comment-body-v1.cjs');
+ const {deriveCommentAnchor}=require('../../src/core/word-comment-ranges-v1.cjs');
+ const {readState}=require('../../src/core/word-comment-authoring-v1.cjs');
+ const anchor=deriveCommentAnchor({sceneId:'s',paragraphs:['Alpha','Beta'],input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:1,endParagraphIndex:1,endUtf16:2}});
+ const state={schemaVersion:STATE_V1,projectId:'p',revision:0,events:[],threads:[{threadId:'t',rootCommentId:'r',sceneId:'s',status:'open',anchor,messages:[{commentId:'r',kind:'root',body:'keep'}]}]};
+ upgradeCommentState(state);assert.equal(state.schemaVersion,STATE_V4);assert.deepEqual(readState(JSON.stringify(state),'p'),state);
+ for(const version of [STATE_V1,STATE_V2,STATE_V3]) assert.throws(()=>readState(JSON.stringify({...state,schemaVersion:version}),'p'),{code:'COMMENT_ANCHOR_STATE_VERSION_REQUIRED'});
+ for(const delta of [{endParagraphIndex:0},{endBlockTextSha256:'bad'},{coveredParagraphsSha256:''},{unexpected:true}]) {
+  const bad=structuredClone(state);Object.assign(bad.threads[0].anchor,delta);assert.throws(()=>readState(JSON.stringify(bad),'p'),{code:'COMMENT_ANCHOR_INVALID'});
+ }
+ state.threads=[];upgradeCommentState(state);assert.equal(state.schemaVersion,STATE_V4);
+});

@@ -1,6 +1,21 @@
 # HANDOFF (Yalken Writer)
 
-_Updated: 2026-08-04_
+## Candidate qualification — 2026-10-05 03:37 EEST
+
+Native SOURCE/PACKAGED candidate `19d025661f4ed431ee9c654950ed3e3f3d9ed95d` now completes fresh rich import, immediate review export, actual changed Word reply and native Apply without rewriting source scene bytes. Replay/restart and packaged saved Undo/Redo plus AllSelection authoring observed. Next: direct consumers, mandatory gates and delivery for the current packet; then continue original Mac novel-text plan. The break-only formatting return diagnostic remains a separate open item. Previous failed candidates stay failed; no whole-plan percentage is inferred.
+
+_Updated: 2026-10-05_
+
+## Active implementation — 2026-10-05 02:11 EEST
+
+Owner resumed autonomous Mac novel-text portability work. PR 2078 is merged at
+`3f2e8e52f887c72753311bdb2e41c22b1e3f29f2`: CI 19/19, identical candidate/merged
+tree and 493/493 affected post-merge tests. Next/current admitted packet:
+`docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md`. Deliver actual
+multi-paragraph discussions through import, authoring, save/history, export and
+changed Word return in SOURCE and PACKAGED. The packet remains TARGET until
+executed; whole-plan acceptance and the mixed novel scenario remain open.
+The dated checkpoint below is historical; its pause and PR-pending state ended.
 
 ## Owner checkpoint — 2026-10-05 01:14:43 EEST
 

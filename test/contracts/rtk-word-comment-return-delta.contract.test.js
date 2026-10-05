@@ -19,7 +19,7 @@ function setReturnedBody(message, body) {
   }
 }
 
-async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false } = {}) {
+async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false, multi = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -39,9 +39,11 @@ async function fixture({ twoThreads = false, empty = false, threeReplies = false
     state.threads.push(second);
   }
   if (empty) { state.threads = []; state.revision = 0; }
+  const paragraphTexts=multi?[text,'Second anchor paragraph','End final']: [text];
+  if(multi) {state.schemaVersion='yalken.rtk.word.non-text-return-state.v4';state.threads[0].anchor=exactAnchor({kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:7,endParagraphIndex:2,endUtf16:3,selectedText:'🧭 anchor after\nSecond anchor paragraph\nEnd'},sceneId,paragraphTexts);}
   const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
-    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
-      doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text:paragraphTexts.join('\n'),
+      doc: { type: 'doc', content: paragraphTexts.map(text=>({ type: 'paragraph', content: [{ type: 'text', text }] })) } }] });
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const bytes = buildDocxReviewPacketBuffer(source);
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
@@ -833,4 +835,27 @@ test('remote complete deletion clears local restore history and later local Undo
  const result=plan(input),state=f.authoring.readState(result.afterText,f.projectId);assert.equal(state.threads[0].status,'deleted');assert.equal(state.threads[0].anchorEditHistory,undefined);assert.deepEqual(state.threads[0].messages,f.current.threads[0].messages);
  const undo=f.planCommentAnchorSave({beforeText:result.afterText,projectId:f.projectId,sceneId:f.sceneId,beforeContent:f.afterContent,afterContent:f.beforeContent,sessionId:'local-session',includeUnchanged:true,editIntents:{schemaVersion:1,baselineTextSha256:f.textDigest(['AlXpha','Other']),edits:[{id:'undo',historyId:'history-edit',direction:'undo',paragraphIndex:0,fromUtf16:2,toUtf16:3,removedText:'X',insertText:''}]}});
  assert.equal(JSON.parse(undo.afterText).threads[0].status,'deleted');assert.deepEqual(JSON.parse(undo.afterText).threads[0].messages,f.current.threads[0].messages);
+});
+
+test('multi-paragraph root/reply actual signed export return proves all covered leaves and text changes',async()=>{
+ const f=await fixture({multi:true});
+ assert.equal(plan(f.input).unchanged,true);
+ const returned=structuredClone(f.input);
+ const row=returned.returnedParagraphs[1],oldText=row.paragraphText;row.paragraphText=oldText+'X';
+ const root=returned.returnedThreads[0],a=root.finalTextAnchorRange;
+ a.selectedText=a.selectedText.replace(oldText,oldText+'X');root.quotedAnchorText=a.selectedText;
+ a.coveredParagraphsSha256=hash(JSON.stringify(returned.returnedParagraphs.map(p=>p.paragraphText)));
+ returned.textChanges=[{sceneId:f.state.threads[0].sceneId,paragraphIndex:1,oldText,newText:row.paragraphText}];
+ const result=plan(returned),after=JSON.parse(result.afterText);
+ assert.equal(after.schemaVersion,'yalken.rtk.word.non-text-return-state.v4');
+ assert.equal(after.threads[0].anchor.selectedText,a.selectedText);
+ assert.deepEqual(after.threads[0].messages,f.state.threads[0].messages);
+ assert.equal(plan({...returned,beforeText:result.afterText}).replay,true);
+ for(const mutate of [r=>r.returnedThreads[0].finalTextAnchorRange.coveredParagraphsSha256=hash('forged'),r=>r.returnedThreads[0].finalTextAnchorRange.endBlockTextSha256=hash('forged'),r=>r.returnedThreads[0].finalTextAnchorRange.endParagraphIndex=900]){
+  const bad=structuredClone(returned);mutate(bad);assert.throws(()=>plan(bad),/COMMENT_RETURN_/);
+ }
+ const badOwner=structuredClone(returned);badOwner.exportMap.scenes[0].blocks[1].formatIr.table={tableId:'foreign',row:0,column:0};
+ assert.throws(()=>plan(badOwner),/COMMENT_ANCHOR_OWNER/);
+ const cross=structuredClone(returned),scene=cross.exportMap.scenes[0];cross.exportMap.scenes.push({sceneId:'foreign',blocks:[scene.blocks.pop()]});
+ assert.throws(()=>plan(cross),/COMMENT_RETURN_SCENE_MISMATCH/);
 });

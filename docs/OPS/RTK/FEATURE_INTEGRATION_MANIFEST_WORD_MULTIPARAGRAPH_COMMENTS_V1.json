@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "taskId": "WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005",
+  "bindingBaseSha": "3f2e8e52f887c72753311bdb2e41c22b1e3f29f2",
+  "productPlane": "Core owns canonical V4 comment interval semantics, exact endpoint and full covered-paragraph hashes, history and monotonic state version. Existing scene and comment state remain authoritative. Owner novel-text priority selects this bounded positive range extension; original full Mac backlog remains.",
+  "interfacePlane": "Mechanical extension of existing text selection intent and read-only comment projection. Existing commands, dialogs and controls; the existing grapheme error removes its obsolete single-paragraph qualification. No new visual zone, layout, typography, tokens or shell flow.",
+  "commands": [
+    "cmd.project.review.editComment",
+    "cmd.project.save",
+    "cmd.project.importDocxV1",
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.export.docxMin",
+    "cmd.project.review.exportDocxReviewPacket",
+    "cmd.project.review.exportFullManuscriptDocxReviewPacket",
+    "cmd.rtk.reviewSession.importComments",
+    "cmd.rtk.review.applyRootCommentReturn",
+    "cmd.rtk.review.applyCommentLifecycleReturn"
+  ],
+  "queries": [
+    "Existing immutable project/scene/comment/capability projections"
+  ],
+  "events": [
+    "Existing committed scene/comment revision and saved edit-history acknowledgement"
+  ],
+  "effects": [
+    "Existing native file dialog, DOCX read/write, leased atomic scene/comment publication and recovery"
+  ],
+  "productPorts": [
+    "Existing project manifest lease, scene/comment atomic transaction and recovery, file chooser/read/export adapters"
+  ],
+  "designOsPorts": [
+    "Existing immutable comment and command availability projections only"
+  ],
+  "readProjections": [
+    "Validated kind and both local paragraph/UTF16 endpoints with exact quote; no path or hash authority supplied by renderer"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "writePaths": [
+    "Native DOCX -> validated parser transport ranges -> admitted preview -> Main/Core derives exact one-scene owned interval -> existing leased atomic import",
+    "Existing editor create/reanchor intent -> Kernel/Main current scene snapshot -> Core derives interval -> existing atomic comment writer",
+    "Existing save intent with exact fixed-topology splice history -> Core rebase/history -> existing atomic scene/comment transaction and recovery",
+    "Signed returned DOCX -> private authenticated map validates every covered block and same scene/cell owner -> Core return delta -> explicitly selected existing atomic Apply"
+  ],
+  "identityGuards": [
+    "Before and after async parse/publication: project, lifecycle, scene, revision and generation",
+    "Every covered block belongs to one authenticated scene and one exact cell ancestry or body domain",
+    "No quote-search, repeated-text inference, flattened paragraph fallback or cross-scene endpoint guessing"
+  ],
+  "capabilityRevalidation": "Unchanged Kernel/Main dispatch revalidation and leased current-state CAS; selection visibility or external ranges never grant mutation authority.",
+  "fallbacks": [
+    "Malformed, stale, foreign-owner or incomplete endpoints refuse before write",
+    "Paragraph count/owner changes outside proven edit intents preserve canonical bytes and working draft; structural edit intent extension remains explicit subsequent plan work",
+    "Older application versions refuse V4 without destructive migration or silent downgrade"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Literal independent expected endpoints and covered-array hashes, repeated text, first/middle/last leaf edits, Unicode graphemes and embedded hardBreak",
+    "Root/reply resolve/reopen reanchor single-to-multi and multi-to-single, Save Undo Save Redo and stale/tombstone history refusals",
+    "Import ordinary/review export actual Word changed return with exact thread IDs and protected foreign state; replay creates no duplicate",
+    "Existing transaction fault injection preserves coherent scene/comment pair; V1/V2/V3-to-V4 allowed, V4 downgrade refused",
+    "Early native SOURCE and PACKAGED positive route before full gates; focused negatives then required exact CI including RTK/baseline/post-audit/security, review and commit/push/PR/merge plus merged verification",
+    "Before broad gates run the full 33 directly identified comment-consumer test files plus new range/multiparagraph/transaction coverage, not only newly authored contracts; preserve existing assertions and classify identity-first refusals explicitly."
+  ],
+  "securityAndInputBoundary": "No dependencies, new IPC, generic storage writer, runtime network or private user corpus. Validate bounded transport payload before interpretation; retain existing byte/entity budgets. One pure browser-safe Core interval helper reuses existing hash primitive.",
+  "performanceAndAccessibility": "Existing keyboard selection/comment workflow. Compute interval proof on explicit command/save; preserve existing incremental splice collection and never run full-book parse on keystrokes. Existing entity/byte budgets unchanged and not claimed sufficient for every novel.",
+  "currentReality": [
+    "Native Word root comment across p0/p1 is rejected by current parser as lone anchor; original RED input SHA1611fb0b9bd1908c7745fc5dd64151fda9f0d3b1fbf07b921e0f56228c92f8c2",
+    "Independent native root+reply and three-paragraph Cyrillic/style/hardBreak fixtures are prepared; no next-packet product PASS yet",
+    "Current canonical anchors and historical save law use one paragraph; transaction and importer/exporter readers enumerate only V1/V2/V3"
+  ],
+  "targetOnly": [
+    "Multi-paragraph outcome until actual new candidate is executed in both Mac builds",
+    "Cross-scene linked ranges, paragraph split/join/multi-paragraph Delete and pending-tracked-text-plus-comment coexistence remain explicit next work",
+    "Whole novel and full original Mac acceptance, five alternating mixed cycles and scale qualification remain open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "hotPathBoundary": "Use existing incremental splice capture; full interval validation only on explicit command/save, no full-book work per keystroke",
+  "migrationRollbackEvidence": "One integrated PR revert; preserve canonical comment/scene bytes. V4 is additive and never silently downgraded; old readers fail closed. No deletion or speculative framework.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SELECTION_COMMENT_AND_REVIEW_SURFACES_NO_DESIGN_CHANGE"
+}

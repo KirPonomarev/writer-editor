@@ -7,6 +7,7 @@ const { tableParagraphs } = require('../io/documentTables.js');
 const { replayEditIntents, mapAnchorSplice } = require('./word-comment-edit-intents-v1.cjs');
 const { serializeCommentState, upgradeCommentState } = require('./word-comment-body-v1.cjs');
 const { readState } = require('./word-comment-authoring-v1.cjs');
+const { MULTI, deriveCommentAnchor, validateCommentAnchor, rebaseCommentAnchorSplice } = require('./word-comment-ranges-v1.cjs');
 const MODE = 'SAFE_ANCHOR_REBASE_V1';
 const RETURN_MODE = 'WORD_COMMENT_TEXT_RETURN_V1';
 const sha = text => sha256UpdateCompatible(text);
@@ -101,6 +102,12 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   for (const thread of after.threads) {
     if (thread.sceneId !== sceneId || thread.status === 'deleted') continue;
     const a = thread.anchor || {}, index = a.sceneParagraphIndex, text = old[index]?.text;
+    if (a.kind === MULTI) {
+      validateCommentAnchor({sceneId,paragraphs:old,anchor:a});
+      if (structureChanged) fail('COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+      if (old.slice(index,a.endSceneParagraphIndex+1).some((row,j)=>row.text!==next[index+j].text)) fail('COMMENT_SAVE_RANGE_INTENT_REQUIRED');
+      validateCommentAnchor({sceneId,paragraphs:next,anchor:a}); continue;
+    }
     if (a.sceneId !== sceneId || !Number.isSafeInteger(index) || index < 0 || typeof text !== 'string'
       || !Number.isSafeInteger(a.startUtf16) || a.startUtf16 < 0 || typeof a.selectedText !== 'string'
       || (a.kind !== 'point' && !a.selectedText) || (a.kind === 'point' && (a.affinity !== 'right' || a.selectedText !== '')) || text.slice(a.startUtf16, a.startUtf16 + a.selectedText.length) !== a.selectedText
@@ -133,6 +140,51 @@ function planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, 
   return { mode: MODE, beforeText, afterText };
 }
 
+// Multi-paragraph history stores only coordinates and full-span digests. The
+// scene replay, not a quote search, supplies the text for exact Undo/Redo.
+function applyMultiGroup(thread,group,beforeRows,afterRows,sessionId) {
+  const a=thread.anchor, {historyId,direction}=group[0].edit;
+  if(!group.some(s=>s.edit.paragraphIndex>=a.sceneParagraphIndex && s.edit.paragraphIndex<=a.endSceneParagraphIndex)) return;
+  if(thread.status==='deleted') return; // Authoritative manual/remote tombstones cannot be revived.
+  validateCommentAnchor({sceneId:thread.sceneId,paragraphs:beforeRows,anchor:a});
+  const snapshot=()=>({kind:MULTI,sceneParagraphIndex:thread.anchor.sceneParagraphIndex,
+    startUtf16:thread.anchor.startUtf16,endSceneParagraphIndex:thread.anchor.endSceneParagraphIndex,endUtf16:thread.anchor.endUtf16,
+    length:thread.anchor.selectedText.length,status:thread.status,blockTextSha256:thread.anchor.blockTextSha256,
+    endBlockTextSha256:thread.anchor.endBlockTextSha256,coveredParagraphsSha256:thread.anchor.coveredParagraphsSha256});
+  const prior=snapshot(), history=thread.anchorEditHistory||[], last=history.at(-1);
+  const entry=history.slice().reverse().find(h=>h.sessionId===sessionId && h.historyId===historyId);
+  const digest=rows=>sha(JSON.stringify(rows.slice(a.sceneParagraphIndex,a.endSceneParagraphIndex+1).map(r=>r.text)));
+  if(direction!=='forward' && entry) {
+    const undo=direction==='undo',source=undo?entry.after:entry.before,target=undo?entry.before:entry.after;
+    if(entry.undone!==!undo || JSON.stringify(prior)!==JSON.stringify(source)
+      || digest(beforeRows)!==(undo?entry.afterTextSha256:entry.beforeTextSha256)
+      || digest(afterRows)!==(undo?entry.beforeTextSha256:entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
+    const restored=deriveCommentAnchor({sceneId:thread.sceneId,paragraphs:afterRows,input:{kind:MULTI,
+      paragraphIndex:target.sceneParagraphIndex,startUtf16:target.startUtf16,endParagraphIndex:target.endSceneParagraphIndex,endUtf16:target.endUtf16}});
+    if(restored.selectedText.length!==target.length || restored.coveredParagraphsSha256!==target.coveredParagraphsSha256) fail('COMMENT_EDIT_HISTORY_STALE');
+    thread.anchor={...a,...restored};thread.status=target.status;entry.undone=undo;return;
+  }
+  if(direction!=='forward' && !entry && history.some(h=>h.sessionId===sessionId) && group.some(({edit:e})=>{
+    if(e.paragraphIndex<a.sceneParagraphIndex || e.paragraphIndex>a.endSceneParagraphIndex) return false;
+    const start=e.paragraphIndex===a.sceneParagraphIndex?a.startUtf16:0;
+    const end=e.paragraphIndex===a.endSceneParagraphIndex?a.endUtf16:beforeRows[e.paragraphIndex].text.length;
+    return e.fromUtf16===e.toUtf16 ? e.fromUtf16>start && e.fromUtf16<end : e.fromUtf16<end && e.toUtf16>start;
+  })) fail('COMMENT_EDIT_HISTORY_EXPIRED');
+  const continuing=direction==='forward' && entry && entry===last && !entry.undone;
+  if(continuing && (JSON.stringify(prior)!==JSON.stringify(entry.after) || digest(beforeRows)!==entry.afterTextSha256)) fail('COMMENT_EDIT_HISTORY_STALE');
+  let rows=beforeRows;
+  for(const step of group) {
+    const next=rows.map(row=>({...row}));next[step.edit.paragraphIndex].text=step.after;
+    thread.anchor=rebaseCommentAnchorSplice({anchor:thread.anchor,beforeParagraphs:rows,afterParagraphs:next,edit:step.edit}).anchor;rows=next;
+  }
+  const result=snapshot();
+  if(continuing) {entry.after=result;entry.afterTextSha256=digest(afterRows);return;}
+  if(a.selectedText===thread.anchor.selectedText) return;
+  thread.anchorEditHistory=history.filter(h=>!h.undone && h.sessionId===sessionId).slice(-31);
+  thread.anchorEditHistory.push({historyId,sessionId,before:prior,after:result,
+    beforeTextSha256:digest(beforeRows),afterTextSha256:digest(afterRows),undone:false});
+}
+
 function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
   if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_.:-]{1,160}$/u.test(sessionId)) fail('COMMENT_EDIT_SESSION_INVALID');
   const old = paragraphs(beforeContent), next = paragraphs(afterContent);
@@ -142,6 +194,7 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
   const after = JSON.parse(JSON.stringify(before));
   for (const thread of after.threads.filter(t=>t.sceneId===sceneId && t.status!=='deleted')) {
     const a=thread.anchor, text=old[a?.sceneParagraphIndex]?.text;
+    if(a?.kind===MULTI) { validateCommentAnchor({sceneId,paragraphs:old,anchor:a}); continue; }
     if (!a || a.sceneId!==sceneId || typeof text!=='string' || a.blockTextSha256!==sha(text)
       || a.selectedTextSha256!==sha(a.selectedText) || !edges(text).has(a.startUtf16)
       || !edges(text).has(a.startUtf16+a.selectedText.length)
@@ -154,9 +207,15 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
     if (last && last[0].edit.historyId===step.edit.historyId && last[0].edit.direction===step.edit.direction) last.push(step);
     else groups.push([step]);
   }
+  let currentParagraphs=old;
   for (const group of groups) {
+    const groupBefore=currentParagraphs;
+    const groupAfter=currentParagraphs.map(row=>({...row}));
+    for(const step of group) groupAfter[step.edit.paragraphIndex].text=step.after;
+    currentParagraphs=groupAfter;
     const {historyId,direction}=group[0].edit;
     for (const thread of after.threads.filter(t=>t.sceneId===sceneId)) {
+      if(thread.anchor?.kind===MULTI) { applyMultiGroup(thread,group,groupBefore,groupAfter,sessionId); continue; }
       const selected=group.filter(s=>s.edit.paragraphIndex===thread.anchor?.sceneParagraphIndex);
       if (!selected.length) continue;
       const history=thread.anchorEditHistory || [], last=history[history.length-1];

@@ -2107,16 +2107,19 @@ function wordCommentSelectionIntent() {
   const selection = getSelectionOffsets();
   const parsed = parseObservablePayload(composeDocumentContent());
   if (parsed.issue) throw new Error('Откройте сцену для добавления комментария.');
-  const paragraphs = [];
-  let lists = 0;
-  const append = node => {
+  const paragraphs = [], owners = [];
+  let lists = 0, nextTable = 0;
+  const append = (node, table = null) => {
     if (paragraphs.length >= 10000 || !['paragraph', 'heading', 'codeBlock'].includes(node?.type))
       throw new Error('Слишком сложная структура сцены.');
     paragraphs.push(deriveVisibleTextFromDocument({ type: 'doc', content: [node] }));
+    const cells = [];
+    for (let at = table; at; at = at.nested) cells.push([at.tableId, at.row, at.column]);
+    owners.push(JSON.stringify(cells));
   };
   const visit = (node, depth = 0) => {
     if (['paragraph', 'heading', 'codeBlock'].includes(node?.type)) { append(node); return; }
-    if (node?.type === 'table') { tableParagraphs(node, 'selection').forEach(leaf => append(leaf.node)); return; }
+    if (node?.type === 'table') { tableParagraphs(node, `selection-${nextTable++}`).forEach(leaf => append(leaf.node, leaf.table)); return; }
     if (!['bulletList', 'orderedList'].includes(node?.type) || depth > 8 || ++lists > 2048
       || !Array.isArray(node.content)) throw new Error('Неподдерживаемая структура выделения.');
     for (const item of node.content) {
@@ -2128,20 +2131,27 @@ function wordCommentSelectionIntent() {
   };
   if (parsed.doc) parsed.doc.content.forEach(node => visit(node));
   else paragraphs.push(...parsed.text.split('\n'));
-  let offset = 0;
+  let offset = 0, start = null, end = null;
   for (let index = 0; index < paragraphs.length; index++) {
     const text = paragraphs[index];
-    if (selection.start >= offset && selection.end <= offset + text.length) {
-      const edges = new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
-        { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
-      if (!edges.has(selection.start - offset) || !edges.has(selection.end - offset))
-        throw new Error('Выделите целые символы внутри одного абзаца.');
-      return { paragraphIndex: index, startUtf16: selection.start - offset, selectedText: text.slice(selection.start - offset, selection.end - offset),
-        ...(selection.start === selection.end ? { kind: 'point', affinity: 'right' } : {}) };
-    }
+    if (selection.start >= offset && selection.start <= offset + text.length) start = { index, at: selection.start - offset };
+    if (selection.end >= offset && selection.end <= offset + text.length) end = { index, at: selection.end - offset };
     offset += text.length + 1;
   }
-  throw new Error('Выделите текст внутри одного абзаца.');
+  if (!start || !end || start.index > end.index) throw new Error('Неподдерживаемая структура выделения.');
+  const edges = text => new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
+    { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
+  if (!edges(paragraphs[start.index]).has(start.at) || !edges(paragraphs[end.index]).has(end.at))
+    throw new Error('Выделите целые символы.');
+  if (owners.slice(start.index, end.index + 1).some(owner => owner !== owners[start.index]))
+    throw new Error('COMMENT_RANGE_OWNER_MISMATCH');
+  if (start.index === end.index) return { paragraphIndex: start.index, startUtf16: start.at,
+    selectedText: paragraphs[start.index].slice(start.at, end.at),
+    ...(selection.start === selection.end ? { kind: 'point', affinity: 'right' } : {}) };
+  return { kind: 'multi-paragraph-range', paragraphIndex: start.index, startUtf16: start.at,
+    endParagraphIndex: end.index, endUtf16: end.at,
+    selectedText: [paragraphs[start.index].slice(start.at), ...paragraphs.slice(start.index + 1, end.index),
+      paragraphs[end.index].slice(0, end.at)].join('\n') };
 }
 
 async function handleWordCommentAction(button) {

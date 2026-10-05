@@ -444,3 +444,54 @@ test('saved tombstone typing continues same history group and Undo/Redo retain e
   const unrelated=intentSave('X','XY',first.afterText,intent('X',1,1,'Y',{id:'e2',historyId:'other'}));
   assert.equal(JSON.parse(unrelated.afterText).threads[0].anchorEditHistory[0].afterTextSha256,sha('X'),'unrelated group must not rewrite original deletion endpoint');
 });
+
+test('multi-paragraph fixed topology Save then saved Undo/Redo preserves root/reply and exact covered authority',()=>{
+ const {deriveCommentAnchor}=require('../../src/core/word-comment-ranges-v1.cjs');
+ const {STATE_V4}=require('../../src/core/word-comment-body-v1.cjs');
+ const {readState}=require('../../src/core/word-comment-authoring-v1.cjs');
+ const encode=texts=>envelope.composeObservablePayload({doc:{type:'doc',content:texts.map(text=>({type:'paragraph',content:[{type:'text',text}]}))}});
+ const initial=['Alpha','Middle','Omega'];
+ const anchor=deriveCommentAnchor({sceneId,paragraphs:initial,input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:2,endParagraphIndex:2,endUtf16:2}});
+ const original={schemaVersion:STATE_V4,projectId,revision:1,events:[],threads:[{threadId:'multi',rootCommentId:'root',sceneId,status:'open',anchor,messages:[{commentId:'root',kind:'root',body:'Root'},{commentId:'reply',kind:'reply',body:'Reply'}]}]};
+ let state=JSON.stringify(original),texts=initial;
+ const save=(next,edit)=>{const result=planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:encode(texts),afterContent:encode(next),sessionId:'session',editIntents:{schemaVersion:1,baselineTextSha256:sha(JSON.stringify(texts)),edits:[edit]}});state=result.afterText;texts=next;return readState(state,projectId);};
+ const forward={id:'e1',historyId:'h1',direction:'forward',paragraphIndex:1,fromUtf16:1,toUtf16:1,removedText:'',insertText:'X'};
+ let saved=save(['Alpha','MXiddle','Omega'],forward);
+ assert.equal(saved.threads[0].anchor.selectedText,'pha\nMXiddle\nOm');assert.equal(saved.threads[0].anchorEditHistory.length,1);
+ // A second Save within the same actual PM history group must refresh the span endpoint.
+ saved=save(['Alpha','MXYiddle','Omega'],{...forward,id:'e2',fromUtf16:2,toUtf16:2,insertText:'Y'});
+ assert.equal(saved.threads[0].anchorEditHistory.length,1);
+ saved=save(initial,{...forward,id:'e3',direction:'undo',fromUtf16:1,toUtf16:3,removedText:'XY',insertText:''});
+ assert.deepEqual(saved.threads[0].anchor,anchor);assert.deepEqual(saved.threads[0].messages,original.threads[0].messages);
+ saved=save(['Alpha','MXYiddle','Omega'],{...forward,id:'e4',direction:'redo',insertText:'XY'});
+ assert.equal(saved.threads[0].anchor.selectedText,'pha\nMXYiddle\nOm');
+ const priorOutside=saved.threads[0].anchor;
+ save(['XXAlpha','MXYiddle','Omega'],{...forward,id:'e5',historyId:'h2',paragraphIndex:0,fromUtf16:0,toUtf16:0,insertText:'XX'});
+ saved=save(['Alpha','MXYiddle','Omega'],{...forward,id:'e6',historyId:'h2',direction:'undo',paragraphIndex:0,fromUtf16:0,toUtf16:2,removedText:'XX',insertText:''});
+ assert.deepEqual(saved.threads[0].anchor,priorOutside);
+ const before=state;
+ assert.throws(()=>planCommentAnchorSave({beforeText:state,projectId,sceneId,beforeContent:encode(texts),afterContent:encode(['Alpha','MXY','iddle','Omega'])}),{code:'COMMENT_SAVE_STRUCTURE_UNSUPPORTED'});
+ assert.equal(state,before);
+ const forged=JSON.parse(state);forged.threads[0].anchorEditHistory[0].before.coveredParagraphsSha256=sha('forged');
+ assert.throws(()=>readState(JSON.stringify(forged),projectId),{code:'COMMENT_HISTORY_INVALID'});
+});
+
+for(const boundary of ['SCENE','COMMENT','COMMIT']) test(`multi-paragraph V4 saved edit fresh-process ${boundary} recovery is atomic`,async t=>{
+ const f=fixture(t),{deriveCommentAnchor}=require('../../src/core/word-comment-ranges-v1.cjs');
+ const encode=texts=>envelope.composeObservablePayload({doc:{type:'doc',content:texts.map(text=>({type:'paragraph',content:[{type:'text',text}]}))}});
+ const old=['Alpha','Beta'],next=['AlXpha','Beta'];
+ f.beforeScene=encode(old);f.afterScene=encode(next);
+ const state=JSON.parse(f.beforeText);state.schemaVersion='yalken.rtk.word.non-text-return-state.v4';
+ state.threads[0].anchor=deriveCommentAnchor({sceneId,paragraphs:old,input:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:1,endParagraphIndex:1,endUtf16:2}});
+ f.beforeText=JSON.stringify(state);
+ const editIntents={schemaVersion:1,baselineTextSha256:sha(JSON.stringify(old)),edits:[{id:'e',historyId:'h',direction:'forward',paragraphIndex:0,fromUtf16:2,toUtf16:2,removedText:'',insertText:'X'}]};
+ f.request={...f.request,expectedSceneContent:f.beforeScene,sceneContent:f.afterScene,commentState:planCommentAnchorSave({beforeText:f.beforeText,projectId,sceneId,beforeContent:f.beforeScene,afterContent:f.afterScene,sessionId:'s',editIntents})};
+ fs.writeFileSync(f.scenePath,f.beforeScene);fs.writeFileSync(f.commentPath,f.beforeText);fs.writeFileSync(path.join(f.root,'request.json'),JSON.stringify(f.request));
+ const prior=observed(f);
+ const forged=structuredClone(f.request);const graph=JSON.parse(forged.commentState.afterText);graph.threads[0].anchor.endUtf16++;forged.commentState.afterText=JSON.stringify(graph);
+ await assert.rejects(tx.commitProjectTransaction({...forged,publishManifest}),/COMMENT_STATE/);assert.deepEqual(observed(f),prior);
+ const crash=await child(f,'crash',boundary);assert.equal(crash.signal,'SIGKILL',JSON.stringify(crash));
+ const recovered=await child(f,'recover');assert.equal(recovered.code,0,recovered.stderr);
+ assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.commentState.afterText]:prior);
+ assert.equal((await child(f,'recover')).code,0);
+});

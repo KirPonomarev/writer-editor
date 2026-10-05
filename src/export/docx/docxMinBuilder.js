@@ -423,7 +423,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       || deps.commentBlocks.some((block, index) => !block || block.text !== entries[index]?.text
         || block.documentParagraphIndex !== index)
       || deps.commentExport.threads.some(thread => !deps.commentBlocks.some(block => block.blockId === thread.anchor.blockId
-        && block.sceneId === thread.sceneId && block.documentParagraphIndex === thread.anchor.documentParagraphIndex))) throw Error('DOCX_COMMENT_ANCHOR_STALE');
+        && block.sceneId === thread.sceneId && block.documentParagraphIndex === thread.anchor.documentParagraphIndex)
+        || thread.anchor.kind === 'multi-paragraph-range' && !deps.commentBlocks.some(block => block.blockId === thread.anchor.endBlockId
+          && block.sceneId === thread.sceneId && block.documentParagraphIndex === thread.anchor.endDocumentParagraphIndex))) throw Error('DOCX_COMMENT_ANCHOR_STALE');
   }
   const headingLevels = new Set();
   const blockStyles = new Set();
@@ -438,7 +440,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (blockStyle) blockStyles.add(blockStyle);
       if (/^Heading[1-9]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
       if (semanticKind === 'pageBreak' || (semanticKind !== 'codeBlock' && String(entry?.text || '').trim() === pageBreakToken)) {
-        if (deps.commentExport?.threads?.some(thread => thread.anchor.blockId === deps.commentBlocks?.[index]?.blockId)) {
+        if (deps.commentExport?.threads?.some(thread => (thread.anchor.blockId === deps.commentBlocks?.[index]?.blockId || thread.anchor.endBlockId === deps.commentBlocks?.[index]?.blockId))) {
           throw Error('DOCX_COMMENT_ANCHOR_UNSUPPORTED');
         }
         return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';

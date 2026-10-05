@@ -1,3 +1,4 @@
+import commentRanges from '../../core/word-comment-ranges-v1.cjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
 import documentTables from '../documentTables.js';
@@ -64,14 +65,20 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     const index = thread.paragraphIndex, paragraph = paragraphs[index];
     demand(Number.isSafeInteger(index) && index >= 0 && plain(range)
       && plain(paragraph) && typeof paragraph.text === 'string', 'ANCHOR');
-    // Images still require their separate annotation coordinate qualification.
-    demand(!paragraph.media?.length, 'TOPOLOGY');
-    const text = paragraph.text, boundaries = edges(text);
-    demand(Number.isSafeInteger(range.startUtf16) && Number.isSafeInteger(range.endUtf16)
-      && range.startUtf16 <= range.endUtf16 && boundaries.has(range.startUtf16)
-      && boundaries.has(range.endUtf16) && sha256Hex(text) === range.blockTextSha256
-      && text.slice(range.startUtf16, range.endUtf16) === range.selectedText
-      && range.selectedText === thread.quotedAnchorText, 'ANCHOR');
+    const multi = range.kind === 'multi-paragraph-range';
+    const end = multi ? range.endParagraphIndex : index;
+    demand(Number.isSafeInteger(end) && end >= index && end < paragraphs.length
+      && paragraphs.slice(index, end + 1).every(p => !p.media?.length), 'TOPOLOGY');
+    let derived;
+    try { derived = commentRanges.deriveCommentAnchor({ sceneId: 'generic-preview', paragraphs,
+      input: { paragraphIndex: index, startUtf16: range.startUtf16, selectedText: range.selectedText,
+        ...(multi ? { kind: range.kind, endParagraphIndex: end, endUtf16: range.endUtf16 }
+          : range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}) } }); }
+    catch { demand(false, 'ANCHOR'); }
+    demand((multi || range.endUtf16 === range.startUtf16 + range.selectedText.length)
+      && derived.blockTextSha256 === range.blockTextSha256 && range.selectedText === thread.quotedAnchorText
+      && (!multi || derived.endBlockTextSha256 === range.endBlockTextSha256
+        && derived.coveredParagraphsSha256 === range.coveredParagraphsSha256), 'ANCHOR');
     demand(Array.isArray(thread.replies) && thread.replies.length <= 128, 'REPLIES');
     demand(thread.replies.every(reply => reply.parentRawId === thread.commentId), 'NESTED_REPLY_UNSUPPORTED');
     const messages = [message(thread), ...thread.replies.map(reply => message(reply, true))];
@@ -80,7 +87,9 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       nativeIds.add(item.sourceCommentId);
     }
     return { paragraphIndex: index, startUtf16: range.startUtf16,
-      ...(range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}),
+      ...(multi ? {kind: range.kind, endParagraphIndex: range.endParagraphIndex, endUtf16: range.endUtf16,
+        endBlockTextSha256: range.endBlockTextSha256, coveredParagraphsSha256: range.coveredParagraphsSha256}
+        : range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}),
       selectedText: range.selectedText, blockTextSha256: range.blockTextSha256,
       status: thread.status === 'RESOLVED' ? 'resolved' : 'open', messages };
   });
@@ -93,7 +102,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
   demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
   const before = commentAuthoring.readState(beforeText, projectId);
-  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3].includes(before.schemaVersion) && before.projectId === projectId
+  demand(plain(before) && [commentBodyModel.STATE_V1,commentBodyModel.STATE_V2,commentBodyModel.STATE_V3,commentBodyModel.STATE_V4].includes(before.schemaVersion) && before.projectId === projectId
     && Number.isSafeInteger(before.revision) && before.revision >= 0 && before.revision < Number.MAX_SAFE_INTEGER
     && Array.isArray(before.threads) && Array.isArray(before.events), 'STATE');
   const existing = new Set();
@@ -106,17 +115,23 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   const operation = sha256Hex(`${projectId}\n${sceneId}\n${importOperationId}`);
   const reserve = id => { demand(!existing.has(id), 'IDENTITY_CONFLICT'); existing.add(id); return id; };
   const threads = candidates.map((candidate, ordinal) => {
-    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages', 'kind', 'affinity'].includes(key))
+    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages', 'kind', 'affinity', 'endParagraphIndex', 'endUtf16', 'endBlockTextSha256', 'coveredParagraphsSha256'].includes(key))
       && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
       && ['open', 'resolved'].includes(candidate.status)
       && Array.isArray(candidate.messages) && candidate.messages.length > 0 && candidate.messages.length <= 129, 'CANDIDATE');
-    const text = paragraphs[candidate.paragraphIndex]?.text;
-    demand(typeof text === 'string' && sha256Hex(text) === candidate.blockTextSha256
-      && typeof candidate.selectedText === 'string'
-      && (candidate.kind === 'point' ? candidate.affinity === 'right' && candidate.selectedText === ''
-        : candidate.kind === undefined && candidate.affinity === undefined && candidate.selectedText.length > 0)
-      && edges(text).has(candidate.startUtf16) && edges(text).has(candidate.startUtf16 + candidate.selectedText.length)
-      && text.slice(candidate.startUtf16, candidate.startUtf16 + candidate.selectedText.length) === candidate.selectedText, 'ANCHOR');
+    let anchor;
+    try { anchor = commentRanges.deriveCommentAnchor({ sceneId, paragraphs, input: {
+      paragraphIndex: candidate.paragraphIndex, startUtf16: candidate.startUtf16, selectedText: candidate.selectedText,
+      ...(candidate.kind === 'multi-paragraph-range' ? { kind: candidate.kind,
+        endParagraphIndex: candidate.endParagraphIndex, endUtf16: candidate.endUtf16 }
+        : candidate.kind === 'point' ? {kind: 'point', affinity: candidate.affinity} : {}) } }); }
+    catch { demand(false, 'ANCHOR'); }
+    demand((candidate.kind === 'point' ? candidate.affinity === 'right' : candidate.affinity === undefined)
+      && candidate.kind === anchor.kind && candidate.blockTextSha256 === anchor.blockTextSha256
+      && (candidate.kind === 'multi-paragraph-range' ? candidate.endBlockTextSha256 === anchor.endBlockTextSha256
+        && candidate.coveredParagraphsSha256 === anchor.coveredParagraphsSha256
+        : candidate.endParagraphIndex === undefined && candidate.endUtf16 === undefined
+          && candidate.endBlockTextSha256 === undefined && candidate.coveredParagraphsSha256 === undefined), 'ANCHOR');
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
     const messages = candidate.messages.map((item, index) => {
       demand(plain(item) && Object.keys(item).every(key => ['sourceCommentId', 'body', 'richBody', 'provenance'].includes(key))
@@ -132,11 +147,7 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
         ...content, provenance: clone(item.provenance) };
     });
     return { threadId, sceneId, rootCommentId: messages[0].commentId, status: candidate.status,
-      anchor: { ...(candidate.kind === 'point' ? {kind: 'point', affinity: 'right'} : {}), sceneId, sceneParagraphIndex: candidate.paragraphIndex,
-        paragraphIndex: candidate.paragraphIndex, blockTextSha256: candidate.blockTextSha256,
-        startUtf16: candidate.startUtf16, selectedText: candidate.selectedText,
-        selectedTextSha256: sha256Hex(candidate.selectedText), authoritySource: 'GENERIC_IMPORT_LOCAL_IDENTITY',
-        sourceChangeId: importOperationId }, messages };
+      anchor: { ...anchor, authoritySource: 'GENERIC_IMPORT_LOCAL_IDENTITY', sourceChangeId: importOperationId }, messages };
   });
   const after = { ...clone(before), revision: before.revision + 1, threads: [...clone(before.threads), ...threads] };
   demand(after.threads.length <= 128, 'STATE');

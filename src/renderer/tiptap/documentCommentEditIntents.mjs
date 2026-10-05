@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { AllSelection, Plugin, PluginKey } from '@tiptap/pm/state';
 import { isHistoryTransaction } from '@tiptap/pm/history';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 
@@ -70,12 +70,19 @@ function capture(tr, previous, oldState, newState) {
   const checkpoint = tr.getMeta(checkpointKey);
   if (checkpoint) {
     const count = checkpoint.nextEdit - (previous.nextEdit - previous.edits.length);
-    if (previous.invalid || checkpoint.incarnation !== previous.incarnation || count < 0 || count > previous.edits.length || count > checkpoint.edits.length
+    if (checkpoint.incarnation !== previous.incarnation || count < 0 || count > previous.edits.length || count > checkpoint.edits.length
       || JSON.stringify(previous.edits.slice(0, count)) !== JSON.stringify(checkpoint.edits.slice(checkpoint.edits.length - count))) return previous;
     countLeaves(checkpoint.doc);
     return { ...previous, baseline: checkpoint.doc, edits: previous.edits.slice(count) };
   }
-  if (!tr.docChanged || previous.invalid) return previous;
+  if (!tr.docChanged) return previous;
+  if (previous.invalid) {
+    // Only real history restoring the exact last proven document can recover
+    // provenance. Keep its pending edits and any acknowledged save prefix.
+    if (!isHistoryTransaction(tr) || !previous.invalidBeforeDoc?.eq(newState.doc)) return previous;
+    const { invalidBeforeDoc, ...restored } = previous;
+    return { ...restored, invalid: false };
+  }
   try {
     const edits = [];
     for (let index = 0; index < tr.steps.length; index++) {
@@ -123,7 +130,7 @@ function capture(tr, previous, oldState, newState) {
     if (combined.length > 256 || new TextEncoder().encode(JSON.stringify(combined)).length > 64000)
       throw new Error('COMMENT_EDIT_BUDGET');
     return { ...previous, edits: combined, groups, nextGroup, nextEdit };
-  } catch { return { ...previous, invalid: true }; }
+  } catch { return { ...previous, invalid: true, invalidBeforeDoc: oldState.doc }; }
 }
 
 // Only actual transactions create edit intent. Core owns validation and anchors.
@@ -163,12 +170,46 @@ export function checkpointCommentEditIntents(editor, wireSha256) {
 }
 export function commentSelectionIntent(editor) {
   if (!editor || editor.isDestroyed) throw new Error('COMMENT_EDIT_EDITOR_UNAVAILABLE');
-  const { from, to } = editor.state.selection;
-  const start = paragraphAt(editor.state.doc, from), end = paragraphAt(editor.state.doc, to);
-  if (start.node !== end.node) throw new Error('Комментарий должен находиться внутри одного абзаца.');
-  const text = inlineText(start.node), edges = new Set([text.length,
+  const selection = editor.state.selection, doc = editor.state.doc;
+  let { from, to } = selection;
+  if (selection instanceof AllSelection) {
+    const leaves = [];
+    doc.descendants((node, position) => {
+      if (paragraphTypes.has(node.type.name)) { leaves.push({ node, position }); return false; }
+      if (!['bulletList', 'orderedList', 'listItem', 'table', 'tableRow', 'tableCell', 'tableHeader'].includes(node.type.name))
+        throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+      return true;
+    });
+    if (!leaves.length) throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+    from = leaves[0].position + 1;
+    to = leaves.at(-1).position + 1 + leaves.at(-1).node.content.size;
+  }
+  const start = paragraphAt(doc, from), end = paragraphAt(doc, to);
+  const texts = [], owners = [];
+  let index = 0;
+  doc.descendants((node, position) => {
+    if (!paragraphTypes.has(node.type.name)) return true;
+    const current = index++;
+    if (current < start.paragraphIndex || current > end.paragraphIndex) return false;
+    const at = doc.resolve(position + 1), cells = [];
+    for (let depth = 1; depth < at.depth; depth++) {
+      const kind = at.node(depth).type.name;
+      if (!['bulletList', 'orderedList', 'listItem', 'table', 'tableRow', 'tableCell', 'tableHeader'].includes(kind))
+        throw new Error('COMMENT_EDIT_TOPOLOGY_UNSUPPORTED');
+      if (['tableCell', 'tableHeader'].includes(kind)) cells.push(at.before(depth));
+    }
+    texts.push(inlineText(node)); owners.push(JSON.stringify(cells)); return false;
+  });
+  if (owners.some(owner => owner !== owners[0])) throw new Error('COMMENT_RANGE_OWNER_MISMATCH');
+  const edges = text => new Set([text.length,
     ...Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
-  if (!edges.has(start.offset) || !edges.has(end.offset)) throw new Error('Выделите целые символы внутри одного абзаца.');
-  return { paragraphIndex: start.paragraphIndex, startUtf16: start.offset, selectedText: text.slice(start.offset, end.offset),
-    ...(from === to ? { kind: 'point', affinity: 'right' } : {}) };
+  if (!edges(texts[0]).has(start.offset) || !edges(texts.at(-1)).has(end.offset))
+    throw new Error('Выделите целые символы.');
+  if (start.paragraphIndex === end.paragraphIndex) return {
+    paragraphIndex: start.paragraphIndex, startUtf16: start.offset, selectedText: texts[0].slice(start.offset, end.offset),
+    ...(from === to ? { kind: 'point', affinity: 'right' } : {}),
+  };
+  return { kind: 'multi-paragraph-range', paragraphIndex: start.paragraphIndex, startUtf16: start.offset,
+    endParagraphIndex: end.paragraphIndex, endUtf16: end.offset,
+    selectedText: [texts[0].slice(start.offset), ...texts.slice(1, -1), texts.at(-1).slice(0, end.offset)].join('\n') };
 }

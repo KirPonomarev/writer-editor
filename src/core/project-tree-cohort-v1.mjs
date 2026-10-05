@@ -7,6 +7,7 @@ import pending from './word-pending-text-revisions-v1.cjs';
 import notesModel from './word-manuscript-notes-v1.cjs';
 import commentsModel from './word-comment-authoring-v1.cjs';
 import commentAnchors from './word-comment-anchor-save-v1.cjs';
+import commentRanges from './word-comment-ranges-v1.cjs';
 import mediaModel from './word-media-return-v1.cjs';
 import storyModel from './word-stories-v1.cjs';
 import mediaData from '../io/documentMedia.js';
@@ -245,17 +246,45 @@ function topologyNote(note, topology, identityMap) {
   }
   return out;
 }
+function validateTreeCommentAnchor(thread, paragraphs) {
+  const anchor = thread.anchor;
+  need(anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
+  if (anchor.kind === commentRanges.MULTI) {
+    // Historical ranges need their own topology proof. Never infer an owner
+    // for an old range from the current first leaf or resurrect a tombstone.
+    need(thread.status !== 'deleted' && !(thread.anchorEditHistory?.length), 'E_TREE_COHORT_COMMENT_HISTORY_UNSUPPORTED');
+    commentRanges.validateCommentAnchor({ sceneId: thread.sceneId, paragraphs, anchor });
+    return;
+  }
+  if (thread.status === 'deleted') return;
+  const proof = commentsModel.exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex,
+    startUtf16: anchor.startUtf16, selectedText: anchor.selectedText,
+    ...(anchor.kind === 'point' ? {kind: 'point', affinity: anchor.affinity} : {}) }, thread.sceneId,
+  paragraphs.map(row => typeof row === 'string' ? row : row.text));
+  need(proof.selectedTextSha256 === anchor.selectedTextSha256 && proof.blockTextSha256 === anchor.blockTextSha256,
+    'E_TREE_COHORT_COMMENT_STALE');
+}
 function topologyComment(thread, topology) {
   const source = topology.sources.find(s => s.relativePath === thread.sceneId); if (!source) return null;
-  const anchor = thread.anchor; need(anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
+  const anchor = thread.anchor;
+  validateTreeCommentAnchor(thread, commentAnchors.paragraphs(source.raw));
   let partition = topology.partitions.find(p => p.sourceRelativePath === source.relativePath);
   if (thread.status !== 'deleted') {
-    const proof = commentsModel.exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex, startUtf16: anchor.startUtf16, selectedText: anchor.selectedText }, source.relativePath, source.leafTexts);
-    need(proof.selectedTextSha256 === anchor.selectedTextSha256 && proof.blockTextSha256 === anchor.blockTextSha256, 'E_TREE_COHORT_COMMENT_STALE');
     partition = topology.locate(source.relativePath, anchor.sceneParagraphIndex); need(partition, 'E_TREE_TOPOLOGY_COMMENT_OWNER');
   }
   const out = clone(thread); out.sceneId = partition.targetRelativePath; out.anchor.sceneId = out.sceneId;
-  if (thread.status !== 'deleted') {
+  if (anchor.kind === commentRanges.MULTI) {
+    for (let index = anchor.sceneParagraphIndex; index <= anchor.endSceneParagraphIndex; index++) {
+      need(topology.locate(source.relativePath, index) === partition, 'E_TREE_TOPOLOGY_COMMENT_RANGE_CROSSES_SCENES');
+    }
+    const output = topology.outputs.find(o => o.relativePath === partition.targetRelativePath);
+    const delta = partition.targetLeafFrom - partition.leafFrom;
+    const proved = commentRanges.deriveCommentAnchor({ sceneId: out.sceneId, paragraphs: commentAnchors.paragraphs(output.raw),
+      input: { kind: commentRanges.MULTI, paragraphIndex: anchor.sceneParagraphIndex + delta, startUtf16: anchor.startUtf16,
+        endParagraphIndex: anchor.endSceneParagraphIndex + delta, endUtf16: anchor.endUtf16, selectedText: anchor.selectedText } });
+    need(proved.coveredParagraphsSha256 === anchor.coveredParagraphsSha256, 'E_TREE_COHORT_COMMENT_STALE');
+    out.anchor = { ...out.anchor, ...proved };
+  } else if (thread.status !== 'deleted') {
     out.anchor.sceneParagraphIndex += partition.targetLeafFrom - partition.leafFrom;
     out.anchor.paragraphIndex = out.anchor.sceneParagraphIndex;
   }
@@ -410,15 +439,7 @@ export function planProjectTreeCohort(input) {
       const thread = sourceThreads[i];
       if (topology) { const rebound = topologyComment(thread, topology); if (rebound) { next.threads[i] = rebound; continue; } }
       const mapping = sceneMap[recovery ? recovery.livePath : thread.sceneId]; if (!mapping) continue;
-      need(thread.anchor?.sceneId === thread.sceneId, 'E_TREE_COHORT_COMMENT_ANCHOR');
-      if (thread.status !== 'deleted') {
-        const anchor = thread.anchor;
-        const paragraphs = commentAnchors.paragraphs(recovery ? recovery.content : text(files.get(thread.sceneId).contentBase64)).map(p => p.text);
-        const proof = commentsModel.exactAnchor({ paragraphIndex: anchor.sceneParagraphIndex,
-          startUtf16: anchor.startUtf16, selectedText: anchor.selectedText }, thread.sceneId, paragraphs);
-        need(proof.selectedTextSha256 === anchor.selectedTextSha256 && proof.blockTextSha256 === anchor.blockTextSha256,
-          'E_TREE_COHORT_COMMENT_STALE');
-      }
+      validateTreeCommentAnchor(thread, commentAnchors.paragraphs(recovery ? recovery.content : text(files.get(thread.sceneId).contentBase64)));
       const changed = clone(thread); changed.sceneId = mapping.to; changed.anchor.sceneId = mapping.to;
       if (mapping.copy) {
         changed.threadId = newId('local-comment-', input, thread.threadId); threadIds[thread.threadId] = changed.threadId;
