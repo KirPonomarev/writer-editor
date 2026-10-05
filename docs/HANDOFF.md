@@ -1,3 +1,14 @@
+## 2026-10-05 — PR2082 CI consumer repair, product runtime unchanged
+
+CI37266596060 on6af552590 found two obsolete HTTP-link refusal assertions and
+one actual-Main VM missing production require. Clean44-path preflight preceded
+repair. Full affected files95/95, zero skips: actual generic create preserves
+table/link/Current/Original; link format accept/reject stays reversible; unsafe
+links/orphan comments still refuse; whole export handler loads real modules.
+No production source change since native53285be1. CI must pass on successor
+before merge and exact merged verification. Next genuine text gap is pending
+revision decisions/recording with active comments, not comment-panel access.
+
 ## 2026-10-05 08:08 EEST — pending comments: native routes observed, delivery pending
 
 WORD_PENDING_COMMENTS_MAC_20261005; native53285be1e63607691020ea9982d96d7e28e0ebd9.
@@ -6,9 +17,10 @@ explicit Apply, both reexports, replay and restart. Scene/ledger bytes unchanged
 three roots/five messages become six exactly once; preview and confirmed replay
 zero-write proved with explicit profile/root/launch binding. Source panel shows
 reply and six revisions; packaged post-restart export retains all six messages.
-PACKAGED WRITER_LOCAL_V1 hides comments/review tabs in flags.js: authoring UI
-remains open and must be addressed next after this delivery chain. No runtime
-flag bypass or whole-novel/full-plan acceptance.100k remains programmatic only.
+Correction observed after08:08: PACKAGED WRITER_LOCAL_V1 hides sidebar tabs,
+but the existing Comments card above the editor opens the canonical panel with
+six revisions and the new reply. No separate access repair is needed. Evidence:
+PACKAGED04-alternate-comments-visible-ax.txt.100k remains programmatic only.
 Direct803/804 failed solely on VM missing production helper; actual-helper
 extraction repaired, full authoring24/24 zero skips. Runtime unchanged since
 native SHA; clean41-path amendment admitted before test edit. Required CI,

@@ -1252,7 +1252,7 @@
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-        "sha256": "5354d332e9f2e939c3a68fa80c05f90294bda686cd889ec085d0195b43218344"
+        "sha256": "70ec70de7b4c20273edff88b759625f51a338bfca580ec5498ff8a677362be53"
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
@@ -1712,7 +1712,7 @@
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
-        "sha256": "0499d74d8c6076aca74065518ad4c657775bc1f523a5e3aa730f55f607854c10"
+        "sha256": "eb810d8c9ceaf952ac983ed116a1ae64b58d57e0b7516fede7aa2df1926d8f90"
       },
       {
         "path": "test/contracts/rtk-word-pending-return.contract.test.js",
@@ -1728,7 +1728,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
-        "sha256": "fd89e630ce0427f0232be367cfbf447d403c89cb9d5a36e0a37a8471efccfd41"
+        "sha256": "8f9cc36f3fe194ab15363e672754a8477fa3217c2a4af406a2e28a6e0e81a4ed"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
@@ -2512,15 +2512,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8e732ee7a43e0972cfd6d90dff0881af71070eec905569887707da76b98a0b2b"
+        "sha256": "014fd443e907fca6f4eeaae03f1400be6ad2a725d112aa8b68a3fdcae9af8013"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "871d6619ce49b707df6f794afde7d5663e7133a7e1adee9fd189335a23734582"
+        "sha256": "e89ec60a142a500703c17c42b3d3c2fd31c6c94354afee73791a36cf0b2abd6e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "13aecdd1f591e82504dd91398bde2a84d425564478a3b1ed6c2e10407734e030"
+        "sha256": "dd5e5dc5bf5602df74e4ccd8e815b0587d31f5141c9462e9fa952a6527cbb242"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2580,7 +2580,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-        "sha256": "2b57a387c2bc17d6bef3bde32c364a278bfc6612600d14f56529582e089e83bf"
+        "sha256": "dad80f60aa961c12f8e6c2b451256e9192ba6b0578df57b1c498fe4dae14ce0d"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",

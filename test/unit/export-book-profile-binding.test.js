@@ -198,6 +198,7 @@ test('export book profile binding: actual main snapshot resolves absent default 
   let manifest = {};
   const context = vm.createContext({
     JSON,
+    require: require('node:module').createRequire(path.join(process.cwd(), 'src/main.js')),
     currentFilePath: scenePath, isDirty: false,
     isAllowedFilePath: () => true,
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),

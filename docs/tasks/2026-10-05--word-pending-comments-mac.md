@@ -257,10 +257,10 @@ no writes on confirmed replay. Both reexports contain new reply exactly once;
 PACKAGED reexport after restart retains it. SOURCE UI displays all revisions
 and the new reply. All owned native processes stopped with verified byte copies.
 
-PACKAGED WRITER_LOCAL_V1 deliberately hides comment/review tabs in flags.js.
-Menu-based exchange works, but visible comment authoring is NOT accepted for
-that profile. This pre-existing product limitation is the next delivery packet,
-not silently bypassed by launch flags or claimed fixed by data roundtrip.
+Correction to the initial PACKAGED access concern: WRITER_LOCAL_V1 hides sidebar
+comment/review tabs, but the existing Comments card above the editor opens the
+canonical panel with all six revisions and the new reply. Observed directly in
+PACKAGED04-alternate-comments-visible-ax.txt. No access repair is needed.
 Import preview text-char count reports serialized envelope length; separate
 existing presentation limitation, not a100k native proof.
 
@@ -269,6 +269,17 @@ existing Main ordinary-comment VM harness missing the newly called production
 buildAuthenticatedPendingCommentScenes function. Clean checkpoint preflight
 expanded to41paths before test edit. Extract actual helper, no stub/bypass;
 whole authoring file24/24 passes. Runtime unchanged; final CI/delivery pending.
+
+## 2026-10-05 — PR2082 CI consumer repair, product runtime unchanged
+
+CI37266596060 on6af552590 found two obsolete HTTP-link refusal assertions and
+one actual-Main VM missing production require. Clean44-path preflight preceded
+repair. Full affected files95/95, zero skips: actual generic create preserves
+table/link/Current/Original; link format accept/reject stays reversible; unsafe
+links/orphan comments still refuse; whole export handler loads real modules.
+No production source change since native53285be1. CI must pass on successor
+before merge and exact merged verification. Next genuine text gap is pending
+revision decisions/recording with active comments, not comment-panel access.
 
 ## STOP_CONDITION
 
