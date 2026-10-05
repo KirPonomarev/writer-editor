@@ -230,3 +230,37 @@ remain refused. The endpoint reference must be a direct Word run child of the
 adjacent empty body paragraph. Independent review found no blocking issue in
 either bounded repair. Main prepares comments independently before formatting;
 the break-only formatting warning remains typed and is not a comment veto.
+
+## Fresh-import admission finding on a948b2dcb
+
+The repaired PACKAGED build applied the exact previously refused Word artifact
+to its existing project, and replay preserved identical scenes and the entire
+two-thread, three-message graph. A separate native rich import completed its
+ACK, durably cleared the active attempt and reopened without the old error.
+
+A new SOURCE round imported the Word result, exported it and added a further
+actual Word reply (artifact
+c16d9a7b52800325f4e6d67fa4b1b927002ef7b08dec805c26671876b9f28ee4).
+Parser, persisted shadow session and private-map Core delta all validate both
+ranges and all four returned messages. Actual Main admission nevertheless
+refuses COMMENT_SAVE_SCENE_FIRST: the untouched imported bytes match the signed
+baseline, but the renderer's schema-normalized representation differs from raw
+JSON. A control Save changes raw bytes, correctly producing a subsequent
+COMMENT_RETURN_SCENE_CONFLICT against the old export. Do not weaken that CAS.
+
+This disproves sufficiency of the ACK-only normalization. Use one bounded
+snapshot comparison law for supported unique mark ordering and empty paragraph
+representation, covering current comment, note and tree consumers. All other
+array order, attributes, metadata and exact signed-byte/revision checks remain
+protected. Unknown/duplicate marks still refuse. The 53-path snapshot-repair
+declaration passed on clean a948b2dcbe9e8d86ebe615bf497553d830ee0f54.
+Fresh native export/changed-return is required; the now-stale SOURCE03 export
+must not be reused as if its raw baseline were current.
+
+The shared snapshot repair passed all seven direct-comparison consumer files
+and the import suite: 277 cases, zero failures or skips. The actual Main test
+executes export, production parsing, private round authority, preparation,
+Command Kernel and comment publication against rich imported bytes. Those bytes
+remain exact; changed signed bytes and unsaved live text still refuse. Unknown
+node mark arrays remain exact after independent review found an overly broad
+normalization during development. Final native candidate observation is pending.

@@ -64,6 +64,16 @@ test('same operation is idempotent only on its exact resulting revision, differe
   assert.throws(() => model.planCommentAuthoring({ ...context, beforeText: two.afterText, input }), /COMMENT_REPLAY_CONFLICT/);
 });
 
+async function actualCommentEditorSchema() {
+  const {getSchema}=await import('@tiptap/core'),{default:StarterKit}=await import('@tiptap/starter-kit');
+  const extensions=[StarterKit.configure({trailingNode:false,heading:false,listItem:false,hardBreak:false,link:false,underline:false})];
+  const modules={documentListNumbering:['DocumentListNumbering'],documentCommentEditIntents:['DocumentCommentEditIntents'],documentSections:['DocumentSections'],documentStories:['DocumentStories'],documentHeadings:['DocumentHeadings'],documentListItems:['DocumentListItems'],documentBreaks:['DocumentBreaks'],documentTextStyle:['DocumentTextStyle'],documentParagraphAlignment:['DocumentParagraphAlignment'],documentTables:['DocumentTables'],documentMedia:['DocumentMedia'],manuscriptNotes:['ManuscriptNoteReferences'],wordPendingRevisions:['WordPendingRevisions'],userBookmarks:['UserBookmarks']};
+  for(const [file,names] of Object.entries(modules)){const module=await import(`../../src/renderer/tiptap/${file}.mjs`);for(const name of names)extensions.push(module[name]);}
+  for(const name of ['color','highlight','underline']){const module=await import('@tiptap/extension-'+name);extensions.push(name==='highlight'?module.default.configure({multicolor:true}):module.default);}
+  const {UserBookmarkLink}=await import('../../src/renderer/tiptap/userBookmarks.mjs');extensions.push(UserBookmarkLink.configure({autolink:false,linkOnPaste:false,openOnClick:false}));
+  return getSchema(extensions);
+}
+
 const runtimePromise = import(pathToFileURL(path.resolve(__dirname, '../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs')).href);
 const stateRelative = '.yalken/word-review/non-text-return-state.v1.json';
 async function disk(t) {
@@ -126,8 +136,8 @@ test('failure before canonical rename keeps the old graph and readable recovery,
 for (const nativeDefaults of [false, true]) test(`actual main handler captures committed scene and rejects forged identity, unsaved changes and lifecycle switches; native defaults=${nativeDefaults}`, async t => {
   const { projectRoot, statePath, runtime } = await disk(t);
   const envelope = require('../../src/core/document-content-envelope-v1.cjs');
-  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: scene, marks: [{ type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] }] }] };
-  const liveDoc = structuredClone(doc); liveDoc.content[0].attrs = { textAlign: null }; liveDoc.content[0].content[0].marks[0].attrs.color = null;
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: scene, marks: [{ type: 'italic' }, { type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '12pt' } }] }] },{type:'paragraph',content:[]}] };
+  const liveDoc = (await actualCommentEditorSchema()).nodeFromJSON(doc).toJSON();
   const sceneRaw = nativeDefaults ? envelope.composeObservablePayload({ doc }) : scene;
   const liveRaw = nativeDefaults ? envelope.composeObservablePayload({ doc: liveDoc }) : scene;
   const scenePath = path.join(projectRoot, 'roman/a.txt'); fs.mkdirSync(path.dirname(scenePath), { recursive: true }); fs.writeFileSync(scenePath, sceneRaw);
@@ -158,6 +168,7 @@ for (const nativeDefaults of [false, true]) test(`actual main handler captures c
   switchDuringCapture = false; sandbox.currentFilePath = scenePath;
   const result = await command(input); assert.equal(result.ok, true, JSON.stringify(result));
   assert.equal(JSON.parse(fs.readFileSync(statePath)).threads[0].messages[0].body, 'main-owned');
+  assert.equal(fs.readFileSync(scenePath,'utf8'),sceneRaw,'comment creation never requires saving or rewriting imported scene bytes');
 });
 
 test('authored root and reply body/status/anchor survive actual DOCX serialization and independent existing parser', async () => {
@@ -525,4 +536,58 @@ test('actual Main private comment proof retains original signed table ancestry a
     assert.throws(()=>ranges.validateCommentAnchor({sceneId:'s',paragraphs:changed,anchor}),/COMMENT_ANCHOR_OWNER/);
   }
   assert.deepEqual(proof.exportMap.scenes[0].blocks,blocks);
+});
+
+test('snapshot representation normalization is restricted to actual document mark sets and empty paragraphs',async()=>{
+  const {commentSceneSnapshotsEqual:equal}=await runtimePromise;
+  const marks=[{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Aptos',wordLanguage:{val:'ru-FI'}}}];
+  const a={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'same',marks}]},{type:'paragraph',content:[]}]};
+  const b=structuredClone(a);b.content[0].content[0].marks.reverse();delete b.content[1].content;
+  assert(equal(a,b));assert(equal(b,a));
+  for(const mutate of [d=>d.content[0].content[0].marks.push({type:'italic'}),d=>d.content[0].content[0].marks.push({type:'foreign'}),d=>{d.content[0].content[0].marks=null;}]){
+    const changed=structuredClone(a);mutate(changed);assert.equal(equal(changed,changed),false);
+  }
+  for(const key of ['attrs','foreign']) {
+    const left=structuredClone(a),right=structuredClone(a);left[key]={type:'paragraph',content:[],marks};right[key]={type:'paragraph',marks:[...marks].reverse()};
+    assert.equal(equal(left,right),false,'lookalike metadata remains exact');
+  }
+  const unknownA={type:'doc',content:[{type:'future-widget',marks,attrs:{identity:'keep'}}]},unknownB=structuredClone(unknownA);unknownB.content[0].marks.reverse();assert.equal(equal(unknownA,unknownB),false);
+  const changed=structuredClone(b);changed.content[1].attrs={custom:null};assert.equal(equal(a,changed),false);
+  const arrayA=structuredClone(a),arrayB=structuredClone(a);arrayA.attrs={items:['A','B']};arrayB.attrs={items:['B','A']};assert.equal(equal(arrayA,arrayB),false);
+  const attributes=structuredClone(b);attributes.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.wordLanguage.val='en-US';assert.equal(equal(a,attributes),false);
+});
+
+test('actual authenticated Main return admission accepts fresh rich editor representation and still rejects changed signed raw bytes',async t=>{
+  const {projectRoot,statePath,runtime}=await disk(t),vm=require('node:vm');
+  const env=require('../../src/core/document-content-envelope-v1.cjs');
+  const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha one.',marks:[{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt'}}]}]},{type:'paragraph',content:[{type:'text',text:'Beta two.'}]},{type:'paragraph',content:[]}]};
+  const raw=env.composeObservablePayload({doc}),opened=(await actualCommentEditorSchema()).nodeFromJSON(doc).toJSON();
+  const sceneId='roman/a.txt',scenePath=path.join(projectRoot,sceneId),projectId='native-rich-return';
+  fs.mkdirSync(path.dirname(scenePath),{recursive:true});fs.writeFileSync(scenePath,raw);
+  const state=model.planCommentAuthoring({beforeText:null,projectId,sceneId,sceneSha256:hash(raw),paragraphs:['Alpha one.','Beta two.',''],now:'2026-10-05T00:00:00Z',input:{requestId:'initial',action:'create',projectId,sceneId,expectedSceneSha256:hash(raw),expectedStateSha256:'',body:'Before reply',anchor:{kind:'multi-paragraph-range',paragraphIndex:0,startUtf16:6,endParagraphIndex:1,endUtf16:4,selectedText:'one.\nBeta'}}}).state;
+  const beforeText=JSON.stringify(state,null,2)+'\n';fs.mkdirSync(path.dirname(statePath),{recursive:true});fs.writeFileSync(statePath,beforeText);
+  const source=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectRoot,projectId,nonTextReturnState:state,scenes:[{sceneId,scenePath,order:0,text:env.deriveVisibleTextFromDocument(doc),observableContent:raw,doc}]});
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),builder=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const original=builder.buildDocxReviewPacketBuffer(source),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  parts['word/comments.xml']=parts['word/comments.xml'].replace('Before reply','Changed in Word');
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stable(value[k])).join(',')+'}':JSON.stringify(value);
+  const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(stable(value)),byteLength:value=>Buffer.byteLength(value)};
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
+  const capsule={...source.localAuthorityCapsule,projectRoot,projectId,roundId:'round-native-rich-return',scenePathBySceneId:{[sceneId]:scenePath},baselineObservableContentBySceneId:{[sceneId]:raw},commentExport:source.commentExport};
+  const context={projectRoot,projectId,reviewTransportAuthorityCapsule:capsule,reviewTransportReturnIntake:{authenticated:true,returnedArtifactSha256:hash(bytes),parserResult:parsed}};
+  const {createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');const authority=createMainProjectManifestAuthority({anchorRoot:path.join(projectRoot,'anchors')});
+  let live=env.composeObservablePayload({doc:opened,metaEnabled:true}),prepared;
+  const sandbox={path,fs:fs.promises,Buffer,computeHash:hash,isDirty:false,autoSaveInProgress:false,currentFilePath:scenePath,lastSignaledEditGeneration:0,activeStage10ApplicationBootstrap:{},currentLifecycleSubjectId:()=> 'native-rich',getProjectRootPath:()=>projectRoot,
+    loadRtkNonTextReturnModule:async()=>runtime,loadDocumentContentEnvelopeModule:async()=>env,requestEditorSnapshot:async()=>({content:live,generation:0}),createRtkReviewTransportCryptoPort:()=>cryptoPort,docxReviewReturnIntakeProductBudgets:()=>({}),canonicalizeComparableValue:value=>value,queueDiskOperation:operation=>operation(),getMainProjectManifestAuthority:async()=>authority};
+  require('../helpers/main-docx-round-authority').installMainDocxRoundAuthority(sandbox,{projectRoot,projectId,references:[capsule],publishAllocated:true,t});
+  const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8'),extract=name=>main.match(new RegExp('async function '+name+'\\([^]*?\\n}(?=\\n|$)'))[0];
+  vm.createContext(sandbox);vm.runInContext('const authenticatedCommentDeltaAdmissions=new WeakMap();\n'+extract('applyAuthenticatedCommentDelta')+'\n'+extract('handleRtkCommentLifecycleReturnCommandSurface'),sandbox);
+  sandbox.dispatchCommandSurfaceKernel=require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({'cmd.rtk.review.applyCommentLifecycleReturn':sandbox.handleRtkCommentLifecycleReturnCommandSurface}).dispatch;
+  const run=()=>sandbox.applyAuthenticatedCommentDelta({context,requestId:'actual-rich',docxBytes:bytes,revisionBridge:bridge,explicitCanonicalApplyConfirmed:false,isCurrent:()=>true,onPrepared:value=>{prepared=value;}});
+  const first=await run();assert.equal(first.status,'preview-ready',JSON.stringify(first));assert.equal(first.changes.length,1);assert.equal(fs.readFileSync(scenePath,'utf8'),raw);assert.equal(fs.readFileSync(statePath,'utf8'),beforeText);
+  fs.writeFileSync(scenePath,raw+'\n');assert.equal((await run()).code,'COMMENT_RETURN_SCENE_CONFLICT');assert.equal(fs.readFileSync(statePath,'utf8'),beforeText);fs.writeFileSync(scenePath,raw);
+  const changed=structuredClone(opened);changed.content[0].content[0].text+='dirty';live=env.composeObservablePayload({doc:changed,metaEnabled:true});assert.equal((await run()).code,'COMMENT_SAVE_SCENE_FIRST');live=env.composeObservablePayload({doc:opened,metaEnabled:true});
+  assert.equal((await run()).status,'preview-ready');const applied=await prepared.apply();assert.equal(applied.writerCalled,true,JSON.stringify(applied));assert.equal(fs.readFileSync(scenePath,'utf8'),raw);
+  const thread=JSON.parse(fs.readFileSync(statePath,'utf8')).threads[0];assert.equal(thread.threadId,state.threads[0].threadId);assert.equal(thread.messages[0].body,'Changed in Word');
 });

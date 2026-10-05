@@ -23,8 +23,11 @@ const ROOT_COMMENT_BODY_LIMIT = 16_384;
 // Tiptap materializes these declared schema defaults when opening an imported
 // document. Compare their meanings without weakening dirty, revision, lease or
 // byte-bound scene CAS checks. Adjacent identical text leaves also share the
-// same meaning after ProseMirror joins them on load; other array order stays exact.
+// same meaning after ProseMirror joins them on load. Unique supported marks are
+// a set in PM; every other array order and every mark attribute stays exact.
 export function commentSceneSnapshotsEqual(left, right) {
+  const supportedMarks = new Set(['bold', 'italic', 'strike', 'code', 'textStyle', 'highlight', 'underline', 'link']);
+  let invalidMarks = false;
   const contentTypes=new Set(['doc','paragraph','heading','codeBlock','blockquote','bulletList','orderedList','listItem','table','tableRow','tableCell','tableHeader']);
   const canonical = (value, documentNode=false) => {
     if (Array.isArray(value)) return value.map(item=>canonical(item));
@@ -36,7 +39,18 @@ export function commentSceneSnapshotsEqual(left, right) {
     if (defaults && (value.attrs === undefined || (value.attrs && typeof value.attrs === 'object' && !Array.isArray(value.attrs)))) {
       source = { ...value, attrs: { ...defaults, ...value.attrs } };
     }
-    return Object.fromEntries(Object.keys(source).sort().map(key => {
+    const keys = Object.keys(source).filter(key => !(documentNode && source.type === 'paragraph'
+      && key === 'content' && Array.isArray(source.content) && source.content.length === 0));
+    return Object.fromEntries(keys.sort().map(key => {
+      if (documentNode && (contentTypes.has(source.type) || ['text', 'hardBreak', 'image', 'horizontalRule'].includes(source.type)) && key === 'marks') {
+        const seen = new Set(), marks = source[key];
+        if (!Array.isArray(marks) || marks.some(mark => {
+          if (!mark || typeof mark !== 'object' || Array.isArray(mark)
+            || !supportedMarks.has(mark.type) || seen.has(mark.type)) return true;
+          seen.add(mark.type); return false;
+        })) { invalidMarks = true; return [key, canonical(marks)]; }
+        return [key, marks.map(mark => canonical(mark)).sort((a, b) => a.type < b.type ? -1 : a.type > b.type ? 1 : 0)];
+      }
       if(key!=='content' || !documentNode || !contentTypes.has(source.type) || !Array.isArray(source[key]))return [key,canonical(source[key])];
       const children=source[key].map(child=>canonical(child,true));
       if(!['paragraph','heading','codeBlock'].includes(source.type))return [key,children];
@@ -53,7 +67,8 @@ export function commentSceneSnapshotsEqual(left, right) {
       return [key,merged];
     }));
   };
-  return JSON.stringify(canonical(left,left?.type==='doc')) === JSON.stringify(canonical(right,right?.type==='doc'));
+  const before = canonical(left,left?.type==='doc'), after = canonical(right,right?.type==='doc');
+  return !invalidMarks && JSON.stringify(before) === JSON.stringify(after);
 }
 
 // Fixed canonical target only. Payloads never supply a path or a writer.

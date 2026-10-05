@@ -813,7 +813,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "75f3a3e28a321cd25b46aaf7b997f76dc576f70f044c59256b9e978e4a8a0bbe"
+        "sha256": "7905b89cdf19158c7ce74201424c30e8128e2b9ceef6a107ca5e51c009db4d87"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1129,7 +1129,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "b4c9e57b9332b1533858d77b189c8b1d11a36177a4aa0e2899918058c320b009"
+        "sha256": "1b7693daa8b17d75d2a928ff494b5129e084b56801f9b68ae7d0f8357033ae23"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -1477,7 +1477,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "aacadb83217779bfffefc73861e2c7a1c23deb0d79501e0f6ade376525106bbe"
+        "sha256": "3923adbd9aeb75486d2163dc31abf02fbd8ee958ee3e8a5977caa7b8be3e7748"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -2529,7 +2529,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-multiparagraph-comments-mac.md",
-        "sha256": "f1efdc1bbb35f1d2d3451a7cbbb9e35f1f86491c753193728423991aa25bb631"
+        "sha256": "a64294058e37bc3e5af31dd5a056fedf263a44c729660744d197498ed81a4e45"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MULTIPARAGRAPH_COMMENTS_V1.json",
