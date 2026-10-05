@@ -1,3 +1,4 @@
+import { normalizeParagraphMarkTypography } from '../inlineTypography.mjs';
 import userBookmarks from '../../core/word-user-bookmarks-v1.cjs';
 import wordSections from '../../core/word-sections-v1.cjs';
 import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
@@ -25,7 +26,7 @@ export const RTK_FORMATTING_RETURN_RUNTIME_SCHEMA = 'yalken.rtk.formatting-retur
 const INLINE_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
 const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize', 'wordLanguage']);
 const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
-const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs']);
+const PARAGRAPH_KEYS = new Set(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs']);
 const OPERATION_KEYS = new Set([
   'kind','document','numbering','sectionGrid','operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
   'inline', 'paragraph', 'targetScope', 'sceneOrdinal', 'paragraphId', 'sourceAuthority', 'expectedOutcome',
@@ -91,6 +92,7 @@ function operationDataOnly(value) {
 }
 function normalizeAction(value, key) {
   if(!operationDataOnly(value)||!isPlainObject(value)||Array.isArray(value))return null;
+  if(key==='wordParagraphMarkTypography'){if(value.action==='remove'&&Object.keys(value).length===1)return {action:'remove'};if(value.action==='set'&&Object.keys(value).every(k=>['action','value'].includes(k)))try{return {action:'set',value:normalizeParagraphMarkTypography(value.value)};}catch{}return null;}
   if(['wordParagraphIndent','wordParagraphTabs'].includes(key)){if(value?.action==='remove'&&Object.keys(value).length===1)return {action:'remove'};if(value?.action==='set'&&Object.keys(value).every(k=>['action','value'].includes(k)))try{return {action:'set',value:(key==='wordParagraphIndent'?paragraphLayout.normalizeWordParagraphIndent:paragraphLayout.normalizeWordParagraphTabs)(value.value)};}catch{}return null;}
   if (!isPlainObject(value)) return null;
   if (Object.keys(value).some((field) => !['action', 'value'].includes(field))) return null;
@@ -345,6 +347,8 @@ function applyInlineRange(paragraph, operation) {
   const nextParagraph = { ...cloneJson(paragraph), content: nextContent };
   if (Object.keys(operation.paragraph).length > 0) {
     const attrs = isPlainObject(nextParagraph.attrs) ? cloneJson(nextParagraph.attrs) : {};
+    const markTypography=operation.paragraph.wordParagraphMarkTypography;
+    if(markTypography?.action==='remove')delete attrs.wordParagraphMarkTypography;else if(markTypography?.action==='set')attrs.wordParagraphMarkTypography=normalizeParagraphMarkTypography(markTypography.value);
     const markLanguage=operation.paragraph.wordParagraphMarkLanguage;
     if(markLanguage?.action==='remove')delete attrs.wordParagraphMarkLanguage;
     else if(markLanguage?.action==='set')attrs.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(markLanguage.value);

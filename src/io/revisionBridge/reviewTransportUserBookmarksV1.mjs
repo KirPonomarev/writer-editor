@@ -425,8 +425,10 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       if(!same(expectedBreaks.map(b=>b.type),returnedBreaks.map(b=>b.type)))return reject('typed-break-semantic-change');
       if(p.trackedRevision||((p.table||block.formatIr.table) && (!ordinaryTextMode || tableBinding.applicable!==true))||block.formatIr.media?.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid||p.unsupportedParagraphNames?.some(name=>!(ordinaryTextMode && ((name==='rPr' && p.wordParagraphMarkLanguageOnly) || (name==='numPr' && hasLists) || (name==='sectPr' && sectionVerified)))))return reject('rich-paragraph-unsupported');
       const baseP=block.formatIr.paragraph;
-      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
+      if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
+      const markChanged=!same(baseP.wordParagraphMarkTypography??null,p.paragraphState?.wordParagraphMarkTypography??null);
+      if(markChanged&&!ordinaryTextMode)return reject('paragraph-mark-typography-change');
       const spacingChanged=!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null);
       if(spacingChanged && !ordinaryTextMode)return reject('paragraph-spacing-change');
       const returnedSpacing=p.paragraphState?.wordParagraphSpacing == null ? null
@@ -436,6 +438,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         sceneId,blockId:block.blockId,paragraphOrdinal:i,from,to,selectedText:p.paragraphText.slice(from,to),inline,paragraph,
         sourceAuthority:'authenticated-full-manuscript-export-map-format-ir-v1',sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,
       });
+      if(markChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{}, {wordParagraphMarkTypography:p.paragraphState?.wordParagraphMarkTypography==null?{action:'remove'}:{action:'set',value:p.paragraphState.wordParagraphMarkTypography}}));
       if(spacingChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{},
         {wordParagraphSpacing:returnedSpacing===null?{action:'remove'}:{action:'set',value:returnedSpacing}}));
       if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');

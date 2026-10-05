@@ -1,3 +1,4 @@
+const { buildDocxParagraphMarkTypographyXml } = require('./docxInlineTypography.js');
 'use strict';
 
 const commentRanges = require('../../core/word-comment-ranges-v1.cjs');
@@ -212,7 +213,7 @@ function commentPackageParts(projection) {
         const id = index === array.length - 1 ? message.paraId : message.precedingParaIds[index];
         demand(/^[A-F0-9]{8}$/u.test(id), 'DOCX_COMMENT_PARAGRAPH_ID_INVALID');
         const align = p.attrs?.textAlign;
-        const lang = buildDocxWordLanguageXml(p.attrs?.wordParagraphMarkLanguage);
+        const lang = buildDocxParagraphMarkTypographyXml(p.attrs?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(p.attrs?.wordParagraphMarkLanguage);
         const props = (align ? `<w:jc w:val="${align === 'justify' ? 'both' : align}"/>` : '')
           + buildDocxWordParagraphSpacingXml(p.attrs?.wordParagraphSpacing)
           + buildDocxWordParagraphLayoutXml(p.attrs) + (lang ? `<w:rPr>${lang}</w:rPr>` : '');

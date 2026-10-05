@@ -27,4 +27,43 @@ function normalizeFontSize(value) {
   return `${halfPoints / 2}pt`;
 }
 
-module.exports = { normalizeFontFamily, normalizeFontSize };
+// Paragraph-mark scope is separate from visible text marks. Explicit off/reset
+// values are data: removing them would reveal an inherited Word style.
+const PARAGRAPH_MARK_KEYS = Object.freeze(['bold','italic','underline','strike','fontFamily','fontSize','color','highlight']);
+function normalizeParagraphMarkTypography(value) {
+  const fail=()=>{throw Object.assign(Error('WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID'),{code:'WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID'});};
+  if(!value||typeof value!=='object'||Array.isArray(value)||![Object.prototype,null].includes(Object.getPrototypeOf(value)))fail();
+  const keys=Reflect.ownKeys(value);if(!keys.length||keys.length>PARAGRAPH_MARK_KEYS.length||keys.some(k=>!PARAGRAPH_MARK_KEYS.includes(k)))fail();
+  const result={};
+  for(const key of PARAGRAPH_MARK_KEYS){const d=Object.getOwnPropertyDescriptor(value,key);if(!d)continue;if(!d.enumerable||!Object.hasOwn(d,'value'))fail();const v=d.value;
+    if(['bold','italic','underline','strike'].includes(key)){if(typeof v!=='boolean')fail();result[key]=v;}
+    else if(key==='fontFamily')result[key]=normalizeFontFamily(v);
+    else if(key==='fontSize')result[key]=normalizeFontSize(v);
+    else {if(v!==null&&(typeof v!=='string'||!/^#[a-f0-9]{6}$/iu.test(v)))fail();result[key]=v===null?null:v.toLowerCase();}
+  }return result;
+}
+// Equality for already validated effective mark values. Boolean omission is
+// Word's off value only after its paragraph style cascade has been resolved.
+function comparableParagraphMarkTypography(value) {
+  if(value==null)return null;
+  const result=normalizeParagraphMarkTypography(value);
+  for(const key of ['bold','italic','underline','strike'])if(result[key]===false)delete result[key];
+  return Object.keys(result).length?result:null;
+}
+// Includes pending property snapshots and reversible history, not only Current.
+// Inspect descriptors before dereferencing; no getter or cyclic graph is admitted.
+function inspectParagraphMarkTypography(value) {
+  const pending=[{value,depth:0}],ancestors=new Set();let present=false,count=0;
+  const fail=()=>{throw Error('WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID');};
+  while(pending.length){const item=pending.pop(),node=item.value;if(!node||typeof node!=='object')continue;
+    if(item.exit){ancestors.delete(node);continue;}
+    if(++count>1000000||item.depth>128||ancestors.has(node))fail();ancestors.add(node);pending.push({value:node,exit:true});
+    const descriptors=Object.getOwnPropertyDescriptors(node);
+    for(const [key,d]of Object.entries(descriptors)){
+      if(!Object.hasOwn(d,'value'))fail();
+      if(key==='wordParagraphMarkTypography'&&d.value!=null){if(item.owner!=='attrs'||!['paragraph','heading'].includes(item.type))fail();normalizeParagraphMarkTypography(d.value);present=true;}
+      if(d.value&&typeof d.value==='object')pending.push({value:d.value,depth:item.depth+1,owner:key,type:descriptors.type?.value});
+    }
+  }return present;
+}
+module.exports = { normalizeFontFamily, normalizeFontSize, PARAGRAPH_MARK_KEYS, normalizeParagraphMarkTypography, comparableParagraphMarkTypography, inspectParagraphMarkTypography };

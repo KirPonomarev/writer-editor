@@ -1,3 +1,4 @@
+import { normalizeParagraphMarkTypography } from '../inlineTypography.mjs';
 import fullManuscriptSource from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { analyzeListNumberingReturn, createLegacyNumberingProofComparator, documentPropertyReturnOperation, cleanFormattingConsumptionDigest } from './reviewTransportUserBookmarksV1.mjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
@@ -5090,7 +5091,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       continue;
     }
     const baselineParagraphRecord = isPlainObject(formatIr.paragraph) ? formatIr.paragraph : {};
-    const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
+    const baselineParagraph = Object.fromEntries(['textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs'].filter(k=>Object.hasOwn(baselineParagraphRecord,k)).map(k=>[k,baselineParagraphRecord[k]]));
     const baselineStructure = baselineParagraphRecord.nodeType === 'heading'
       ? { nodeType: 'heading', headingLevel: Number(baselineParagraphRecord.headingLevel) }
       : { nodeType: 'paragraph' };
@@ -5102,7 +5103,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     if(Object.hasOwn(baselineParagraph,'textAlign')&&!Object.hasOwn(returnedParagraphState,'textAlign')
       && paragraph.resolvedTextAlign==='left')returnedParagraphState.textAlign='left';
     const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? {...paragraph.paragraphActions} : {};
-    if(!paragraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
+    if(!paragraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs','wordParagraphMarkTypography'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
     const paragraphAmbiguousRemovals = docxReviewFormattingAmbiguousRemovalKeys(
       baselineParagraph,
       returnedParagraphState,
@@ -8045,6 +8046,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 'PENDING_TABLE_ROW_EMPTY', 'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED', 'PENDING_TABLE_ROW_CHILD_OWNER', 'PENDING_TABLE_ROW_INVALID', 'PENDING_TABLE_ROW_OVERLAP', 'PENDING_TABLE_ROW_VERTICAL_MERGE_UNSUPPORTED', 'PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_PARAGRAPH_SPACING_UNSUPPORTED', 'CONTENT_INVALID');
+for(const code of ['WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID','WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED','WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE','WORD_PARAGRAPH_MARK_PROPERTY_INVALID','WORD_PARAGRAPH_MARK_DUPLICATE','WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED','WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED'])DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
   for(const code of bookmarkCodes) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
@@ -10017,6 +10019,16 @@ function docxResolveParagraphAlignment(metadata, catalog) {
   const markProperties={...catalog.defaults};docxInlineApplyStyle(markProperties,metadata.paragraphStyleId||catalog.defaultParagraph,'paragraph',catalog);
   const language={...markProperties.wordLanguage,...metadata.wordParagraphMarkLanguage};
   if(Object.keys(language).length)metadata.wordParagraphMarkLanguage=wordLanguage.normalizeWordLanguage(language);
+  if(metadata.paragraphMarkProperties||['bold','italic','underline','strike'].some(key=>markProperties[key]===true)){
+    const raw=metadata.paragraphMarkProperties||{}, value=Object.fromEntries(['bold','italic','underline','strike'].filter(key=>markProperties[key]===true).map(key=>[key,true]));
+    for(const key of ['bold','italic','underline','strike','color','highlight'])if(Object.hasOwn(raw,key))value[key]=raw[key];
+    if(Object.hasOwn(raw,'shading')&&!Object.hasOwn(raw,'highlight'))value.highlight=raw.shading;
+    const effectiveMark={...markProperties,...raw};
+    const slots=DOCX_FONT_SLOTS.some(slot=>raw[`font_${slot}`]!==undefined)?DOCX_FONT_SLOTS.map(slot=>effectiveMark[`font_${slot}`]).filter(v=>v!==undefined).map(v=>docxFontResolveTheme(v,catalog.themeFonts)):[];
+    if(slots.length){if(slots.some(v=>typeof v!=='string'||v===DOCX_UNSUPPORTED_FONT)||new Set(slots).size!==1)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');value.fontFamily=slots[0];}
+    if(raw.font_size!==undefined||raw.font_sizeCs!==undefined){if(effectiveMark.font_size!==undefined&&effectiveMark.font_sizeCs!==undefined&&effectiveMark.font_size!==effectiveMark.font_sizeCs)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');value.fontSize=effectiveMark.font_size??effectiveMark.font_sizeCs;}
+    if(Object.keys(value).length)metadata.wordParagraphMarkTypography=normalizeParagraphMarkTypography(value);
+  }
   const layoutLayers=[metadata];
   const spacingLayers=[metadata.wordParagraphSpacing];
   let spacingId=metadata.paragraphStyleId||catalog.defaultParagraph;const spacingSeen=new Set();
@@ -10107,7 +10119,7 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
     }
     if(paragraph.wordParagraphSpacing!==undefined)paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing);
     for(const [key,normalize] of [['wordParagraphIndent',paragraphLayout.normalizeWordParagraphIndent],['wordParagraphTabs',paragraphLayout.normalizeWordParagraphTabs]])if(paragraph[key]!==undefined)normalize(paragraph[key]);
-    needsRichContent ||= paragraph.wordParagraphIndent!==undefined || paragraph.wordParagraphTabs!==undefined || paragraph.wordParagraphMarkLanguage!==undefined || paragraph.wordParagraphSpacing!==undefined || level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
+    needsRichContent ||= paragraph.wordParagraphMarkTypography!==undefined || paragraph.wordParagraphIndent!==undefined || paragraph.wordParagraphTabs!==undefined || paragraph.wordParagraphMarkLanguage!==undefined || paragraph.wordParagraphSpacing!==undefined || level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
     const typedBreaks = wordTypedBreaks.validateOffsets(paragraph.text, paragraph.typedBreaks);
     const breakTypes = new Map(typedBreaks.map(item => [item.offset, item.type]));
     if (codeBlock && typedBreaks.length) throw new Error('WORD_TYPED_BREAK_INVALID');
@@ -10171,7 +10183,7 @@ function docxInlineCanonicalContent(paragraphs, { preserveCommentBreakMarks = fa
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
-    const attrs = { ...(paragraph.wordParagraphIndent!==undefined?{wordParagraphIndent:paragraph.wordParagraphIndent}:{}),...(paragraph.wordParagraphTabs!==undefined?{wordParagraphTabs:paragraph.wordParagraphTabs}:{}), ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}),...(paragraph.wordParagraphSpacing?{wordParagraphSpacing:paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing)}:{}),...(paragraph.wordParagraphMarkLanguage?{wordParagraphMarkLanguage:wordLanguage.normalizeWordLanguage(paragraph.wordParagraphMarkLanguage)}:{}) };
+    const attrs = { ...(paragraph.wordParagraphMarkTypography!==undefined?{wordParagraphMarkTypography:normalizeParagraphMarkTypography(paragraph.wordParagraphMarkTypography)}:{}),...(paragraph.wordParagraphIndent!==undefined?{wordParagraphIndent:paragraph.wordParagraphIndent}:{}),...(paragraph.wordParagraphTabs!==undefined?{wordParagraphTabs:paragraph.wordParagraphTabs}:{}), ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}),...(paragraph.wordParagraphSpacing?{wordParagraphSpacing:paragraphSpacing.normalizeWordParagraphSpacing(paragraph.wordParagraphSpacing)}:{}),...(paragraph.wordParagraphMarkLanguage?{wordParagraphMarkLanguage:wordLanguage.normalizeWordLanguage(paragraph.wordParagraphMarkLanguage)}:{}) };
     if (paragraph.media !== undefined) {
       if (codeBlock || !Array.isArray(paragraph.media) || !paragraph.media.length || paragraph.media.length > 4096) throw Error('DOCUMENT_MEDIA_PLACEMENT');
       let previous = -1;
@@ -10310,6 +10322,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
   for(const key of ['wordParagraphIndent','wordParagraphTabs'])if(metadata[key]!==undefined)paragraph[key]=metadata[key];
   if(metadata.wordParagraphSpacing!==undefined)paragraph.wordParagraphSpacing=metadata.wordParagraphSpacing;
+  if(metadata.wordParagraphMarkTypography!==undefined)paragraph.wordParagraphMarkTypography=metadata.wordParagraphMarkTypography;
   if(metadata.wordParagraphMarkLanguage!==undefined)paragraph.wordParagraphMarkLanguage=metadata.wordParagraphMarkLanguage;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
   if(metadata.listContinuationLevel!==undefined)paragraph.listContinuationLevel=metadata.listContinuationLevel;
@@ -10621,6 +10634,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
     }
 
+    if(insideParagraph&&!closing&&parentTag==='w:rPr'&&elementStack.at(selfClosing?-2:-3)?.semanticTagName==='w:pPr'&&tagName!=='w:lang'){
+      if(!['w:b','w:i','w:u','w:strike','w:color','w:highlight','w:shd','w:rFonts','w:sz','w:szCs'].includes(tagName)||!selfClosing)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      const raw=activeParagraphMetadata.paragraphMarkProperties ||= {}, seen=activeParagraphMetadata.paragraphMarkSeen ||= new Set();
+      if(seen.has(tagName))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE');seen.add(tagName);
+      const keys=tagName==='w:rFonts'?['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme']:tagName==='w:shd'?['val','fill']:['val'];
+      for(const [key]of docxFontAttributes(token,tokenNamespaceMap))if(!key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!keys.includes(key.split('\u0000')[1]))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      docxInlineReadProperty(raw,tagName,token,tokenNamespaceMap);
+    }
     if(insideParagraph&&!closing&&tagName==='w:lang'&&parentTag==='w:rPr'&&elementStack.at(selfClosing?-2:-3)?.semanticTagName==='w:pPr'){
       if(activeParagraphMetadata.wordParagraphMarkLanguage)throw Error('WORD_LANGUAGE_INVALID');
       activeParagraphMetadata.wordParagraphMarkLanguage=docxReadLanguageTuple(token,tokenNamespaceMap);

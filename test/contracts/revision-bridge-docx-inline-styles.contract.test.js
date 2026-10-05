@@ -51,7 +51,7 @@ test('C1 inline: four marks, combinations, plain neighbors, blank paragraphs and
   const { plan } = await planFrom(bytes);
   assert.deepEqual(await profile(plan), [[['B', ['bold']], ...[...' plain '].map(ch => [ch, []]), ['И', ['italic', 'strike', 'underline']]], [], [['x', []], ['\n', []], ['y', []]]]);
   assert.equal(plan.lossReport.mode, 'inline-marks');
-  assert.match(plan.lossReport.items.find(i => i.code === 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY').message, /fonts/);
+  assert.match(plan.lossReport.items.find(i => i.code === 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY').message, /Unsupported properties and import limitations are listed separately/);
 });
 test('C1 inline: explicit off and split runs do not leak across boundaries or paragraphs', async () => {
   const { plan } = await planFrom(packageBytes(`<w:p>${r('a', '<w:b/>')}${r('b', '<w:b w:val="true"/>')}${r('c', '<w:b w:val="0"/>')}${r('d')}</w:p><w:p>${r('e')}</w:p>`));
@@ -207,5 +207,25 @@ test('C1 used typography slots refuse unresolved mixed scripts and missing force
     const report = bridge.buildDocxContentPreviewFromZipBytes(packageBytes(`<w:p>${r(text,properties)}</w:p>`));
     assert.equal(report.ok,true,JSON.stringify(report));
     assert.ok(report.diagnostics.some(d => d.sourceCode === 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED'),JSON.stringify(report));
+  }
+});
+
+ test('Paragraph mark typography: literal empty and nonempty properties remain separate from visible text', async () => {
+  const [,envelope]=await modules;
+  const pr='<w:b/><w:i w:val="0"/><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/>';
+  const {plan}=await planFrom(packageBytes(`<w:p><w:pPr><w:rPr>${pr}</w:rPr></w:pPr>${r('Chapter text','<w:i/>')}</w:p><w:p><w:pPr><w:rPr>${pr}</w:rPr></w:pPr></w:p>`));
+  const doc=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  assert.deepEqual(doc.content.map(p=>p.attrs?.wordParagraphMarkTypography),[{bold:true,italic:false,fontFamily:'Georgia',fontSize:'14pt'},{bold:true,italic:false,fontFamily:'Georgia',fontSize:'14pt'}]);
+  assert.deepEqual(doc.content[0].content[0].marks,[{type:'italic'}]);assert.deepEqual(doc.content[1].content,[]);
+ });
+
+test('Paragraph mark typography: partial font and size slots cannot overwrite different inherited script properties',async()=>{
+  const [bridge]=await modules;
+  const styles=styleXml('<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>');
+  for(const [property,valid] of [['<w:rFonts w:ascii="Georgia"/>',false],['<w:rFonts w:ascii="Arial"/>',true],['<w:sz w:val="28"/>',false],['<w:sz w:val="24"/>',true]]){
+    const report=bridge.buildDocxContentPreviewFromZipBytes(packageBytes(`<w:p><w:pPr><w:rPr>${property}</w:rPr></w:pPr>${r('x')}</w:p>`,styles));
+    assert.equal(report.ok,valid,property);
+    if(!valid){assert.equal(report.code,'DOCX_CONTENT_PREVIEW_CONTENT_INVALID');assert.match(report.diagnostics[0].sourceCode,/WORD_PARAGRAPH_MARK_(FONT|SIZE)_UNSUPPORTED/);}
+    if(valid){const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(report);assert.equal(plan.ok,true);const [,envelope]=await modules;const p=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc.content[0];assert.deepEqual(p.attrs.wordParagraphMarkTypography,property.includes('rFonts')?{fontFamily:'Arial'}:{fontSize:'12pt'});}
   }
 });

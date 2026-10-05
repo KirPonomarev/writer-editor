@@ -1,3 +1,13 @@
+## 2026-10-05 — frozen04 candidate checkpoint
+
+WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005: five auxiliary regressions repaired; final whole17files307/307 and focused19/19, build pass. SOURCE04 native genuine mark/text/reply return, Save/restart, independent Undo14/Redo16, Review and Minimal exports observed. PACKAGED04 from same source is in native acceptance. Global exact-candidate checks and commit/push/PR/CI/merge/exact merged verification still gate closure. Earlier pending checkpoint paragraphs remain historical evidence. No whole-plan percentage or completion claim.
+
+## 2026-10-05 — WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005 — working candidate, delivery pending
+
+Owner resumed Mac novel portability. Base4b9fb5f3f. Closed optional paragraph-mark typography is distinct from visible text; both paragraph property revision owners use existing format/history/atomic discussion paths. SOURCE03 native mixed Word return observed empty14-to16pt marker, tracked insertion, genuine second reply, zero-write Cancel, explicit Apply, Save/restart, revision-round Undo/Redo and independent Review export. Undo retains messages and maps anchors by existing contract.
+
+SOURCE03 evidence binds exact working source, not the later repair or a delivered SHA. Auxiliary regression suites found five legacy load/diagnostic regressions; repair stays within the declared envelope. PACKAGED repaired-candidate route, stable mandatory gates, commit/push/PR/merge and exact merged proof remain pending. Minimal export is not yet observed. Original full Mac plan stays intact; named style identity, typing inheritance, zero-text comment-reference formatting carriers, multi-scene full-book combinations and five genuine Word rounds remain OPEN.
+
 ## 2026-10-05 — authority migration serialization repair; final delivery pending
 
 Actual race reproduction on bc9 resurrects EXPIRED/version3 as ACTIVE/version2 after a late unleased migration; bc9 is superseded. The same bounded61path contour now routes oversized legacy recovery through the existing disk queue and trusted project lease/publish, re-reading the original record inside serialization. The addressed real atomic-write race regression passes, retaining both terminal round graphs and a newly signed independently published active round. Whole affected Main/neighbor checks are ongoing; no broad result is attributed to these new bytes yet.

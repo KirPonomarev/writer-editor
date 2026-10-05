@@ -27,7 +27,7 @@ function planPendingCommentDecision({ beforeText, projectId, sceneId, beforeCont
   if (stable(oldLedger.source) !== stable(newLedger.source)
     || stable(definitions(oldLedger)) !== stable(definitions(newLedger))
     || oldLedger.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
-      || r.operation === 'format' && r.format.kind !== 'run'))
+      || r.operation === 'format' && !['run','paragraph'].includes(r.format.kind)))
     fail('PENDING_COMMENT_DECISION_UNSUPPORTED');
   const sessionId = 'pending-comments:' + sha(stable({ projectId, sceneId, source: oldLedger.source, revisions: definitions(oldLedger) }));
   const oldStates = oldLedger.revisions.map(r => r.state), newStates = newLedger.revisions.map(r => r.state);
@@ -39,7 +39,7 @@ function planPendingCommentDecision({ beforeText, projectId, sceneId, beforeCont
   const edits = [];
   source.forEach((paragraph, paragraphIndex) => {
     const text = (paragraph.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join('');
-    const revisions = oldLedger.revisions.filter(r => r.paragraphIndex === paragraphIndex).sort((a, b) => a.from - b.from);
+    const revisions = oldLedger.revisions.filter(r => r.paragraphIndex === paragraphIndex && !review.isParagraphFormat(r)).sort((a, b) => a.from - b.from);
     let cursor = 0, position = 0;
     for (const r of revisions) {
       const next = newLedger.revisions.find(row => row.id === r.id);

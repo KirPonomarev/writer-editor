@@ -230,3 +230,44 @@ test('language set and removal preserve typed break metadata and adjacent text e
   }
  }
 });
+
+test('Paragraph mark typography: real editor schema and durable reopen retain explicit off without visible run leakage',async()=>{
+ const [{getSchema},{default:StarterKit},{DocumentTextStyle},{DocumentParagraphAlignment}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTextStyle.mjs'),import('../../src/renderer/tiptap/documentParagraphAlignment.mjs')]);
+ const e=require('../../src/core/document-content-envelope-v1.cjs'),schema=getSchema([StarterKit,DocumentTextStyle,DocumentParagraphAlignment]);
+ const tuple={bold:true,italic:false,fontFamily:'Georgia',fontSize:'14pt'},doc={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:tuple},content:[{type:'text',text:'italic',marks:[{type:'italic'}]}]},{type:'paragraph',attrs:{wordParagraphMarkTypography:tuple},content:[]}]};
+ const live=schema.nodeFromJSON(doc);live.check();const raw=e.composeObservablePayload({doc:live.toJSON()}),parsed=e.parseObservablePayload(raw);assert.equal(parsed.issue,null);
+ const reopened=schema.nodeFromJSON(parsed.doc);reopened.check();assert.deepEqual(reopened.toJSON().content.map(p=>p.attrs.wordParagraphMarkTypography),[tuple,tuple]);
+ assert.deepEqual(reopened.toJSON().content[0].content[0].marks,[{type:'italic'}]);assert.equal(reopened.toJSON().content[1].content,undefined);assert.match(raw,/word-paragraph-mark-typography.v1/);
+});
+
+test('Paragraph mark typography: closed values reject malformed state before invoking accessors and preserve legacy bytes',()=>{
+ const v=require('../../src/io/inlineTypography.cjs'),e=require('../../src/core/document-content-envelope-v1.cjs');
+ for(const tuple of [{},{bold:1},{italic:'false'},{fontFamily:'serif'},{fontSize:'1.2pt'},{fontSize:'1639pt'},{color:'red'},{highlight:'#123'},{rawXml:'<w:b/>'},[],Object.create({bold:true})])assert.throws(()=>v.normalizeParagraphMarkTypography(tuple));
+ let calls=0;const getter={};Object.defineProperty(getter,'bold',{enumerable:true,get(){calls++;return true;}});assert.throws(()=>v.normalizeParagraphMarkTypography(getter));assert.equal(calls,0);
+ const symbol={bold:true};symbol[Symbol('hidden')]=true;assert.throws(()=>v.normalizeParagraphMarkTypography(symbol));
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'legacy'}]}]},raw=e.composeObservablePayload({doc});
+ assert.deepEqual(e.parseObservablePayload(raw).doc,doc);assert.doesNotMatch(raw,/word-paragraph-mark-typography/);
+ for(const bad of [{...doc,attrs:{wordParagraphMarkTypography:{bold:true}}},{type:'doc',content:[{type:'text',text:'wrong',attrs:{wordParagraphMarkTypography:{bold:true}}}]}])assert.throws(()=>e.composeObservablePayload({doc:bad}));
+});
+test('Paragraph mark typography: predecessor refuses required feature retained only by Original and round history',()=>{
+ const e=require('../../src/core/document-content-envelope-v1.cjs'),review=require('../../src/core/word-pending-text-revisions-v1.cjs'),recording=require('../../src/core/word-pending-recording-v1.cjs');
+ const before={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Georgia',fontSize:'14pt'}},content:[]}]},after={type:'doc',content:[{type:'paragraph',content:[]}]};
+ const pending=recording.derive(before,after,{author:'Owner',date:'2026-10-05T12:00:00.000Z'}).doc;
+ const frame=review.roundFrame(review.readLedger(pending));const history=review.bindLedger({schemaVersion:2,source:after,revisions:[],undo:[],redo:[],roundUndo:[frame],roundRedo:[],returnReceipts:[]});
+ const oldModule={exports:{}},old=require('node:child_process').execFileSync('git',['show','4b9fb5f3ff3029d85722a4655ca47cc0c3cfb583:src/core/document-content-envelope-v1.cjs'],{encoding:'utf8'});
+ require('node:vm').runInNewContext(old,{module:oldModule,exports:oldModule.exports,require:id=>require(path.resolve(__dirname,'../../src/core',id))});
+ for(const doc of [pending,history]){assert.equal(doc.content[0].attrs?.wordParagraphMarkTypography,undefined);const raw=e.composeObservablePayload({doc});assert.match(raw,/word-paragraph-mark-typography.v1/);assert.equal(e.parseObservablePayload(raw).issue,null);assert.equal(oldModule.exports.parseObservablePayload(raw).issue.reason,'DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');}
+});
+
+test('Paragraph mark typography: optional raw detection rejects hidden/getter fields without changing legacy absent loading',()=>{
+ const e=require('../../src/core/document-content-envelope-v1.cjs');let calls=0;
+ for(const descriptor of [{enumerable:true,get(){calls++;throw Error('getter must not execute');}},{enumerable:false,value:{bold:true}}]){
+  const doc={type:'doc',content:[{type:'paragraph',attrs:{},content:[]}]};Object.defineProperty(doc.content[0].attrs,'wordParagraphMarkTypography',descriptor);
+  assert.throws(()=>e.canonicalizeDocumentJson(doc),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/);assert.equal(calls,0);
+ }
+ const fs=require('node:fs'),vm=require('node:vm'),real=require('node:module').createRequire(require.resolve('../../src/core/document-content-envelope-v1.cjs'));let loads=0;
+ const sandbox={module:{exports:{}},require(name){if(name==='../io/inlineTypography.cjs'){loads++;throw Error('MARK_VALIDATOR_NOT_COPIED');}return real(name);}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../../src/core/document-content-envelope-v1.cjs'),'utf8'),sandbox);
+ for(const attrs of [undefined,{wordParagraphMarkTypography:null}])assert.doesNotThrow(()=>sandbox.module.exports.canonicalizeDocumentJson({type:'doc',content:[{type:'paragraph',...(attrs?{attrs}:{}),content:[]}]}));
+ assert.equal(loads,0);assert.throws(()=>sandbox.module.exports.canonicalizeDocumentJson({type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false}},content:[]}]}),/MARK_VALIDATOR_NOT_COPIED/);assert.equal(loads,1);
+});

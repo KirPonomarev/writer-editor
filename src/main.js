@@ -12635,7 +12635,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'headingLevel',
                 'textAlign',
                 'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
-                'wordParagraphMarkLanguage',
+                'wordParagraphMarkLanguage', 'wordParagraphMarkTypography',
                 'list',
                 'blockKind',
                 'blockquoteDepth',
@@ -26578,6 +26578,7 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
           const entry=byParagraph.get(operation.paragraphOrdinal) || {operation,font:false,spacing:false,markLanguage:false};
           entry.font ||= Object.hasOwn(operation.inline || {},'fontFamily');
           entry.spacing ||= Object.hasOwn(operation.paragraph || {},'wordParagraphSpacing');
+          entry.markTypography ||= Object.hasOwn(operation.paragraph || {},'wordParagraphMarkTypography');
           entry.markLanguage ||= Object.hasOwn(operation.paragraph || {},'wordParagraphMarkLanguage');
           byParagraph.set(operation.paragraphOrdinal,entry);
         }
@@ -26589,6 +26590,8 @@ async function applyPrivateCleanBlockTextReturn(writer,input,options) {
             operationId:`${entry.operation.operationId}-prepared-${operations.length}`,from,to,selectedText:text.slice(from,to),inline,paragraph});
           if(entry.spacing){const value=target.attrs?.wordParagraphSpacing;
             add(0,text.length,{}, {wordParagraphSpacing:value==null?{action:'remove'}:{action:'set',value}});}
+          if(entry.markTypography){const value=target.attrs?.wordParagraphMarkTypography;
+            add(0,text.length,{}, {wordParagraphMarkTypography:value==null?{action:'remove'}:{action:'set',value}});}
           if(entry.markLanguage){const value=target.attrs?.wordParagraphMarkLanguage;
             add(0,text.length,{}, {wordParagraphMarkLanguage:value==null?{action:'remove'}:{action:'set',value}});}
           if(entry.font){let offset=0;for(const node of target.content || []){

@@ -1,3 +1,4 @@
+const { buildDocxParagraphMarkTypographyXml } = require('./docxInlineTypography.js');
 const { buildDocxWordParagraphLayoutXml, buildDocxWordParagraphSpacingXml, buildPendingRowPropertiesXml, buildPendingRowParagraphXml, buildPendingRunsXml, buildPendingParagraphPropertiesXml, buildPendingParagraphBoundaryXml } = require('./docxPendingRevisions.js');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
@@ -422,7 +423,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     ? {...paragraphLayout,wordParagraphIndent:{left:docxListTextIndent(Number(list.level),!list.wordNumbering)}} : paragraphLayout;
   paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(effectiveLayout));
   paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(block.formatIr?.paragraph?.wordParagraphSpacing));
-  const markLanguage = buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
+  const markLanguage = buildDocxParagraphMarkTypographyXml(block.formatIr?.paragraph?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
   if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
   if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));
   const paragraphProperties = buildPendingRowParagraphXml(buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(paragraphPropertyParts.length > 0

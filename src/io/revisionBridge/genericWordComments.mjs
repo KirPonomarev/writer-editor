@@ -47,14 +47,14 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     && (!(ir.textRevisions?.length || ir.propertyRevisions?.length) || pendingLedger), 'TRACKED_UNSUPPORTED');
   if(pendingLedger) {
     demand(pendingLedger.revisions.every(r=>['insert','delete','format'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName
-      && (r.operation !== 'format' || r.format.kind === 'run')),'TRACKED_UNSUPPORTED');
+      && (r.operation !== 'format' || ['run','paragraph'].includes(r.format.kind))),'TRACKED_UNSUPPORTED');
     // Formatting cannot move an anchor, but it must remain a pending operation
     // in the independently validated rich ledger rather than disappear here.
     const formats = pendingLedger.revisions.filter(r => r.operation === 'format');
     const properties = ir.propertyRevisions || [];
     demand(properties.length === formats.length && formats.every(revision =>
       properties.filter(property => property.nativeRevisionId === revision.nativeId
-        && property.propertyKind === (revision.format.kind === 'run' ? 'rPrChange' : 'pPrChange')
+        && (revision.format.kind==='run'?property.propertyKind==='rPrChange':['rPrChange','pPrChange'].includes(property.propertyKind))
         && (property.author ?? '') === revision.author
         && (property.date ?? '') === revision.date
         && (property.dateUtc ?? '') === revision.dateUtc).length === 1), 'TRACKED_UNSUPPORTED');

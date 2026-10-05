@@ -170,9 +170,10 @@ function validateSource(doc) {
   spacing.inspectDocumentParagraphSpacing(doc);
   require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(doc);
   language.inspectDocumentLanguage(doc);
+  require('../io/inlineTypography.cjs').inspectParagraphMarkTypography(doc);
   for (const p of paragraphs(doc)) {
     assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading', 'codeBlock'].includes(p.type));
-    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs', ...(p.type === 'codeBlock' ? ['language'] : [])])
+    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs', ...(p.type === 'codeBlock' ? ['language'] : [])])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
       && (p.type !== 'heading' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)
       && (p.attrs.language == null || p.type === 'codeBlock' && typeof p.attrs.language === 'string' && p.attrs.language.length <= 128 && !/[\x00-\x1f<>]/u.test(p.attrs.language))));
@@ -786,6 +787,7 @@ function commentLeftDefaults(doc, exportParagraphs) {
 function commentRich(doc, fontSize, indents=null, leftDefaults=null) {
   const copy=clone(doc);
   const visit=n=>{
+    if(n.attrs?.wordParagraphMarkTypography!=null){const value=require('../io/inlineTypography.cjs').comparableParagraphMarkTypography(n.attrs.wordParagraphMarkTypography);if(value)n.attrs.wordParagraphMarkTypography=value;else delete n.attrs.wordParagraphMarkTypography;}
     if(fontSize && ['text','hardBreak'].includes(n.type)) {
       const marks=n.marks || (n.marks=[]); let style=marks.find(m=>m.type==='textStyle');
       if(!style) marks.push(style={type:'textStyle',attrs:{}});
@@ -827,10 +829,13 @@ function commentTransportSegments(segments, paragraph = {}) {
 function commentBasis(document,exportTypography,schemaVersion=1) {
   const ledger=readLedger(document);
   assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete','format'].includes(r.operation)
-    && (r.operation !== 'format' || r.format.kind === 'run')), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
+    && (r.operation !== 'format' || ['run','paragraph'].includes(r.format.kind))), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
   const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], rows=[];
   const exportedParagraphs=paragraphs(exported.doc);
   exported.paragraphs.forEach((p,paragraphIndex)=>{
+    const format=ledger.revisions.find(r=>r.paragraphIndex===paragraphIndex&&isParagraphFormat(r)&&r.state==='pending');
+    if(format)spans.push({revisionId:format.id,paragraphIndex,fromUtf16:0,toUtf16:(exportedParagraphs[paragraphIndex].content||[]).map(textOf).join('').length,operation:'format',paragraphFormat:true,
+      provenanceSha256:commentHash({author:format.author,date:format.date,dateUtc:format.dateUtc}),formatSha256:commentHash({before:commentRich({type:'doc',content:[{...format.format.before,content:[]}]},size),after:commentRich({type:'doc',content:[{...format.format.after,content:[]}]},size)})});
     let offset=0; const parts=[];
     for(const segment of schemaVersion===2?commentTransportSegments(p.segments,exportedParagraphs[paragraphIndex]):p.segments) {
       const length=textOf(segment.node).length, from=offset; offset+=length;
@@ -846,7 +851,10 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
   });
   const project=mode=>{
     const doc=clone(exported.doc);
-    paragraphs(doc).forEach((p,index)=>{p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>{
+    paragraphs(doc).forEach((p,index)=>{
+      const format=ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r)&&r.state==='pending');
+      if(mode==='original'&&format){p.type=format.format.before.type;if(format.format.before.attrs)p.attrs=clone(format.format.before.attrs);else delete p.attrs;}
+      p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>{
       const node=clone(s.node);
       if(mode==='original' && s.revision?.operation==='format') {
         if(s.revision.format.before.length)node.marks=clone(s.revision.format.before);else delete node.marks;
@@ -857,6 +865,7 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
   };
   const union=project('union'),current=project('current'),original=project('original');
   for(const span of spans) {
+    if(span.paragraphFormat)continue;
     const nodes=rows[span.paragraphIndex].filter(s=>s.fromUtf16>=span.fromUtf16 && s.toUtf16<=span.toUtf16).map(s=>s.node);
     span.formatSha256=commentHash(commentRich({type:'doc',content:[{type:'paragraph',content:nodes}]},size));
   }
@@ -994,6 +1003,7 @@ function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[
   assert(commentHash({union:commentRich(returned.union,returned.size,null,leftDefaults),current:commentRich(returned.current,returned.size,null,leftDefaults),original:commentRich(returned.original,returned.size,null,leftDefaults)})===binding.basisSha256,'PENDING_COMMENT_PROJECTION_CHANGED');
   const partitions=[];let cursor=0;
   for(const span of binding.revisionSpans) {
+    if(span.paragraphFormat){const actual=returned.spans[cursor++];assert(actual?.paragraphFormat&&actual.paragraphIndex===span.paragraphIndex&&actual.fromUtf16===span.fromUtf16&&actual.toUtf16===span.toUtf16&&actual.provenanceSha256===span.provenanceSha256&&actual.formatSha256===span.formatSha256,'PENDING_COMMENT_PARTITION_CHANGED');partitions.push({revisionId:span.revisionId,fragments:[actual.revisionId]});continue;}
     let offset=span.fromUtf16;const fragments=[];
     while(offset<span.toUtf16) {
       const fragment=returned.spans[cursor++];
@@ -1017,10 +1027,19 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
   const old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
   // Match a fresh property change against its checked previous rich snapshot.
   // The published Current and Original projections remain separate and exact.
-  const comparison=clone(incoming.union);
+  const comparison=clone(incoming.union), oldLedger=readLedger(document);
   const sameRevision=(a,b)=>a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
     && stable(a.format)===stable(b.format);
-  paragraphs(comparison).forEach((p,index)=>{p.content=incoming.rows[index].map(segment=>{
+  paragraphs(comparison).forEach((p,index)=>{
+    const currentFormat=incoming.ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
+    const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
+    if(oldFormat)assert(currentFormat&&sameRevision(oldFormat,currentFormat),'MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED');
+    else if(currentFormat){
+      const strip=properties=>{const value=clone(properties);if(value.attrs){delete value.attrs.wordParagraphMarkTypography;delete value.attrs.wordParagraphMarkLanguage;if(!Object.keys(value.attrs).length)delete value.attrs;}return value;};
+      assert(stable(strip(currentFormat.format.before))===stable(strip(currentFormat.format.after)),'MIXED_RETURN_PARAGRAPH_FORMAT_UNSUPPORTED');
+      p.type=currentFormat.format.before.type;if(currentFormat.format.before.attrs)p.attrs=clone(currentFormat.format.before.attrs);else delete p.attrs;
+    }
+    p.content=incoming.rows[index].map(segment=>{
     const node=clone(segment.node),revision=segment.revision;
     if(revision?.operation==='format' && !before.projection.segments[index].some(old=>old.revision && sameRevision(old.revision,revision))) {
       node.marks=commentTransportSegments([{node:{type:'text',text:'x',marks:revision.format.before},revision:null}],p)[0].node.marks;
@@ -1030,7 +1049,7 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
   const next=commentRich(comparison,incoming.size,null,left);
   const shape=doc=>{const copy=clone(doc);paragraphs(copy).forEach(p=>{p.content=[];});return normalizeNode(copy);};
   assert(stable(shape(old))===stable(shape(next)),'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
-  return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows},
+  return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows,paragraphFormats:incoming.ledger.revisions.filter(isParagraphFormat)},
     oldComparison:old,newComparison:next};
 }
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {

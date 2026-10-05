@@ -18,12 +18,13 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false, novelDocument, novelState, reopenRoot, commandOnly = false } = {}) {
+async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false, markChange = false, novelDocument, novelState, reopenRoot, commandOnly = false } = {}) {
   const root = reopenRoot || fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); if (!reopenRoot) t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman'), {recursive:true}); const file = path.join(root, 'roman/a.txt');
   let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
   const linked=(doc,target)=>{const node={type:'paragraph',content:[{type:'text',text:'Unchanged external link',marks:[{type:'link',attrs:{href:target,rel:'noopener noreferrer nofollow',target:'_blank'}}]}]},ledger=model.readLedger(doc);if(ledger){ledger.source.content.push(node);return model.bindLedger(ledger);}doc.content.push(node);return doc;};
   if(early) {const l=model.readLedger(initial);l.source.content.unshift({type:'paragraph',content:[{type:'text',text:'lead'}]});l.revisions.forEach(r=>r.paragraphIndex++);initial=model.bindLedger(l);}
+  if(markChange){const ledger=model.readLedger(initial);for(const p of ledger.source.content)p.attrs={wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}};ledger.source.content.push({type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}},content:[]});initial=model.bindLedger(ledger);}
   if(links)initial=linked(initial,'https://example.com/original');
   if (novelDocument) initial=structuredClone(novelDocument);
   if (reopenRoot) initial=envelope.parseObservablePayload(fs.readFileSync(file,'utf8')).doc;
@@ -129,12 +130,13 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     for(const thread of returnedComments.threads)if(thread.anchor.sceneParagraphIndex===index)thread.anchor.blockTextSha256=hash(changedText);
     returnedComments.threads.slice(0,2).forEach((thread,i)=>thread.messages.push({commentId:'capacity-reply-'+next+'-'+i,kind:'reply',body:'Editorial round '+next,provenance:{author:'Editor'}}));
   }
+  if(markChange){const ledger=model.readLedger(doc);ledger.source.content.push({type:'paragraph',content:[]});for(const [index,p]of ledger.source.content.entries()){const before={type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}}};p.attrs={wordParagraphMarkTypography:{bold:true,fontFamily:'Georgia',fontSize:'14pt'}};ledger.revisions.push({id:'revision-'+(4+index),nativeId:String(3+index),operation:'format',author:'Editor',date:'',dateUtc:'',paragraphIndex:index,from:0,to:(p.content||[]).map(n=>n.text).join('').length,state:'pending',groupId:null,format:{kind:'paragraph',before,after:model.paragraphProperties(p)}});}ledger.revisions.sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);doc=model.bindLedger(ledger);}
   if(links)doc=linked(doc,linkTarget||'https://example.com/original');
   const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root, ...(mixed?{nonTextReturnState:returnedComments}:{}),
-    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: novelDocument||reopenRoot||links||early?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: novelDocument||reopenRoot||links||early||markChange?envelope.deriveVisibleTextFromDocument(doc):clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
   let bytes = buildDocxReviewPacketBuffer(exported);
   const baselineSource=mixed?buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:JSON.parse(h.commentText),
-    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:novelDocument||reopenRoot||links||early?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
+    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:novelDocument||reopenRoot||links||early||markChange?envelope.deriveVisibleTextFromDocument(initial):'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
   if(mixed) {
     const baseBytes=buildDocxReviewPacketBuffer(baselineSource);
     const baseParts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:baseBytes}).parts;
@@ -553,4 +555,22 @@ for(const variant of ['reordered','mismatch'])test('actual Main mixed proof dupl
  else capsule.exportMap.commentExport={...capsule.commentExport,stateRevision:capsule.commentExport.stateRevision+1};
  const result=await h.prepare();assert.equal(result.status,variant==='reordered'?'preview-ready':'blocked',JSON.stringify(result));assert.equal(h.writes,0);
  if(variant==='mismatch')assert.equal(result.code,'MIXED_RETURN_COMMENT_BASELINE_MISMATCH');
+});
+
+test('Paragraph mark typography: actual Main compound route uses atomic writer, fresh restart, decisions and round UndoRedo',async t=>{
+ const h=await harness(t,{mixed:true,markChange:true});installRealEditorialWriter(h);const before=fs.readFileSync(h.file,'utf8');
+ const routed=await h.route();assert.equal(routed.pendingProductPath?.status,'preview-ready',JSON.stringify(routed));assert.equal(h.writes,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);
+ assert.equal((await h.prepared.apply()).ok,true);const current=h.context().parsed.doc;assert.equal(model.projection(current).current,'new added\n');
+ assert.deepEqual(model.normalizeNode(current).content.map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:true,fontFamily:'Georgia',fontSize:'14pt'}));
+ let live=await harness(t,{mixed:true,reopenRoot:h.context().projectRoot,commandOnly:true});installRealEditorialWriter(live);
+ assert.equal((await live.command('undo')).ok,true);assert.equal(model.projection(live.context().parsed.doc).current,'new\n');
+ assert.deepEqual(model.normalizeNode(live.context().parsed.doc).content.map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:false,fontFamily:'Arial',fontSize:'12pt'}));
+ live=await harness(t,{mixed:true,reopenRoot:h.context().projectRoot,commandOnly:true});installRealEditorialWriter(live);assert.equal((await live.command('redo')).ok,true);
+ assert.deepEqual(model.normalizeNode(live.context().parsed.doc),model.normalizeNode(current));assert.equal(JSON.parse(live.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
+ const mark=model.readLedger(live.context().parsed.doc).revisions.find(model.isParagraphFormat);assert.equal((await live.command('reject',{revisionId:mark.id})).ok,true);
+ assert.deepEqual(model.normalizeNode(live.context().parsed.doc).content[mark.paragraphIndex].attrs.wordParagraphMarkTypography,{bold:false,fontFamily:'Arial',fontSize:'12pt'});assert.equal((await live.command('undo')).ok,true);
+ const exported=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:live.context().projectRoot,nonTextReturnState:JSON.parse(live.commentText),scenes:[{sceneId:'roman/a.txt',scenePath:live.file,doc:live.context().parsed.doc,text:envelope.deriveVisibleTextFromDocument(live.context().parsed.doc),order:0}]});
+ const b=await import('../../src/io/revisionBridge/index.mjs'),bytes=buildDocxReviewPacketBuffer(exported),preview=b.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));const plan=b.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);const returned=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+ const emitted=doc=>{const copy=model.normalizeNode(doc);for(const p of copy.content)for(const n of p.content||[]){const marks=n.marks||(n.marks=[]);let style=marks.find(m=>m.type==='textStyle');if(!style)marks.push(style={type:'textStyle',attrs:{}});style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},...style.attrs};}return model.normalizeNode(copy).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));};
+ for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),emitted(model.materialize(model.readLedger(live.context().parsed.doc),mode)));
 });

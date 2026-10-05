@@ -37,7 +37,7 @@ const snapshotDigest = s => s.status === 'deleted' ? s.liveLocator.blockTextSha2
 function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'forward') {
   const oldIds = new Set(baseline.revisions.map(r => r.id));
   if (recorded.revisions.some(r => !['insert', 'delete', 'format'].includes(r.operation) || review.isStructural(r) || r.moveName
-    || r.operation === 'format' && r.format.kind !== 'run'))
+    || r.operation === 'format' && !['run','paragraph'].includes(r.format.kind)))
     fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const fresh = recorded.revisions.filter(r => !oldIds.has(r.id));
   if (!fresh.length || fresh.some(r => r.state !== 'pending')) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
@@ -46,7 +46,7 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
   if (sourceRows.length !== expectedRows.length) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
   const shifted = clone(recorded.revisions.filter(r => oldIds.has(r.id)));
   sourceRows.forEach((paragraph, paragraphIndex) => {
-    const value = rowText(paragraph), revisions = recorded.revisions.filter(r => r.paragraphIndex === paragraphIndex).sort((a, b) => a.from - b.from);
+    const value = rowText(paragraph), revisions = recorded.revisions.filter(r => r.paragraphIndex === paragraphIndex && !review.isParagraphFormat(r)).sort((a, b) => a.from - b.from);
     let cursor = 0, position = 0;
     for (const r of revisions) {
       position += r.from - cursor;
@@ -60,7 +60,7 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
       cursor = r.to;
     }
     const insertions = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'insert');
-    const formats = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'format');
+    const formats = fresh.filter(r => r.paragraphIndex === paragraphIndex && r.operation === 'format' && !review.isParagraphFormat(r));
     let offset = 0; const nodes = [];
     for (const node of paragraph.content || []) {
       const size = node.type === 'hardBreak' ? 1 : node.text.length, end = offset + size;
@@ -76,7 +76,10 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
       offset = end;
     }
     paragraph.content = nodes;
+    const paragraphFormat=fresh.find(r=>r.paragraphIndex===paragraphIndex&&review.isParagraphFormat(r));
+    if(paragraphFormat){paragraph.type=paragraphFormat.format.before.type;if(paragraphFormat.format.before.attrs)paragraph.attrs=clone(paragraphFormat.format.before.attrs);else delete paragraph.attrs;}
     for (const r of shifted.filter(r => r.paragraphIndex === paragraphIndex)) {
+      if(review.isParagraphFormat(r)){r.to=rowText(paragraph).length;continue;}
       if (insertions.some(i => i.from < r.to && i.to > r.from)) fail('RECORDING_COMMENT_ROUND_UNSUPPORTED');
       const shift = insertions.filter(i => i.to <= r.from).reduce((n,i) => n+i.to-i.from,0); r.from -= shift; r.to -= shift;
     }

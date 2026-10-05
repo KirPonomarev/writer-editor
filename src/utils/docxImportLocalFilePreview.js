@@ -246,7 +246,7 @@ function sanitizeContentPreviewReport(report) {
                 'headingLevel',
                 'textAlign',
                 'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
-                'wordParagraphMarkLanguage',
+                'wordParagraphMarkLanguage', 'wordParagraphMarkTypography',
                 'list',
                 'blockKind',
                 'blockquoteDepth',
