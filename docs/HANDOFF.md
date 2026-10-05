@@ -1,3 +1,25 @@
+## 2026-10-05 — repaired mixed return native06 complete; final CI pending
+
+Repaired ae19881ec00e0bc96cc83b453b0adc8af09e8bcf completes actual native
+Apply, restart, round Undo/Redo and Review DOCX reexport in SOURCE06 and PACKAGED06.
+Preparation replays genuine native05 preApply captures and real changed Word05
+files; original post05 profiles are archived byte-exact. This is repaired Main
+route revalidation, with Word changed-save proof retained at its originalce26 SHA.
+All prior revision IDs/provenance, discussion bodies/statuses/Current quotes and
+Original/Current text pass saved-data readback; restart hashes equal Apply and
+Redo scene bytes equal Apply. SOURCE7revisions/4roots/7messages; PACKAGED11/5/10.
+Final native export retains all old discussions and the added EARLY root. Both
+owned runtimes stop normally with byte-exact saved-profile snapshots.
+
+Empty export metadata now preserves existing pending-notes route; genuine first
+incoming discussion still uses atomic mixed route. Legacy unchanged rich snapshot
+is preserved and changed100k preview remains bounded.74focused and1054affected
+checks pass, no skips/todo. CI37304924977 failures are repaired, not acceptance.
+NATIVE06_RECEIPT.json binds this observation; final CI, merge and exact merged
+verification remain required. These189/190-word fixtures do not accept100k.
+Next declared packet should combine measured full-source history growth and finite
+discussion capacity, followed by native100k composed acceptance. Original plan intact.
+
 ## 2026-10-05 — legacy route repair; native06 revalidation pending
 
 CI37304924977 at4c1ac4178 found5 failures out of3400; cancelled after diagnosis.
