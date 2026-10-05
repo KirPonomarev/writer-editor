@@ -49,7 +49,10 @@ export function commentSceneSnapshotsEqual(left, right) {
             || !supportedMarks.has(mark.type) || seen.has(mark.type)) return true;
           seen.add(mark.type); return false;
         })) { invalidMarks = true; return [key, canonical(marks)]; }
-        return [key, marks.map(mark => canonical(mark)).sort((a, b) => a.type < b.type ? -1 : a.type > b.type ? 1 : 0)];
+        return [key, marks.map(mark => canonical(mark.type === 'link' && mark.attrs !== null
+          && typeof mark.attrs === 'object' && !Array.isArray(mark.attrs)
+          ? { ...mark, attrs: { class: null, title: null, wordBookmarkId: null, wordBookmarkName: null, ...mark.attrs } }
+          : mark)).sort((a, b) => a.type < b.type ? -1 : a.type > b.type ? 1 : 0)];
       }
       if(key!=='content' || !documentNode || !contentTypes.has(source.type) || !Array.isArray(source[key]))return [key,canonical(source[key])];
       const children=source[key].map(child=>canonical(child,true));

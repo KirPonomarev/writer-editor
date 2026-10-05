@@ -1136,7 +1136,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
-        "sha256": "fb7b1c4bc971cfeac8194ef2242c4c168659a5569efe6e333b5bf28de01b47ca"
+        "sha256": "775dc3d77eb8cec978c8f2f332c86d0d6ccb4be71ac4bda07c0f5fe65d8f8175"
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
@@ -2416,7 +2416,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "39678cd30f24071a0dde322398585c8e94f28ce103f3f4e3da4991591a6174d3"
+        "sha256": "06b7e2729c300106ccc26177de5be85e78563cfc368bf1a5fe777444b2bfadf5"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2580,7 +2580,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-        "sha256": "820f6874dc8643407123d222a38d5988ea7844fbee066f9c16f3cab42e54e470"
+        "sha256": "d43e1c5b416d6762ca974fda813fb78c483665468099e9d07efc124d68a1747f"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",

@@ -207,6 +207,23 @@ projection retaining prior editor state/history; independent source review
 found no blocking issue. Native recheck remains required. SOURCE01 profile and all12 files are
 retained byte-for-byte after safe stop. No native acceptance claimed.
 
+SOURCE02 on2de297312 opened the full rich scene, six pending revisions and
+three discussions. Import ACK still refused: actual full-schema Main comparator
+proved the only differences were absent versus null class/title/bookmark ID/name
+on three external HTTP links. Extend only the real document-link mark default
+law; every nonnull/unknown property, target and relation remain exact. No
+normalization of arbitrary objects or nested ledger metadata. Actual full native
+document through actual schema, canonical envelope and Main ACK now passes;
+renderer30/30 including changed link/metadata/ledger negatives passes. SOURCE02 stopped
+safely with all12 files retained; no native acceptance claimed.
+
+Shared100k programmatic measurement onc1ba94de: 100229words,1741paragraphs,
+21source scenes; export64ms, generic import3724ms, total5894ms. Separate signed
+rich Current/Original/union proof6038ms, six revision partitions exact. Peak
+RSS733568KiB. This is runtime-bound programmatic evidence, not native100k or
+whole-plan acceptance. Original corpus label mismatch is explicitly corrected
+in the immutable external proof; measured source and generator retained.
+
 ## STOP_CONDITION
 
 No missing authority, ambiguous identity, unpreserved manuscript/metadata,
