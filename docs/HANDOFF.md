@@ -1,6 +1,17 @@
 # HANDOFF (Yalken Writer)
 
-## Active implementation — 2026-10-05 04:27 EEST
+## Active implementation — 2026-10-05 04:52 EEST
+
+Structural-comment candidate `19ae1ccc4` completed native SOURCE/PACKAGED split,
+join, whole Delete, saved Undo/Redo, real Word reply, explicit Apply, exact no-op
+replay and restart. SOURCE additionally covers partial crossparagraph Delete.
+Scene bytes and discussion identities survive return; external
+`NATIVE_OBSERVATIONS_VERIFIED.json` binds 35 observations/artifacts. Both owned
+test apps stopped cleanly with saved-byte snapshots. No runtime change followed
+native start. Next: finish direct consumers, mandatory CI and full delivery,
+verify exact merged SHA, then continue original Mac novel-text plan.
+
+## Delivered predecessor and scope — 2026-10-05 04:27 EEST
 
 PR2079 delivery is closed at merged `555717390e94c5f41a0be79a2f3f49c0cda2f8a7`:
 19 CI jobs passed, RTK3254/3254 twice, exact merged700/700 with zero skips and
@@ -13,7 +24,8 @@ Base555717390; root paragraphs Enter/join/Delete with V2 actual-step provenance
 and V5 bounded saved history. Root owns docs/OPS/proof/delivery, three code
 agents own disjoint Core/renderer/compatibility files. First actual PM/Core
 mixed-history checks, then native SOURCE/PACKAGED before full stable gates.
-This new outcome is TARGET until executed. Continue original Mac novel-text
+Native candidate outcome is bounded as recorded above; delivery remains open.
+Continue original Mac novel-text
 plan autonomously; historical paused/pending checkpoints below are superseded.
 No whole-plan completion or percentage follows from this packet.
 

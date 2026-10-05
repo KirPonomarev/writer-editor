@@ -2508,15 +2508,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3762c751383a7351cbab52f081ef3375ae85d64defdfafa0bd5dbdff33f7ca5f"
+        "sha256": "02e27d2ffdbfc18c86bc6a0940d4bfe9e5aa7cfef69bd3cfd9dd4eb97babbf27"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ac7b29305aee505724cb88245b717a1b7bf2cba2bf55c89c7df743a68b1381be"
+        "sha256": "13c360309c4c4e8767526789f386f4289b2a425cf419c2224b1419931c06d7f4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "6a5ad0a24c9de51c5ed9250a72a7820076c12bf441a5d419960cf33a7653853c"
+        "sha256": "905e438a099111b027c5f173163d6cbc893601ae6f2f0d9437b7c07cec37f570"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2560,7 +2560,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-structural-comments-mac.md",
-        "sha256": "56991d93059da0265a8159d173303ecd727ae659e8a5e4a074f016aa18219a41"
+        "sha256": "8f3465a583f45999dc786f9a7d0c5de345bbc2d2bee4b2a4dc2187b396f2e08a"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_STRUCTURAL_COMMENTS_V1.json",

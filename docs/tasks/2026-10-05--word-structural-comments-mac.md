@@ -3,7 +3,7 @@
 TASK_ID: WORD_STRUCTURAL_COMMENTS_MAC_20261005
 TYPE: PRODUCT_CODE
 BASE: 555717390e94c5f41a0be79a2f3f49c0cda2f8a7
-STATUS: FOCUSED_CANDIDATE_READY_NATIVE_PENDING
+STATUS: NATIVE_SOURCE_PACKAGED_OBSERVED_REQUIRED_DELIVERY_PENDING
 
 Owner priority remains complete novel-text portability between Yalken and Word
 on macOS. This is one bounded next vertical slice, not whole-plan acceptance.
@@ -96,3 +96,34 @@ Legacy deleted history without a proved collapsed locator supports its exact
 same-leaf Undo through the retained V1 law; unsupported structural changes in
 that condition refuse rather than invent old coordinates. This limitation is
 explicitly retained for subsequent compatibility work.
+
+## Native candidate observation — 2026-10-05 04:52 EEST
+
+Exact candidate `19ae1ccc4a08a4bac61eb926040a4f13033436fa` completed the native
+route in SOURCE and packaged WRITER_LOCAL_V1 on macOS27 arm64, Word16.112.
+Independent fixture `word-multiparagraph-reply-native.docx` was imported into
+separate empty synthetic profiles. Enter, Backspace join, whole-scene Delete
+and each saved Undo/Redo retained the discussion identity, original messages
+and exact current range. SOURCE also exercised partial crossparagraph Delete
+and saved Undo/Redo. Deleted original quote and a proved collapsed locator were
+observed; restoration recovered the live discussion.
+
+Each build exported the structurally expanded three-paragraph comment, received
+an actual new reply in Microsoft Word, then applied it through the native Review
+command. All scene bytes stayed equal across Apply; three messages and the
+retained local history survived exact no-op replay and app restart. Restart
+does not claim a persistent editor Undo stack. Source split after `Be`, package
+after `B`; literal saved paragraph/range observations prove both variants, not
+identical keyboard cursor placement. External `NATIVE_OBSERVATIONS_VERIFIED.json`
+binds 35 saved observations/artifacts, with raw project snapshots and DOCX hashes.
+
+This evidence is bounded to the synthetic scene and candidate above. Required
+stable checks and Git delivery are still pending. No whole novel, crossscene,
+structural list/cell or whole-plan acceptance is inferred. Earlier failed review
+reproductions remain failures; no runtime repair was needed after native start.
+
+The stable affected-consumer run then passed 1091/1091 tests across 37 files,
+with zero skips/todo and unchanged source bindings. Production npm audit found
+zero vulnerabilities; OSS policy and agent guardrails passed. Independent final
+review found no remaining blocker within this packet's stated boundary. Required
+remote CI, merge and exact merged verification remain separate pending gates.

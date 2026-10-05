@@ -1,5 +1,15 @@
 # WORKLOG (Craftsman)
 
+## 2026-10-05 04:52 EEST — structural comments native route
+
+- Candidate19ae1ccc4 observed in SOURCE and packaged Mac app: split/join/Delete,
+  saved Undo/Redo, real Word reply Apply/replay/restart. Source also partial
+  crossparagraph Delete. Canonical scenes remain byte-identical across return.
+- Separate profiles and literal saved anchors/messages were independently
+  checked; 35 observations/artifacts bound externally. Both apps stopped with
+  verified saved snapshots. Stable gates and delivery still pending; no whole
+  novel or whole-plan completion claim.
+
 ## 2026-10-05 04:27 EEST — Mac novel structural-comment slice
 
 - PR2079 delivered at555717390; exactCI19/19, RTK3254/3254 twice, merged700/7000skip. Native19d runtime equality retained; whole plan remains open.
