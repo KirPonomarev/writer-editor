@@ -168,6 +168,8 @@
     "rtk-word-pending-moves.contract.test.js",
     "rtk-word-pending-notes.contract.test.js",
     "rtk-word-pending-paragraph-boundaries.contract.test.js",
+    "rtk-word-pending-recording-comments.contract.test.js",
+    "rtk-word-pending-recording-intents.contract.test.js",
     "rtk-word-pending-recording-runtime.contract.test.js",
     "rtk-word-pending-recording.contract.test.js",
     "rtk-word-pending-return-runtime.contract.test.js",

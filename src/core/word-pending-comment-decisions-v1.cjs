@@ -21,6 +21,9 @@ function planPendingCommentDecision({ beforeText, projectId, sceneId, beforeCont
     fail('PENDING_COMMENT_DECISION_TARGET_MISMATCH');
   const oldLedger = review.readLedger(before.doc), newLedger = review.readLedger(after.doc);
   const definitions = ledger => ledger.revisions.map(({ state, ...revision }) => revision);
+  if (stable(oldLedger.source) !== stable(newLedger.source) || stable(definitions(oldLedger)) !== stable(definitions(newLedger)))
+    return require('./word-pending-recording-comments-v1.cjs').planRecordingRoundDecision(
+      { beforeText, projectId, sceneId, beforeContent, afterContent, decision }, oldLedger, newLedger);
   if (stable(oldLedger.source) !== stable(newLedger.source)
     || stable(definitions(oldLedger)) !== stable(definitions(newLedger))
     || oldLedger.revisions.some(r => !['insert', 'delete'].includes(r.operation) || review.isStructural(r) || r.moveName))

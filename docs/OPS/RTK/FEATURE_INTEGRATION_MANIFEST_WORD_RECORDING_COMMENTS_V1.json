@@ -1,0 +1,73 @@
+{
+  "taskId": "WORD_RECORDING_COMMENTS_MAC_20261005",
+  "objective": "Mac tracked inline authoring with comments: exact edit provenance across autosaves, imported document metadata, atomic anchors, source-changing round Undo/Redo and native Word exchange.",
+  "writePaths": [
+    "Existing editor snapshot -> validated retained original intervals and fresh insertion pieces -> Core recording ledger -> private Main admission -> leased independently recomputed scene/comment atomic transaction -> readback and identity-guarded publication"
+  ],
+  "productPorts": [
+    "Existing project lease, atomic scene/manifest/comment transaction, readable recovery and guarded editor publication; existing native DOCX exports"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Existing pending revision and canonical comment immutable projections"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Exact baseline and projected working document, validated edit coordinates and removed text; repeated text never establishes identity",
+    "Main-owned recording session, saved provenance prefix, scene/comment CAS, project/lifecycle/generation checks",
+    "Restart-safe recording round identity from full immutable frame and revision definitions; actual Core Undo/Redo determines permitted delta"
+  ],
+  "capabilityRevalidation": "Existing Kernel/Main entitlement and profile checks plus under-lease exact source/comment/notes and editor freshness checks. Internal options cannot be injected through closed renderer payload.",
+  "fallbacks": [
+    "No silent removal of comments guard: recording with comments requires exact admitted provenance and supported inline changes",
+    "Unsupported structural/format/move/notes mixtures, expired history, manual tombstones and unsafe metadata refuse before write",
+    "Bounded edit/history budgets retained; no silent loss or manufactured PASS"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Repeated-character middle deletion, disjoint edits, inserted text edited again, real Undo/Redo provenance and autosave prefix continuation",
+    "Document tabstop/sections preserved or typed refusal; unknown attributes fail",
+    "Actual Main transaction comment preservation, stale scene/comments/generation/project, forged anchors and recovery",
+    "Recording stop and restart source-changing Undo/Redo; subsequent pending decisions, new roots and Word replies",
+    "Early SOURCE/PACKAGED native route before full stable checks; mandatory CI and merged exact-head verification"
+  ],
+  "securityAndInputBoundary": "No new dependencies, runtime network, UI/IPC writers, private owner data or budget inflation. External DOCX and proof fields validated before semantic use; compact signed binding avoids manuscript duplication.",
+  "performanceAndAccessibility": "Reuse existing controls, no UI design changes. Bounded ledger and existing256-intent/32-comment-history budgets; no per-keystroke new work.",
+  "currentReality": [
+    "PR2083 delivered at ebab94902555af261a89ce18e06940234eccd5a5: CI19/19, both RTK3340/3340, merged920/920 zero skips",
+    "Recording currently refuses active comments and imported doc attrs; prefix/suffix text diff loses occurrence identity and can swallow untouched middle text",
+    "Renderer already captures validated-shape v2 position intents and acknowledges saved prefixes; no new UI design required"
+  ],
+  "targetOnly": [
+    "Recording with comments and round Undo/Redo remain TARGET until real native route and required gates pass",
+    "Paragraph-mark typography, named style identity and full large-book/five-cycle acceptance remain open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Core validates exact edit positions against baseline and resulting projection; canonical scene, pending ledger and comment state own durable truth. Renderer operation provenance is untrusted input, never write authority.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.review.recordTextRevisions",
+    "Existing save command",
+    "cmd.project.review.decidePendingRevision"
+  ],
+  "queries": [
+    "Existing pending revision and canonical comment projections"
+  ],
+  "events": [
+    "Existing atomic scene/comment saved event"
+  ],
+  "effects": [
+    "Existing leased atomic project transaction and guarded publication"
+  ],
+  "hotPathBoundary": "Existing snapshot/save boundary, bounded256 typed edit intents; no added renderer per-keystroke work",
+  "migrationRollbackEvidence": "Revert this bounded packet, preserve canonical documents/comments/ledger/history and readable recovery; no new dependency or destructive migration.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_NO_DESIGN_CHANGE"
+}

@@ -15,7 +15,6 @@ function baseline(doc) {
   if (ledger) return { ...clone(ledger), schemaVersion: 2, roundUndo: clone(ledger.roundUndo || []),
     roundRedo: clone(ledger.roundRedo || []), returnReceipts: clone(ledger.returnReceipts || []) };
   const source = review.normalizeNode(doc);
-  if (source.attrs) fail('RECORDING_DOCUMENT_ATTRIBUTES_UNSUPPORTED');
   review.paragraphs(source).forEach(p => { p.content ||= []; });
   return review.validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [],
     roundUndo: [], roundRedo: [], returnReceipts: [] });
@@ -150,7 +149,8 @@ function deriveParagraphBoundaries(doc, before, working, metadata) {
     const inserted = []; append(inserted, added, 'insert');
     union = [...original.slice(0, end), ...inserted, ...original.slice(end)];
   }
-  const after = clone(before), source = { type: 'doc', content: [] }, locations = new Map(), boundaryLocations = new Map();
+  if (before.source.attrs?.wordSections) fail('RECORDING_SECTION_STRUCTURE_UNSUPPORTED');
+  const after = clone(before), source = { ...clone(before.source), content: [] }, locations = new Map(), boundaryLocations = new Map();
   const fresh = []; let nodes = [], offset = 0, paragraphIndex = 0, active = null;
   const finish = () => { if (active) { fresh.push(active); active = null; } };
   for (const token of union) {
@@ -286,7 +286,7 @@ function deriveTableRows(doc, before, working, metadata) {
 
 // Pure derivation from a stable session baseline, not from the last autosave.
 // The caller supplies main-owned author/time and owns all save authority.
-function derive(doc, workingDoc, metadata) {
+function derive(doc, workingDoc, metadata, editIntents) {
   if (!metadata || Object.keys(metadata).some(k => !['author', 'date'].includes(k))
     || typeof metadata.author !== 'string' || !metadata.author.trim() || metadata.author.length > 1024
     || /[\x00-\x1f]/u.test(metadata.author) || typeof metadata.date !== 'string'
@@ -295,6 +295,8 @@ function derive(doc, workingDoc, metadata) {
   if (workingDoc?.attrs?.[review.KEY]) fail('RECORDING_RENDERER_LEDGER_FORBIDDEN');
   const before = baseline(doc), working = baseline(workingDoc).source;
   const current = review.materialize(before);
+  const exact = editIntents === undefined ? null : require('./word-pending-recording-intents-v1.cjs')
+    .deriveChanges(review.paragraphs(current).map(text), review.paragraphs(working).map(text), editIntents);
   const shape = document => { const result = clone(document); review.paragraphs(result).forEach(p => { p.content = []; p.type = 'paragraph'; delete p.attrs; }); return result; };
   const oldLeaves = review.paragraphs(current), newLeaves = review.paragraphs(working);
   const changedBoundariesOnly = [current, working].every(d => d.content.every(p => ['paragraph', 'heading'].includes(p.type)))
@@ -311,8 +313,10 @@ function derive(doc, workingDoc, metadata) {
     for (let i = sourceIndexes.length - 1; i >= 0; i--)
       if (hidden.some(row => i >= row.paragraphIndex && i < row.paragraphIndex + row.paragraphCount)) sourceIndexes.splice(i, 1);
   }
-  if (changedBoundariesOnly || !sameShape || oldLeaves.length !== sourceIndexes.length)
+  if (changedBoundariesOnly || !sameShape || oldLeaves.length !== sourceIndexes.length) {
+    if (exact) fail('RECORDING_INTENT_STRUCTURE_UNSUPPORTED');
     return deriveParagraphBoundaries(doc, before, working, metadata);
+  }
   const after = clone(before); let nextId = 1, nextGroup = 1, changed = false;
   const currentParagraphs = review.paragraphs(current), workingParagraphs = review.paragraphs(working);
   const sourceParagraphs = review.paragraphs(before.source), afterParagraphs = review.paragraphs(after.source);
@@ -354,32 +358,41 @@ function derive(doc, workingDoc, metadata) {
   for (let visibleIndex = 0; visibleIndex < workingParagraphs.length; visibleIndex++) {
     const index = sourceIndexes[visibleIndex];
     const old = currentParagraphs[visibleIndex], next = workingParagraphs[visibleIndex];
-    if (equal(old, next)) continue;
+    if (equal(old, next) && !exact?.changes[visibleIndex]?.length) continue;
     const row = review.tableRows(before.source).find(row => index >= row.paragraphIndex && index < row.paragraphIndex + row.paragraphCount);
     if (row && before.revisions.some(r => review.isTableRow(r) && r.paragraphIndex === row.paragraphIndex)) fail('RECORDING_EXISTING_REVISION_OVERLAP');
     const a = text(old), b = text(next), p = afterParagraphs[index];
-    const oldRevisions = after.revisions.filter(r => r.paragraphIndex === index);
-    let insertionAt = Infinity, addedLength = 0;
-    let unchanged = [[0, a.length, 0, b.length]];
-    if (a !== b) {
-      // Walk Unicode scalars so a revision boundary cannot split a surrogate pair.
+    const oldRevisions = before.revisions.filter(r => r.paragraphIndex === index);
+    const shifts = [];
+    let changes = exact?.changes[visibleIndex] || [];
+    if (!exact && a !== b) {
       const aa = [...a], bb = [...b]; let left = 0, right = 0;
       while (left < aa.length && left < bb.length && aa[left] === bb[left]) left++;
       while (right < aa.length - left && right < bb.length - left && aa[aa.length - 1 - right] === bb[bb.length - 1 - right]) right++;
       const start = aa.slice(0, left).join('').length;
-      const oldEnd = a.length - aa.slice(aa.length - right).join('').length;
-      const newEnd = b.length - bb.slice(bb.length - right).join('').length;
-      unchanged = [[0, start, 0, start], [oldEnd, a.length, newEnd, b.length]];
-      const from = visibleOffsetToSource(before, index, start, sourceParagraphs[index]);
-      const to = visibleOffsetToSource(before, index, oldEnd, sourceParagraphs[index]);
+      changes = [{ from: start, to: a.length - aa.slice(aa.length - right).join('').length,
+        newFrom: start, newTo: b.length - bb.slice(bb.length - right).join('').length }];
+    }
+    const unchanged = []; let oldAt = 0, newAt = 0;
+    for (const change of changes) {
+      unchanged.push([oldAt, change.from, newAt, change.newFrom]);
+      oldAt = change.to; newAt = change.newTo;
+    }
+    unchanged.push([oldAt, a.length, newAt, b.length]);
+    // Right-to-left insertion preserves the baseline offsets of every earlier
+    // change. Retained rich runs between disjoint edits stay outside revisions.
+    for (const change of changes.slice().reverse()) {
+      const from = visibleOffsetToSource(before, index, change.from, sourceParagraphs[index]);
+      const to = visibleOffsetToSource(before, index, change.to, sourceParagraphs[index]);
       if (oldRevisions.filter(r => !review.isParagraphFormat(r)).some(r => from === to ? r.from < from && r.to > from : r.from < to && r.to > from))
         fail('RECORDING_EXISTING_REVISION_OVERLAP');
-      const inserted = slice(next.content, start, newEnd); addedLength = newEnd - start; insertionAt = to;
+      const inserted = slice(next.content, change.newFrom, change.newTo), addedLength = change.newTo - change.newFrom;
       p.content = [...slice(p.content, 0, to), ...inserted, ...slice(p.content, to, text(p).length)];
-      for (const r of oldRevisions) {
+      for (const r of after.revisions.filter(r => r.paragraphIndex === index)) {
         if (review.isParagraphFormat(r)) r.to += addedLength;
         else if (r.from >= to) { r.from += addedLength; r.to += addedLength; }
       }
+      shifts.push({ at: to, length: addedLength });
       let groupId = null;
       if (to > from && addedLength) {
         if (nextGroup > 9999) fail('PENDING_REVISIONS_ID_BUDGET');
@@ -392,7 +405,8 @@ function derive(doc, workingDoc, metadata) {
       for (const interval of markIntervals(slice(old.content, oldStart, oldEnd), slice(next.content, newStart, newEnd))) {
         let from = visibleOffsetToSource(before, index, oldStart + interval.from, sourceParagraphs[index]);
         let to = visibleOffsetToSource(before, index, oldStart + interval.to, sourceParagraphs[index]);
-        if (from >= insertionAt) { from += addedLength; to += addedLength; }
+        const shift = shifts.filter(s => s.at <= from).reduce((sum, s) => sum + s.length, 0);
+        from += shift; to += shift;
         if (after.revisions.some(r => r.paragraphIndex === index && !review.isParagraphFormat(r) && r.from < to && r.to > from))
           fail('RECORDING_EXISTING_REVISION_OVERLAP');
         const styled = slice(p.content, from, to).map(n => {
@@ -419,7 +433,7 @@ function derive(doc, workingDoc, metadata) {
   // repeated candidates and differing rich marks retain ordinary text review.
   const previousIds = new Set(before.revisions.map(r => r.id)), relocations = new Map();
   for (const revision of after.revisions) {
-    if (previousIds.has(revision.id) || revision.groupId || !['insert', 'delete'].includes(revision.operation)) continue;
+    if (exact || previousIds.has(revision.id) || revision.groupId || !['insert', 'delete'].includes(revision.operation)) continue;
     const nodes = slice(afterParagraphs[revision.paragraphIndex].content, revision.from, revision.to);
     if (!nodes.some(n => n.type === 'text' && /\S/u.test(n.text))) continue;
     const key = stable(review.normalizeNode({ type: 'paragraph', content: nodes }));
