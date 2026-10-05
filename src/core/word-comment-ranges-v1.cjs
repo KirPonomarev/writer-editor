@@ -56,15 +56,26 @@ function deriveCommentAnchor({ sceneId, paragraphs, input }) {
   validateCommentAnchorOwners({ anchor, paragraphs });
   return anchor;
 }
+function validatePendingUnionLocator(value) {
+  data(value);
+  if(Object.keys(value).sort().join(',')!=='geometrySha256,schemaVersion,unionEnd,unionStart'||value.schemaVersion!==1||!/^[a-f0-9]{64}$/u.test(value.geometrySha256)) fail('COMMENT_PENDING_LOCATOR_INVALID');
+  for(const point of [value.unionStart,value.unionEnd]) {
+    data(point);
+    if(Object.keys(point).sort().join(',')!=='offsetUtf16,paragraphIndex'||!Number.isSafeInteger(point.paragraphIndex)||point.paragraphIndex<0||point.paragraphIndex>=10000||!Number.isSafeInteger(point.offsetUtf16)||point.offsetUtf16<0) fail('COMMENT_PENDING_LOCATOR_INVALID');
+  }
+  if(value.unionEnd.paragraphIndex<value.unionStart.paragraphIndex||(value.unionEnd.paragraphIndex===value.unionStart.paragraphIndex&&value.unionEnd.offsetUtf16<value.unionStart.offsetUtf16)) fail('COMMENT_PENDING_LOCATOR_INVALID');
+  return value;
+}
 function validateCommentAnchor({ sceneId, paragraphs, anchor }) {
   data(anchor);
+  if(anchor.pendingUnionLocator!==undefined)validatePendingUnionLocator(anchor.pendingUnionLocator);
   const multi = anchor.kind === MULTI;
   const expected = deriveCommentAnchor({ sceneId, paragraphs, input: {
     paragraphIndex: anchor.sceneParagraphIndex, startUtf16: anchor.startUtf16, selectedText: anchor.selectedText,
     ...(multi ? { kind: MULTI, endParagraphIndex: anchor.endSceneParagraphIndex, endUtf16: anchor.endUtf16 }
       : anchor.kind === 'point' ? { kind: 'point', affinity: anchor.affinity } : {}) } });
   if (anchor.kind !== expected.kind || Object.keys(expected).some(key => (multi || key !== 'paragraphIndex') && anchor[key] !== expected[key])) fail('COMMENT_ANCHOR_STALE');
-  if (multi && Object.keys(anchor).some(key => !Object.hasOwn(expected, key) && !['authoritySource', 'sourceChangeId'].includes(key))) fail('COMMENT_ANCHOR_INVALID');
+  if (multi && Object.keys(anchor).some(key => !Object.hasOwn(expected, key) && !['authoritySource', 'sourceChangeId', 'pendingUnionLocator'].includes(key))) fail('COMMENT_ANCHOR_INVALID');
   return expected;
 }
 // Legacy single-leaf law retains its public signature and error codes.
@@ -136,7 +147,7 @@ function rebaseStructuralCommentAnchor({anchor,beforeParagraphs,afterParagraphs,
     input.selectedText=textsOf(afterParagraphs)[a.paragraphIndex].slice(a.offsetUtf16,b.offsetUtf16);
   }
   const derived=deriveCommentAnchor({sceneId:anchor.sceneId,paragraphs:afterParagraphs,input});
-  const provenance=Object.fromEntries(Object.entries(anchor).filter(([key])=>!['kind','affinity','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256'].includes(key)));
+  const provenance=Object.fromEntries(Object.entries(anchor).filter(([key])=>!['pendingUnionLocator','kind','affinity','sceneId','sceneParagraphIndex','paragraphIndex','startUtf16','selectedText','selectedTextSha256','blockTextSha256','endSceneParagraphIndex','endParagraphIndex','endUtf16','endBlockTextSha256','coveredParagraphsSha256'].includes(key)));
   return {anchor:{...provenance,...derived},deleted:false};
 }
-module.exports = { mapCommentEndpoint, rebaseStructuralCommentAnchor, MULTI, deriveCommentAnchor, validateCommentAnchor, validateCommentAnchorOwners, rebaseCommentAnchorSplice, mapAnchorSplice };
+module.exports = { validatePendingUnionLocator, mapCommentEndpoint, rebaseStructuralCommentAnchor, MULTI, deriveCommentAnchor, validateCommentAnchor, validateCommentAnchorOwners, rebaseCommentAnchorSplice, mapAnchorSplice };

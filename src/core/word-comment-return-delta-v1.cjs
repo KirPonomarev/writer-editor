@@ -219,6 +219,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       ...(multi?{kind:'multi-paragraph-range',endParagraphIndex:end.sceneParagraphIndex,endUtf16:a.endUtf16}:
         a.startUtf16 === a.endUtf16 ? {kind: 'point', affinity: 'right'} : {}) }, expected.sceneId, paragraphs);
     if(multi) demand(anchor.endBlockTextSha256===a.endBlockTextSha256 && anchor.coveredParagraphsSha256===a.coveredParagraphsSha256, 'COMMENT_RETURN_ANCHOR_INVALID');
+    if(pendingProof?.mixed) {
+      const rows=blocks.filter(b=>b.sceneId===expected.sceneId),u=actual.anchorRange;
+      const locator=pendingModel.createCommentUnionLocator({projection:pendingProof.projection,anchor,
+        unionStart:{paragraphIndex:rows.findIndex(b=>b.documentParagraphIndex===actual.paragraphIndex),offsetUtf16:u.startUtf16},
+        unionEnd:{paragraphIndex:rows.findIndex(b=>b.documentParagraphIndex===(u.endParagraphIndex??actual.paragraphIndex)),offsetUtf16:u.endUtf16}});
+      if(locator)anchor.pendingUnionLocator=locator;
+    }
     anchor.authoritySource = 'AUTHENTICATED_WORD_COMMENT_RETURN';
     const messages = [{ durableId: actual.durableId, body: actual.body, richBody: actual.richBody,
       author: actual.authorPersonIdentity?.author, initials: actual.authorPersonIdentity?.initials,
@@ -300,7 +307,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       'COMMENT_RETURN_TARGET_INVALID');
     demand(candidate.messages.length + (thread.deletedMessages?.length || 0) + removed.length <= 129, 'COMMENT_RETURN_STATE_BUDGET');
     const changedMessages = candidate.messages.filter((m, i) => stable(m) !== stable(thread.messages[i]));
-    const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'kind', 'affinity', 'endSceneParagraphIndex', 'endParagraphIndex', 'endUtf16', 'endBlockTextSha256', 'coveredParagraphsSha256'].some(k => candidate.anchor[k] !== thread.anchor?.[k]);
+    const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'kind', 'affinity', 'endSceneParagraphIndex', 'endParagraphIndex', 'endUtf16', 'endBlockTextSha256', 'coveredParagraphsSha256'].some(k => candidate.anchor[k] !== thread.anchor?.[k]) || stable(candidate.anchor.pendingUnionLocator)!==stable(thread.anchor?.pendingUnionLocator);
     if (changedMessages.length || removed.length || anchorChanged || thread.status !== candidate.status) {
       changes.push({ threadId: thread.threadId, messageIds: changedMessages.map(m => m.commentId),
         ...(removed.length ? { deletedMessageIds: removed.map(m => m.commentId),

@@ -37,6 +37,19 @@ async function fixture(clean=false) {
   return {beforeContent,beforeText,beforeDoc,proof,projectId,sceneId};
 }
 const plan=f=>planMixedPendingReturn({...f,returnProofJson:JSON.stringify(f.proof)});
+async function assertDiscussionReadback(doc,state) {
+ const canonical=JSON.parse(state),bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:canonical,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc}]}));
+ const result=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)}});
+ assert.equal(result.ok,true);const active=canonical.threads.filter(t=>t.status!=='deleted');assert.equal(result.reviewIr.commentThreads.length,active.length);
+ for(const expected of active) {
+  const actual=result.reviewIr.commentThreads.find(t=>t.body===expected.messages[0].body);assert.ok(actual);
+  assert.deepEqual([actual.body,...actual.replies.map(r=>r.body)],expected.messages.map(m=>m.body));
+  assert.equal(actual.finalTextAnchorRange.selectedText,expected.anchor.selectedText);
+  assert.equal(actual.paragraphIndex,expected.anchor.sceneParagraphIndex);assert.equal(actual.finalTextAnchorRange.startUtf16,expected.anchor.startUtf16);
+ }
+}
+
 test('mixed Word replacement preserves old partitions, rich source, multiple discussions and restart round inverse',async()=>{
   const f=await fixture(),p=plan(f),ledger=review.readLedger(p.replacement.doc);
   assert.equal(review.projection(p.replacement.doc).current,'new\ntail ZZZ BBB');
@@ -84,4 +97,34 @@ test('changed megaparagraph refuses before character atom allocation',()=>{
  const before=make('a'.repeat(10000)),after=make('a'.repeat(10000)+'b'),binding=review.buildCommentExportBinding({document:before,schemaVersion:2}).binding;
  const ledger=review.readLedger(after);ledger.source=review.buildCommentExportBinding({document:after,schemaVersion:2}).projection.union;
  assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:before,returnedDocument:review.bindLedger(ledger),binding,anchors:[]}),/CHANGED_PARAGRAPH_BUDGET/);
+});
+
+test('mixed comment starting at replacement insertion keeps its explicit Word union endpoint on reexport and round redo',async()=>{
+ const f=await fixture(),thread=f.proof.returnedThreads.at(-1);
+ thread.anchorRange.startUtf16=8;thread.anchorRange.endUtf16=11;thread.anchorRange.selectedText='ZZZ';thread.quotedAnchorText='ZZZ';
+ thread.finalTextAnchorRange.startUtf16=5;thread.finalTextAnchorRange.endUtf16=8;thread.finalTextAnchorRange.selectedText='ZZZ';
+ const p=plan(f),decisions=require('../../src/core/word-pending-comment-decisions-v1.cjs');let doc=p.replacement.doc,state=p.afterText;
+ const exported=()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:JSON.parse(state),scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(doc).current,doc}]});
+ assert.ok(build(exported()).length);await assertDiscussionReadback(doc,state);
+ for(const action of ['undo','redo']) {const next=review.decide(doc,{action}).doc;state=decisions.planPendingCommentDecision({beforeText:state,projectId,sceneId,beforeContent:encode(doc),afterContent:encode(next),decision:{action}}).afterText;doc=next;assert.ok(build(exported()).length);await assertDiscussionReadback(doc,state);}
+});
+
+for(const action of ['accept','reject'])for(const targetId of ['revision-1','revision-2','revision-3','revision-4'])test('boundary discussion stays exportable through '+action+' '+targetId+' and decision Undo/Redo',async()=>{
+ const f=await fixture(),thread=f.proof.returnedThreads.at(-1);
+ Object.assign(thread.anchorRange,{startUtf16:8,endUtf16:11,selectedText:'ZZZ'});thread.quotedAnchorText='ZZZ';
+ Object.assign(thread.finalTextAnchorRange,{startUtf16:5,endUtf16:8,selectedText:'ZZZ'});
+ const p=plan(f),decisions=require('../../src/core/word-pending-comment-decisions-v1.cjs');let doc=p.replacement.doc,state=p.afterText;
+ for(const decision of [{action,revisionId:targetId},{action:'undo'},{action:'redo'}]) {
+   const next=review.decide(doc,decision).doc;
+   state=decisions.planPendingCommentDecision({beforeText:state,projectId,sceneId,beforeContent:encode(doc),afterContent:encode(next),decision}).afterText;doc=next;
+   await assertDiscussionReadback(doc,state);
+ }
+});
+for(const kind of ['stale','endpoint','unknown'])test('export refuses '+kind+' pending union locator before publication',async()=>{
+ const f=await fixture(),thread=f.proof.returnedThreads.at(-1);
+ Object.assign(thread.anchorRange,{startUtf16:8,endUtf16:11,selectedText:'ZZZ'});thread.quotedAnchorText='ZZZ';
+ Object.assign(thread.finalTextAnchorRange,{startUtf16:5,endUtf16:8,selectedText:'ZZZ'});
+ const p=plan(f),state=JSON.parse(p.afterText),locator=state.threads.at(-1).anchor.pendingUnionLocator;
+ if(kind==='stale')locator.geometrySha256='0'.repeat(64);else if(kind==='endpoint')locator.unionStart.offsetUtf16++;else locator.extra=true;
+ assert.throws(()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(p.replacement.doc).current,doc:p.replacement.doc}]}),/LOCATOR/);
 });

@@ -6182,7 +6182,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     const mixedComments = Boolean(capsule.commentExport && scenes.length===1);

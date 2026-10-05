@@ -18,10 +18,12 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false, mixed = false } = {}) {
+async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
-  const initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
+  let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
+  const linked=(doc,target)=>{const node={type:'paragraph',content:[{type:'text',text:'Unchanged external link',marks:[{type:'link',attrs:{href:target,rel:'noopener noreferrer nofollow',target:'_blank'}}]}]},ledger=model.readLedger(doc);if(ledger){ledger.source.content.push(node);return model.bindLedger(ledger);}doc.content.push(node);return doc;};
+  if(links)initial=linked(initial,'https://example.com/original');
   if (savedDefaults) initial.attrs = { wordPendingRevisions: null };
   fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
   const h = { writes: 0, opens: 0, snapshot: null, race: null };
@@ -97,11 +99,12 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false 
       anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'added'},'roman/a.txt',['new added']),
       messages:[{commentId:'insert-root',kind:'root',body:'On added text',provenance:{author:'Editor'}}]});
   }
+  if(links)doc=linked(doc,linkTarget||'https://example.com/original');
   const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root, ...(mixed?{nonTextReturnState:returnedComments}:{}),
-    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: links?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
   let bytes = buildDocxReviewPacketBuffer(exported);
   const baselineSource=mixed?buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:JSON.parse(h.commentText),
-    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
+    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:links?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
   if(mixed) {
     const baseBytes=buildDocxReviewPacketBuffer(baselineSource);
     const baseParts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:baseBytes}).parts;
@@ -358,4 +361,14 @@ test('first clean writer export returns first tracked insertion and multiple dis
   assert.equal((await h.command('undo')).ok,true);assert.equal(model.projection(h.context().parsed.doc).current,'new');
   assert.equal(JSON.parse(h.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
   assert.equal((await h.command('redo')).ok,true);assert.equal(JSON.parse(h.commentText).threads.filter(t=>t.status!=='deleted').length,3);
+});
+
+test('actual Main mixed route preserves unchanged hyperlinks and rejects changed targets',async t=>{
+ const h=await harness(t,{mixed:true,links:true});
+ const result=await h.route();assert.equal(result.pendingProductPath?.status,'preview-ready',JSON.stringify(result));assert.equal(h.writes,0);
+ assert.equal((await h.prepared.apply()).ok,true);
+ const returned=model.readLedger(h.context().parsed.doc).source;
+ assert.ok(model.paragraphs(returned).at(-1).content.every(n=>n.marks?.some(m=>m.type==='link'&&m.attrs.href==='https://example.com/original')));
+ const bad=await harness(t,{mixed:true,links:true,linkTarget:'https://example.com/changed'});
+ const refusal=await bad.route();assert.equal(refusal.pendingProductPath?.status,'blocked',JSON.stringify(refusal));assert.equal(bad.writes,0);assert.equal(bad.prepared,undefined);
 });

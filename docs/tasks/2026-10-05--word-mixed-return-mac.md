@@ -75,3 +75,56 @@ Original broader Mac scope remains intact.
   before+after; unchanged paragraphs bypass atom alignment. New13/13 core
   checks include a20001UTF16 no-write refusal. Arbitrarily long changed single
   paragraphs are an explicit residual, not silently truncated.
+
+## Native checkpoint d09b6b9ba: real blockers retained
+
+- Clean candidate113/113 affected checks; OPS data/order/textOrder/fresh and
+  certification byte bindings pass. Product native outcome is still FAIL.
+- SOURCE01 generic import of actual early-mixed-word.docx succeeds,7 pending
+  revisions and3 discussions/6 messages; immediate native Review reexport fails.
+  Independent saved-data reproduction: PENDING_COMMENT_ENDPOINT_AMBIGUOUS.
+  Current offset14 maps to union14 or21 around a pending deletion. The exact
+  Word endpoint was discarded by Current-only anchor storage.
+- SOURCE02 fresh native import of SOURCE02-recorded-review-before-word.docx
+  succeeds,3 pending revisions. Native export succeeds; actual Word changes
+  alpha to beta, appends two replies and creates a new root on beta. Saved Word
+  package has3ins/2del, no rPrChange/pPrChange and6 messages.
+- Native Review open refuses RTK_WORD_HYPERLINK_UNSUPPORTED before Apply.
+  Main omitted relationship metadata required by the existing scanner for the
+  three unchanged external links. Pure-plan evidence alone missed this route.
+- Same delivery contour repair: checked union endpoint locator through import,
+  round history and export, plus actual package relationships in Main.
+  Clean d09b6b9ba preflight passed before expanding to36 declared paths.
+  No arbitrary inverse choice, weakening stale checks or different-SHA PASS.
+-100229-word component probe:1741 paragraphs;5,642,258B proof; pure plan3.697s,
+  isolated peak512,507,904B; build/parse/plan combined peak about1GB. This is
+  component evidence only. Native full-book launch acceptance remains open.
+
+### Boundary locator repair contract
+
+The optional closed-schema locator identifies exact canonical union endpoints
+against source geometry and maps them through revision decisions to Current and
+export coordinates. It never chooses an arbitrary inverse at a hidden deletion.
+The existing anchor history retains before/after locators for round Undo/Redo.
+Generic import independently checks the locator against its parsed pending doc.
+Old binaries do not promise export compatibility for this new boundary case:
+old simple-anchor readers ignore the additive field and their unchanged strict
+exporter refuses ambiguity; old structural-history readers reject the new key.
+No top-level state migration or new writer is introduced.
+
+The saved SOURCE02 project had zero changed files between failed return and
+normal process stop. SOURCE03 reuses this native-created, unchanged saved profile
+and signed Word round with a newly frozen candidate; it does not seed a synthetic
+post-Apply result or claim that prior candidate passed.
+
+### Repaired native candidate checkpoint
+
+Two affected groups153/153 and106/106 pass, no failures/skips/todo. Actual
+SOURCE02 saved snapshot and Word bytes reach the real Main preview-ready branch
+with no write; prepared scene equals the independently invoked Core plan.
+Reexport readback retains beta at the new comment's Current anchor,3 active
+roots and40 paragraphs. Boundary tests read finished DOCX markers after each
+individual old/new accept/reject and Undo/Redo; generic import revalidates the
+source locator. This remains programmatic proof until native Apply completes.
+The repaired isolated100k plan measured3.15s, peak483,917,824B; input proof size
+5,642,258B. No whole-book native or five-cycle claim follows from this result.

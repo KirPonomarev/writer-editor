@@ -1,6 +1,6 @@
 {
   "taskId": "WORD_MIXED_RETURN_MAC_20261005",
-  "objective": "Atomic authenticated Word return with inline tracked text edits and multiple discussion changes, restart-safe round decisions and reexport; first bounded prerequisite for the100000-word novel launch.",
+  "objective": "Atomic authenticated Word return with inline tracked text edits and multiple discussion changes, restart-safe round decisions and reexport; first bounded prerequisite for the100000-word novel launch. Complete this same mixed-return outcome by preserving checked union comment endpoints through import, atomic publication, round history and reexport; supply validated package relationships to the existing Main parser.",
   "writePaths": [
     "Authenticated DOCX bytes and locally signed baseline -> bounded rich partition and full discussion proof -> explicit Pending Apply -> Kernel and Main revalidation -> existing atomic scene/comment transaction -> exact readback -> guarded editor publication"
   ],
@@ -22,7 +22,8 @@
   "identityGuards": [
     "Exact baseline SHA, DOCX artifact hash, scene and project identity, round receipt, lifecycle and edit generation",
     "Preserved old pending partitions and rich provenance, returned union/Current coordinates; repeated text never establishes occurrence identity",
-    "Exact comment CAS and scene CAS revalidated under project lease; private proof independently recomputed by transaction"
+    "Exact comment CAS and scene CAS revalidated under project lease; private proof independently recomputed by transaction",
+    "Optional closed-schema pending union locator must match exact ledger geometry and Current anchor; no ambiguous inverse guessing or stale locator fallback."
   ],
   "capabilityRevalidation": "Existing Kernel/Main profile and command capability, current project/lifecycle/editor state and source/comment CAS under lease; no renderer provided admission.",
   "fallbacks": [
@@ -35,7 +36,8 @@
     "Repeated strings, forged source/partitions/provenance and anchor coordinates, missing inventory, malicious/unknown fields",
     "Stale comment/scene/lifecycle/generation, forged admission, rollback and partial write failure",
     "Restart round Undo/Redo retains messages, reversible new-root-on-insert locator, pending decisions and reexport",
-    "Early real Word SOURCE and PACKAGED native before full stable required gates; exact merged verification"
+    "Early real Word SOURCE and PACKAGED native before full stable required gates; exact merged verification",
+    "Native SOURCE01 ambiguous deleted-text boundary and SOURCE02 unchanged hyperlinks reproduce failures; exact endpoints survive mixed Apply, restart, Undo/Redo and reexport; forged/stale locators reject before write."
   ],
   "securityAndInputBoundary": "No new dependencies or runtime network. Mixed proof is separately capped at8MiB (existing scene/recording ceiling); clean legacy proof retains2MiB. Untrusted DOCX validated before target/path/mutation decisions. Existing file ports and readable recovery only.",
   "performanceAndAccessibility": "No new surface or visual design; same confirmation dialog must disclose discussion delta. Bounded paragraph and revision walks outside per-keystroke path;100000-word combined acceptance remains a separate required launch proof.",

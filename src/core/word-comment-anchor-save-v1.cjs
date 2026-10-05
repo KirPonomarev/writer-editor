@@ -196,7 +196,7 @@ function applyMultiGroup(thread,group,beforeRows,afterRows,sessionId) {
 function structuralSnapshot(thread,liveLocator) {
   const a=thread.anchor;
   return {sceneParagraphIndex:a.sceneParagraphIndex,startUtf16:a.startUtf16,length:a.selectedText.length,
-    status:thread.status,blockTextSha256:a.blockTextSha256,
+    status:thread.status,blockTextSha256:a.blockTextSha256,...(a.pendingUnionLocator?{pendingUnionLocator:JSON.parse(JSON.stringify(a.pendingUnionLocator))}:{}),
     ...(a.kind==='point'?{kind:'point',affinity:'right'}:a.kind===MULTI?{kind:MULTI,endSceneParagraphIndex:a.endSceneParagraphIndex,
       endUtf16:a.endUtf16,endBlockTextSha256:a.endBlockTextSha256,coveredParagraphsSha256:a.coveredParagraphsSha256}:{}),
     ...(thread.status==='deleted'?{deletedText:a.selectedText,liveLocator}: {})};
@@ -222,6 +222,7 @@ function validateStructuralSnapshot(snapshot,rows) {
   const anchor=deriveCommentAnchor({sceneId:'history-validation',paragraphs:rows,input});
   if(anchor.selectedText.length!==snapshot.length||anchor.blockTextSha256!==snapshot.blockTextSha256
     ||(snapshot.kind===MULTI&&(anchor.endBlockTextSha256!==snapshot.endBlockTextSha256||anchor.coveredParagraphsSha256!==snapshot.coveredParagraphsSha256))) fail('COMMENT_EDIT_HISTORY_STALE');
+  if(snapshot.pendingUnionLocator)anchor.pendingUnionLocator=JSON.parse(JSON.stringify(snapshot.pendingUnionLocator));
   return anchor;
 }
 function structuralOwners(content,rows) {
@@ -237,6 +238,10 @@ function structuralOwners(content,rows) {
   return rows.map((row,i)=>({...row,root:result[i]}));
 }
 function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
+  const pending=require('./word-pending-text-revisions-v1.cjs'),beforeDoc=parseObservablePayload(beforeContent).doc,afterDoc=parseObservablePayload(afterContent).doc;
+  const oldLedger=beforeDoc&&pending.readLedger(beforeDoc),newLedger=afterDoc&&pending.readLedger(afterDoc);
+  const definitions=l=>l.revisions.map(({state,...r})=>r);
+  const fixedPendingSource=oldLedger&&newLedger&&historyEqual(oldLedger.source,newLedger.source)&&historyEqual(definitions(oldLedger),definitions(newLedger));
   if(typeof sessionId!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/u.test(sessionId)) fail('COMMENT_EDIT_SESSION_INVALID');
   let rows=structuralOwners(beforeContent,paragraphs(beforeContent));
   const finalRows=structuralOwners(afterContent,paragraphs(afterContent));
@@ -286,6 +291,8 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
           const provenance=Object.fromEntries(Object.entries(thread.anchor).filter(([k])=>['authoritySource','sourceChangeId'].includes(k)));
           thread.anchor={...provenance,...restored,sceneId};
         }
+        delete thread.anchor.pendingUnionLocator;
+        if(target.pendingUnionLocator)thread.anchor.pendingUnionLocator=JSON.parse(JSON.stringify(target.pendingUnionLocator));
         thread.status=target.status;entry.undone=undo;
         // A whole recording round replaces its transient PM group cursor. Those
         // later snapshots describe the superseded working document, not the
@@ -303,6 +310,7 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
           locator={sceneParagraphIndex:mapped.paragraphIndex,startUtf16:mapped.offsetUtf16,blockTextSha256:sha(text)};
         } else {
           const mapped=rebaseStructuralCommentAnchor({anchor:thread.anchor,beforeParagraphs:step.beforeRows,afterParagraphs:step.afterRows,edit:step.edit});
+          if(fixedPendingSource&&thread.anchor.pendingUnionLocator)mapped.anchor.pendingUnionLocator=thread.anchor.pendingUnionLocator;
           thread.anchor=mapped.anchor;if(mapped.deleted) {thread.status='deleted';locator=mapped.liveLocator;}
         }
       }

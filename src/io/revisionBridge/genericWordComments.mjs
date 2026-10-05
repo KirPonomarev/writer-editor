@@ -74,6 +74,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     }
     return result;
   };
+  const pendingProjection=pendingLedger?pendingTextRevisions.buildCommentExportBinding({document:pendingDocument}).projection:null;
   const nativeIds = new Set();
   const candidates = ir.commentThreads.map(thread => {
     demand(['ANCHORED', 'RESOLVED'].includes(thread.status)
@@ -117,6 +118,11 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       ...(multi ? {kind: range.kind, endParagraphIndex: range.endParagraphIndex, endUtf16: range.endUtf16,
         endBlockTextSha256: range.endBlockTextSha256, coveredParagraphsSha256: range.coveredParagraphsSha256}
         : range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}),
+      ...(pendingLedger?(()=>{
+        const u=thread.anchorRange,locator=pendingTextRevisions.createCommentUnionLocator({projection:pendingProjection,anchor:derived,
+          unionStart:{paragraphIndex:index,offsetUtf16:u.startUtf16},unionEnd:{paragraphIndex:u.endParagraphIndex??index,offsetUtf16:u.endUtf16}});
+        return locator?{pendingUnionLocator:locator}:{};
+      })():{}),
       selectedText: range.selectedText, blockTextSha256: range.blockTextSha256,
       status: thread.status === 'RESOLVED' ? 'resolved' : 'open', messages };
   });
@@ -124,7 +130,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
   return candidates;
 }
 
-export function materializeGenericComments({ candidates, paragraphs, projectId, sceneId, importOperationId, beforeText }) {
+export function materializeGenericComments({ candidates, paragraphs, pendingDocument, projectId, sceneId, importOperationId, beforeText }) {
   demand(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= 128, 'BUDGET');
   for (const value of [projectId, sceneId, importOperationId]) literal(value, 1024, true);
   demand(beforeText === null || (typeof beforeText === 'string' && bytes(beforeText) <= 65536), 'STATE_BUDGET');
@@ -141,8 +147,9 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   }
   const operation = sha256Hex(`${projectId}\n${sceneId}\n${importOperationId}`);
   const reserve = id => { demand(!existing.has(id), 'IDENTITY_CONFLICT'); existing.add(id); return id; };
+  const locatorProjection=candidates.some(c=>c.pendingUnionLocator!==undefined)&&pendingDocument?pendingTextRevisions.buildCommentExportBinding({document:pendingDocument}).projection:null;
   const threads = candidates.map((candidate, ordinal) => {
-    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages', 'kind', 'affinity', 'endParagraphIndex', 'endUtf16', 'endBlockTextSha256', 'coveredParagraphsSha256'].includes(key))
+    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages', 'kind', 'affinity', 'endParagraphIndex', 'endUtf16', 'endBlockTextSha256', 'coveredParagraphsSha256', 'pendingUnionLocator'].includes(key))
       && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
       && ['open', 'resolved'].includes(candidate.status)
       && Array.isArray(candidate.messages) && candidate.messages.length > 0 && candidate.messages.length <= 129, 'CANDIDATE');
@@ -159,6 +166,11 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
         && candidate.coveredParagraphsSha256 === anchor.coveredParagraphsSha256
         : candidate.endParagraphIndex === undefined && candidate.endUtf16 === undefined
           && candidate.endBlockTextSha256 === undefined && candidate.coveredParagraphsSha256 === undefined), 'ANCHOR');
+    if(candidate.pendingUnionLocator!==undefined) {
+      demand(pendingDocument,'PENDING_DOCUMENT_REQUIRED');
+      pendingTextRevisions.validateCommentUnionLocator({projection:locatorProjection,anchor,locator:candidate.pendingUnionLocator});
+      anchor.pendingUnionLocator=clone(candidate.pendingUnionLocator);
+    }
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
     const messages = candidate.messages.map((item, index) => {
       demand(plain(item) && Object.keys(item).every(key => ['sourceCommentId', 'body', 'richBody', 'provenance'].includes(key))
