@@ -122,3 +122,28 @@ test('returned round history survives five authenticated-source export parse cyc
   for (let n = 0; n < 5; n++) doc = model.decide(doc, { action: 'redo' }).doc;
   assert.equal(model.readLedger(doc).roundUndo.length, 5);
 });
+
+test('pending insertion interior and deletion-spanning comments keep one wrapper and distinct union/Current anchors in both exports',async()=>{
+ const {b,doc}=await parse(pack()),sha=x=>require('node:crypto').createHash('sha256').update(x).digest('hex');
+ const ranges=require('../../src/core/word-comment-ranges-v1.cjs'),sceneId='s';
+ const texts=model.paragraphs(model.materialize(model.readLedger(doc))).map(p=>({text:(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')}));
+ const threads=[['inside',4,'ово'],['across',0,'До новое после.']].map(([id,startUtf16,selectedText])=>({threadId:id,sceneId,rootCommentId:id+'root',status:'open',
+  anchor:ranges.deriveCommentAnchor({sceneId,paragraphs:texts,input:{paragraphIndex:0,startUtf16,selectedText}}),messages:[{commentId:id+'root',kind:'root',body:'Check '+id,provenance:{author:'Reviewer',date:'2026-10-05T00:00:00Z'}}]}));
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'p',revision:1,threads,events:[]};
+ const input={projectId:'p',projectRoot:'/p',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/p/s',order:0,doc,text:model.projection(doc).current}]};
+ const source=buildFullManuscriptDocxReviewPacketSource(input);
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const ports={cryptoPort:{sha256Text:sha,sha256Json:x=>sha(JSON.stringify(x)),byteLength:x=>Buffer.byteLength(x)}};
+ for(const bytes of [buildDocxReviewPacketBuffer(source),buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},{docxPageSetupBindModule,semanticMappingModule,styleMapModule,commentExport:source.commentExport,commentBlocks:source.blocks})]){
+  const xml=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+  assert.equal((xml.match(/<w:ins\b/g)||[]).length,1);assert.equal((xml.match(/<w:del\b/g)||[]).length,1);
+  const ins=xml.match(/<w:ins\b[^>]*>([\s\S]*?)<\/w:ins>/u)[1];assert.match(ins,/<w:commentRangeStart/u);assert.match(ins,/<w:commentRangeEnd/u);
+  const analysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes},ports);assert.equal(analysis.ok,true);
+  const spanning=analysis.reviewIr.commentThreads.find(t=>t.body==='Check across');assert.equal(spanning.quotedAnchorText,'До староеновое после.');assert.equal(spanning.finalTextAnchorRange.selectedText,'До новое после.');
+  const preview=b.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview.diagnostics));assert.equal(preview.contentPreview.genericComments.length,2);
+  assert.equal(model.projection(preview.contentPreview.pendingRevisionDocument).original,'До старое после.');
+  const generic=await import('../../src/io/revisionBridge/genericWordComments.mjs');const forged=structuredClone(analysis);
+  const root=forged.reviewIr.commentThreads.find(t=>t.body==='Check inside');root.finalTextAnchorRange.startUtf16++;root.finalTextAnchorRange.endUtf16++;
+  assert.throws(()=>generic.genericCommentCandidates(forged,preview.contentPreview.paragraphs,{metadataValidated:true,pendingDocument:preview.contentPreview.pendingRevisionDocument}),/PENDING_ENDPOINT_BINDING/u);
+ }
+});

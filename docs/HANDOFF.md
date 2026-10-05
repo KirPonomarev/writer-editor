@@ -1,5 +1,19 @@
 # HANDOFF (Yalken Writer)
 
+## Active next packet — 2026-10-05 06:34 EEST
+
+PR2081 full delivery closed atf557f7cb0: CI19/19, both RTK3295/3295; exact
+merged401/401 zero skips and Git/OPS/guardrails, clean identical candidate tree.
+Native fc9aa9f56 SOURCE/PACKAGED and572-file runtime equivalence remain bound.
+Continue WORD_PENDING_COMMENTS_MAC_20261005 on this exact base after clean
+bootstrap/preflight34paths. Core/parser-export/Main disjoint owners; parent
+docs/build/native/delivery. Early native before broad stable gates. Generic
+mixed single-scene and signed multi-scene routes require separate observation.
+Actual Word splits one insertion around reply references; compact proof must
+verify ordered complete partition and dual union/Current anchors. No trusted
+flag, scene rewrite or guessed inherited typography. Paragraph-mark typography,
+largebook/fivecycle acceptance and remaining original plan stay open.
+
 ## CI consumer correction — 2026-10-05 06:12 EEST
 
 CI37257433260 failed both full RTK lanes3294/3295 on one stale renderer

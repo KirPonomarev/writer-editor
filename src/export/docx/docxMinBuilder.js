@@ -223,7 +223,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
         if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
         const headingLevel = paragraph.type === 'heading' ? Number(paragraph.attrs?.level) : undefined;
         if (headingLevel !== undefined && (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 9)) throw new Error('DOCX_HEADING_LEVEL_INVALID');
-        blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), ...(firstParagraph ? {numbering} : {}), textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent ?? (firstParagraph ? undefined : {left:docxListTextIndent(numbering.level)}), wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
+        blocks.push({ kind: headingLevel === undefined ? 'paragraph' : headingLevel === 2 ? 'sceneHeading' : 'heading', ...(headingLevel === undefined ? {} : { headingLevel }), text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), ...(firstParagraph ? {numbering} : {listContinuationLevel:numbering.level}), textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign), wordParagraphSpacing: paragraph.attrs?.wordParagraphSpacing, wordParagraphIndent: paragraph.attrs?.wordParagraphIndent ?? (firstParagraph ? undefined : {left:docxListTextIndent(numbering.level)}), wordParagraphTabs: paragraph.attrs?.wordParagraphTabs, wordParagraphMarkLanguage: paragraph.attrs?.wordParagraphMarkLanguage });
         firstParagraph = false;
       }
     }
@@ -355,7 +355,7 @@ function assertDocxBuilderDependencies(dependencies) {
 }
 
 function buildDocxMinBuffer(editorSnapshot, dependencies) {
-  const deps = assertDocxBuilderDependencies(dependencies);
+  let deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   if (snapshot.doc) require('../../core/word-paragraph-spacing-v1.cjs').inspectDocumentParagraphSpacing(snapshot.doc);
   const defaultTabs=snapshot.doc?.attrs?.wordDefaultTabStop;
@@ -393,7 +393,12 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
-  if (pendingLedger && deps.commentExport?.threads?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+  if (pendingLedger && deps.commentExport?.threads?.length) {
+    const ids=[...new Set(deps.commentBlocks?.map(block=>block.sceneId))];
+    if(ids.length!==1)throw Error('PENDING_COMMENT_SCENE_BINDING_REQUIRED');
+    deps={...deps,commentExport:require('./docxReviewPacketComments.js').bindPendingCommentExport({commentExport:deps.commentExport,
+      scenes:[{sceneId:ids[0],doc:snapshot.doc}],blocks:deps.commentBlocks}).commentExport};
+  }
   const pendingExport = pendingLedger?.revisions.some(pendingTextRevisions.isStructural) ? pendingTextRevisions.exportDocument(pendingLedger) : null;
   const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
   const revisionCounter = { next: 1 };
@@ -448,10 +453,12 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
 
       const text = typeof entry?.text === 'string' ? entry.text : '';
       const numbering = semanticBlocks?.[index]?.numbering;
+      const continuationLevel=semanticBlocks?.[index]?.listContinuationLevel;
+      if(continuationLevel!==undefined)blockStyles.add(`YalkenListContinuation${continuationLevel}`);
       if (numbering) numberings.set(numbering.numId, numbering);
       const textAlign = semanticBlocks?.[index]?.textAlign;
       const markLanguage = buildDocxWordLanguageXml(semanticBlocks?.[index]?.wordParagraphMarkLanguage);
-      const properties = (styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
+      const properties = (continuationLevel!==undefined ? `<w:pStyle w:val="YalkenListContinuation${continuationLevel}"/>` : styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
         + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '')
@@ -467,7 +474,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const noteBlock = deps.noteBlocks?.[index];
       const markers = noteBlock ? noteMarkersForBlock(deps.documentNotes, noteBlock) : new Map();
       const commentMarkers = deps.commentBlocks?.[index]
-        ? commentMarkersForBlock(deps.commentExport, deps.commentBlocks[index]) : new Map();
+        ? commentMarkersForBlock(deps.commentExport, {...deps.commentBlocks[index],...(pendingSegments?{pendingRevisionSegments:pendingSegments[index]}:{})}) : new Map();
       for (const [offset, xml] of commentMarkers) markers.set(offset, (markers.get(offset) || '') + xml);
       const {markers:userMarkers,afterParagraph}=bookmarkHelpers?bookmarkHelpers.userBookmarkMarkersForBlock({text,formatIr:{userBookmarks:semanticBlocks?.[index]?.userBookmarks,table:semanticBlocks?.[index]?.table}},bookmarkIds):{markers:new Map(),afterParagraph:''};
       for(const [offset,xml] of userMarkers)markers.set(offset,(markers.get(offset)||'')+xml);
@@ -487,10 +494,10 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         ? runs.map(run => run.image ? media.drawing(run.image)
           : wrapLink(buildDocxMarkedRunXml(run, hasColors, hasTypography), readHref(run))).join('') : buildDocxTextRunsXml(text);
       if (pendingLedger) {
-        if (userMarkers.size || hasMedia || hasLinks) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+        if (userMarkers.size || hasMedia) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
         const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(deps.documentNotes, noteBlock || {});
         runsXml = buildPendingRunsXml(rowRevision ? pendingSegments[index].map(s => ({ ...s, revision: rowRevision })) : pendingSegments[index],
-          node => buildDocxMarkedRunXml(node.type === 'hardBreak' ? readDocumentInlineRuns(node)[0] : { text: node.text, marks: node.marks }, true, true), revisionCounter, '', pendingMarkers);
+          node => {const run=node.type === 'hardBreak' ? readDocumentInlineRuns(node)[0] : {text:node.text,marks:node.marks};return wrapLink(buildDocxMarkedRunXml(run,true,true),readHref(run));}, revisionCounter, '', pendingMarkers, commentMarkers);
       }
       if (markers.size && !pendingLedger) {
         const parts = [], boundaries = [...markers.keys()].sort((a, b) => a - b);
@@ -537,7 +544,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
 </w:document>`;
 
   const styleParts = headingLevels.size || blockStyles.size ? [
-    { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}${buildDocxBlockStyleDefinitions(blockStyles)}</w:styles>` },
+    { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}${buildDocxBlockStyleDefinitions([...blockStyles].filter(id=>!id.startsWith('YalkenListContinuation')))}${[...blockStyles].filter(id=>id.startsWith('YalkenListContinuation')).map(id=>`<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="Yalken List Continuation ${id.slice(-1)}"/></w:style>`).join('')}</w:styles>` },
   ] : [];
   if (numberings.size) {
     const patterns = buildDocxPatternNumberingParts([...numberings.values()].filter(value => value.wordNumbering));

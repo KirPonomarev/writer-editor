@@ -15,7 +15,7 @@ const { documentMedia } = require('../../io/documentMedia.js');
 
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require('./docxReviewPacketBuilder');
-const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
+const { buildCanonicalCommentExport, bindPendingCommentExport } = require('./docxReviewPacketComments.js');
 const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 const { normalizeWordParagraphSpacing, inspectDocumentParagraphSpacing } = require('../../core/word-paragraph-spacing-v1.cjs');
@@ -1301,7 +1301,8 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const wordDefaultTabStop=documentFormats.some(format=>format.explicit)?documentFormats[0].wordDefaultTabStop:undefined;
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
-  const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
+  const initialCommentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
+  const {commentExport,pendingCommentBindings} = bindPendingCommentExport({commentExport:initialCommentExport,scenes,blocks,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
@@ -1320,6 +1321,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     sceneOrdinal: scene.sceneOrdinal,
     sceneRevision: scene.sceneRevision,
     rawSha256: scene.rawSha256,
+    ...(pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?{pendingCommentBinding:pendingCommentBindings.find(item=>item.sceneId===scene.sceneId).binding}:{}),
     blocks: blocks
       .filter((block) => block.sceneId === scene.sceneId)
       .map((block) => ({
@@ -1344,6 +1346,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       sceneOrdinal: scene.sceneOrdinal,
       sceneRevision: scene.sceneRevision,
       rawSha256: scene.rawSha256,
+      ...(pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?{pendingCommentBinding:pendingCommentBindings.find(item=>item.sceneId===scene.sceneId).binding}:{}),
       documentFormatIr:{wordDefaultTabStop:scene.doc?.attrs?.wordDefaultTabStop??720,explicit:scene.doc?.attrs?.wordDefaultTabStop!=null},
       ...(sceneBookmarkRegistry(scene) ? {userBookmarks:sceneBookmarkRegistry(scene)} : {}),
       blocks: blocks

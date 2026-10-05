@@ -1,0 +1,77 @@
+{
+  "taskId": "WORD_PENDING_COMMENTS_MAC_20261005",
+  "bindingBaseSha": "f557f7cb0b267ccbee7c7c24406727e2bc925c16",
+  "writePaths": [
+    "DOCX validated OPC/parser -> Core pending/current and comment candidates -> existing atomic safe-create import transaction",
+    "Canonical source/ledger/comment state -> validated compact export bindings -> ordinary/Review DOCX publication with semantic readback",
+    "Signed source/raw return -> independent unchanged-pending partition/anchor proof -> explicit Kernel/Main Apply -> existing leased atomic comment state writer; scenes remain byteexact"
+  ],
+  "productPorts": [
+    "Existing native DOCX chooser/read/write, atomic import project transaction, scene snapshot and leased atomic comment persistence/recovery ports"
+  ],
+  "designOsPorts": [
+    "Existing immutable import/return preview and capability projections"
+  ],
+  "readProjections": [
+    "Bounded parsed preview and independent pure unchanged-pending correspondence; not stored as new project truth"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "TRANSIENT_STATE"
+  ],
+  "identityGuards": [
+    "Every pending baseline scene accounted from signed source raw hash and recomputed ledger/basis binding",
+    "Returned native fragments uniquely partition one original revision span with no gaps/overlap/crossrevision merge; all operations/provenance/rich atoms preserved",
+    "Independent union/Current/Original endpoints and quotes; ambiguous hidden-deletion inverse refuses",
+    "Existing project/scene/session/generation/rawartifact/comment/sceneCAS and Kernel capability checks before publication"
+  ],
+  "capabilityRevalidation": "Existing dispatch-time Main/Kernel capability plus active export/session, all-scene byte CAS and comment CAS under project lease. Private proof is recomputed in Core, never trusted:true.",
+  "fallbacks": [
+    "Changed pending ledger/text/marks/provenance, unmodeled mixed structural revision or ambiguous anchors refuse before writes",
+    "Unknown hierarchy/links/metadata remain rejected; admit only existing finite quote/code/list-continuation/HTTP link and marked break semantics",
+    "Unresolved font/language inheritance is not treated equal; only signed emitted defaults compensate formatting representation"
+  ],
+  "recoveryAndNegativeChecks": [
+    "Actual Word fragmentation around reply references, repeatedtext, insertion-internal and deletion-spanning comments; actual Main preview no write, explicit reply Apply scene+ledgerbyteequal, replay/restart",
+    "Generic mixed single-scene import independently proved with shared quote/code/list/HTTP/markedbreak corpus; signed multi-scene proof alone insufficient",
+    "Changed/missing/extra/empty/crossrevision fragments, untracked gaps, altered author/date/marks/breaks, wrong union/current anchors, stale sibling/comment/raw/context/generation refuse with zero writes",
+    "Early SOURCE/PACKAGED native before stable broad consumers; mandatory CI/delivery and exact merged verification"
+  ],
+  "securityAndInputBoundary": "No new dependencies, runtime network, UI/IPC writers, private owner data or budget inflation. External DOCX and proof fields validated before semantic use; compact signed binding avoids manuscript duplication.",
+  "performanceAndAccessibility": "Bounded explicit import/export/return work, no per-keystroke fullbook scan. Existing keyboard/preview controls preserved. Shared100k corpus measured after small route;500k remains final original acceptance.",
+  "currentReality": [
+    "Basef557f7cb0 contains merged PR2081; exact merged checks must close before new write",
+    "Pending+comments export, generic parser and return currently refuse; actual Word calibration splits oneins into2 aroundnewreplyref while preserving Current/Original",
+    "Existing signed typography default binds12pt only; inherited family/language must not be guessed"
+  ],
+  "targetOnly": [
+    "Mixed pending+comment route and finite rich source compatibility are TARGET until actually tested and delivered",
+    "Fivechangedcycles,500k boundary, paragraph-mark typography, structural revision mixtures and full original Mac plan remain open"
+  ],
+  "designToolRouter": "NOT_APPLICABLE",
+  "dependenciesAndNetwork": "NO_NEW_DEPENDENCY_NO_RUNTIME_NETWORK",
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "productPlane": "Canonical pending ledger owns Current/Original/union rich manuscript, revision identities and history; canonical discussion state owns comments. Signed bounded export bindings and validated parsed Word data are evidence, never mutation authority.",
+  "interfacePlane": "Existing import/review/comment surfaces and projections; no UI design, composition or command semantics redesign.",
+  "commands": [
+    "cmd.project.docx.importSafeCreate",
+    "cmd.project.export.docxMin",
+    "cmd.project.review.exportDocxReviewPacket",
+    "cmd.rtk.review.applyCommentLifecycleReturn",
+    "cmd.project.save"
+  ],
+  "queries": [
+    "Existing immutable import/return/comment and capability projections"
+  ],
+  "events": [
+    "Existing imported project/comment-state publication and replay outcomes"
+  ],
+  "effects": [
+    "Existing native DOCX I/O and atomic project/comment transactions"
+  ],
+  "hotPathBoundary": "Explicit bounded import/export/preview/apply only; no per-keystroke novel scan",
+  "migrationRollbackEvidence": "Revert the single bounded packet; preserve all scene/ledger/comment data, history and recovery. New compact export proof is optional and never authority for older unproved routes; unsupported old readers fail closed without dropping data.",
+  "surfaceManifest": "NOT_APPLICABLE_EXISTING_SURFACES_NO_DESIGN_CHANGE"
+}

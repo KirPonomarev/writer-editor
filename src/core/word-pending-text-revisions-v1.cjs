@@ -45,13 +45,19 @@ function normalizeNode(node) {
 // text, list nesting and table coordinates. Returns references into this doc.
 function paragraphs(doc) {
   require('./word-list-numbering-v1.cjs').resolve(doc);
-  assert(exact(doc, ['type', 'content','attrs']) && (!doc.attrs||exact(doc.attrs,['wordDefaultTabStop'])) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
+  assert(exact(doc, ['type', 'content','attrs']) && (!doc.attrs||exact(doc.attrs,['wordDefaultTabStop','wordSections'])) && doc.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0 && doc.content.length <= 10000);
+  if(doc.attrs?.wordSections!=null)require('./word-sections-v1.cjs').read(doc);
   if(doc.attrs?.wordDefaultTabStop!=null)require('./word-paragraph-layout-v1.cjs').normalizeWordDefaultTabStop(doc.attrs.wordDefaultTabStop);
   const result = []; let lists = 0;
   const visit = (node, depth = 0, inCell = false) => {
     assert(exact(node, ['type', 'attrs', 'content']));
-    if (['paragraph', 'heading'].includes(node.type)) {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) {
       assert(result.length < 10000, 'PENDING_REVISIONS_BUDGET'); result.push(node); return;
+    }
+    if (node.type === 'blockquote') {
+      assert(depth < 8 && (!node.attrs || exact(node.attrs, [])) && Array.isArray(node.content) && node.content.length > 0);
+      for (const child of node.content) visit(child, depth + 1, inCell);
+      return;
     }
     if (node.type === 'table') {
       let layout;
@@ -74,7 +80,7 @@ function paragraphs(doc) {
       assert(exact(item, ['type', 'attrs', 'content']) && item.type === 'listItem'
         && (!item.attrs || exact(item.attrs, [])) && Array.isArray(item.content)
         && ['paragraph', 'heading'].includes(item.content[0]?.type)
-        && item.content.slice(1).every(n => ['bulletList', 'orderedList'].includes(n?.type)));
+        && item.content.slice(1).every(n => ['paragraph', 'heading', 'bulletList', 'orderedList'].includes(n?.type)));
       visit(item.content[0], depth, inCell);
       for (const child of item.content.slice(1)) visit(child, depth + 1, inCell);
     }
@@ -131,7 +137,7 @@ function collapseParagraphBoundaries(doc, remove, onMerge = () => {}) {
       const next = children[i + 1];
       assert(indexes.has(next), 'PENDING_PARAGRAPH_BOUNDARY_OWNER');
       onMerge(p, next);
-      next.content = [...p.content, ...next.content]; children.splice(i--, 1);
+      next.content = [...(p.content || []), ...(next.content || [])]; children.splice(i--, 1);
     }
   };
   visit(doc); return doc;
@@ -165,15 +171,16 @@ function validateSource(doc) {
   require('./word-paragraph-layout-v1.cjs').inspectDocumentParagraphLayout(doc);
   language.inspectDocumentLanguage(doc);
   for (const p of paragraphs(doc)) {
-    assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading'].includes(p.type));
-    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs'])
+    assert(exact(p, ['type', 'attrs', 'content']) && ['paragraph', 'heading', 'codeBlock'].includes(p.type));
+    assert(!p.attrs || (exact(p.attrs, ['textAlign', 'level', 'wordParagraphSpacing', 'wordParagraphMarkLanguage','wordParagraphIndent','wordParagraphTabs', ...(p.type === 'codeBlock' ? ['language'] : [])])
       && (!p.attrs.textAlign || ['left', 'center', 'right', 'justify'].includes(p.attrs.textAlign))
-      && (p.type === 'paragraph' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)));
-    assert(Array.isArray(p.content));
-    for (const n of p.content) {
+      && (p.type !== 'heading' ? p.attrs.level === undefined : Number.isInteger(p.attrs.level) && p.attrs.level >= 1 && p.attrs.level <= 9)
+      && (p.attrs.language == null || p.type === 'codeBlock' && typeof p.attrs.language === 'string' && p.attrs.language.length <= 128 && !/[\x00-\x1f<>]/u.test(p.attrs.language))));
+    assert(p.content === undefined || Array.isArray(p.content));
+    for (const n of p.content || []) {
       assert(exact(n, ['type', 'text', 'marks', ...(n.type === 'hardBreak' ? ['attrs'] : [])]) && ['text', 'hardBreak'].includes(n.type));
       if (n.type === 'hardBreak' && n.attrs != null) require('./word-typed-breaks-v1.cjs').kind(n);
-      assert(n.type === 'text' ? typeof n.text === 'string' && n.text.length > 0 : n.text === undefined && !n.marks?.length);
+      assert(n.type === 'text' ? typeof n.text === 'string' && n.text.length > 0 : n.text === undefined);
       assert(n.marks === undefined || Array.isArray(n.marks) && n.marks.length <= 8);
       const seen = new Set();
       for (const mark of n.marks || []) {
@@ -187,6 +194,10 @@ function validateSource(doc) {
             if (key === 'color') assert(/^#[a-f0-9]{6}$/u.test(value));
             if (key === 'fontSize') assert(/^\d+(?:\.5)?pt$/u.test(value) && parseFloat(value) > 0 && parseFloat(value) <= 1638);
           }
+        } else if (mark.type === 'link') {
+          assert(exact(mark.attrs, ['href', 'target', 'rel', 'class']) && typeof mark.attrs.href === 'string');
+          try { require('../io/docxHyperlinks.cjs').normalizeDocxHttpHref(mark.attrs.href); } catch { fail('PENDING_REVISIONS_MARK_UNSUPPORTED'); }
+          assert((mark.attrs.target == null || mark.attrs.target === '_blank') && (mark.attrs.rel == null || mark.attrs.rel === 'noopener noreferrer nofollow' || mark.attrs.rel === 'noopener noreferrer') && mark.attrs.class == null);
         } else if (mark.type === 'highlight') assert(exact(mark.attrs, ['color']) && /^#[a-f0-9]{6}$/u.test(mark.attrs.color));
         else fail('PENDING_REVISIONS_MARK_UNSUPPORTED');
       }
@@ -255,7 +266,7 @@ function validateState(input, frame = false) {
     assert(![r.nativeId, r.author, r.date, r.dateUtc].some(value => /[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)));
     assert(['insert', 'delete', 'format'].includes(r.operation) && status(r.state));
     assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < sourceParagraphs.length);
-    const p = sourceParagraphs[r.paragraphIndex], text = p.content.map(textOf).join('');
+    const p = sourceParagraphs[r.paragraphIndex], text = (p.content || []).map(textOf).join('');
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to)
       && (isTableRow(r) ? r.from === 0 && r.to === 0 : isParagraphBoundary(r) ? r.from === text.length && r.to === text.length
         : isParagraphFormat(r) ? r.from === 0 && r.to === text.length : r.to > r.from)
@@ -298,7 +309,7 @@ function validateState(input, frame = false) {
           validateSource({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks }] }] });
         }
         let offset = 0;
-        for (const n of p.content) {
+        for (const n of p.content || []) {
           const end = offset + textOf(n).length;
           if (n.type === 'text' && r.from < end && r.to > offset)
             assert(stable(n.marks || []) === stable(r.format.after), 'PENDING_FORMAT_SOURCE_MISMATCH');
@@ -368,7 +379,7 @@ function projectSourcePoint(ledger, point, mode = 'current') {
   assert(['current', 'original', 'export'].includes(mode), 'PENDING_NOTE_POINT_MODE');
   const leaves = paragraphs(ledger.source), p = leaves[point?.paragraphIndex];
   assert(Number.isSafeInteger(point?.paragraphIndex) && point.paragraphIndex >= 0 && p
-    && safeBoundary(p.content.map(textOf).join(''), point.offsetUtf16), 'PENDING_NOTE_POINT_BOUNDARY');
+    && safeBoundary((p.content || []).map(textOf).join(''), point.offsetUtf16), 'PENDING_NOTE_POINT_BOUNDARY');
   assert(ledger.revisions.every(r => ['insert', 'delete'].includes(r.operation) && !isStructural(r) && !r.moveName), 'PENDING_NOTE_REVISION_UNSUPPORTED');
   let offsetUtf16 = point.offsetUtf16;
   for (const r of ledger.revisions) {
@@ -415,7 +426,7 @@ function roundFrame(ledger) {
 }
 function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex) {
   // A paragraph property's identity covers the paragraph, not its changing text.
-  const text = isTableRow(revision) ? 'TABLE_ROW' : isParagraphBoundary(revision) ? '\n' : isParagraphFormat(revision) ? null : sourceParagraphs[revision.paragraphIndex].content.map(textOf).join('').slice(revision.from, revision.to);
+  const text = isTableRow(revision) ? 'TABLE_ROW' : isParagraphBoundary(revision) ? '\n' : isParagraphFormat(revision) ? null : (sourceParagraphs[revision.paragraphIndex].content || []).map(textOf).join('').slice(revision.from, revision.to);
   // Word preserves dateUtc to seconds, while rewriting legacy date at minute
   // precision. Keep raw provenance, but use the authoritative UTC timestamp at
   // Word's supported precision when matching an already-owned revision.
@@ -526,7 +537,7 @@ function exportSegments(ledger) {
 function paragraphSegments(ledger, p, paragraphIndex, mode) {
   const changes = ledger.revisions.filter(r => r.paragraphIndex === paragraphIndex && !isParagraphFormat(r) && !isStructural(r));
   const result = []; let offset = 0;
-  for (const node of p.content) {
+  for (const node of p.content || []) {
     const text = textOf(node), end = offset + text.length;
     const cuts = [...new Set([offset, end, ...changes.flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a, b) => a - b);
     for (let i = 1; i < cuts.length; i++) {
@@ -627,6 +638,146 @@ function projection(doc) {
   const text = value => paragraphs(value).map(p => (p.content || []).map(textOf).join('')).join('\n');
   return { original: text(materialize(ledger, 'original')), current: text(materialize(ledger)),
     canUndo: ledger.undo.length > 0 || Boolean(ledger.roundUndo?.length), canRedo: ledger.redo.length > 0 || Boolean(ledger.roundRedo?.length),
-    revisions: ledger.revisions.map(r => ({ ...clone(r), text: isTableRow(r) ? tableRows(ledger.source).filter(row => row.tableIndex === r.structure.tableIndex && row.rowIndex === r.structure.rowIndex).flatMap(row => sourceParagraphs.slice(row.paragraphIndex, row.paragraphIndex + row.paragraphCount)).map(p => p.content.map(textOf).join('')).join('\t') : isParagraphBoundary(r) ? '\n' : sourceParagraphs[r.paragraphIndex].content.map(textOf).join('').slice(r.from, r.to) })) };
+    revisions: ledger.revisions.map(r => ({ ...clone(r), text: isTableRow(r) ? tableRows(ledger.source).filter(row => row.tableIndex === r.structure.tableIndex && row.rowIndex === r.structure.rowIndex).flatMap(row => sourceParagraphs.slice(row.paragraphIndex, row.paragraphIndex + row.paragraphCount)).map(p => (p.content || []).map(textOf).join('')).join('\t') : isParagraphBoundary(r) ? '\n' : (sourceParagraphs[r.paragraphIndex].content || []).map(textOf).join('').slice(r.from, r.to) })) };
 }
-module.exports = { setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+
+// Comment transport uses an independently checked export basis. Native wrapper
+// IDs may change or split in Word; canonical revision identity never does.
+const commentHash = value => require('./browser-safe-hash.cjs').sha256UpdateCompatible(typeof value === 'string' ? value : stable(value));
+function commentTypography(value) {
+  assert(value === undefined || exact(value,['schemaVersion','fontSize']) && value.schemaVersion === 'yalken.review-docx.typography-defaults.v1' && value.fontSize === '12pt', 'PENDING_COMMENT_TYPOGRAPHY_INVALID');
+  return value?.fontSize || null;
+}
+function commentRich(doc, fontSize) {
+  const copy=clone(doc);
+  const visit=n=>{
+    if(fontSize && ['text','hardBreak'].includes(n.type)) {
+      const marks=n.marks || (n.marks=[]); let style=marks.find(m=>m.type==='textStyle');
+      if(!style) marks.push(style={type:'textStyle',attrs:{}});
+      style.attrs={...style.attrs,fontSize:style.attrs?.fontSize || fontSize};
+    }
+    for(const child of n.content||[]) visit(child);
+  };
+  visit(copy); return normalizeNode(copy);
+}
+function commentBasis(document,exportTypography) {
+  const ledger=readLedger(document);
+  assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete'].includes(r.operation)), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
+  const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], rows=[];
+  exported.paragraphs.forEach((p,paragraphIndex)=>{
+    let offset=0; const parts=[];
+    for(const segment of p.segments) {
+      const length=textOf(segment.node).length, from=offset; offset+=length;
+      parts.push({fromUtf16:from,toUtf16:offset,node:clone(segment.node),revision:segment.revision});
+      if(segment.revision) {
+        const r=segment.revision, last=spans.at(-1);
+        if(last?.revisionId===r.id && last.paragraphIndex===paragraphIndex && last.toUtf16===from) last.toUtf16=offset;
+        else spans.push({revisionId:r.id,paragraphIndex,fromUtf16:from,toUtf16:offset,operation:r.operation,
+          provenanceSha256:commentHash({author:r.author,date:r.date,dateUtc:r.dateUtc})});
+      }
+    }
+    rows.push(parts);
+  });
+  const project=mode=>{
+    const doc=clone(exported.doc);
+    paragraphs(doc).forEach((p,index)=>{p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>clone(s.node));});
+    return doc;
+  };
+  const union=project('union'),current=project('current'),original=project('original');
+  for(const span of spans) {
+    const nodes=rows[span.paragraphIndex].filter(s=>s.fromUtf16>=span.fromUtf16 && s.toUtf16<=span.toUtf16).map(s=>s.node);
+    span.formatSha256=commentHash(commentRich({type:'doc',content:[{type:'paragraph',content:nodes}]},size));
+  }
+  return {ledger,rows,spans,union,current,original,size};
+}
+function basisEndpoint(basis,paragraphIndex,offsetUtf16,mode='current',inverse=false) {
+  const row=basis.rows[paragraphIndex];
+  assert(row && Number.isSafeInteger(offsetUtf16) && offsetUtf16>=0,'PENDING_COMMENT_ENDPOINT_INVALID');
+  if(!inverse) {
+    const unionText=row.map(s=>textOf(s.node)).join('');
+    assert(safeBoundary(unionText,offsetUtf16) && offsetUtf16<=unionText.length,'PENDING_COMMENT_ENDPOINT_INVALID');
+    let removed=0;
+    for(const s of row) if(mode!=='union' && s.revision && (mode==='current'?s.revision.operation==='delete':s.revision.operation==='insert')) removed+=Math.max(0,Math.min(offsetUtf16,s.toUtf16)-s.fromUtf16);
+    return {paragraphIndex,offsetUtf16:offsetUtf16-removed};
+  }
+  const currentText=row.filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':s.revision.operation!=='insert')).map(s=>textOf(s.node)).join('');
+  const edges=new Set([currentText.length,...Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(currentText),s=>s.index)]);
+  assert(edges.has(offsetUtf16),'PENDING_COMMENT_ENDPOINT_INVALID');
+  const candidates=[]; let projected=0;
+  for(const s of row) {
+    const hidden=s.revision && (mode==='current'?s.revision.operation==='delete':s.revision.operation==='insert');
+    if(hidden) {if(offsetUtf16===projected)candidates.push(s.fromUtf16,s.toUtf16);continue;}
+    const length=s.toUtf16-s.fromUtf16;
+    if(offsetUtf16>=projected && offsetUtf16<=projected+length)candidates.push(s.fromUtf16+offsetUtf16-projected);
+    projected+=length;
+  }
+  if(!row.length && offsetUtf16===0)candidates.push(0);
+  const unique=[...new Set(candidates)];
+  assert(unique.length===1,'PENDING_COMMENT_ENDPOINT_AMBIGUOUS');
+  return basisEndpoint(basis,paragraphIndex,unique[0],'union');
+}
+function commentAnchorBindings(basis,anchors) {
+  assert(Array.isArray(anchors) && anchors.length<=128,'PENDING_COMMENT_ANCHORS_INVALID');
+  const seen=new Set(), ownerByNode=new Map(); let tableId=0;
+  const visit=(node,owner=null)=>{
+    if(node.type==='table') {
+      const id=String(++tableId);
+      for(const cell of inspectTable(node).cells) {
+        const local={tableId:id,row:cell.row,column:cell.column};
+        const combined=owner?{...clone(owner)}:local;
+        if(owner) {let tail=combined;while(tail.nested)tail=tail.nested;tail.nested=local;}
+        for(const child of cell.node.content)visit(child,combined);
+      }
+    } else if(['paragraph','heading','codeBlock'].includes(node.type)) ownerByNode.set(node,owner);
+    else for(const child of node.content||[])visit(child,owner);
+  };
+  visit(basis.current);
+  const texts=paragraphs(basis.current).map(p=>({text:(p.content||[]).map(textOf).join(''),...(ownerByNode.get(p)?{table:ownerByNode.get(p)}:{})}));
+  return anchors.map(entry=>{
+    assert(exact(entry,['threadId','anchor']) && typeof entry.threadId==='string' && !seen.has(entry.threadId),'PENDING_COMMENT_ANCHORS_INVALID');seen.add(entry.threadId);
+    const a=entry.anchor, start=a?.sceneParagraphIndex, end=a?.endSceneParagraphIndex ?? start;
+    require('./word-comment-ranges-v1.cjs').validateCommentAnchor({sceneId:a?.sceneId,paragraphs:texts,anchor:a});
+    const currentStart={paragraphIndex:start,offsetUtf16:a.startUtf16},currentEnd={paragraphIndex:end,offsetUtf16:a.endUtf16 ?? a.startUtf16+a.selectedText.length};
+    const unionStart=basisEndpoint(basis,start,currentStart.offsetUtf16,'current',true),unionEnd=basisEndpoint(basis,end,currentEnd.offsetUtf16,'current',true);
+    return {threadId:entry.threadId,currentStart,currentEnd,unionStart,unionEnd,
+      originalStart:basisEndpoint(basis,start,unionStart.offsetUtf16,'original'),originalEnd:basisEndpoint(basis,end,unionEnd.offsetUtf16,'original')};
+  }).sort((a,b)=>a.threadId<b.threadId?-1:a.threadId>b.threadId?1:0);
+}
+function buildCommentExportBinding({document,anchors=[],exportTypography}={}) {
+  inspectLedgerData({document,anchors,exportTypography});
+  const basis=commentBasis(document,exportTypography);
+  const projection={union:basis.union,current:basis.current,original:basis.original,segments:basis.rows};
+  const binding={schemaVersion:1,ledgerSha256:commentHash(basis.ledger),
+    basisSha256:commentHash({union:commentRich(basis.union,basis.size),current:commentRich(basis.current,basis.size),original:commentRich(basis.original,basis.size)}),
+    paragraphCount:basis.rows.length,revisionSpans:basis.spans,anchors:commentAnchorBindings(basis,anchors)};
+  return {binding,projection};
+}
+function mapCommentExportEndpoint({document,binding,anchors=[],exportTypography,paragraphIndex,offsetUtf16,affinity}={}) {
+  inspectLedgerData(binding);
+  assert(['left','right'].includes(affinity),'PENDING_COMMENT_ENDPOINT_INVALID');
+  const actual=buildCommentExportBinding({document,anchors,exportTypography});
+  assert(stable(binding)===stable(actual.binding),'PENDING_COMMENT_BINDING_CHANGED');
+  return basisEndpoint({rows:actual.projection.segments},paragraphIndex,offsetUtf16,'current',true);
+}
+function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[],exportTypography}={}) {
+  inspectLedgerData({binding,returnedDocument});
+  const before=buildCommentExportBinding({document,anchors,exportTypography});
+  assert(stable(binding)===stable(before.binding),'PENDING_COMMENT_BINDING_CHANGED');
+  const returned=commentBasis(returnedDocument,exportTypography);
+  assert(returned.ledger.revisions.every(r=>r.state==='pending'),'PENDING_COMMENT_REVISION_CHANGED');
+  assert(commentHash({union:commentRich(returned.union,returned.size),current:commentRich(returned.current,returned.size),original:commentRich(returned.original,returned.size)})===binding.basisSha256,'PENDING_COMMENT_PROJECTION_CHANGED');
+  const partitions=[];let cursor=0;
+  for(const span of binding.revisionSpans) {
+    let offset=span.fromUtf16;const fragments=[];
+    while(offset<span.toUtf16) {
+      const fragment=returned.spans[cursor++];
+      assert(fragment && fragment.paragraphIndex===span.paragraphIndex && fragment.fromUtf16===offset && fragment.toUtf16>offset && fragment.toUtf16<=span.toUtf16
+        && fragment.operation===span.operation && fragment.provenanceSha256===span.provenanceSha256,'PENDING_COMMENT_PARTITION_CHANGED');
+      fragments.push(fragment.revisionId);offset=fragment.toUtf16;
+    }
+    partitions.push({revisionId:span.revisionId,fragments});
+  }
+  assert(cursor===returned.spans.length,'PENDING_COMMENT_PARTITION_CHANGED');
+  return {partitions,projection:before.projection,anchors:binding.anchors};
+}
+module.exports = { buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

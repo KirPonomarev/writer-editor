@@ -455,7 +455,7 @@ test('actual main command with real project lease applies once; forged admission
   installMainDocxRoundAuthority(sandbox, { projectRoot: root, references: [context.reviewTransportAuthorityCapsule], publishAllocated: true });
   const ctx = vm.createContext(sandbox);
   vm.runInContext('const authenticatedCommentDeltaAdmissions = new WeakMap();\n'
-    + extract('applyAuthenticatedCommentDelta') + '\n' + extract('handleRtkCommentLifecycleReturnCommandSurface'), ctx);
+    + extract('buildAuthenticatedPendingCommentScenes') + '\n' + extract('applyAuthenticatedCommentDelta') + '\n' + extract('handleRtkCommentLifecycleReturnCommandSurface'), ctx);
   const kernel = require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({
     'cmd.rtk.review.applyCommentLifecycleReturn': ctx.handleRtkCommentLifecycleReturnCommandSurface,
   });
@@ -858,4 +858,36 @@ test('multi-paragraph root/reply actual signed export return proves all covered 
  assert.throws(()=>plan(badOwner),/COMMENT_ANCHOR_OWNER/);
  const cross=structuredClone(returned),scene=cross.exportMap.scenes[0];cross.exportMap.scenes.push({sceneId:'foreign',blocks:[scene.blocks.pop()]});
  assert.throws(()=>plan(cross),/COMMENT_RETURN_SCENE_MISMATCH/);
+});
+
+test('unchanged pending partition admits one reply with independently checked union and Current anchors', async () => {
+  const f=await fixture(), model=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const unionText='Before 🧭 removedanchor after';
+  const revision=(id,operation,from,to)=>({id:'revision-'+id,nativeId:String(id),operation,author:'Editor',date:'2026-10-05T10:00:00Z',dateUtc:'2026-10-05T10:00:00Z',groupId:null,paragraphIndex:0,from,to,state:'pending'});
+  const ledger={schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:unionText}]}]},revisions:[revision(1,'delete',10,17),revision(2,'insert',17,23)],undo:[],redo:[]};
+  const document=model.bindLedger(ledger), anchors=f.state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor}));
+  const {binding}=model.buildCommentExportBinding({document,anchors,exportTypography:f.input.exportMap.exportTypography});
+  const returned=structuredClone(ledger),r=returned.revisions[1];
+  returned.revisions.splice(1,1,{...r,to:20},{...r,id:'revision-3',nativeId:'90',from:20});
+  const returnedDocument=model.bindLedger(returned);
+  const input=structuredClone(f.input);
+  input.exportMap.scenes[0].pendingCommentBinding=binding;
+  input.pendingScenes=[{sceneId:f.state.threads[0].sceneId,document,returnedDocument}];
+  input.returnedParagraphs[0].trackedRevision=true;
+  const root=input.returnedThreads[0];
+  root.anchorRange={...root.finalTextAnchorRange,endUtf16:23,selectedText:'🧭 removedanchor',blockTextSha256:hash(unionText)};
+  root.quotedAnchorText=root.anchorRange.selectedText;
+  const reply=structuredClone(root.replies[0]);reply.durableId='AABBCCDD';reply.body='New reply';delete reply.richBody;root.replies.push(reply);
+  const result=plan(input),after=JSON.parse(result.afterText);
+  assert.equal(after.threads[0].messages.length,3);
+  assert.deepEqual(after.threads[0].anchor,f.state.threads[0].anchor);
+  assert.deepEqual(after.threads[0].messages.slice(0,2),f.state.threads[0].messages);
+  assert.equal(plan({...input,beforeText:result.afterText}).replay,true);
+  const unchanged=structuredClone(input);unchanged.returnedThreads[0].replies.pop();assert.equal(plan(unchanged).afterText,input.beforeText);
+  for(const mutate of [v=>v.pendingScenes=[],v=>v.pendingScenes[0].returnedDocument.attrs.wordPendingRevisions.revisions[1].author='forged',
+    v=>v.returnedThreads[0].quotedAnchorText=v.returnedThreads[0].finalTextAnchorRange.selectedText,
+    v=>v.returnedThreads[0].anchorRange.startUtf16++,v=>v.returnedThreads[0].body='Changed root',v=>v.returnedThreads[0].status='RESOLVED',
+    v=>v.pendingScenes.push(v.pendingScenes[0]),v=>v.exportMap.scenes[0].pendingCommentBinding.extra=true]) {
+    const bad=structuredClone(input);mutate(bad);const before=JSON.stringify(bad);assert.throws(()=>plan(bad));assert.equal(JSON.stringify(bad),before);
+  }
 });

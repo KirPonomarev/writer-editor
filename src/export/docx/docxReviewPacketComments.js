@@ -246,6 +246,40 @@ function commentPackageParts(projection) {
   };
 }
 
+function bindPendingCommentExport({commentExport, scenes, blocks, exportTypography}) {
+  const pending = require('../../core/word-pending-text-revisions-v1.cjs');
+  const projection = commentExport ? JSON.parse(JSON.stringify(commentExport)) : commentExport;
+  const pendingCommentBindings = [];
+  if(!projection?.threads?.length)return {commentExport:projection,pendingCommentBindings};
+  for (const scene of scenes) {
+    if (!pending.readLedger(scene.doc)) continue;
+    const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
+    const rows = sceneBlocks.map(block => ({text:block.text,...(block.formatIr?.table?{table:block.formatIr.table}:{})}));
+    const threads = (projection?.threads || []).filter(thread => thread.sceneId === scene.sceneId);
+    const anchors = threads.map(thread => {
+      const a = thread.anchor, first = sceneBlocks.findIndex(b => b.blockId === a.blockId);
+      const input = {paragraphIndex:first,startUtf16:a.startUtf16,selectedText:a.selectedText,
+        ...(a.kind === 'multi-paragraph-range' ? {kind:a.kind,endParagraphIndex:sceneBlocks.findIndex(b=>b.blockId===a.endBlockId),endUtf16:a.endUtf16}
+          : a.kind === 'point' ? {kind:'point',affinity:'right'} : {})};
+      return {threadId:thread.threadId,anchor:commentRanges.deriveCommentAnchor({sceneId:scene.sceneId,paragraphs:rows,input})};
+    });
+    const {binding} = pending.buildCommentExportBinding({document:scene.doc,anchors,exportTypography});
+    pendingCommentBindings.push({sceneId:scene.sceneId,binding});
+    const union = pending.exportSegments(pending.readLedger(scene.doc)).map(segments=>segments.map(s=>s.node.type==='hardBreak'?'\n':s.node.text).join(''));
+    for (const thread of threads) {
+      const occurrence = binding.anchors.find(a=>a.threadId===thread.threadId);
+      demand(occurrence,'PENDING_COMMENT_BINDING_REQUIRED');
+      const a=thread.anchor, start=occurrence.unionStart, end=occurrence.unionEnd;
+      const quote = start.paragraphIndex===end.paragraphIndex ? union[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)
+        : [union[start.paragraphIndex].slice(start.offsetUtf16),...union.slice(start.paragraphIndex+1,end.paragraphIndex),union[end.paragraphIndex].slice(0,end.offsetUtf16)].join('\n');
+      thread.pendingAnchor={...a,startUtf16:start.offsetUtf16,endUtf16:end.offsetUtf16,selectedText:quote,
+        blockTextSha256:digest(union[start.paragraphIndex]),...(a.kind==='multi-paragraph-range'?{
+          endBlockTextSha256:digest(union[end.paragraphIndex]),coveredParagraphsSha256:digest(JSON.stringify(union.slice(start.paragraphIndex,end.paragraphIndex+1)))}:{})};
+    }
+  }
+  return {commentExport:projection,pendingCommentBindings};
+}
+
 function commentMarkersForBlock(projection, block) {
   const markers = new Map();
   let ordinal = 0;
@@ -254,20 +288,22 @@ function commentMarkersForBlock(projection, block) {
     boundary[kind].push(event); markers.set(offset, boundary);
   };
   for (const thread of projection?.threads || []) {
-    const multi = thread.anchor.kind === 'multi-paragraph-range';
-    const isStart = thread.anchor.blockId === block.blockId;
-    const isEnd = (multi ? thread.anchor.endBlockId : thread.anchor.blockId) === block.blockId;
+    const anchor = thread.pendingAnchor || thread.anchor;
+    const blockText = thread.pendingAnchor ? (block.pendingRevisionSegments || []).map(s=>s.node.type==='hardBreak'?'\n':s.node.text).join('') : block.text;
+    const multi = anchor.kind === 'multi-paragraph-range';
+    const isStart = anchor.blockId === block.blockId;
+    const isEnd = (multi ? anchor.endBlockId : anchor.blockId) === block.blockId;
     if (!isStart && !isEnd) { ordinal += thread.messages.length; continue; }
-    const { startUtf16: start, endUtf16: end, selectedText } = thread.anchor;
+    const { startUtf16: start, endUtf16: end, selectedText } = anchor;
     demand(thread.sceneId === block.sceneId && (multi
-      ? (!isStart || digest(block.text) === thread.anchor.blockTextSha256 && isUtf16Boundary(block.text, start))
-        && (!isEnd || digest(block.text) === thread.anchor.endBlockTextSha256 && isUtf16Boundary(block.text, end))
-      : block.text.slice(start, end) === selectedText
-        && (thread.anchor.kind === 'point' ? start === end && thread.anchor.affinity === 'right' : start < end)
-        && isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end)), 'DOCX_COMMENT_ANCHOR_STALE');
+      ? (!isStart || digest(blockText) === anchor.blockTextSha256 && isUtf16Boundary(blockText, start))
+        && (!isEnd || digest(blockText) === anchor.endBlockTextSha256 && isUtf16Boundary(blockText, end))
+      : blockText.slice(start, end) === selectedText
+        && (anchor.kind === 'point' ? start === end && anchor.affinity === 'right' : start < end)
+        && isUtf16Boundary(blockText, start) && isUtf16Boundary(blockText, end)), 'DOCX_COMMENT_ANCHOR_STALE');
     for (const message of thread.messages) {
-      const event = { start, end, startParagraph: thread.anchor.documentParagraphIndex,
-        endParagraph: multi ? thread.anchor.endDocumentParagraphIndex : thread.anchor.documentParagraphIndex,
+      const event = { start, end, startParagraph: anchor.documentParagraphIndex,
+        endParagraph: multi ? anchor.endDocumentParagraphIndex : anchor.documentParagraphIndex,
         point: !multi && start === end, ordinal: ordinal++, id: message.commentId };
       if (isStart) append(start, 'start', event);
       if (isEnd) append(end, 'end', event);
@@ -319,14 +355,22 @@ function compareCommentExportReadback(projection, returned) {
     ...(actual.replies || []).map(reply => ({ body: reply.body, richBody: reply.richBody, durableId: reply.durableId,
       provenance: { author: reply.author, initials: reply.initials, date: reply.date, dateUtc: reply.dateUtc } }))];
     const before = changed.length + missing.length;
-    if (actual.quotedAnchorText !== expected.anchor.selectedText
-      || actual.paragraphIndex !== expected.anchor.documentParagraphIndex
-      || actual.anchorRange?.startUtf16 !== expected.anchor.startUtf16
-      || actual.anchorRange?.endUtf16 !== expected.anchor.endUtf16
-      || actual.anchorRange?.kind !== expected.anchor.kind && (actual.anchorRange?.kind === 'multi-paragraph-range' || expected.anchor.kind === 'multi-paragraph-range')
-      || (expected.anchor.kind === 'multi-paragraph-range' && (actual.anchorRange?.endParagraphIndex !== expected.anchor.endDocumentParagraphIndex
-        || actual.anchorRange?.coveredParagraphsSha256 !== expected.anchor.coveredParagraphsSha256
-        || actual.anchorRange?.endBlockTextSha256 !== expected.anchor.endBlockTextSha256))
+    if(expected.pendingAnchor){
+      const current=actual.finalTextAnchorRange;
+      if(!current||current.selectedText!==expected.anchor.selectedText||current.startUtf16!==expected.anchor.startUtf16
+        ||current.endUtf16!==expected.anchor.endUtf16||expected.anchor.blockTextSha256!==undefined&&current.blockTextSha256!==expected.anchor.blockTextSha256
+        ||expected.anchor.kind==='multi-paragraph-range'&&(current.endParagraphIndex!==expected.anchor.endDocumentParagraphIndex
+          ||current.endBlockTextSha256!==expected.anchor.endBlockTextSha256||current.coveredParagraphsSha256!==expected.anchor.coveredParagraphsSha256))
+        changed.push({threadId:expected.threadId,code:'COMMENT_CURRENT_ANCHOR_CHANGED'});
+    }
+    if (actual.quotedAnchorText !== (expected.pendingAnchor || expected.anchor).selectedText
+      || actual.paragraphIndex !== (expected.pendingAnchor || expected.anchor).documentParagraphIndex
+      || actual.anchorRange?.startUtf16 !== (expected.pendingAnchor || expected.anchor).startUtf16
+      || actual.anchorRange?.endUtf16 !== (expected.pendingAnchor || expected.anchor).endUtf16
+      || actual.anchorRange?.kind !== (expected.pendingAnchor || expected.anchor).kind && (actual.anchorRange?.kind === 'multi-paragraph-range' || (expected.pendingAnchor || expected.anchor).kind === 'multi-paragraph-range')
+      || ((expected.pendingAnchor || expected.anchor).kind === 'multi-paragraph-range' && (actual.anchorRange?.endParagraphIndex !== (expected.pendingAnchor || expected.anchor).endDocumentParagraphIndex
+        || actual.anchorRange?.coveredParagraphsSha256 !== (expected.pendingAnchor || expected.anchor).coveredParagraphsSha256
+        || actual.anchorRange?.endBlockTextSha256 !== (expected.pendingAnchor || expected.anchor).endBlockTextSha256))
       || !['ANCHORED', 'RESOLVED'].includes(actual.status)
       || (actual.status === 'RESOLVED') !== (expected.status === 'resolved')) {
       changed.push({ threadId: expected.threadId, code: 'COMMENT_ANCHOR_OR_STATE_CHANGED' });
@@ -354,4 +398,4 @@ function compareCommentExportReadback(projection, returned) {
 }
 
 module.exports = { COMMENT_EXPORT_SCHEMA, buildCanonicalCommentExport, commentStateDigest,
-  normalizeCommentProvenance, commentPackageParts, commentMarkersForBlock, compareCommentExportReadback };
+  bindPendingCommentExport, normalizeCommentProvenance, commentPackageParts, commentMarkersForBlock, compareCommentExportReadback };

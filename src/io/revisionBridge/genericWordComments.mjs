@@ -1,3 +1,4 @@
+import pendingTextRevisions from '../../core/word-pending-text-revisions-v1.cjs';
 import commentRanges from '../../core/word-comment-ranges-v1.cjs';
 import commentAuthoring from '../../core/word-comment-authoring-v1.cjs';
 import commentBodyModel from '../../core/word-comment-body-v1.cjs';
@@ -36,12 +37,19 @@ function message(source, reply = false) {
     ...commentBodyModel.validateCommentMessageContent(source), provenance };
 }
 
-export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false } = {}) {
-  demand(analysis?.ok === true && analysis.reviewIr?.sourceMode === 'CLEAN', 'ANALYSIS');
+export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false, pendingDocument } = {}) {
+  demand(analysis?.ok === true && (analysis.reviewIr?.sourceMode === 'CLEAN' || pendingDocument), 'ANALYSIS');
   const ir = analysis.reviewIr;
   demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= 128
     && Array.isArray(paragraphs), 'BUDGET');
-  demand(!(ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length), 'TRACKED_UNSUPPORTED');
+  const pendingLedger = pendingDocument ? pendingTextRevisions.readLedger(pendingDocument) : null;
+  demand(!(ir.moveRevisions?.length || ir.propertyRevisions?.length)
+    && (!ir.textRevisions?.length || pendingLedger), 'TRACKED_UNSUPPORTED');
+  if(pendingLedger) {
+    demand(pendingLedger.revisions.every(r=>['insert','delete'].includes(r.operation)&&!pendingTextRevisions.isStructural(r)&&!r.moveName),'TRACKED_UNSUPPORTED');
+    const current=pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(pendingLedger));
+    demand(current.length===paragraphs.length && current.every((p,i)=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')===paragraphs[i].text),'PENDING_CURRENT');
+  }
   // Missing/orphan/truncated comments may not disappear behind an empty lane.
   const reasons = analysis.reasons || [];
   demand(!reasons.some(item => {
@@ -56,12 +64,31 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
   // The canonical import writer uses this same validated recursive leaf order.
   // Malformed ownership may not be rescued by a matching comment quote.
   try { documentTables.groupTableParagraphs(paragraphs); } catch { demand(false, 'TOPOLOGY'); }
+  const unionRows=pendingLedger?pendingTextRevisions.paragraphs(pendingLedger.source).map((p,i)=>({...paragraphs[i],text:(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('')})):null;
+  const currentPoint=(paragraphIndex,offset)=>{
+    let result=offset;
+    for(const revision of pendingLedger.revisions){
+      if(revision.paragraphIndex!==paragraphIndex||revision.operation!=='delete')continue;
+      demand(!(revision.from<offset&&offset<revision.to),'PENDING_DELETED_ENDPOINT');
+      if(revision.to<=offset)result-=revision.to-revision.from;
+    }
+    return result;
+  };
   const nativeIds = new Set();
   const candidates = ir.commentThreads.map(thread => {
     demand(['ANCHORED', 'RESOLVED'].includes(thread.status)
       && ['active', 'resolved', 'reopened'].includes(thread.doneResolvedReopenedState)
       && !thread.parentThreadId && thread.placement?.anchored === true, 'PLACEMENT');
     const range = thread.finalTextAnchorRange || thread.anchorRange;
+    if(pendingLedger) {
+      const union=thread.anchorRange, start=thread.paragraphIndex, last=union?.endParagraphIndex??start;
+      demand(plain(union)&&unionRows[start]&&unionRows[last],'PENDING_UNION');
+      const quote=start===last?unionRows[start].text.slice(union.startUtf16,union.endUtf16):[unionRows[start].text.slice(union.startUtf16),...unionRows.slice(start+1,last).map(p=>p.text),unionRows[last].text.slice(0,union.endUtf16)].join('\n');
+      demand(quote===thread.quotedAnchorText && quote===union.selectedText && union.blockTextSha256===sha256Hex(unionRows[start].text),'PENDING_UNION');
+      demand(!(union.selectedText && range?.selectedText===''),'PENDING_DELETED_ANCHOR');
+      demand(range.startUtf16===currentPoint(start,union.startUtf16) && range.endUtf16===currentPoint(last,union.endUtf16)
+        && (range.endParagraphIndex??start)===last,'PENDING_ENDPOINT_BINDING');
+    }
     const index = thread.paragraphIndex, paragraph = paragraphs[index];
     demand(Number.isSafeInteger(index) && index >= 0 && plain(range)
       && plain(paragraph) && typeof paragraph.text === 'string', 'ANCHOR');
@@ -76,7 +103,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
           : range.startUtf16 === range.endUtf16 ? {kind: 'point', affinity: 'right'} : {}) } }); }
     catch { demand(false, 'ANCHOR'); }
     demand((multi || range.endUtf16 === range.startUtf16 + range.selectedText.length)
-      && derived.blockTextSha256 === range.blockTextSha256 && range.selectedText === thread.quotedAnchorText
+      && derived.blockTextSha256 === range.blockTextSha256 && (pendingLedger || range.selectedText === thread.quotedAnchorText)
       && (!multi || derived.endBlockTextSha256 === range.endBlockTextSha256
         && derived.coveredParagraphsSha256 === range.coveredParagraphsSha256), 'ANCHOR');
     demand(Array.isArray(thread.replies) && thread.replies.length <= 128, 'REPLIES');

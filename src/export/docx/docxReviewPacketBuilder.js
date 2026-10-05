@@ -350,10 +350,10 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   for (const image of block.formatIr?.media || []) {
     markers.set(image.offset, (markers.get(image.offset) || '') + mediaPackage.drawing(image.attrs));
   }
-  let textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
+  let textRun = block.pendingRevisionSegments ? '' : markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
   if (block.pendingRevisionSegments) {
-    if (commentMarkersForBlock(commentExport, block).size || userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
+    if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
     textRun = buildPendingRunsXml(block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments, node => {
       const inline = {}, preservedMarks = [];
@@ -361,12 +361,13 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
         if (['bold', 'italic', 'underline', 'strike'].includes(mark.type)) inline[mark.type] = true;
         else if (mark.type === 'textStyle') Object.assign(inline, mark.attrs);
         else if (mark.type === 'highlight') inline.highlight = mark.attrs.color;
+        else if (mark.type === 'link' && /^https?:\/\//u.test(mark.attrs?.href || '')) preservedMarks.push(mark);
         else throw Error('PENDING_REVISIONS_MARK_EXPORT_UNSUPPORTED');
       }
       const breakType = node.type === 'hardBreak' ? require('../../core/word-typed-breaks-v1.cjs').kind(node) : 'line';
       const text = node.type === 'hardBreak' ? '\n' : node.text;
       return buildFormatIrRunsXml({ text, formatIr: { runs: [{ text, inline, preservedMarks, ...(breakType !== 'line' ? { wordBreakType: breakType } : {}) }] } }, hyperlinkByHref);
-    }, revisionCounter, block.sceneId || '', pendingMarkers);
+    }, revisionCounter, block.sceneId || '', pendingMarkers, commentMarkersForBlock(commentExport, block));
   }
   // Google Office drops an otherwise empty paragraph carrying a section
   // break. A word joiner is visually empty but keeps the authored paragraph
@@ -401,6 +402,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
       || (Object.hasOwn(list, 'continuation') && list.continuation !== true)) {
       throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_LIST_UNSUPPORTED');
     }
+    if(list.continuation===true){for(let i=paragraphPropertyParts.length-1;i>=0;i--)if(paragraphPropertyParts[i].startsWith('<w:pStyle'))paragraphPropertyParts.splice(i,1);paragraphPropertyParts.unshift(`<w:pStyle w:val="YalkenListContinuation${level}"/>`);}
     if (list.continuation !== true) paragraphPropertyParts.push(`<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${numId}"/></w:numPr>`);
   }
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
@@ -675,6 +677,7 @@ function buildStylesXml(blocks) {
 <w:styles xmlns:w="${WORD_MAIN_NS}">
   <w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>
   ${buildDocxBlockStyleDefinitions(ids)}
+  ${[...new Set(blocks.filter(b=>b.formatIr?.paragraph?.list?.continuation===true).map(b=>b.formatIr.paragraph.list.level))].map(level=>`<w:style w:type="paragraph" w:styleId="YalkenListContinuation${level}"><w:name w:val="Yalken List Continuation ${level}"/></w:style>`).join('')}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
 </w:styles>`;
 }

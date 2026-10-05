@@ -1,4 +1,25 @@
+## 2026-10-05 — pending comments: bounded integration checkpoint (not accepted)
+
+WORD_PENDING_COMMENTS_MAC_20261005: Core focused49/49 passed; real Word v03
+retained Current/Original text and one new reply on the shared novel corpus.
+Generic decoding is available, but strict full rich correspondence still
+refuses derived quote/list-continuation indent representation. Main C2 export
+passes publication; reply Apply and SOURCE/PACKAGED acceptance remain open.
+Intermediate commit preserves coherent owned WIP and permits clean preflight
+for two obsolete blanket-refusal test consumers. No delivery/whole-plan PASS.
+Initial task prose was corrected to required ten-section HARD presentation.
+
 # WORKLOG (Craftsman)
+
+## 2026-10-05 06:34 EEST — break delivery; pending/comment implementation
+
+- PR2081 mergedf557f7cb0, CI19/19 and both RTK3295/3295. Baseline2199pass,
+  59historical skips excluded. Exact merged401/4010skip plus real Git/OPS and
+  guardrails; candidate tree equal, native572runtimeinputhashes retained.
+- New34-path clean preflight admits mixed pending insert/delete and comments.
+  Early independent Word reply/save calibrated5native wrappers becoming6
+  without changed Current/Original; implement semantic span partition proof.
+  Same shared novel corpus, generic and signed routes, no wholeplan claim.
 
 ## 2026-10-05 06:12 EEST — CI consumer expectation repair
 

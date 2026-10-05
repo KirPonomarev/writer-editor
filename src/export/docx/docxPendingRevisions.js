@@ -62,7 +62,7 @@ function buildPendingRowParagraphXml(xml, revision, counter) {
 }
 // Export segments have already been validated against canonical scene truth.
 // One native wrapper per revision, even when its body has several rich runs.
-function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map()) {
+function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map(), commentMarkers = new Map()) {
   let output = '', active = null, body = '', formatText = '';
   const flush = () => {
     if (!active) { output += body; body = ''; return; }
@@ -95,14 +95,19 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   };
   let offset = 0;
   const remaining = new Map(markers);
+  const remainingComments = new Map(commentMarkers);
   const emit = point => {
+    if (remainingComments.has(point)) {
+      if (active?.operation === 'format') throw Error('PENDING_COMMENT_FORMAT_UNSUPPORTED');
+      body += remainingComments.get(point); remainingComments.delete(point);
+    }
     if (!remaining.has(point)) return;
     flush(); active = null; output += remaining.get(point); remaining.delete(point);
   };
   for (const segment of segments) {
     const value = segment.node.type === 'hardBreak' ? '\n' : segment.node.text, end = offset + value.length;
-    const inner = [...remaining.keys()].filter(point => point > offset && point < end).sort((a, b) => a - b);
-    if (segment.revision && inner.length) throw Error('PENDING_NOTE_REFERENCE_CONSUMED');
+    const inner = [...new Set([...remaining.keys(), ...remainingComments.keys()])].filter(point => point > offset && point < end).sort((a, b) => a - b);
+    if (segment.revision && inner.some(point => remaining.has(point))) throw Error('PENDING_NOTE_REFERENCE_CONSUMED');
     const cuts = [offset, ...inner, end];
     for (let i = 0; i < cuts.length - 1; i++) {
       emit(cuts[i]);
@@ -117,6 +122,7 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   }
   emit(offset);
   if (remaining.size) throw Error('PENDING_NOTE_ANCHOR_UNEMITTED');
+  if (remainingComments.size) throw Error('PENDING_COMMENT_ANCHOR_UNEMITTED');
   flush(); return output;
 }
 function pendingNoteMarkersForBlock(projection, block) {

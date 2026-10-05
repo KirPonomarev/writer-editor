@@ -2379,3 +2379,109 @@ for(const variant of ['line','page','column','inherited','type-spoof'])test(`act
  const run=[...xml.matchAll(/<w:r>[\s\S]*?<\/w:r>/gu)].map(m=>m[0]).find(r=>r.includes('<w:br'));assert.ok(run.includes('w:lang w:val="ru-FI"'),run);assert.ok(run.includes(inherited?'Times New Roman':'Georgia'),run);
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'break-replay'});await settle();assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
 });
+
+async function pendingCommentMainFixture(t,{scope='full',tamper=null}={}) {
+  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const comments=require('../../src/core/word-comment-authoring-v1.cjs');
+  const generated=(await import('../../scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')).buildWordManuscriptFixture('MULTI_SCENE','C2','DEFAULT');
+  assert.equal(generated.scenes.length,3);
+  const docs=generated.scenes.map(scene=>structuredClone(scene.doc));
+  const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]});
+  docs[0].content.push({type:'orderedList',attrs:{start:1},content:[{type:'listItem',content:[paragraph('List owner retained'),paragraph('List continuation retained')]}]},
+    {type:'paragraph',content:[{type:'text',text:'Marked break '},{type:'hardBreak',marks:[{type:'textStyle',attrs:{fontFamily:'Georgia',wordLanguage:{val:'en-US'}}}]},{type:'text',text:'retained'}]});
+  const union='Before OLD new inside tail after.',index=pending.paragraphs(docs[2]).length;
+  docs[2].content.push(paragraph(union));
+  const revision=(id,operation,from,to)=>({id:'revision-'+id,nativeId:String(id),operation,author:'Pending author',date:'2026-10-05T07:00:00Z',dateUtc:'2026-10-05T07:00:00Z',groupId:null,paragraphIndex:index,from,to,state:'pending'});
+  docs[2]=pending.bindLedger({schemaVersion:1,source:docs[2],revisions:[revision(1,'delete',union.indexOf('OLD'),union.indexOf('OLD')+3),revision(2,'insert',union.indexOf('new'),union.indexOf('tail')+4)],undo:[],redo:[]});
+  const third=path.join(f.imported,'03_Gamma.txt'),paths=[f.alpha,f.beta,third],sceneIds=paths.map(file=>path.relative(f.root,file).split(path.sep).join('/'));
+  paths.forEach((file,i)=>fs.writeFileSync(file,envelope.composeObservablePayload({doc:docs[i]})));
+  await f.main.buildProjectTreeRootsWithIdentities('Роман');
+  const query=await f.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),thirdNode=find(query.root,'Gamma');assert.ok(thirdNode);
+  const text=bookmarks.paragraphs(docs[2]).map(p=>bookmarks.textOf(p));
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:f.query.projectId,revision:0,threads:[],events:[]};
+  for(const [threadId,sceneIndex,paragraphIndex,start,quote] of [
+    ['pending-inside',2,index,text[index].indexOf('inside'),'inside'],
+    ['pending-spanning',2,index,0,text[index].slice(0,text[index].indexOf('inside'))],
+    ['protected-sibling',1,0,0,bookmarks.textOf(pending.paragraphs(docs[1])[0]).slice(0,12)],
+  ])state.threads.push({threadId,rootCommentId:threadId+'-root',sceneId:sceneIds[sceneIndex],status:'open',
+    anchor:comments.exactAnchor({paragraphIndex,startUtf16:start,selectedText:quote},sceneIds[sceneIndex],bookmarks.paragraphs(docs[sceneIndex]).map(p=>bookmarks.textOf(p))),
+    messages:[{commentId:threadId+'-root',kind:'root',body:threadId+' body',provenance:{author:'Author'}}]});
+  state.threads[0].messages.push({commentId:'old-reply',kind:'reply',body:'Existing reply retained',provenance:{author:'Prior reader'}});
+  comments.readState(JSON.stringify(state),f.query.projectId);
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,JSON.stringify(state));
+  const observed=()=>read(third);mountRenderer(f,observed,0,null,()=>({projectId:f.query.projectId,documentId:thirdNode.nodeId}));f.probe.state({filePath:third,projectName:'Роман'});
+  const source=await (scope==='scene'?f.probe.sceneSource():f.probe.fullSource()),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts={...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
+  const projection=structuredClone(source.commentExport),thread=projection.threads.find(t=>t.threadId==='pending-inside'),root=thread.messages[0];
+  const reply={canonicalCommentId:'word-new-reply',commentId:'900',kind:'reply',body:'One new Word reply',provenance:{author:'Word reader'},paraId:'6A012345',durableId:'EB012345'};thread.messages.push(reply);
+  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="900"/>`)
+    .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="900"/><w:r><w:commentReference w:id="900"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
+  let split=false;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/(<w:ins\b[^>]*>)([\s\S]*?)(<\/w:ins>)/gu,(all,open,body,close)=>{
+    if(split||!body.includes('inside')||!body.includes('tail'))return all;
+    const marker='<w:r><w:commentReference w:id="900"/></w:r>',at=body.indexOf(marker);
+    assert.ok(at>=0,'new reply reference is inside the original insertion');split=true;
+    return open+body.slice(0,at)+close+marker+open.replace(/w:id="[^"]*"/u,'w:id="901"')+body.slice(at+marker.length)+close;
+  });
+  assert.equal(split,true,'Word-shaped fragment split is actually exercised');
+  if(tamper)tamper(parts,{f,third,commentPath});
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const diagnostic=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:x=>`sha256:${sha(x)}`,sha256Json:x=>`sha256:${sha(JSON.stringify(x))}`,byteLength:x=>Buffer.byteLength(x)}});
+  assert.equal(diagnostic.reviewIr?.commentBodyGrammar?.status,'SUPPORTED',JSON.stringify(diagnostic.reviewIr?.commentBodyGrammar||diagnostic));
+  const before=f.capture();let prepared;
+  const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;}});
+  return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
+}
+
+test('actual Main signed three-scene C2 pending insertion/deletion plus one reply preserves every scene byte and replays',async t=>{
+  const x=await pendingCommentMainFixture(t);
+  assert.equal(x.activated.ok,true,JSON.stringify(x.activated));assert.equal(x.activated.commentProductPath?.status,'preview-ready',JSON.stringify(x.activated));
+  assert.ok(x.prepared);assert.deepEqual(x.f.capture(),x.before,'preview is read-only');
+  const beforeScenes=x.paths.map(read),beforeManifest=read(x.f.manifestPath);
+  const applied=await x.prepared.apply();assert.equal(applied.ok,true,JSON.stringify(applied));assert.equal(applied.status,'applied');
+  assert.deepEqual(x.paths.map(read),beforeScenes);assert.equal(read(x.f.manifestPath),beforeManifest);
+  const graph=JSON.parse(read(x.commentPath));assert.equal(graph.threads.length,x.state.threads.length);
+  for(const original of x.state.threads){const actual=graph.threads.find(t=>t.threadId===original.threadId);assert.deepEqual(actual.anchor,original.anchor);assert.deepEqual(actual.messages.slice(0,original.messages.length),original.messages);}
+  assert.equal(graph.threads.find(t=>t.threadId==='pending-inside').messages.at(-1).body,'One new Word reply');
+  assert.equal(graph.threads.reduce((n,t)=>n+t.messages.length,0),x.state.threads.reduce((n,t)=>n+t.messages.length,0)+1);
+  const ordinary=await x.f.probe.exportMin({outPath:path.join(x.f.temp,'pending-comments-ordinary.docx')});
+  assert.equal(ordinary.ok,1,JSON.stringify(ordinary));
+  const fresh=await x.f.probe.fullSource(),rebuilt=await x.f.probe.reviewBuild(fresh);assert.equal(rebuilt.publicationGate.publishAllowed,true);
+  assert.deepEqual(x.paths.map(read),beforeScenes);
+  let replay;
+  const reopened=await x.f.probe.reviewActivate({requestId:'pending-reply-replay',bufferSource:x.bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{replay=value;}});
+  assert.equal(reopened.ok,true,JSON.stringify(reopened));assert.ok(replay);
+  const beforeReplay=x.f.capture();assert.equal((await replay.apply()).status,'replayed');assert.deepEqual(x.f.capture(),beforeReplay);
+});
+
+for (const [name, mutate] of [
+  ['nonpending font color', parts => {
+    const before=parts['word/document.xml'];
+    parts['word/document.xml']=before.replace(/<w:color w:val="[^"]*"\/>/u,'<w:color w:val="17A9C4"/>');
+    assert.notEqual(parts['word/document.xml'],before,'existing supported color is actually changed');
+  }],
+  ['pending revision provenance', parts => {
+    const before=parts['word/document.xml'];
+    parts['word/document.xml']=before.replace(/(<w:ins\b[^>]*w:author=")[^"]*/u,'$1Different author');
+    assert.notEqual(parts['word/document.xml'],before);
+  }],
+  ['section geometry', parts => {
+    const before=parts['word/document.xml'];
+    parts['word/document.xml']=before.replace(/(<w:pgMar\b[^>]*w:top=")\d+/u,(_all,prefix)=>prefix+'1234');
+    assert.notEqual(parts['word/document.xml'],before);
+  }],
+]) test(`actual Main pending reply rejects changed ${name} without writes`,async t=>{
+  const x=await pendingCommentMainFixture(t,{tamper:mutate});
+  assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
+  assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);
+});
+
+for(const target of ['sibling scene','comment state'])test(`actual Main pending reply stale ${target} refuses Apply without writes`,async t=>{
+  const x=await pendingCommentMainFixture(t);assert.equal(x.activated.ok,true,JSON.stringify(x.activated));assert.ok(x.prepared);
+  if(target==='sibling scene')fs.appendFileSync(x.paths[1],' external edit');
+  else {const graph=JSON.parse(read(x.commentPath));graph.revision++;fs.writeFileSync(x.commentPath,JSON.stringify(graph));}
+  const before=x.f.capture(),result=await x.prepared.apply();assert.equal(result.ok,false,JSON.stringify(result));
+  assert.deepEqual(x.f.capture(),before);
+});
