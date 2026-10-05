@@ -23360,10 +23360,14 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               const current = await comments.readCommentAuthoringState({
                 projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId,
               });
-              commentState = planCommentAnchorSave({ beforeText: current.text,
+              const commentSaveInput = { beforeText: current.text,
                 projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
                 beforeContent: expectedSceneContent, afterContent: content, includeUnchanged: true,
-                ...(options.commentEditIntentsJson != null ? {editIntents:options.commentEditIntentsJson,sessionId:commentAuthoringSessionId} : {}) });
+                ...(options.commentEditIntentsJson != null ? {editIntents:options.commentEditIntentsJson,sessionId:commentAuthoringSessionId} : {}) };
+              commentState = options.pendingCommentDecision
+                ? require('./core/word-pending-comment-decisions-v1.cjs').planPendingCommentDecision({
+                  ...commentSaveInput, decision: options.pendingCommentDecision })
+                : planCommentAnchorSave(commentSaveInput);
             }
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
@@ -25403,13 +25407,17 @@ async function handlePendingRevisionCommand(payload = {}) {
       if (JSON.stringify(visible(live.doc)) !== JSON.stringify(visible(context.parsed.doc))
         || JSON.stringify(liveLedger) !== JSON.stringify(savedLedger)) throw Error('PENDING_REVISION_EDITOR_STALE');
       let expectedNotesDigest = admission?.notesDigest || null;
+      const expectedCommentsText = context.saved?.text ?? null;
+      const hasDecisionComments = context.saved?.state?.threads?.some(t => t.sceneId === context.sceneId
+        && (t.status !== 'deleted' || t.anchorEditHistory?.length));
       const revalidate = async () => {
         if (admission) admission.check();
         if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
           || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('PENDING_REVISION_CONTEXT_CHANGED');
         const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
         if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw Error('PENDING_REVISION_SCENE_CHANGED');
-        if (fresh.saved?.state?.threads?.some(t => t.sceneId === context.sceneId && t.status !== 'deleted')) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
+        if ((fresh.saved?.text ?? null) !== expectedCommentsText) throw Error('PENDING_REVISION_COMMENTS_CHANGED');
+        if (admission && hasDecisionComments) throw Error('PENDING_REVISION_ANNOTATION_UNDO_REQUIRED');
         const storage = await loadNotesStorageModule();
         const notes = await storage.readNotesStorage({ projectRoot: context.projectRoot, projectId: context.projectId });
         if (!notes.ok) throw Error('PENDING_REVISION_NOTES_UNAVAILABLE');
@@ -25428,7 +25436,9 @@ async function handlePendingRevisionCommand(payload = {}) {
       if (!decided.changed) return { ok: true, changed: false, replay: decided.replay === true, writerCalled: false };
       const content = envelope.composeObservablePayload({ ...context.parsed, doc: decided.doc });
       const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
-        'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true });
+        'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true,
+          ...(!admission && hasDecisionComments ? { pendingCommentDecision: { action: payload.action,
+            ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) } } : {}) });
       if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });
       const readback = await fs.readFile(context.filePath, 'utf8');
       if (readback !== content) throw Error('PENDING_REVISION_READBACK_MISMATCH');

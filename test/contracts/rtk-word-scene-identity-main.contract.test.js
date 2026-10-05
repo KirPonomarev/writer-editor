@@ -86,6 +86,8 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     },
     tamperEmptyCleanCandidate(){ userBookmarkModel.paragraphs(activeRtkCleanLinkLabelApplyStore.cleanTextCandidateDoc).at(-1).content=[{type:'text',text:'UNAUTHORIZED'}]; },
     commentProjection: readCommentAuthoringProjection, authorComment: handleCommentAuthoringCommand,
+    pendingContext: () => readCommentAuthoringContext({pendingRichBlocks:true}),
+    pendingDecision: payload => dispatchMenuCommand('cmd.project.review.decidePendingRevision',payload,{route:COMMAND_BUS_ROUTE}),
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -2440,6 +2442,31 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;}});
   return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
 }
+
+test('actual Main pending decisions and comments commit together, restore after reopen and preserve both exports',async t=>{
+  const x=await pendingCommentMainFixture(t,{scope:'scene'}),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const original=JSON.parse(read(x.commentPath)),siblings=x.paths.slice(0,2).map(read);
+  for(const action of ['rejectAll','undo','redo','undo','acceptAll','undo']) {
+    // Re-read durable context on every action, including after changing the
+    // ephemeral session: inverse identity must come from the saved ledger.
+    x.f.probe.changeSession();
+    const c=await x.f.probe.pendingContext();
+    const result=await x.f.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,
+      expectedSceneSha256:c.sceneSha256,action});
+    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.writerCalled,true);
+    assert.deepEqual(x.paths.slice(0,2).map(read),siblings);
+    const state=JSON.parse(read(x.commentPath));
+    assert.deepEqual(state.threads.map(t=>t.messages),original.threads.map(t=>t.messages));
+    assert.deepEqual(state.threads[2],original.threads[2]);
+    if(action==='undo')assert.deepEqual(state.threads.map(t=>t.anchor),original.threads.map(t=>t.anchor));
+    const doc=envelope.parseObservablePayload(read(x.third)).doc;
+    assert.ok(pending.readLedger(doc));
+    const ordinary=await x.f.probe.exportMin({outPath:path.join(x.f.temp,'decision-'+action+'-ordinary.docx')});
+    assert.equal(ordinary.ok,1,JSON.stringify(ordinary));
+    const built=await x.f.probe.reviewBuild(await x.f.probe.sceneSource());
+    assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  }
+});
 
 for(const scope of ['full','scene','imported'])test(`actual Main signed three-scene C2 pending ${scope} scope reply preserves every scene byte and replays`,async t=>{
   const x=await pendingCommentMainFixture(t,{scope:scope==='imported'?'scene':scope,combined:scope==='imported'});

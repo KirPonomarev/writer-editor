@@ -1,0 +1,112 @@
+# Mac inline revision decisions with comments
+
+TASK_ID: WORD_COMMENT_DECISIONS_MAC_20261005
+TYPE: CORE
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+MODE: A
+STATUS: IMPLEMENTING_NOT_ACCEPTED
+BASE: 8e038139ad3b0f0236140b5641a266924d48d255
+COMMIT_REQUIRED: true
+PUSH_REQUIRED: true
+PR_REQUIRED: true
+MERGE_REQUIRED: true
+
+## MICRO_GOAL
+
+O: Accept/reject one or all inline insert/delete changes with active comments;
+Undo/Redo after save/restart restores exact anchors and statuses. Both DOCX
+exports and Word reply return retain this local history.
+T: canonical ledger + comments -> existing Kernel command -> Main revalidation
+-> independently replayed Core anchor plan -> existing atomic project writer.
+H: exact union revision intervals produce unambiguous splices even for repeated
+text; stable transition identity makes inverse comment history restart-safe.
+B: preserve every message, source metadata, sibling scene, journal and manual
+comment lifecycle action. Recording/source-changing history/structural mixtures
+remain outside this packet. Revert one packet; no cleanup of owner data.
+P: exact Core counterexamples, actual entire Main + real transaction, early
+SOURCE/PACKAGED native, affected stable tests, mandatory CI, merged exact checks.
+I: binding base above; isolated existing worktree; build/profile/artifact hashes
+must be recorded before every native observation. No percentage/full-plan claim.
+
+## ARTIFACT
+
+Core decision-to-anchor plan, Main integration, existing history correction,
+regressions, feature manifest and exact native/delivery evidence.
+
+## ALLOWLIST
+
+- `src/core/word-pending-comment-decisions-v1.cjs`
+- `src/core/word-comment-anchor-save-v1.cjs`
+- `src/main.js`
+- `test/contracts/rtk-word-pending-comment-decisions.contract.test.js`
+- `test/contracts/rtk-word-comment-anchor-save.contract.test.js`
+- `test/contracts/rtk-word-pending-revisions-runtime.contract.test.js`
+- `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `docs/tasks/2026-10-05--word-comment-decisions-mac.md`
+- `docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json`
+- `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/CONTEXT.md`
+- `docs/HANDOFF.md`
+- `docs/WORKLOG.md`
+
+## DENYLIST
+
+No dependencies, UI design, renderer/IPC authority, arbitrary persistence port,
+owner checkout mutation, reset/stash/clean/rebase/force-push, silent metadata
+loss or unqualified source-changing round history with comments.
+
+## CONTRACT / SHAPES
+
+Closed existing decision input. Core must recompute full expected output from
+beforeContent, validate unchanged union source/revision definitions and derive
+version2 edit intents from visibility transitions. Existing32-history and256-
+intent limits remain explicit. Unknown/history-expired inputs refuse no-write.
+Manual tombstones never revive. First observed inverse history stores inverse
+orientation accurately. Existing transaction recomputes anchor state from exact
+scene pair; a proposed after graph alone grants no authority.
+
+## IMPLEMENTATION_STEPS
+
+1. Implement/test exact decision mapping and inverse-history counterexample.
+2. Bind internal Main option, comments CAS, real transaction and guarded publish.
+3. Exercise early small native SOURCE/PACKAGED route, repair focused failures.
+4. Stable affected tests, CI, full delivery and exact merged verification.
+
+## CHECKS
+
+Selected/all accept/reject, Undo/Redo/restart, repeated text, consumed ranges,
+point/multi and resolved comments, new root after decision, manual tombstones,
+forged target, stale state/scene/generation, capability denial and rollback.
+Both exports and Word reply after all decisions must retain local Undo history.
+Actual Main plus real transaction; existing crash/recovery negative suite.
+Mandatory guardrails, OSS/dependency checks, baseline/RTK CI and exact merged
+checks. No skipped/stale/self-authored proof credited as runtime acceptance.
+
+## STOP_CONDITION
+
+No required proof failure, ambiguous identity or undeclared scope. Third same
+failure stops that loop with expected/actual/identity and a new hypothesis.
+
+## REPORT_FORMAT
+
+AGENT_FINAL_REPORT_V1: task, before/after/merged SHA, basenames, tests,
+commit/push/PR/CI/merge, exact-head proof, residuals, next step.
+
+## FAIL_PROTOCOL
+
+Preserve evidence and user data. Repair in admitted scope; new paths require
+clean checkpoint and amended preflight. Do not certify a partial route.
+
+Checkpoint: first Core5/5 passes; actual entire Main decision commit succeeds,
+but following Review export fails PENDING_COMMENT_LEDGER_REQUIRED after all
+revisions decided. Parser currently requires a native pending ledger even when
+signed expected spans are empty. This is a known open failure, not acceptance.
+Clean checkpoint required before admitting index.mjs parser correction.

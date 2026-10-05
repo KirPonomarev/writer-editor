@@ -591,7 +591,11 @@
     "docs/tasks/2026-10-05--word-break-formatting-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_BREAK_FORMATTING_V1.json",
     "docs/tasks/2026-10-05--word-pending-comments-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
+    "src/core/word-pending-comment-decisions-v1.cjs",
+    "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
+    "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json"
   ],
   "protectedFiles": [
     {
@@ -820,7 +824,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8da1e1ec5cc2c8ed2f1b6bae5c73beee969d07874f6bff8ed68fac4e1525e008"
+        "sha256": "0f40c4ec5bd84e055120a14a2547c504acd9be7e36855a42b1545d863a50b9ba"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1520,7 +1524,7 @@
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "ff098fd5b5e7ee2f1c3840dc912ac5cb75daa254bef7bbb4c04dcb033924c243"
+        "sha256": "dcb36596555c83f5afe94334864c49814ccf3390f6546b9352f896da14dd5532"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1668,7 +1672,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b2d7d0ebfa17688e3a4606541c4e55978276150bfd3732b9f62bf0833e69669d"
+        "sha256": "8b4364f40f173ad6114931fc7704390c58a2478e3aef5f0665d04583d97a388e"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2008,7 +2012,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "2e9c658d809a2cc47eaa553d088234eaf30ad9ed987ff3d994169d3b910a7567"
+        "sha256": "a3cafb6389515868d48555d9bae8bb05683cbb1fb80b14eef024c20a3b578397"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2512,15 +2516,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "014fd443e907fca6f4eeaae03f1400be6ad2a725d112aa8b68a3fdcae9af8013"
+        "sha256": "cb80274027eddd8755ccfacfaaf24a1ee24e0dbf9937711773d8d311c30cc91f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e89ec60a142a500703c17c42b3d3c2fd31c6c94354afee73791a36cf0b2abd6e"
+        "sha256": "b59f9fc8627d1c9c77572b86caa26e4559e50b3efba507f17c6aae3dc8b18d08"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "dd5e5dc5bf5602df74e4ccd8e815b0587d31f5141c9462e9fa952a6527cbb242"
+        "sha256": "189b0ac8d64993485f10b0abe40d4e23b05800de0e6e7e73f59c74f4de590be7"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2585,6 +2589,22 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PENDING_COMMENTS_V1.json",
         "sha256": "262615711a9f1476de0102f893924111cf20c099c48dd0c180328c07f4424a07"
+      },
+      {
+        "path": "src/core/word-pending-comment-decisions-v1.cjs",
+        "sha256": "3a5f4abb2030be09327bb1c6f9868eae04b499314b31fb8aed76709827f83952"
+      },
+      {
+        "path": "test/contracts/rtk-word-pending-comment-decisions.contract.test.js",
+        "sha256": "40d3a011adc24d295bf19f3b1fe04c2c2fb0730a7545ce62f31ac0fac865c64b"
+      },
+      {
+        "path": "docs/tasks/2026-10-05--word-comment-decisions-mac.md",
+        "sha256": "29ec9b966eb3f10a4aa9c0c1424ca58b53cf083d67584b470aafc7df4cce061c"
+      },
+      {
+        "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_COMMENT_DECISIONS_V1.json",
+        "sha256": "13b0e99b6e3bccda63e5883c3c0aec4b6bb26af4e63fbf3d3c79c1976835b414"
       }
     ],
     "followupRepair": {

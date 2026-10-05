@@ -1,3 +1,22 @@
+## 2026-10-05 08:57 EEST — PR2082 delivered; comment decisions started
+
+PR2082 merged at8e038139ad3b0f0236140b5641a266924d48d255. CI37267780453:
+19/19 jobs, bothRTK3319/3319 zero skips; baseline2199 passed,59 historical skips
+excluded. Clean exact merged899/899 zero skips, Git/OPS/guardrails passed.
+SOURCE04/PACKAGED04 native53285be1 source/package bytes equal merged version;
+reply-only Apply preserves scene and ledger, replay/restart and both exports.
+Packaged Comments card access confirmed. Original whole Mac plan remains open.
+
+Current WORD_COMMENT_DECISIONS_MAC_20261005: explicit inline accept/reject and
+restart-safe Undo/Redo with comments through existing atomic project writer.
+Core5/5 initial checks pass including new-root inverse-history counterexample.
+Actual entire Main commits decision but next Review export currently fails
+PENDING_COMMENT_LEDGER_REQUIRED when all native revisions have been decided.
+Checkpoint is NOT accepted; expand parser scope from clean preflight then
+repair exact zero-pending readback. No broad/native acceptance claim yet.
+Recording with comments, paragraph-mark typography, named styles and final
+largebook/fivecycle acceptance remain open; no percentage claim.
+
 ## 2026-10-05 — PR2082 CI consumer repair, product runtime unchanged
 
 CI37266596060 on6af552590 found two obsolete HTTP-link refusal assertions and
