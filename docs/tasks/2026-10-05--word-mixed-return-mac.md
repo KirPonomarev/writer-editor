@@ -170,3 +170,17 @@ Main8MiB scene cap. Evidence: mixed-100k-five-rounds.json. This is a launch bloc
 not a native100k success. Next bounded packet must avoid repeated unchanged source
 storage while preserving exact history, hashes, comments and atomic recovery;
 simply raising limits does not resolve the measured mechanism.
+
+
+## Pre-merge position-order counterexample
+
+Review of6e6cb4eeb found a blocking valid edit omitted by the prior fixtures:
+a new insertion before an old pending span, or in an earlier paragraph,
+was rejected as PENDING_REVISIONS_INVALID. The derived array kept all old
+records before new records despite the ledger requiring document-position order.
+The repair sorts by paragraphIndex/from while preserving exact canonical IDs,
+groups and provenance. Both actual Main-route regressions were observed red
+before the fix;81/81 affected checks then passed, no skips/todo, including
+explicit Apply, round Undo/Redo and finished DOCX discussion readback.
+CI37294887991 was cancelled after this confirmed finding; it is not green
+acceptance. Native04 verifies earlier edits before the next full candidate gate.

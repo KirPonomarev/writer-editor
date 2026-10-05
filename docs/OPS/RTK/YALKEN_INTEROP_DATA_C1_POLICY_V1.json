@@ -1735,7 +1735,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "fb44b166ce69aa804bda8f4275f648b4d855db07151c07ec73ea66f25346cf50"
+        "sha256": "502f16a226b56377b25e4fbbc1fc3d57a848f263a81717c31ec469a93d1b4f74"
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
@@ -2643,11 +2643,11 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "9b0e04fade6137d41d7d73209910330a84b31698e335d7d30a1d1b4c44e201bd"
+        "sha256": "8521ec8cc26dcf07dbb6ebbfca0e1f349c7240388a3cd7a42679ad67c39f4bbe"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
-        "sha256": "d4b4eae5b10171e00e353ea7b01b379d57d6c5bf6f07f62168946c3360b982ae"
+        "sha256": "d620c2161b1c1e3405933cc748b56e810833a5efd8c4d3e3f2a7b907e0eb3e1f"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
@@ -2655,7 +2655,7 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-mixed-return-mac.md",
-        "sha256": "3eb7fa752fc4318e9f5ccbc252be484b3cab977245b148d9ae110ea8c86f4c03"
+        "sha256": "f966cbdc4da88af6f0d53fcd5698b31ceed7ba917b017e1dc17429c12e3d7fd5"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_MIXED_RETURN_V1.json",

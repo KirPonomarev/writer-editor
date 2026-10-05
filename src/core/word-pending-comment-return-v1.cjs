@@ -97,8 +97,8 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     });
     sourceParagraphs[p].content=nodes;
   });
-  // Existing order/group identity remains owned by the canonical ledger.
-  const ordered=[...oldLedger.revisions.map(old=>{const r=revisions.find(r=>r.id===old.id);need(r,'MIXED_RETURN_OLD_REVISION_LOST');return r;}),...revisions.filter(r=>!oldLedger.revisions.some(old=>old.id===r.id))];
+  // Existing IDs and groups remain canonical; interval order follows the new source.
+  const ordered=[...oldLedger.revisions.map(old=>{const r=revisions.find(r=>r.id===old.id);need(r,'MIXED_RETURN_OLD_REVISION_LOST');return r;}),...revisions.filter(r=>!oldLedger.revisions.some(old=>old.id===r.id))].sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);
   const doc=review.bindLedger({schemaVersion:1,source:review.normalizeNode(source),revisions:ordered,undo:[],redo:[]});
   return {document:doc,projection:basis.returned,changed:changes>0};
 }

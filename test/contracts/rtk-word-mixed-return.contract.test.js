@@ -128,3 +128,17 @@ for(const kind of ['stale','endpoint','unknown'])test('export refuses '+kind+' p
  if(kind==='stale')locator.geometrySha256='0'.repeat(64);else if(kind==='endpoint')locator.unionStart.offsetUtf16++;else locator.extra=true;
  assert.throws(()=>makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:review.projection(p.replacement.doc).current,doc:p.replacement.doc}]}),/LOCATOR/);
 });
+
+for(const placement of ['span','paragraph'])test('mixed Core orders fresh insertion before existing '+placement+' without reassigning IDs',async()=>{
+ const f=await fixture(),old=structuredClone(review.readLedger(f.beforeDoc));
+ if(placement==='paragraph'){old.source.content.unshift({type:'paragraph',content:[{type:'text',text:'lead'}]});old.revisions.forEach(r=>r.paragraphIndex++);}
+ const before=review.bindLedger(old),incoming=structuredClone(old),p=0,from=placement==='span'?0:4;
+ incoming.source.content[p].content[0].text=placement==='span'?'Xoldnew':'leadX';
+ if(placement==='span')incoming.revisions.forEach(r=>{r.from++;r.to++;});
+ incoming.revisions.unshift({id:'revision-3',nativeId:'2',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:p,from,to:from+1,state:'pending',groupId:null});
+ const binding=review.buildCommentExportBinding({document:before,schemaVersion:2}).binding;
+ incoming.source=review.buildCommentExportBinding({document:review.bindLedger(incoming),schemaVersion:2}).projection.union;
+ const derived=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:before,returnedDocument:review.bindLedger(incoming),binding,anchors:[]});
+ const rows=review.readLedger(derived.document).revisions;assert.deepEqual(rows.map(r=>r.id),['revision-3','revision-1','revision-2']);
+ for(const previous of old.revisions){const retained=rows.find(r=>r.id===previous.id);assert.deepEqual(retained,{...previous,from:previous.from+(placement==='span'?1:0),to:previous.to+(placement==='span'?1:0)});}
+});

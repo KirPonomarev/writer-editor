@@ -18,11 +18,12 @@ function document() {
     revisions: ['delete', 'insert'].map((operation, i) => ({ id: 'revision-' + (i + 1), nativeId: '' + i, operation, author: 'A', date: '', dateUtc: '',
       paragraphIndex: 0, from: i * 3, to: i * 3 + 3, state: 'pending', groupId: 'group-1' })), undo: [], redo: [] });
 }
-async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget } = {}) {
+async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman')); const file = path.join(root, 'roman/a.txt');
   let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
   const linked=(doc,target)=>{const node={type:'paragraph',content:[{type:'text',text:'Unchanged external link',marks:[{type:'link',attrs:{href:target,rel:'noopener noreferrer nofollow',target:'_blank'}}]}]},ledger=model.readLedger(doc);if(ledger){ledger.source.content.push(node);return model.bindLedger(ledger);}doc.content.push(node);return doc;};
+  if(early) {const l=model.readLedger(initial);l.source.content.unshift({type:'paragraph',content:[{type:'text',text:'lead'}]});l.revisions.forEach(r=>r.paragraphIndex++);initial=model.bindLedger(l);}
   if(links)initial=linked(initial,'https://example.com/original');
   if (savedDefaults) initial.attrs = { wordPendingRevisions: null };
   fs.writeFileSync(file, envelope.composeObservablePayload({ doc: initial }));
@@ -34,6 +35,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
         anchor:exactAnchor({paragraphIndex:0,startUtf16:1,selectedText:'ew'},'roman/a.txt',['new']),
         messages:[{commentId:'root-'+i,kind:'root',body:'Discussion '+i,provenance:{author:'Writer'}}]}))});
   }
+  if(early){const state=JSON.parse(h.commentText);for(const t of state.threads){t.anchor.sceneParagraphIndex=1;t.anchor.paragraphIndex=1;}h.commentText=JSON.stringify(state);}
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
   const c = { require: value => require(path.resolve(__dirname,'../../src',value)), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
@@ -99,12 +101,24 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
       anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'added'},'roman/a.txt',['new added']),
       messages:[{commentId:'insert-root',kind:'root',body:'On added text',provenance:{author:'Editor'}}]});
   }
+  if(early) {
+    const l=structuredClone(model.readLedger(initial)),p=early==='span'?1:0,from=early==='span'?0:4;
+    l.source.content[p].content[0].text=early==='span'?'Xoldnew':'leadX';
+    if(early==='span')l.revisions.forEach(r=>{r.from++;r.to++;});
+    l.revisions.unshift({id:'revision-3',nativeId:'2',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:p,from,to:from+1,state:'pending',groupId:null});doc=model.bindLedger(l);
+    returnedComments=JSON.parse(h.commentText);const rows=model.paragraphs(model.normalizeNode(doc)).map(p=>p.content.map(n=>n.text).join(''));
+    const anchor=(paragraphIndex,startUtf16,selectedText)=>require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex,startUtf16,selectedText},'roman/a.txt',rows);
+    returnedComments.threads.forEach((t,i)=>{t.anchor=anchor(1,early==='span'?2:1,'ew');t.messages.push({commentId:'reply-'+i,kind:'reply',body:'Reply '+i,provenance:{author:'Editor'}});});
+    const fresh=anchor(p,from,'X'),locator=model.createCommentUnionLocator({document:doc,anchor:fresh,unionStart:{paragraphIndex:p,offsetUtf16:from},unionEnd:{paragraphIndex:p,offsetUtf16:from+1}});
+    if(locator)fresh.pendingUnionLocator=locator;
+    returnedComments.threads.push({threadId:'insert-discussion',rootCommentId:'insert-root',sceneId:'roman/a.txt',status:'open',anchor:fresh,messages:[{commentId:'insert-root',kind:'root',body:'On early insertion',provenance:{author:'Editor'}}]});
+  }
   if(links)doc=linked(doc,linkTarget||'https://example.com/original');
   const exported = buildFullManuscriptDocxReviewPacketSource({ projectId: 'p', projectRoot: root, ...(mixed?{nonTextReturnState:returnedComments}:{}),
-    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: links?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
+    scenes: [{ sceneId: 'roman/a.txt', scenePath: file, text: links||early?model.projection(doc).current:clean&&!mixed ? 'new' : 'new added', doc, order: 0 }] });
   let bytes = buildDocxReviewPacketBuffer(exported);
   const baselineSource=mixed?buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:root,nonTextReturnState:JSON.parse(h.commentText),
-    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:links?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
+    scenes:[{sceneId:'roman/a.txt',scenePath:file,text:links||early?model.projection(initial).current:'new',doc:initial,observableContent:context().raw,order:0}]}):exported;
   if(mixed) {
     const baseBytes=buildDocxReviewPacketBuffer(baselineSource);
     const baseParts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:baseBytes}).parts;
@@ -371,4 +385,21 @@ test('actual Main mixed route preserves unchanged hyperlinks and rejects changed
  assert.ok(model.paragraphs(returned).at(-1).content.every(n=>n.marks?.some(m=>m.type==='link'&&m.attrs.href==='https://example.com/original')));
  const bad=await harness(t,{mixed:true,links:true,linkTarget:'https://example.com/changed'});
  const refusal=await bad.route();assert.equal(refusal.pendingProductPath?.status,'blocked',JSON.stringify(refusal));assert.equal(bad.writes,0);assert.equal(bad.prepared,undefined);
+});
+
+for(const early of ['span','paragraph'])test('actual Main mixed insertion before old pending '+early+' preserves identity through Undo/Redo and DOCX readback',async t=>{
+ const h=await harness(t,{mixed:true,early}),before=h.context().parsed.doc,old=model.readLedger(before).revisions;
+ const route=await h.route();assert.equal(route.pendingProductPath?.status,'preview-ready',JSON.stringify(route));assert.equal(h.writes,0);
+ assert.equal((await h.prepared.apply()).ok,true);const after=h.context().parsed.doc;
+ assert.deepEqual(model.readLedger(after).revisions.map(r=>r.id),['revision-3','revision-1','revision-2']);
+ for(const r of old){const kept=model.readLedger(after).revisions.find(n=>n.id===r.id);assert.equal(kept.author,r.author);assert.equal(kept.groupId,r.groupId);assert.equal(kept.state,'pending');}
+ const bridge=h.input.revisionBridge;
+ for(const action of [null,'undo','redo']){
+  if(action)assert.equal((await h.command(action)).ok,true);
+  const doc=h.context().parsed.doc,state=JSON.parse(h.commentText),source=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:h.context().projectRoot,nonTextReturnState:state,scenes:[{sceneId:'roman/a.txt',scenePath:h.file,order:0,text:model.projection(doc).current,doc}]});
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)},{cryptoPort:h.c.createRtkReviewTransportCryptoPort()});assert.equal(parsed.ok,true);
+  const active=state.threads.filter(t=>t.status!=='deleted');assert.equal(parsed.reviewIr.commentThreads.length,active.length);
+  for(const t of active){const actual=parsed.reviewIr.commentThreads.find(n=>n.body===t.messages[0].body);assert.ok(actual);assert.equal(actual.finalTextAnchorRange.selectedText,t.anchor.selectedText);assert.deepEqual([actual.body,...actual.replies.map(r=>r.body)],t.messages.map(m=>m.body));}
+  assert.deepEqual(model.normalizeNode(doc),model.normalizeNode(action==='undo'?before:after));
+ }
 });
