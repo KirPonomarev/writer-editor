@@ -94,6 +94,9 @@ checkpoint and validated scope amendment before its first edit.
 - `test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js`
 - `test/contracts/rtk-word-pending-notes.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `test/contracts/rtk-word-note-return.contract.test.js`
+- `test/contracts/rtk-word-note-return-runtime.contract.test.js`
+- `test/contracts/rtk-word-note-tables.contract.test.js`
 - `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -272,6 +275,51 @@ Cancel/Apply/reexport, normal restart and independent complete text/revision/
 note/discussion oracles precede the full gates and required delivery chain.
 Synthetic semantic proof is never relabelled as authenticated native Apply,
 large novel performance or the complete three-role release.
+
+Compatibility amendment04 starts at clean incomplete checkpoint
+0b3e6fd7996824413a35f067b7929869f221ec9b. Fresh registry, encrypted unlocked
+writable T7, bootstrap, full active canon/startup reading and exact remote
+mainc799 checks precede declaration06 preflight32 and this first amendment edit.
+Original delivery basec799, one task/rollback and runtime700/behavior1100
+aggregate budgets remain unchanged. Root independently matched the interim
+16 source/test and7 retained log hashes; whole notes03 is50of50 actual0 with
+zero skipped/todo/cancel. This is component evidence, not native acceptance.
+
+Only three existing fixture consumers are added. The note-return and note-table
+fixtures use the existing complete rich-note parser with includeBreakProjection;
+the existing clean Main harness regenerates changed note XML and full parser
+output instead of manually changing body text while leaving break text digests
+stale. Preserve every existing semantic, table property/topology, no-write,
+identity, stale-state, capability and lease assertion. No new harness, runtime
+law, parser/proof field, dependency or expanded product outcome is admitted.
+Retain actual failing input/output before correcting each invalid fixture.
+
+The corrected whole compatibility run exposes one source regression in the
+already protected clean-note law: legacy auto-fit grid materialization must
+remain equivalent only when the existing strict compareTableParagraphTopology
+oracle approves it from the authenticated local source. Restore this existing
+law inside the declared clean V2 planner seam, then compare every remaining
+effective paragraph/run/list/media/break field. Do not change that oracle or
+the shared book/pending comparison. Explicit grid/property/topology edits remain
+real edits. Retain the failing whole run and full field diagnosis; this is
+compatibility preservation, not new table scope or weaker note admission.
+
+Genuine consistent Word native-ID renumbering remains supported. Native
+body/reference joins are validated by the actual parser before private Main
+admission. Atomic replay independently validates the canonical note identities,
+complete rich source/body roster, Original/union geometry and exact after ledger;
+it cannot reconstruct native joins omitted from the existing proof fields and
+must not claim that coverage. No native-ID equality to the old transport IDs
+or guessed identity is substituted for canonical meaning.
+
+Execute all three corrected whole suites and the affected whole Main/recording/
+note/atomic suites. Fresh short SOURCE and ordinary PACKAGED genuine Word
+changed-save, Cancel/Apply/reexport/restart and complete independent oracles
+remain required before the stable full gates and current delivery chain.
+The prior25190 official RTK terminal3716of3718 failed two DATA_DELIVERY_SCOPE
+checks because its strict static path list omitted this task. The mechanical
+list correction preserves exact policy equality and all refusal laws; only a
+fresh final official runner can qualify the changed candidate.
 
 FEATURE_INTEGRATION_MANIFEST_V1:
 

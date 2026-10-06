@@ -104,7 +104,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
     if (emission) need(stable(note.breakProjection) === stable(localBookNoteBreakProjection(note.body, emission)), 'NOTE_RETURN_BREAK_CHANGED');
     const body = binding && (emission
-      ? equivalentCompleteBody(binding.richBody, note.body, exportMap.exportTypography, emission)
+      ? equivalentCompleteCleanBody(binding.richBody, note.body, exportMap.exportTypography, emission)
       : equivalentBody(binding.richBody, note.body, exportMap.exportTypography)) ? binding.richBody : note.body;
     // sceneContent is already the validated canonical leaf projection. Parsing
     // it again as a legacy scene file would trim empty edge paragraphs or treat
@@ -324,6 +324,15 @@ function completeBodyMeaning(body, defaults, emission, source = false) {
     }
     return { paragraph: { type: paragraph.type, attrs, content }, list, ...(table ? { table } : {}) };
   });
+}
+function equivalentCompleteCleanBody(expected, actual, defaults, emission) {
+  const sourceRows = model.validateNoteBody(expected).paragraphs, actualRows = model.validateNoteBody(actual).paragraphs;
+  if (!compareTableParagraphTopology(actualRows, sourceRows.map(({ table }) => ({ formatIr: { table } }))).ok) return false;
+  const source = completeBodyMeaning(expected, defaults, emission, true), returned = completeBodyMeaning(actual, defaults, emission);
+  // Only the existing strict table oracle can authorize its legacy auto-fit
+  // representation. Every effective paragraph, run, list and media still compares.
+  returned.forEach((row, i) => { if (row.table) row.table = source[i].table; });
+  return stable(source) === stable(returned);
 }
 function equivalentCompleteBody(expected, actual, defaults, emission) {
   return stable(completeBodyMeaning(expected, defaults, emission, true)) === stable(completeBodyMeaning(actual, defaults, emission));

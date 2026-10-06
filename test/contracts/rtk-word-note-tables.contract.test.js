@@ -221,7 +221,7 @@ async function tableReturnFixture(kind, mutate = value => value, explicit = true
     sha256Text: model.sha, sha256Json: value => 'sha256:' + model.sha(stable(value)), byteLength: value => Buffer.byteLength(value),
   } });
   assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
-  const returnedNotes = bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes);
+  const returnedNotes = bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes, { includeBreakProjection: true });
   assert.equal(model.validateNoteBody(returnedNotes[0].body).text, document.notes[0].body, 'fixture changes no note text');
   return { document, returnedNotes, input: { document, projectId, roundId: 'table-only', artifactSha256: model.sha(bytes),
     baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap, returnedNotes,

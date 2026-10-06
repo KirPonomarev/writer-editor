@@ -3142,11 +3142,11 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "cb0b81199e61d2b289e7557929a6a6242dd67b05ff2729a8bc384ff6809beea8"
+      "sha256": "f540647bb67244fb76ab612d505ac235842feee5e181058bc21c39c7b938f49b"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
-      "sha256": "0c5c66e5408c48952e313bfa8cc561ce062100faea5f5d6dce5f73410e68c0b4"
+      "sha256": "ac0573fbc08412ad9990005159b6d85731d5f5e06eccf4bc7979a6d56418c0b5"
     },
     {
       "path": "src/core/word-pending-comment-return-v1.cjs",
@@ -3162,11 +3162,11 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "sha256": "7b0870fdc4566b4c977c083253e01c460a08387023cdfd498f89ba415f39ec4e"
+      "sha256": "829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d"
     },
     {
       "path": "src/export/docx/docxReviewPacketNotes.js",
-      "sha256": "eb3aaaf1312920fd9520be2c4683d95261d70742e3c359e00a1f1c255ba3355f"
+      "sha256": "8edd7793439be2298ee2f6ba90a23f41abb6fecbcbae3a9af8fde96e9563bb66"
     },
     {
       "path": "src/export/docx/docxReviewPacketBuilder.js",
@@ -3178,7 +3178,7 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "37ef78e5f1496e7f07fe4494967646f58880aa86983a647f1bf35e8c6557906b"
+      "sha256": "bcaa814cdbb7eb80239c6ff6e4743684306aff0f1df3f7624f4acb9cf2a79cfa"
     },
     {
       "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -3242,13 +3242,25 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-06--word-recording-notes-mac.md",
-      "sha256": "2b7330b1359d6343628d90b6d0c32d2041fd903e2c4d1a61cc00abe3a1e30a5f"
+      "sha256": "c2f95d553f845237aa84784def407a1e65482c8f5f4a34e3ac3c0065101ea6cc"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-return.contract.test.js",
+      "sha256": "05dc33495eb11afdf71c3d1c706f896340cb356b7ac6c0cec32da1557b42d77f"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+      "sha256": "435743272679a476a99124558baf9cccabc464953e5f1a754714dacd90455066"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-tables.contract.test.js",
+      "sha256": "f6a4dd968f596c18219b4e2d7ff3fde16625cb5154fe9a82b906aee3153b0fe8"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9a26f412d4609cb75638720dec6020a2804ddadbb93548bde80df3e1c1d8f76c"
+      "sha256": "ac6301dfaf4e6944883435033213671cfc5a17c86a3cd7e1afce3c092ea5780b"
     }
   ]
 });

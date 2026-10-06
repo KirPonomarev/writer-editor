@@ -1,3 +1,32 @@
+## 2026-10-07 — single-scene note compatibility candidate; native qualification open
+
+WORD_RECORDING_NOTES_MAC_20261006 remains an incomplete delivery contour;
+original macOS100000-word/five genuine exchanges/three-role scope is unchanged.
+Clean checkpoint0b3e6fd7996824413a35f067b7929869f221ec9b admitted same-task
+fixture amendment04 through fresh bootstrap,32-path preflight and E0. Fresh
+single-scene clean/pending export now carries the existing finite notes-only
+V2 profile; complete effective note and break comparison preserves authored
+rich/private source. Old unknown-profile genuine Word input still refuses
+PENDING_NOTE_BODY_CHANGED and writes nothing. Consistent native ID renumbering
+remains supported; native joins are checked by parser before private Main
+admission, canonical identities/geometry/after ledger by independent atomic
+replay. Atomic proof does not reconstruct omitted native join fields.
+
+Actual three whole compatibility suites45of45 and seven whole affected suites
+478of478 pass without fail/cancel/skip/todo on frozen candidate source. The
+clean-only table comparison preserves the existing strict authenticated legacy
+auto-fit oracle; real property/topology edits remain edits. All previous fresh
+admission, full CAS, recovery and no-loss guards remain. Runtime272of700 and
+behavior628of1100; no new dependency, parser/proof field, schema family or UI.
+Note Core source SHA256 ac0573fbc08412ad9990005159b6d85731d5f5e06eccf4bc7979a6d56418c0b5.
+
+The prior25190 official RTK terminal3716of3718 failed two static scope-list
+checks. Exact list equality is corrected; final official RTK, npm test, native
+SOURCE/PACKAGED genuine changed Word Cancel/Apply/reexport/restart, CI and full
+Git delivery are OPEN. Component and synthetic100k evidence is not physical
+Word or production performance proof. Fresh native apps must bind the clean
+candidate and all source/package bytes; old profiles/crash/AX/TCC replay forbidden.
+
 ## 2026-10-06 — writer notes amendment01 incomplete recovery checkpoint
 
 WORD_RECORDING_NOTES_MAC_20261006 remains TARGET, not delivered. Clean cc32
