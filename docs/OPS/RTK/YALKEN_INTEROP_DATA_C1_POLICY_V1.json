@@ -849,7 +849,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f705ddea338390a6dbf03a2bb127e09cbd3dc71ef715877a2b9f3ff80cbd3947"
+        "sha256": "689178169b7f740d3749442a9b67d03cf5d9e9c1150bb9c8993d6967d26ab7f4"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -885,7 +885,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "a5daaf850c01653fad85ff55e872abc19a7821321a3ba168f97082fbecfce22d"
+        "sha256": "07b37e4924ad961c8e12e52c4b5222a5d0668b1e232d35ec7596320443b7fd7e"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -961,7 +961,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "dbe5d6447f67e6f1bd8069a868a839208fbc306004b4c25cf2c36a46ca3a282f"
+        "sha256": "a9010f46e69152bb46fad97c7c22d9a1973e83f690e37f47a7f0d1bb266a483d"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -985,7 +985,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "970dfe14cb74bd1f82c832362a98491d6d8d530b5128edf1848d8f19d98ef830"
+        "sha256": "f27285e57777a05a6c1b8b567469b4bfe83eff0bda7d67b632104c075092292c"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1233,7 +1233,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketNotes.js",
-        "sha256": "2c138ed59bb46567c812e3184b16d525a0cc8d8f4a40be1f2257a762eb2847a9"
+        "sha256": "6c7fb43bb52ed3dd0d4db598737f8526db2032ff1c664b45b27c5448e13c66c3"
       },
       {
         "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
@@ -1701,7 +1701,7 @@
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
-        "sha256": "b89d98d0ee8af2e703afad1cd9663837aeb39caadbd89e1c5d8c7d3a984e6be3"
+        "sha256": "53f2e7a032c7ec6fa9829345ff96310bd2e546c1252ca8acb7d1fdf525e63f5a"
       },
       {
         "path": "test/contracts/rtk-word-note-return.contract.test.js",
@@ -2009,7 +2009,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "a554d88b8b04a4bfad734c614755f791ebb0374cde8b2fc0baefdac97cefed2a"
+        "sha256": "25ea07a447f172fcfcc1eee0efcd06a3c40eb4ec7715ff1c9885658259d48bb7"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -2037,7 +2037,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "83663bdaa6587cf272b855670da8016ee6bbfc072b9a0f1085bfea2be02aa83a"
+        "sha256": "95f7fdf4568f80a0c0e6e566bc9ccfa2f8e8a7a5a74180f8f3a2ce88da8ccbba"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2541,15 +2541,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9d454ba373db3781b3763f0b06eadb4a690c243f2f8e07a3335c858a1ce3b792"
+        "sha256": "d420f5e3c17ece51fc3b954028f936c9c60f01e2ad75281a32d76bfb295801fd"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e2e4823bb7fd71c5175f72b134e01a92ecff8d52494395c9673b8bd02d297a67"
+        "sha256": "ef7b9c936f509e412a6516a4a57f833989fdb5e6ef95c93f0cf5ad5e18818f75"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d4d696e65262e5e796855fbde04b97138730745633ca23dff01042080d0c1fe4"
+        "sha256": "aa9a6f9bd75958c78b11b16fae7ae81fedc2e3a83fa3a3bc4f544e5862a075e5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2657,7 +2657,7 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "f8b8ca22a28e041c7bebed6782026daf4904433b320e2c9589e28f342f86bd64"
+        "sha256": "9df767e2701f3e1da6f3b97a649a835aedc50b55e7ed8fe8235e65c0f0b1f988"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -2729,7 +2729,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-        "sha256": "b221796ee6de7bb7ced44884ec5872e6c368c0eaee1ed8bf6efbb2141d8b29a1"
+        "sha256": "a30684d07b26391a33aae4a965c42c641b8b98119a23bc8680bb53c0a21d8a38"
       }
     ],
     "followupRepair": {

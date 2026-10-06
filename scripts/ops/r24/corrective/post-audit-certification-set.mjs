@@ -3051,15 +3051,15 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "f705ddea338390a6dbf03a2bb127e09cbd3dc71ef715877a2b9f3ff80cbd3947"
+      "sha256": "689178169b7f740d3749442a9b67d03cf5d9e9c1150bb9c8993d6967d26ab7f4"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
-      "sha256": "b89d98d0ee8af2e703afad1cd9663837aeb39caadbd89e1c5d8c7d3a984e6be3"
+      "sha256": "53f2e7a032c7ec6fa9829345ff96310bd2e546c1252ca8acb7d1fdf525e63f5a"
     },
     {
       "path": "src/core/word-pending-comment-return-v1.cjs",
-      "sha256": "f8b8ca22a28e041c7bebed6782026daf4904433b320e2c9589e28f342f86bd64"
+      "sha256": "9df767e2701f3e1da6f3b97a649a835aedc50b55e7ed8fe8235e65c0f0b1f988"
     },
     {
       "path": "src/core/word-comment-return-delta-v1.cjs",
@@ -3071,11 +3071,23 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "sha256": "970dfe14cb74bd1f82c832362a98491d6d8d530b5128edf1848d8f19d98ef830"
+      "sha256": "f27285e57777a05a6c1b8b567469b4bfe83eff0bda7d67b632104c075092292c"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketNotes.js",
+      "sha256": "6c7fb43bb52ed3dd0d4db598737f8526db2032ff1c664b45b27c5448e13c66c3"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketBuilder.js",
+      "sha256": "a9010f46e69152bb46fad97c7c22d9a1973e83f690e37f47a7f0d1bb266a483d"
+    },
+    {
+      "path": "src/io/revisionBridge/index.mjs",
+      "sha256": "07b37e4924ad961c8e12e52c4b5222a5d0668b1e232d35ec7596320443b7fd7e"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "a554d88b8b04a4bfad734c614755f791ebb0374cde8b2fc0baefdac97cefed2a"
+      "sha256": "25ea07a447f172fcfcc1eee0efcd06a3c40eb4ec7715ff1c9885658259d48bb7"
     },
     {
       "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -3087,17 +3099,17 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "83663bdaa6587cf272b855670da8016ee6bbfc072b9a0f1085bfea2be02aa83a"
+      "sha256": "95f7fdf4568f80a0c0e6e566bc9ccfa2f8e8a7a5a74180f8f3a2ce88da8ccbba"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-      "sha256": "b221796ee6de7bb7ced44884ec5872e6c368c0eaee1ed8bf6efbb2141d8b29a1"
+      "sha256": "a30684d07b26391a33aae4a965c42c641b8b98119a23bc8680bb53c0a21d8a38"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "0466ceff7333615a37b4a40190e11df9c43a14daccd1e56e9099668954456784"
+      "sha256": "5ef3eea4dbeec0042a3f82bd87618701443f55b7acd91e65cfe0873f8987eabf"
     }
   ]
 });

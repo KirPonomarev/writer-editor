@@ -1176,16 +1176,18 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     };
   }
   let documentNotesBinding = null;
-  if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1) {
+  if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1
+    && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
       const noteProofs=[];
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
         const readback=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
         if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
         const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
-          const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId];
-          const document=require('./core/document-content-envelope-v1.cjs').parseObservablePayload(raw).doc;
-          if(!document)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document};});
+          const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
+          if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+          const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
+          if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
         const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
           baselineDocuments:noteScenes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
           signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
@@ -1195,7 +1197,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
           projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
           scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
-          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes),
+          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
           returnedReferences:readback.reviewIr.documentNotes.references,
           unionReferences:preview.contentPreview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
         for(const scene of bound) {
@@ -6348,15 +6350,17 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const projectRoot=await fs.realpath(context.projectRoot),scenes=[];let sourceBytes=0;
     if(capsule.exportMap.scenes.length>512)throw Error('WORD_BOOK_RETURN_BUDGET');
     for(const scene of capsule.exportMap.scenes) {
-      const target=capsule.scenePathBySceneId?.[scene.sceneId],raw=capsule.baselineObservableContentBySceneId?.[scene.sceneId];
-      if(typeof target!=='string'||typeof raw!=='string'||path.resolve(context.projectRoot,scene.sceneId)!==target)throw Error('WORD_BOOK_RETURN_SCENE_BINDING');
+      const target=capsule.scenePathBySceneId?.[scene.sceneId],raw=capsule.baselineObservableContentBySceneId?.[scene.sceneId]??capsule.baselineFinalTextBySceneId?.[scene.sceneId];
+      if(typeof target!=='string'||typeof raw!=='string'||path.resolve(context.projectRoot,scene.sceneId)!==target
+        ||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${computeHash(raw)}`)throw Error('WORD_BOOK_RETURN_SCENE_BINDING');
       sourceBytes+=Buffer.byteLength(raw);if(sourceBytes>32*1024*1024)throw Error('WORD_BOOK_RETURN_BUDGET');
       const relative=path.relative(context.projectRoot,target);
       if(!relative||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p==='..'||p==='.'||!p))throw Error('WORD_BOOK_RETURN_SCENE_PATH');
       let at=projectRoot;
       for(const component of relative.split(path.sep)) {at=path.join(at,component);const stat=await fs.lstat(at);
         if(stat.isSymbolicLink()||(at===path.join(projectRoot,relative)?!stat.isFile()||stat.nlink!==1||stat.size>8*1024*1024:!stat.isDirectory()))throw Error('WORD_BOOK_RETURN_SCENE_PATH');}
-      const parsed=envelope.parseObservablePayload(raw);if(parsed.issue||!parsed.doc)throw Error('WORD_BOOK_RETURN_SOURCE_INVALID');
+      const parsed=envelope.parseObservablePayload(raw);if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_RETURN_SOURCE_INVALID');
+      parsed.doc ||= envelope.buildParagraphDocumentFromText(parsed.text);
       scenes.push({sceneId:scene.sceneId,target,raw,parsed});
     }
     const open=scenes.find(scene=>scene.target===file);if(!open)throw Error('WORD_BOOK_RETURN_OPEN_SCENE_REQUIRED');
@@ -6386,7 +6390,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       returnedThreads:intake.parserResult.reviewIr.commentThreads,returnedParagraphs:intake.parserResult.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),
       commentReturnInventory:intake.parserResult.reviewIr.commentReturnInventory,
       ...(hasNotes?{noteContext:{baseline:capsule.documentNotes,
-        returnedNotes:revisionBridge.parseDocumentNotesRichReturn(docxBytes,intake.parserResult.reviewIr.documentNotes),
+        returnedNotes:revisionBridge.parseDocumentNotesRichReturn(docxBytes,intake.parserResult.reviewIr.documentNotes,{includeBreakProjection:true}),
         returnedReferences:intake.parserResult.reviewIr.documentNotes.references,
         unionReferences:preview.contentPreview.pendingNoteReferences||intake.parserResult.reviewIr.documentNotes.references}}:{})};
     const returnProofJson=JSON.stringify(proof),model=await loadProjectTreeCohortModule();

@@ -33,7 +33,7 @@ The hypothesis is that closed full-book note binding, source-point derivation
 and regenerated annotation cohort resolve the current composite refusal
 without weakening source/graph/lease/semantic guards.
 
-Diff budget:22 explicit paths; runtime at most900 added/deleted lines; behavior
+Diff budget:25 explicit paths; runtime at most900 added/deleted lines; behavior
 tests at most1300 added/deleted lines; generated inventory and exact hash
 companions may reflect complete serialization. No unrelated formatting/refactor.
 
@@ -45,6 +45,9 @@ companions may reflect complete serialization. No unrelated formatting/refactor.
 - `src/core/word-comment-return-delta-v1.cjs`
 - `src/core/project-tree-cohort-v1.mjs`
 - `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
+- `src/export/docx/docxReviewPacketNotes.js`
+- `src/export/docx/docxReviewPacketBuilder.js`
+- `src/io/revisionBridge/index.mjs`
 - `test/contracts/rtk-word-pending-notes.contract.test.js`
 - `test/contracts/rtk-word-mixed-return.contract.test.js`
 - `test/contracts/rtk-word-mixed-return-transaction.contract.test.js`
@@ -64,8 +67,10 @@ companions may reflect complete serialization. No unrelated formatting/refactor.
 
 ## DENYLIST
 
-No renderer, preload, parser, shared modal, package/lockfile, dependency or
-runtime-network changes. No style catalog, generic default engine, tracked
+No renderer, preload, shared modal, package/lockfile, dependency or runtime-network
+changes. Parser changes are restricted to the existing note-only read-only
+break-format projection before canonical conversion; generic import behavior
+and unrelated document/story parsing remain unchanged. No style catalog, generic default engine, tracked
 format/move/structural mixtures, media/bookmark/story admission expansion or
 second storage writer. Preserve existing authored rich fields and schema3
 no-notes route. Do not replay old native import, pending100k profiles, giant
@@ -158,10 +163,98 @@ Two deletion edges can share one Current offset and remain distinct source
 occurrences. New canonical source points require verified mapping; neither old
 points nor incoming offsets may be blindly copied after text changes.
 
+### SCOPE_AMENDMENT_01 — same closed book-note contour
+
+AMENDMENT_CHECKPOINT_SHA: e714e9b17b0338ee8ce6b4cf200465c5289d6a93
+AMENDMENT_PREFLIGHT: passed on clean exact checkpoint with25 explicit paths
+AMENDMENT_AUTHORITY: existing owner autonomous full novel no-loss implementation;
+no new stage, privilege, dependency, runtime network or delivery contour.
+
+The exact initial real SOURCE export is34,460 bytes with artifact SHA256
+5cd8115011c1bc82f5455255d3e7b1db748fba3c162efc8e8e9982569a1be6f2.
+It references FootnoteText, EndnoteText, FootnoteReference and EndnoteReference,
+while styles.xml declares only the two code styles. The independent full-note
+style observer refuses the missing style. Notes emission must supply only its
+self-contained required definitions, without undeclared base/link inheritance,
+a named product style catalog or changes to global defaults/no-notes output.
+
+An independently changed actual ZIP note break adds bold/red run properties.
+Mutant SHA256461f55241914e42889c266bc024ffe1912a99f683bf74accb55024883af04a5e
+still produces exactly equal parsed complete rich note bodies. Thus previous
+whole-body comparison is incomplete. The narrow parser seam must retain a
+bounded read-only effective break-format/occurrence projection before lossy
+canonical conversion. The existing owned book comparator independently checks
+it against the complete authenticated local emitted expectation, including
+paragraph and UTF16 occurrence identity. Missing, duplicate, moved, unknown or
+changed meaning refuses. Returned bytes never define expected defaults.
+
+The only current note default explicitly emitted is12pt. No Times New Roman,
+en-US, paragraph language propagation or unowned Word default may be invented.
+Canonical note body grammar and stored bodies stay unchanged. Any transport
+baseline is note-only, closed, versioned and derived from local canonical input
+plus explicitly owned emission; no generic default engine, Core-to-export
+circular dependency, new storage writer or caller-supplied after authority.
+
+Required amendment proof: actual ZIP bold/color/font/language break corruption
+must be observable and refused; closed baseline/returned projection is complete
+and source-bound; emitted note style IDs resolve; authored Georgia14/bold/ru-RU,
+spacing0/120, hardBreak, text and every note identity/reference remain preserved.
+Normal no-notes export and prior standalone no-notes/notes semantics remain
+within their prior contracts. Forged, omitted and stale projection must refuse.
+
+The early native diagnostic is not acceptance: no Word edits or genuine changed
+exchange executed. SOURCE child7876 exited normally(code0, no signal) through
+exact-PID ordinary AppKit quit; all protected business bytes stayed exact. The
+controller itself exited1 because its stopped flag did not observe external
+normal quit. Word DOM read full text and all four note bodies; its owned saved
+synthetic document is retained unchanged after native close API failures. No
+computer/native failure replay, process crash, force quit, UI capture or foreign
+document mutation occurred. System Events UI elements enabled=false; real
+picker/keyboard acceptance remains a mandatory open gate, never skip/PASS.
+
+### Amendment01 controlled proof checkpoint
+
+Amendment01 writer HOLD13: final serial pinned Node22 suites pass108of108
+(pending-notes22, mixed-return33, transaction45, selected actual Main8), with
+zero fail/cancel/skip/todo. Independent fresh actual-Main DOCX XML observation
+resolves all four emitted note style identities and reads the full ten-paragraph
+book/four-note graph; this is controlled publication evidence, not genuine Word
+exchange acceptance. Exact frozen13 source/test hashes are external. System
+Events UI authorization is false; existing Hammerspoon authorization is true,
+but three bounded exact-PID keyboard close requests had no observed effect.
+That loop stopped. A separately resolved native Word DocClose command also
+returned without closing the saved owned fixture; cause remains UNKNOWN.
+No Word edit, TCC change, capture or force quit occurred. Native SOURCE/PACKAGED
+changed-save/Cancel/Apply/restart proof and all release denominators remain open.
+Next: exact companion freeze, whole affected suites and stable checkpoint,
+then resolve native automation using changed evidence rather than blind replay.
+
+
+### Amendment01 legacy and valid-plain source correction checkpoint
+
+Final amendment01 correction HOLD13: final serial focused128of128 pass with
+zero fail/cancel/skip/todo (Main28, notes22, mixed33, atomic transaction45).
+The first mandatory whole Main is retained as FAIL251of266,15 failures; focused
+green does not supersede that failed denominator. Its14 clean-book publication
+regressions are corrected by selecting the composed gate from the authenticated
+LOCAL schema2 pending binding. Valid plain source(version1, no envelope issue)
+has a read-only paragraph projection only after rawSHA/identity validation in
+Main and independent Core re-derivation. Untouched plain Beta stays byte-exact
+through actual Main Apply/reopen/UndoRedo/second exchange; malformed typed input,
+stale raw source and copied forged after refuse with precise domain codes and
+full no-write evidence. Canonical rich note bodies/geometry and all guards remain.
+Runtime413of900 and behavior373of1300; exact25-path aggregate scope. Fresh final
+controlled public export04 and canonical expectations are immutable externally.
+No Word edit, native changed exchange, capture, TCC change or new dependency.
+Next required proof: fresh independent XML and whole Main/broader exact gates,
+then safe native SOURCE/PACKAGED proof and full delivery; original novel release
+and100k/five genuine Word exchanges remain OPEN.
+
 ## IMPLEMENTATION_STEPS
 
 Root owns contract, declaration/E0, OPS, proof and full delivery. Separate code
-writer owns only six runtime and four behavior-test paths. Preserve original
+writer owns only the original six runtime and four behavior-test paths plus
+the three exact emitter/parser seams admitted by amendment01 below. Preserve original
 schema3 full graph behavior. Add closed book note binding/proof, independently
 derive note geometry in mixed planner and comment re-derivation, then apply
 existing note-anchor plans cumulatively to one regenerated cohort. Whole-book
@@ -180,7 +273,9 @@ These early routes do not certify the complete100k/five-exchange novel.
 
 CHECK_01_PRE_ADMISSION: CHECK_01 выполняется ДО любых изменений; CHECK_02+
 выполняются ПОСЛЕ. Clean exact base, registry, verified T7, bootstrap, full
-ordered reads and22-path preflight precede first file edit. E0 precedes runtime.
+ordered reads and initial22-path preflight preceded the first file edit.
+Amendment01 clean e714 checkpoint and25-path preflight precede its own edits;
+E0 precedes runtime edits in both phases.
 CHECK_02_POST_FOCUSED: both note kinds around insertion/deletion, repeated text,
 Unicode/surrogates, co-located notes, global/local occurrence bijection, full rich
 body preservation; missing/duplicate/foreign/moved/changed graph refuses.

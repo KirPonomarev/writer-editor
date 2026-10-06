@@ -124,6 +124,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     offsetUtf16: binding.offsetUtf16, paragraphs: [...binding.paragraphs] }));
   sourceBindings.forEach(binding => { binding.nativeId = String(++ordinalByKind[binding.kind]); });
   return { schemaVersion: DOCUMENT_NOTES_SCHEMA, projectId, selections, stateDigest: notesStateDigest(document),
+    ...(options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: { schemaVersion: 1, fontSize: '12pt' } } : {}),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
     policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }
@@ -142,15 +143,19 @@ function noteMarkersForBlock(projection, block) {
 }
 
 function notePackageParts(projection, { firstNumId = 1 } = {}) {
-  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '' };
+  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '', stylesXml: '' };
   demand(projection.schemaVersion === DOCUMENT_NOTES_SCHEMA, 'DOCX_NOTES_EXPORT_SCHEMA_INVALID');
-  const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [];
+  const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [], styles = [];
   demand(Number.isSafeInteger(firstNumId) && firstNumId > 0 && firstNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');
   let nextNumId = firstNumId;
   for (const kind of ['footnote', 'endnote']) {
     const bindings = projection.sourceBindings.filter(binding => binding.kind === kind);
     if (!bindings.length) continue;
     const style = kind === 'footnote' ? 'Footnote' : 'Endnote';
+    // These exact emitted references have no undeclared Normal/base/link
+    // inheritance. The existing document default supplies only 12pt.
+    styles.push(`<w:style w:type="paragraph" w:styleId="${style}Text"><w:name w:val="${style} Text"/></w:style>`,
+      `<w:style w:type="character" w:styleId="${style}Reference"><w:name w:val="${style} Reference"/></w:style>`);
     const links = new Map();
     const media = buildMediaPackage({ type: 'doc', content: bindings.flatMap(binding => binding.richBody?.content || []) },
       { firstPlacementId: kind === 'footnote' ? 1000000 : 2000000 });
@@ -189,7 +194,7 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
     types.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>`);
     relationships.push(`<Relationship Id="rIdYalken${style}s" Type="${REL_NS}${kind}s" Target="${name}"/>`);
   }
-  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings, mediaParts: mergeMediaParts(mediaParts), mediaTypes: mergeMediaTypes(...mediaTypes) };
+  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings, mediaParts: mergeMediaParts(mediaParts), mediaTypes: mergeMediaTypes(...mediaTypes), stylesXml: styles.join('') };
 }
 
 function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) {

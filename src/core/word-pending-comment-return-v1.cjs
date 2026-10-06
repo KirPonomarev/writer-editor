@@ -320,16 +320,23 @@ function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesT
     &&Array.isArray(proof.returnedScenes)&&proof.returnedScenes.length===mapped.length
     &&new Set(mapped.map(s=>s.sceneId)).size===mapped.length,'MIXED_RETURN_SCENE_REQUIRED');
   const state=readState(beforeText,projectId),sha=require('./browser-safe-hash.cjs').sha256UpdateCompatible;
-  const noteScenes=proof.schemaVersion===4?bookNoteBindings({notesText,projectId,exportMap:proof.exportMap,noteContext:proof.noteContext,
-    scenes:scenes.map((scene,i)=>({sceneId:scene.sceneId,document:envelope.parseObservablePayload(scene.beforeContent).doc,
-      returnedDocument:review.bindLedger(proof.returnedScenes[i].ledger)}))}):null;
-  const mixed=[],results=[];
-  for(let i=0;i<mapped.length;i++) {
-    const binding=mapped[i],scene=scenes[i],returned=proof.returnedScenes[i];
+  // Authenticate every raw source before note binding; valid plain envelopes
+  // have a read-only paragraph projection while their exact bytes remain owned.
+  const parsedScenes=scenes.map((scene,i)=>{
+    const binding=mapped[i],returned=proof.returnedScenes[i];
     need(scene?.sceneId===binding.sceneId&&returned?.sceneId===binding.sceneId
       &&Object.keys(returned).sort().join(',')==='ledger,sceneId'
       &&typeof scene.beforeContent==='string'&&binding.rawSha256==='sha256:'+sha(scene.beforeContent),'MIXED_RETURN_BASELINE_STALE');
-    const parsed=envelope.parseObservablePayload(scene.beforeContent);need(!parsed.issue&&parsed.doc,'MIXED_RETURN_DOCUMENT_REQUIRED');
+    const parsed=envelope.parseObservablePayload(scene.beforeContent);
+    need(!parsed.issue&&(parsed.doc||parsed.version===1),'MIXED_RETURN_DOCUMENT_REQUIRED');
+    parsed.doc ||= envelope.buildParagraphDocumentFromText(parsed.text);return parsed;
+  });
+  const noteScenes=proof.schemaVersion===4?bookNoteBindings({notesText,projectId,exportMap:proof.exportMap,noteContext:proof.noteContext,
+    scenes:scenes.map((scene,i)=>({sceneId:scene.sceneId,document:parsedScenes[i].doc,
+      returnedDocument:review.bindLedger(proof.returnedScenes[i].ledger)}))}):null;
+  const mixed=[],results=[];
+  for(let i=0;i<mapped.length;i++) {
+    const binding=mapped[i],scene=scenes[i],returned=proof.returnedScenes[i],parsed=parsedScenes[i];
     const returnedDocument=review.bindLedger(returned.ledger),anchors=state.threads.filter(t=>t.sceneId===scene.sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
     const rows=review.paragraphs(review.normalizeNode(parsed.doc));
     need(rows.length===binding.blocks.length&&binding.blocks.every((b,j)=>b.formatIr?.runs?.map(r=>r.text).join('')===(rows[j].content||[]).map(text).join('')),'MIXED_RETURN_EXPORT_TEXT_STALE');

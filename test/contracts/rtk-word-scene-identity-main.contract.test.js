@@ -2624,6 +2624,9 @@ for (const [name, mutate] of [
   if(['nonpending font color','pending revision provenance'].includes(name)) {
     assert.equal(x.activated.ok,true);assert.equal(x.activated.activated,false);
     assert.deepEqual(x.activated.pendingProductPath,{ok:false,status:'blocked',code:'MIXED_RETURN_SOURCE_CHANGED',writerOutcome:'NOT_CONFIRMED'});
+  } else if(name==='added footnote') {
+    assert.equal(x.activated.ok,true);assert.equal(x.activated.activated,false);
+    assert.deepEqual(x.activated.pendingProductPath,{ok:false,status:'blocked',code:'PENDING_NOTE_BOOK_CONTEXT_INVALID',writerOutcome:'NOT_CONFIRMED'});
   } else assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
   assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);
 });
@@ -2784,9 +2787,10 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
   }
 });
 
-async function composedNotesMainFixture(t,{authored=false}={}) {
+async function composedNotesMainFixture(t,{authored=false,plainSibling=false}={}) {
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');let originalNotes,notePath;
  const x=await pendingCommentMainFixture(t,{beforeExport:async({f,paths,sceneIds})=>{
+  if(plainSibling)fs.writeFileSync(paths[1],bookmarks.paragraphs(envelope.parseObservablePayload(read(paths[1])).doc).map(p=>bookmarks.textOf(p)).join('\n'));
   fs.writeFileSync(paths[0],envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AxxB first owner'}]}]}}));
   if(authored){
    const prior=pending.readLedger(envelope.parseObservablePayload(read(paths[2])).doc),value=structuredClone(prior);
@@ -2796,7 +2800,7 @@ async function composedNotesMainFixture(t,{authored=false}={}) {
   }
   const records=[];
   for(const [owner,point,kind] of [[0,1,'footnote'],[0,3,'endnote'],[1,2,'footnote'],[2,null,'endnote']]) {
-   let doc=envelope.parseObservablePayload(read(paths[owner])).doc,ledger=pending.readLedger(doc);
+   const parsed=envelope.parseObservablePayload(read(paths[owner]));let doc=parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text),ledger=pending.readLedger(doc);
    const leaves=pending.paragraphs(pending.normalizeNode(doc)),paragraphIndex=owner===2?leaves.length-1:0;
    const sourceOffset=point??pending.paragraphs(ledger.source)[paragraphIndex].content.map(n=>n.type==='hardBreak'?'\n':n.text).join('').length-2;
    const id='book-note-'+records.length,sourcePoint={noteId:id,paragraphIndex,offsetUtf16:sourceOffset};
@@ -2835,8 +2839,8 @@ async function composedNotesMainFixture(t,{authored=false}={}) {
  }});
  return {x,originalNotes,notePath};
 }
-test('book notes actual Main commits both pending owners and full discussions with exact protected sibling',async t=>{
- const {x,originalNotes,notePath}=await composedNotesMainFixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+for(const plainSibling of [false,true])test('book notes actual Main commits both pending owners and full discussions with exact protected '+(plainSibling?'plain ':'')+'sibling',async t=>{
+ const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{plainSibling}),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
  assert.deepEqual(x.f.capture(),x.before);const protectedRaw=read(x.paths[1]),beforeNotes=read(notePath),beforeDocs=x.paths.map(read);
  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'book-notes.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
@@ -2881,6 +2885,56 @@ test('book notes actual Main commits both pending owners and full discussions wi
  for(const i of [0,2]){const doc=envelope.parseObservablePayload(read(x.paths[i])).doc;assert.match(pending.projection(doc).current,/ SECOND/u);assert.equal(pending.readLedger(doc).roundUndo.length,2);}
  assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(t=>({threadId:t.threadId,messages:t.messages})),messages);
  const final=await reopened.probe.reviewBuild(await reopened.probe.fullSource());assert.equal(final.publicationGate.publishAllowed,true,JSON.stringify(final.publicationGate));
+});
+
+test('book notes publication authenticates omitted plain sibling baseline and refuses forged bytes',async t=>{
+ const {x}=await composedNotesMainFixture(t,{plainSibling:true}),sibling=read(x.paths[1]),sceneId=x.source.localAuthorityCapsule.exportMap.scenes[1].sceneId;
+ assert.equal(Object.hasOwn(x.source.localAuthorityCapsule.baselineObservableContentBySceneId,sceneId),false);
+ const built=await x.f.probe.reviewBuild(x.source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const source={...x.source,localAuthorityCapsule:{...x.source.localAuthorityCapsule,baselineFinalTextBySceneId:{...x.source.localAuthorityCapsule.baselineFinalTextBySceneId,[sceneId]:sibling+' FORGED'}}};
+ const rejected=await x.f.probe.fullGate(source,built.documentBuffer);assert.equal(rejected.reason,'WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+ for(const malformed of [false,true]){const raw=malformed?'[doc-v2 length=1]\n{':sibling,bad={...x.source,localAuthorityCapsule:{...x.source.localAuthorityCapsule,
+  baselineFinalTextBySceneId:{...x.source.localAuthorityCapsule.baselineFinalTextBySceneId,[sceneId]:raw},exportMap:structuredClone(x.source.localAuthorityCapsule.exportMap)}};
+  bad.localAuthorityCapsule.exportMap.scenes[1].rawSha256='sha256:'+(malformed?sha(raw):'0'.repeat(64));
+  assert.equal((await x.f.probe.fullGate(bad,built.documentBuffer)).reason,'WORD_BOOK_NOTES_PUBLICATION_BASELINE');}
+ assert.equal(read(x.paths[1]),sibling);assert.deepEqual(x.f.capture(),x.before);assert.equal(envelope.parseObservablePayload(sibling).hasMetaBlock,false);
+});
+
+for(const corrupt of ['raw source','malformed envelope','after bytes'])test('book notes actual Main plain sibling refuses forged '+corrupt+' at the atomic boundary',async t=>{
+ const {x}=await composedNotesMainFixture(t,{plainSibling:true});assert.ok(x.prepared);const before=x.f.capture(),kernel=x.f.probe.observeKernelResults();
+ t.after(()=>kernel.restore());x.f.probe.beforeNextBookTransaction(request=>{const plan=structuredClone(request.treeCohort),scene=plan.input.scenes[1];request.treeCohort=plan;
+  if(corrupt==='after bytes')plan.entries.find(entry=>entry.relativePath===scene.sceneId).afterBase64=Buffer.from('FORGED').toString('base64');
+  else {scene.beforeContent=corrupt==='raw source'?scene.beforeContent+' FORGED':'[doc-v2 length=1]\n{';
+   if(corrupt==='malformed envelope'){const proof=JSON.parse(plan.input.returnProofJson);proof.exportMap.scenes[1].rawSha256='sha256:'+sha(scene.beforeContent);plan.input.returnProofJson=JSON.stringify(proof);}}
+ });
+ const code=corrupt==='raw source'?'MIXED_RETURN_BASELINE_STALE':corrupt==='malformed envelope'?'MIXED_RETURN_DOCUMENT_REQUIRED':'E_TREE_COHORT_PLAN_MISMATCH';
+ await assert.rejects(x.prepared.apply(),{message:code});assert.deepEqual(kernel.failures,[code]);
+ assert.deepEqual(x.f.capture(),before);assert.equal(read(x.paths[1]),Buffer.from(before.files[path.relative(x.f.root,x.paths[1])],'base64').toString());
+});
+
+test('book notes actual Main retains real ZIP break evidence and refuses altered formatting before publication or write',async t=>{
+ const {x,originalNotes}=await composedNotesMainFixture(t),built=await x.f.probe.reviewBuild(x.source),before=x.f.capture();
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ if(process.env.YALKEN_BOOK_NOTES_EXPORT_EVIDENCE_PATH){const target=process.env.YALKEN_BOOK_NOTES_EXPORT_EVIDENCE_PATH;fs.writeFileSync(target,built.documentBuffer,{flag:'wx'});
+  fs.writeFileSync(target+'.expected.json',JSON.stringify({purpose:'fresh controlled actual Main publication; not native acceptance',documentSha256:sha(built.documentBuffer),canonicalNotes:originalNotes,scenes:x.paths.map(file=>({basename:path.basename(file),payload:read(file)}))},null,2)+'\n',{flag:'wx'});}
+ const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const mutate=(bytes,properties)=>{
+  const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+  const original=parts['word/footnotes.xml'];parts['word/footnotes.xml']=original.replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`);
+  assert.notEqual(parts['word/footnotes.xml'],original,'actual note break ZIP mutation');return pack(parts);
+ };
+ for(const properties of ['<w:b w:val="1"/>','<w:color w:val="FF0000"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>',
+  ...['val','eastAsia','bidi'].map(field=>`<w:lang w:${field}="en-GB"/>`)]) {
+  const gate=await x.f.probe.fullGate(x.source,mutate(built.documentBuffer,properties));
+  assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(gate.reason,'PENDING_NOTE_BREAK_CHANGED');
+  const rejected=await x.f.probe.reviewActivate({requestId:'book-note-break-corruption',bufferSource:mutate(x.bytes,properties).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.equal(rejected.pendingProductPath?.status,'blocked',JSON.stringify(rejected));assert.equal(rejected.pendingProductPath?.code,'PENDING_NOTE_BREAK_CHANGED');
+  assert.deepEqual(x.f.capture(),before,'no canonical writes on corrupted real note break');
+ }
+ const bytes=mutate(x.source.provisionalSelfParseArtifact.bytes,'<w:b w:val="1"/>'),source={...x.source,
+  provisionalSelfParseArtifact:{...x.source.provisionalSelfParseArtifact,bytes},advisoryManifest:{...x.source.advisoryManifest,coreManifest:structuredClone(x.source.advisoryManifest.coreManifest)}};
+ source.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256='sha256:'+sha(bytes);
+ const gate=await x.f.probe.fullGate(source,built.documentBuffer);assert.equal(gate.reason,'PENDING_NOTE_BREAK_CHANGED');assert.deepEqual(x.f.capture(),before);
 });
 
 test('book notes publication uses exact local emitted defaults and authored overrides, refusing every run language field and font corruption',async t=>{

@@ -679,7 +679,7 @@ function buildNumberingXml(definitions) {
 <w:numbering xmlns:w="${WORD_MAIN_NS}">${abstract}${instances}</w:numbering>`;
 }
 
-function buildStylesXml(blocks) {
+function buildStylesXml(blocks, noteStyles = '') {
   const ids = ['YalkenCodeBlock', ...blocks.map(block => docxBlockStyleId(
     block.formatIr?.paragraph?.nodeType === 'codeBlock', Number(block.formatIr?.paragraph?.blockquoteDepth || 0),
   )).filter(Boolean)];
@@ -689,7 +689,7 @@ function buildStylesXml(blocks) {
   ${buildDocxBlockStyleDefinitions(ids)}
   ${[...new Set(blocks.filter(b=>b.formatIr?.paragraph?.list?.continuation===true).map(b=>b.formatIr.paragraph.list.level))].map(level=>`<w:style w:type="paragraph" w:styleId="YalkenListContinuation${level}"><w:name w:val="Yalken List Continuation ${level}"/></w:style>`).join('')}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
-</w:styles>`;
+${noteStyles ? '  ' + noteStyles + '\n' : ''}</w:styles>`;
 }
 
 function collectDocumentHyperlinks(blocks) {
@@ -843,7 +843,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', defaultTabsXml+(stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
-    { name: 'word/styles.xml', data: buildStylesXml(blocks) },
+    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },

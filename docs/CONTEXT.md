@@ -1,3 +1,55 @@
+## 2026-10-06 — book notes legacy and plain-source correction checkpoint
+
+Final amendment01 correction HOLD13: final serial focused128of128 pass with
+zero fail/cancel/skip/todo (Main28, notes22, mixed33, atomic transaction45).
+The first mandatory whole Main is retained as FAIL251of266,15 failures; focused
+green does not supersede that failed denominator. Its14 clean-book publication
+regressions are corrected by selecting the composed gate from the authenticated
+LOCAL schema2 pending binding. Valid plain source(version1, no envelope issue)
+has a read-only paragraph projection only after rawSHA/identity validation in
+Main and independent Core re-derivation. Untouched plain Beta stays byte-exact
+through actual Main Apply/reopen/UndoRedo/second exchange; malformed typed input,
+stale raw source and copied forged after refuse with precise domain codes and
+full no-write evidence. Canonical rich note bodies/geometry and all guards remain.
+Runtime413of900 and behavior373of1300; exact25-path aggregate scope. Fresh final
+controlled public export04 and canonical expectations are immutable externally.
+No Word edit, native changed exchange, capture, TCC change or new dependency.
+Next required proof: fresh independent XML and whole Main/broader exact gates,
+then safe native SOURCE/PACKAGED proof and full delivery; original novel release
+and100k/five genuine Word exchanges remain OPEN.
+
+## 2026-10-06 — book notes semantic closure amendment01
+
+WORD_BOOK_PENDING_NOTES_MAC_20261006 remains one open delivery contour.
+Clean checkpoint e714e9b17b0338ee8ce6b4cf200465c5289d6a93: writer105 actual
+focused tests and full promotion37 pass; inventory1597 VALID and guardrails pass.
+A fresh real SOURCE export exposes undeclared note styles. Actual ZIP bold/red
+hardBreak mutation produces equal parsed notes: missing semantic field is proven.
+Clean25-path amendment preflight admits only two note emitter seams and the
+existing parser's note-only read-only break projection. Strict source/local
+emission expectations and all stale/lease/cohort guards remain; no global font
+or locale default inference. Native changed Word/picker/Apply proof is open:
+System Events UI elements enabled=false, no Word edit executed. Owned SOURCE
+app exited normally code0/no signal via exact-PID AppKit; controller exit1 is
+retained as diagnostic failure. Protected business bytes unchanged; saved owned
+Word synthetic document retained, foreign documents untouched. Full novel100k,
+five genuine exchanges, three roles and original Mac release denominator open.
+
+Amendment01 writer HOLD13: final serial pinned Node22 suites pass108of108
+(pending-notes22, mixed-return33, transaction45, selected actual Main8), with
+zero fail/cancel/skip/todo. Independent fresh actual-Main DOCX XML observation
+resolves all four emitted note style identities and reads the full ten-paragraph
+book/four-note graph; this is controlled publication evidence, not genuine Word
+exchange acceptance. Exact frozen13 source/test hashes are external. System
+Events UI authorization is false; existing Hammerspoon authorization is true,
+but three bounded exact-PID keyboard close requests had no observed effect.
+That loop stopped. A separately resolved native Word DocClose command also
+returned without closing the saved owned fixture; cause remains UNKNOWN.
+No Word edit, TCC change, capture or force quit occurred. Native SOURCE/PACKAGED
+changed-save/Cancel/Apply/restart proof and all release denominators remain open.
+Next: exact companion freeze, whole affected suites and stable checkpoint,
+then resolve native automation using changed evidence rather than blind replay.
+
 ## 2026-10-06 — atomic book return with notes declared
 
 Active task WORD_BOOK_PENDING_NOTES_MAC_20261006 starts from exact merged

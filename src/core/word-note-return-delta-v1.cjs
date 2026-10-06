@@ -239,6 +239,32 @@ function equivalentCompleteBody(expected, actual, defaults) {
   return stable(completeBodyMeaning(expected, defaults)) === stable(completeBodyMeaning(actual, defaults));
 }
 
+// Independently reconstruct the closed LOCAL note emission, never the returned
+// parser's defaults. A type-only hardBreak emits no run properties; only the
+// authenticated 12pt document default applies. Paragraph-mark language does
+// not propagate into note runs in this emitter.
+function localBookNoteBreakProjection(body, emission) {
+  need(stable(emission)===stable({schemaVersion:1,fontSize:'12pt'}),'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  const rows=model.validateNoteBody(body).paragraphs,breaks=[];
+  rows.forEach(({paragraph},paragraphIndex)=>{
+    let offset=0;
+    for(const node of paragraph.content||[]) {
+      if(node.type==='image')continue;
+      const text=node.type==='hardBreak'?'\n':node.text;
+      const marks=node.type==='text'?(node.marks||[]):[],style=marks.find(mark=>mark.type==='textStyle')?.attrs||{};
+      const enabled=marks.filter(mark=>['bold','italic','underline','strike'].includes(mark.type)).map(mark=>mark.type).sort();
+      const size=style.fontSize||emission.fontSize,format={marks:enabled,boldCs:enabled.includes('bold'),italicCs:enabled.includes('italic'),forceCs:false,rtl:false,
+        fontSize:size,fontSizeCs:size,...(style.fontFamily?{fontSlots:Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(slot=>[slot,style.fontFamily]))}:{}),
+        ...(style.color?{color:style.color.toLowerCase()}:{}),...(style.wordLanguage?{wordLanguage:clone(style.wordLanguage)}:{}),
+        ...(marks.some(mark=>mark.type==='highlight')?{highlight:marks.find(mark=>mark.type==='highlight').attrs.color.toLowerCase()}:{}),
+        ...(marks.some(mark=>mark.type==='link')?{href:marks.find(mark=>mark.type==='link').attrs.href}: {})};
+      for(let at=text.indexOf('\n');at!==-1;at=text.indexOf('\n',at+1))breaks.push({paragraphIndex,offsetUtf16:offset+at,kind:'line',format:clone(format)});
+      offset+=text.length;
+    }
+  });
+  return {schemaVersion:1,paragraphCount:rows.length,textSha256:model.sha(rows.map(({paragraph})=>(paragraph.content||[]).map(node=>node.type==='hardBreak'?'\n':node.type==='image'?'':node.text).join('')).join('\n')),breaks};
+}
+
 // Full signed-map occurrence bijection precedes any scene-local binding. The
 // two arrays retain parser occurrence order, including colocated references.
 function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMap, scenes, returnedNotes, returnedReferences, unionReferences }) {
@@ -283,6 +309,7 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
     const matches = returnedNotes.map((note, index) => ({ note, index })).filter(item => item.note.transportIdentity === binding.transportIdentity);
     need(matches.length === 1 && !used.has(matches[0].index), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { note: returned, index } = matches[0]; used.add(index);
+    need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(note.manuscript.body,baseline.breakEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     need(returned.kind === binding.kind && equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography), 'PENDING_NOTE_BODY_CHANGED');
     need(blocks[returned.paragraphIndex]?.sceneId === binding.sceneId
       && unionReferences[index]?.kind === returned.kind
