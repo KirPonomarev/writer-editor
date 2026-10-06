@@ -18,11 +18,13 @@ const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', native
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 // Shared owned fixture, loaded without registering this file's tests by the
 // other two contracts. Every expected point/text below is a literal oracle.
-async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null } = {}) {
+async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null, includeCodeBlock = false } = {}) {
   const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
   const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
   const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
   const beforeDocs=[d(p('AxxB tail')),d(p('Control Beta')),pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('oldnew tail')),[event(1,'delete',0,3),event(2,'insert',3,6)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:8}])];
+  const codeBlock={type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'const answer = 42;'}]};
+  if(includeCodeBlock)beforeDocs[0].content.push(plain(codeBlock));
   if(authoredRunLanguage)beforeDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);for(const node of (old?value.source:value).content[0].content)if(node.type==='text')node.marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:plain(authoredRunLanguage)}}];beforeDocs[i]=old?pending.bindLedger(value):value;});
   if(bodyParagraphAttrs)beforeDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);(old?value.source:value).content[0].attrs=plain(bodyParagraphAttrs);beforeDocs[i]=old?pending.bindLedger(value):value;});
   const body=bodyOverride||d({type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},content:[
@@ -46,11 +48,13 @@ async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = fa
   const afterDocs=[pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!AxxB tail')),[{...event(3,'insert',0,1),author:'Word editor'},{...event(4,'delete',2,4),author:'Word editor'}])),
     [{noteId:'note-left',paragraphIndex:0,offsetUtf16:2},{noteId:'note-right',paragraphIndex:0,offsetUtf16:4}]),beforeDocs[1],
     pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!oldnew tail')),[{...event(3,'insert',0,1),author:'Word editor'},event(1,'delete',1,4),event(2,'insert',4,7)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:9}])];
+  if(includeCodeBlock){const value=plain(pending.readLedger(afterDocs[0]));value.source.content.push(plain(codeBlock));afterDocs[0]=pending.bindLedger(value);}
   if(authoredRunLanguage)afterDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);for(const node of (old?value.source:value).content[0].content)if(node.type==='text')node.marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:plain(authoredRunLanguage)}}];afterDocs[i]=old?pending.bindLedger(value):value;});
   if(bodyParagraphAttrs)afterDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);(old?value.source:value).content[0].attrs=plain(bodyParagraphAttrs);afterDocs[i]=old?pending.bindLedger(value):value;});
   const afterNotes=plain(document),afterOffsets=[2,2,2,6],current=['!AB tail','Control Beta','!new tail'];
+  if(includeCodeBlock)current[0]+='\nconst answer = 42;';
   afterNotes.notes.forEach((n,i)=>{n.manuscript.reference.offsetUtf16=afterOffsets[i];n.manuscript.reference.sourceTextSha256=hash(current[owners[i]]);});
-  const afterState=plain(state);afterState.threads[0].anchor=exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'tail'},ids[0],[current[0]]);
+  const afterState=plain(state);afterState.threads[0].anchor=exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'tail'},ids[0],current[0].split('\n'));
   afterState.threads[2].anchor=exactAnchor({paragraphIndex:0,startUtf16:2,selectedText:'e'},ids[2],[current[2]]);
   afterState.threads[1].messages.push({commentId:'foreign-reply',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'}});
   afterState.threads[2].messages.push({commentId:'gamma-reply',kind:'reply',body:'Gamma reply retained',provenance:{author:'Word editor'}});

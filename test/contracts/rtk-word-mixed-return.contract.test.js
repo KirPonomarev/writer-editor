@@ -89,6 +89,27 @@ test('v3 book transport keeps authored absent and partial body fields through pa
  proof.returnedScenes[0].ledger.source.content[0].attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}};
  assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
 });
+test('v3 notes and discussions preserve unchanged codeBlock through changed text while its original typed format guard rejects actual ZIP mutations',async()=>{
+ const f=await notesBookFixture({includeCodeBlock:true}),model=require('../../src/core/word-pending-comment-return-v1.cjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+ const input={beforeText:f.beforeText,projectId:f.document.projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)},result=model.planMixedBookReturn(input);
+ const code={type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'const answer = 42;'}]},doc=envelope.parseObservablePayload(result.scenes[0].content).doc;
+ assert.deepEqual(review.readLedger(doc).source.content[1],code);assert.equal(review.projection(doc).current,'!AB tail\nconst answer = 42;');
+ assert.equal(result.scenes[1].content,f.scenes[1].beforeContent);assert.equal(JSON.parse(result.afterText).threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
+ assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,f.beforeDocs[0]);
+ const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,codeParagraph=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)][1][0];
+ assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);assert.doesNotMatch(codeParagraph,/<w:spacing\b|<w:lang\b/u);
+ const parse=xml=>f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data}))),
+  exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),retainPendingScenes:true,
+  documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest});
+ // The existing code model owns fixed typography and syntax language. Run
+ // proofing language has no representation here; it is not a claimed invariant.
+ for(const property of ['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>','<w:sz w:val="28"/>']){
+  const changed=codeParagraph.replace('<w:r>','<w:r><w:rPr>'+property+'</w:rPr>');assert.notEqual(changed,codeParagraph);
+  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+ }
+ const forged=structuredClone(f.proof);forged.returnedScenes[0].ledger.source.content[1].attrs.language='python';
+ assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
+});
 test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
  const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
  const style=attrs=>[{type:'textStyle',attrs}],edited={fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'en-GB'}};

@@ -512,6 +512,96 @@ exchanges or final delivery. Whole-run checkpoint04 process qualification
 remains unresolved despite all3613 tests passing. Native and full gates follow
 on a clean independently frozen checkpoint; no self-PASS or scope expansion.
 
+
+Amendment06 — preserve the existing codeBlock typed law
+
+Same task,26-file contour and rollback; current clean pushed checkpoint
+a1a8c2e79679086d92cc031dbd062b35125eccbf. Same-scope architecture preflight
+passes on that exact base before this task edit. Full ordered startup reads
+already completed in this continuing task; no validated context cache claim.
+Exact whole affected proof executes353 with352pass1fail,zero cancel/skip/todo.
+Both independent CI RTK jobs execute3617 with3616pass1fail and the same failure;
+retain all logs. They are failed gates, not passing counts.
+
+O: Original comment-only reply with a protected note retains every scene byte,
+manifest and note byte while appending the authenticated discussion reply.
+T: Current signed source -> independent Core mapping -> existing Main admission,
+Kernel revalidation, lease and original atomic comment-only writer. No new port.
+H: Actual source/return Alpha paragraph24 is an unchanged codeBlock; parser
+keeps its typed law and omits generic spacing/language. Version3 generic pPr
+comparison nevertheless expects full body defaults and refuses before write.
+Predicted observation: omit only version3 body defaults for codeBlock emission
+and Main expectation; use existing codeBlock comparison/emission unchanged.
+The original unmodified positive comment-only contract passes, with unchanged
+code semantics; real altered code language/font/style or topology still refuse.
+B: Preserve authored source fields, all rich notes, complete graphs, legacy v1/v2,
+codeBlock type/language and all existing guards; no broad reader normalization,
+generic ignore, parser/test gate weakening or fixture replacement.
+P: Original failing contract, focused codeBlock negative regressions, whole
+notes/mixed/Main/atomic, all mandatory original graph/baseline/OPS/CI and fresh
+native Word gates. I: a1a8c2e, current task/branch/26paths, exact readonly
+source/return/signed paragraph diagnosis retained externally.
+
+Root authorizes separate writer only in existing builder body pPr selection,
+Core deriveMixedPendingDocument body-default application, Main read-only
+publication expectation, and existing three test files for meaningful typed
+regressions. Version3/non-codeBlock restriction must be consistent at all
+three seams; no source mutation or unsupported formatting acceptance.
+Root validates this updated contract with E0 before writer edits. Runtime and
+behavior budgets remain900 and1300. Whole novel and native acceptance remain
+OPEN. SOURCE07 public export passed complete independent short oracle; Word
+count query timed out before open. All6seed files remain exact, own application
+exited0 normally after the bounded quit-observation timeout. Same existing
+Word returned16.112/documents0 after ordinary foreground activation; this
+observation does not certify an imported return or prove a general cause.
+
+
+Amendment06 exact second seam and diagnosis correction, same26-file authority:
+The original Main positive now reaches strict comment proof but refuses clean
+scene p0/p1: v3 source-authored absent paragraph fields versus exact declared
+export spacing0/0/240auto and en-US mark/run language. No actual semantic edit.
+Root read Main6570-6740, existing complete Core book-note binder, mixed mapper,
+comment-only planner/atomic writer and publication transport reconstruction.
+
+Root admits only the existing Main authenticated v3 whole-book comment-only
+seam to fresh complete note binding and independent per-scene mixed derivation.
+All scenes and original signed raw hashes/layouts are required. Reject any
+changed result before reconstructing a read-only prior emitted transport clone;
+schema2 uses only existing commentTransportSegments, schema1 stays unchanged.
+Original strict clean/signed-pending, full discussion graph, Kernel, source CAS,
+lease and original comment-only atomic writer remain mandatory. Fresh canonical
+note sourceText must match at every existing prepublication revalidation; dirty
+note authoring must refuse. No original source/body mutation or generic ignore.
+Non-v3 routes remain byte-equivalent. Exact positive Apply/replay preserve all
+scene/manifest/note bytes; negatives cover genuine changed text/style/note
+meaning/geometry and note conflict during prewrite revalidation.
+
+Actual independently isolated Arial all4slots and sz28 mutations both refuse
+DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED. The earlier generic property-loop failure
+was the new ru-FI run-proofing-language assertion, not an Arial gap. Existing
+code nodes intentionally do not represent run proofing-language; this contour
+adds no parser law and makes no lossless claim for it. Authored code syntax
+language and original font/size/style law remain protected. Retain all failed
+logs and corrected member-level diagnosis. Whole notes/mixed60of60 now pass.
+
+Before first amendment06 edit, clean a1a8 preflight02 already passed the same
+26paths and existing Main/read-only Core integration authority. A redundant
+mid-edit amended-description preflight refused its expected dirty tree; retain
+that failure and do not count it as passing or reroute to a different canon.
+This is progressive diagnosis within that admitted contour, not a new scope.
+Root checks E0 for this precise second-seam task contract before writer edits,
+then revalidates declaration on the next clean checkpoint before native work.
+
+Amendment06 writer terminal HOLD on exact current runtime/test bytes:
+whole notes/mixed60of60 and selected actual Main12of12, exit0, no skipped/todo
+or cancelled. Root independently verified source hashes, full TAP denominators
+and retained logs. Original protected-note reply Apply/replay passed unchanged.
+Fresh complete note binding and unchanged-only derivation precede strict prior
+transport proof; actual already checked quote/list indentation is retained only
+in its read-only expectation clone. Genuine changes and note/unsaved-note races
+refuse without writes. Aggregate runtime648of900, behavior664of1300.
+Full official graph/baseline/native/CI/merge are separate OPEN gates.
+
 ## IMPLEMENTATION_STEPS
 
 Root owns contract, declaration/E0, OPS, proof and full delivery. Separate code

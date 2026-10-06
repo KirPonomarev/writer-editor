@@ -3195,3 +3195,42 @@ for(const area of ['note','story'])test(area==='note'?'actual Main pending full 
   {allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{replay=value;}});
  assert.equal(reopened.ok,true,JSON.stringify(reopened));assert.ok(replay);assert.equal((await replay.apply()).status,'replayed');assert.deepEqual(x.f.capture(),before);
 });
+
+async function protectedNoteCommentFixture(t, tamper=null) {
+ return pendingCommentMainFixture(t,{tamper,beforeExport:async({f,paths,sceneIds})=>{
+  const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Protected note kept'}]}]};
+  const manuscript=notes.bindManuscriptPayload({kind:'footnote',body,sceneId:sceneIds[1],offsetUtf16:2,sceneContent:read(paths[1])});
+  const storage=await import('../../src/core/notesStorage.mjs');
+  const value=storage.normalizeNotesDocument({schemaVersion:1,projectId:f.query.projectId,notes:[{id:'protected-beta-note',scope:'manuscript',body:'Protected note kept',manuscript}]},
+   {projectId:f.query.projectId,now:()=> '2026-10-05T12:00:00Z'});
+  fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify(value.value));
+ }});
+}
+for(const change of ['text','font','spacing','quote indent','list continuation indent','note'])test(`v3 original comment-only Main refuses changed ${change} without writes`,async t=>{
+ const x=await protectedNoteCommentFixture(t,parts=>{
+  if(change==='note'){const before=parts['word/footnotes.xml'];parts['word/footnotes.xml']=before.replace('Protected note kept','Protected note changed');assert.notEqual(parts['word/footnotes.xml'],before);return;}
+  const paragraphs=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].map(match=>match[0]);
+  const original=change==='quote indent'?paragraphs.find(p=>p.includes('[quote] Authored quotation.'))
+   :change==='list continuation indent'?paragraphs.find(p=>p.includes('List continuation retained')):paragraphs[0];
+  const changed=change==='text'?original.replace('Body text sentinel alpha.','Body text sentinel alpha changed.')
+   :change==='font'?original.replaceAll('Times New Roman','Georgia')
+   :change==='spacing'?original.replace('w:after="0"','w:after="120"'):original.replace('w:left="720"','w:left="1080"');
+  assert.notEqual(changed,original,'actual owned Word property changed');parts['word/document.xml']=parts['word/document.xml'].replace(original,changed);
+ });
+ if(change==='note'){
+  assert.equal(x.activated.activated,false,JSON.stringify(x.activated));assert.equal(x.activated.pendingProductPath?.status,'blocked');
+  assert.equal(x.activated.pendingProductPath.code,'PENDING_NOTE_BREAK_CHANGED');
+ }else assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
+ assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);
+});
+for(const boundary of ['notes bytes','unsaved note'])test(`v3 original comment-only Main refuses stale ${boundary} at Apply without writes`,async t=>{
+ const x=await protectedNoteCommentFixture(t);assert.equal(x.activated.commentProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+ if(boundary==='notes bytes')fs.appendFileSync(path.join(x.f.root,'notes.craftsman.json'),' ');
+ else{
+  const query=await x.f.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(query.root,'Gamma');assert.ok(node);
+  mountRenderer(x.f,()=>read(x.third),0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId,manuscriptNoteAuthoringPending:true}));
+  x.f.probe.state({filePath:x.third});
+ }
+ const before=x.f.capture();await assert.rejects(x.prepared.apply(),boundary==='notes bytes'?/NOTE_RETURN_BASELINE_CONFLICT/u:/COMMENT_RETURN_EDITOR_STALE/u);
+ assert.deepEqual(x.f.capture(),before);
+});

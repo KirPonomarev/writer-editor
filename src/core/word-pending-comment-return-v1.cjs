@@ -167,7 +167,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
         const value=!oldFormat&&returnedFormat&&!equal(returnedFormat.format.before.attrs?.[key],returnedFormat.format.after.attrs?.[key])
           ?returnedFormat.format.before.attrs?.[key]:actual.attrs?.[key];
-        if(bodyEmission){
+        if(bodyEmission&&sourceParagraphs[p].type!=='codeBlock'){
           const expected={...bodyEmission[key],...sourceParagraphs[p].attrs?.[key]};
           const effective=key==='wordParagraphSpacing'?{before:0,after:0,...value}:value;
           need(equal(expected,effective),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');

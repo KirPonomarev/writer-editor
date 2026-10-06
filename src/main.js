@@ -1220,6 +1220,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             // Core has independently validated the complete local v3 profile.
             // Rebuild its emitted pPr only in this read-only expectation clone.
             if(scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+              if(paragraph.type==='codeBlock')return;
               if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
                 (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
               paragraph.attrs={...paragraph.attrs};
@@ -6566,12 +6567,13 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
-async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge) {
+async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge, bookContext = null) {
   const scenes = capsule?.exportMap?.scenes;
   const signedScenes = scenes?.filter(scene => scene.pendingCommentBinding);
   if (!signedScenes?.length) return null;
   if (capsule.exportMapAuthority !== 'main-owned-active-export-authority-store-after-return-authentication'
     || capsule.returnedArtifactExportMapAccepted !== false) throw Error('COMMENT_RETURN_AUTHORITY_REQUIRED');
+  const v3Book = scenes.length > 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 3;
   const envelope = await loadDocumentContentEnvelopeModule();
   const baselineDocuments = scenes.map(scene => {
     const raw = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
@@ -6589,16 +6591,57 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
     // Authenticated local capsule and every signed source hash were checked
     // above. This read-only permit retains the exact bounded inactive-default
     // predicate; mixed semantic changes still require the complete book proof.
-    allowInactiveDefaultTabEmission: true });
+    allowInactiveDefaultTabEmission: true,...(v3Book?{retainPendingScenes:true}:{}) });
   if (parsed?.ok !== true || !Array.isArray(parsed.scenes) || parsed.scenes.length !== scenes.length)
     throw Error(parsed?.code || 'PENDING_COMMENT_RETURN_DOCUMENT_REQUIRED');
   const pending = require('./core/word-pending-text-revisions-v1.cjs'), seen = new Set(), result = [];
+  let noteBindings;
+  if (v3Book) {
+    if (!bookContext) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
+    const cryptoPort = createRtkReviewTransportCryptoPort();
+    const readback = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:docxBytes},{cryptoPort});
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+    if (!readback.ok || !preview.ok) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
+    noteBindings = require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({
+      document:bookContext.notesDocument,projectId:capsule.commentExport.projectId,baseline:capsule.documentNotes,
+      exportMap:capsule.exportMap,scenes:baselineDocuments.map((scene,index)=>({...scene,returnedDocument:parsed.scenes[index].returnedDocument})),
+      returnedNotes:revisionBridge.parseDocumentNotesRichReturn(docxBytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:readback.reviewIr.documentNotes.references,
+      unionReferences:preview.contentPreview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
+  }
   for (const scene of scenes) {
     const rows = parsed.scenes.filter(item => item.sceneId === scene.sceneId);
     if (rows.length !== 1 || seen.has(scene.sceneId)) throw Error('PENDING_COMMENT_RETURN_SCENE_BINDING');
     seen.add(scene.sceneId);
     const document = baselineDocuments.find(item => item.sceneId === scene.sceneId).document;
-    const returnedDocument = rows[0].returnedDocument;
+    let returnedDocument = rows[0].returnedDocument;
+    if (v3Book) {
+      const paragraphs = scene.blocks.map(block=>block.formatIr.paragraph);
+      const anchors = bookContext.commentState.threads.filter(thread=>thread.sceneId===scene.sceneId&&thread.status!=='deleted')
+        .map(thread=>({threadId:thread.threadId,anchor:thread.anchor}));
+      const derived = require('./core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
+        document,returnedDocument,binding:scene.pendingCommentBinding,anchors,exportTypography:capsule.exportMap.exportTypography,
+        exportParagraphs:paragraphs,cleanTransportSchemaVersion:1,allowUntrackedRichFormatting:true,
+        noteBinding:noteBindings.find(binding=>binding.sceneId===scene.sceneId)});
+      if (derived.changed) throw Error('PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED');
+      // Core proved the complete actual v3 transport unchanged. Reconstruct
+      // only the prior signed comment transport on a canonical read-only clone.
+      const emitted = cloneJsonSafe(pending.readLedger(derived.document));
+      const checkedLeaves = pending.paragraphs(derived.projection.union);
+      pending.paragraphs(emitted.source).forEach((paragraph,index)=>{
+        const indent = checkedLeaves[index].attrs?.wordParagraphIndent;
+        if (paragraph.attrs?.wordParagraphIndent === undefined && indent !== undefined)
+          paragraph.attrs={...paragraph.attrs,wordParagraphIndent:cloneJsonSafe(indent)};
+      });
+      if (scene.pendingCommentBinding?.schemaVersion === 2) {
+        const leaves = pending.paragraphs(emitted.source);
+        leaves.forEach((paragraph,index)=>{paragraph.content=pending.commentTransportSegments(
+          (paragraph.content||[]).map(node=>({node,revision:null})),paragraph).map(segment=>segment.node);});
+        emitted.revisions=emitted.revisions.map(revision=>pending.commentTransportSegments(
+          [{node:{type:'text',text:'x'},revision}],leaves[revision.paragraphIndex])[0].revision);
+      }
+      returnedDocument = scene.pendingCommentBinding ? pending.bindLedger(emitted) : emitted.source;
+    }
     if (scene.pendingCommentBinding) result.push({ sceneId: scene.sceneId, document, returnedDocument });
     else {
       // Reuse the same strict three-projection law with an ephemeral empty
@@ -6651,7 +6694,17 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
         signedDigest: intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest });
       if (!noteProof.ok) throw rejected('PENDING_COMMENT_RETURN_NOTES_CHANGED');
     }
-    const pendingScenes = await buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge);
+    let notesContext, notesBefore;
+    const v3Book = capsule.exportMap?.scenes?.length > 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 3;
+    if (v3Book) {
+      notesContext = await getProjectNotesContext({projectId:context.projectId},{readOnlyActive:true});
+      if (!notesContext.ok || notesContext.projectRoot !== context.projectRoot) throw rejected('NOTE_RETURN_PROJECT_MISMATCH');
+      notesBefore = await readProjectNotesDocument(notesContext);
+      if (!notesBefore.ok) throw rejected(notesBefore.reason);
+    }
+    const bookBefore = v3Book ? await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId}) : null;
+    const pendingScenes = await buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge,
+      v3Book ? {notesDocument:notesBefore.current.document,commentState:require('./core/word-comment-authoring-v1.cjs').readState(bookBefore.text,context.projectId)} : null);
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
@@ -6667,6 +6720,10 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     };
     const revalidateScenes = async () => {
       checkIdentity();
+      if (v3Book) {
+        const fresh = await readProjectNotesDocument(notesContext);
+        if (!fresh.ok || fresh.current.sourceText !== notesBefore.current.sourceText) throw rejected('NOTE_RETURN_BASELINE_CONFLICT');
+      }
       const root = await fs.realpath(context.projectRoot);
       const scenes = capsule.exportMap?.scenes;
       if (!Array.isArray(scenes) || !scenes.length) throw rejected('COMMENT_RETURN_SCENES_REQUIRED');
@@ -6690,14 +6747,15 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       }
       if (openRaw === null) throw rejected('COMMENT_RETURN_OPEN_SCENE_REQUIRED');
       const snapshot = await requestEditorSnapshot();
-      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true) throw rejected('COMMENT_RETURN_EDITOR_STALE');
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true
+        || (v3Book && snapshot.manuscriptNoteAuthoringPending === true)) throw rejected('COMMENT_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
       if (live.issue || saved.issue || !module.commentSceneSnapshotsEqual(live.doc || live.text, saved.doc || saved.text)) throw rejected('COMMENT_SAVE_SCENE_FIRST');
       checkIdentity();
     };
     await revalidateScenes();
-    const before = await module.readCommentAuthoringState(input);
+    const before = bookBefore || await module.readCommentAuthoringState(input);
     const plan = module.planCommentReturnDelta({ ...input, beforeText: before.text });
     checkIdentity();
     let consumed = false;

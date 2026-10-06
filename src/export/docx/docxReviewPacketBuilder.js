@@ -427,7 +427,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(effectiveLayout));
   // notePackageParts validates the complete local versioned profile before
   // document emission. These transport fields never enter canonical formatIR.
-  const bodyDefaults = documentNotes?.breakEmission?.schemaVersion === 3 ? documentNotes.breakEmission.bodyParagraphDefaults : null;
+  const bodyDefaults = documentNotes?.breakEmission?.schemaVersion === 3 && paragraphLayout.nodeType !== 'codeBlock' ? documentNotes.breakEmission.bodyParagraphDefaults : null;
   const spacing = bodyDefaults ? { ...bodyDefaults.wordParagraphSpacing, ...paragraphLayout.wordParagraphSpacing } : paragraphLayout.wordParagraphSpacing;
   const language = bodyDefaults ? { ...bodyDefaults.wordParagraphMarkLanguage, ...paragraphLayout.wordParagraphMarkLanguage } : paragraphLayout.wordParagraphMarkLanguage;
   paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(spacing));
