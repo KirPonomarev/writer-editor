@@ -265,12 +265,18 @@ test('Pending rich export binds cell preferred widths to the retained grid inclu
   }
 });
 
-test('Native pending confirmation names all canonical paragraph leaves without exposing container objects', async () => {
+test('Bounded pending confirmation names all canonical paragraph leaves without exposing container objects', async () => {
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const start = main.indexOf('function describeLocalWordPendingReturn(');
   let shown;
-  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, pendingTextRevisions: model,
-    dialog: { showMessageBox: async (_window, options) => { shown = options; return { response: 1 }; } } });
+  const parent = { isDestroyed: () => false }, BrowserWindow = function OwnedConfirmationWindow() {}, screen = {};
+  const context = vm.createContext({ mainWindow: parent, pendingTextRevisions: model, BrowserWindow, screen,
+    dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_CONFIRMATION_FALLBACK'); } },
+    confirmWordReturn: async (request, adapter) => {
+      assert.equal(request.parent, parent);
+      assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      shown = request; return true;
+    } });
   vm.runInContext(main.slice(start, main.indexOf('async function confirmLocalWordNoteDelta(', start)), context);
   const doc = fixture();
   assert.equal(await context.confirmLocalWordPendingReturn({ fileName: 'review.docx', changes: { before: doc, after: doc } }), true);

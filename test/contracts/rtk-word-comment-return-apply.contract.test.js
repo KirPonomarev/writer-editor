@@ -14,30 +14,46 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const { execFileSync } = require('node:child_process');
   const root = path.resolve(__dirname, '../..');
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
-  const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options });
+  const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_REVIEW_SELECTION_IDENTITY_SUCCESSOR;
+  const current = cert.R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR;
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);
   assert.equal(result.cellAcceptanceAuthority, false);
+  assert.deepEqual(result.bindings, current.bindings);
   for (const binding of [...current.bindings, ...current.guards]) {
-    const mutate = (args, options) => args[0] === 'show' && args[1] === candidate + ':' + binding.path
-      ? Buffer.concat([git(args, options), Buffer.from('\nchanged-after-admission')]) : git(args, options);
+    let mutated = false;
+    const mutate = (args, options) => {
+      if (args[0] === 'show' && args[1] === candidate + ':' + binding.path) {
+        mutated = true;
+        return Buffer.concat([git(args, options), Buffer.from('\nchanged-after-admission')]);
+      }
+      return git(args, options);
+    };
     assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: mutate }),
       /E_INTEROP_WORD_PROMOTION_PIN/);
+    assert.equal(mutated, true, 'corruption must execute for ' + binding.path);
   }
-  const mixed = (args, options) => args[0] === 'show' && args[1] === candidate + ':' + current.guards[0].path
-    ? git(['show', 'c00d33d2ceee761e391eb742c98a68f629d355d8:' + current.guards[0].path], options)
-    : git(args, options);
+  let mixedRead = false;
+  const mixed = (args, options) => {
+    if (args[0] === 'show' && args[1] === candidate + ':' + current.guards[0].path) {
+      mixedRead = true;
+      return git(['show', 'c00d33d2ceee761e391eb742c98a68f629d355d8:' + current.guards[0].path], options);
+    }
+    return git(args, options);
+  };
   assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: mixed }),
     /E_INTEROP_WORD_PROMOTION_PIN/);
+  assert.equal(mixedRead, true, 'mixed predecessor bytes must execute');
+  let ancestryChecked = false;
   const unrelated = (args, options) => {
-    if (args[0] === 'merge-base') throw new Error('unrelated candidate');
+    if (args[0] === 'merge-base') { ancestryChecked = true; throw new Error('unrelated candidate'); }
     return git(args, options);
   };
   assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: unrelated }),
     /E_INTEROP_WORD_TABLES_ANCESTRY/);
+  assert.equal(ancestryChecked, true, 'ancestry rejection must execute');
 });
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);

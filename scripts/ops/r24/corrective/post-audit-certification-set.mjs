@@ -2965,13 +2965,13 @@ export const R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
-      "sha256": "54b4c348fb039f5a75ff25eed22ca1068de3359e4d635a4132b83c63cef683b5"
+      "sha256": "704805f3549b4ab0c8d6b585290220de24669e3f89c1709a6ddbdd0d2c53e3ad"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "18477445f59af349138b30595345533d553ff3a92ffccda4dd697cf41c964f08"
+      "sha256": "3b4f1093ec06022a31fa51c4329a82499c1ab7d530d41c8735e15b44405fa512"
     }
   ]
 });

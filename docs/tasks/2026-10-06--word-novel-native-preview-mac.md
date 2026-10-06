@@ -78,6 +78,8 @@ focused semantic and safety contracts. The former prepared worktree is preserved
 - `test/contracts/rtk-word-pending-return-runtime.contract.test.js`
 - `test/contracts/rtk-word-return-confirmation.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `test/contracts/rtk-word-pending-rich-blocks.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/tasks/2026-10-06--word-novel-native-preview-mac.md`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
@@ -302,3 +304,14 @@ Clean exact-base19-path scope amendment and current E0 precede the fixture
 repair. Observe the new adapter request and explicit boolean response while
 retaining every no-write Cancel, semantic, atomic Apply, replay and Undo check.
 No native fallback, disabled assertion or production authority change is allowed.
+
+FULL_RTK_FAILURE_CHECKPOINT: frozen e83e23478c9e6213f0dd2a7e65cbb7df56965c68
+passed3580 of3582 maintained cases with0skip/todo. One remaining rich-block
+preview VM fixture omitted the new confirmation port. The admission contract's
+custom Git adapter kept Node's default1MiB buffer, below the current1,672,503-byte
+Main binding; the production verifier's bounded64MiB adapter admits the exact
+candidate. This RTK run remains FAIL. Clean exact-base21-path preflight and
+current E0 precede both fixture repairs. Retain all paragraph-leaf assertions;
+use the production-equivalent bounded Git read and mutate every current
+successor binding and guard, preserving mixed-byte and ancestry rejection.
+The repository verifier predicates, runtime authority and source remain unchanged.

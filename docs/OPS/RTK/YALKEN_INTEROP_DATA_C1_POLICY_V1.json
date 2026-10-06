@@ -1583,7 +1583,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "670186d43d4493335a25df98841b94fb82f12895cdde719cf7d1663625f30407"
+        "sha256": "3565c9b4b7b164fe8bb7b2018d241e6623382977093b90af0b38d1919efdfff9"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1767,7 +1767,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-        "sha256": "505cce4077cb342027cea9fc76e3f5d24404b79c39dab101b2530b2b51ac6fc3"
+        "sha256": "cc3f1cebd281e0e549007533bdecabd875e8ebbaa4862f8fcd07bcecd70186d6"
       },
       {
         "path": "test/contracts/rtk-word-pending-moves.contract.test.js",
@@ -2711,7 +2711,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
-        "sha256": "54b4c348fb039f5a75ff25eed22ca1068de3359e4d635a4132b83c63cef683b5"
+        "sha256": "704805f3549b4ab0c8d6b585290220de24669e3f89c1709a6ddbdd0d2c53e3ad"
       },
       {
         "path": "src/main/wordReturnConfirmation.cjs",
