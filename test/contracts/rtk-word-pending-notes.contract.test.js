@@ -317,16 +317,21 @@ async function decode(bytes, source, h) {
   assert.equal(plan.ok, true, JSON.stringify(plan));
   return { bridge, analysis, preview, doc: envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc };
 }
-test('source points distinguish both deletion boundaries across round undo, decisions, restart and Core note cohort', () => {
+test('source points distinguish both deletion boundaries across round undo, decisions, restart and Core note cohort', async () => {
   const original = d(p('AxxB')), beforeNotes = notesFor(original, [1, 3]);
   const points = beforeNotes.notes.map((n, i) => ({ noteId: n.id, paragraphIndex: 0, offsetUtf16: [1, 3][i] }));
   const before = pending.bindNoteSourcePoints(original, points);
   const incoming = pending.bindNoteSourcePoints(pending.bindLedger(ledger(original, [revision(1, 3)])), points);
-  let doc = pending.replaceFromReturn(before, incoming, { roundId: 'round-a', artifactSha256: 'a'.repeat(64) }).doc;
+  const receipt={roundId:'round-a',artifactSha256:'a'.repeat(64)},producer=await sourceHarness(envelope.composeObservablePayload({doc:original}),beforeNotes),source=await producer.run();
+  const proof={schemaVersion:1,projectId,sceneId,baseline:source.documentNotes,exportMap:source.localAuthorityCapsule.exportMap,returnedDoc:incoming,receipt,
+    returnedNotes:source.documentNotes.sourceBindings.map(binding=>({kind:binding.kind,transportIdentity:binding.transportIdentity,body:binding.richBody,paragraphIndex:0,offsetUtf16:binding.offsetUtf16})),
+    unionReferences:points.map((point,i)=>({kind:beforeNotes.notes[i].manuscript.kind,paragraphIndex:0,offsetUtf16:point.offsetUtf16}))};
+  let doc = pending.replaceFromReturn(before, incoming, receipt).doc;
   let previous = original, state = beforeNotes;
   const observe = expected => {
     const beforeContent = envelope.composeObservablePayload({ doc: previous }), afterContent = envelope.composeObservablePayload({ doc });
-    const cohort = notes.planManuscriptNoteAnchorSave({ beforeText: JSON.stringify(state), projectId, sceneId, beforeContent, afterContent });
+    const cohort = notes.planManuscriptNoteAnchorSave({ beforeText: JSON.stringify(state), projectId, sceneId, beforeContent, afterContent,
+      ...(previous===original?{pendingNoteReturnProofJson:JSON.stringify(proof)}:{}) });
     if (cohort) { notes.validateNoteCohort(cohort, { projectId, sceneId, beforeContent, afterContent }); state = JSON.parse(cohort.afterText); }
     assert.deepEqual(state.notes.map(n => n.manuscript.reference.offsetUtf16), expected);
     assert.deepEqual(state.notes.map(n => n.manuscript.body), beforeNotes.notes.map(n => n.manuscript.body));
@@ -389,6 +394,7 @@ async function runtimeFixture(t, insertion = false) {
   h.context = () => ({...oldContext(), projectId});
   Object.assign(h.c, {
     require:createRequire(require.resolve('../../src/main.js')),
+    manuscriptNoteModel:notes,
     notesStateDigest:require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest,
     readCommentAuthoringContext:async()=>h.context(),
     loadNotesStorageModule:async()=>({readNotesStorage:async()=>({ok:true,document:JSON.parse(fs.readFileSync(notePath,'utf8')),sourceExists:true,sourceText:fs.readFileSync(notePath,'utf8')})}),
@@ -422,10 +428,12 @@ async function runtimeFixture(t, insertion = false) {
     if(h.race)h.race(); await options.beforeScenePublish();
     const beforeText=fs.readFileSync(notePath,'utf8'), expectedManifestContent=fs.readFileSync(manifestPath,'utf8');
     const revision=JSON.parse(expectedManifestContent).revision+1;
-    const noteState=notes.planManuscriptNoteAnchorSave({beforeText,projectId,sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content});
+    const noteState=notes.planManuscriptNoteAnchorSave({beforeText,projectId,sceneId:'roman/a.txt',beforeContent:options.expectedSceneContent,afterContent:content,
+      ...(options.pendingNoteReturnProofJson!==undefined?{pendingNoteReturnProofJson:options.pendingNoteReturnProofJson}:{})});
     const request={scenePath:target,manifestPath,sceneContent:content,expectedSceneContent:options.expectedSceneContent,
       expectedManifestContent,manifestContent:JSON.stringify({...JSON.parse(expectedManifestContent),revision}),revision,noteState,publishManifest};
     h.lastRequest=request;
+    if(h.mutateRequest)h.mutateRequest(request);
     const adapter=h.failNotePublish?{...fs.promises,rename:async(a,b)=>{if(b===notePath)throw Error('INJECTED_NOTE_PUBLICATION_FAILURE');return fs.promises.rename(a,b);}}:fs.promises;
     await tx.commitProjectTransaction({...request,fsAdapter:adapter});h.writes++;
     return {success:true,projectTransaction:true};
@@ -461,6 +469,37 @@ test('actual atomic writer rollback and stale note CAS never publish a partial p
     }else{assert.equal(fs.readFileSync(h.file,'utf8'),before[0]);assert.equal(fs.readFileSync(h.manifestPath,'utf8'),before[2]);}
   }
 });
+for(const attack of ['omitted','malformed','extra','foreignProject','foreignScene','baselineDigest','foreignRoster','noteBody','source','point','receipt','history','afterLedger','beforeSource','staleNotes'])
+ test(`authenticated single-scene note return atomic ${attack} refuses with all business bytes retained`,async t=>{
+  const h=await runtimeFixture(t,true);assert.equal((await h.prepare()).status,'preview-ready');
+  const files=[h.file,h.notePath,h.manifestPath],before=files.map(file=>fs.readFileSync(file,'utf8'));
+  h.mutateRequest=request=>{
+   assert.equal(typeof request.noteState.pendingNoteReturnProofJson,'string');
+   if(attack==='omitted'){delete request.noteState.pendingNoteReturnProofJson;return;}
+   if(attack==='malformed'){request.noteState.pendingNoteReturnProofJson='{';return;}
+   if(attack==='staleNotes'){fs.writeFileSync(h.notePath,before[1]+' ');return;}
+   if(attack==='beforeSource'){request.expectedSceneContent+=' ';return;}
+   if(attack==='history'||attack==='afterLedger'){
+    const ledger=plain(pending.readLedger(envelope.parseObservablePayload(request.sceneContent).doc));
+    if(attack==='history')ledger.returnReceipts=[];else ledger.revisions[0].author='Forged author';
+    request.sceneContent=envelope.composeObservablePayload({doc:pending.bindLedger(ledger)});return;
+   }
+   const proof=JSON.parse(request.noteState.pendingNoteReturnProofJson);
+   if(attack==='extra')proof.authority=true;
+   if(attack==='foreignProject')proof.projectId='foreign';if(attack==='foreignScene')proof.sceneId='roman/foreign.txt';
+   if(attack==='baselineDigest')proof.baseline.stateDigest='sha256:'+'0'.repeat(64);
+   if(attack==='foreignRoster')proof.baseline.sourceBindings[0].noteId='foreign';
+   if(attack==='noteBody')proof.returnedNotes[0].body.content[0].content[0].text='Forged body';
+   if(attack==='source'){
+    const ledger=plain(pending.readLedger(proof.returnedDoc));ledger.source.content[0].content.at(-1).text+='X';proof.returnedDoc=pending.bindLedger(ledger);
+   }
+   if(attack==='point')proof.unionReferences[0].offsetUtf16++;
+   if(attack==='receipt')proof.receipt.artifactSha256='b'.repeat(64);
+   request.noteState.pendingNoteReturnProofJson=JSON.stringify(proof);
+  };
+  await assert.rejects(h.prepared.apply(),attack==='staleNotes'?/NOTE_CAS/:/NOTE_STATE/);assert.equal(h.writes,0);
+  assert.deepEqual(files.map(file=>fs.readFileSync(file,'utf8')),[before[0],attack==='staleNotes'?before[1]+' ':before[1],before[2]]);
+ });
 
 test('source-point projection preserves disjoint edits across nested, repeated, empty and Unicode leaves for every decision combination',()=>{
   const c=(...content)=>({type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content});

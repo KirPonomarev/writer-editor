@@ -3142,7 +3142,7 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "fa55511f412f1f245e6cb7bcbfa668b5c7067ab7e7ae48fe84e7e584d6b51f14"
+      "sha256": "cb0b81199e61d2b289e7557929a6a6242dd67b05ff2729a8bc384ff6809beea8"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -3178,7 +3178,7 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "b4d7f2b1a3c0463d352d9a408b69f618b81ec99e426b9dd835c8f77d80a73400"
+      "sha256": "37ef78e5f1496e7f07fe4494967646f58880aa86983a647f1bf35e8c6557906b"
     },
     {
       "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -3194,7 +3194,7 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "7eca952137646f9baeed63c81e2f933fd6acd7e073830543be92cd9bf53586d4"
+      "sha256": "c504e00fe1409c9452f9204dbc8c6cf64bb63e44f5501fd617cd3bb8769195d9"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -3210,7 +3210,7 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/word-manuscript-notes-v1.cjs",
-      "sha256": "7bec1014cad14b61aa52b6d9346f21c75a1bb846be7c8fa63ff4c16c3a62fa77"
+      "sha256": "1198403cba29ba22fca2364c39e9825daefbbffdb695d59829af726265ff6768"
     },
     {
       "path": "src/core/word-pending-text-revisions-v1.cjs",
@@ -3230,21 +3230,21 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "02f8d8f76d0f6399ddc2a4de73f9ae29aa616959ef41de2bf204ec6fc787f1e2"
+      "sha256": "2ad1bef7be1dfce6a4fa3b40c7a5a210752cb6149cda735dc89a5e1bcce8d8a2"
     },
     {
       "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
-      "sha256": "09d0b16509f6d9f0c6f9c946e89ad6fed6088729510a5916b19368aa94c28337"
+      "sha256": "3e0615f26f691b8faefe4c3b298e51b2addc090229218721b151fcb7f17a6698"
     },
     {
       "path": "docs/tasks/2026-10-06--word-recording-notes-mac.md",
-      "sha256": "432f29b4b041822914d2f20bfa0f144b15ac41dba20637919ed13d2915bf0d23"
+      "sha256": "d21d7400a9b1605af27216ec829ab4e196a94cd6a93bb992f81df2d5944e3804"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "12d428a80a1e92657e181bf197fd7b6bafcb2b089818a24afb66588766b20382"
+      "sha256": "de1fc0de65b988cbf5b850d61426a0d9777436c6995d19cb33ecb947769f66b9"
     }
   ]
 });

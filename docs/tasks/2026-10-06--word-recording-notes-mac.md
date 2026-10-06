@@ -45,13 +45,25 @@ binding/replacement, because that route cannot provide a comment return proof.
 No native build/run or full gates have executed for this task. A clean same-task
 checkpoint precedes a validated bounded semantic amendment; no delivery claim.
 
+Amendment01 freeze: actual whole six suites157/157 and legacy compatibility
+three suites77/77, zero skip/todo/cancel; latter includes pure Node5x100k plus
+five Undo/Redo, not physical Word. Missing-proof MODE source/point/history
+forgeries now refuse; genuine single-scene return/decisions and new proof-bearing
+journals pass. Root independently verified all11 source/log hashes and TAP.
+Required predecessor-journal recovery regression is OPEN: c799-admitted genuine
+first-binding MODE at JOURNAL/COMMIT fails current parseJournal validation
+without any writes; exact predecessor recovers full OLD/NEW business bytes.
+Do not ship or claim no decoder downgrade at this incomplete checkpoint.
+Runtime147/700 and behavior392/1100; all retained failures preserved. A clean
+same-task checkpoint and validated recovery-seam amendment must come next.
+
 One bounded existing-seam authoring repair with strict source-point geometry,
 Main-held recording/save admission and real atomic persistence proofs. Root
 owns this contract, factual docs, exact-byte OPS companions and delivery;
 a separate code agent owns declared runtime/behavior tests. No new writer,
 registry, schema family, dependency, IPC channel or visual surface.
 
-Diff budget:23 explicit paths; runtime maximum700 added/deleted lines;
+Diff budget:24 explicit paths; runtime maximum700 added/deleted lines;
 behavior tests maximum1100 added/deleted lines. No unrelated reformat/refactor.
 Unused allowed paths need not change. Any additional seam requires clean
 checkpoint and validated scope amendment before its first edit.
@@ -70,6 +82,7 @@ checkpoint and validated scope amendment before its first edit.
 - `test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js`
 - `test/contracts/rtk-word-pending-notes.contract.test.js`
 - `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
@@ -138,6 +151,36 @@ the session's expectation; foreign updates must not become a silent overwrite.
 Complete note bodies and other metadata remain byte/meaning exact. Existing
 annotation and edit-intent provenance checks are retained, including saved
 prefixes, Undo/Redo inverse steps and repeated-text occurrence identity.
+
+Semantic amendment01, clean checkpoint cc32f657fce254c6f82cf71dda21cb9119982295:
+original delivery base c799 is unchanged. Clean24-path declaration02 preflight
+passed before amendment edits. Runtime five paths and behavior six paths retain
+the original finite budgets. Root additionally owns the mechanical ordinary
+Word Apply successor-tuple selector in rtk-word-comment-return-apply.contract.test.js;
+all its corruption, mixed-byte and ancestry checks remain strict.
+
+At the MODE atomic boundary, omission of recording proof must not admit new
+union-source text or forged note source points. Without a proof, reconstruct
+only exact existing Core accept/reject/all, Undo/Redo including round history,
+or no-op results. Do not accept state-only similarity, receipt/nativeId hints,
+arbitrary source matching or caller flags as authority.
+
+Preserve genuine single-scene authenticated pending-note returns and their
+first source binding. Main captures bounded closed ephemeral inputs only after
+existing authenticated intake: exact baseline/full notes/export map, returned
+note bodies and union references, returned document, receipt and paragraph
+bindings. At the existing atomic note cohort, independently replay existing
+bindUnchangedPendingNotes and replaceFromReturn against canonical before/after.
+No new durable schema family, writer, command, network or schema downgrade.
+Use source/note CAS and existing private admission, capability and lease guards.
+
+Required negatives: omitted and malformed proof; forged source or points with
+unchanged Current text; foreign project/scene/full note roster; stale before
+source/notes; altered receipt/history and replay; complete after-ledger mismatch.
+Actual transaction must refuse without business writes. Positives include
+old single-scene return, first binding, all decisions and round Undo/Redo,
+schema3/schema5 compatibility, serial recording saves and readable recovery.
+Never weaken previous guards to make the new proof pass.
 
 FEATURE_INTEGRATION_MANIFEST_V1:
 

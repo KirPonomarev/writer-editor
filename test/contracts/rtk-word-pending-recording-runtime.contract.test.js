@@ -354,3 +354,45 @@ test('failed stop with notes retains active recording and exact buffer; owned re
  h.writeFailure=false;assert.equal((await h.command('stop')).ok,true);assert.equal(model.projection(h.context().parsed.doc).current,'A!B tail');
  assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.filter(n=>n.manuscript).map(n=>n.manuscript.reference.offsetUtf16),[2,2]);
 });
+for(const forgedPoint of [false,true]) test(`atomic note MODE omitted proof ${forgedPoint?'with forged coincident source point':'with new recording source'} refuses without writes`,async t=>{
+ const h=await harness(t);addBoundNotes(h,false);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ const snapshot=await h.capture(),before=business(h),working=h.editor,real=h.c.commitProjectTransaction;
+ h.c.commitProjectTransaction=async args=>{
+  const noteState=structuredClone(args.noteState);delete noteState.recordingProofJson;
+  let sceneContent=args.sceneContent;
+  if(forgedPoint){const ledger=structuredClone(model.readLedger(envelope.parseObservablePayload(sceneContent).doc));ledger.noteSourcePoints[0].offsetUtf16=1;
+   sceneContent=envelope.composeObservablePayload({doc:model.bindLedger(ledger)});
+   const raw=notesModel.planManuscriptNoteAnchorSave({beforeText:noteState.beforeText,projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:args.expectedSceneContent,afterContent:sceneContent});
+   noteState.afterText=raw.afterText;
+  }
+  return real({...args,sceneContent,noteState});
+ };
+ const result=await h.commit(snapshot);assert.equal(result.success,false,JSON.stringify(result));assert.match(JSON.stringify(result),/NOTE_STATE/);
+ assert.equal(h.writes,0);assert.deepEqual(business(h),before);assert.equal(h.editor,working);assert.equal(h.c.isDirty,true);
+});
+test('atomic no-proof note MODE reconstructs complete Core decisions and source-changing round UndoRedo; forged history refuses',async t=>{
+ const h=await harness(t),seed=addBoundNotes(h,false,5);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ assert.equal((await h.save()).success,true);h.intents=intents('A!B tail');assert.equal((await h.command('stop')).ok,true);
+ const commit=async(next,mutate=null)=>{
+  const beforeContent=fs.readFileSync(h.file,'utf8'),beforeText=fs.readFileSync(h.notePath,'utf8'),afterContent=envelope.composeObservablePayload({doc:next});
+  const noteState=notesModel.planManuscriptNoteAnchorSave({beforeText,projectId:'recording-project',sceneId:'roman/a.txt',beforeContent,afterContent,includeUnchanged:true});
+  const beforeManifest=fs.readFileSync(h.manifest,'utf8'),request={scenePath:h.file,manifestPath:h.manifest,expectedSceneContent:beforeContent,sceneContent:afterContent,
+   expectedManifestContent:beforeManifest,manifestContent:beforeManifest,revision:1,noteState,
+   publishManifest:async({manifestPath,expectedText,nextText,revision})=>{assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);await durableSaveTransaction({filePath:manifestPath,content:nextText,revision});}};
+  if(mutate)mutate(request);return tx.commitProjectTransaction(request);
+ };
+ const current=()=>envelope.parseObservablePayload(fs.readFileSync(h.file,'utf8')).doc;
+ for(const input of [{action:'accept',revisionId:'revision-1'},{action:'undo'},{action:'reject',revisionId:'revision-1'},{action:'undo'},
+  {action:'rejectAll'},{action:'undo'},{action:'redo'},{action:'undo'},{action:'acceptAll'},{action:'undo'},{action:'undo'},{action:'redo'}]){
+  const next=model.decide(current(),input).doc;await commit(next);assert.deepEqual(current(),next);
+  assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(seed.document));
+ }
+ await commit(current()); // Explicit unchanged MODE is exact, without fresh return history.
+ const before=business(h),forged=structuredClone(model.readLedger(current()));forged.returnReceipts.push({roundId:'forged',artifactSha256:'f'.repeat(64)});
+ await assert.rejects(commit(model.bindLedger(forged)),/NOTE_STATE/);assert.deepEqual(business(h),before);
+ const swapped=structuredClone(model.readLedger(current()));swapped.noteSourcePoints[0].offsetUtf16=1;
+ await assert.rejects(commit(model.bindLedger(swapped)),/NOTE_STATE/);assert.deepEqual(business(h),before);
+ const hidden=structuredClone(model.readLedger(current())),owner=hidden.source.content[0].content.find(node=>node.text.includes('xx'));assert.ok(owner);owner.text=owner.text.replace('xx','zz');
+ const changedSource=model.bindLedger(hidden);assert.equal(model.projection(changedSource).current,model.projection(current()).current);
+ await assert.rejects(commit(changedSource),/NOTE_STATE/);assert.deepEqual(business(h),before);
+});

@@ -6313,17 +6313,24 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       const originalProof = revisionBridge.validateShiftedCellReturnOriginalV1(current.parsed.doc, incoming.doc);
       if (!originalProof.ok) throw Error(originalProof.code);
     }
-    let beforeDoc = current.parsed.doc, returnedDoc = incoming.doc, notesDigest = null;
+    let beforeDoc = current.parsed.doc, returnedDoc = incoming.doc, notesDigest = null, pendingNoteReturnProofJson;
     const notesStorage = await loadNotesStorageModule();
     const notesState = await notesStorage.readNotesStorage({ projectRoot: current.projectRoot, projectId: current.projectId }); check();
     if (!notesState.ok) throw Error('PENDING_RETURN_NOTES_UNAVAILABLE');
     const activeNotes = notesState.document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
     if (!replay && (activeNotes.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)) {
-      const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes({
+      const noteReplay = {
         document: notesState.document, projectId: current.projectId, sceneId, baseline: capsule.documentNotes,
         exportMap: capsule.exportMap, beforeDoc, returnedDoc,
         returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
-        unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references });
+        unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references };
+      const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes(noteReplay);
+      pendingNoteReturnProofJson = JSON.stringify({ schemaVersion: 1, projectId: current.projectId, sceneId,
+        baseline: noteReplay.baseline, exportMap: noteReplay.exportMap, returnedDoc: noteReplay.returnedDoc,
+        returnedNotes: noteReplay.returnedNotes, unionReferences: noteReplay.unionReferences, receipt,
+        paragraphBindings: mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
+          ? mapped.paragraphBindings : undefined) });
+      if (Buffer.byteLength(pendingNoteReturnProofJson) > 8 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
       beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
     }
     notesDigest = notesStateDigest(notesState.document);
@@ -6359,7 +6366,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       consumed = true; check();
       const payload = { action: 'authenticated-pending-return', projectId: current.projectId,
         sceneId, subjectId: current.subjectId, expectedSceneSha256: current.sceneSha256 };
-      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest, mixedPlan });
+      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest, mixedPlan, pendingNoteReturnProofJson });
       let result;
       try { result = await dispatchMenuCommand('cmd.project.review.decidePendingRevision', payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedPendingReturnAdmissions.delete(payload); }
@@ -23880,6 +23887,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               beforeText: notes.sourceExists ? notes.sourceText : null, projectId: prepared.projectId,
               sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
               beforeContent: expectedSceneContent, afterContent: content,
+              ...(options.pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson: options.pendingNoteReturnProofJson } : {}),
               ...(recordingAdmission?.session.noteRecording ? { recordingProofJson: recordingAdmission.recordingProofJson } : {}) });
           }
           if(options.commentTextReturnPlan) {
@@ -26004,6 +26012,7 @@ async function handlePendingRevisionCommand(payload = {}) {
       const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
         'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true,
           ...(admission?.mixedPlan ? {pendingCommentReturnProofJson:admission.mixedPlan.returnProofJson}:{}),
+          ...(admission?.pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson: admission.pendingNoteReturnProofJson } : {}),
           ...(!admission && hasDecisionComments ? { pendingCommentDecision: { action: payload.action,
             ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) } } : {}) });
       if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });

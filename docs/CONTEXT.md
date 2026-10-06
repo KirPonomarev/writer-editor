@@ -1,3 +1,24 @@
+## 2026-10-06 — writer notes amendment01 incomplete recovery checkpoint
+
+WORD_RECORDING_NOTES_MAC_20261006 remains TARGET, not delivered. Clean cc32
+checkpoint admitted bounded amendment01 with declaration02/E0. Exact frozen
+six assigned whole suites157/157 and three legacy compatibility whole suites
+77/77 executed without skip/todo/cancel; the latter contains controlled pure
+Node five100k exchanges and five round Undo/Redo, not physical Word evidence.
+Source-point/source/history omission and private single-scene return replay
+checks pass. Root verified all11 source and retained log hashes/full TAP.
+
+Required regression found: exact c799-admitted first-binding note journals at
+JOURNAL and COMMIT fail current recovery with NOTE_PENDING_TRANSITION_PROOF_REQUIRED
+before writes. Exact predecessor recovery succeeds on identical retained bytes;
+root independently compared complete scene/manifest/notes and failed no-write
+state. parseJournal reuses new fresh-admission transition validation. Do not
+ship this checkpoint or claim backwards recovery compatibility. All source
+edits/lane held; a clean checkpoint and validated same-task recovery amendment
+must precede touching the existing transaction seam. Fresh native, complete
+mandatory gates/CI/delivery and original full Mac novel denominator remain OPEN.
+No production crash/native old profile/AX/TCC/dependency changes or cleanup.
+
 ## 2026-10-06 — PR2091 delivered; source-bound note recording in progress
 
 The book-return contour is closed: candidate a4c2db3dec02e43b951cf25000a44abf505038b0,
