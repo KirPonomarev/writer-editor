@@ -1,3 +1,105 @@
+## 2026-10-06 — book notes legacy and plain-source correction checkpoint
+
+## 2026-10-06 — book-note checkpoint02 and one stale successor contract
+
+Clean ee28a379 checkpoint: whole Main271of271 and promotion37of37 pass; fresh
+SOURCE02 and ordinary PACKAGED02 actual public exports are independently
+checked for full text, pending metadata, discussion bodies, four rich notes and
+all reference geometry; six business files remain byte-exact, both owned apps
+exit normally. This is export-only evidence. Genuine changed Word return is
+OPEN: native close/save commands fail; no Word edit or real chooser/Apply ran.
+Draft PR2091 is pushed and attached; no merge or full novel release claim.
+Official unmodified RTK01 fails3609of3610 with one stale prior successor tuple
+in ordinary Apply corruption contract, not a demonstrated runtime defect.
+Clean checkpoint26-path amendment02 preflight passed before adding that exact
+existing test seam. Retain all typed corruption/mixed-byte/ancestry negatives
+and pin that test in the current19-member tuple. Retain historical failed logs.
+Same contour and original full macOS novel plan; no new runtime/UI/dependency.
+
+CI checkpoint02 retains two actual failures: strict governance rejects stale
+cross-file approval bytes, and broad baseline stops at doctor exit1. The
+committed primary PK1R1 has stale C2A and Interop100 rows; Interop100 also has
+a stale primary back-reference. Preserve all approval/history records and
+refresh in the existing delivered order C2A, Interop100, then primary PK1R1.
+Every primary row must bind final actual bytes. The historical mutual
+back-reference is not acceptance authority; neither evaluator nor strict gates
+change. Do not claim both recursive registries are simultaneously current.
+The separate writer changed only the successor constant; all19 ordinary Apply
+tests pass provisionally with no skipped/todo cases and original13 hashes
+unchanged. Root must freeze19 bindings and rerun the real committed candidate.
+
+Final amendment01 correction HOLD13: final serial focused128of128 pass with
+zero fail/cancel/skip/todo (Main28, notes22, mixed33, atomic transaction45).
+The first mandatory whole Main is retained as FAIL251of266,15 failures; focused
+green does not supersede that failed denominator. Its14 clean-book publication
+regressions are corrected by selecting the composed gate from the authenticated
+LOCAL schema2 pending binding. Valid plain source(version1, no envelope issue)
+has a read-only paragraph projection only after rawSHA/identity validation in
+Main and independent Core re-derivation. Untouched plain Beta stays byte-exact
+through actual Main Apply/reopen/UndoRedo/second exchange; malformed typed input,
+stale raw source and copied forged after refuse with precise domain codes and
+full no-write evidence. Canonical rich note bodies/geometry and all guards remain.
+Runtime413of900 and behavior373of1300; exact25-path aggregate scope. Fresh final
+controlled public export04 and canonical expectations are immutable externally.
+No Word edit, native changed exchange, capture, TCC change or new dependency.
+Next required proof: fresh independent XML and whole Main/broader exact gates,
+then safe native SOURCE/PACKAGED proof and full delivery; original novel release
+and100k/five genuine Word exchanges remain OPEN.
+
+## 2026-10-06 — book notes semantic closure amendment01
+
+WORD_BOOK_PENDING_NOTES_MAC_20261006 remains one open delivery contour.
+Clean checkpoint e714e9b17b0338ee8ce6b4cf200465c5289d6a93: writer105 actual
+focused tests and full promotion37 pass; inventory1597 VALID and guardrails pass.
+A fresh real SOURCE export exposes undeclared note styles. Actual ZIP bold/red
+hardBreak mutation produces equal parsed notes: missing semantic field is proven.
+Clean25-path amendment preflight admits only two note emitter seams and the
+existing parser's note-only read-only break projection. Strict source/local
+emission expectations and all stale/lease/cohort guards remain; no global font
+or locale default inference. Native changed Word/picker/Apply proof is open:
+System Events UI elements enabled=false, no Word edit executed. Owned SOURCE
+app exited normally code0/no signal via exact-PID AppKit; controller exit1 is
+retained as diagnostic failure. Protected business bytes unchanged; saved owned
+Word synthetic document retained, foreign documents untouched. Full novel100k,
+five genuine exchanges, three roles and original Mac release denominator open.
+
+Amendment01 writer HOLD13: final serial pinned Node22 suites pass108of108
+(pending-notes22, mixed-return33, transaction45, selected actual Main8), with
+zero fail/cancel/skip/todo. Independent fresh actual-Main DOCX XML observation
+resolves all four emitted note style identities and reads the full ten-paragraph
+book/four-note graph; this is controlled publication evidence, not genuine Word
+exchange acceptance. Exact frozen13 source/test hashes are external. System
+Events UI authorization is false; existing Hammerspoon authorization is true,
+but three bounded exact-PID keyboard close requests had no observed effect.
+That loop stopped. A separately resolved native Word DocClose command also
+returned without closing the saved owned fixture; cause remains UNKNOWN.
+No Word edit, TCC change, capture or force quit occurred. Native SOURCE/PACKAGED
+changed-save/Cancel/Apply/restart proof and all release denominators remain open.
+Next: exact companion freeze, whole affected suites and stable checkpoint,
+then resolve native automation using changed evidence rather than blind replay.
+
+## 2026-10-06 — atomic book return with notes declared
+
+Active task WORD_BOOK_PENDING_NOTES_MAC_20261006 starts from exact merged
+5d0c5865280684bcd9ce287d138a9200c40eb054. Owner requests full autonomous Mac
+novel exchange for writer/editor/proofreader; original denominator unchanged.
+PR2090 confirmation-only chain is closed at that merge: CI19/19, exact candidate
+official default RTK3593/3593 and exact merged affected151/151, all zero skipped/
+todo; actual Main hidden choice6/6. This is bounded confirmation proof only.
+
+Fresh verified T7 and clean isolated branch, full actual initial startup reads,
+22-path preflight and E0 precede this new code dispatch. One outcome: signed
+multi-scene insert/delete plus full discussion graph and unchanged foot/endnotes
+through one existing atomic cohort. Source occurrence mapping, full rich note
+body (including paragraph/break fields), independent comment re-derivation,
+provisional/final DOCX self-parse and notes recovery remain required. No new
+writer/parser/UI/dependency. Separate code writer owns six runtime/four behavior
+tests; root owns OPS/proof/delivery. Short genuine SOURCE/PACKAGED native exchange
+comes before final broad gates. Old native import/pending100k/giant alert/AX/CUA/
+capture/machine failure replay forbidden; controlled owned Node journal recovery
+is a distinct required proof. Full100k/five genuine exchanges, named styles and
+other original Mac requirements remain OPEN; target is not live yet.
+
 ## 2026-10-06 — autonomous macOS novel release direction resumed
 
 The owner explicitly requests autonomous completion of the agreed large-novel
@@ -1076,3 +1178,27 @@ PR2088 remains DRAFT on checkpointc8e3e8be2e66f3da4f465fed4dd186dfdabc505b. Its 
 ### 2026-10-06 — novel book frozen07 native routes complete; delivery open
 
 Frozen40F legal paragraph-mark export now survives a genuine third Word save. SOURCE07:2affected owners, Cancel/Apply all3canonicalrich scenes+wholegraph independently checked,12native UndoRedo checkpoints across3rounds, same-profile controlled restart, fullreexport4900778c opened in Word. Ordinary PACKAGED07 WRITER_LOCAL_V1 without collaboration flags: ownexport→genuineWordsave8eb1fe15→Cancel/Apply,8UndoRedo checkpoints across2rounds, restart, fullreexport3fd4d9d8 opened in Word.5discussion messages retained. Existing Comments rail exposes local decisions; genericReview entry still routes to Inspector and navigator counts refresh only after restart. All owned native processes stopped. Short183/181word fixtures do not certify100k, nativeimport,5successive novel exchanges or full Mac plan. Compound paragraph-mark+structural single-event export and implicit run-language binding remain typed/open limitations. Full frozen07 mandatory gates, ordinary tree-preserving main integration, PR2088 CI/merge/merged verification NEXT; c8 RTK3515 green predates40F. Original binding0612 fixed, original fullplan denominator unchanged.
+
+## 2026-10-06 — book-note amendment07 reexport candidate
+
+SOURCE09 genuine Word16.112 changed-save completed actual public Cancel and
+Apply; independent complete Current/Original, four rich notes/references and
+full saved discussion graph/single-event input history match. SOURCE10 same
+profile restart, Alpha accept/reject and UndoRedo preserve those meanings.
+Both owned children exit normally code0. Actual SOURCE09 reexport failed: only
+two native replacement group occurrences differ; all other source fields, note
+points and both complete comment graphs match. Retain failed receipt.
+
+Clean b12426-path preflight and root task E0 precede amendment07 writer.
+Main predicts existing emitted adjacent opposite-operation grouping only in
+the independently source-owned v3 publication expectation projection. Canonical
+IDs, independent decisions, undo/redo rows and all strict comparisons stay.
+Final focused10of10 zero fail/cancel/skip/todo;24 actual ZIP mutants refuse
+without writes. Actual Core accept-to-Undo yields divergent redo states and
+actual Main read-only both-phase export passes. Original non-injected immutable
+SOURCE09 build passes both full note/comment phases with all six business
+bytes exact. Root independently checked all8hashes, complete TAP and receipts.
+Runtime688of900, behavior765of1300. Retained fixture/recovery failures remain
+failed. Fresh native both origins, public Gamma decisions, full affected and
+mandatory gates, CI and final delivery remain OPEN at this checkpoint.
+Original100k/five-genuine-exchange/three-role Mac novel denominator unchanged.

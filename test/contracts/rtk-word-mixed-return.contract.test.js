@@ -10,6 +10,106 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
+async function notesBookFixture(options) {
+ const file=require('node:path').join(__dirname,'rtk-word-pending-notes.contract.test.js'),module={exports:{}};
+ const code=require('node:fs').readFileSync(file,'utf8').split("\ntest('complete book note law")[0]+'\nmodule.exports={composedBookFixture};';
+ new Function('require','module','__dirname',code)(require('node:module').createRequire(file),module,__dirname);
+ return module.exports.composedBookFixture(null,options);
+}
+test('book schema4 independently derives new source points and the complete foreign reply graph without caller after state',async()=>{
+ const f=await notesBookFixture(),model=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const input={beforeText:f.beforeText,projectId:f.document.projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)},result=model.planMixedBookReturn(input);
+ assert.equal(result.scenes[1].content,f.scenes[1].beforeContent,'control owner stays byte exact');
+ for(const [index,original] of [[0,'AxxB tail'],[2,'old tail']]) {
+  const doc=envelope.parseObservablePayload(result.scenes[index].content).doc;
+  assert.equal(review.projection(doc).current,f.current[index]);assert.equal(review.projection(doc).original,original);
+  assert.deepEqual(review.readLedger(doc).noteSourcePoints.map(p=>p.offsetUtf16),index===0?[2,4]:[9]);
+  assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,review.readLedger(f.beforeDocs[index])?.source||f.beforeDocs[index]);
+  assert.deepEqual(review.decide(review.decide(doc,{action:'undo'}).doc,{action:'redo'}).doc,doc);
+ }
+ const graph=JSON.parse(result.afterText);assert.equal(graph.threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
+ assert.equal(graph.threads.find(t=>t.threadId==='thread-2').messages.at(-1).body,'Gamma reply retained');
+ const comment=require('../../src/core/word-comment-return-delta-v1.cjs'),mixed=f.scenes.map((scene,i)=>({sceneId:scene.sceneId,document:f.beforeDocs[i],returnedDocument:review.bindLedger(f.proof.returnedScenes[i].ledger)}));
+ assert.equal(comment.planCommentReturnDelta({...f.proof,beforeText:f.beforeText,notesText:f.notesText,mixedPendingScenes:mixed}).afterText,result.afterText);
+ for(const alter of [p=>p.schemaVersion=3,p=>delete p.noteContext.returnedReferences,p=>p.noteContext.callerAfter=f.afterNotes,
+  p=>p.noteContext.unionReferences[0].offsetUtf16++,p=>p.noteContext.returnedNotes[0].body.content[0].attrs.wordParagraphSpacing.after++,
+  p=>p.returnedScenes[0].ledger.noteSourcePoints=[{noteId:'note-left',paragraphIndex:0,offsetUtf16:3}]]) {
+  const proof=structuredClone(f.proof);alter(proof);assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proof)}),/PENDING_|MIXED_RETURN_|NOTE_/u,String(alter));
+ }
+ const stale=JSON.parse(f.notesText);stale.notes[0].manuscript.reference.offsetUtf16++;
+ assert.throws(()=>comment.planCommentReturnDelta({...f.proof,beforeText:f.beforeText,notesText:JSON.stringify(stale),mixedPendingScenes:mixed}),/PENDING_NOTE_BASELINE_CONFLICT/u);
+});
+test('v3 book transport keeps authored absent and partial body fields through parsed changed ZIP, Undo and strict semantic refusals',async()=>{
+ const model=require('../../src/core/word-pending-comment-return-v1.cjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+ for(const attrs of [null,{wordParagraphSpacing:{after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},
+  {wordParagraphSpacing:{before:100,after:120,line:280,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}]){
+  const f=await notesBookFixture({bodyParagraphAttrs:attrs}),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>').replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+  const proofFor=changed=>{
+   const bytes=buildStoredZip(Object.entries(changed).map(([name,data])=>({name,data}))),parsed=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,
+    exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),retainPendingScenes:true,
+    documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest});
+   assert.equal(parsed.ok,true,JSON.stringify(parsed));const proof=structuredClone(f.proof);
+   proof.returnedScenes=parsed.scenes.map(s=>({sceneId:s.sceneId,ledger:review.readLedger(s.returnedDocument)}));
+   const analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:value=>'sha256:'+sha(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)}});
+   assert.equal(analysis.ok,true,JSON.stringify(analysis));const preview=f.bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true);
+   proof.noteContext.returnedNotes=f.bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true});
+   proof.noteContext.returnedReferences=analysis.reviewIr.documentNotes.references;proof.noteContext.unionReferences=preview.contentPreview.pendingNoteReferences;return proof;
+  };
+  const input={beforeText:f.beforeText,projectId:f.document.projectId,scenes:f.scenes,notesText:f.notesText},proof=proofFor(parts);
+  const result=model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proof)});
+  for(const i of [0,2]){
+   const doc=envelope.parseObservablePayload(result.scenes[i].content).doc,ledger=review.readLedger(doc);
+   assert.deepEqual(ledger.source.content[0].attrs,attrs||undefined);
+   assert.equal(review.projection(doc).current,f.current[i]);
+   assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,review.readLedger(f.beforeDocs[i])?.source||f.beforeDocs[i]);
+  }
+  assert.equal(result.scenes[1].content,f.scenes[1].beforeContent);
+  for(const [from,to] of [['w:line="'+(attrs?.wordParagraphSpacing.line||240)+'"','w:line="278"'],['w:after="'+(attrs?120:0)+'"','w:after="161"'],['w:bidi="'+(attrs?.wordParagraphMarkLanguage.bidi||'en-US')+'"','w:bidi="ar-SA"']]){
+   const changed={...parts,'word/document.xml':parts['word/document.xml'].replace(from,to)};assert.notEqual(changed['word/document.xml'],parts['word/document.xml']);
+   assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proofFor(changed))}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
+  }
+  for(const [field,value] of [['val','ru-FI'],['bidi','ar-SA']]){
+   let changedRun=false;const xml=parts['word/document.xml'].replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>{
+    if(changedRun||!/<w:t\b[^>]*>A<\/w:t>/u.test(run))return run;changedRun=true;
+    if(/<w:lang\b/u.test(run))return run.replace(/<w:lang\b[^>]*\/>/u,tag=>tag.includes('w:'+field+'=')?tag.replace(new RegExp('w:'+field+'="[^"]*"','u'),'w:'+field+'="'+value+'"'):tag.replace('/>',' w:'+field+'="'+value+'"/>'));
+    const properties='<w:lang w:'+field+'="'+value+'"/>';return run.includes('</w:rPr>')?run.replace('</w:rPr>',properties+'</w:rPr>'):run.replace('<w:r>','<w:r><w:rPr>'+properties+'</w:rPr>');
+   });assert.equal(changedRun,true);assert.notEqual(xml,parts['word/document.xml']);
+   assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proofFor({...parts,'word/document.xml':xml}))}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
+  }
+  const zero={...parts,'word/document.xml':parts['word/document.xml'].replaceAll(' w:before="0"','')};
+  const unchanged=model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proofFor(zero))});assert.deepEqual(unchanged,result);
+ }
+ const explicit=await notesBookFixture({bodyParagraphAttrs:{wordParagraphMarkLanguage:{val:'ru-RU'}},authoredRunLanguage:{val:'he-IL'}});
+ const preserved=model.planMixedBookReturn({beforeText:explicit.beforeText,projectId:explicit.document.projectId,scenes:explicit.scenes,notesText:explicit.notesText,returnProofJson:JSON.stringify(explicit.proof)});
+ for(const i of [0,2])for(const node of review.readLedger(envelope.parseObservablePayload(preserved.scenes[i].content).doc).source.content[0].content.filter(n=>n.type==='text')){
+  if(node.text!=='!')assert.deepEqual(node.marks,[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'he-IL'}}}]);
+ }
+ const legacy=await notesBookFixture({noteProfileV2:true}),proof=structuredClone(legacy.proof);
+ proof.returnedScenes[0].ledger.source.content[0].attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}};
+ assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
+});
+test('v3 notes and discussions preserve unchanged codeBlock through changed text while its original typed format guard rejects actual ZIP mutations',async()=>{
+ const f=await notesBookFixture({includeCodeBlock:true}),model=require('../../src/core/word-pending-comment-return-v1.cjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+ const input={beforeText:f.beforeText,projectId:f.document.projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)},result=model.planMixedBookReturn(input);
+ const code={type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'const answer = 42;'}]},doc=envelope.parseObservablePayload(result.scenes[0].content).doc;
+ assert.deepEqual(review.readLedger(doc).source.content[1],code);assert.equal(review.projection(doc).current,'!AB tail\nconst answer = 42;');
+ assert.equal(result.scenes[1].content,f.scenes[1].beforeContent);assert.equal(JSON.parse(result.afterText).threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
+ assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,f.beforeDocs[0]);
+ const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,codeParagraph=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)][1][0];
+ assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);assert.doesNotMatch(codeParagraph,/<w:spacing\b|<w:lang\b/u);
+ const parse=xml=>f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data}))),
+  exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),retainPendingScenes:true,
+  documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest});
+ // The existing code model owns fixed typography and syntax language. Run
+ // proofing language has no representation here; it is not a claimed invariant.
+ for(const property of ['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>','<w:sz w:val="28"/>']){
+  const changed=codeParagraph.replace('<w:r>','<w:r><w:rPr>'+property+'</w:rPr>');assert.notEqual(changed,codeParagraph);
+  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+ }
+ const forged=structuredClone(f.proof);forged.returnedScenes[0].ledger.source.content[1].attrs.language='python';
+ assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
+});
 test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
  const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
  const style=attrs=>[{type:'textStyle',attrs}],edited={fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'en-GB'}};

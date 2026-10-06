@@ -10,6 +10,14 @@ const manuscriptModel = require('../../core/word-manuscript-notes-v1.cjs');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 
 const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
+// Owned transport fallback, not canonical manuscript typography. Only closed
+// book exports use it; source-authored run/paragraph properties remain direct.
+const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
+  wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
+  paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
+const BOOK_NOTE_EMISSION_V3 = { ...BOOK_NOTE_EMISSION_V2, schemaVersion: 3, bodyParagraphDefaults: {
+  wordParagraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' },
+  wordParagraphMarkLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' } } };
 const MAX_NOTES = 256;
 const MAX_TEXT_BYTES = 1024 * 1024;
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -124,6 +132,8 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     offsetUtf16: binding.offsetUtf16, paragraphs: [...binding.paragraphs] }));
   sourceBindings.forEach(binding => { binding.nativeId = String(++ordinalByKind[binding.kind]); });
   return { schemaVersion: DOCUMENT_NOTES_SCHEMA, projectId, selections, stateDigest: notesStateDigest(document),
+    ...(options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: options.pinnedBookNoteProfile === true
+      ? clone(BOOK_NOTE_EMISSION_V3) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
     policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }
@@ -142,15 +152,28 @@ function noteMarkersForBlock(projection, block) {
 }
 
 function notePackageParts(projection, { firstNumId = 1 } = {}) {
-  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '' };
+  if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '', stylesXml: '' };
   demand(projection.schemaVersion === DOCUMENT_NOTES_SCHEMA, 'DOCX_NOTES_EXPORT_SCHEMA_INVALID');
-  const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [];
+  const pinned = [2, 3].includes(projection.breakEmission?.schemaVersion);
+  if (Object.hasOwn(projection, 'breakEmission')) demand(stable(projection.breakEmission) === stable(BOOK_NOTE_EMISSION_V3)
+    || stable(projection.breakEmission) === stable(BOOK_NOTE_EMISSION_V2)
+    || stable(projection.breakEmission) === stable({ schemaVersion: 1, fontSize: '12pt' }), 'DOCX_NOTE_EMISSION_INVALID');
+  const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [], styles = [];
   demand(Number.isSafeInteger(firstNumId) && firstNumId > 0 && firstNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');
   let nextNumId = firstNumId;
   for (const kind of ['footnote', 'endnote']) {
     const bindings = projection.sourceBindings.filter(binding => binding.kind === kind);
     if (!bindings.length) continue;
     const style = kind === 'footnote' ? 'Footnote' : 'Endnote';
+    // Pin paragraph inheritance as well as text runs: macOS Word can remove
+    // break rPr on save. A per-run fallback alone does not survive that rewrite.
+    const profileRun = pinned ? require('./docxMinBuilder.js').buildDocxMarkedRunXml({ text: 'x',
+      marks: [{ type: 'textStyle', attrs: { fontFamily: BOOK_NOTE_EMISSION_V2.fontFamily,
+        fontSize: BOOK_NOTE_EMISSION_V2.fontSize, wordLanguage: BOOK_NOTE_EMISSION_V2.wordLanguage } }] }, true, true) : '';
+    const profile = pinned ? `<w:pPr><w:jc w:val="left"/>${buildDocxWordParagraphSpacingXml(BOOK_NOTE_EMISSION_V2.paragraphSpacing)}</w:pPr>`
+      + profileRun.match(/^<w:r>(<w:rPr>[\s\S]*?<\/w:rPr>)/u)[1] : '';
+    styles.push(`<w:style w:type="paragraph" w:styleId="${style}Text"><w:name w:val="${style} Text"/>${profile}</w:style>`,
+      `<w:style w:type="character" w:styleId="${style}Reference"><w:name w:val="${style} Reference"/></w:style>`);
     const links = new Map();
     const media = buildMediaPackage({ type: 'doc', content: bindings.flatMap(binding => binding.richBody?.content || []) },
       { firstPlacementId: kind === 'footnote' ? 1000000 : 2000000 });
@@ -189,7 +212,7 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
     types.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/>`);
     relationships.push(`<Relationship Id="rIdYalken${style}s" Type="${REL_NS}${kind}s" Target="${name}"/>`);
   }
-  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings, mediaParts: mergeMediaParts(mediaParts), mediaTypes: mergeMediaTypes(...mediaTypes) };
+  return { entries, contentTypes: types.join(''), relationships: relationships.join(''), numberings, mediaParts: mergeMediaParts(mediaParts), mediaTypes: mergeMediaTypes(...mediaTypes), stylesXml: styles.join('') };
 }
 
 function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) {

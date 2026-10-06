@@ -353,10 +353,13 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   }
   // Word must see explicit break defaults, but transport typography must never
   // mutate the canonical format IR used by the signed source binding.
-  const emissionBlock = !block.pendingRevisionSegments && commentExport?.threads?.length
+  const cleanBodyEmission = documentNotes?.breakEmission?.schemaVersion === 3 ? documentNotes.breakEmission : null;
+  const emissionBlock = !block.pendingRevisionSegments && (cleanBodyEmission || commentExport?.threads?.length)
     && block.formatIr?.paragraph?.nodeType !== 'codeBlock' ? {...block,formatIr:{...block.formatIr,
-      runs:block.formatIr?.runs?.map(run=>run.text==='\n'?{...run,inline:{...run.inline,
-        wordLanguage:run.inline?.wordLanguage || {val:'en-US',eastAsia:'en-US',bidi:'en-US',...block.formatIr.paragraph?.wordParagraphMarkLanguage}}}:run)}} : block;
+      runs:block.formatIr?.runs?.map(run=>cleanBodyEmission?{...run,inline:{fontFamily:cleanBodyEmission.fontFamily,fontSize:cleanBodyEmission.fontSize,...run.inline,
+        wordLanguage:{...cleanBodyEmission.wordLanguage,...block.formatIr.paragraph?.wordParagraphMarkLanguage,...run.inline?.wordLanguage}}}
+        :run.text==='\n'?{...run,inline:{...run.inline,
+          wordLanguage:run.inline?.wordLanguage || {val:'en-US',eastAsia:'en-US',bidi:'en-US',...block.formatIr.paragraph?.wordParagraphMarkLanguage}}}:run)}} : block;
   let textRun = block.pendingRevisionSegments ? '' : markers.size ? buildCommentedRunsXml(emissionBlock, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(emissionBlock, hyperlinkByHref);
   if (block.pendingRevisionSegments) {
@@ -422,8 +425,13 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   const effectiveLayout = list?.continuation === true && paragraphLayout.wordParagraphIndent == null
     ? {...paragraphLayout,wordParagraphIndent:{left:docxListTextIndent(Number(list.level),!list.wordNumbering)}} : paragraphLayout;
   paragraphPropertyParts.push(buildDocxWordParagraphLayoutXml(effectiveLayout));
-  paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(block.formatIr?.paragraph?.wordParagraphSpacing));
-  const markLanguage = buildDocxParagraphMarkTypographyXml(block.formatIr?.paragraph?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(block.formatIr?.paragraph?.wordParagraphMarkLanguage);
+  // notePackageParts validates the complete local versioned profile before
+  // document emission. These transport fields never enter canonical formatIR.
+  const bodyDefaults = documentNotes?.breakEmission?.schemaVersion === 3 && paragraphLayout.nodeType !== 'codeBlock' ? documentNotes.breakEmission.bodyParagraphDefaults : null;
+  const spacing = bodyDefaults ? { ...bodyDefaults.wordParagraphSpacing, ...paragraphLayout.wordParagraphSpacing } : paragraphLayout.wordParagraphSpacing;
+  const language = bodyDefaults ? { ...bodyDefaults.wordParagraphMarkLanguage, ...paragraphLayout.wordParagraphMarkLanguage } : paragraphLayout.wordParagraphMarkLanguage;
+  paragraphPropertyParts.push(buildDocxWordParagraphSpacingXml(spacing));
+  const markLanguage = buildDocxParagraphMarkTypographyXml(paragraphLayout.wordParagraphMarkTypography)+buildDocxWordLanguageXml(language);
   if (markLanguage) paragraphPropertyParts.push(`<w:rPr>${markLanguage}</w:rPr>`);
   if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));
   const paragraphProperties = buildPendingRowParagraphXml(buildPendingParagraphBoundaryXml(buildPendingParagraphPropertiesXml(paragraphPropertyParts.length > 0
@@ -679,7 +687,7 @@ function buildNumberingXml(definitions) {
 <w:numbering xmlns:w="${WORD_MAIN_NS}">${abstract}${instances}</w:numbering>`;
 }
 
-function buildStylesXml(blocks) {
+function buildStylesXml(blocks, noteStyles = '') {
   const ids = ['YalkenCodeBlock', ...blocks.map(block => docxBlockStyleId(
     block.formatIr?.paragraph?.nodeType === 'codeBlock', Number(block.formatIr?.paragraph?.blockquoteDepth || 0),
   )).filter(Boolean)];
@@ -689,7 +697,7 @@ function buildStylesXml(blocks) {
   ${buildDocxBlockStyleDefinitions(ids)}
   ${[...new Set(blocks.filter(b=>b.formatIr?.paragraph?.list?.continuation===true).map(b=>b.formatIr.paragraph.list.level))].map(level=>`<w:style w:type="paragraph" w:styleId="YalkenListContinuation${level}"><w:name w:val="Yalken List Continuation ${level}"/></w:style>`).join('')}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
-</w:styles>`;
+${noteStyles ? '  ' + noteStyles + '\n' : ''}</w:styles>`;
 }
 
 function collectDocumentHyperlinks(blocks) {
@@ -843,7 +851,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', defaultTabsXml+(stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
-    { name: 'word/styles.xml', data: buildStylesXml(blocks) },
+    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },

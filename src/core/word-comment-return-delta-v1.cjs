@@ -57,7 +57,7 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null, mixedPendingScenes = null }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null, mixedPendingScenes = null, notesText = null, noteContext = null }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
@@ -93,6 +93,9 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     && (mixed.length ? pendingScenes.length===0 && textChanges.length===0
       && mixed.length===exportMap.scenes.length : pendingBound.length===pendingScenes.length),'COMMENT_RETURN_PENDING_PROOF_INVALID');
   if(mixedPendingScene)demand(exportMap.scenes.length===1,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  // Rebuild note contexts from fresh canonical truth here too. A caller's
+  // derived after-ledger or source-point array never validates the graph delta.
+  const noteBindings=noteContext?require('./word-pending-comment-return-v1.cjs').bookNoteBindings({notesText,projectId,exportMap,noteContext,scenes:mixed}):null;
   for(const item of mixed) {
     demand(plain(item)&&Object.keys(item).sort().join(',')==='document,returnedDocument,sceneId'
       &&!pendingByScene.has(item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
@@ -100,12 +103,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     demand(scene,'COMMENT_RETURN_PENDING_PROOF_INVALID');
     const anchors=before.threads.filter(t=>t.sceneId===scene.sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
     const checked=require('./word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({...item,binding:scene.pendingCommentBinding,anchors,
-      exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph),cleanTransportSchemaVersion:mixedPendingScenes===null?2:1,allowUntrackedRichFormatting:mixedPendingScenes!==null});
+      exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph),cleanTransportSchemaVersion:mixedPendingScenes===null?2:1,allowUntrackedRichFormatting:mixedPendingScenes!==null,
+      noteBinding:noteBindings?.find(binding=>binding.sceneId===item.sceneId)||null});
     if(mixedPendingScenes!==null&&checked.changed&&before.threads.some(t=>t.sceneId===item.sceneId
       &&t.anchorEditHistory?.some(h=>h.sessionId?.startsWith('recording-round:')))) {
       const envelope=require('./document-content-envelope-v1.cjs'),oldLedger=pendingModel.readLedger(item.document);
       demand(oldLedger,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
-      const replacement=pendingModel.replaceFromReturn(item.document,checked.document,{roundId,artifactSha256:artifactSha256.replace(/^sha256:/u,'')});
+      const replacement=pendingModel.replaceFromReturn(checked.beforeDocument||item.document,checked.document,{roundId,artifactSha256:artifactSha256.replace(/^sha256:/u,'')});
       const planned=require('./word-pending-recording-comments-v1.cjs').planRecordingRoundDecision({beforeText,projectId,sceneId:item.sceneId,
         beforeContent:envelope.composeObservablePayload({doc:item.document}),afterContent:envelope.composeObservablePayload({doc:replacement.doc}),decision:{action:'redo'}},oldLedger,pendingModel.readLedger(replacement.doc));
       const projected=readState(planned?.afterText||beforeText,projectId);

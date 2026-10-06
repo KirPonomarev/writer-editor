@@ -9787,7 +9787,25 @@ function docxHyperlinkCatalog(bytes, relationshipPart = 'word/_rels/document.xml
   return result;
 }
 
-function docxInlineStyleCatalog(bytes) {
+// Opt-in note evidence keeps fields which the ordinary canonical body cannot
+// represent. It never changes generic import or grants mutation authority.
+function docxNoteBreakReadProperty(properties, unknown, seen, tag, token, namespaces, run = false) {
+  const names = tag === 'w:rFonts' ? ['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme','hint']
+    : tag === 'w:lang' ? wordLanguage.KEYS : tag === 'w:color' ? ['val','themeColor','themeTint','themeShade']
+    : tag === 'w:shd' ? ['val','color','fill','themeColor','themeTint','themeShade','themeFill','themeFillTint','themeFillShade']
+    : ['w:b','w:bCs','w:i','w:iCs','w:u','w:strike','w:highlight','w:sz','w:szCs','w:cs','w:rtl','w:vanish','w:webHidden',...(run ? ['w:rStyle'] : [])].includes(tag) ? ['val'] : null;
+  if (!names || seen.has(tag)) { unknown.push(tag); return; }
+  seen.add(tag);
+  for (const [key] of docxFontAttributes(token, namespaces))
+    if (!key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000') || !names.includes(key.split('\u0000')[1])) unknown.push(key);
+  if (['w:bCs','w:iCs'].includes(tag)) {
+    const value=docxContentPreviewWordAttributeValue(token,namespaces,'val');
+    if (!['','0','1','false','true','off','on'].includes(value)) throw Error('NOTE_BREAK_FORMAT_INVALID');
+    properties[tag==='w:bCs'?'boldCs':'italicCs']=!['0','false','off'].includes(value);
+  }
+}
+
+function docxInlineStyleCatalog(bytes, noteBreakStrict = false) {
   const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes), hyperlinks: docxHyperlinkCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
@@ -9824,6 +9842,10 @@ function docxInlineStyleCatalog(bytes) {
     if(['ind','tabs','tab','defaultTabStop'].includes(parsed.localName)&&parsed.namespaceUri!==DOCX_WORDPROCESSINGML_MAIN_NAMESPACE)throw Error('WORD_PARAGRAPH_LAYOUT_NAMESPACE');
     const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? `w:${parsed.localName}` : '';
     const parent = stack.at(-1)?.tag;
+    if(noteBreakStrict && parent==='w:pPr' && !['w:jc','w:spacing','w:ind','w:tabs','w:numPr','w:outlineLvl'].includes(tag)) {
+      const target=stack.at(-2)?.tag==='w:style'?current:stack.at(-2)?.tag==='w:pPrDefault'?catalog:null;
+      if(target)(target.noteBreakUnknown ||= []).push(tag);
+    }
     if(['w:lang','w:spacing','w:ind','w:tab'].includes(parent))throw Error('WORD_PROPERTY_SHAPE_INVALID');
     if (!stack.length) {
       if (root) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
@@ -9833,7 +9855,7 @@ function docxInlineStyleCatalog(bytes) {
       const id = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'styleId');
       const type = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'type');
       if (!id || id.length > 256 || catalog.styles.has(id) || catalog.styles.size >= DOCX_INLINE_MAX_STYLES) throw new Error('DOCX_INLINE_STYLE_ID_OR_LIMIT');
-      current = { type, properties: {}, basedOn: '' };
+      current = { type, properties: {}, basedOn: '', ...(noteBreakStrict ? { noteBreakUnknown: [], noteBreakSeen: new Set() } : {}) };
       catalog.styles.set(id, current);
       const defaultValue = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'default');
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
@@ -9907,8 +9929,10 @@ function docxInlineStyleCatalog(bytes) {
     } else if (parent === 'w:rPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current && ['paragraph', 'character'].includes(current.type)) {
+        if(noteBreakStrict)docxNoteBreakReadProperty(current.properties,current.noteBreakUnknown,current.noteBreakSeen,tag,token,parsed.namespaceMap);
         docxInlineReadProperty(current.properties, tag, token, parsed.namespaceMap);
       } else if (owner === 'w:rPrDefault') {
+        if(noteBreakStrict)docxNoteBreakReadProperty(catalog.defaults,catalog.noteBreakUnknown ||= [],catalog.noteBreakSeen ||= new Set(),tag,token,parsed.namespaceMap);
         docxInlineReadProperty(catalog.defaults, tag, token, parsed.namespaceMap);
       } else if (current?.type === 'table' && ['w:vanish', 'w:webHidden'].includes(tag)) {
         // Conditional table-style precedence is not represented by our model.
@@ -10428,7 +10452,7 @@ function docxContentPreviewUnsupportedEncoding(xmlText) {
   return normalized === 'utf-8' || normalized === 'utf8' || normalized === 'us-ascii' ? null : encoding[2].trim();
 }
 
-function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numberings) {
+function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numberings, noteBreaks = null) {
   const xmlValidation = docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText);
   if (xmlValidation.failure) return { failure: xmlValidation.failure };
   const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
@@ -10630,6 +10654,13 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       ? tagName : `other:${rawTagName.split(':').at(-1)}`;
     const tableParentTag = tableParent && docxContentPreviewNamespaceUriForTagName(tableParent.rawTagName, tableParent.namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
       ? parentTag : `other:${tableParent?.rawTagName.split(':').at(-1) || ''}`;
+    if(noteBreaks && !closing && insideParagraph && parentTag==='w:pPr') {
+      const keys=tagName==='w:spacing'?['before','after','line','lineRule']:tagName==='w:ind'?paragraphLayout.INDENT_KEYS
+        : ['w:pStyle','w:jc'].includes(tagName)?['val']:['w:numPr','w:tabs','w:rPr'].includes(tagName)?[]:null;
+      const seen=activeParagraphMetadata.noteBreakParagraphSeen ||= new Set();
+      if(!keys||seen.has(tagName))throw Error('NOTE_BREAK_PARAGRAPH_UNSUPPORTED');seen.add(tagName);
+      for(const [key]of docxFontAttributes(token,tokenNamespaceMap))if(!key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!keys.includes(key.split('\u0000')[1]))throw Error('NOTE_BREAK_PARAGRAPH_UNSUPPORTED');
+    }
     tableReader.tag(tableTag, tableParentTag, closing, selfClosing,
       name => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, name));
     if (tableTag === 'w:tbl') {
@@ -10645,6 +10676,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };
     } else if (activeInlineRun && !closing && parentTag === 'w:rPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:r') {
+      if(noteBreaks)docxNoteBreakReadProperty(activeInlineRun.properties,activeInlineRun.noteBreakUnknown ||= [],activeInlineRun.noteBreakSeen ||= new Set(),tagName,token,tokenNamespaceMap,true);
       docxInlineReadProperty(activeInlineRun.properties, tagName, token, tokenNamespaceMap);
       if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
     }
@@ -10852,13 +10884,20 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (parentTag !== 'w:r') throw new Error('DOCX_INLINE_ATOM_OWNER_INVALID');
       const marker = tagName === 'w:tab' ? '\t' : tagName === 'w:noBreakHyphen' ? '\u2011'
         : tagName === 'w:softHyphen' ? '\u00ad' : '\n';
+      let noteBreakType = 'line';
       if (tagName === 'w:br') {
         const breakType = docxContentPreviewNormalizeTypedBreakType(token, tokenNamespaceMap);
+        noteBreakType = breakType;
         if (breakType !== 'line') {
           activeParagraphMetadata.typedBreaks ||= [];
           activeParagraphMetadata.typedBreaks.push({ offset: paragraphText.length, type: breakType });
         }
         docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenTypedBreakKinds, breakType);
+      }
+      if(noteBreaks && marker==='\n') {
+        if(noteBreaks.length>=manuscriptNoteModel.LIMITS.text)throw Error('NOTE_BREAK_PROJECTION_BUDGET');
+        noteBreaks.push({paragraphIndex:paragraphs.length,offsetUtf16:paragraphText.length,kind:noteBreakType,
+          format:docxNoteBreakFormat(activeParagraphMetadata,activeInlineRun,inlineStyles)});
       }
       paragraphText += marker;
       docxInlineAppendText(activeParagraphMetadata, activeInlineRun, marker, inlineStyles, inlineBudget);
@@ -11022,10 +11061,37 @@ function parseCommentRichDocument(bytes, source, cache = {}) {
 }
 
 // Shared bounded body grammar for generic import and authenticated return.
-function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
-  const inlineStyles = docxInlineStyleCatalog(bytes);
+function docxNoteBreakFormat(metadata, run, catalog) {
+  if(catalog.noteBreakUnknown?.length || run?.noteBreakUnknown?.length)throw Error('NOTE_BREAK_PROPERTY_UNSUPPORTED');
+  for(const [start,type] of [[metadata.paragraphStyleId||catalog.defaultParagraph,'paragraph'],[run?.styleId||catalog.defaultCharacter,'character']]) {
+    const seen=new Set();let id=start;
+    while(id) {
+      if(seen.has(id)||seen.size>=64)throw Error('NOTE_BREAK_STYLE_INVALID');seen.add(id);
+      const style=catalog.styles.get(id);
+      if(!style||style.type!==type||style.noteBreakUnknown?.length)throw Error('NOTE_BREAK_STYLE_INVALID');id=style.basedOn;
+    }
+  }
+  const properties=docxInlineEffectiveRunProperties(metadata,run,catalog),fontSlots={};
+  for(const slot of DOCX_FONT_SLOTS)if(properties['font_'+slot]!==undefined) {
+    const value=docxFontResolveTheme(properties['font_'+slot],catalog.themeFonts);
+    if(typeof value!=='string'||value===DOCX_UNSUPPORTED_FONT)throw Error('NOTE_BREAK_FORMAT_INVALID');fontSlots[slot]=value;
+  }
+  const color=isPlainObject(properties.color)&&properties.color.linkThemeColor
+    ? catalog.themeFonts.colors.get(catalog.themeFonts.linkColorMap.get(properties.color.linkThemeColor))||DOCX_UNSUPPORTED_COLOR : properties.color;
+  const highlight=properties.highlight??properties.shading;
+  if(color===DOCX_UNSUPPORTED_COLOR||highlight===DOCX_UNSUPPORTED_COLOR)throw Error('NOTE_BREAK_FORMAT_INVALID');
+  return {marks:Object.values(DOCX_INLINE_MARKS).filter(mark=>properties[mark]===true).sort(),
+    boldCs:properties.boldCs===true,italicCs:properties.italicCs===true,forceCs:properties.font_forceCs===true,rtl:properties.font_rtl===true,
+    ...(Object.keys(fontSlots).length?{fontSlots}:{}),
+    ...(properties.font_size!==undefined?{fontSize:properties.font_size}:{}),
+    ...(properties.font_sizeCs!==undefined?{fontSizeCs:properties.font_sizeCs}:{}),
+    ...(properties.font_hint!==undefined?{fontHint:properties.font_hint}:{}),
+    ...(color?{color}:{}),...(highlight?{highlight}:{}),...(properties.wordLanguage?{wordLanguage:properties.wordLanguage}:{}),...(metadata.currentHref?{href:metadata.currentHref}:{})};
+}
+function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreakProjection = false) {
+  const inlineStyles = docxInlineStyleCatalog(bytes,includeBreakProjection),breaks=includeBreakProjection?[]:null;
   const styles = { ...inlineStyles, hyperlinks };
-  const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes));
+  const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes),breaks);
   if (!body.failure) {
     resolveNoteTableStyleLosses(bytes, body);
     const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
@@ -11050,8 +11116,10 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks) {
     || body.contentPreview.paragraphs.some(p => p.headingLevel !== undefined || p.blockKind || p.blockquoteDepth)) throw Error('DOCX_GENERIC_NOTE_BODY_UNSUPPORTED');
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
   if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
+  if(includeBreakProjection)for(const paragraph of body.contentPreview.paragraphs)docxNoteBreakFormat(paragraph,null,styles);
   const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs, { allowLegacyAlpha:true });
-  return manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
+  const document=manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
+  return includeBreakProjection?{body:document,breakProjection:{schemaVersion:1,paragraphCount:body.contentPreview.paragraphs.length,textSha256:sha256Hex(text),breaks}}:document;
 }
 
 // Header/footer parts become typed rich bodies; XML is parser input only.
@@ -11132,7 +11200,8 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   return includeParts ? {registry, validatedParts, storyMediaParts} : registry;
 }
 
-export function parseDocumentNotesRichReturn(bytes, notes) {
+export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProjection = false } = {}) {
+  if(typeof includeBreakProjection!=='boolean')throw Error('NOTE_BREAK_PROJECTION_INVALID');
   if (notes == null) return [];
   if (notes.inventoryStatus !== 'COMPLETE' || !Array.isArray(notes.notes) || notes.notes.length > 256
     || notes.notes.length !== notes.references?.length || notes.notes.length !== notes.bodySources?.length) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
@@ -11144,9 +11213,10 @@ export function parseDocumentNotesRichReturn(bytes, notes) {
     if (source.transportIdentity && seen.has(source.transportIdentity)) throw Error('NOTE_RETURN_IDENTITY_COLLISION');
     if (source.transportIdentity) seen.add(source.transportIdentity);
     if (!linksByPart.has(source.relationshipPart)) linksByPart.set(source.relationshipPart, docxHyperlinkCatalog(bytes, source.relationshipPart));
+    const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection);
     return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
       transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
-      body: parseDocumentNoteRichBody(bytes, source, note, linksByPart.get(source.relationshipPart)) };
+      ...(includeBreakProjection?parsed:{body:parsed}) };
   });
   if ([...linksByPart.values()].some(links => links.usedIds.size !== links.size)) throw Error('NOTE_RETURN_UNUSED_RELATIONSHIP');
   return result;
@@ -11155,19 +11225,53 @@ export function parseDocumentNotesRichReturn(bytes, notes) {
 // A signed, inactive Office emission default is equivalent only when complete
 // observable baseline and every returned Word XML part have no tab carrier.
 // Unknown separate note/story baselines fail closed rather than erase semantics.
-function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission}) {
+function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes}) {
   if(allowInactiveDefaultTabEmission!==true || exportMap.scenes.some(s=>s.documentFormatIr?.explicit!==false
     ||s.documentFormatIr.wordDefaultTabStop!==720))return false;
   const strings=[...baselineDocuments.map(s=>s.document)];
-  while(strings.length){const value=strings.pop();if(typeof value==='string'&&value.includes('\t'))return false;
-    if(value&&typeof value==='object')strings.push(...Object.values(value));}
   const extracted=extractDocxReviewTransportPackagePartsFromZipBytes({bytes});
   if(!extracted.ok)return false;
+  if(Object.keys(extracted.parts).some(name=>/^word\/(?:footnotes|endnotes)\.xml$/u.test(name))
+    ||baselineDocumentNotes?.sourceBindings?.length){
+    // This is read-only evidence from the authenticated book capsule. It does
+    // not replace the complete rich-body/source/occurrence law before Apply.
+    const baseline=baselineDocumentNotes,returned=returnedDocumentNotes;
+    if(baseline?.schemaVersion!=='yalken.rtk.word.document-notes.v1'
+      ||baseline.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'||typeof baseline.projectId!=='string'||!baseline.projectId
+      ||!Array.isArray(baseline.sourceBindings)||!baseline.sourceBindings.length||baseline.sourceBindings.length>256
+      ||!Array.isArray(baseline.notes)||baseline.notes.length!==baseline.sourceBindings.length
+      ||baseline.protectedDigest!==`sha256:${hashCanonicalValue({schemaVersion:baseline.schemaVersion,notes:baseline.notes})}`
+      ||returned?.inventoryStatus!=='COMPLETE'||!Array.isArray(returned.bodySources)
+      ||returned.bodySources.length!==baseline.sourceBindings.length||returned.notes?.length!==returned.bodySources.length
+      ||returned.references?.length!==returned.bodySources.length)return false;
+    const ids=new Set(),nativeIds=new Set(),seen=new Set();
+    for(const [i,binding] of baseline.sourceBindings.entries()){
+      if(!binding||typeof binding.noteId!=='string'||ids.has(binding.noteId)||!['footnote','endnote'].includes(binding.kind)
+        ||!exportMap.scenes.some(scene=>scene.sceneId===binding.sceneId)
+        ||binding.transportIdentity!==`_YALKEN_NOTE_${sha256Hex(baseline.projectId+'\n'+binding.noteId).slice(0,24)}`
+        ||!/^[1-9][0-9]*$/u.test(binding.nativeId)||nativeIds.has(binding.kind+':'+binding.nativeId))return false;
+      ids.add(binding.noteId);nativeIds.add(binding.kind+':'+binding.nativeId);
+      const matches=returned.bodySources.filter(source=>source.transportIdentity===binding.transportIdentity);
+      if(matches.length!==1||matches[0].kind!==binding.kind||seen.has(matches[0]))return false;
+      seen.add(matches[0]);
+      let rows;try{rows=manuscriptNoteModel.validateNoteBody(binding.richBody).paragraphs;}catch{return false;}
+      if(rows.some(row=>row.list||row.table||row.paragraph.type!=='paragraph'
+        ||row.paragraph.content?.some(node=>!['text','hardBreak'].includes(node.type))))return false;
+      const paragraphs=rows.map(row=>(row.paragraph.content||[]).map(node=>node.type==='hardBreak'?'\n':node.text).join(''));
+      if(hashCanonicalValue(paragraphs)!==hashCanonicalValue(binding.paragraphs)
+        ||hashCanonicalValue(baseline.notes[i])!==hashCanonicalValue({kind:binding.kind,paragraphIndex:binding.documentParagraphIndex,
+          offsetUtf16:binding.offsetUtf16,paragraphs}))return false;
+      strings.push(binding.richBody);
+    }
+  }
+  while(strings.length){const value=strings.pop();if(typeof value==='string'&&value.includes('\t'))return false;
+    if(value&&typeof value==='object')strings.push(...Object.values(value));}
   for(const [name,xml] of Object.entries(extracted.parts)){
     if(!name.startsWith('word/')||!name.endsWith('.xml'))continue;
     // These baselines live in separate protected registries; this caller has
     // not supplied their authenticated content, so do not infer equivalence.
-    if(/^word\/(?:footnotes|endnotes|header[^/]*|footer[^/]*)\.xml$/u.test(name))return false;
+    if(/^word\/(?:header[^/]*|footer[^/]*)\.xml$/u.test(name))return false;
+    const notePart=/^word\/(?:footnotes|endnotes)\.xml$/u.test(name);
     if(xml.includes('\t')||/&#(?:0*9|x0*9);/iu.test(xml))return false;
     if(docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure)return false;
     const selected=docxContentPreviewSelectMarkupCompatibilityXml(xml);if(selected.failure)return false;
@@ -11179,6 +11283,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
       const parsed=docxContentPreviewParseStrictStartTag(token.slice(1,-1),stack.at(-1)?.ns||new Map());if(!parsed)return false;
       const tag=parsed.namespaceUri===DOCX_WORDPROCESSINGML_MAIN_NAMESPACE?parsed.localName:'';
       if(tag==='tab'&&stack.at(-1)?.tag==='r')return false;
+      if(notePart&&['numPr','tbl'].includes(tag))return false;
       if(!parsed.selfClosing)stack.push({raw:parsed.rawTagName,tag,ns:parsed.namespaceMap});if(stack.length>128)return false;
     }
     if(stack.length)return false;
@@ -11189,7 +11294,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
     if(typeof allowInactiveDefaultTabEmission!=='boolean')throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_PERMISSION');
@@ -11198,7 +11303,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
     const preview=buildDocxContentPreviewFromZipBytes(bytes);
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
-    let sectionsVerified=false;
+    let sectionsVerified=false,returnedDocumentNotes;
     if(baselineDocuments!==undefined){
       if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
         ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
@@ -11207,6 +11312,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         signedDigest:signedSectionsDigest,allowOfficeDefaultOmissions});
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
       sectionsVerified=true;
+      returnedDocumentNotes=analysis.reviewIr.documentNotes;
     }
     const document=preview.contentPreview?.pendingRevisionDocument;
     let ledger=pendingTextRevisions.readLedger(document);
@@ -11251,7 +11357,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         const format=scene.documentFormatIr;
         if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop){
           if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=source.attrs.wordDefaultTabStop===708
-            &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission});
+            &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes});
           if(!inactiveTabEquivalent)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
         }
         if(format?.explicit===false)delete source.attrs.wordDefaultTabStop;

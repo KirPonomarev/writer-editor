@@ -249,6 +249,7 @@ const fs=require('node:fs'),fsp=require('node:fs/promises'),path=require('node:p
 const tx=require(process.argv[1]),{durableSaveTransaction}=require(process.argv[2]),root=process.argv[3],mode=process.argv[4],boundary=process.argv[5];
 const q=JSON.parse(fs.readFileSync(path.join(root,'request.json'))),scenes=q.treeCohort.input.scenes;
 const points=new Map([[tx.journalPathFor(q.manifestPath),'JOURNAL'],[tx.treeCommitPathFor(q.manifestPath),'TREE_COMMIT'],[path.join(root,'.yalken/word-review/non-text-return-state.v1.json'),'COMMENTS']]);
+points.set(path.join(root,'notes.craftsman.json'),'NOTES');
 scenes.forEach((scene,index)=>{const p=path.join(root,scene.sceneId);points.set(p,'SCENE_'+index);points.set(tx.commitPathFor(p),'RECEIPT_'+index);});
 const hit=p=>{if(boundary===p){process.stdout.write('HIT:'+p+'\n');process.kill(process.pid,'SIGKILL');}};
 const adapter={...fsp,rename:async(a,b)=>{await fsp.rename(a,b);hit(points.get(b));},unlink:async p=>{if(p===tx.journalPathFor(q.manifestPath))hit('BEFORE_CLEANUP');await fsp.unlink(p);if(p===tx.journalPathFor(q.manifestPath))hit('AFTER_CLEANUP');}};
@@ -278,4 +279,40 @@ test('book recovery interrupted during rollback resumes exactly and preserves fo
  const result=await bookChild(f,'recover');assert.equal(result.code,0,result.stderr);assert.deepEqual(f.observe(),f.before);
  assert.equal((await bookChild(f,'commit','SCENE_1')).signal,'SIGKILL');const other=path.join(f.root,f.ids[1]);fs.writeFileSync(other,'independent foreign update');const before=f.observe();
  const conflict=await bookChild(f,'recover');assert.equal(conflict.code,1);assert.match(conflict.stderr,/UNKNOWN_BYTES|RECOVERY_CONFLICT/);assert.deepEqual(f.observe(),before);assert.ok(fs.existsSync(tx.journalPathFor(f.manifestPath)));
+});
+
+async function notesBookDiskFixture(t) {
+ const file=path.join(__dirname,'rtk-word-pending-notes.contract.test.js'),module={exports:{}};
+ new Function('require','module','__dirname',fs.readFileSync(file,'utf8').split("\ntest('complete book note law")[0]+'\nmodule.exports={composedBookFixture};')
+  (require('node:module').createRequire(file),module,__dirname);
+ const f=await module.exports.composedBookFixture(),root=fs.mkdtempSync(path.join(os.tmpdir(),'word-book-notes-atomic-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const id=f.document.projectId,manifestPath=path.join(root,'project.craftsman.json'),manifest=JSON.stringify({projectId:id,revision:1}),notePath=path.join(root,'notes.craftsman.json'),commentPath=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');
+ fs.mkdirSync(path.join(root,'.yalken/word-review'),{recursive:true});fs.mkdirSync(path.join(root,'roman'));fs.writeFileSync(manifestPath,manifest);fs.writeFileSync(notePath,f.notesText);fs.writeFileSync(commentPath,f.beforeText);
+ for(const scene of f.scenes)fs.writeFileSync(path.join(root,scene.sceneId),scene.beforeContent);
+ const model=await import('../../src/core/project-tree-cohort-v1.mjs'),input={operation:'word-mixed-return',operationId:'book-notes-op',projectId:id,manifestPath,beforeManifestText:manifest,expectedTreeRevision:0,
+  scenes:f.scenes.map(scene=>({...scene,commitText:null})),notesText:f.notesText,commentsText:f.beforeText,returnProofJson:JSON.stringify(f.proof)};
+ const planned=model.planProjectMixedWordReturnCohort(input),request={manifestPath,revision:1,treeCohort:planned};fs.writeFileSync(path.join(root,'request.json'),JSON.stringify(request));
+ const decode=entry=>Buffer.from(entry.afterBase64,'base64').toString(),afterNotes=JSON.parse(decode(planned.entries.find(e=>e.role==='notes')));
+ assert.deepEqual(afterNotes.notes.map(n=>n.manuscript.reference.offsetUtf16),[2,2,2,6]);
+ assert.deepEqual(afterNotes.notes.map(n=>n.manuscript.body),f.document.notes.map(n=>n.manuscript.body));assert.deepEqual(afterNotes.notes[2],f.document.notes[2]);
+ const tracked=[...f.ids.map(scene=>path.join(root,scene)),notePath,commentPath,manifestPath],observe=()=>tracked.map(file=>fs.readFileSync(file,'utf8'));
+ const after=[...f.ids.map(scene=>decode(planned.entries.find(e=>e.relativePath===scene))),decode(planned.entries.find(e=>e.role==='notes')),decode(planned.entries.find(e=>e.role==='comments')),manifest];
+ assert.equal(after[1],f.scenes[1].beforeContent);
+ after.slice(0,3).forEach((raw,i)=>assert.equal(envelope.deriveVisibleTextFromDocument(envelope.parseObservablePayload(raw).doc),f.current[i]));
+ return {root,input,model,manifestPath,ids:f.ids,request,notePath,commentPath,observe,before:observe(),after};
+}
+test('book notes actual atomic writer rejects forged note cohort and stale notes without changing another owner',async t=>{
+ const f=await notesBookDiskFixture(t),forged=structuredClone(f.request);
+ forged.treeCohort.entries.find(e=>e.role==='notes').afterBase64=Buffer.from('forged').toString('base64');
+ await assert.rejects(tx.commitProjectTransaction({...forged,publishManifest,revalidate:async()=>{}}),/PLAN_MISMATCH/u);assert.deepEqual(f.observe(),f.before);
+ const foreign=f.before[3]+' ';fs.writeFileSync(f.notePath,foreign);
+ await assert.rejects(tx.commitProjectTransaction({...f.request,publishManifest,revalidate:async()=>{}}),/CAS|UNKNOWN_BYTES/u);assert.deepEqual(f.observe(),[...f.before.slice(0,3),foreign,...f.before.slice(4)]);
+ fs.writeFileSync(f.notePath,f.before[3]);await tx.commitProjectTransaction({...f.request,publishManifest,revalidate:async()=>{}});assert.deepEqual(f.observe(),f.after);
+});
+for(const boundary of ['NOTES','RECEIPT_0','TREE_COMMIT','BEFORE_CLEANUP'])test('book notes owned process interruption '+boundary+' recovers all scene note and discussion bytes',async t=>{
+ const f=await notesBookDiskFixture(t),crash=await bookChild(f,'commit',boundary);assert.equal(crash.signal,'SIGKILL',JSON.stringify(crash));assert.match(crash.stdout,new RegExp('HIT:'+boundary));
+ const expected=['TREE_COMMIT','BEFORE_CLEANUP'].includes(boundary)?f.after:f.before;
+ const recovered=await bookChild(f,'recover');assert.equal(recovered.code,0,recovered.stderr);assert.deepEqual(f.observe(),expected);
+ const again=await bookChild(f,'recover');assert.equal(again.code,0,again.stderr);assert.deepEqual(f.observe(),expected);
+ if(expected===f.before){const committed=await bookChild(f,'commit');assert.equal(committed.code,0,committed.stderr);assert.deepEqual(f.observe(),f.after);}
 });
