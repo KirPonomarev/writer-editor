@@ -15,6 +15,9 @@ const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
 const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
   wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
   paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
+const BOOK_NOTE_EMISSION_V3 = { ...BOOK_NOTE_EMISSION_V2, schemaVersion: 3, bodyParagraphDefaults: {
+  wordParagraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' },
+  wordParagraphMarkLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' } } };
 const MAX_NOTES = 256;
 const MAX_TEXT_BYTES = 1024 * 1024;
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -130,7 +133,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
   sourceBindings.forEach(binding => { binding.nativeId = String(++ordinalByKind[binding.kind]); });
   return { schemaVersion: DOCUMENT_NOTES_SCHEMA, projectId, selections, stateDigest: notesStateDigest(document),
     ...(options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: options.pinnedBookNoteProfile === true
-      ? clone(BOOK_NOTE_EMISSION_V2) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
+      ? clone(BOOK_NOTE_EMISSION_V3) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
     policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }
@@ -151,8 +154,9 @@ function noteMarkersForBlock(projection, block) {
 function notePackageParts(projection, { firstNumId = 1 } = {}) {
   if (!projection) return { entries: [], contentTypes: '', relationships: '', numberings: [], mediaParts: [], mediaTypes: '', stylesXml: '' };
   demand(projection.schemaVersion === DOCUMENT_NOTES_SCHEMA, 'DOCX_NOTES_EXPORT_SCHEMA_INVALID');
-  const pinned = projection.breakEmission?.schemaVersion === 2;
-  if (Object.hasOwn(projection, 'breakEmission')) demand(stable(projection.breakEmission) === stable(BOOK_NOTE_EMISSION_V2)
+  const pinned = [2, 3].includes(projection.breakEmission?.schemaVersion);
+  if (Object.hasOwn(projection, 'breakEmission')) demand(stable(projection.breakEmission) === stable(BOOK_NOTE_EMISSION_V3)
+    || stable(projection.breakEmission) === stable(BOOK_NOTE_EMISSION_V2)
     || stable(projection.breakEmission) === stable({ schemaVersion: 1, fontSize: '12pt' }), 'DOCX_NOTE_EMISSION_INVALID');
   const entries = [], types = [], relationships = [], numberings = [], mediaParts = [], mediaTypes = [], styles = [];
   demand(Number.isSafeInteger(firstNumId) && firstNumId > 0 && firstNumId <= 2147483647, 'DOCX_NOTE_NUMBERING_ID');

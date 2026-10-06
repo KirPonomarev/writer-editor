@@ -223,13 +223,17 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
 const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
   wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
   paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
+const BOOK_NOTE_EMISSION_V3 = { ...BOOK_NOTE_EMISSION_V2, schemaVersion: 3, bodyParagraphDefaults: {
+  wordParagraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' },
+  wordParagraphMarkLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' } } };
 function requireBookNoteEmission(emission) {
   need(stable(emission) === stable({ schemaVersion: 1, fontSize: '12pt' })
-    || stable(emission) === stable(BOOK_NOTE_EMISSION_V2), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
-  return emission.schemaVersion === 2;
+    || stable(emission) === stable(BOOK_NOTE_EMISSION_V2)
+    || stable(emission) === stable(BOOK_NOTE_EMISSION_V3), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  return [2, 3].includes(emission.schemaVersion);
 }
 function completeBodyMeaning(body, defaults, emission, source = false) {
-  const pinned = emission?.schemaVersion === 2;
+  const pinned = [2, 3].includes(emission?.schemaVersion);
   if (emission) requireBookNoteEmission(emission);
   const rows = model.validateNoteBody(body).paragraphs;
   return rows.map(({ paragraph, list, table }) => {
@@ -346,16 +350,19 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
       && unionReferences[index]?.paragraphIndex === returned.paragraphIndex, 'PENDING_NOTE_UNION_BINDING');
   }
   need(used.size === returnedNotes.length, 'PENDING_NOTE_GRAPH_MISMATCH');
+  requireBookNoteEmission(baseline.breakEmission);
+  const bodyEmission = baseline.breakEmission.schemaVersion === 3
+    ? { bodyParagraphEmission: clone(BOOK_NOTE_EMISSION_V3.bodyParagraphDefaults) } : {};
   const bound=scenes.map((scene, i) => {
     const owned = baseline.sourceBindings.filter(binding => binding.sceneId === scene.sceneId);
-    if (!owned.length) return { sceneId: scene.sceneId, beforeDoc: scene.document, returnedDoc: scene.returnedDocument };
+    if (!owned.length) return { sceneId: scene.sceneId, beforeDoc: scene.document, returnedDoc: scene.returnedDocument, ...bodyEmission };
     const indices = returnedNotes.map((note, index) => ({ note, index })).filter(item => blocks[item.note.paragraphIndex]?.sceneId === scene.sceneId);
     const local = note => ({ ...note, paragraphIndex: blocks[note.paragraphIndex].local });
     const bound = bindUnchangedPendingNotes({ document, projectId, sceneId: scene.sceneId,
       baseline: { ...baseline, sourceBindings: owned }, exportMap, beforeDoc: scene.document, returnedDoc: scene.returnedDocument,
-      ...(baseline.breakEmission?.schemaVersion === 2 ? { closedBookEmission: baseline.breakEmission } : {}),
+      ...([2, 3].includes(baseline.breakEmission?.schemaVersion) ? { closedBookEmission: baseline.breakEmission } : {}),
       returnedNotes: indices.map(item => local(item.note)), unionReferences: indices.map(item => local(unionReferences[item.index])) });
-    return { sceneId: scene.sceneId, ...bound };
+    return { sceneId: scene.sceneId, ...bound, ...bodyEmission };
   });
   const ordered=baseline.sourceBindings.map((binding,index)=>{
     const scene=bound.find(scene=>scene.sceneId===binding.sceneId),point=pending.noteProjection(scene.beforeDoc,'export').find(point=>point.noteId===binding.noteId);

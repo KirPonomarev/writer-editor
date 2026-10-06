@@ -43,7 +43,7 @@ function applyRunFormat(node, format) {
   if(marks.length)result.marks=marks;else delete result.marks;
   return review.normalizeNode(result);
 }
-function importRunStyle(node, returnedMarks, expectedMarks, paragraphType, paragraphAttrs) {
+function importRunStyle(node, returnedMarks, expectedMarks, paragraphType, paragraphAttrs, bodyEmission) {
   const result=clone(node),marks=clone(node.marks||[]),incoming=(returnedMarks||[]).find(m=>m.type==='textStyle')?.attrs||{};
   const index=marks.findIndex(m=>m.type==='textStyle'),attrs=clone(index>=0?marks[index].attrs||{}:{});
   const expected=(expectedMarks||[]).find(m=>m.type==='textStyle')?.attrs||{};
@@ -52,7 +52,9 @@ function importRunStyle(node, returnedMarks, expectedMarks, paragraphType, parag
     // identical explicit run properties; retain authored canonical properties
     // when that effective style is unchanged, rather than inventing defaults.
     const codeDefault=paragraphType==='codeBlock'?(key==='fontFamily'?'Menlo':key==='fontSize'?'10pt':undefined):undefined;
-    const emitted=expected[key] ?? (paragraphType==='codeBlock'?codeDefault:key==='fontFamily'?'Times New Roman':key==='fontSize'?'12pt':{val:'en-US',eastAsia:'en-US',bidi:'en-US'});
+    const emitted=bodyEmission&&paragraphType!=='codeBlock'&&key==='wordLanguage'
+      ?{...bodyEmission.wordParagraphMarkLanguage,...paragraphAttrs?.wordParagraphMarkLanguage,...expected[key]}
+      :expected[key] ?? (paragraphType==='codeBlock'?codeDefault:key==='fontFamily'?'Times New Roman':key==='fontSize'?'12pt':{val:'en-US',eastAsia:'en-US',bidi:'en-US'});
     const languageContextChanged=key==='wordLanguage' && incoming[key]!==undefined && attrs[key]===undefined
       &&!equal(incoming[key],{val:'en-US',eastAsia:'en-US',bidi:'en-US',...paragraphAttrs?.wordParagraphMarkLanguage});
     if(equal(incoming[key]??codeDefault,emitted)&&!languageContextChanged||incoming[key]===undefined&&attrs[key]===undefined)continue;
@@ -152,6 +154,10 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     if(paragraph.type==='codeBlock')need(exportParagraphs?.[index]?.nodeType==='codeBlock'
       &&exportParagraphs[index].codeLanguage===(paragraph.attrs?.language||''),'MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN');
   });
+  const bodyEmission=noteBinding?.bodyParagraphEmission;
+  if(bodyEmission!==undefined)need(equal(bodyEmission,{
+    wordParagraphSpacing:{before:0,after:0,line:240,lineRule:'auto'},
+    wordParagraphMarkLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}}),'MIXED_RETURN_NOTE_BODY_EMISSION_INVALID');
   let changes=0;
   basis.returned.segments.forEach((segments,p)=>{
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===p&&review.isParagraphFormat(r));
@@ -161,6 +167,12 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
         const value=!oldFormat&&returnedFormat&&!equal(returnedFormat.format.before.attrs?.[key],returnedFormat.format.after.attrs?.[key])
           ?returnedFormat.format.before.attrs?.[key]:actual.attrs?.[key];
+        if(bodyEmission){
+          const expected={...bodyEmission[key],...sourceParagraphs[p].attrs?.[key]};
+          const effective=key==='wordParagraphSpacing'?{before:0,after:0,...value}:value;
+          need(equal(expected,effective),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
+          continue; // Retain authored absence/partial fields, not transport fallbacks.
+        }
         if(equal(sourceParagraphs[p].attrs?.[key],value))continue;styleChanged=true;
         sourceParagraphs[p].attrs={...sourceParagraphs[p].attrs};
         if(value===undefined)delete sourceParagraphs[p].attrs[key];else sourceParagraphs[p].attrs[key]=clone(value);
@@ -203,7 +215,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       if(allowUntrackedRichFormatting&&match!==null){
         const expectedMarks=sourceParagraphs[p].type==='codeBlock'
           ?(old?.revision?.operation==='format'?old.revision.format.before:canonicalNode.marks):before[match].node.marks;
-        const imported=importRunStyle(canonicalNode,token.revision?.operation==='format'?token.revision.format.before:token.node.marks,expectedMarks,sourceParagraphs[p].type,sourceParagraphs[p].attrs);
+        const imported=importRunStyle(canonicalNode,token.revision?.operation==='format'?token.revision.format.before:token.node.marks,expectedMarks,sourceParagraphs[p].type,sourceParagraphs[p].attrs,bodyEmission);
         need(!noteBinding||equal(imported,canonicalNode),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
         if(!equal(imported,canonicalNode))changes++;canonicalNode=imported;
       }

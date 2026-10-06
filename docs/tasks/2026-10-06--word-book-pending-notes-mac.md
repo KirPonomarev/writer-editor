@@ -425,6 +425,93 @@ Source bytes remain exact during both runs. These are controlled code proofs on
 the owned0bcf70-based candidate; native exchanges, full RTK/baseline, CI, merge
 and original novel release remain open. Fresh origin/main remains5d0c586.
 
+### Amendment05 — authenticated body paragraph transport
+
+Same open delivery contour, unchanged26-path allowlist and original5d0c586
+delivery base. Clean checkpointb0100d7, fresh full ordered startup reads and
+amendment05 architecture preflight precede this amendment. E0 must pass before
+runtime edits. Runtime900 and behavior1300 diff budgets remain unchanged.
+
+SOURCE06 own public export and genuine Word changed SaveAs061c746a preserve
+the complete four-note meaning and expected Current/Original text. Actual
+public intake refuses MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED before Apply;
+all six canonical business files remain exact. Read-only actual Core diagnosis
+isolates paragraph0: source has absent spacing/mark language, Word resolves
+after160 line278 auto and ru-FI/ru-RU/ar-SA from its body docDefaults.
+The old v2 artifact remains refused; do not replay or relabel it as acceptance.
+
+O: fresh composed-book pending text/discussion return with unchanged rich notes
+reaches Cancel/Apply and preserves authored paragraph absence on disk.
+T: canonical scenes/notes and authenticated local export capsule -> existing
+Main/Kernel/lease -> existing atomic writer; incoming Word properties are proof
+only. H: pin exact locally owned fallback body pPr in the exported DOCX, then
+independently compare actual effective properties without writing fallbacks to
+canonical state. B: protect all authored source properties, notes/graphs,
+legacy v1/v2 routes, old artifacts and foreign WIP; rollback this PR to5d0c586.
+P: meaningful ZIP/property/profile negatives, whole affected suites, fresh
+SOURCE and ordinary PACKAGED genuine changed-save/Cancel/Apply/restart/reexport,
+mandatory gates and complete delivery. I: clean b0100d7, current task/branch,
+061c746a artifact, fresh uniquely owned native profiles and exact child identity.
+
+Version3 closed local note emission retains the v2 note profile and additionally
+declares bodyParagraphDefaults: wordParagraphSpacing before0 after0 line240
+lineRule auto and wordParagraphMarkLanguage val/eastAsia/bidi en-US.
+Source-authored fields override every fallback. Producer pins direct body pPr
+and explicit clean-run language for this composed pending-comment-plus-existing-notes
+route; global docDefaults, standalone and no-notes output remain unchanged. Canonical formatIR
+and raw source hashes never gain these fallback properties.
+
+Core owns an independent exact profile literal, validates the full local
+baseline/source/note meaning before deriving each scene binding, and compares
+all actual effective body spacing/language against the source-bound emitted
+expectation. Missing zero spacing may equal zero only after parser resolution.
+Matching transport representation retains original canonical absent/partial
+attributes; altered nonzero/lang/profile values and true paragraph/run format
+changes with notes remain strict refusals. No returned-derived defaults,
+generic defaults engine, style catalog or new dependency. Keep legacy v1/v2
+meaning/corruption tests; add full authored override and canonical-absence
+regressions. New profile alone never gives write authority.
+
+Amendment05 consistency clarification, same26-path preflight/authority:
+full-ZIP emulation of the observed Word rPrDefault language exposes a retained
+clean-run refusal after pPr is pinned. The previous fixture incorrectly placed
+language inside pPrDefault; retain its failures, not acceptance. Paragraph-mark
+language cannot establish text-run language. Only version3/non-codeBlock clean
+emission explicitly declares the existing locally owned Times New Roman12pt
+font/size fallback plus en-US slots -> authored paragraph mark language ->
+authored run language, matching the already owned commentTransportSegments law.
+Use a read-only cloned emissionBlock and independently source-bound comparison;
+no canonical formatIR/source mutation, source-authored omission erasure or
+returned-derived fallback. Authored font/size fields override local defaults;
+every actual changed font/size/language still refuses under the complete oracle.
+CodeBlock, v1/v2 and no-notes paths retain their prior behavior. Reparse complete
+notes from every mutated ZIP; never reuse old note observations to hide defaults.
+Root updates this existing specification and executes E0 before that producer
+consistency edit; it does not expand paths, runtime boundary or release scope.
+
+Checkpoint04 mandatory graph executes3613/3613 with zero fail/cancel/skip/todo
+and clean final process/lease cleanup, but original runner exits1. Preserve
+that failure and resolve its separate process-observation qualification before
+claiming whole-run PASS. Log SHA25681aae1c2ee937a582de68dea459036f66a661955d9a9b11c8d0ee1e520c8e002.
+Full native Apply, both origins,100k/five genuine exchanges and original novel
+release remain OPEN. Root owns OPS/proof/delivery; separate writer owns only
+the already admitted runtime and behavior-test seams for this amendment.
+
+
+Amendment05 final writer HOLD: whole notes/mixed59of59 and selected real
+Main3of3 execute with exit0 and zero fail/cancel/skip/todo. Full actual Main
+selected contracts exercise Cancel, Apply, restart, reexport, complete notes,
+protected sibling and absent/partial authored body properties under the exact
+observed Word rPrDefault/pPrDefault shape. Retain all earlier failed attempts:
+one synthetic mutation crossed a closed run into a note reference and was
+correctly refused; another fixture lacked active project context on reexport.
+Both fixture issues were corrected without changing runtime acceptance gates.
+Runtime574of900 and behavior596of1300 aggregate; writer now HOLD. These selected
+proofs do not certify genuine native Word, whole mandatory graph,100k/five
+exchanges or final delivery. Whole-run checkpoint04 process qualification
+remains unresolved despite all3613 tests passing. Native and full gates follow
+on a clean independently frozen checkpoint; no self-PASS or scope expansion.
+
 ## IMPLEMENTATION_STEPS
 
 Root owns contract, declaration/E0, OPS, proof and full delivery. Separate code

@@ -1217,6 +1217,15 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
               emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
                 [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
             }
+            // Core has independently validated the complete local v3 profile.
+            // Rebuild its emitted pPr only in this read-only expectation clone.
+            if(scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+              if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
+                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
+              paragraph.attrs={...paragraph.attrs};
+              for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
+                ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
+            });
             if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
               ||stableRtkReviewTransportJson(scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography))
                 !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');

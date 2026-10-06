@@ -18,11 +18,13 @@ const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', native
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 // Shared owned fixture, loaded without registering this file's tests by the
 // other two contracts. Every expected point/text below is a literal oracle.
-async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false } = {}) {
+async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null } = {}) {
   const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
   const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
   const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
   const beforeDocs=[d(p('AxxB tail')),d(p('Control Beta')),pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('oldnew tail')),[event(1,'delete',0,3),event(2,'insert',3,6)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:8}])];
+  if(authoredRunLanguage)beforeDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);for(const node of (old?value.source:value).content[0].content)if(node.type==='text')node.marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:plain(authoredRunLanguage)}}];beforeDocs[i]=old?pending.bindLedger(value):value;});
+  if(bodyParagraphAttrs)beforeDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);(old?value.source:value).content[0].attrs=plain(bodyParagraphAttrs);beforeDocs[i]=old?pending.bindLedger(value):value;});
   const body=bodyOverride||d({type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},content:[
     {type:'text',text:'Rich body',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
     {type:'hardBreak'},{type:'text',text:'kept'}]});
@@ -35,14 +37,17 @@ async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = fa
   const packet=(docs,notesDocument,nonTextReturnState)=>{
     const value=makeSource({projectId,projectRoot:'/project',notesDocument,nonTextReturnState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:'/project/'+id,order:i,
       doc:docs[i],text:envelope.deriveVisibleTextFromDocument(docs[i]),observableContent:envelope.composeObservablePayload({doc:docs[i]})}))});
-    // Keep the historical emitter/proof law executable; production selects v2.
+    // Keep both historical emitter/proof laws executable; production selects v3.
     if(legacyNoteProfile)for(const noteBaseline of [value.documentNotes,value.localAuthorityCapsule.documentNotes])noteBaseline.breakEmission={schemaVersion:1,fontSize:'12pt'};
+    if(noteProfileV2)for(const noteBaseline of [value.documentNotes,value.localAuthorityCapsule.documentNotes]){noteBaseline.breakEmission.schemaVersion=2;delete noteBaseline.breakEmission.bodyParagraphDefaults;}
     return value;
   };
   const source=packet(beforeDocs,document,state);
   const afterDocs=[pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!AxxB tail')),[{...event(3,'insert',0,1),author:'Word editor'},{...event(4,'delete',2,4),author:'Word editor'}])),
     [{noteId:'note-left',paragraphIndex:0,offsetUtf16:2},{noteId:'note-right',paragraphIndex:0,offsetUtf16:4}]),beforeDocs[1],
     pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!oldnew tail')),[{...event(3,'insert',0,1),author:'Word editor'},event(1,'delete',1,4),event(2,'insert',4,7)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:9}])];
+  if(authoredRunLanguage)afterDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);for(const node of (old?value.source:value).content[0].content)if(node.type==='text')node.marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:plain(authoredRunLanguage)}}];afterDocs[i]=old?pending.bindLedger(value):value;});
+  if(bodyParagraphAttrs)afterDocs.forEach((doc,i)=>{const old=pending.readLedger(doc),value=plain(old||doc);(old?value.source:value).content[0].attrs=plain(bodyParagraphAttrs);afterDocs[i]=old?pending.bindLedger(value):value;});
   const afterNotes=plain(document),afterOffsets=[2,2,2,6],current=['!AB tail','Control Beta','!new tail'];
   afterNotes.notes.forEach((n,i)=>{n.manuscript.reference.offsetUtf16=afterOffsets[i];n.manuscript.reference.sourceTextSha256=hash(current[owners[i]]);});
   const afterState=plain(state);afterState.threads[0].anchor=exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'tail'},ids[0],[current[0]]);
@@ -192,7 +197,7 @@ test('actual ZIP book note break formatting is retained and every altered or for
   }
 });
 test('closed v2 note styles survive Word defaults and zero omission while source fields and every effective break remain guarded',async()=>{
-  const f=await composedBookFixture(),baseline=f.source.documentNotes,input={document:f.document,projectId,baseline,exportMap:f.proof.exportMap,
+  const f=await composedBookFixture(null,{noteProfileV2:true}),baseline=f.source.documentNotes,input={document:f.document,projectId,baseline,exportMap:f.proof.exportMap,
     scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
     returnedNotes:f.proof.noteContext.returnedNotes,returnedReferences:f.proof.noteContext.returnedReferences,unionReferences:f.proof.noteContext.unionReferences};
   assert.deepEqual(baseline.breakEmission,{schemaVersion:2,fontSize:'12pt',fontFamily:'Times New Roman',
@@ -230,6 +235,28 @@ test('closed v2 note styles survive Word defaults and zero omission while source
   const ordinary=make({projectId,projectRoot:'/project',notesDocument:f.document,nonTextReturnState:{...f.state,threads:[]},scenes:f.ids.map((sceneId,i)=>({sceneId,scenePath:'/project/'+sceneId,order:i,
     doc:f.beforeDocs[i],text:envelope.deriveVisibleTextFromDocument(f.beforeDocs[i]),observableContent:envelope.composeObservablePayload({doc:f.beforeDocs[i]})}))});
   assert.deepEqual(ordinary.documentNotes.breakEmission,{schemaVersion:1,fontSize:'12pt'});
+});
+test('closed v3 emission pins body pPr without granting fallback fields canonical ownership or accepting altered profile',async()=>{
+  const f=await composedBookFixture(),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  const profile={wordParagraphSpacing:{before:0,after:0,line:240,lineRule:'auto'},wordParagraphMarkLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}};
+  assert.deepEqual(f.source.documentNotes.breakEmission.bodyParagraphDefaults,profile);
+  assert.equal(f.source.documentNotes.breakEmission.schemaVersion,3);
+  for(const paragraph of parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)){
+    assert.match(paragraph[0],/<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"\/>/u);
+    assert.match(paragraph[0],/<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"\/>/u);
+  }
+  assert.ok(f.source.localAuthorityCapsule.exportMap.scenes.every(scene=>scene.blocks.every(block=>block.formatIr.paragraph.wordParagraphSpacing===undefined&&block.formatIr.paragraph.wordParagraphMarkLanguage===undefined)));
+  const input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
+    scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
+    returnedNotes:f.proof.noteContext.returnedNotes,returnedReferences:f.proof.noteContext.returnedReferences,unionReferences:f.proof.noteContext.unionReferences};
+  assert.deepEqual(delta.bindUnchangedBookPendingNotes(input).map(b=>b.bodyParagraphEmission),Array(3).fill(profile));
+  for(const mutate of [e=>delete e.bodyParagraphDefaults,e=>e.bodyParagraphDefaults.wordParagraphSpacing.line=278,
+    e=>delete e.bodyParagraphDefaults.wordParagraphSpacing.before,e=>e.bodyParagraphDefaults.wordParagraphMarkLanguage.bidi='ar-SA',
+    e=>e.bodyParagraphDefaults.extra=true,e=>e.schemaVersion=4,e=>e.extra=true]){
+    const baseline=plain(input.baseline);mutate(baseline.breakEmission);
+    assert.throws(()=>delta.bindUnchangedBookPendingNotes({...input,baseline}),/PENDING_NOTE_BREAK_BASELINE_REQUIRED/u);
+    assert.throws(()=>builder.buildDocxReviewPacketBuffer({...f.afterSource,documentNotes:baseline}),/DOCX_NOTE_EMISSION_INVALID/u);
+  }
 });
 test('Return note points preserve semantic ownership across pending and resolved export bases, not raw union offsets',()=>{
   for(const state of ['pending','accepted','rejected']) {
