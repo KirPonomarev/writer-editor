@@ -2787,7 +2787,7 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
   }
 });
 
-async function composedNotesMainFixture(t,{authored=false,plainSibling=false}={}) {
+async function composedNotesMainFixture(t,{authored=false,plainSibling=false,inactiveTab=false}={}) {
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');let originalNotes,notePath;
  const x=await pendingCommentMainFixture(t,{beforeExport:async({f,paths,sceneIds})=>{
   if(plainSibling)fs.writeFileSync(paths[1],bookmarks.paragraphs(envelope.parseObservablePayload(read(paths[1])).doc).map(p=>bookmarks.textOf(p)).join('\n'));
@@ -2823,6 +2823,7 @@ async function composedNotesMainFixture(t,{authored=false,plainSibling=false}={}
     whitelist:whitelist.map(relative=>({relativePath:relative,sha256:sha(fs.readFileSync(path.join(target,relative)))})),noteIds:originalNotes.notes.map(n=>n.id)},null,2));
   }
  },tamper:(parts,{projection})=>{
+  if(inactiveTab){assert.doesNotMatch(parts['word/settings.xml'],/<w:defaultTabStop\b/u);parts['word/settings.xml']=parts['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>');}
   const beta=projection.threads.find(t=>t.threadId==='protected-sibling'),root=beta.messages[0];
   beta.messages.push({canonicalCommentId:'book-note-beta-reply',commentId:'910',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'});
   for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
@@ -2887,6 +2888,27 @@ for(const plainSibling of [false,true])test('book notes actual Main commits both
  const final=await reopened.probe.reviewBuild(await reopened.probe.fullSource());assert.equal(final.publicationGate.publishAllowed,true,JSON.stringify(final.publicationGate));
 });
 
+test('book notes actual Main admits only inactive tab emission through complete proof, retaining rich-note refusals and Cancel',async t=>{
+ const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{inactiveTab:true}),before=x.f.capture(),beforeNotes=read(notePath);
+ assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+ assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
+ const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.bytes}).parts;
+ for(const properties of ['<w:b/>','<w:lang w:val="en-US"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>']) {
+  const parts={...original,'word/footnotes.xml':original['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`)};
+  assert.notEqual(parts['word/footnotes.xml'],original['word/footnotes.xml']);
+  const result=await x.f.probe.reviewActivate({requestId:'inactive-tab-rich-refusal',bufferSource:pack(parts).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.equal(result.pendingProductPath?.code,'PENDING_NOTE_BREAK_CHANGED',JSON.stringify(result));assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
+ }
+ const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'inactive-tab.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
+ const cancelled=await x.f.probe.reviewLocalFile({requestId:'inactive-tab-cancel'},options);
+ assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
+ const sibling=read(x.paths[1]);x.f.chooseMessageResponse(1);
+ const applied=await x.f.probe.reviewLocalFile({requestId:'inactive-tab-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));
+ assert.equal(read(x.paths[1]),sibling);assert.deepEqual(JSON.parse(read(notePath)).notes.map(n=>n.manuscript.body),originalNotes.notes.map(n=>n.manuscript.body));
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');for(const i of [0,2])assert.match(pending.projection(envelope.parseObservablePayload(read(x.paths[i])).doc).current,/😀BOOK/u);
+ assert.equal(JSON.parse(read(x.commentPath)).threads.find(t=>t.threadId==='protected-sibling').messages.at(-1).body,'Foreign Beta reply retained');
+});
 test('book notes publication authenticates omitted plain sibling baseline and refuses forged bytes',async t=>{
  const {x}=await composedNotesMainFixture(t,{plainSibling:true}),sibling=read(x.paths[1]),sceneId=x.source.localAuthorityCapsule.exportMap.scenes[1].sceneId;
  assert.equal(Object.hasOwn(x.source.localAuthorityCapsule.baselineObservableContentBySceneId,sceneId),false);

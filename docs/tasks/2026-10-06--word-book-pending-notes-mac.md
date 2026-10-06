@@ -70,7 +70,8 @@ companions may reflect complete serialization. No unrelated formatting/refactor.
 
 No renderer, preload, shared modal, package/lockfile, dependency or runtime-network
 changes. Parser changes are restricted to the existing note-only read-only
-break-format projection before canonical conversion; generic import behavior
+break-format projection and the authenticated closed-book inactive default-tab
+predicate described in amendment03; generic import behavior
 and unrelated document/story parsing remain unchanged. No style catalog, generic default engine, tracked
 format/move/structural mixtures, media/bookmark/story admission expansion or
 second storage writer. Preserve existing authored rich fields and schema3
@@ -293,6 +294,68 @@ change. Do not claim both recursive registries are simultaneously current.
 The separate writer changed only the successor constant; all19 ordinary Apply
 tests pass provisionally with no skipped/todo cases and original13 hashes
 unchanged. Root must freeze19 bindings and rerun the real committed candidate.
+
+### SCOPE_AMENDMENT_03 — authenticated inactive tab with complete book notes
+
+AMENDMENT03_CHECKPOINT_SHA: 196d56d2c4a70a80530055d10665f95662ae7cc4
+AMENDMENT03_PREFLIGHT: passed on clean exact checkpoint with26 explicit paths
+AMENDMENT03_AUTHORITY: same owner-authorized atomic book-note return; no new
+delivery contour, UI, dependency, permission, runtime network or writer.
+
+The owned Word lock was removed through exact cancellation of two known small
+dialogs followed by normal saved-document close. Word removed its own owner
+file. No force quit, lock-file deletion, permission change or failure replay.
+One genuine changed Word Save As produced23334 bytes, artifact SHA256
+338987b0e99088eba197d66748ed3ec8f7685f3a2a0bc96de136c5e880225aac.
+Actual public SOURCE preview refused PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED;
+all six canonical business files stayed byte-exact. Full Current/Original body
+and reference geometry match the independent pre-Word intent. Rich note
+language/formatting differences remain unresolved and must continue to refuse.
+
+Exact read-only reparse reproduces the first refusal: source-owned unconfigured
+implicit default tab720 acquired an explicit708 after Word save, but foot/endnote XML makes the existing
+inactive predicate refuse without their authenticated local baseline. Supply
+complete baselineDocumentNotes only from the validated Main-owned active book
+capsule, after signed note-digest/policy checks. Require the complete source
+note roster/rich bodies and actual returned identities; inspect every source
+body and returned Word XML part for active tab carriers. Missing, malformed,
+foreign, duplicate or incomplete baseline/roster refuses. Note list/table
+uncertainty and header/footer baselines remain unsupported by this predicate.
+Explicit source settings, non708 returns and source/returned tabs still refuse.
+The first comment-only format refusal may route to the complete book planner
+only for multiple scenes with authenticated existing manuscript notes. This
+does not admit note formatting in the comment-only publisher.
+No changed language, font, spacing, break meaning or note graph is ignored;
+the complete independent semantic planner and atomic publication guards remain.
+
+Three old SOURCE04 public request timeouts are retained; that replay loop is
+stopped. The actual bridge budget is120000ms. Operator/dialog acknowledgement
+wait exceeded it; product latency is unproven. No timeout/preload/modal/UI repair
+is admitted by this amendment. Zero full native Apply exchanges and zero
+packaged changed exchanges are qualified in this resumed proof. CHECK05 and
+the original100k/five-exchange/full novel acceptance remain OPEN.
+
+### Amendment03 resume diagnostic checkpoint
+
+The complete actual-Main suite on the owned amendment03 bytes passes272of272,
+with zero failures, cancellations, skips or todo. Source bytes remain unchanged
+during the run; log SHA256c7e531e81f7c925f3ed4d318d7c7eba430177a7d46571c91a7add48aa089d99e.
+This controlled proof does not satisfy the native exchange gate.
+
+Two fresh short real Word16.112 no-edit Save As controls preserve every note
+text and the authored Georgia14/bold/ru-RU runs, while adding document-default
+Times New Roman and ru-FI/ru-RU/ar-SA language properties, plus inherited
+paragraph spacing. Original-style result SHA256
+96c88fb1203b8b1171c375cec14726ebed314e3977690ffac805d719c9948451;
+renamed-note-style result SHA256
+9ad9fd059fc7844807b4e8ac330d0fe0355ad8cbb80faf673c5e73db284ee398.
+Both source files remain exact; both owned Word documents close normally.
+Renaming the four note styles therefore does not resolve the default ambiguity.
+These are external diagnostic variants, not product changes or Apply evidence.
+The prior changed artifact's authored ru-RU to en-US change remains a real
+unresolved difference and must not be normalized away. A subsequent coherent
+amendment must bind any additional note emission to an explicitly owned local
+profile; returned defaults cannot define the expected canonical meaning.
 
 ## IMPLEMENTATION_STEPS
 

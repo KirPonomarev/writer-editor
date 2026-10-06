@@ -11225,19 +11225,53 @@ export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProject
 // A signed, inactive Office emission default is equivalent only when complete
 // observable baseline and every returned Word XML part have no tab carrier.
 // Unknown separate note/story baselines fail closed rather than erase semantics.
-function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission}) {
+function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes}) {
   if(allowInactiveDefaultTabEmission!==true || exportMap.scenes.some(s=>s.documentFormatIr?.explicit!==false
     ||s.documentFormatIr.wordDefaultTabStop!==720))return false;
   const strings=[...baselineDocuments.map(s=>s.document)];
-  while(strings.length){const value=strings.pop();if(typeof value==='string'&&value.includes('\t'))return false;
-    if(value&&typeof value==='object')strings.push(...Object.values(value));}
   const extracted=extractDocxReviewTransportPackagePartsFromZipBytes({bytes});
   if(!extracted.ok)return false;
+  if(Object.keys(extracted.parts).some(name=>/^word\/(?:footnotes|endnotes)\.xml$/u.test(name))
+    ||baselineDocumentNotes?.sourceBindings?.length){
+    // This is read-only evidence from the authenticated book capsule. It does
+    // not replace the complete rich-body/source/occurrence law before Apply.
+    const baseline=baselineDocumentNotes,returned=returnedDocumentNotes;
+    if(baseline?.schemaVersion!=='yalken.rtk.word.document-notes.v1'
+      ||baseline.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'||typeof baseline.projectId!=='string'||!baseline.projectId
+      ||!Array.isArray(baseline.sourceBindings)||!baseline.sourceBindings.length||baseline.sourceBindings.length>256
+      ||!Array.isArray(baseline.notes)||baseline.notes.length!==baseline.sourceBindings.length
+      ||baseline.protectedDigest!==`sha256:${hashCanonicalValue({schemaVersion:baseline.schemaVersion,notes:baseline.notes})}`
+      ||returned?.inventoryStatus!=='COMPLETE'||!Array.isArray(returned.bodySources)
+      ||returned.bodySources.length!==baseline.sourceBindings.length||returned.notes?.length!==returned.bodySources.length
+      ||returned.references?.length!==returned.bodySources.length)return false;
+    const ids=new Set(),nativeIds=new Set(),seen=new Set();
+    for(const [i,binding] of baseline.sourceBindings.entries()){
+      if(!binding||typeof binding.noteId!=='string'||ids.has(binding.noteId)||!['footnote','endnote'].includes(binding.kind)
+        ||!exportMap.scenes.some(scene=>scene.sceneId===binding.sceneId)
+        ||binding.transportIdentity!==`_YALKEN_NOTE_${sha256Hex(baseline.projectId+'\n'+binding.noteId).slice(0,24)}`
+        ||!/^[1-9][0-9]*$/u.test(binding.nativeId)||nativeIds.has(binding.kind+':'+binding.nativeId))return false;
+      ids.add(binding.noteId);nativeIds.add(binding.kind+':'+binding.nativeId);
+      const matches=returned.bodySources.filter(source=>source.transportIdentity===binding.transportIdentity);
+      if(matches.length!==1||matches[0].kind!==binding.kind||seen.has(matches[0]))return false;
+      seen.add(matches[0]);
+      let rows;try{rows=manuscriptNoteModel.validateNoteBody(binding.richBody).paragraphs;}catch{return false;}
+      if(rows.some(row=>row.list||row.table||row.paragraph.type!=='paragraph'
+        ||row.paragraph.content?.some(node=>!['text','hardBreak'].includes(node.type))))return false;
+      const paragraphs=rows.map(row=>(row.paragraph.content||[]).map(node=>node.type==='hardBreak'?'\n':node.text).join(''));
+      if(hashCanonicalValue(paragraphs)!==hashCanonicalValue(binding.paragraphs)
+        ||hashCanonicalValue(baseline.notes[i])!==hashCanonicalValue({kind:binding.kind,paragraphIndex:binding.documentParagraphIndex,
+          offsetUtf16:binding.offsetUtf16,paragraphs}))return false;
+      strings.push(binding.richBody);
+    }
+  }
+  while(strings.length){const value=strings.pop();if(typeof value==='string'&&value.includes('\t'))return false;
+    if(value&&typeof value==='object')strings.push(...Object.values(value));}
   for(const [name,xml] of Object.entries(extracted.parts)){
     if(!name.startsWith('word/')||!name.endsWith('.xml'))continue;
     // These baselines live in separate protected registries; this caller has
     // not supplied their authenticated content, so do not infer equivalence.
-    if(/^word\/(?:footnotes|endnotes|header[^/]*|footer[^/]*)\.xml$/u.test(name))return false;
+    if(/^word\/(?:header[^/]*|footer[^/]*)\.xml$/u.test(name))return false;
+    const notePart=/^word\/(?:footnotes|endnotes)\.xml$/u.test(name);
     if(xml.includes('\t')||/&#(?:0*9|x0*9);/iu.test(xml))return false;
     if(docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure)return false;
     const selected=docxContentPreviewSelectMarkupCompatibilityXml(xml);if(selected.failure)return false;
@@ -11249,6 +11283,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
       const parsed=docxContentPreviewParseStrictStartTag(token.slice(1,-1),stack.at(-1)?.ns||new Map());if(!parsed)return false;
       const tag=parsed.namespaceUri===DOCX_WORDPROCESSINGML_MAIN_NAMESPACE?parsed.localName:'';
       if(tag==='tab'&&stack.at(-1)?.tag==='r')return false;
+      if(notePart&&['numPr','tbl'].includes(tag))return false;
       if(!parsed.selfClosing)stack.push({raw:parsed.rawTagName,tag,ns:parsed.namespaceMap});if(stack.length>128)return false;
     }
     if(stack.length)return false;
@@ -11259,7 +11294,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
     if(typeof allowInactiveDefaultTabEmission!=='boolean')throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_PERMISSION');
@@ -11268,7 +11303,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
     const preview=buildDocxContentPreviewFromZipBytes(bytes);
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
-    let sectionsVerified=false;
+    let sectionsVerified=false,returnedDocumentNotes;
     if(baselineDocuments!==undefined){
       if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
         ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
@@ -11277,6 +11312,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         signedDigest:signedSectionsDigest,allowOfficeDefaultOmissions});
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
       sectionsVerified=true;
+      returnedDocumentNotes=analysis.reviewIr.documentNotes;
     }
     const document=preview.contentPreview?.pendingRevisionDocument;
     let ledger=pendingTextRevisions.readLedger(document);
@@ -11321,7 +11357,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         const format=scene.documentFormatIr;
         if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop){
           if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=source.attrs.wordDefaultTabStop===708
-            &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission});
+            &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes});
           if(!inactiveTabEquivalent)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
         }
         if(format?.explicit===false)delete source.attrs.wordDefaultTabStop;

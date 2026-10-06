@@ -81,6 +81,48 @@ test('complete book note law retains typed spacing/language/breaks and rejects e
     const bad=plain(input);mutate(bad);assert.throws(()=>delta.bindUnchangedBookPendingNotes(bad),/PENDING_NOTE_|NOTE_/u,String(mutate));
   }
 });
+test('inactive 720-to-708 tab emission requires complete local book-note bodies and returned identities',async()=>{
+  const f=await composedBookFixture(),original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  const pack=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  assert.doesNotMatch(original['word/settings.xml'],/<w:defaultTabStop\b/u);
+  assert.ok(f.source.localAuthorityCapsule.exportMap.scenes.every(scene=>scene.documentFormatIr.explicit===false&&scene.documentFormatIr.wordDefaultTabStop===720));
+  const parts={...original,'word/settings.xml':original['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>')},bytes=pack(parts);
+  const input={bytes,exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),
+    baselineDocumentNotes:f.source.documentNotes,documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest,
+    allowInactiveDefaultTabEmission:true,retainPendingScenes:true};
+  const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.deepEqual(result.scenes,f.proof.returnedScenes.map(scene=>({sceneId:scene.sceneId,returnedDocument:pending.bindLedger(scene.ledger)})));
+  const refuse=value=>{const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(value);assert.equal(result.ok,false,JSON.stringify(result));};
+  for(const mutate of [x=>delete x.baselineDocumentNotes,x=>x.baselineDocumentNotes=null,x=>x.allowInactiveDefaultTabEmission=false,
+    x=>x.baselineDocumentNotes.sourceBindings.pop(),x=>x.baselineDocumentNotes.sourceBindings[0].richBody=null,
+    x=>x.baselineDocumentNotes.projectId='foreign',x=>x.baselineDocumentNotes.policy='READ_ONLY',x=>x.baselineDocumentNotes.protectedDigest='sha256:'+'0'.repeat(64),
+    x=>x.baselineDocumentNotes.sourceBindings[0].transportIdentity=x.baselineDocumentNotes.sourceBindings[1].transportIdentity,
+    x=>x.baselineDocumentNotes.sourceBindings[0].nativeId=x.baselineDocumentNotes.sourceBindings[2].nativeId,
+    x=>x.baselineDocumentNotes.sourceBindings[0].sceneId='foreign.txt',x=>x.baselineDocumentNotes.sourceBindings[0].paragraphs[0]='changed',
+    x=>x.exportMap.scenes[0].documentFormatIr.explicit=true,x=>x.exportMap.scenes[0].documentFormatIr.wordDefaultTabStop=709,
+    x=>x.baselineDocuments[1].document.content[0].content[0].text+='\t']) {
+    const bad={...input,exportMap:plain(input.exportMap),baselineDocuments:plain(input.baselineDocuments),baselineDocumentNotes:plain(input.baselineDocumentNotes)};
+    mutate(bad);refuse(bad);
+  }
+  // A complete, coherently hashed local note baseline with an actual tab is
+  // still active. Missing/altered rich-body fields cannot hide that carrier.
+  const bad={...input,baselineDocumentNotes:plain(input.baselineDocumentNotes)},baseline=bad.baselineDocumentNotes;
+  baseline.sourceBindings[0].richBody.content[0].content[0].text+='\t';
+  baseline.sourceBindings[0].paragraphs=notes.validateNoteBody(baseline.sourceBindings[0].richBody).paragraphs.map(row=>row.paragraph.content.map(node=>node.type==='hardBreak'?'\n':node.text).join(''));
+  baseline.notes[0].paragraphs=plain(baseline.sourceBindings[0].paragraphs);
+  const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
+  baseline.protectedDigest='sha256:'+hash(stable({schemaVersion:baseline.schemaVersion,notes:baseline.notes}));refuse(bad);
+  const listed={...input,baselineDocumentNotes:plain(input.baselineDocumentNotes)};
+  listed.baselineDocumentNotes.sourceBindings[0].richBody.content=[{type:'bulletList',content:[{type:'listItem',content:listed.baselineDocumentNotes.sourceBindings[0].richBody.content}]}];
+  assert.ok(notes.validateNoteBody(listed.baselineDocumentNotes.sourceBindings[0].richBody).paragraphs[0].list);refuse(listed);
+  for(const [name,carrier] of [['word/document.xml','<w:tab/>'],['word/document.xml','<alias:tab xmlns:alias="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'],
+    ['word/footnotes.xml','<w:tab/>'],['word/endnotes.xml','<w:tab/>'],['word/footnotes.xml','<w:t>&#x9;</w:t>'],['word/endnotes.xml','<w:t>&#0009;</w:t>']]) {
+    const changed={...parts,[name]:parts[name].replace('</w:r>',carrier+'</w:r>')};assert.notEqual(changed[name],parts[name]);refuse({...input,bytes:pack(changed)});
+  }
+  for(const defaultTab of [719,721])refuse({...input,bytes:pack({...parts,'word/settings.xml':parts['word/settings.xml'].replace('w:val="708"',`w:val="${defaultTab}"`)})});
+  for(const kind of ['header','footer'])refuse({...input,bytes:pack({...parts,[`word/${kind}1.xml`]:`<w:${kind==='header'?'hdr':'ftr'} xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:${kind==='header'?'hdr':'ftr'}>`})});
+});
 test('book note styles resolve completely while no-notes styles and global defaults remain byte-exact',async()=>{
   const f=await composedBookFixture(),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
   const styles=parts['word/styles.xml'],definitions=[...styles.matchAll(/<w:style\b[^>]*w:styleId="([^"]+)"[^>]*>[\s\S]*?<\/w:style>/gu)];

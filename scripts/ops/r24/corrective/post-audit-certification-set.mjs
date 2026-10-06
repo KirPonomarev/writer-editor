@@ -3051,7 +3051,7 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "689178169b7f740d3749442a9b67d03cf5d9e9c1150bb9c8993d6967d26ab7f4"
+      "sha256": "2d73c91a5af0abfd8354854edee9ee493e26e9e2fdf5791f99b5db6b744253c8"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -3083,11 +3083,11 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "07b37e4924ad961c8e12e52c4b5222a5d0668b1e232d35ec7596320443b7fd7e"
+      "sha256": "f5c1778f2dc57957b2e69ff44e107b9ce66e28f819b9feed29abfbd0054f54f1"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "25ea07a447f172fcfcc1eee0efcd06a3c40eb4ec7715ff1c9885658259d48bb7"
+      "sha256": "bd8a7e15fe35f97b989b7e7935f85e38dfd44d1e1dd33647a2bb7eabce862cf8"
     },
     {
       "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -3099,7 +3099,7 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "95f7fdf4568f80a0c0e6e566bc9ccfa2f8e8a7a5a74180f8f3a2ce88da8ccbba"
+      "sha256": "24092e88f446e10b958fb8732b896f4592438e6360b6635dbdc4dfba6dbe8811"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -3107,13 +3107,13 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-      "sha256": "07e94b8033c0e8a7549923c4f4f4ef321ea96c39f96033256cbf6b93725a2bfb"
+      "sha256": "3f460706694004cc55145f1394fbc2fdc8845421c54f039484829e6a62da7257"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e0649216a31218bdef5a27dd10efdb116787b38e0f802c7cba1b9488937503df"
+      "sha256": "1ea233403953c362cb203590c8b61a8f4d94b4928bdc8669afeb90ccc00b86bb"
     }
   ]
 });

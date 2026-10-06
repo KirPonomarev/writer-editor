@@ -6374,17 +6374,18 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const snapshot=await verifySources();
     const comments=await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId});
     const cryptoPort=createRtkReviewTransportCryptoPort();
+    const hasNotes=Boolean(capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length);
+    if(hasNotes&&(capsule.documentNotes?.projectId!==context.projectId||capsule.documentNotes?.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+      ||intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest!==capsule.documentNotes.protectedDigest))throw Error('PENDING_NOTE_BASELINE_CONFLICT');
     const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
       baselineDocuments:scenes.map(scene=>({sceneId:scene.sceneId,document:scene.parsed.doc})),retainPendingScenes:true,
+      ...(hasNotes?{baselineDocumentNotes:capsule.documentNotes}:{}),
       documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections?.protectedDigest,
       allowOfficeDefaultOmissions:capsule.officeModeTransport===true,allowInactiveDefaultTabEmission:true,cryptoPort});
     if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_RETURN_PARSE_FAILED');
     const exportMap=JSON.parse(JSON.stringify(capsule.exportMap));
     if(Object.hasOwn(exportMap,'commentExport')&&stableRtkReviewTransportJson(exportMap.commentExport)!==stableRtkReviewTransportJson(capsule.commentExport))throw Error('MIXED_RETURN_COMMENT_BASELINE_MISMATCH');
     delete exportMap.commentExport;
-    const hasNotes=Boolean(capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length);
-    if(hasNotes&&(capsule.documentNotes?.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
-      ||intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest!==capsule.documentNotes.protectedDigest))throw Error('PENDING_NOTE_BASELINE_CONFLICT');
     const proof={schemaVersion:hasNotes?4:3,projectId:context.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
       baseline:capsule.commentExport,exportMap,returnedScenes:parsed.scenes.map(scene=>({sceneId:scene.sceneId,ledger:pendingTextRevisions.readLedger(scene.returnedDocument)})),
       returnedThreads:intake.parserResult.reviewIr.commentThreads,returnedParagraphs:intake.parserResult.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),
@@ -11260,7 +11261,11 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       onPrepared: options.onCommentDeltaPrepared });
     if(commentProductPath.ok!==true
       &&(['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)
-        ||commentProductPath.code==='PENDING_COMMENT_RETURN_NOTES_CHANGED'&&returnIntake.localAuthorityCapsule.exportMap.scenes.length>1)) {
+        ||returnIntake.localAuthorityCapsule.exportMap.scenes.length>1
+          &&(commentProductPath.code==='PENDING_COMMENT_RETURN_NOTES_CHANGED'
+            ||commentProductPath.code==='PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED'
+              &&returnIntake.localAuthorityCapsule.documentNotes?.policy==='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+              &&returnIntake.localAuthorityCapsule.documentNotes.sourceBindings?.length))) {
       // These typed outcomes require the separate complete mixed proof. All
       // identity, capability, stale and package failures remain terminal.
       const mixedPath=await (returnIntake.localAuthorityCapsule.exportMap.scenes.length>1?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
