@@ -11,7 +11,7 @@ const { renderTableParagraphs } = require('../../io/documentTables.js');
 
 const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
 // Owned transport fallback, not canonical manuscript typography. Only closed
-// book exports use it; source-authored run/paragraph properties remain direct.
+// book and fresh editable single-scene exports use it; authored properties remain direct.
 const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
   wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
   paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
@@ -132,8 +132,10 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     offsetUtf16: binding.offsetUtf16, paragraphs: [...binding.paragraphs] }));
   sourceBindings.forEach(binding => { binding.nativeId = String(++ordinalByKind[binding.kind]); });
   return { schemaVersion: DOCUMENT_NOTES_SCHEMA, projectId, selections, stateDigest: notesStateDigest(document),
-    ...(options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: options.pinnedBookNoteProfile === true
-      ? clone(BOOK_NOTE_EMISSION_V3) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
+    ...(options.pinnedSingleSceneNoteProfile === true && options.editableReturn === true && sourceBindings.length
+      ? { breakEmission: clone(BOOK_NOTE_EMISSION_V2) }
+      : options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: options.pinnedBookNoteProfile === true
+        ? clone(BOOK_NOTE_EMISSION_V3) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
     policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }

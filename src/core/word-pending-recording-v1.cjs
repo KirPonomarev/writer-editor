@@ -11,8 +11,7 @@ const frame = ledger => review.roundFrame(ledger);
 
 function baseline(doc) {
   const ledger = review.readLedger(doc);
-  if (ledger?.schemaVersion === 3 || ledger && Object.hasOwn(ledger,'noteSourcePoints')) fail('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
-  if (ledger) return { ...clone(ledger), schemaVersion: ledger.schemaVersion===5?5:2, roundUndo: clone(ledger.roundUndo || []),
+  if (ledger) return { ...clone(ledger), schemaVersion: [3,5].includes(ledger.schemaVersion)?ledger.schemaVersion:2, roundUndo: clone(ledger.roundUndo || []),
     roundRedo: clone(ledger.roundRedo || []), returnReceipts: clone(ledger.returnReceipts || []) };
   const source = review.normalizeNode(doc);
   review.paragraphs(source).forEach(p => { p.content ||= []; });
@@ -294,6 +293,8 @@ function derive(doc, workingDoc, metadata, editIntents) {
     || !Number.isFinite(Date.parse(metadata.date))) fail('RECORDING_METADATA_INVALID');
   if (workingDoc?.attrs?.[review.KEY]) fail('RECORDING_RENDERER_LEDGER_FORBIDDEN');
   const before = baseline(doc), working = baseline(workingDoc).source;
+  const withNotes = Object.hasOwn(before, 'noteSourcePoints');
+  if (withNotes && editIntents === undefined && !equal(review.materialize(before), working)) fail('RECORDING_NOTE_INTENTS_REQUIRED');
   const current = review.materialize(before);
   const exact = editIntents === undefined ? null : require('./word-pending-recording-intents-v1.cjs')
     .deriveChanges(review.paragraphs(current).map(text), review.paragraphs(working).map(text), editIntents);
@@ -303,6 +304,8 @@ function derive(doc, workingDoc, metadata, editIntents) {
     && oldLeaves.map(text).join('') === newLeaves.map(text).join('')
     && stable(oldLeaves.map(text)) !== stable(newLeaves.map(text));
   const sameShape = equal(shape(current), shape(working));
+  if (withNotes && (changedBoundariesOnly || !sameShape || oldLeaves.length !== review.paragraphs(before.source).length))
+    fail('RECORDING_NOTE_STRUCTURE_UNSUPPORTED');
   if (!sameShape && current.content.some(n => n.type === 'table')) return deriveTableRows(doc, before, working, metadata);
   const sourceIndexes = review.paragraphs(before.source).map((_, i) => i);
   if (before.revisions.some(review.isTableRow)) {
@@ -386,6 +389,8 @@ function derive(doc, workingDoc, metadata, editIntents) {
       const to = visibleOffsetToSource(before, index, change.to, sourceParagraphs[index]);
       if (oldRevisions.filter(r => !review.isParagraphFormat(r)).some(r => from === to ? r.from < from && r.to > from : r.from < to && r.to > from))
         fail('RECORDING_EXISTING_REVISION_OVERLAP');
+      if (withNotes && before.noteSourcePoints.some(point => point.paragraphIndex === index
+        && from < point.offsetUtf16 && point.offsetUtf16 < to)) fail('RECORDING_NOTE_REFERENCE_CONSUMED');
       const inserted = slice(next.content, change.newFrom, change.newTo), addedLength = change.newTo - change.newFrom;
       p.content = [...slice(p.content, 0, to), ...inserted, ...slice(p.content, to, text(p).length)];
       for (const r of after.revisions.filter(r => r.paragraphIndex === index)) {
@@ -393,6 +398,8 @@ function derive(doc, workingDoc, metadata, editIntents) {
         else if (r.from >= to) { r.from += addedLength; r.to += addedLength; }
       }
       shifts.push({ at: to, length: addedLength });
+      if (withNotes) for (const point of after.noteSourcePoints)
+        if (point.paragraphIndex === index && point.offsetUtf16 >= to) point.offsetUtf16 += addedLength;
       let groupId = null;
       if (to > from && addedLength) {
         if (nextGroup > 9999) fail('PENDING_REVISIONS_ID_BUDGET');
@@ -403,6 +410,7 @@ function derive(doc, workingDoc, metadata, editIntents) {
     }
     for (const [oldStart, oldEnd, newStart, newEnd] of unchanged) {
       for (const interval of markIntervals(slice(old.content, oldStart, oldEnd), slice(next.content, newStart, newEnd))) {
+        if (withNotes) fail('RECORDING_NOTE_FORMAT_UNSUPPORTED');
         let from = visibleOffsetToSource(before, index, oldStart + interval.from, sourceParagraphs[index]);
         let to = visibleOffsetToSource(before, index, oldStart + interval.to, sourceParagraphs[index]);
         const shift = shifts.filter(s => s.at <= from).reduce((sum, s) => sum + s.length, 0);
@@ -421,6 +429,7 @@ function derive(doc, workingDoc, metadata, editIntents) {
     }
     const oldProperties = review.paragraphProperties(old), newProperties = review.paragraphProperties(next);
     if (stable(oldProperties) !== stable(newProperties)) {
+      if (withNotes) fail('RECORDING_NOTE_FORMAT_UNSUPPORTED');
       if (oldRevisions.some(review.isParagraphFormat)) fail('RECORDING_EXISTING_REVISION_OVERLAP');
       p.type = next.type; delete p.attrs;
       if (next.attrs) p.attrs = clone(next.attrs);

@@ -1,3 +1,93 @@
+## 2026-10-07 — single-scene note compatibility candidate; native qualification open
+
+WORD_RECORDING_NOTES_MAC_20261006 remains an incomplete delivery contour;
+original macOS100000-word/five genuine exchanges/three-role scope is unchanged.
+Clean checkpoint0b3e6fd7996824413a35f067b7929869f221ec9b admitted same-task
+fixture amendment04 through fresh bootstrap,32-path preflight and E0. Fresh
+single-scene clean/pending export now carries the existing finite notes-only
+V2 profile; complete effective note and break comparison preserves authored
+rich/private source. Old unknown-profile genuine Word input still refuses
+PENDING_NOTE_BODY_CHANGED and writes nothing. Consistent native ID renumbering
+remains supported; native joins are checked by parser before private Main
+admission, canonical identities/geometry/after ledger by independent atomic
+replay. Atomic proof does not reconstruct omitted native join fields.
+
+Actual three whole compatibility suites45of45 and seven whole affected suites
+478of478 pass without fail/cancel/skip/todo on frozen candidate source. The
+clean-only table comparison preserves the existing strict authenticated legacy
+auto-fit oracle; real property/topology edits remain edits. All previous fresh
+admission, full CAS, recovery and no-loss guards remain. Runtime272of700 and
+behavior628of1100; no new dependency, parser/proof field, schema family or UI.
+Note Core source SHA256 ac0573fbc08412ad9990005159b6d85731d5f5e06eccf4bc7979a6d56418c0b5.
+
+The prior25190 official RTK terminal3716of3718 failed two static scope-list
+checks. Exact list equality is corrected; final official RTK, npm test, native
+SOURCE/PACKAGED genuine changed Word Cancel/Apply/reexport/restart, CI and full
+Git delivery are OPEN. Component and synthetic100k evidence is not physical
+Word or production performance proof. Fresh native apps must bind the clean
+candidate and all source/package bytes; old profiles/crash/AX/TCC replay forbidden.
+
+## 2026-10-06 — writer notes amendment01 incomplete recovery checkpoint
+
+WORD_RECORDING_NOTES_MAC_20261006 remains TARGET, not delivered. Clean cc32
+checkpoint admitted bounded amendment01 with declaration02/E0. Exact frozen
+six assigned whole suites157/157 and three legacy compatibility whole suites
+77/77 executed without skip/todo/cancel; the latter contains controlled pure
+Node five100k exchanges and five round Undo/Redo, not physical Word evidence.
+Source-point/source/history omission and private single-scene return replay
+checks pass. Root verified all11 source and retained log hashes/full TAP.
+
+Required regression found: exact c799-admitted first-binding note journals at
+JOURNAL and COMMIT fail current recovery with NOTE_PENDING_TRANSITION_PROOF_REQUIRED
+before writes. Exact predecessor recovery succeeds on identical retained bytes;
+root independently compared complete scene/manifest/notes and failed no-write
+state. parseJournal reuses new fresh-admission transition validation. Do not
+ship this checkpoint or claim backwards recovery compatibility. All source
+edits/lane held; a clean checkpoint and validated same-task recovery amendment
+must precede touching the existing transaction seam. Fresh native, complete
+mandatory gates/CI/delivery and original full Mac novel denominator remain OPEN.
+No production crash/native old profile/AX/TCC/dependency changes or cleanup.
+
+## 2026-10-06 — PR2091 delivered; source-bound note recording in progress
+
+The book-return contour is closed: candidate a4c2db3dec02e43b951cf25000a44abf505038b0,
+ordinary merge c799423ff447da6591db186dd7417da71147ee24; CI19 success, fresh merged
+whole affected450of450 without skips/todo, original OPS5 and guardrails pass.
+DELIVERY_RECEIPT_PR2091_EXACT_MERGED_07_01.json binds actual logs, parents,
+clean exact merged identity and equal candidate/merged trees. Candidate full
+RTK3633of3633 and unit2199of2258 (59 configured skips excluded) are separate
+executed evidence. Native short SOURCE11/12 and ordinary PACKAGED03/04 remain
+candidate-bound; complete notes/discussions, genuine Word changes, Cancel/Apply,
+restart and revision decisions were checked. Retained packaged Alpha observer
+failures limit first-accept coverage; there is no full novel release claim.
+Earlier OPEN/failed entries below are historical and remain retained.
+
+Checkpoint01 is TARGET and incomplete: code writer is HOLD after Core31,
+compatibility31, Main43 on the pre-two-additional-tests snapshot, and final
+selected real-PM/failed-stop2 executed without skips/todo. VM foreign JSON
+realm failure is retained; harness correction preserves rich language checks.
+The low-level MODE omitted-proof source-point bypass remains OPEN. Preserving
+single-scene note return requires independent replay of its existing Core
+binding/replacement, because that route cannot provide a comment return proof.
+No native build/run or full gates have executed for this task. A clean same-task
+checkpoint precedes a validated bounded semantic amendment; no delivery claim.
+
+WORD_RECORDING_NOTES_MAC_20261006 now starts from exact c799 with fresh full
+startup,23-path architecture preflight and successful E0 before code dispatch.
+The observed Core refusal is RECORDING_NOTE_BINDINGS_UNSUPPORTED. Target:
+existing source-bound foot/endnotes with disjoint inline recording, full fresh
+note/comment CAS, independent re-derivation at the existing atomic writer,
+serial saves and no-loss Undo/Redo/restart. A fresh synthetic seed has source
+AxxB first owner and two distinct note occurrences1/3 collapsed to Current1/1;
+expected inserted ! gives source A!xxB, points2/4, Current2/2, Original1/3.
+This is a declared target until actual proof. No UI/dependency/schema-family
+or runtime-network change. Fresh unbound note recording and notes combined
+with tracked structure/format/moves remain typed refusals and original gaps.
+Full100k, five genuinely changed Word exchanges, Word-born native import and
+complete three-role macOS release acceptance remain OPEN. Next: source/Core/
+Main/atomic negative proof, early fresh native SOURCE/PACKAGED, full gates and
+complete required delivery before beginning any next code contour.
+
 ## 2026-10-06 — book notes legacy and plain-source correction checkpoint
 
 ## 2026-10-06 — book-note checkpoint02 and one stale successor contract

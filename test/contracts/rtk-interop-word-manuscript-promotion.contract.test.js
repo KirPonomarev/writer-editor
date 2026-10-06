@@ -140,10 +140,71 @@ for(const era of ['C1','REVIEW','HOSTILE','MEDIA','REOPEN','TABLE_FILES','IMPORT
   assert.equal(git('diff', '--name-only', runtime, verifier, '--', 'src', 'package.json', 'package-lock.json'), '');
  });
 
-test('Book pending notes successor requires every exact current binding, guard and both ancestry proofs', async () => {
+test('Delivered book pending notes successor retains every exact historical binding, guard and ancestry proof', async () => {
   const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
   const expected = cert.R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR;
   assert.ok(expected, 'current book notes successor must exist');
+  const candidate = 'f'.repeat(40);
+  const bindings = [...expected.bindings, ...expected.guards];
+  const bytes = new Map(await Promise.all(bindings.map(async binding => {
+    const value = execFileSync('git', ['show', 'c799423ff447da6591db186dd7417da71147ee24:' + binding.path], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 });
+    assert.equal(digest(value), binding.sha256, binding.path);
+    return [binding.path, value];
+  })));
+  let badTree = false, badAncestry = false;
+  const ancestry = new Set(), reads = new Set();
+  const git = args => {
+    if (args[0] === 'rev-parse') {
+      if (args[1] === expected.baseSha + '^{tree}') return expected.baseTree;
+      if (args[1] === expected.successorBaseSha + '^{tree}') return badTree ? '0'.repeat(40) : expected.successorBaseTree;
+      return candidate;
+    }
+    if (args[0] === 'merge-base') {
+      ancestry.add(args[2]);
+      if (badAncestry) throw Error('not ancestor');
+      return '';
+    }
+    if (args[0] === 'show') {
+      assert.equal(args[1].slice(0, 40), candidate);
+      const name = args[1].slice(41), value = bytes.get(name);
+      reads.add(name);
+      if (!value) throw Error('missing binding');
+      return value;
+    }
+    throw Error(args.join(' '));
+  };
+  const run = () => cert.verifyR24InteropWordPromotionSuccessor({ git });
+  const result = run();
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.cellAcceptanceAuthority, false);
+  assert.deepEqual(result.bindings, expected.bindings);
+  assert.deepEqual(ancestry, new Set([expected.baseSha, expected.successorBaseSha]));
+  for (const binding of bindings) {
+    const original = bytes.get(binding.path);
+    reads.clear();
+    bytes.set(binding.path, Buffer.concat([original, Buffer.from('\nchanged after exact admission\n')]));
+    assert.throws(run, /E_INTEROP_WORD_PROMOTION_PIN/u, binding.path);
+    assert.ok(reads.has(binding.path), 'must consume altered binding: ' + binding.path);
+    bytes.set(binding.path, original);
+  }
+  const predecessorMain = execFileSync('git', ['show', expected.successorBaseSha + ':src/main.js'],
+    { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 });
+  assert.notEqual(digest(predecessorMain), expected.bindings.find(binding => binding.path === 'src/main.js').sha256);
+  const currentMain = bytes.get('src/main.js');
+  bytes.set('src/main.js', predecessorMain);
+  assert.throws(run, /E_INTEROP_WORD_PROMOTION_PIN/u, 'a mixed predecessor must not certify');
+  bytes.set('src/main.js', currentMain);
+  badTree = true;
+  assert.throws(run, /E_INTEROP_WORD_TABLES_BASE_TREE/u);
+  badTree = false;
+  badAncestry = true;
+  assert.throws(run, /E_INTEROP_WORD_TABLES_ANCESTRY/u);
+});
+
+test('Recording notes successor requires every exact current binding, guard and both ancestry proofs', async () => {
+  const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
+  const expected = cert.R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR;
+  assert.ok(expected, 'current recording notes successor must exist');
   const candidate = 'f'.repeat(40);
   const bindings = [...expected.bindings, ...expected.guards];
   const bytes = new Map(await Promise.all(bindings.map(async binding => {

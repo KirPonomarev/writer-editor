@@ -132,7 +132,45 @@ function mapPoint(oldText, nextText, point) {
   return result;
 }
 
-function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent }) {
+// Replay evidence is supplied only by Main's authenticated private admission.
+// The complete canonical result, including history, is regenerated here; a
+// provider receipt or a matching Current projection never proves a transition.
+function validatePendingNoteTransition({ beforeText, projectId, sceneId, beforeContent, afterContent, pendingNoteReturnProofJson }) {
+  const pending = require('./word-pending-text-revisions-v1.cjs');
+  const envelope = require('./document-content-envelope-v1.cjs');
+  const beforeDoc = parseObservablePayload(beforeContent).doc, afterDoc = parseObservablePayload(afterContent).doc;
+  const equal = (a, b) => JSON.stringify(envelope.canonicalizeDocumentJson(a)) === JSON.stringify(envelope.canonicalizeDocumentJson(b));
+  if (pendingNoteReturnProofJson !== undefined) {
+    need(typeof pendingNoteReturnProofJson === 'string' && Buffer.byteLength(pendingNoteReturnProofJson) <= 8 * LIMITS.bytes, 'NOTE_RETURN_PROOF_BUDGET');
+    const proof = JSON.parse(pendingNoteReturnProofJson);
+    const required = ['schemaVersion', 'projectId', 'sceneId', 'baseline', 'exportMap', 'returnedDoc', 'returnedNotes', 'unionReferences', 'receipt'];
+    need(keys(proof, [...required, 'paragraphBindings']) && required.every(key => Object.hasOwn(proof, key))
+      && proof.schemaVersion === 1 && proof.projectId === projectId && proof.sceneId === sceneId && typeof beforeText === 'string', 'NOTE_RETURN_PROOF_SHAPE');
+    const bound = require('./word-note-return-delta-v1.cjs').bindUnchangedPendingNotes({ document: JSON.parse(beforeText), projectId, sceneId,
+      baseline: proof.baseline, exportMap: proof.exportMap, beforeDoc, returnedDoc: proof.returnedDoc,
+      returnedNotes: proof.returnedNotes, unionReferences: proof.unionReferences });
+    const replacement = pending.replaceFromReturn(bound.beforeDoc, bound.returnedDoc, proof.receipt, proof.paragraphBindings);
+    need(equal(replacement.doc, afterDoc), 'NOTE_RETURN_PROOF_RESULT');
+    return;
+  }
+  const beforeLedger = pending.readLedger(beforeDoc), afterLedger = pending.readLedger(afterDoc);
+  if (!beforeLedger && !afterLedger) return; // Existing untracked anchor law.
+  if (equal(beforeDoc, afterDoc)) return;
+  need(beforeLedger && afterLedger, 'NOTE_PENDING_TRANSITION_PROOF_REQUIRED');
+  const changed = beforeLedger.revisions.find((revision, index) => afterLedger.revisions[index]?.state !== revision.state);
+  const decisions = ['undo', 'redo', 'acceptAll', 'rejectAll'].map(action => ({ action }));
+  if (changed) decisions.push({ action: 'accept', revisionId: changed.id }, { action: 'reject', revisionId: changed.id });
+  for (const input of decisions) {
+    let result;
+    try { result = pending.decide(beforeDoc, input); } catch { continue; }
+    if (equal(result.doc, afterDoc)) return;
+  }
+  need(false, 'NOTE_PENDING_TRANSITION_PROOF_REQUIRED');
+}
+
+function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent, recordingProofJson, pendingNoteReturnProofJson, includeUnchanged = false }) {
+  if (recordingProofJson !== undefined) require('./word-pending-recording-comments-v1.cjs')
+    .validateRecordingSaveProof({ beforeContent, afterContent, recordingProofJson });
   if (beforeText === null) return null;
   need(typeof beforeText === 'string' && Buffer.byteLength(beforeText) <= 4 * LIMITS.bytes, 'NOTE_DOCUMENT_BUDGET');
   const document = validateManuscriptDocument(JSON.parse(beforeText), projectId);
@@ -165,19 +203,28 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
     ref.offsetUtf16 = nextOffset;
     ref.sourceTextSha256 = sha(after);
   }
-  if (before === after && !referenceChanged) return null;
-  return { mode: MODE, beforeText, afterText: `${JSON.stringify(document, null, 2)}\n` };
+  if (pendingNoteReturnProofJson !== undefined) validatePendingNoteTransition({ beforeText, projectId, sceneId, beforeContent, afterContent, pendingNoteReturnProofJson });
+  if (before === after && !referenceChanged && recordingProofJson === undefined && pendingNoteReturnProofJson === undefined && !includeUnchanged) return null;
+  return { mode: MODE, beforeText, afterText: before === after && !referenceChanged ? beforeText : `${JSON.stringify(document, null, 2)}\n`,
+    ...(recordingProofJson !== undefined ? { recordingProofJson } : {}),
+    ...(pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson } : {}) };
 }
 
 function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterContent }) {
   if (value == null) return null;
-  need(keys(value, ['mode', 'beforeText', 'afterText'])
+  need(keys(value, ['mode', 'beforeText', 'afterText', ...(value.mode === MODE ? ['recordingProofJson', 'pendingNoteReturnProofJson'] : [])])
     && [MODE, 'MANUSCRIPT_IMPORT_V1', 'MANUSCRIPT_BODY_UPDATE_V1'].includes(value.mode)
     && (value.beforeText === null || typeof value.beforeText === 'string')
     && typeof value.afterText === 'string'
     && [value.beforeText || '', value.afterText].every(s => Buffer.byteLength(s) <= 4 * LIMITS.bytes), 'NOTE_COHORT_SHAPE');
   if (value.mode === MODE) {
-    const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent });
+    need(!(Object.hasOwn(value, 'recordingProofJson') && Object.hasOwn(value, 'pendingNoteReturnProofJson')), 'NOTE_COHORT_PROOF_AMBIGUOUS');
+    need(['recordingProofJson', 'pendingNoteReturnProofJson'].every(key => !Object.hasOwn(value, key) || typeof value[key] === 'string'), 'NOTE_COHORT_PROOF_SHAPE');
+    if (!Object.hasOwn(value, 'recordingProofJson')) validatePendingNoteTransition({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent,
+      ...(Object.hasOwn(value, 'pendingNoteReturnProofJson') ? { pendingNoteReturnProofJson: value.pendingNoteReturnProofJson } : {}) });
+    const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent, includeUnchanged: true,
+      ...(Object.hasOwn(value, 'recordingProofJson') ? { recordingProofJson: value.recordingProofJson } : {}),
+      ...(Object.hasOwn(value, 'pendingNoteReturnProofJson') ? { pendingNoteReturnProofJson: value.pendingNoteReturnProofJson } : {}) });
     need(expected && expected.afterText === value.afterText, 'NOTE_COHORT_REBASE');
     return expected;
   }

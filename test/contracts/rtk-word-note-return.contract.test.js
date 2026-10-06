@@ -26,7 +26,7 @@ async function fixture(mutate) {
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, ports);
   return { document, source, bytes, parts, parsed, bridge, input: { document, projectId, roundId: source.roundId || 'round-test',
     artifactSha256: hash(bytes), baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap,
-    returnedNotes: parsed.ok && !parsed.reasons.some(x => /NOTES.*BLOCKED/.test(x.code)) ? bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes) : null,
+    returnedNotes: parsed.ok && !parsed.reasons.some(x => /NOTES.*BLOCKED/.test(x.code)) ? bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes, { includeBreakProjection: true }) : null,
     returnedParagraphs: parsed.reviewIr?.formattingParagraphs, now: '2026-09-28T03:00:00.000Z' } };
 }
 test('actual full exporter and parser retain stable identity, exact rich body and unchanged graph', async () => {

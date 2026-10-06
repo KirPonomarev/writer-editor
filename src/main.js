@@ -4739,7 +4739,7 @@ async function readDocxReviewPacketExportSource() {
   const notesDocument = notesSourceDocument || { schemaVersion: 1, projectId, notes: [] };
   const documentNotes = buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
     ...block, sceneId, documentParagraphIndex: index,
-  })), projectId, { editableReturn: true });
+  })), projectId, { editableReturn: true, pinnedSingleSceneNoteProfile: true });
   if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
   const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
     subjectId: sourceSubjectId, owner: sourceOwner, generation: sourceGeneration, raw: sceneRawContent, sourceCohort,
@@ -5362,7 +5362,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId,
       baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap,
       beforeDoc: baselineDocument.doc, returnedDoc,
-      returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+      returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes, { includeBreakProjection: source.localAuthorityCapsule.exportMap?.scenes?.length === 1 && source.localAuthorityCapsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
       unionReferences: preview.contentPreview.pendingNoteReferences || parsed.reviewIr.documentNotes.references });
     const returnedLedger = pendingTextRevisions.readLedger(bound.returnedDoc);
     const expectedPoints = pendingTextRevisions.noteProjection(baselineDocument.doc, 'export');
@@ -5393,7 +5393,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
     roundId: source.localAuthorityCapsule.roundId, artifactSha256: finalArtifactSha256, baseline: source.documentNotes,
     exportMap: source.localAuthorityCapsule.exportMap,
-    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes, { includeBreakProjection: source.localAuthorityCapsule.exportMap?.scenes?.length === 1 && source.localAuthorityCapsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
     returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '1970-01-01T00:00:00.000Z' });
   if (plan.changes.length) throw Error('REVIEW_DOCX_EXPORT_NOTE_SEMANTICS_MISMATCH');
   return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256, ...commentPublication };
@@ -6313,17 +6313,24 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       const originalProof = revisionBridge.validateShiftedCellReturnOriginalV1(current.parsed.doc, incoming.doc);
       if (!originalProof.ok) throw Error(originalProof.code);
     }
-    let beforeDoc = current.parsed.doc, returnedDoc = incoming.doc, notesDigest = null;
+    let beforeDoc = current.parsed.doc, returnedDoc = incoming.doc, notesDigest = null, pendingNoteReturnProofJson;
     const notesStorage = await loadNotesStorageModule();
     const notesState = await notesStorage.readNotesStorage({ projectRoot: current.projectRoot, projectId: current.projectId }); check();
     if (!notesState.ok) throw Error('PENDING_RETURN_NOTES_UNAVAILABLE');
     const activeNotes = notesState.document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
     if (!replay && (activeNotes.length || intake.parserResult?.reviewIr?.documentNotes?.notes?.length)) {
-      const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes({
+      const noteReplay = {
         document: notesState.document, projectId: current.projectId, sceneId, baseline: capsule.documentNotes,
         exportMap: capsule.exportMap, beforeDoc, returnedDoc,
-        returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
-        unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references });
+        returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.exportMap?.scenes?.length === 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
+        unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references };
+      const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes(noteReplay);
+      pendingNoteReturnProofJson = JSON.stringify({ schemaVersion: 1, projectId: current.projectId, sceneId,
+        baseline: noteReplay.baseline, exportMap: noteReplay.exportMap, returnedDoc: noteReplay.returnedDoc,
+        returnedNotes: noteReplay.returnedNotes, unionReferences: noteReplay.unionReferences, receipt,
+        paragraphBindings: mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
+          ? mapped.paragraphBindings : undefined) });
+      if (Buffer.byteLength(pendingNoteReturnProofJson) > 8 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
       beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
     }
     notesDigest = notesStateDigest(notesState.document);
@@ -6359,7 +6366,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       consumed = true; check();
       const payload = { action: 'authenticated-pending-return', projectId: current.projectId,
         sceneId, subjectId: current.subjectId, expectedSceneSha256: current.sceneSha256 };
-      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest, mixedPlan });
+      authenticatedPendingReturnAdmissions.set(payload, { check, raw: current.raw, replacement, notesDigest, mixedPlan, pendingNoteReturnProofJson });
       let result;
       try { result = await dispatchMenuCommand('cmd.project.review.decidePendingRevision', payload, { route: COMMAND_BUS_ROUTE }); }
       finally { authenticatedPendingReturnAdmissions.delete(payload); }
@@ -6505,7 +6512,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
     const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
     const input = { projectId: context.projectId, roundId: capsule.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.documentNotes,
-      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
+      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.exportMap?.scenes?.length === 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
       returnedParagraphs: intake.parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() };
     const checkIdentity = () => {
       assertFreshDocxReviewRoundAuthority(capsule);
@@ -10284,7 +10291,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
     const comments = parserResult.reviewIr?.commentThreads || [];
     if (authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
       throw Error('WORD_STORIES_RETURN_COMMENTS_CHANGED');
-    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
     let noteSourceGuard = null;
     if (authority.documentNotes?.sourceBindings?.length || returnedNotes.length) {
       if (authority.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
@@ -10440,7 +10447,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       if (!Buffer.isBuffer(context.docxBytes)
         || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256) throw Error('RTK_CLEAN_TEXT_ARTIFACT_MISMATCH');
       const bridge = await loadRevisionBridgeModule();
-      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
       if (authority.documentNotes?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') {
         if (authority.documentNotes.sourceBindings.some(note => changedOrdinals.has(note.documentParagraphIndex))
           || returnedNotes.some(note => changedOrdinals.has(note.paragraphIndex))) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
@@ -10524,7 +10531,7 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
       const delta = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
         document: saved.current.document, projectId: context.projectId, roundId: authority.roundId,
         artifactSha256: computeHash(docxBytes), baseline: authority.documentNotes, exportMap: authority.exportMap,
-        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes),
+        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 }),
         returnedParagraphs: parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString(),
       });
       if (delta.unchanged !== true || delta.changes?.length) throw Error('RTK_MEDIA_NOTES_CHANGED');
@@ -23874,10 +23881,14 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
             if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
+            if (recordingAdmission?.session.noteRecording
+              && (notes.sourceExists ? notes.sourceText : null) !== recordingAdmission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
             noteState = manuscriptNoteModel.planManuscriptNoteAnchorSave({
               beforeText: notes.sourceExists ? notes.sourceText : null, projectId: prepared.projectId,
               sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-              beforeContent: expectedSceneContent, afterContent: content });
+              beforeContent: expectedSceneContent, afterContent: content,
+              ...(options.pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson: options.pendingNoteReturnProofJson } : {}),
+              ...(recordingAdmission?.session.noteRecording ? { recordingProofJson: recordingAdmission.recordingProofJson } : {}) });
           }
           if(options.commentTextReturnPlan) {
             if(options.authenticatedCleanBlockText!==true) throw Error('COMMENT_TEXT_RETURN_AUTHORITY_REQUIRED');
@@ -23938,6 +23949,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           });
           if (recordingAdmission && receipt.success === true) {
             recordingAdmission.session.raw = content; recordingAdmission.session.savedGeneration = revision;
+            if (recordingAdmission.session.noteRecording) recordingAdmission.session.expectedNotes = noteState?.afterText ?? recordingAdmission.expectedNotes;
             if (recordingAdmission.nextIntents) {
               recordingAdmission.session.provenance = recordingAdmission.nextIntents;
               recordingAdmission.session.provenanceWire = recordingAdmission.wire;
@@ -25761,8 +25773,26 @@ async function assertPendingRecordingAnnotations(session) {
   const activeComments = saved.state.threads.some(t => t.sceneId === session.sceneId && (t.status !== 'deleted' || t.anchorEditHistory?.length));
   if (activeComments && session.commentRecording === false) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
   const notes = await (await loadNotesStorageModule()).readNotesStorage(session);
-  if (!notes.ok || notes.document.notes.some(n => !n.deleted && n.manuscript?.reference?.sceneId === session.sceneId)) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
-  return { saved, activeComments };
+  if (!notes.ok) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
+  const noteText = notes.sourceExists ? notes.sourceText : null;
+  if (session.noteRecording && noteText !== session.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
+  const document = manuscriptNoteModel.validateManuscriptDocument(noteText === null
+    ? notes.document : JSON.parse(noteText), session.projectId);
+  const activeNotes = document.notes.filter(n => !n.deleted && n.manuscript?.reference?.sceneId === session.sceneId);
+  const doc = (await loadDocumentContentEnvelopeModule()).parseObservablePayload(session.raw).doc;
+  const points = pendingTextRevisions.noteProjection(doc);
+  if (activeNotes.length || points) {
+    if (!points) throw Error('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
+    if (points.length !== activeNotes.length || !activeNotes.every(n => points.some(p => p.noteId === n.id))) throw Error('RECORDING_NOTE_ROSTER_STALE');
+    const source = manuscriptNoteModel.sceneText(session.raw);
+    for (const note of activeNotes) {
+      const ref = note.manuscript.reference;
+      if (ref.sourceTextSha256 !== manuscriptNoteModel.sha(source)
+        || !manuscriptNoteModel.boundary(source, ref.offsetUtf16)
+        || points.find(p => p.noteId === note.id).globalOffsetUtf16 !== ref.offsetUtf16) throw Error('RECORDING_NOTE_REFERENCE_STALE');
+    }
+  }
+  return { saved, activeComments, activeNotes: activeNotes.length > 0, noteText };
 }
 async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   if (!capturedSession && !activePendingRecording) return snapshot;
@@ -25773,8 +25803,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const working = envelope.parseObservablePayload(snapshot.content);
   if (working.issue || !working.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
-  let nextIntents, expectedComments, recordingProofJson;
-  if (session.commentRecording) {
+  let nextIntents, expectedComments, expectedNotes, recordingProofJson;
+  if (session.commentRecording || session.noteRecording) {
     const model = require('./core/word-comment-edit-intents-v1.cjs');
     if (snapshot.commentEditIntentsJson == null) throw Error('RECORDING_COMMENT_INTENTS_REQUIRED');
     const incoming = model.validateEditIntents(snapshot.commentEditIntentsJson), prior = session.provenanceWire;
@@ -25785,7 +25815,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
       && JSON.stringify(incoming.edits.slice(0, prior.edits.length)) === JSON.stringify(prior.edits)) suffix = incoming.edits.slice(prior.edits.length);
     else if (incoming.baselineTextSha256 !== savedDigest) throw Error('RECORDING_COMMENT_PREFIX_STALE');
     nextIntents = model.validateEditIntents(JSON.stringify({ ...session.provenance, edits: [...session.provenance.edits, ...suffix] }));
-    expectedComments = (await assertPendingRecordingAnnotations(session)).saved.text;
+    const annotations = await assertPendingRecordingAnnotations(session);
+    expectedComments = annotations.saved.text; expectedNotes = annotations.noteText;
     recordingProofJson = JSON.stringify({ schemaVersion: 1, baselineContent: session.baselineContent,
       metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id });
   }
@@ -25795,7 +25826,7 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const key = computeHash(content) + ':' + snapshot.generation;
   if (pendingRecordingSaveAdmissions.size >= 32) pendingRecordingSaveAdmissions.clear();
   pendingRecordingSaveAdmissions.set(key, { session, content, generation: snapshot.generation, expected: session.raw,
-    ...(session.commentRecording ? { nextIntents, expectedComments, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
+    ...(session.commentRecording || session.noteRecording ? { nextIntents, expectedComments, expectedNotes, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
   return { ...snapshot, content, doc: result.doc };
 }
 function resolvePendingRecordingSaveAdmission(filePath, content, generation) {
@@ -25813,6 +25844,11 @@ async function revalidatePendingRecordingSave(admission) {
   if (admission.expected !== session.raw || admission.generation < session.savedGeneration) throw Error('RECORDING_SAVE_STALE');
   const annotations = await assertPendingRecordingAnnotations(session);
   if (session.commentRecording && annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (session.noteRecording) {
+    if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
+    require('./core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof({
+      beforeContent: admission.expected, afterContent: admission.content, recordingProofJson: admission.recordingProofJson });
+  }
   const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
   if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
   if (await fs.readFile(session.filePath, 'utf8') !== admission.expected) throw Error('RECORDING_SCENE_CHANGED');
@@ -25873,7 +25909,9 @@ async function handlePendingRecordingCommand(payload = {}) {
         owner: activeStage10ApplicationBootstrap, savedGeneration: snapshot.generation };
       const annotations = await assertPendingRecordingAnnotations(session);
       session.commentRecording = annotations.activeComments;
-      if (session.commentRecording) {
+      session.noteRecording = annotations.activeNotes;
+      session.expectedNotes = annotations.noteText;
+      if (session.commentRecording || session.noteRecording) {
         const model = require('./core/word-comment-edit-intents-v1.cjs');
         session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, doc: original });
         session.provenance = { schemaVersion: 2, baselineTextSha256: model.textDigest(commentSceneParagraphs(session.baselineContent).map(p => p.text)), edits: [] };
@@ -25881,7 +25919,9 @@ async function handlePendingRecordingCommand(payload = {}) {
       const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
       if (fresh.raw !== context.raw || fresh.subjectId !== context.subjectId || fresh.projectId !== context.projectId
         || lastSignaledEditGeneration > snapshot.generation) throw Error('RECORDING_SCENE_CHANGED');
-      if (((await assertPendingRecordingAnnotations(session)).saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
+      const freshAnnotations = await assertPendingRecordingAnnotations(session);
+      if ((freshAnnotations.saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
+      if (freshAnnotations.noteText !== annotations.noteText) throw Error('RECORDING_NOTES_CHANGED');
       pendingRecordingCapability();
       activePendingRecording = session;
       try {
@@ -25972,6 +26012,7 @@ async function handlePendingRevisionCommand(payload = {}) {
       const receipt = await commitWriterProjectSnapshot(context.filePath, content, snapshot.generation, context.manifest?.bookProfile,
         'pending revision decision', { expectedSceneContent: context.raw, beforeScenePublish: revalidate, pendingRevisionDecision: true,
           ...(admission?.mixedPlan ? {pendingCommentReturnProofJson:admission.mixedPlan.returnProofJson}:{}),
+          ...(admission?.pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson: admission.pendingNoteReturnProofJson } : {}),
           ...(!admission && hasDecisionComments ? { pendingCommentDecision: { action: payload.action,
             ...(payload.revisionId !== undefined ? { revisionId: payload.revisionId } : {}) } } : {}) });
       if (receipt.success !== true || receipt.projectTransaction !== true) throw Object.assign(Error(receipt.error || 'PENDING_REVISION_COMMIT_FAILED'), { code: receipt.code });

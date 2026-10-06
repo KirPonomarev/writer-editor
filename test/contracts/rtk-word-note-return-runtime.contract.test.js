@@ -97,13 +97,32 @@ async function harness(t) {
     manuscript: model.bindManuscriptPayload({ body, kind: 'footnote', sceneId, offsetUtf16: 3, sceneContent: text }) }] }, { projectId, now: () => '2026-09-28T00:00:00Z' }).value;
   const source = makeSource({ projectId, projectRoot: root, notesDocument: document,
     scenes: [{ sceneId, scenePath, order: 0, text, doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
-  const bytes = buildDocxReviewPacketBuffer(source), bridge = await import('../../src/io/revisionBridge/index.mjs');
-  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
-    sha256Text: model.sha, sha256Json: v => 'sha256:' + model.sha(stable(v)), byteLength: v => Buffer.byteLength(v),
-  } });
-  assert.equal(parsed.ok, true);
-  const returned = bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes);
-  returned[0].body.content[0].content[0].text = 'Edited'; returned[0].paragraphs = ['Edited'];
+  const originalBytes = buildDocxReviewPacketBuffer(source), bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const changedNoteBytes = (text, { create = false } = {}) => {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: originalBytes }).parts };
+    if (text === null) {
+      parts['word/footnotes.xml'] = parts['word/footnotes.xml'].replace(/<w:footnote w:id="1">[^]*?<\/w:footnote>/u, '');
+      parts['word/document.xml'] = parts['word/document.xml'].replace(/<w:r><w:rPr><w:rStyle w:val="FootnoteReference"\/><\/w:rPr><w:footnoteReference w:id="1"\/><\/w:r>/u, '');
+    } else parts['word/footnotes.xml'] = parts['word/footnotes.xml'].replace('>Old<', '>' + require('../../src/export/docx/docxTextXml.js').escapeXml(text) + '<');
+    if (create) {
+      const added = parts['word/footnotes.xml'].match(/<w:footnote w:id="1">[^]*?<\/w:footnote>/u)[0]
+        .replace('w:id="1"', 'w:id="2"').replace(/<w:bookmarkStart[^]*?\/>|<w:bookmarkEnd[^]*?\/>/gu, '').replace('>Old<', '>Created<');
+      parts['word/footnotes.xml'] = parts['word/footnotes.xml'].replace('</w:footnotes>', added + '</w:footnotes>');
+      const marker = '<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr><w:footnoteReference w:id="1"/></w:r>';
+      assert.ok(parts['word/document.xml'].includes(marker));
+      parts['word/document.xml'] = parts['word/document.xml'].replace(marker, marker + marker.replace('w:id="1"', 'w:id="2"'));
+    }
+    return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data]) => ({name,data})));
+  };
+  let bytes = changedNoteBytes('Edited');
+  const readNotes = () => {
+    const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+      sha256Text: model.sha, sha256Json: v => 'sha256:' + model.sha(stable(v)), byteLength: v => Buffer.byteLength(v),
+    } });
+    assert.equal(parsed.ok, true);
+    return { parsed, returned: bridge.parseDocumentNotesRichReturn(bytes, parsed.reviewIr.documentNotes, { includeBreakProjection: true }) };
+  };
+  const { parsed, returned } = readNotes();
   const notesPath = path.join(root, 'notes.craftsman.json'); fs.writeFileSync(notesPath, JSON.stringify(document));
   const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
   const runtime = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
@@ -140,14 +159,29 @@ async function harness(t) {
   const actualDispatch = sandbox.dispatchMenuCommand;
   sandbox.dispatchMenuCommand = async (id, payload, options) => { h.dispatches++; assert.equal(id, 'cmd.project.notes.update'); return actualDispatch(id, payload, options); };
   h.prepare = () => sandbox.prepare({ context, requestId: 'test', isCurrent: () => h.current, docxBytes: bytes,
-    revisionBridge: { parseDocumentNotesRichReturn: () => structuredClone(returned) }, onPrepared: value => { h.prepared = value; } });
-  h.returned = returned; h.storage = storage; h.context = context; h.sandbox = sandbox; h.document = document; return h;
+    revisionBridge: bridge, onPrepared: value => { h.prepared = value; } });
+  h.regenerate = (text, options) => { bytes = changedNoteBytes(text, options); const actual = readNotes(); h.bytes = bytes; h.returned = actual.returned;
+    context.reviewTransportReturnIntake.returnedArtifactSha256 = model.sha(bytes); context.reviewTransportReturnIntake.parserResult = actual.parsed; };
+  h.source = source; h.originalBytes = originalBytes; h.bridge = bridge; h.returned = returned; h.storage = storage; h.context = context; h.sandbox = sandbox; h.document = document; return h;
 }
+test('fresh clean Main full-parser unchanged and created notes preserve canonical source and exact existing notes', async t => {
+  const h = await harness(t), scene = fs.readFileSync(h.scenePath, 'utf8'), before = fs.readFileSync(h.notesPath, 'utf8');
+  h.regenerate('Old');
+  const unchanged = await h.prepare(); assert.equal(unchanged.status, 'unchanged', JSON.stringify(unchanged));
+  assert.equal(unchanged.writerCalled, false); assert.equal(h.writes, 0); assert.equal(fs.readFileSync(h.notesPath, 'utf8'), before);
+  h.regenerate('Old', { create: true });
+  assert.equal((await h.prepare()).status, 'preview-ready'); assert.equal(h.writes, 0);
+  assert.equal((await h.prepared.apply()).status, 'applied'); assert.equal(h.writes, 1);
+  const after = JSON.parse(fs.readFileSync(h.notesPath, 'utf8'));
+  assert.deepEqual(after.notes[0], h.document.notes[0]); assert.equal(after.notes.length, 2);
+  assert.equal(after.notes[1].body, 'Created'); assert.match(after.notes[1].id, /^note-[a-f0-9]{32}$/);
+  assert.equal(fs.readFileSync(h.scenePath, 'utf8'), scene);
+  assert.equal((await h.prepare()).status, 'replayed'); assert.equal(h.writes, 1);
+});
 async function noteEntryHarness(t, { choice = false, unavailable = false, oversized = false, superseded = false } = {}) {
   const h = await harness(t), requests = [];
   if (oversized) {
-    h.returned[0].body.content[0].content[0].text = 'x'.repeat(20000);
-    h.returned[0].paragraphs = ['x'.repeat(20000)];
+    h.regenerate('x'.repeat(20000));
   }
   const parent = { isDestroyed: () => false }, BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {}, screen = { ownedDisplay: true };
   Object.assign(h.sandbox, { mainWindow: parent, BrowserWindow, screen,
@@ -248,7 +282,7 @@ for (const mode of ['entitled', 'profileAllowed']) test(`actual notes bus revali
 });
 
 test('deletion uses canonical tombstone fields and survives actual notes normalization and replay', async t => {
-  const h = await harness(t); h.returned.splice(0);
+  const h = await harness(t); h.regenerate(null);
   assert.equal((await h.prepare()).status, 'preview-ready');
   assert.equal((await h.prepared.apply()).status, 'applied');
   const raw = JSON.parse(fs.readFileSync(h.notesPath));
