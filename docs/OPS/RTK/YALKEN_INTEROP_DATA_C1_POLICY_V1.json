@@ -2711,7 +2711,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
-        "sha256": "b610deb6d75b1d38587ff4fab3167e665c62b6238886f93c9647aff0054ddefd"
+        "sha256": "ed7801ae7d685134fb2c89116eac3bed0ee0d1bea079998d890c4652f44676f4"
       },
       {
         "path": "src/main/wordReturnConfirmation.cjs",

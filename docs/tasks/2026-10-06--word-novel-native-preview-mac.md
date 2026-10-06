@@ -82,6 +82,7 @@ focused semantic and safety contracts. The former prepared worktree is preserved
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `scripts/ops/rtk-interop-data-c1.mjs`
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
