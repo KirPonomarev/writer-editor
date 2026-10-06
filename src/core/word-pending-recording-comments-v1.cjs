@@ -126,8 +126,7 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
   return { ...identity, plan };
 }
 
-function planRecordingCommentSave(input) {
-  const { beforeText, projectId, sceneId, beforeContent, afterContent, recordingProofJson } = input;
+function validateRecordingSaveProof({ beforeContent, afterContent, recordingProofJson }) {
   if (typeof recordingProofJson !== 'string' || Buffer.byteLength(recordingProofJson) > 8 * 1024 * 1024)
     fail('RECORDING_COMMENT_PROOF_BUDGET');
   let proof; try { proof = JSON.parse(recordingProofJson); } catch { fail('RECORDING_COMMENT_PROOF_INVALID'); }
@@ -144,6 +143,11 @@ function planRecordingCommentSave(input) {
     if (!equal(envelope.canonicalizeDocumentJson(derived.doc), envelope.canonicalizeDocumentJson(parsed.doc)))
       fail('RECORDING_COMMENT_LEDGER_MISMATCH');
   }
+  return { proof, baseline, before, after, previous, next };
+}
+function planRecordingCommentSave(input) {
+  const { beforeText, projectId, sceneId, beforeContent, afterContent, recordingProofJson } = input;
+  const { proof, baseline, before, after, previous, next } = validateRecordingSaveProof(input);
   const delta = { schemaVersion: 2, baselineTextSha256: textDigest(texts(beforeContent)), edits: next.edits.slice(previous.edits.length) };
   const normal = anchors.planCommentAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent,
     editIntents: delta, sessionId: proof.sessionId, includeUnchanged: true });
@@ -200,4 +204,4 @@ function planRecordingRoundDecision(input, oldLedger, newLedger) {
   return anchors.planCommentAnchorSave({ ...input, includeUnchanged: true, sessionId: bound.sessionId, editIntents: bound.plan });
 }
 
-module.exports = { planRecordingCommentSave, planRecordingRoundDecision, roundIdentity };
+module.exports = { planRecordingCommentSave, planRecordingRoundDecision, roundIdentity, validateRecordingSaveProof };

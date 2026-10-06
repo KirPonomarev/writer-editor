@@ -29,7 +29,7 @@ async function harness(t) {
   const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
   const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, 'leases'), useLeaseHeartbeatWorker: false });
   const requests = new Map();
-  const c = { require: require('node:module').createRequire(path.join(__dirname, '../../src/main.js')),
+  const c = { JSON, require: require('node:module').createRequire(path.join(__dirname, '../../src/main.js')),
     commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs, Buffer, crypto, setTimeout, clearTimeout, pendingSnapshotRequests: requests,
     pendingTextRevisions: model, pendingRecordingModel: recording, cloneJsonSafe: v => JSON.parse(JSON.stringify(v)),
     isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
@@ -61,11 +61,13 @@ async function harness(t) {
   };
   c.mainWindow = { isDestroyed: () => false, webContents: { send: (_channel, { requestId }) => {
     const p = requests.get(requestId); clearTimeout(p.timeoutId); requests.delete(requestId);
-    p.resolve({ content: h.editor, generation: h.generation, commentAuthoringPending: h.draft === true, commentEditIntentsJson: h.intents == null ? null : JSON.stringify(h.intents) });
+    p.resolve({ content: h.editor, generation: h.generation, commentAuthoringPending: h.draft === true,
+      manuscriptNoteAuthoringPending: h.noteDraft === true, commentEditIntentsJson: h.intents == null ? null : JSON.stringify(h.intents) });
   } } };
   vm.createContext(c);
   const recordingSource = main.slice(main.indexOf('let activePendingRecording ='), main.indexOf('const authenticatedPendingReturnAdmissions ='));
   vm.runInContext([extract('commitWriterProjectSnapshot'), extract('requestEditorSnapshot'), recordingSource,
+    extract('readPendingRevisionProjection'),
     main.slice(main.indexOf('function dispatchMenuCommand('), main.indexOf('function buildCommandClickHandler('))].join('\n'), c);
   const kernel = createCommandSurfaceKernel({ [id]: payload => c.handlePendingRecordingCommand(payload) });
   c.MENU_COMMAND_HANDLERS = { [id]: payload => kernel.dispatch(id, payload) };
@@ -77,7 +79,8 @@ async function harness(t) {
     ...(action === 'start' ? { expectedSceneSha256: context().sceneSha256, author: 'Yalken tester' } : { sessionId: h.sessionId }), action, ...override }, { route: 'command.bus' });
   h.start = async () => { const r = await h.command('start'); assert.equal(r.ok, true, JSON.stringify(r)); h.sessionId = r.result?.sessionId || r.sessionId; return r; };
   h.type = text => { h.editor = envelope.composeObservablePayload({ doc: doc(text) }); h.generation++; c.lastSignaledEditGeneration = h.generation; c.isDirty = true; };
-  h.c = c; h.file = file; h.context = context; h.commentPath = commentPath; h.readComments = readComments; return h;
+  h.c = c; h.file = file; h.root = root; h.manifest = manifest; h.notePath = path.join(root,'notes.craftsman.json');
+  h.context = context; h.commentPath = commentPath; h.readComments = readComments; return h;
 }
 test('actual Kernel, main snapshot and atomic save preserve authored revisions across autosaves, stop and reopen', async t => {
   const h = await harness(t); await h.start();
@@ -216,4 +219,138 @@ for(const mode of ['commentsRace','missingIntents','forgedPlan']) test(`actual r
  let r;try {const capture=await h.capture();if(mode==='commentsRace')fs.writeFileSync(h.commentPath,comments+' ');r=await h.commit(capture);}catch(error){r={success:false,error:error.message};}
  assert.equal(r.success,false,JSON.stringify(r));assert.equal(h.writes,0);assert.equal(fs.readFileSync(h.file,'utf8'),scene);
  assert.equal(fs.readFileSync(h.commentPath,'utf8'),mode==='commentsRace'?comments+' ':comments);assert.equal(h.c.isDirty,true);
+});
+
+const notesModel=require('../../src/core/word-manuscript-notes-v1.cjs');
+function addBoundNotes(h, withComments = true, schemaVersion = 3) {
+ const source=doc('AxxB tail'),revision={id:'revision-1',nativeId:'Word-owned',operation:'delete',author:'Word editor',date:'',dateUtc:'',
+  groupId:null,state:'pending',paragraphIndex:0,from:1,to:3};
+ const bound=model.bindLedger({schemaVersion,source,revisions:[revision],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],
+  noteSourcePoints:[{noteId:'note-left',paragraphIndex:0,offsetUtf16:1},{noteId:'note-right',paragraphIndex:0,offsetUtf16:3}]});
+ h.editor=envelope.composeObservablePayload({doc:bound});fs.writeFileSync(h.file,h.editor);
+ const body={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},
+  content:[{type:'text',text:'Rich 😀',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+   {type:'hardBreak'},{type:'text',text:'body'}]},{type:'paragraph',content:[]}]};
+ const document={schemaVersion:1,projectId:'recording-project',notes:[{id:'private',scope:'inbox',body:'Private immutable note',title:'Keep'},
+  ...['note-left','note-right'].map((id,i)=>({id,scope:'manuscript',title:'Note '+i,body:notesModel.validateNoteBody(body).text,deleted:false,
+   createdAtUtc:'2026-10-05T00:00:00Z',updatedAtUtc:'2026-10-05T01:00:00Z',attachment:{scope:'manuscript'},
+   manuscript:notesModel.bindManuscriptPayload({kind:i?'endnote':'footnote',body,sceneId:'roman/a.txt',offsetUtf16:1,sceneContent:h.editor})}))]};
+ fs.writeFileSync(h.notePath,JSON.stringify(document));
+ if(withComments){
+  const context=h.context(),state=authoring.planCommentAuthoring({beforeText:null,projectId:context.projectId,sceneId:context.sceneId,
+   paragraphs:['AB tail'],sceneSha256:context.sceneSha256,now:'2026-10-05T00:00:00Z',input:{action:'create',requestId:'notes-discussion',projectId:context.projectId,
+    sceneId:context.sceneId,subjectId:context.subjectId,expectedStateSha256:'',expectedSceneSha256:context.sceneSha256,body:'Full discussion',anchor:{paragraphIndex:0,startUtf16:3,selectedText:'tail'}}});
+  const full=JSON.parse(state.afterText);full.threads[0].messages.push({commentId:'reply-one',kind:'reply',body:'Editor reply',provenance:{author:'Editor'}},
+   {commentId:'reply-two',kind:'reply',body:'Corrector reply',provenance:{author:'Corrector'}});
+  fs.mkdirSync(path.dirname(h.commentPath),{recursive:true});fs.writeFileSync(h.commentPath,JSON.stringify(full));
+ }
+ return {doc:bound,document,scene:h.editor,comments:h.readComments().text};
+}
+const protectedNoteMeaning=document=>({...document,notes:document.notes.map(note=>!note.manuscript?note:{...note,
+ manuscript:{...note.manuscript,reference:{...note.manuscript.reference,offsetUtf16:0,sourceTextSha256:''}}})});
+const business=h=>[h.file,h.manifest,h.notePath,h.commentPath].map(file=>fs.existsSync(file)?fs.readFileSync(file,'utf8'):null);
+for(const comments of [false,true]) for(const schemaVersion of [3,5]) test(`actual Main schema${schemaVersion} records notes${comments?' plus complete discussions':''} across atomic ACKs and restart`,async t=>{
+ const h=await harness(t),seed=addBoundNotes(h,comments,schemaVersion);
+ const capability=await h.c.readPendingRevisionProjection();assert.equal(capability.recordingAvailable,true,JSON.stringify(capability));
+ await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ let result=await h.save();assert.equal(result.success,true,JSON.stringify(result));
+ let ledger=model.readLedger(h.context().parsed.doc);assert.deepEqual(ledger.noteSourcePoints.map(p=>p.offsetUtf16),[2,4]);
+ assert.equal(ledger.source.content[0].content.map(n=>n.text).join(''),'A!xxB tail');
+ let savedNotes=JSON.parse(fs.readFileSync(h.notePath,'utf8'));assert.deepEqual(savedNotes.notes.filter(n=>n.manuscript).map(n=>n.manuscript.reference.offsetUtf16),[2,2]);
+ assert.deepEqual(protectedNoteMeaning(savedNotes),protectedNoteMeaning(seed.document));
+ h.type('A!B tail?');h.intents=intents('A!B tail',typed('second',8,'','?'));
+ result=await h.save();assert.equal(result.success,true,JSON.stringify(result));
+ ledger=model.readLedger(h.context().parsed.doc);assert.deepEqual(ledger.noteSourcePoints.map(p=>p.offsetUtf16),[2,4]);assert.equal(ledger.roundUndo.length,1);
+ h.intents=intents('A!B tail?');assert.equal((await h.command('stop')).ok,true);
+ const reopened=envelope.parseObservablePayload(fs.readFileSync(h.file,'utf8')).doc,stored=business(h);
+ assert.equal(model.projection(reopened).current,'A!B tail?');assert.equal(model.projection(reopened).original,'AxxB tail');
+ if(comments){const before=JSON.parse(seed.comments),after=h.readComments().state;
+  assert.deepEqual(after.threads[0].messages,before.threads[0].messages);assert.equal(after.threads[0].anchor.startUtf16,4);
+  assert.deepEqual(after.events,before.events);assert.equal(after.threads[0].status,before.threads[0].status);
+ }
+ const undo=model.decide(reopened,{action:'undo'}).doc;
+ const noteUndo=notesModel.planManuscriptNoteAnchorSave({beforeText:stored[2],projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:stored[0],afterContent:envelope.composeObservablePayload({doc:undo})});
+ assert.deepEqual(JSON.parse(noteUndo.afterText),seed.document);assert.deepEqual(model.roundFrame(model.readLedger(undo)),model.roundFrame(model.readLedger(seed.doc)));
+ const redo=model.decide(undo,{action:'redo'}).doc;assert.deepEqual(redo,reopened);
+ const noteRedo=notesModel.planManuscriptNoteAnchorSave({beforeText:noteUndo.afterText,projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:envelope.composeObservablePayload({doc:undo}),afterContent:stored[0]});
+ assert.deepEqual(JSON.parse(noteRedo.afterText),JSON.parse(stored[2]));
+ // An ordinary new Main session reads saved bytes, not a previous session's pins.
+ assert.equal((await h.c.readPendingRevisionProjection()).recordingAvailable,true);await h.start();h.intents=intents('A!B tail?');
+ assert.equal((await h.command('stop')).ok,true);assert.deepEqual(business(h),stored);
+});
+for(const mode of ['missingIntents','notesBeforeCapture','notesAfterCapture','otherNoteAfterCapture','noteRoster','noteDigest','noteOffset','forgedPoints','forgedBody','forgedAfter','noteDraft','failedSave','lease','session','owner'])
+ test(`actual note recording ${mode} refuses without business writes or working-buffer loss`,async t=>{
+  const h=await harness(t);addBoundNotes(h);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+  if(mode==='missingIntents')h.intents=null;if(mode==='noteDraft')h.noteDraft=true;
+  const mutateNotes=mutation=>{const document=JSON.parse(fs.readFileSync(h.notePath,'utf8'));mutation(document);fs.writeFileSync(h.notePath,JSON.stringify(document));};
+  if(mode==='notesBeforeCapture')mutateNotes(d=>d.notes[1].title='Foreign title');
+  if(mode==='noteRoster')mutateNotes(d=>d.notes.splice(1,1));
+  if(mode==='noteDigest')mutateNotes(d=>d.notes[1].manuscript.reference.sourceTextSha256='0'.repeat(64));
+  if(mode==='noteOffset')mutateNotes(d=>d.notes[1].manuscript.reference.offsetUtf16=0);
+  const working=h.editor;let result;
+  try{
+   const snapshot=await h.capture();
+   if(mode==='notesAfterCapture')mutateNotes(d=>d.notes[2].title='Foreign after capture');
+   if(mode==='otherNoteAfterCapture')mutateNotes(d=>d.notes[0].body='Foreign private note');
+   if(mode==='failedSave')h.writeFailure=true;
+   if(mode==='session')h.c.commentAuthoringSessionId='foreign-session';
+   if(mode==='owner')h.c.activeStage10ApplicationBootstrap={};
+   if(mode==='lease')h.c.getMainProjectManifestAuthority=async()=>({withProjectLease:async()=>{throw Error('PROJECT_LEASE_DENIED');}});
+   if(['forgedPoints','forgedBody','forgedAfter'].includes(mode)){
+    const real=h.c.commitProjectTransaction;
+    h.c.commitProjectTransaction=async args=>{
+     const forged={...args,noteState:structuredClone(args.noteState)};
+     if(mode==='forgedPoints'){
+      const ledger=structuredClone(model.readLedger(envelope.parseObservablePayload(args.sceneContent).doc));ledger.noteSourcePoints[0].offsetUtf16=1;
+      forged.sceneContent=envelope.composeObservablePayload({doc:model.bindLedger(ledger)});
+     }else{const notes=JSON.parse(forged.noteState.afterText);
+      if(mode==='forgedBody')notes.notes[1].title='Forged metadata';else notes.notes[1].manuscript.reference.offsetUtf16=0;
+      forged.noteState.afterText=JSON.stringify(notes);
+     }
+     return real(forged);
+    };
+   }
+   const before=business(h);result=await h.commit(snapshot);assert.deepEqual(business(h),before);
+  }catch(error){result={success:false,error:error.message};}
+  assert.equal(result.success,false,JSON.stringify(result));assert.equal(h.writes,0);assert.equal(h.editor,working);assert.equal(h.c.isDirty,true);
+ });
+test('first admission of an unbound note roster remains typed refused with exact bytes',async t=>{
+ const h=await harness(t);addBoundNotes(h,false);h.editor=envelope.composeObservablePayload({doc:doc('AB tail')});fs.writeFileSync(h.file,h.editor);
+ const before=business(h),projection=await h.c.readPendingRevisionProjection();
+ assert.equal(projection,null);const refused=await h.command('start');assert.equal(refused.ok,false);assert.match(JSON.stringify(refused),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/);
+ assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+});
+test('real PM gestures and SAVED prefix ACKs persist exact note occurrences through typing Undo and Redo',async t=>{
+ const [{Editor},{default:StarterKit},ui]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentCommentEditIntents.mjs')]);
+ const h=await harness(t),seed=addBoundNotes(h),editor=new Editor({element:null,
+  extensions:[StarterKit.configure({trailingNode:false}),ui.DocumentCommentEditIntents],content:doc('AB tail')});
+ editor.view.updateState(editor.state.reconfigure({plugins:editor.extensionManager.plugins}));Object.defineProperty(editor,'isDestroyed',{get:()=>false});
+ try{
+  await h.start();
+  const persist=async(expected,offsets)=>{
+   h.type(editor.state.doc.textContent);h.editor=envelope.composeObservablePayload({doc:editor.getJSON()});
+   const wire=ui.getCommentEditIntentsJson(editor);assert.equal(typeof wire,'string');h.intents=JSON.parse(wire);
+   const result=await h.save();assert.equal(result.success,true,JSON.stringify(result));
+   assert.equal(result.commentEditIntentsSha256,hash(wire));assert.equal(ui.checkpointCommentEditIntents(editor,result.commentEditIntentsSha256),true);
+   assert.equal(model.projection(h.context().parsed.doc).current,expected);
+   assert.deepEqual(model.readLedger(h.context().parsed.doc).noteSourcePoints.map(p=>p.offsetUtf16),offsets);
+   assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(seed.document));
+   assert.deepEqual(h.readComments().state.threads[0].messages,JSON.parse(seed.comments).threads[0].messages);
+  };
+  editor.commands.setTextSelection(2);editor.commands.insertContent({type:'text',text:'!'});await persist('A!B tail',[2,4]);
+  editor.commands.insertContent({type:'text',text:'?'});await persist('A!?B tail',[3,5]);
+  assert.equal(editor.commands.undo(),true);await persist('AB tail',[1,3]);
+  assert.deepEqual(model.roundFrame(model.readLedger(h.context().parsed.doc)),model.roundFrame(model.readLedger(seed.doc)));
+  assert.equal(editor.commands.redo(),true);await persist('A!?B tail',[3,5]);
+  h.intents=JSON.parse(ui.getCommentEditIntentsJson(editor));assert.equal((await h.command('stop')).ok,true);
+  assert.equal(model.projection(envelope.parseObservablePayload(fs.readFileSync(h.file,'utf8')).doc).original,'AxxB tail');
+ }finally{editor.destroy();}
+});
+test('failed stop with notes retains active recording and exact buffer; owned retry advances pins only after atomic ACK',async t=>{
+ const h=await harness(t);addBoundNotes(h);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ const before=business(h),buffer=h.editor;h.writeFailure=true;
+ const failed=await h.command('stop');assert.equal(failed.ok,false);assert.match(JSON.stringify(failed),/RECORDING_SAVE_FAILED_BUFFER_RETAINED/);
+ assert.deepEqual(business(h),before);assert.equal(h.editor,buffer);assert.equal(h.c.isDirty,true);assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+ h.writeFailure=false;assert.equal((await h.command('stop')).ok,true);assert.equal(model.projection(h.context().parsed.doc).current,'A!B tail');
+ assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.filter(n=>n.manuscript).map(n=>n.manuscript.reference.offsetUtf16),[2,2]);
 });

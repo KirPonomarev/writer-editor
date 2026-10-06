@@ -337,7 +337,8 @@ test('source points distinguish both deletion boundaries across round undo, deci
     doc = pending.decide(doc, { action }).doc; observe(expected);
   }
   assert.throws(() => pending.bindNoteSourcePoints(incoming, [{ noteId:'bad', paragraphIndex:0, offsetUtf16:2 }]), /REFERENCE_CONSUMED/);
-  assert.throws(() => require('../../src/core/word-pending-recording-v1.cjs').prepare(doc), /RECORDING_NOTE_BINDINGS_UNSUPPORTED/);
+  assert.deepEqual(pending.readLedger(require('../../src/core/word-pending-recording-v1.cjs').prepare(doc).baseline).noteSourcePoints,
+    pending.readLedger(doc).noteSourcePoints);
 });
 
 test('actual single-scene producer, signed Word parser, unchanged-note admission and publication preserve distinct collapsed references', async () => {

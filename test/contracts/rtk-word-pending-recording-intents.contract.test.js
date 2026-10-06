@@ -70,3 +70,49 @@ test('imported document tab stop survives recording and round Undo, unknown attr
   assert.equal(review.normalizeNode(review.decide(result, { action: 'undo' }).doc).attrs.wordDefaultTabStop, 720);
   assert.throws(() => recording.prepare({ ...base, attrs: { arbitrary: true } }), /PENDING_REVISIONS/);
 });
+
+const bound = (source, points, revisions = [], schemaVersion = 3) => review.bindLedger({ schemaVersion, source: doc(source),
+  revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [],
+  noteSourcePoints: points.map((offsetUtf16, i) => ({ noteId: 'note-'+i, paragraphIndex: 0, offsetUtf16 })) });
+const deletion = { id:'revision-1', nativeId:'word-delete', author:'Word', date:'', dateUtc:'', operation:'delete',
+  paragraphIndex:0, from:1, to:3, state:'pending', groupId:null };
+for (const schemaVersion of [3,5]) for (const [at, current, source, expectedPoints, currentPoints] of [
+  [0,'!AB','!AxxB',[2,4],[2,2]], [1,'A!B','A!xxB',[2,4],[2,2]], [2,'AB!','AxxB!',[1,3],[1,1]],
+]) test(`schema${schemaVersion} insertion at${at} retains distinct hidden note endpoints through decisions and round history`, () => {
+  const base=bound('AxxB',[1,3],[deletion],schemaVersion), frozen=JSON.stringify(base);
+  const next=recording.derive(base,doc(current),meta,plan('AB',edit('insert',at,'','!'))).doc, ledger=review.readLedger(next);
+  assert.equal(ledger.schemaVersion,schemaVersion);assert.equal(ledger.source.content[0].content.map(n=>n.text).join(''),source);
+  assert.deepEqual(ledger.noteSourcePoints.map(p=>p.offsetUtf16),expectedPoints);
+  assert.deepEqual(review.noteProjection(next).map(p=>p.offsetUtf16),currentPoints);
+  assert.deepEqual(review.noteProjection(next,'original').map(p=>p.offsetUtf16),[1,3]);
+  assert.equal(review.projection(next).original,'AxxB');assert.equal(review.projection(next).current,current);
+  assert.deepEqual(ledger.revisions.find(r=>r.id==='revision-1'),{...deletion,from:at<2?2:1,to:at<2?4:3});
+  assert.deepEqual(review.roundFrame(review.readLedger(review.decide(next,{action:'undo'}).doc)),review.roundFrame(review.readLedger(base)));
+  const undo=review.decide(next,{action:'undo'}).doc;assert.deepEqual(review.decide(undo,{action:'redo'}).doc,next);
+  const rejected=review.decide(next,{action:'rejectAll'}).doc;
+  assert.deepEqual(review.noteProjection(rejected).map(p=>p.offsetUtf16),[1,3]);
+  assert.equal(JSON.stringify(base),frozen);
+});
+test('exact repeated occurrence, replacement endpoint and emoji shifts use UTF16 source space once',()=>{
+  const base=bound('aaa😀z',[1,2,5]), input=plan('aaa😀z',edit('middle',1,'a','XX'),edit('emoji-before',4,'','!'));
+  const next=recording.derive(base,doc('aXXa!😀z'),meta,input).doc;
+  assert.equal(review.readLedger(next).source.content[0].content.map(n=>n.text).join(''),'aaXXa!😀z');
+  assert.deepEqual(review.readLedger(next).noteSourcePoints.map(p=>p.offsetUtf16),[1,4,8]);
+  assert.deepEqual(review.noteProjection(next).map(p=>p.offsetUtf16),[1,3,7]);
+  assert.deepEqual(review.noteProjection(next,'original').map(p=>p.offsetUtf16),[1,2,5]);
+  const undone=recording.derive(base,doc('aaa😀z'),meta,plan('aaa😀z',edit('middle',1,'a','XX'),edit('undo',1,'XX','a','undo','middle')));
+  assert.deepEqual(undone,{changed:false,doc:base});
+});
+test('notes retain strict provenance, consumed-reference, formatting and structural no-loss refusals',()=>{
+  const base=bound('abcd',[2]), working=doc('ad'), frozen=JSON.stringify({base,working});
+  assert.throws(()=>recording.derive(base,working,meta),/RECORDING_NOTE_INTENTS_REQUIRED/);
+  assert.throws(()=>recording.derive(base,working,meta,plan('abcd',edit('consume',1,'bc',''))),/RECORDING_NOTE_REFERENCE_CONSUMED/);
+  assert.throws(()=>recording.derive(base,doc('ab!cd'),meta,plan('abcd',edit('forged',0,'','!'))),/REPLAY_MISMATCH/);
+  const styled=doc('abcd');styled.content[0].content[0].marks=[{type:'bold'}];
+  assert.throws(()=>recording.derive(base,styled,meta,plan('abcd')),/RECORDING_NOTE_FORMAT_UNSUPPORTED/);
+  const paragraphs={type:'doc',content:[doc('ab').content[0],doc('cd').content[0]]};
+  assert.throws(()=>recording.derive(base,paragraphs,meta,plan('abcd')),/RECORDING_NOTE_STRUCTURE_UNSUPPORTED|REPLAY_MISMATCH/);
+  const forged=structuredClone(review.readLedger(base));forged.noteSourcePoints[0].offsetUtf16=99;
+  assert.throws(()=>recording.prepare(review.bindLedger(forged)),/PENDING_NOTE_POINT_BOUNDARY/);
+  assert.equal(JSON.stringify({base,working}),frozen);
+});

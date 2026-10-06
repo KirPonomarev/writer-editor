@@ -1,0 +1,248 @@
+# Writer recording with manuscript-note source occurrences on macOS
+
+TYPE: CORE
+CANON_VERSION: v3.13a-final
+CHECKS_BASELINE_VERSION: v1.3
+DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
+TASK_ID: WORD_RECORDING_NOTES_MAC_20261006
+STATUS: DECLARED_TARGET
+DOCUMENT_CLASS: TASK_CONTRACT
+BINDING_BASE_SHA: c799423ff447da6591db186dd7417da71147ee24
+DESIGN_TOOL_ROUTER: bound to validated pre-edit architecture declaration; existing UI contract unchanged
+CLAIM_BOUNDARY: source-bound inline author recording with existing manuscript notes; full original macOS novel acceptance remains open.
+
+## MICRO_GOAL
+
+After a supported Word return, the writer can record new inline insertions,
+deletions and replacements beside existing footnote/endnote references, save,
+stop recording, restart, decide revisions and Undo/Redo without losing any rich
+note body, source occurrence, discussion or prior revision history. Use the
+existing atomic scene/manifest/note/comment cohort and existing commands.
+
+PR2091 is delivered at this exact base. External terminal receipt
+DELIVERY_RECEIPT_PR2091_EXACT_MERGED_07_01.json binds candidate a4c2db3,
+merged450 affected checks without skips/todo, exact OPS5 and guardrails,
+candidate3633 RTK,2199 executed unit tests plus59 excluded configured skips,
+and CI19 successful jobs. Native evidence remains candidate-bound short
+SOURCE11/12 and ordinary PACKAGED03/04; tree equality does not relabel it as
+execution on the merged binary. Full100k/five genuine exchanges and complete
+three-role release are not closed by that receipt.
+
+Fresh SOURCE12 and PACKAGED04 query observed recordingAvailable=false,
+RECORDING_NOTE_BINDINGS_UNSUPPORTED. Core baseline rejects noteSourcePoints;
+Main independently rejects active notes. Existing commitWriterProjectSnapshot
+already regenerates and atomically publishes noteState and commentState.
+
+## ARTIFACT
+
+Checkpoint01 is TARGET and incomplete: code writer is HOLD after Core31,
+compatibility31, Main43 on the pre-two-additional-tests snapshot, and final
+selected real-PM/failed-stop2 executed without skips/todo. VM foreign JSON
+realm failure is retained; harness correction preserves rich language checks.
+The low-level MODE omitted-proof source-point bypass remains OPEN. Preserving
+single-scene note return requires independent replay of its existing Core
+binding/replacement, because that route cannot provide a comment return proof.
+No native build/run or full gates have executed for this task. A clean same-task
+checkpoint precedes a validated bounded semantic amendment; no delivery claim.
+
+One bounded existing-seam authoring repair with strict source-point geometry,
+Main-held recording/save admission and real atomic persistence proofs. Root
+owns this contract, factual docs, exact-byte OPS companions and delivery;
+a separate code agent owns declared runtime/behavior tests. No new writer,
+registry, schema family, dependency, IPC channel or visual surface.
+
+Diff budget:23 explicit paths; runtime maximum700 added/deleted lines;
+behavior tests maximum1100 added/deleted lines. No unrelated reformat/refactor.
+Unused allowed paths need not change. Any additional seam requires clean
+checkpoint and validated scope amendment before its first edit.
+
+## ALLOWLIST
+
+- `src/main.js`
+- `src/core/word-pending-recording-v1.cjs`
+- `src/core/word-pending-recording-comments-v1.cjs`
+- `src/core/word-manuscript-notes-v1.cjs`
+- `src/core/word-pending-text-revisions-v1.cjs`
+- `test/contracts/rtk-word-pending-recording.contract.test.js`
+- `test/contracts/rtk-word-pending-recording-intents.contract.test.js`
+- `test/contracts/rtk-word-pending-recording-comments.contract.test.js`
+- `test/contracts/rtk-word-pending-recording-runtime.contract.test.js`
+- `test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js`
+- `test/contracts/rtk-word-pending-notes.contract.test.js`
+- `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/tasks/2026-10-06--word-recording-notes-mac.md`
+- `docs/CONTEXT.md`
+- `docs/HANDOFF.md`
+- `docs/WORKLOG.md`
+
+## DENYLIST
+
+No renderer/preload/exporter/parser/style/catalog/modal/dependency/package or
+runtime-network change. No direct storage, second writer or new source of
+truth. Preserve existing no-notes behavior, current schema3/schema5 grammar,
+source CAS, closed note roster, Core regeneration, Kernel capabilities,
+project lease, history/recovery and all negative guards. No blanket removal
+of note checks, caller point offsets as authority, quote-based identity,
+history pruning or swallowed failure. Preserve foreign worktrees/profiles.
+No replay of old pending100k profiles, old import/giant alert, machine failure,
+WindowServer crash, force quit, TCC changes, AX/CUA or screenshots.
+
+Tracked formatting, paragraph splits/joins, moves and structural mixtures with
+notes remain typed refusals under their existing grammar. They remain original
+goal gaps. This first recording slice requires validated existing union-source
+note points; an unbound fresh note roster must not be guessed from coincident
+Current offsets. If its first admission needs a separate outcome, retain the
+typed refusal and report that gap rather than silently widening the contract.
+
+## CONTRACT / SHAPES
+
+O: on a source-bound scene with pending inline text and full notes/discussions,
+record disjoint inline changes, serial autosaves and Undo/Redo; public recording
+projection becomes available and actual saved/restarted data retains meanings.
+T: fresh canonical scene/full note/discussion bytes -> Main recording command
+and source-bound session -> real editor edit intents -> Core derivation ->
+canonical save/admission revalidation -> leased existing atomic writer ->
+journal/readback -> immutable editor publication.
+H: the blanket note refusals hide a missing insertion relocation step. Derive
+each new union-source point from its prior source occurrence and exact admitted
+insertion coordinates. Current equality alone never determines identity.
+B: rich note bodies/kinds/IDs/metadata, prior source/revisions/history, other
+scenes, full discussion graphs/statuses and working buffer remain protected;
+one coherent revert after completing existing recovery, no decoder downgrade.
+P: short actual Core/Main/real transaction proof first; early fresh short native
+SOURCE and ordinary PACKAGED recording plus actual Word changed save/reexport;
+then complete affected and mandatory stable checks and exact merged replay.
+I: exact c799 base, registered linked branch codex word-recording-notes mac20261006,
+T7 UUID D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2; fresh owned synthetic identities,
+runtime SHA, source/package bytes, Word build and artifacts bound externally.
+
+Source points at opposite edges of hidden text remain distinct even when their
+Current offsets coincide. The after-affinity rule is explicit at insertion
+endpoints and must be consistent with existing note projection/export laws.
+Insertion coordinate shifts apply once in source space, with UTF16 boundaries.
+An operation consuming an unsupported source reference must refuse while
+retaining the working buffer; do not manufacture point deletion semantics.
+
+Main reads the complete fresh note roster, validates project/scene identity,
+sourceTextSha256 and all Current point offsets before start and every save.
+Capture exact expected note bytes/digest in private save admission and recheck
+inside serialized leased publication. An owned successful note update advances
+the session's expectation; foreign updates must not become a silent overwrite.
+Complete note bodies and other metadata remain byte/meaning exact. Existing
+annotation and edit-intent provenance checks are retained, including saved
+prefixes, Undo/Redo inverse steps and repeated-text occurrence identity.
+
+FEATURE_INTEGRATION_MANIFEST_V1:
+
+```text
+featureId: word.writer.recording.note.source.points
+featureVersion: 1
+domainOwner: existing Core scene ledger and manuscript-note/discussion graphs
+authoritativeData: saved rich scene, full note document, full discussion graph and Main-owned session baseline
+derivedData: exact edit-intent delta, projected note coordinates and pending revision projection
+commandIds: existing cmd.project.review.recordTextRevisions; canonical save/autosave; cmd.project.review.decidePendingRevision
+eventTypes: existing commit acknowledgement and projection invalidation; no new bus
+queryIds: existing readPendingRevisionProjection
+productProjectionIds: existing pending revisions and editor working publication
+capabilityIds: existing writer-local recording and writable project capability
+authorityMap: Core geometry; Kernel capability; Main admission; existing leased atomic port; UI intent only
+identityKeys: project scene note source revision generation lifecycle subject session bootstrap owner lease
+revisionPolicy: complete fresh source/note/comment CAS before async publication
+writePath: Kernel -> Main session -> pure derivation -> canonical save admission -> leased scene/manifest/note/comment cohort -> readback
+readPath: canonical saved graph -> validated source points -> immutable recording projection
+requiredProductPorts: existing ProjectPersistencePort RecoveryPort and editor snapshot/publication adapter
+requiredDesignOsPorts: existing read-only DomainProjectionPort and intent-only CommandDispatchPort
+adapterRequirements: existing scene envelope, note storage and atomic transaction adapters
+surfaceManifests: existing editor and Comments surfaces; no new zone
+slotRequirements: existing slots unchanged
+supportedWorkspaces: WRITE and REVIEW
+platformAvailability: macOS SOURCE and ordinary WRITER_LOCAL_V1 PACKAGED
+accessibilityRequirements: unchanged keyboard and existing native shortcut parity; typed no-loss refusal
+fallbacks: unsupported/unbound/stale/ambiguous points refuse with working buffer retained
+stateClasses: PROJECT_STATE; AUTHORING_WORKING_STATE no-loss; DERIVED_STATE; TRANSIENT_STATE; shell unchanged
+persistenceClass: existing atomic scene/manifest/note/comment cohort
+migrations: existing schema3/schema5 and readable history; no new schema family
+recovery: existing journal regeneration and idempotent readable rollback
+rollback: one coherent PR revert after completing existing recovery; retain business files and evidence
+performanceBudget: existing4MiB ledger1024 revisions256 points/history and edit-intent bounds unchanged
+securityBoundary: bounded closed saved schemas and real edit provenance; no new path/command/network authority
+lifecycle: private session/bootstrap/generation owner checks through save and stop
+negativeBypassChecks: forged source/points/after/intents, stale notes/comments/source/owner/lease/generation, prefix replay and failed save
+evidenceBindings: independent full saved-data/geometry oracles; actual Core Main atomic writer native routes and exact merged checks
+currentReality: note recording currently refused; target until executed acceptance
+integrationMode: EXISTING_SEAM
+```
+
+## IMPLEMENTATION_STEPS
+
+1. Separate code agent maps exact baseline/point/intent/save paths and first
+   executes the observed recording refusal as a retained controlled proof.
+2. Derive source-point insertion shifts in existing Core recording while
+   retaining closed grammar, old revisions and complete round history.
+3. Main admits only fresh exact source/notes/discussions and revalidates the
+   full note expectation inside the existing leased save writer. Prove serial
+   save/stop/restart and history with actual Main and atomic transaction.
+4. Root freezes bytes, exercises early short native SOURCE/PACKAGED routes,
+   then executes stable full gates and completes the declared delivery chain.
+
+## CHECKS
+
+CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+
+- CHECK_01_PRE_ADMISSION: completed predecessor chain, fresh bootstrap, full ordered reads,
+  canonical registry and encrypted unlocked writable T7, clean exact c799
+  branch,23-path architecture preflight and this task's E0 before code dispatch.
+- CHECK_02_POST_CORE: exact source-point Core proof: disjoint insert/delete/replace beside
+  notes, before/at/after endpoints, distinct collapsed offsets, repeated text,
+  emoji/UTF16 boundaries; exact Current/Original/export and retained history.
+  Full saved-note/discussion comparisons, not counts-only success.
+- CHECK_03_POST_MAIN_ATOMIC: actual Main recording/start/save/stop/query with real atomic writer;
+  serial autosaves, failed-save buffer preservation, forged geometry/proof and
+  stale full note/comment/source/lifecycle/generation tests; source re-derivation
+  at transaction boundary and existing owned Node journal recovery checks.
+- CHECK_04_POST_NATIVE: fresh short SOURCE and ordinary PACKAGED app: recording via public
+  command, exact owned edit gestures, save/stop, controlled normal restart,
+  independent full note/discussion/revision history; genuine Word changed save,
+  Cancel/Apply/reexport where the composed route is affected. No old failure
+  replay. Bind exact runtime/package and artifact bytes; native100k is later.
+- CHECK_05_POST_STABLE_GATES: all changed and affected whole suites without name filters/skips/
+  todo, mandatory npm test, full official RTK including clean process/lease
+  qualification, agent guardrails, security/OSS/audit/OPS and exact-byte
+  governance. Inventory's configured skips remain outside positive coverage.
+- CHECK_06_POST_DELIVERY: final scope/diff review, coherent commit/push/PR, successful required
+  CI, ordinary merge with exact head binding, fresh fetch and clean exact merged
+  relevant tests/OPS/guardrails. No new contour until delivery closure.
+
+Brain refs ran before this task: only internal references suggested; no design
+question is present and no external design tooling or third-party code is used.
+The deterministic checklist is satisfied by explicit one-outcome scope,
+two planes, manifest, identities, no-loss/recovery/fallback, finite budgets,
+negative tests and mandatory full delivery. Work advances through these checks
+without additional owner approval inside the previously authorized scope.
+
+## STOP_CONDITION
+
+Stop on ambiguous identity, foreign dirty state, required proof failure,
+missing source occurrence, authority bypass, undeclared path or third repeated
+same failure. Retain failed artifacts and one next hypothesis. A short green
+test never closes a failed larger denominator or the full original novel plan.
+Rollback is one coherent PR revert with current recovery completed first.
+
+## REPORT_FORMAT
+
+Output: one text code block, KEY: VALUE; basenames only, no URLs/slash paths;
+task id, before/after/merged SHA, changed scope, actual tests, commit/push/PR/CI/
+merge/exact-head outcome, limitations and one next step.
+
+## FAIL_PROTOCOL
+
+Retain actual failed test/oracle/process output and immutable input artifacts;
+state expected, actual, seed, exact HEAD, hashes and one next hypothesis. Do not
+replace a failed gate with a focused success or rerun a third identical failure.

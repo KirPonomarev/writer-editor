@@ -98,7 +98,7 @@ test('native Tiptap typing and plain paste emit empty inherited color without ch
   assert.equal(review.projection(result.doc).original, 'Native text');
   assert.ok(!JSON.stringify(review.readLedger(result.doc).source).includes('"color":""'));
 });
-test('recording retains schema5 parent-child identities, round frames and explicit note refusal',()=>{
+test('recording retains schema5 parent-child identities, round frames and bound note points',()=>{
  const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'added',marks:[{type:'bold'}]}]}]},common={nativeId:'native',author:'Word',date:'',dateUtc:'',paragraphIndex:0,from:0,to:5,state:'pending',groupId:null};
  const parent={...common,id:'revision-1',operation:'insert'},child={...common,id:'revision-2',operation:'format',parentRevisionId:'revision-1',format:{kind:'run',before:[],after:[{type:'bold'}]}};
  const initial=review.bindLedger({schemaVersion:5,source,revisions:[parent,child],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
@@ -108,7 +108,7 @@ test('recording retains schema5 parent-child identities, round frames and explic
  assert.equal(ledger.schemaVersion,5);assert.deepEqual(ledger.revisions.slice(0,2),[parent,child]);assert.equal(ledger.roundUndo.at(-1).schemaVersion,5);
  assert.deepEqual(review.readLedger(review.decide(next,{action:'undo'}).doc).revisions,[parent,child]);
  const notes={schemaVersion:5,source:doc('plain'),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[{noteId:'note-one',paragraphIndex:0,offsetUtf16:0}]};
- const noteDoc=review.bindLedger(notes);assert.throws(()=>recording.prepare(noteDoc),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/u);assert.deepEqual(review.readLedger(noteDoc).noteSourcePoints,notes.noteSourcePoints);
+ const noteDoc=review.bindLedger(notes);assert.deepEqual(recording.prepare(noteDoc).baseline,noteDoc);assert.deepEqual(review.readLedger(noteDoc).noteSourcePoints,notes.noteSourcePoints);
 });
 
 test('Round decision anchor geometry accepts returned styles while rich Undo and message provenance stay exact',()=>{

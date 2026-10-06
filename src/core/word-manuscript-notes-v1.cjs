@@ -132,7 +132,9 @@ function mapPoint(oldText, nextText, point) {
   return result;
 }
 
-function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent }) {
+function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent, recordingProofJson }) {
+  if (recordingProofJson !== undefined) require('./word-pending-recording-comments-v1.cjs')
+    .validateRecordingSaveProof({ beforeContent, afterContent, recordingProofJson });
   if (beforeText === null) return null;
   need(typeof beforeText === 'string' && Buffer.byteLength(beforeText) <= 4 * LIMITS.bytes, 'NOTE_DOCUMENT_BUDGET');
   const document = validateManuscriptDocument(JSON.parse(beforeText), projectId);
@@ -165,19 +167,21 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
     ref.offsetUtf16 = nextOffset;
     ref.sourceTextSha256 = sha(after);
   }
-  if (before === after && !referenceChanged) return null;
-  return { mode: MODE, beforeText, afterText: `${JSON.stringify(document, null, 2)}\n` };
+  if (before === after && !referenceChanged && recordingProofJson === undefined) return null;
+  return { mode: MODE, beforeText, afterText: before === after && !referenceChanged ? beforeText : `${JSON.stringify(document, null, 2)}\n`,
+    ...(recordingProofJson !== undefined ? { recordingProofJson } : {}) };
 }
 
 function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterContent }) {
   if (value == null) return null;
-  need(keys(value, ['mode', 'beforeText', 'afterText'])
+  need(keys(value, ['mode', 'beforeText', 'afterText', ...(value.mode === MODE ? ['recordingProofJson'] : [])])
     && [MODE, 'MANUSCRIPT_IMPORT_V1', 'MANUSCRIPT_BODY_UPDATE_V1'].includes(value.mode)
     && (value.beforeText === null || typeof value.beforeText === 'string')
     && typeof value.afterText === 'string'
     && [value.beforeText || '', value.afterText].every(s => Buffer.byteLength(s) <= 4 * LIMITS.bytes), 'NOTE_COHORT_SHAPE');
   if (value.mode === MODE) {
-    const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent });
+    const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId, sceneId, beforeContent, afterContent,
+      ...(Object.hasOwn(value, 'recordingProofJson') ? { recordingProofJson: value.recordingProofJson } : {}) });
     need(expected && expected.afterText === value.afterText, 'NOTE_COHORT_REBASE');
     return expected;
   }

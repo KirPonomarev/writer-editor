@@ -1,3 +1,43 @@
+## 2026-10-06 — PR2091 delivered; source-bound note recording in progress
+
+The book-return contour is closed: candidate a4c2db3dec02e43b951cf25000a44abf505038b0,
+ordinary merge c799423ff447da6591db186dd7417da71147ee24; CI19 success, fresh merged
+whole affected450of450 without skips/todo, original OPS5 and guardrails pass.
+DELIVERY_RECEIPT_PR2091_EXACT_MERGED_07_01.json binds actual logs, parents,
+clean exact merged identity and equal candidate/merged trees. Candidate full
+RTK3633of3633 and unit2199of2258 (59 configured skips excluded) are separate
+executed evidence. Native short SOURCE11/12 and ordinary PACKAGED03/04 remain
+candidate-bound; complete notes/discussions, genuine Word changes, Cancel/Apply,
+restart and revision decisions were checked. Retained packaged Alpha observer
+failures limit first-accept coverage; there is no full novel release claim.
+Earlier OPEN/failed entries below are historical and remain retained.
+
+Checkpoint01 is TARGET and incomplete: code writer is HOLD after Core31,
+compatibility31, Main43 on the pre-two-additional-tests snapshot, and final
+selected real-PM/failed-stop2 executed without skips/todo. VM foreign JSON
+realm failure is retained; harness correction preserves rich language checks.
+The low-level MODE omitted-proof source-point bypass remains OPEN. Preserving
+single-scene note return requires independent replay of its existing Core
+binding/replacement, because that route cannot provide a comment return proof.
+No native build/run or full gates have executed for this task. A clean same-task
+checkpoint precedes a validated bounded semantic amendment; no delivery claim.
+
+WORD_RECORDING_NOTES_MAC_20261006 now starts from exact c799 with fresh full
+startup,23-path architecture preflight and successful E0 before code dispatch.
+The observed Core refusal is RECORDING_NOTE_BINDINGS_UNSUPPORTED. Target:
+existing source-bound foot/endnotes with disjoint inline recording, full fresh
+note/comment CAS, independent re-derivation at the existing atomic writer,
+serial saves and no-loss Undo/Redo/restart. A fresh synthetic seed has source
+AxxB first owner and two distinct note occurrences1/3 collapsed to Current1/1;
+expected inserted ! gives source A!xxB, points2/4, Current2/2, Original1/3.
+This is a declared target until actual proof. No UI/dependency/schema-family
+or runtime-network change. Fresh unbound note recording and notes combined
+with tracked structure/format/moves remain typed refusals and original gaps.
+Full100k, five genuinely changed Word exchanges, Word-born native import and
+complete three-role macOS release acceptance remain OPEN. Next: source/Core/
+Main/atomic negative proof, early fresh native SOURCE/PACKAGED, full gates and
+complete required delivery before beginning any next code contour.
+
 ## 2026-10-06 — book notes legacy and plain-source correction checkpoint
 
 ## 2026-10-06 — book-note checkpoint02 and one stale successor contract

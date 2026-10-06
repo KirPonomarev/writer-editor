@@ -23874,10 +23874,13 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             const notesStorage = await loadNotesStorageModule();
             const notes = await notesStorage.readNotesStorage({ projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId });
             if (!notes.ok) throw Error('NOTE_STORAGE_CORRUPT');
+            if (recordingAdmission?.session.noteRecording
+              && (notes.sourceExists ? notes.sourceText : null) !== recordingAdmission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
             noteState = manuscriptNoteModel.planManuscriptNoteAnchorSave({
               beforeText: notes.sourceExists ? notes.sourceText : null, projectId: prepared.projectId,
               sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
-              beforeContent: expectedSceneContent, afterContent: content });
+              beforeContent: expectedSceneContent, afterContent: content,
+              ...(recordingAdmission?.session.noteRecording ? { recordingProofJson: recordingAdmission.recordingProofJson } : {}) });
           }
           if(options.commentTextReturnPlan) {
             if(options.authenticatedCleanBlockText!==true) throw Error('COMMENT_TEXT_RETURN_AUTHORITY_REQUIRED');
@@ -23938,6 +23941,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           });
           if (recordingAdmission && receipt.success === true) {
             recordingAdmission.session.raw = content; recordingAdmission.session.savedGeneration = revision;
+            if (recordingAdmission.session.noteRecording) recordingAdmission.session.expectedNotes = noteState?.afterText ?? recordingAdmission.expectedNotes;
             if (recordingAdmission.nextIntents) {
               recordingAdmission.session.provenance = recordingAdmission.nextIntents;
               recordingAdmission.session.provenanceWire = recordingAdmission.wire;
@@ -25761,8 +25765,26 @@ async function assertPendingRecordingAnnotations(session) {
   const activeComments = saved.state.threads.some(t => t.sceneId === session.sceneId && (t.status !== 'deleted' || t.anchorEditHistory?.length));
   if (activeComments && session.commentRecording === false) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
   const notes = await (await loadNotesStorageModule()).readNotesStorage(session);
-  if (!notes.ok || notes.document.notes.some(n => !n.deleted && n.manuscript?.reference?.sceneId === session.sceneId)) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
-  return { saved, activeComments };
+  if (!notes.ok) throw Error('RECORDING_ANNOTATIONS_UNSUPPORTED');
+  const noteText = notes.sourceExists ? notes.sourceText : null;
+  if (session.noteRecording && noteText !== session.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
+  const document = manuscriptNoteModel.validateManuscriptDocument(noteText === null
+    ? notes.document : JSON.parse(noteText), session.projectId);
+  const activeNotes = document.notes.filter(n => !n.deleted && n.manuscript?.reference?.sceneId === session.sceneId);
+  const doc = (await loadDocumentContentEnvelopeModule()).parseObservablePayload(session.raw).doc;
+  const points = pendingTextRevisions.noteProjection(doc);
+  if (activeNotes.length || points) {
+    if (!points) throw Error('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
+    if (points.length !== activeNotes.length || !activeNotes.every(n => points.some(p => p.noteId === n.id))) throw Error('RECORDING_NOTE_ROSTER_STALE');
+    const source = manuscriptNoteModel.sceneText(session.raw);
+    for (const note of activeNotes) {
+      const ref = note.manuscript.reference;
+      if (ref.sourceTextSha256 !== manuscriptNoteModel.sha(source)
+        || !manuscriptNoteModel.boundary(source, ref.offsetUtf16)
+        || points.find(p => p.noteId === note.id).globalOffsetUtf16 !== ref.offsetUtf16) throw Error('RECORDING_NOTE_REFERENCE_STALE');
+    }
+  }
+  return { saved, activeComments, activeNotes: activeNotes.length > 0, noteText };
 }
 async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   if (!capturedSession && !activePendingRecording) return snapshot;
@@ -25773,8 +25795,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const working = envelope.parseObservablePayload(snapshot.content);
   if (working.issue || !working.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
-  let nextIntents, expectedComments, recordingProofJson;
-  if (session.commentRecording) {
+  let nextIntents, expectedComments, expectedNotes, recordingProofJson;
+  if (session.commentRecording || session.noteRecording) {
     const model = require('./core/word-comment-edit-intents-v1.cjs');
     if (snapshot.commentEditIntentsJson == null) throw Error('RECORDING_COMMENT_INTENTS_REQUIRED');
     const incoming = model.validateEditIntents(snapshot.commentEditIntentsJson), prior = session.provenanceWire;
@@ -25785,7 +25807,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
       && JSON.stringify(incoming.edits.slice(0, prior.edits.length)) === JSON.stringify(prior.edits)) suffix = incoming.edits.slice(prior.edits.length);
     else if (incoming.baselineTextSha256 !== savedDigest) throw Error('RECORDING_COMMENT_PREFIX_STALE');
     nextIntents = model.validateEditIntents(JSON.stringify({ ...session.provenance, edits: [...session.provenance.edits, ...suffix] }));
-    expectedComments = (await assertPendingRecordingAnnotations(session)).saved.text;
+    const annotations = await assertPendingRecordingAnnotations(session);
+    expectedComments = annotations.saved.text; expectedNotes = annotations.noteText;
     recordingProofJson = JSON.stringify({ schemaVersion: 1, baselineContent: session.baselineContent,
       metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id });
   }
@@ -25795,7 +25818,7 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const key = computeHash(content) + ':' + snapshot.generation;
   if (pendingRecordingSaveAdmissions.size >= 32) pendingRecordingSaveAdmissions.clear();
   pendingRecordingSaveAdmissions.set(key, { session, content, generation: snapshot.generation, expected: session.raw,
-    ...(session.commentRecording ? { nextIntents, expectedComments, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
+    ...(session.commentRecording || session.noteRecording ? { nextIntents, expectedComments, expectedNotes, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
   return { ...snapshot, content, doc: result.doc };
 }
 function resolvePendingRecordingSaveAdmission(filePath, content, generation) {
@@ -25813,6 +25836,11 @@ async function revalidatePendingRecordingSave(admission) {
   if (admission.expected !== session.raw || admission.generation < session.savedGeneration) throw Error('RECORDING_SAVE_STALE');
   const annotations = await assertPendingRecordingAnnotations(session);
   if (session.commentRecording && annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (session.noteRecording) {
+    if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
+    require('./core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof({
+      beforeContent: admission.expected, afterContent: admission.content, recordingProofJson: admission.recordingProofJson });
+  }
   const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
   if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
   if (await fs.readFile(session.filePath, 'utf8') !== admission.expected) throw Error('RECORDING_SCENE_CHANGED');
@@ -25873,7 +25901,9 @@ async function handlePendingRecordingCommand(payload = {}) {
         owner: activeStage10ApplicationBootstrap, savedGeneration: snapshot.generation };
       const annotations = await assertPendingRecordingAnnotations(session);
       session.commentRecording = annotations.activeComments;
-      if (session.commentRecording) {
+      session.noteRecording = annotations.activeNotes;
+      session.expectedNotes = annotations.noteText;
+      if (session.commentRecording || session.noteRecording) {
         const model = require('./core/word-comment-edit-intents-v1.cjs');
         session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, doc: original });
         session.provenance = { schemaVersion: 2, baselineTextSha256: model.textDigest(commentSceneParagraphs(session.baselineContent).map(p => p.text)), edits: [] };
@@ -25881,7 +25911,9 @@ async function handlePendingRecordingCommand(payload = {}) {
       const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
       if (fresh.raw !== context.raw || fresh.subjectId !== context.subjectId || fresh.projectId !== context.projectId
         || lastSignaledEditGeneration > snapshot.generation) throw Error('RECORDING_SCENE_CHANGED');
-      if (((await assertPendingRecordingAnnotations(session)).saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
+      const freshAnnotations = await assertPendingRecordingAnnotations(session);
+      if ((freshAnnotations.saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
+      if (freshAnnotations.noteText !== annotations.noteText) throw Error('RECORDING_NOTES_CHANGED');
       pendingRecordingCapability();
       activePendingRecording = session;
       try {
