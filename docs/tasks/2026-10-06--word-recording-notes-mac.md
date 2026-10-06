@@ -9,7 +9,7 @@ STATUS: DECLARED_TARGET
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: c799423ff447da6591db186dd7417da71147ee24
 DESIGN_TOOL_ROUTER: bound to validated pre-edit architecture declaration; existing UI contract unchanged
-CLAIM_BOUNDARY: source-bound inline author recording with existing manuscript notes; full original macOS novel acceptance remains open.
+CLAIM_BOUNDARY: source-bound inline author recording and fresh single-scene Word pending-note return with exact source-owned note emission; full original macOS novel acceptance remains open.
 
 ## MICRO_GOAL
 
@@ -71,7 +71,7 @@ owns this contract, factual docs, exact-byte OPS companions and delivery;
 a separate code agent owns declared runtime/behavior tests. No new writer,
 registry, schema family, dependency, IPC channel or visual surface.
 
-Diff budget:25 explicit paths; runtime maximum700 added/deleted lines;
+Diff budget:29 explicit paths; runtime maximum700 added/deleted lines;
 behavior tests maximum1100 added/deleted lines. No unrelated reformat/refactor.
 Unused allowed paths need not change. Any additional seam requires clean
 checkpoint and validated scope amendment before its first edit.
@@ -84,12 +84,16 @@ checkpoint and validated scope amendment before its first edit.
 - `src/core/word-manuscript-notes-v1.cjs`
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/project-transaction-v1.cjs`
+- `src/core/word-note-return-delta-v1.cjs`
+- `src/export/docx/docxReviewPacketNotes.js`
+- `src/export/docx/fullManuscriptDocxReviewPacketSource.js`
 - `test/contracts/rtk-word-pending-recording.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-intents.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-comments.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-runtime.contract.test.js`
 - `test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js`
 - `test/contracts/rtk-word-pending-notes.contract.test.js`
+- `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -106,8 +110,10 @@ checkpoint and validated scope amendment before its first edit.
 
 ## DENYLIST
 
-No renderer/preload/exporter/parser/style/catalog/modal/dependency/package or
-runtime-network change. No direct storage, second writer or new source of
+No renderer/preload/parser/catalog/modal/dependency/package or runtime-network
+change. The only added export seams are the listed existing note projection and
+its single-scene producer selection. No manuscript body-default emitter, global
+style profile, note typography rewrite or unrelated export behavior change. No direct storage, second writer or new source of
 truth. Preserve existing no-notes behavior, current schema3/schema5 grammar,
 source CAS, closed note roster, Core regeneration, Kernel capabilities,
 project lease, history/recovery and all negative guards. No blanket removal
@@ -211,6 +217,62 @@ geometry/body/private state and divergent current bytes must refuse before
 business writes. Fresh omitted-proof and forged recovery-flag requests remain
 refused. Component evidence alone cannot certify physical Word or full novel.
 
+
+Semantic amendment03 starts at clean25190b4c0d068a5927d67abc75e19838a01eb514
+after fresh registry/T7/bootstrap/startup and remote main exactlyc799 checks.
+Declaration05 preflight29 passes before this first amendment repository edit;
+E0 for the amended contract precedes code dispatch. Original task/delivery base
+c799 remains unchanged. Four bounded paths are added; aggregate runtime700 and
+behavior1100 budgets remain. All previous recovery and fresh-admission guards
+and evidence remain required. The official old-checkpoint RTK must terminate
+before source edits; final changed bytes require their own applicable gates.
+
+Retained genuine Word changed-save input9d9634 and own export477e94 produce
+PENDING_NOTE_BODY_CHANGED at the existing unauthenticated single-scene binder.
+Full source-v-return diagnosisfc6163 observes that canonical notes equal own
+exported notes, but Word supplies font and auxiliary language inheritance that
+was absent from the authenticated capsule. This is a real admission defect
+for a fresh supported exchange, not permission to infer those returned defaults.
+The original unknown-default round must retain its existing strict refusal.
+No authentic key, capsule or returned artifact may be extracted, replaced or
+rewritten to manufacture native acceptance.
+
+For future editable single-scene exports, both clean and pending, reuse the already finite notes-only
+V2 transport profile in the existing documentNotes.breakEmission field. Keep
+canonical rich bodies, private metadata and authored fields exact. Preserve
+existing multiscene V1/V3 policy and manuscript body defaults. Producer profile
+selection is local source authority. Main export self-readback, authenticated
+return preparation and independent atomic proof replay must all use the same
+closed source-owned effective note and hard-break meaning. The existing clean
+note planner also uses full profile-owned equality before retaining canonical
+representation, and preserves all already-supported note create/update/delete
+semantics. Real representable clean note edits remain edits; unrepresentable
+break formatting refuses without loss. No pending-only workaround. No new durable
+schema family, writer, registry, command, decoder downgrade or dependency.
+
+Single-scene profile admission requires exact project/scene/export-map scope,
+complete active note roster, full source/body/state digest, native occurrence
+bijection and original/union geometry. Derive the permitted finite profile
+from the exact local baseline; a caller flag, observed default or equal plain
+text cannot grant relaxed comparison. Old rounds without a profile use the
+unchanged strict legacy law. Missing, partial, forged or wrong-scope profiles
+must refuse. In the pending unchanged-note route, altered body, used font slots,
+size, all language slots, bold/color, spacing, links or break meaning must
+refuse. Identity/geometry or stale full note/source state must always refuse
+without business writes. Main/transaction freshness, lifecycle, generation,
+capability, session, source/note/comment CAS and lease guards remain unchanged.
+
+Required proof first executes the old unknown-default refusal and an actual
+fresh clean and pending producer-to-ZIP-to-existing-parser-to-Core/Main
+positives with partial
+authored language and rich hard breaks; actual persistence replay preserves
+complete canonical/private note bytes and all previous history/recovery.
+Then fresh short SOURCE and ordinary PACKAGED genuine Word changed save,
+Cancel/Apply/reexport, normal restart and independent complete text/revision/
+note/discussion oracles precede the full gates and required delivery chain.
+Synthetic semantic proof is never relabelled as authenticated native Apply,
+large novel performance or the complete three-role release.
+
 FEATURE_INTEGRATION_MANIFEST_V1:
 
 ```text
@@ -218,13 +280,13 @@ featureId: word.writer.recording.note.source.points
 featureVersion: 1
 domainOwner: existing Core scene ledger and manuscript-note/discussion graphs
 authoritativeData: saved rich scene, full note document, full discussion graph and Main-owned session baseline
-derivedData: exact edit-intent delta, projected note coordinates and pending revision projection
-commandIds: existing cmd.project.review.recordTextRevisions; canonical save/autosave; cmd.project.review.decidePendingRevision
+derivedData: exact edit-intent delta, projected note coordinates, source-owned V2 effective note/break meaning and pending revision projection
+commandIds: existing cmd.project.review.recordTextRevisions; canonical save/autosave; cmd.project.review.decidePendingRevision; existing scene/book DOCX export and authenticated return preview/Apply
 eventTypes: existing commit acknowledgement and projection invalidation; no new bus
 queryIds: existing readPendingRevisionProjection
 productProjectionIds: existing pending revisions and editor working publication
 capabilityIds: existing writer-local recording and writable project capability
-authorityMap: Core geometry; Kernel capability; Main admission; existing leased atomic port; UI intent only
+authorityMap: Core geometry/effective note comparison; local producer and capsule own emission; Kernel capability; Main admission; existing leased atomic port; UI intent only
 identityKeys: project scene note source revision generation lifecycle subject session bootstrap owner lease
 revisionPolicy: complete fresh source/note/comment CAS before async publication
 writePath: Kernel -> Main session -> pure derivation -> canonical save admission -> leased scene/manifest/note/comment cohort -> readback
@@ -237,7 +299,7 @@ slotRequirements: existing slots unchanged
 supportedWorkspaces: WRITE and REVIEW
 platformAvailability: macOS SOURCE and ordinary WRITER_LOCAL_V1 PACKAGED
 accessibilityRequirements: unchanged keyboard and existing native shortcut parity; typed no-loss refusal
-fallbacks: unsupported/unbound/stale/ambiguous points refuse with working buffer retained
+fallbacks: unsupported/unbound/stale/ambiguous points refuse with working buffer retained; unknown old export defaults remain strict; exact V2 clean/pending routes use complete source-owned equality
 stateClasses: PROJECT_STATE; AUTHORING_WORKING_STATE no-loss; DERIVED_STATE; TRANSIENT_STATE; shell unchanged
 persistenceClass: existing atomic scene/manifest/note/comment cohort
 migrations: existing schema3/schema5 and readable history; no new schema family
@@ -248,7 +310,7 @@ securityBoundary: bounded closed saved schemas and real edit provenance; no new 
 lifecycle: private session/bootstrap/generation owner checks through save and stop
 negativeBypassChecks: forged source/points/after/intents, stale notes/comments/source/owner/lease/generation, prefix replay and failed save
 evidenceBindings: independent full saved-data/geometry oracles; actual Core Main atomic writer native routes and exact merged checks
-currentReality: note recording currently refused; target until executed acceptance
+currentReality: short component/native recording and decisions observed; complete fresh note return and full native/delivery acceptance remain TARGET; old unknown Word-note defaults refuse
 integrationMode: EXISTING_SEAM
 ```
 

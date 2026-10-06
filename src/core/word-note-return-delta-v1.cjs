@@ -56,6 +56,8 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
   model.validateManuscriptDocument(document, projectId);
   need(Array.isArray(returnedNotes) && returnedNotes.length <= 256 && Array.isArray(returnedParagraphs)
     && Array.isArray(exportMap?.scenes), 'NOTE_RETURN_GRAPH_INCOMPLETE');
+  const emission = singleSceneNoteEmission(baseline, exportMap);
+  if (emission && notesStateDigest(document) === baseline.stateDigest) validateSingleSceneNoteRoster(document, baseline, exportMap);
   const blocks = exportMap.scenes.flatMap(scene => (scene.blocks || []).map(block => ({
     ...block, sceneId: scene.sceneId, text: block.formatIr?.runs?.map(run => run.text).join(''),
   })));
@@ -100,8 +102,10 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const sceneBlocks = blocks.filter(b => b.sceneId === block.sceneId);
     const blockIndex = sceneBlocks.indexOf(block), sceneContent = sceneBlocks.map(b => b.text).join('\n');
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
-    const body = binding && equivalentBody(binding.richBody, note.body, exportMap.exportTypography)
-      ? binding.richBody : note.body;
+    if (emission) need(stable(note.breakProjection) === stable(localBookNoteBreakProjection(note.body, emission)), 'NOTE_RETURN_BREAK_CHANGED');
+    const body = binding && (emission
+      ? equivalentCompleteBody(binding.richBody, note.body, exportMap.exportTypography, emission)
+      : equivalentBody(binding.richBody, note.body, exportMap.exportTypography)) ? binding.richBody : note.body;
     // sceneContent is already the validated canonical leaf projection. Parsing
     // it again as a legacy scene file would trim empty edge paragraphs or treat
     // literal envelope-looking text as metadata and change anchor coordinates.
@@ -166,6 +170,10 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
   if (closedBookEmission !== undefined) need(exportMap?.scenes?.length > 1
     && stable(baseline.breakEmission) === stable(closedBookEmission)
     && requireBookNoteEmission(closedBookEmission), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  if (closedBookEmission === undefined) {
+    closedBookEmission = singleSceneNoteEmission(baseline, exportMap, sceneId);
+    if (closedBookEmission) validateSingleSceneNoteRoster(document, baseline, exportMap);
+  }
   const active = document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
   need(active.length > 0 && active.length <= 256 && baseline.sourceBindings?.length === active.length
     && returnedNotes?.length === active.length && unionReferences?.length === active.length, 'PENDING_NOTE_GRAPH_MISMATCH');
@@ -175,6 +183,14 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
   need(text(original(old) || beforeDoc) === text(original(incoming) || returnedDoc), 'PENDING_NOTE_ORIGINAL_TEXT_MISMATCH');
   const originalLeaves = pending.paragraphs(pending.normalizeNode(original(old) || beforeDoc));
   const currentText = text(beforeDoc), beforePoints = [], returnedPoints = [], used = new Set();
+  if (closedBookEmission?.schemaVersion === 2 && exportMap.scenes.length === 1) {
+    const nativeIds = new Set();
+    for (const ref of unionReferences) {
+      const id = ref?.kind + ':' + ref?.nativeId;
+      need(/^[1-9][0-9]*$/u.test(ref?.nativeId) && !nativeIds.has(id), 'PENDING_NOTE_NATIVE_ROSTER_MISMATCH');
+      nativeIds.add(id);
+    }
+  }
   for (const note of active) {
     const binding = baseline.sourceBindings.find(b => b.noteId === note.id);
     need(binding?.richBody && binding.sceneId === sceneId && binding.kind === note.manuscript.kind
@@ -184,11 +200,12 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
     const { n, i } = matches[0]; used.add(i);
     if (closedBookEmission !== undefined) {
       need(stable(binding.richBody) === stable(model.validateNoteBody(note.manuscript.body).body), 'PENDING_NOTE_BASELINE_MISMATCH');
-      need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
+      if (exportMap.scenes.length > 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     }
     need(n.kind === binding.kind && (closedBookEmission !== undefined
       ? equivalentCompleteBody(note.manuscript.body, n.body, exportMap.exportTypography, closedBookEmission)
       : equivalentBody(note.manuscript.body, n.body, exportMap.exportTypography)), 'PENDING_NOTE_BODY_CHANGED');
+    if (closedBookEmission !== undefined && exportMap.scenes.length === 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     const ref = note.manuscript.reference;
     need(ref.sourceTextSha256 === model.sha(currentText), 'PENDING_NOTE_REFERENCE_STALE');
     let beforePoint = old?.noteSourcePoints?.find(p => p.noteId === note.id);
@@ -202,6 +219,10 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
         offset -= length + 1;
       }
       beforePoint = { noteId: note.id, paragraphIndex, offsetUtf16: offset };
+    }
+    if (closedBookEmission?.schemaVersion === 2 && exportMap.scenes.length === 1) {
+      const exported = old ? pending.projectSourcePoint(old, beforePoint, 'current') : beforePoint;
+      need(binding.documentParagraphIndex === exported.paragraphIndex && binding.offsetUtf16 === exported.offsetUtf16, 'PENDING_NOTE_BASELINE_MISMATCH');
     }
     const oldProjection = old ? pending.projectSourcePoint(pending.exportNoteBasis(old), pending.projectSourcePoint(old, beforePoint, 'export'), 'original') : beforePoint;
     need(n.paragraphIndex === oldProjection.paragraphIndex && n.offsetUtf16 === oldProjection.offsetUtf16
@@ -219,7 +240,7 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
 // Complete typed body law for the composed book lane. Legacy emission owns
 // 12pt; v2 owns the exact finite note-style profile below. Source-authored
 // properties, paragraph meaning and every effective break must still match.
-// This deliberately does not broaden the standalone note-return equivalence.
+// Fresh single-scene rounds select v2 only from their closed local baseline.
 const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
   wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
   paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
@@ -231,6 +252,41 @@ function requireBookNoteEmission(emission) {
     || stable(emission) === stable(BOOK_NOTE_EMISSION_V2)
     || stable(emission) === stable(BOOK_NOTE_EMISSION_V3), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
   return [2, 3].includes(emission.schemaVersion);
+}
+// A profile is source evidence, not a caller capability. Unknown/partial
+// single-scene profiles cannot select the legacy comparison by falling back.
+function singleSceneNoteEmission(baseline, exportMap, sceneId) {
+  if (!Object.hasOwn(baseline, 'breakEmission')) return undefined;
+  if (exportMap?.scenes?.length !== 1) return undefined;
+  need(exportMap?.scenes?.length === 1 && typeof exportMap.scenes[0].sceneId === 'string'
+    && (!sceneId || exportMap.scenes[0].sceneId === sceneId)
+    && stable(baseline.breakEmission) === stable(BOOK_NOTE_EMISSION_V2)
+    && Array.isArray(baseline.sourceBindings) && baseline.sourceBindings.every(b => b.sceneId === exportMap.scenes[0].sceneId),
+  'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  const ids = new Set(), nativeIds = new Set();
+  for (const binding of baseline.sourceBindings) {
+    const block = exportMap.scenes[0].blocks?.find(b => b.blockId === binding.blockId);
+    const nativeId = binding.kind + ':' + binding.nativeId;
+    need(block && block.documentParagraphIndex === binding.documentParagraphIndex
+      && model.sha((block.formatIr?.runs || []).map(r => r.text).join('')) === binding.blockTextSha256
+      && !ids.has(binding.noteId) && /^[1-9][0-9]*$/u.test(binding.nativeId) && !nativeIds.has(nativeId)
+      && (!binding.richBody || stable(binding.paragraphs) === stable(model.validateNoteBody(binding.richBody).paragraphs.map(({paragraph}) =>
+        (paragraph.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join(''))) && binding.transportIdentity === `_YALKEN_NOTE_${model.sha(baseline.projectId + '\n' + binding.noteId).slice(0,24)}`),
+    'PENDING_NOTE_BASELINE_MISMATCH');
+    ids.add(binding.noteId); nativeIds.add(nativeId);
+  }
+  need(stable(baseline.notes) === stable(baseline.sourceBindings.map(b => ({kind:b.kind,paragraphIndex:b.documentParagraphIndex,
+    offsetUtf16:b.offsetUtf16,paragraphs:b.paragraphs})))
+    && baseline.protectedDigest === `sha256:${model.sha(stable({schemaVersion:baseline.schemaVersion,notes:baseline.notes}))}`,
+  'PENDING_NOTE_BASELINE_MISMATCH');
+  return baseline.breakEmission;
+}
+function validateSingleSceneNoteRoster(document, baseline, exportMap) {
+  const active = document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === exportMap.scenes[0].sceneId);
+  const bindings = baseline.sourceBindings.filter(b => b.richBody);
+  need(active.length === bindings.length && active.every(note => bindings.some(b => b.noteId === note.id
+    && b.kind === note.manuscript.kind && stable(b.richBody) === stable(model.validateNoteBody(note.manuscript.body).body))),
+  'PENDING_NOTE_BASELINE_MISMATCH');
 }
 function completeBodyMeaning(body, defaults, emission, source = false) {
   const pinned = [2, 3].includes(emission?.schemaVersion);

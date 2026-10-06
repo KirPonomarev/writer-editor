@@ -4739,7 +4739,7 @@ async function readDocxReviewPacketExportSource() {
   const notesDocument = notesSourceDocument || { schemaVersion: 1, projectId, notes: [] };
   const documentNotes = buildCanonicalNotesExport(notesDocument, [], blocks.map((block, index) => ({
     ...block, sceneId, documentParagraphIndex: index,
-  })), projectId, { editableReturn: true });
+  })), projectId, { editableReturn: true, pinnedSingleSceneNoteProfile: true });
   if (documentNotes) blocks.forEach((block, index) => { block.sceneId = sceneId; block.documentParagraphIndex = index; });
   const sceneNoteBinding = documentNotes ? { projectId, projectRoot, filePath: sourceFilePath,
     subjectId: sourceSubjectId, owner: sourceOwner, generation: sourceGeneration, raw: sceneRawContent, sourceCohort,
@@ -5362,7 +5362,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId,
       baseline: source.documentNotes, exportMap: source.localAuthorityCapsule.exportMap,
       beforeDoc: baselineDocument.doc, returnedDoc,
-      returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+      returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes, { includeBreakProjection: source.localAuthorityCapsule.exportMap?.scenes?.length === 1 && source.localAuthorityCapsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
       unionReferences: preview.contentPreview.pendingNoteReferences || parsed.reviewIr.documentNotes.references });
     const returnedLedger = pendingTextRevisions.readLedger(bound.returnedDoc);
     const expectedPoints = pendingTextRevisions.noteProjection(baselineDocument.doc, 'export');
@@ -5393,7 +5393,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const plan = planNoteReturnDelta({ document: source.notesDocument, projectId: source.documentNotes.projectId,
     roundId: source.localAuthorityCapsule.roundId, artifactSha256: finalArtifactSha256, baseline: source.documentNotes,
     exportMap: source.localAuthorityCapsule.exportMap,
-    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes),
+    returnedNotes: revisionBridge.parseDocumentNotesRichReturn(documentBuffer, parsed.reviewIr.documentNotes, { includeBreakProjection: source.localAuthorityCapsule.exportMap?.scenes?.length === 1 && source.localAuthorityCapsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
     returnedParagraphs: parsed.reviewIr.formattingParagraphs, now: '1970-01-01T00:00:00.000Z' });
   if (plan.changes.length) throw Error('REVIEW_DOCX_EXPORT_NOTE_SEMANTICS_MISMATCH');
   return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED', finalArtifactSha256, ...commentPublication };
@@ -6322,7 +6322,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
       const noteReplay = {
         document: notesState.document, projectId: current.projectId, sceneId, baseline: capsule.documentNotes,
         exportMap: capsule.exportMap, beforeDoc, returnedDoc,
-        returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
+        returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.exportMap?.scenes?.length === 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
         unionReferences: preview.contentPreview.pendingNoteReferences || intake.parserResult.reviewIr.documentNotes.references };
       const bound = require('./core/word-note-return-delta-v1.cjs').bindUnchangedPendingNotes(noteReplay);
       pendingNoteReturnProofJson = JSON.stringify({ schemaVersion: 1, projectId: current.projectId, sceneId,
@@ -6512,7 +6512,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
     const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
     const input = { projectId: context.projectId, roundId: capsule.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.documentNotes,
-      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes),
+      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.exportMap?.scenes?.length === 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
       returnedParagraphs: intake.parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() };
     const checkIdentity = () => {
       assertFreshDocxReviewRoundAuthority(capsule);
@@ -10291,7 +10291,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
     const comments = parserResult.reviewIr?.commentThreads || [];
     if (authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
       throw Error('WORD_STORIES_RETURN_COMMENTS_CHANGED');
-    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
     let noteSourceGuard = null;
     if (authority.documentNotes?.sourceBindings?.length || returnedNotes.length) {
       if (authority.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
@@ -10447,7 +10447,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       if (!Buffer.isBuffer(context.docxBytes)
         || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256) throw Error('RTK_CLEAN_TEXT_ARTIFACT_MISMATCH');
       const bridge = await loadRevisionBridgeModule();
-      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes);
+      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
       if (authority.documentNotes?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') {
         if (authority.documentNotes.sourceBindings.some(note => changedOrdinals.has(note.documentParagraphIndex))
           || returnedNotes.some(note => changedOrdinals.has(note.paragraphIndex))) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
@@ -10531,7 +10531,7 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
       const delta = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
         document: saved.current.document, projectId: context.projectId, roundId: authority.roundId,
         artifactSha256: computeHash(docxBytes), baseline: authority.documentNotes, exportMap: authority.exportMap,
-        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes),
+        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 }),
         returnedParagraphs: parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString(),
       });
       if (delta.unchanged !== true || delta.changes?.length) throw Error('RTK_MEDIA_NOTES_CHANGED');
