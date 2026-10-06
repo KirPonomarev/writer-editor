@@ -228,15 +228,15 @@ for (const kind of ['project', 'hash', 'untrustedMap', 'wrongScene', 'multipleSc
   });
 }
 
-test('native confirmation describes complete semantics, defaults to Cancel, and refuses truncated previews', async t => {
+test('bounded confirmation port receives complete semantics and refuses truncated previews', async t => {
   const h = await harness(t); assert.equal((await h.prepare()).status, 'preview-ready');
   const dialogSource = main.slice(main.indexOf('function describeLocalWordPendingReturn('), main.indexOf('async function confirmLocalWordNoteDelta('));
   let calls = 0;
-  Object.assign(h.c, { mainWindow: { isDestroyed: () => false }, dialog: { showMessageBox: async (_window, options) => {
-    calls++; assert.equal(options.cancelId, 0); assert.equal(options.defaultId, 0);
+  installConfirmationPort(h.c, async options => {
+    calls++; assert.equal(options.parent, h.c.mainWindow);
     for (const text of ['До возврата', 'После возврата', 'Исходный текст', 'Текущий текст', 'Вставка', 'Удаление', 'new', 'old', 'added']) assert.ok(options.detail.includes(text));
-    return { response: 0 };
-  } } });
+    return false;
+  });
   vm.runInContext(dialogSource, h.c);
   assert.equal(await h.c.confirmLocalWordPendingReturn({ fileName: 'Word.docx', changes: h.prepared.changes }), false);
   assert.equal(h.writes, 0); assert.equal(calls, 1);
@@ -378,10 +378,10 @@ test('native pending confirmation presents one changed paragraph in a 100000 wor
   const next=structuredClone(source);next.content[500].content[0].text+=' added';
   const after=model.bindLedger({schemaVersion:1,source:next,revisions:[{id:'revision-1',nativeId:'0',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:500,from:text.length,to:text.length+6,state:'pending',groupId:null}],undo:[],redo:[]});
   let seen;
-  Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{seen=options;return {response:0};}}});
+  installConfirmationPort(h.c,options=>{seen=options;return false;});
   const sourceText=main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta('));vm.runInContext(sourceText,h.c);
   assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'100k.docx',changes:{before,after}}),false);
-  assert.ok(seen.detail.length<15000);assert.match(seen.detail,/Абзац 501/);assert.doesNotMatch(seen.detail,/Абзац 500/);assert.match(seen.detail,/added/);assert.equal(seen.cancelId,0);
+  assert.ok(seen.detail.length<15000);assert.match(seen.detail,/Абзац 501/);assert.doesNotMatch(seen.detail,/Абзац 500/);assert.match(seen.detail,/added/);assert.equal(seen.parent,h.c.mainWindow);
 });
 
 test('first clean writer export returns first tracked insertion and multiple discussions through actual Main route',async t=>{
@@ -522,7 +522,7 @@ test('editorial capacity actual Main disk route completes five 100000 word excha
   const result=await h.route();assert.equal(result.pendingProductPath?.status,'preview-ready','round '+(round+1)+': '+JSON.stringify(result));
   const prepareMs=performance.now()-prepareStarted;
   assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);
-  if(round===0){let preview;Object.assign(h.c,{mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:async(_window,options)=>{preview=options;return {response:0};}}});vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),h.c);assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'novel.docx',changes:h.prepared.changes}),false);assert.equal(preview.cancelId,0);assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);}
+  if(round===0){let preview;installConfirmationPort(h.c,options=>{preview=options;return false;});vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),h.c);assert.equal(await h.c.confirmLocalWordPendingReturn({fileName:'novel.docx',changes:h.prepared.changes}),false);assert.equal(preview.parent,h.c.mainWindow);assert.equal(fs.readFileSync(h.file,'utf8'),before);assert.equal(h.commentText,comments);assert.equal(h.writes,0);}
   const applyStarted=performance.now();assert.equal((await h.prepared.apply()).ok,true);const applyMs=performance.now()-applyStarted;assert.equal(h.writes,1);
   states.push(model.projection(h.context().parsed.doc));ledgers.push(model.readLedger(h.context().parsed.doc));
   const record={round:round+1,prepareMs,applyMs,journalBytes:h.journalBytes,proofBytes:h.proofMetrics.bytes,elapsedMs:performance.now()-start,sceneBytes:Buffer.byteLength(fs.readFileSync(h.file,'utf8')),ledgerBytes:Buffer.byteLength(JSON.stringify(ledgers.at(-1))),commentsBytes:Buffer.byteLength(h.commentText),rss:process.memoryUsage().rss};measurements.push(record);console.log('CAPACITY_ROUND '+JSON.stringify(record));
@@ -573,4 +573,114 @@ test('Paragraph mark typography: actual Main compound route uses atomic writer, 
  const b=await import('../../src/io/revisionBridge/index.mjs'),bytes=buildDocxReviewPacketBuffer(exported),preview=b.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));const plan=b.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);const returned=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
  const emitted=doc=>{const copy=model.normalizeNode(doc);for(const p of copy.content)for(const n of p.content||[]){const marks=n.marks||(n.marks=[]);let style=marks.find(m=>m.type==='textStyle');if(!style)marks.push(style={type:'textStyle',attrs:{}});style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},...style.attrs};}return model.normalizeNode(copy).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));};
  for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),emitted(model.materialize(model.readLedger(live.context().parsed.doc),mode)));
+});
+
+function novelConfirmationFixture() {
+  const language={val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'};
+  const spacing={after:160,line:278,lineRule:'auto'};
+  const markers=['РОМАН-РАУНД01-НАЧАЛО','РОМАН-РАУНД01-СЕРЕДИНА','РОМАН-РАУНД01-КОНЕЦ'];
+  const locations=new Map([[0,[0,markers[0]]],[4,[49,markers[1]]],[9,[99,markers[2]]]]);
+  const scenes=Array.from({length:10},(_,sceneIndex)=>{
+    const sceneId=`roman/Imported/${String(sceneIndex+1).padStart(2,'0')}_Chapter_${sceneIndex+1}_f807fdb4-a8e4-434d-bdc1-aa818822fdb9.txt`;
+    const before={type:'doc',content:Array.from({length:100},(_,p)=>({type:'paragraph',content:[{type:'text',text:`Глава ${sceneIndex+1}, абзац ${p+1}. `+Array(100).fill('рукопись').join(' ')}]}))};
+    for(const [index,mark] of [[9,{type:'bold'}],[49,{type:'italic'}],[89,{type:'textStyle',attrs:{fontFamily:sceneIndex%2?'Arial':'Georgia',fontSize:sceneIndex%2?'13pt':'14pt'}}]]){
+      const text=before.content[index].content[0].text;before.content[index].content=[{type:'text',text:text.slice(0,12)},{type:'text',text:text.slice(12,24),marks:[mark]},{type:'text',text:text.slice(24)}];
+    }
+    const source=structuredClone(before);source.attrs={wordDefaultTabStop:708};
+    for(const paragraph of source.content){paragraph.attrs={wordParagraphSpacing:spacing,wordParagraphMarkLanguage:language};
+      for(const node of paragraph.content){node.marks||=[];let style=node.marks.find(m=>m.type==='textStyle');if(!style){style={type:'textStyle',attrs:{}};node.marks.push(style);}
+        style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',...style.attrs,wordLanguage:language};}
+    }
+    const revisions=[];
+    if(locations.has(sceneIndex)){
+      const [paragraphIndex,marker]=locations.get(sceneIndex),text=marker+' ';
+      source.content[paragraphIndex].content[0].text=text+source.content[paragraphIndex].content[0].text;
+      revisions.push({id:`revision-${sceneIndex+1}`,nativeId:String(sceneIndex),operation:'insert',author:'YalkenC5V2Canary',date:'2026-10-06T01:00:00Z',dateUtc:'2026-10-06T01:00:00Z',paragraphIndex,from:0,to:text.length,state:'pending',groupId:null});
+    }
+    return {sceneId,formatOnly:!revisions.length,before,after:model.bindLedger({schemaVersion:2,source,revisions,undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]})};
+  });
+  const commentsBefore=Array.from({length:200},(_,i)=>({threadId:`thread-${String(i).padStart(3,'0')}-ea987da7-9e95-0ef8-9910-468a3ebe2087`,sceneId:scenes[Math.floor(i/20)].sceneId,status:'open',anchor:{sceneParagraphIndex:i%100,startUtf16:0,selectedText:'Глава',blockTextSha256:hash('Глава')},messages:[0,1].map(j=>({commentId:`comment-${i}-${j}-ea987da7-9e95-0ef8-9910-468a3ebe2087`,kind:j?'reply':'root',body:`Замечание ${i}, ответ ${j}: текст сохранён.`,provenance:{author:'Редактор',date:'2026-10-06T00:00:00Z'}}))}));
+  const comments=structuredClone(commentsBefore);
+  for(const thread of comments)for(const message of thread.messages)message.richBody={schemaVersion:'yalken.rtk.word.comment-rich-body.v1',document:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:spacing,wordParagraphMarkLanguage:language},content:[{type:'text',text:message.body,marks:[{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:language}}]}]}]}};
+  return {scenes,commentsBefore,comments,commentChanges:comments.map(t=>({threadId:t.threadId,messageIds:t.messages.map(m=>m.commentId),anchorChanged:false,statusBefore:'open',statusAfter:'open'})),markers};
+}
+function installConfirmationPort(context,onConfirmation) {
+  const BrowserWindow=function AdapterWindow() {},screen={};
+  Object.assign(context,{mainWindow:{isDestroyed:()=>false},BrowserWindow,screen,
+    dialog:{showMessageBox:()=>{throw Error('UNSAFE_NATIVE_CONFIRMATION_FALLBACK');}},
+    confirmWordReturn:async(request,adapter)=>{
+      assert.equal(adapter.BrowserWindow,BrowserWindow);assert.equal(adapter.screen,screen);
+      assert.equal(request.parent,context.mainWindow);return onConfirmation(request);
+    }});
+}
+function confirmationContext(onConfirmation) {
+  const context=vm.createContext({pendingTextRevisions:model});
+  installConfirmationPort(context,onConfirmation);
+  vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
+  return context;
+}
+test('bounded grouped novel confirmation retains all ten scenes, 200 discussions, 400 rich messages and three genuine insertions below 32k',async t=>{
+  const changes=novelConfirmationFixture(),before=JSON.stringify(changes);let shown,calls=0;
+  const h=await harness(t);const oldBytes=fs.readFileSync(h.file,'utf8');
+  const context=confirmationContext(options=>{calls++;shown=options;return false;});
+  assert.equal(await context.confirmLocalWordPendingReturn({fileName:'Novel.review.docx',changes}),false);
+  assert.equal(calls,1);assert.ok(shown.detail.length<32000,`actual ${shown.detail.length}`);
+  assert.equal(shown.parent,context.mainWindow);
+  for(const scene of changes.scenes)assert.ok(shown.detail.includes(scene.sceneId));
+  for(const thread of changes.comments)assert.ok(shown.detail.includes(thread.threadId));
+  for(const marker of changes.markers)assert.ok(shown.detail.includes(marker));
+  for(const field of ['YalkenC5V2Canary','2026-10-06T01:00:00Z','pending','wordLanguage','wordParagraphMarkLanguage','wordParagraphSpacing','wordDefaultTabStop','ru-FI','160','278','708','Times New Roman','12pt','Georgia','14pt','italic','bold'])assert.ok(shown.detail.includes(field),field);
+  assert.match(shown.detail,/Всего изменённых абзацев: 1000; изменённых исправлений: 3/);
+  assert.match(shown.detail,/Изменённых обсуждений: 200; изменённых сообщений: 400/);
+  assert.match(shown.detail,/С2 Абзацы 1–100/);assert.match(shown.detail,/Обсуждения 1–200 М1/);
+  assert.equal((shown.detail.match(/только форматирование; текст сцены не изменён/gu)||[]).length,7);
+  assert.doesNotMatch(shown.detail,/undefined|\[object Object\]/u);
+  assert.equal(JSON.stringify(changes),before);assert.equal(h.writes,0);assert.equal(fs.readFileSync(h.file,'utf8'),oldBytes);
+});
+for(const kind of ['insertedText','changedCommentBody','uniqueFormatting','hugeFileName'])test(`bounded grouped confirmation refuses oversized true semantic ${kind} before adapter and writes`,async t=>{
+  const changes=novelConfirmationFixture(),h=await harness(t),old=fs.readFileSync(h.file,'utf8');let calls=0;
+  if(kind==='insertedText'){
+    const ledger=model.readLedger(changes.scenes[0].after);ledger.source.content[0].content[0].text='z'.repeat(33000)+ledger.source.content[0].content[0].text;ledger.revisions[0].to+=33000;changes.scenes[0].after=model.bindLedger(ledger);
+  }else if(kind==='changedCommentBody'){
+    changes.comments[0].messages[0].body='z'.repeat(33000);changes.comments[0].messages[0].richBody.document.content[0].content[0].text=changes.comments[0].messages[0].body;
+  }else if(kind==='uniqueFormatting'){
+    for(let i=0;i<10;i++){const ledger=model.readLedger(changes.scenes[i].after);for(let p=0;p<100;p++)ledger.source.content[p].content[0].marks[0].attrs.fontFamily=`Family ${i}-${p} ${'x'.repeat(55)}`;changes.scenes[i].after=model.bindLedger(ledger);}
+  }
+  const context=confirmationContext(()=>{calls++;return true;});
+  await assert.rejects(context.confirmLocalWordPendingReturn({fileName:kind==='hugeFileName'?'x'.repeat(32001):'Novel.review.docx',changes}),/PENDING_RETURN_PREVIEW_BUDGET/);
+  assert.equal(calls,0);assert.equal(h.writes,0);assert.equal(fs.readFileSync(h.file,'utf8'),old);
+});
+test('bounded grouped confirmation explicitly retains genuine comment text, reply, status and anchor changes',async()=>{
+  const changes=novelConfirmationFixture();
+  changes.comments[0].messages[0].body='РЕАЛЬНОЕ ИЗМЕНЕНИЕ КОММЕНТАРИЯ';changes.comments[0].messages[0].richBody.document.content[0].content[0].text=changes.comments[0].messages[0].body;
+  changes.comments[1].messages.push({commentId:'new-reply-identity',kind:'reply',body:'НОВЫЙ ОТВЕТ',provenance:{author:'Другой редактор',date:'2026-10-06T02:00:00Z'}});
+  changes.comments[2].status='resolved';changes.comments[3].anchor.startUtf16=5;
+  let detail;const context=confirmationContext(options=>{detail=options.detail;return true;});
+  assert.equal(await context.confirmLocalWordPendingReturn({fileName:'Novel.docx',changes}),true);
+  for(const text of ['РЕАЛЬНОЕ ИЗМЕНЕНИЕ КОММЕНТАРИЯ','НОВЫЙ ОТВЕТ','new-reply-identity','Другой редактор','resolved','Положение обсуждения.startUtf16','добавлено: 1'])assert.ok(detail.includes(text),text);
+});
+test('bounded grouped deleted message retains its former index, identity and complete deleted text',async()=>{
+  const changes=novelConfirmationFixture(),deleted=changes.commentsBefore[0].messages[0];
+  changes.comments[0].messages.shift();
+  let detail;const context=confirmationContext(request=>{detail=request.detail;return false;});
+  assert.equal(await context.confirmLocalWordPendingReturn({fileName:'Novel.docx',changes}),false);
+  assert.ok(detail.includes(deleted.commentId));assert.ok(detail.includes(deleted.body));
+  assert.match(detail,/О1: thread-000[^\n]*удалено: 1/u);
+  assert.match(detail,/О1 М1; текст UTF-16 0: До "Замечание 0, ответ 0: текст сохранён\."; После ""/u);
+  assert.doesNotMatch(detail,/О1 М0/u);
+});
+test('bounded grouped 2500 paragraph 100000 word style delta bounds compact ranges rather than expanded location labels',async()=>{
+  const before={type:'doc',content:Array.from({length:2500},()=>({type:'paragraph',content:[{type:'text',text:Array(40).fill('novel').join(' ')}]}))};
+  const after=structuredClone(before);
+  for(const paragraph of after.content){paragraph.attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'}};paragraph.content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Times New Roman',wordLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}}}];}
+  const expandedLocations=Array.from({length:2500},(_,i)=>`С1 Абзац ${i+1}:весь`).join('; ');
+  assert.ok(expandedLocations.length>32000);
+  assert.equal(before.content.reduce((n,p)=>n+p.content[0].text.split(' ').length,0),100000);
+  let shown;const context=confirmationContext(options=>{shown=options;return false;});
+  assert.equal(await context.confirmLocalWordPendingReturn({fileName:'2500-paragraphs.docx',changes:{scenes:[{sceneId:'roman/Imported/2500-paragraphs.txt',formatOnly:true,before,after}],commentChanges:[]}}),false);
+  assert.ok(shown.detail.length<3000,`actual ${shown.detail.length}`);
+  assert.match(shown.detail,/мест: 2500; С1 Абзацы 1–2500:весь/);
+  assert.match(shown.detail,/мест: 2500; С1 Абзацы 1–2500/);
+  assert.match(shown.detail,/Всего изменённых абзацев: 2500; изменённых исправлений: 0/);
+  assert.equal(shown.parent,context.mainWindow);
 });

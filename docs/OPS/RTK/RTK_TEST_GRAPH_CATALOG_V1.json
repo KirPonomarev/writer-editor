@@ -249,7 +249,8 @@
     "rtk-zip01-budget-crc-evidence.contract.test.js",
     "rtk-word-mixed-return.contract.test.js",
     "rtk-word-mixed-return-transaction.contract.test.js",
-    "rtk-word-review-authority-codec.contract.test.js"
+    "rtk-word-review-authority-codec.contract.test.js",
+    "rtk-word-return-confirmation.contract.test.js"
   ],
   "requiredLocalPromotion": true,
   "requiredCiWorkflow": ".github/workflows/rtk-required.yml",

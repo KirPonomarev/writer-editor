@@ -1,7 +1,8 @@
 const reviewAuthorityCodec = require('./core/word-review-authority-codec-v1.cjs');
 const pendingTextRevisions = require('./core/word-pending-text-revisions-v1.cjs');
 const pendingRecordingModel = require('./core/word-pending-recording-v1.cjs');
-const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage, screen } = require('electron');
+const { confirmWordReturn } = require('./main/wordReturnConfirmation.cjs');
 const { createReviewSecretStore } = require('./io/review-secret-store-v1.cjs');
 const { performance } = require('perf_hooks');
 const { spawnSync } = require('child_process');
@@ -11927,20 +11928,175 @@ function describeLocalWordPendingReturn({fileName,changes}) {
   if (detail.length > 32000) throw Error('PENDING_RETURN_PREVIEW_BUDGET');
   return detail;
 }
+// A read-only projection of the complete prepared delta. Group only identical
+// before/after meanings; locations and genuine text/provenance remain explicit.
+// This summary never creates an admission or changes the prepared Apply payload.
+function describeLocalWordPendingReturnDelta({fileName, changes}) {
+  const scenes = Array.isArray(changes?.scenes) ? changes.scenes : [{...changes, sceneId:'текущая сцена'}];
+  if (!scenes.length || scenes.length > 512) throw Error('PENDING_RETURN_PREVIEW_INVALID');
+  const lines = [fileName, `Изменённых сцен: ${scenes.length}. Полный сгруппированный перечень изменений.`];
+  let length = lines.join('\n').length, semanticCount = 0;
+  const append = line => { length += line.length + 1; if(length > 32000)throw Error('PENDING_RETURN_PREVIEW_BUDGET'); lines.push(line); };
+  const value = v => v === undefined ? 'не задано' : JSON.stringify(v);
+  const equal = (a,b) => value(a) === value(b);
+  const groups = new Map();
+  const group = (kind, before, after, location) => {
+    if(equal(before,after))return;
+    semanticCount++;
+    const key=JSON.stringify([kind,value(before),value(after)]);
+    let entry=groups.get(key);
+    if(!entry){entry={kind,before:value(before),after:value(after),locations:[]};groups.set(key,entry);}
+    entry.locations.push(location);
+    // Bound intermediate descriptions too, without truncating a semantic value.
+    if(key.length>32000)throw Error('PENDING_RETURN_PREVIEW_BUDGET');
+  };
+  const compactLocations = locations => {
+    const buckets=new Map();
+    for(const location of locations){
+      let match,kind,index,suffix;
+      if((match=/^С(\d+) Абзац (\d+)(.*)$/u.exec(location))){kind=`С${match[1]} Абзацы`;index=Number(match[2]);suffix=match[3];}
+      else if((match=/^О(\d+) М(\d+)(?: П(\d+))?(.*)$/u.exec(location))){kind='Обсуждения';index=Number(match[1]);suffix=` М${match[2]}${match[3]?` П${match[3]}`:''}${match[4]}`;}
+      else if((match=/^О(\d+)$/u.exec(location))){kind='Обсуждения';index=Number(match[1]);suffix='';}
+      else {const key=`exact:${location}`;buckets.set(key,{exact:location});continue;}
+      const key=JSON.stringify([kind,suffix]);let bucket=buckets.get(key);
+      if(!bucket){bucket={kind,suffix,indices:[]};buckets.set(key,bucket);}bucket.indices.push(index);
+    }
+    return [...buckets.values()].map(bucket=>{
+      if(bucket.exact)return bucket.exact;
+      const indices=[...new Set(bucket.indices)].sort((a,b)=>a-b),ranges=[];
+      for(let i=0;i<indices.length;i++){let end=i;while(end+1<indices.length&&indices[end+1]===indices[end]+1)end++;
+        ranges.push(end===i?`${indices[i]}`:`${indices[i]}–${indices[end]}`);i=end;}
+      return `${bucket.kind} ${ranges.join(',')}${bucket.suffix}`;
+    }).join('; ');
+  };
+  const text = p => (p?.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text||'').join('');
+  const textDelta = (before,after,location) => {
+    if(before===after)return;
+    let from=0,endBefore=before.length,endAfter=after.length;
+    while(from<endBefore && from<endAfter && before[from]===after[from])from++;
+    // Never split an astral character in a displayed UTF-16 hunk.
+    if(from && /[\ud800-\udbff]/u.test(before[from-1]))from--;
+    while(endBefore>from && endAfter>from && before[endBefore-1]===after[endAfter-1]){endBefore--;endAfter--;}
+    if(endBefore<before.length && /[\udc00-\udfff]/u.test(before[endBefore])){endBefore++;endAfter++;}
+    semanticCount++;
+    append(`${location}; текст UTF-16 ${from}: До ${JSON.stringify(before.slice(from,endBefore))}; После ${JSON.stringify(after.slice(from,endAfter))}`);
+  };
+  const fields = (before,after,kind,location,exclude=[]) => {
+    for(const key of new Set([...Object.keys(before||{}),...Object.keys(after||{})])){
+      if(!exclude.includes(key))group(`${kind}.${key}`,before?.[key],after?.[key],location);
+    }
+  };
+  const runs = p => {
+    let offset=0;
+    return (p?.content||[]).map(node=>{
+      const size=node.type==='hardBreak'?1:(node.text||'').length;
+      const meaning={...node};delete meaning.text;
+      const run={from:offset,to:offset+size,meaning};offset+=size;return run;
+    });
+  };
+  const bodyDelta = (before,after,location) => {
+    group('Абзац.type',before?.type,after?.type,location);
+    fields(before?.attrs,after?.attrs,'Абзац',location);
+    textDelta(text(before),text(after),location);
+    const old=runs(before),next=runs(after);
+    const boundaries=[...new Set([...old,...next].flatMap(r=>[r.from,r.to]))].sort((a,b)=>a-b);
+    for(let i=1;i<boundaries.length;i++){
+      const from=boundaries[i-1],to=boundaries[i];
+      group('Форматирование текста',old.find(r=>r.from<=from&&r.to>=to)?.meaning,
+        next.find(r=>r.from<=from&&r.to>=to)?.meaning,`${location}:${from===0&&to===text(before).length&&to===text(after).length?'весь':`${from}–${to}`}`);
+    }
+    // Zero-width/unknown nodes must not disappear from the confirmation.
+    group('Нулевые элементы',old.filter(r=>r.from===r.to).map(r=>r.meaning),next.filter(r=>r.from===r.to).map(r=>r.meaning),location);
+  };
+  const topology = doc => {
+    let leaf=0;
+    const visit=node=>['paragraph','heading','codeBlock'].includes(node.type)?{paragraph:++leaf}:
+      {...node,...(node.content?{content:node.content.map(visit)}:{})};
+    const result=visit(doc);delete result.attrs;return result;
+  };
+  let totalParagraphs=0,totalRevisions=0;
+  scenes.forEach((scene,sceneIndex)=>{
+    if(!scene?.before||!scene?.after||typeof scene.sceneId!=='string')throw Error('PENDING_RETURN_PREVIEW_INVALID');
+    const beforeLedger=pendingTextRevisions.readLedger(scene.before),afterLedger=pendingTextRevisions.readLedger(scene.after);
+    const beforeSource=pendingTextRevisions.normalizeNode(beforeLedger?.source||scene.before);
+    const afterSource=pendingTextRevisions.normalizeNode(afterLedger?.source||scene.after);
+    const beforeRows=pendingTextRevisions.paragraphs(beforeSource),afterRows=pendingTextRevisions.paragraphs(afterSource);
+    const changed=[];
+    for(let i=0;i<Math.max(beforeRows.length,afterRows.length);i++)if(!equal(beforeRows[i],afterRows[i]))changed.push(i);
+    const beforeRevisions=beforeLedger?.revisions||[],afterRevisions=afterLedger?.revisions||[];
+    const oldById=new Map(beforeRevisions.map(r=>[r.id,r])),newById=new Map(afterRevisions.map(r=>[r.id,r]));
+    const changedIds=[...new Set([...oldById.keys(),...newById.keys()])].filter(id=>!equal(oldById.get(id),newById.get(id)));
+    const retained=beforeRevisions.length-changedIds.filter(id=>oldById.has(id)).length;
+    totalParagraphs+=changed.length;totalRevisions+=changedIds.length;
+    const label=`С${sceneIndex+1}`;
+    append(`${label}: ${scene.sceneId}${scene.formatOnly?' — только форматирование; текст сцены не изменён':''}. Изменённых абзацев: ${changed.length}; изменённых исправлений: ${changedIds.length}; сохранено прежних: ${retained}; всего после: ${afterRevisions.length}.`);
+    fields(beforeSource.attrs,afterSource.attrs,'Документ',label);
+    group('Структура документа',topology(beforeSource),topology(afterSource),label);
+    for(const i of changed)bodyDelta(beforeRows[i],afterRows[i],`${label} Абзац ${i+1}`);
+    for(const id of changedIds){
+      semanticCount++;
+      const describeRevision=(r,rows)=>r?JSON.stringify({...r,text:text(rows[r.paragraphIndex]).slice(r.from,r.to)}):'нет';
+      append(`${label} Исправление ${id}; До: ${describeRevision(oldById.get(id),beforeRows)}; После: ${describeRevision(newById.get(id),afterRows)}`);
+    }
+  });
+  append(`Всего изменённых абзацев: ${totalParagraphs}; изменённых исправлений: ${totalRevisions}.`);
+  const beforeThreads=new Map((changes.commentsBefore||[]).map(t=>[t.threadId,t]));
+  const afterThreads=new Map((changes.comments||[]).map(t=>[t.threadId,t]));
+  const commentChanges=changes.commentChanges||[];
+  let messageCount=0;
+  commentChanges.forEach((change,index)=>{
+    const before=beforeThreads.get(change.threadId),after=afterThreads.get(change.threadId),label=`О${index+1}`;
+    if(!before&&!after)throw Error('PENDING_RETURN_PREVIEW_INVALID');
+    const oldMessages=new Map((before?.messages||[]).map(m=>[m.commentId,m]));
+    const newMessages=new Map((after?.messages||[]).map(m=>[m.commentId,m]));
+    const ids=[...new Set([...oldMessages.keys(),...newMessages.keys()])].filter(id=>!equal(oldMessages.get(id),newMessages.get(id)));
+    messageCount+=ids.length;
+    append(`${label}: ${change.threadId}; изменённых сообщений: ${ids.length}; добавлено: ${ids.filter(id=>!oldMessages.has(id)).length}; удалено: ${ids.filter(id=>!newMessages.has(id)).length}.`);
+    fields(before,after,'Обсуждение',label,['messages','anchor']);
+    fields(before?.anchor,after?.anchor,'Положение обсуждения',label);
+    group('Порядок сообщений',(before?.messages||[]).map(m=>m.commentId),(after?.messages||[]).map(m=>m.commentId),label);
+    for(const id of ids){
+      const old=oldMessages.get(id),next=newMessages.get(id);
+      const afterIndex=(after?.messages||[]).findIndex(m=>m.commentId===id);
+      const messageIndex=afterIndex>=0?afterIndex:(before?.messages||[]).findIndex(m=>m.commentId===id);
+      const messageLabel=`${label} М${messageIndex+1}`;
+      fields(old,next,'Сообщение',messageLabel,['body','richBody']);
+      textDelta(old?.body||'',next?.body||'',messageLabel);
+      const oldDoc=old?.richBody?.document||{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:old?.body||''}]}]};
+      const nextDoc=next?.richBody?.document||{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:next?.body||''}]}]};
+      fields(old?.richBody,next?.richBody,'Богатое сообщение',messageLabel,['document']);
+      fields(oldDoc.attrs,nextDoc.attrs,'Документ сообщения',messageLabel);
+      group('Структура сообщения',topology(oldDoc),topology(nextDoc),messageLabel);
+      for(let i=0;i<Math.max(oldDoc.content.length,nextDoc.content.length);i++)bodyDelta(oldDoc.content[i],nextDoc.content[i],`${messageLabel} П${i+1}`);
+    }
+  });
+  append(`Изменённых обсуждений: ${commentChanges.length}; изменённых сообщений: ${messageCount}. Неизменённый текст сообщений не повторяется.`);
+  for(const entry of groups.values())append(`${entry.kind}; До: ${entry.before}; После: ${entry.after}; мест: ${entry.locations.length}; ${compactLocations(entry.locations)}`);
+  if(!semanticCount&&!Array.isArray(changes.commentChanges)&&!Array.isArray(changes.scenes))return null; // Preserve full legacy snapshots.
+  append('Все перечисленные изменения применяются вместе. Возврат можно отменить и повторить в панели исправлений, в том числе после перезапуска.');
+  return lines.join('\n');
+}
 async function confirmLocalWordPendingReturn({fileName,changes}) {
   if(!mainWindow||mainWindow.isDestroyed())return false;
   let detail,book=Array.isArray(changes?.scenes);
-  if(book){
+  const sceneChanges=book?changes.scenes:[changes];
+  // Cheap shape selection only; the grouped projection still reads validated
+  // ledgers below. This inspection is not an authority or semantic oracle.
+  const manyLeaves=doc=>{let count=0;const visit=node=>{if(!node||count>32)return;
+    if(['paragraph','heading','codeBlock'].includes(node.type))count++;
+    else for(const child of node.content||[])visit(child);};visit(doc?.attrs?.wordPendingRevisions?.source||doc);return count>32;};
+  const large=(changes?.commentChanges?.length||0)>12||(book&&sceneChanges.length>4)||sceneChanges?.some(scene=>manyLeaves(scene?.after));
+  if(large)detail=describeLocalWordPendingReturnDelta({fileName,changes});
+  if(!detail&&book){
     if(changes.scenes.length<1||changes.scenes.length>512)throw Error('PENDING_RETURN_PREVIEW_INVALID');
     const rows=changes.scenes.map((scene,index)=>describeLocalWordPendingReturn({fileName:`Сцена ${index+1}: ${scene.sceneId}${scene.formatOnly?"\nТолько форматирование; текст сцены не изменён.":""}`,
       changes:{...scene,commentChanges:[],...(index===0?{comments:changes.comments,commentsBefore:changes.commentsBefore,commentChanges:changes.commentChanges}:{})}}));
     detail=fileName+'\nИзменённых сцен: '+changes.scenes.length+'\n'+rows.join('\n\n');
-  } else {if(!changes?.before||!changes?.after)return false;detail=describeLocalWordPendingReturn({fileName,changes});}
+  } else if(!detail) {if(!changes?.before||!changes?.after)return false;detail=describeLocalWordPendingReturn({fileName,changes});}
   if(detail.length>32000)throw Error('PENDING_RETURN_PREVIEW_BUDGET');
-  const result=await dialog.showMessageBox(mainWindow,{type:'question',title:'Исправления из Word',
+  return confirmWordReturn({parent:mainWindow,title:'Исправления из Word',
     message:book?'Применить возврат Word ко всем перечисленным сценам?':'Применить возврат Word к этой сцене?',
-    detail,buttons:['Отмена','Применить'],defaultId:0,cancelId:0,noLink:true});
-  return result.response===1;
+    detail}, {BrowserWindow,screen});
 }
 
 async function confirmLocalWordNoteDelta({ fileName, changes }) {
