@@ -168,3 +168,18 @@ Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word retu
 
 
 2026-10-06 — terminal closure of isolated-successor timing exception: PR2087 candidate0612a9ea13736d47e4f59c6e4964a1b71595969f passed19/19 required CI after official provider recovery, merged as06b4523f55ff77ac4306055d8e5d5395bdd204d9. Clean detached exactorigin/main verification proves full tracked tree identical to0612; merged affected818/818 zero skip/todo, C1C363/63 zero skip/todo, five OPS admission checks and agent guardrails passed. External DELIVERY09_RECEIPT binds hashes and limits. The predecessor publication dependency is now closed; timing exception expires. Successor remains on its original binding0612 without rebase/base transfer, with byte-identical merged predecessor. Its own native, local, CI, commit/push/PR/merge gates remain mandatory and not yet complete.
+
+## 2026-10-06 — task-shape gate ordering deviation, bounded confirmation repair
+
+- Task: WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006, exact base7e8f878c203b261e7b93abda93781df84748eadb. Clean17-path architecture preflight passed before any write. Prepared three-file bytes and old owner state were preserved.
+- Deviation: PROCESS Enforcement E0 requires the task-shape OPS gate before runtime implementation. The task/manifests were prepared first, but root requested E0 after the helper/Main edits had started. No pre-edit E0 receipt exists; a later PASS cannot retrospectively prove the required ordering.
+- Cause and boundary: orchestration sequencing error during the owner-authorized safe confirmation continuation. It creates no Core writer, authority exception, weakened oracle, first-write claim or delivered acceptance. Scope remains the declared17 paths and one rollback; no further contour begins.
+- Remedy: execute and repair the task-shape gate now before acceptance or publication, then retain all focused, broad and Git delivery gates. Report the ordering limitation separately from actual executed acceptance. Do not rerun or relabel preflight as first-write evidence.
+- Rollback: revert the single repair delivery if acceptance fails; preserve pending novel projects and original prepared worktree. This sequencing deviation expires at closure of this contour and does not amend PROCESS or future task order.
+
+## 2026-10-06 — manifest unused-field token conflict in existing task-shape gate
+
+- Task: WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006. The feature doctrine prescribes an explicit unused-field marker with a reason; E0 currently rejects its literal marker globally for every non-OPS_REPORT task, including mandatory feature/surface manifest blocks.
+- Narrow representation exception: this task uses NONE plus a precise reason for no new events, migrations or irrelevant fields. No field is omitted or empty, no architecture responsibility changes, and no runtime/authority/acceptance gate is waived. The fixed confirmation remains an effect returning intent to the existing independently revalidated Apply path.
+- Do not broaden E0 or add a governance subsystem during the UI repair. Both full manifests remain reviewable in the declared task document. The unused-field wording exception belongs only to this task and does not change the doctrine or future output rules.
+- Rollback/removal: revert the task together with the single repair chain if needed. A separately scoped future task-shape correction can reconcile exact normative markers; do not reuse this exception as standing authority.

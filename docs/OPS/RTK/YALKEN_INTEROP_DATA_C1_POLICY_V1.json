@@ -615,7 +615,10 @@
     "docs/tasks/2026-10-05--word-paragraph-mark-typography-mac.md",
     "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_PARAGRAPH_MARK_TYPOGRAPHY_V1.json",
     "docs/tasks/2026-10-05--word-novel-multi-scene-mixed-return-mac.md",
-    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_V1.json"
+    "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_V1.json",
+    "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
+    "src/main/wordReturnConfirmation.cjs",
+    "test/contracts/rtk-word-return-confirmation.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -844,7 +847,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "80542d44defe23695c1cecb1a63a5d0836039f5334594e3394f7b6d5afc16763"
+        "sha256": "963958672a6a03fccf8c54826f616eee64bd6e46adb27c608251d98cd13239d9"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1580,7 +1583,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "670186d43d4493335a25df98841b94fb82f12895cdde719cf7d1663625f30407"
+        "sha256": "3565c9b4b7b164fe8bb7b2018d241e6623382977093b90af0b38d1919efdfff9"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1692,7 +1695,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "391e55ee38f9917cad16c085ab03108c37663a65b8aa8f54f251c32ad2d7257c"
+        "sha256": "8d00bc097e0b159c1b97b4134f5654a45f6857e99c14c99f2a4ca562f40f95f3"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -1744,7 +1747,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
-        "sha256": "767d40d608770d39b734ef48f15599828d1fa448b26e75a98b16154de048e114"
+        "sha256": "d6fc7ef0c4a6505b7134efe82fcd68ba1acce4be79965d52a433a11b2bd35d69"
       },
       {
         "path": "src/core/word-pending-recording-v1.cjs",
@@ -1764,7 +1767,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
-        "sha256": "505cce4077cb342027cea9fc76e3f5d24404b79c39dab101b2530b2b51ac6fc3"
+        "sha256": "cc3f1cebd281e0e549007533bdecabd875e8ebbaa4862f8fcd07bcecd70186d6"
       },
       {
         "path": "test/contracts/rtk-word-pending-moves.contract.test.js",
@@ -2032,7 +2035,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "fd47c90acd17296746c97fa05552d07677996b9c53cf0d009a6e0401310b2f45"
+        "sha256": "9c864d96133cb474b4042c9ea982e81998bba77e71c2139059f6f4f5332545d4"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2088,7 +2091,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "5f28b1fb794c27aeacfebb9da41cc4fbf2abae00ab834ed735af41ab4809f903"
+        "sha256": "24ced424eaa3e8773c23fe91302c14e22dcf834a98ed25e9c159b9f20951563e"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2536,15 +2539,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "506d1dd4edee53d952e42adff5cf7ac22aab3249e8d8fb143c979499038224a8"
+        "sha256": "9d66759a1362eff665053fe807b15dcf685a07baf73af5ae4c1e7d9f112a1b55"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "167ce10efb93009c4e8d43a0525feb52405e44b3ecd7a32b50e3a49643f8c32a"
+        "sha256": "8ebf5c00202771eecf580875a8dc67a05ccf055cf38559f530418d99e51b503d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1db10e53ad90f59b5b648e0fe12c8810025c4ac7a8e00f5c3b7fc899b810b01a"
+        "sha256": "5b763175d3de76b0f3c2cd66525981015e6be32a1ca644f33f8e396bafc94519"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2705,6 +2708,18 @@
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_V1.json",
         "sha256": "31681ced08a985d78bb750d1f1be2f57a4707da32579679844f08af982c3f81b"
+      },
+      {
+        "path": "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
+        "sha256": "704805f3549b4ab0c8d6b585290220de24669e3f89c1709a6ddbdd0d2c53e3ad"
+      },
+      {
+        "path": "src/main/wordReturnConfirmation.cjs",
+        "sha256": "0fab12a1399dcffbad810aa7e268cd541b73cff2e8118d5f586bed7179b9791a"
+      },
+      {
+        "path": "test/contracts/rtk-word-return-confirmation.contract.test.js",
+        "sha256": "bb91e5917d00131d51e5c0fd8baa9b540b0f78a1fb107cbd24cfa1b32c9f189d"
       }
     ],
     "followupRepair": {
