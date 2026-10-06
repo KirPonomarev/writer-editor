@@ -208,3 +208,74 @@ test('compact proof2 reconstructs exact legacy1 outcome and rejects conflicting 
   const changed=structuredClone(proof);alter(changed);assert.throws(()=>plan({...f,proof:changed}),/MIXED_RETURN_|PENDING_/);
  }
 });
+
+// Three independently persisted owners, one global discussion state. The
+// journal receives a regenerated semantic proof, not precomputed after bytes.
+async function bookDiskFixture(t) {
+ const f=await fixture(),single=plan(f),root=fs.mkdtempSync(path.join(os.tmpdir(),'word-book-atomic-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const manifestPath=path.join(root,'project.craftsman.json'),ids=[sceneId,'roman/b.txt','roman/c.txt'];
+ const marks=[{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}}}];
+ const clean=text=>({type:'doc',content:[{type:'paragraph',content:[{type:'text',text,marks}]}]});
+ const docs=[f.beforeDoc,clean('Beta'),clean('BBB')],raws=docs.map(encode),before=JSON.parse(f.beforeText);
+ const initial=makeSource({projectId,projectRoot:root,nonTextReturnState:before,scenes:ids.map((id,i)=>({sceneId:id,scenePath:path.join(root,id),order:i,text:envelope.deriveVisibleTextFromDocument(docs[i]),doc:docs[i],observableContent:raws[i]}))});
+ const changedB=review.bindLedger({schemaVersion:1,source:clean('Beta NEW'),revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:0,from:4,to:8,state:'pending',groupId:null}],undo:[],redo:[]});
+ const returned=[envelope.parseObservablePayload(single.content).doc,changedB,docs[2]],afterState=JSON.parse(single.afterText);
+ const bytes=build(makeSource({projectId,projectRoot:root,nonTextReturnState:afterState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:path.join(root,id),order:i,text:envelope.deriveVisibleTextFromDocument(returned[i]),doc:returned[i]}))}));
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)}});assert.equal(parsed.ok,true);
+ const capsule=initial.localAuthorityCapsule,documents=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:ids.map((id,i)=>({sceneId:id,document:docs[i]})),retainPendingScenes:true,documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest});assert.equal(documents.ok,true,JSON.stringify(documents));
+ const exportMap=structuredClone(capsule.exportMap);delete exportMap.commentExport;
+ const proof={schemaVersion:3,projectId,roundId:'book-round',artifactSha256:'sha256:'+sha(bytes),baseline:capsule.commentExport,exportMap,returnedScenes:documents.scenes.map(item=>({sceneId:item.sceneId,ledger:review.readLedger(item.returnedDocument)})),returnedThreads:parsed.reviewIr.commentThreads,returnedParagraphs:parsed.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:parsed.reviewIr.commentReturnInventory};
+ const manifest=JSON.stringify({projectId,revision:1});fs.mkdirSync(path.join(root,'roman'));fs.mkdirSync(path.join(root,'.yalken/word-review'),{recursive:true});fs.writeFileSync(manifestPath,manifest);
+ ids.forEach((id,i)=>fs.writeFileSync(path.join(root,id),raws[i]));const commentPath=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');fs.writeFileSync(commentPath,f.beforeText);
+ const model=await import('../../src/core/project-tree-cohort-v1.mjs');
+ const input={operation:'word-mixed-return',operationId:'book-op',projectId,manifestPath,beforeManifestText:manifest,expectedTreeRevision:0,scenes:ids.map((id,i)=>({sceneId:id,beforeContent:raws[i],commitText:null})),notesText:null,commentsText:f.beforeText,returnProofJson:JSON.stringify(proof)};
+ const planned=model.planProjectMixedWordReturnCohort(input),request={manifestPath,revision:1,treeCohort:planned};
+ fs.writeFileSync(path.join(root,'request.json'),JSON.stringify(request));
+ const tracked=[...ids.map(id=>path.join(root,id)),commentPath,manifestPath],observe=()=>tracked.map(file=>fs.readFileSync(file,'utf8'));
+ return {root,input,model,manifestPath,ids,request,observe,before:observe(),after:[...ids.map(id=>Buffer.from(planned.entries.find(entry=>entry.relativePath===id).afterBase64,'base64').toString()),Buffer.from(planned.entries.find(entry=>entry.role==='comments').afterBase64,'base64').toString(),manifest]};
+}
+test('book cohort admission regenerates all owners, rejects forged output, and forbids structural Undo',async t=>{
+ const f=await bookDiskFixture(t),forged=structuredClone(f.request);forged.treeCohort.entries[0].afterBase64=Buffer.from('forged').toString('base64');
+ await assert.rejects(tx.commitProjectTransaction({...forged,publishManifest,revalidate:async()=>{}}),/PLAN_MISMATCH/);assert.deepEqual(f.observe(),f.before);
+ const oversized=structuredClone(f.input);oversized.scenes[0].beforeContent='x'.repeat(32*1024*1024);assert.throws(()=>f.model.planProjectMixedWordReturnCohort(oversized),/E_TREE_COHORT_BUDGET/);assert.deepEqual(f.observe(),f.before);
+ const receipt=await tx.commitProjectTransaction({...f.request,publishManifest,revalidate:async()=>{}});assert.equal(receipt.success,true);assert.deepEqual(f.observe(),f.after);
+ const verified=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath,projectId});assert.equal(verified.lastMutation.canUndo,false);assert.equal(verified.lastMutation.unavailableReason,'EDITORIAL_SCENE_HISTORY_ONLY');
+ assert.throws(()=>f.model.planProjectTreeUndo({projectId,operationId:'forged-undo',expectedTreeRevision:1,lastMutation:receipt.transactionId,receipt:verified.receipt,retainedPacket:verified.retainedPacket}),/E_TREE_UNDO_UNAVAILABLE/);
+ for(const id of f.ids)assert.equal((await tx.readVerifiedProjectTransaction({scenePath:path.join(f.root,id),manifestPath:f.manifestPath})).schemaVersion,'yalken.project-transaction.commit.v7');
+});
+
+const BOOK_CHILD=String.raw`
+const fs=require('node:fs'),fsp=require('node:fs/promises'),path=require('node:path');
+const tx=require(process.argv[1]),{durableSaveTransaction}=require(process.argv[2]),root=process.argv[3],mode=process.argv[4],boundary=process.argv[5];
+const q=JSON.parse(fs.readFileSync(path.join(root,'request.json'))),scenes=q.treeCohort.input.scenes;
+const points=new Map([[tx.journalPathFor(q.manifestPath),'JOURNAL'],[tx.treeCommitPathFor(q.manifestPath),'TREE_COMMIT'],[path.join(root,'.yalken/word-review/non-text-return-state.v1.json'),'COMMENTS']]);
+scenes.forEach((scene,index)=>{const p=path.join(root,scene.sceneId);points.set(p,'SCENE_'+index);points.set(tx.commitPathFor(p),'RECEIPT_'+index);});
+const hit=p=>{if(boundary===p){process.stdout.write('HIT:'+p+'\n');process.kill(process.pid,'SIGKILL');}};
+const adapter={...fsp,rename:async(a,b)=>{await fsp.rename(a,b);hit(points.get(b));},unlink:async p=>{if(p===tx.journalPathFor(q.manifestPath))hit('BEFORE_CLEANUP');await fsp.unlink(p);if(p===tx.journalPathFor(q.manifestPath))hit('AFTER_CLEANUP');}};
+const publishManifest=async({manifestPath,expectedText,nextText,revision})=>{if(fs.readFileSync(manifestPath,'utf8')!==expectedText)throw Error('CAS');await durableSaveTransaction({filePath:manifestPath,content:nextText,revision,fsAdapter:adapter});};
+(mode==='recover'?tx.recoverProjectTransaction({manifestPath:q.manifestPath,treeCohort:q.treeCohort,publishManifest,fsAdapter:adapter,revalidate:async()=>{}}):tx.commitProjectTransaction({...q,publishManifest,fsAdapter:adapter,revalidate:async()=>{}})).then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.code||e.message);process.exitCode=1;});
+`;
+const bookChild=(f,mode,boundary='')=>new Promise((resolve,reject)=>{
+ const c=spawn(process.execPath,['-e',BOOK_CHILD,require.resolve('../../src/core/project-transaction-v1.cjs'),require.resolve('../../src/core/save-coordinator-v1.cjs'),f.root,mode,boundary],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';
+ const timer=setTimeout(()=>{c.kill('SIGKILL');reject(Error('owned book process timeout'));},15000);
+ c.stdout.on('data',v=>stdout+=v);c.stderr.on('data',v=>stderr+=v);c.on('error',reject);c.on('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal,stdout,stderr});});
+});
+for(const boundary of ['JOURNAL','SCENE_0','RECEIPT_0','SCENE_1','RECEIPT_1','RECEIPT_2','COMMENTS','TREE_COMMIT','BEFORE_CLEANUP','AFTER_CLEANUP'])test('book atomic SIGKILL '+boundary+' recovers all owners and discussions in a fresh process',async t=>{
+ const f=await bookDiskFixture(t),crash=await bookChild(f,'commit',boundary);assert.equal(crash.signal,'SIGKILL',JSON.stringify(crash));assert.match(crash.stdout,new RegExp('HIT:'+boundary));
+ const journal=tx.journalPathFor(f.manifestPath);if(fs.existsSync(journal))assert.ok(fs.statSync(journal).size<=32*1024*1024);
+ const committed=['TREE_COMMIT','BEFORE_CLEANUP','AFTER_CLEANUP'].includes(boundary),expected=committed?f.after:f.before;
+ const recovered=await bookChild(f,'recover');assert.equal(recovered.code,0,recovered.stderr);assert.deepEqual(f.observe(),expected);
+ const snapshot=()=>f.ids.map(id=>{const p=tx.commitPathFor(path.join(f.root,id));return fs.existsSync(p)?fs.readFileSync(p,'utf8'):null;});
+ const receiptBytes=snapshot();if(committed)for(const id of f.ids)assert.equal((await tx.readVerifiedProjectTransaction({scenePath:path.join(f.root,id),manifestPath:f.manifestPath})).schemaVersion,'yalken.project-transaction.commit.v7');else assert.deepEqual(receiptBytes,[null,null,null]);
+ const again=await bookChild(f,'recover');assert.equal(again.code,0,again.stderr);assert.deepEqual(f.observe(),expected);assert.deepEqual(snapshot(),receiptBytes);
+ if(!committed){const result=await bookChild(f,'commit');assert.equal(result.code,0,result.stderr);assert.deepEqual(f.observe(),f.after);}
+});
+test('book recovery interrupted during rollback resumes exactly and preserves foreign bytes on conflict',async t=>{
+ // Comments sort before scene entries. Crash after the second scene receipt
+ // so rollback really has a first-scene durable write to interrupt.
+ const f=await bookDiskFixture(t);assert.equal((await bookChild(f,'commit','RECEIPT_1')).signal,'SIGKILL');
+ const interrupted=await bookChild(f,'recover','SCENE_0');assert.equal(interrupted.signal,'SIGKILL',JSON.stringify(interrupted));assert.match(interrupted.stdout,/HIT:SCENE_0/);
+ const result=await bookChild(f,'recover');assert.equal(result.code,0,result.stderr);assert.deepEqual(f.observe(),f.before);
+ assert.equal((await bookChild(f,'commit','SCENE_1')).signal,'SIGKILL');const other=path.join(f.root,f.ids[1]);fs.writeFileSync(other,'independent foreign update');const before=f.observe();
+ const conflict=await bookChild(f,'recover');assert.equal(conflict.code,1);assert.match(conflict.stderr,/UNKNOWN_BYTES|RECOVERY_CONFLICT/);assert.deepEqual(f.observe(),before);assert.ok(fs.existsSync(tx.journalPathFor(f.manifestPath)));
+});

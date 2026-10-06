@@ -4259,8 +4259,17 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // Use the literal main-document parser, not the generic import pipeline:
     // generic note/comment admission calls this analyzer and would recurse.
     const bytes = Buffer.isBuffer(input) ? input : input.bytes;
+    const documentXml=extracted.parts['word/document.xml'];
+    // Pending property containers are not paragraph-mark properties. Resolve
+    // them only through the existing checked pending union view; the raw
+    // ReviewIR still retains their independent IDs, snapshots and provenance.
+    const numberingXml=result.reviewIr.propertyRevisions?.length
+      ? extractPendingTextRevisionSourceV1(documentXml,{allowCommentMarkers:true,cryptoPort:options.cryptoPort||{
+        sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,
+        byteLength:value=>new TextEncoder().encode(value).length,
+      }}).xml : documentXml;
     const preview = docxContentPreviewParseMainDocumentXml(
-      extracted.parts['word/document.xml'], docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+      numberingXml, docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
     const paragraphs = !preview.failure ? preview.contentPreview?.paragraphs : null;
     const observed = result.reviewIr.formattingParagraphs;
     if (Array.isArray(paragraphs) && paragraphs.length === observed.length
@@ -11143,12 +11152,49 @@ export function parseDocumentNotesRichReturn(bytes, notes) {
   return result;
 }
 
+// A signed, inactive Office emission default is equivalent only when complete
+// observable baseline and every returned Word XML part have no tab carrier.
+// Unknown separate note/story baselines fail closed rather than erase semantics.
+function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission}) {
+  if(allowInactiveDefaultTabEmission!==true || exportMap.scenes.some(s=>s.documentFormatIr?.explicit!==false
+    ||s.documentFormatIr.wordDefaultTabStop!==720))return false;
+  const strings=[...baselineDocuments.map(s=>s.document)];
+  while(strings.length){const value=strings.pop();if(typeof value==='string'&&value.includes('\t'))return false;
+    if(value&&typeof value==='object')strings.push(...Object.values(value));}
+  const extracted=extractDocxReviewTransportPackagePartsFromZipBytes({bytes});
+  if(!extracted.ok)return false;
+  for(const [name,xml] of Object.entries(extracted.parts)){
+    if(!name.startsWith('word/')||!name.endsWith('.xml'))continue;
+    // These baselines live in separate protected registries; this caller has
+    // not supplied their authenticated content, so do not infer equivalence.
+    if(/^word\/(?:footnotes|endnotes|header[^/]*|footer[^/]*)\.xml$/u.test(name))return false;
+    if(xml.includes('\t')||/&#(?:0*9|x0*9);/iu.test(xml))return false;
+    if(docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure)return false;
+    const selected=docxContentPreviewSelectMarkupCompatibilityXml(xml);if(selected.failure)return false;
+    let cursor=0;const stack=[];
+    while(cursor<selected.xmlText.length){const next=docxContentPreviewNextXmlToken(selected.xmlText,cursor);
+      if(!next||next.failure)return false;cursor=next.nextCursor;const token=next.token;
+      if(!token.startsWith('<')||token.startsWith('<?')||token.startsWith('<!--'))continue;
+      if(token.startsWith('</')){const frame=stack.pop();if(!frame||frame.raw!==docxContentPreviewTagName(token))return false;continue;}
+      const parsed=docxContentPreviewParseStrictStartTag(token.slice(1,-1),stack.at(-1)?.ns||new Map());if(!parsed)return false;
+      const tag=parsed.namespaceUri===DOCX_WORDPROCESSINGML_MAIN_NAMESPACE?parsed.localName:'';
+      if(tag==='tab'&&stack.at(-1)?.tag==='r')return false;
+      if(!parsed.selfClosing)stack.push({raw:parsed.rawTagName,tag,ns:parsed.namespaceMap});if(stack.length>128)return false;
+    }
+    if(stack.length)return false;
+  }
+  return true;
+}
+
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,cryptoPort,retainPendingSceneId}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
+    if(typeof allowInactiveDefaultTabEmission!=='boolean')throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_PERMISSION');
+    if(retainPendingScenes!==false&&retainPendingScenes!==true)throw Error('PENDING_COMMENT_SCENE_BINDING');
+    if(retainPendingScenes&&(!baselineDocuments||retainPendingSceneId!==undefined))throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
     const preview=buildDocxContentPreviewFromZipBytes(bytes);
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
@@ -11181,6 +11227,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       ledger=pendingTextRevisions.validateLedger({schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
     }
     const leaves=pendingTextRevisions.paragraphs(ledger.source), index=new Map(leaves.map((p,i)=>[p,i]));
+    let inactiveTabEquivalent;
     const seen=new Set(),scenes=[];
     for(const scene of exportMap.scenes){
       if(!Array.isArray(scene.blocks)||!scene.blocks.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
@@ -11202,14 +11249,18 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         source.attrs={...source.attrs};delete source.attrs.wordSections;
         if(registry)source.attrs.wordSections=JSON.parse(JSON.stringify(registry));
         const format=scene.documentFormatIr;
-        if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
+        if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop){
+          if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=source.attrs.wordDefaultTabStop===708
+            &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission});
+          if(!inactiveTabEquivalent)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
+        }
         if(format?.explicit===false)delete source.attrs.wordDefaultTabStop;
         if(!Object.keys(source.attrs).length)delete source.attrs;
       }else if(exportMap.scenes.length!==1 && source.attrs?.wordSections)throw Error('PENDING_COMMENT_SECTION_BINDING_REQUIRED');
       const revisions=ledger.revisions.filter(r=>r.paragraphIndex>=from&&r.paragraphIndex<to).map(r=>({...r,paragraphIndex:r.paragraphIndex-from}));
-      scenes.push({sceneId:scene.sceneId,returnedDocument:(scene.pendingCommentBinding||scene.sceneId===retainPendingSceneId)?pendingTextRevisions.bindLedger({
-        schemaVersion:revisions.length?1:2,source,revisions,undo:[],redo:[],
-        ...(!revisions.length?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})}):source});
+      scenes.push({sceneId:scene.sceneId,returnedDocument:(retainPendingScenes||scene.pendingCommentBinding||scene.sceneId===retainPendingSceneId)?pendingTextRevisions.bindLedger({
+        schemaVersion:revisions.some(r=>r.parentRevisionId!==undefined)?5:revisions.length?1:2,source,revisions,undo:[],redo:[],
+        ...(!revisions.length||revisions.some(r=>r.parentRevisionId!==undefined)?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})}):source});
     }
     if(seen.size!==leaves.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
     return {ok:true,scenes};
@@ -11439,7 +11490,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           : marksAt(currentLeaves[paragraphIndex], revision.from, revision.to);
         return { ...base, paragraphIndex, format: { kind: propertyKind, before, after } };
       });
-      const ledger = { schemaVersion: 1, source, revisions, undo: [], redo: [] };
+      const nestedFormat=revisions.some(r=>r.parentRevisionId!==undefined);
+      const ledger = { schemaVersion: nestedFormat?5:1, source, revisions, undo: [], redo: [],...(nestedFormat?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{}) };
       const doc = pendingTextRevisions.bindLedger(ledger);
       const current = pendingTextRevisions.materialize(ledger);
       // Parse native Current independently, retaining list/table metadata and

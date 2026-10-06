@@ -381,7 +381,8 @@ function documentHasTypedBreaks(doc) {
 function requiredSceneFeatures(doc) {
   return [...(doc.attrs?.wordStories != null ? ['word-stories.v1'] : []), ...(doc.attrs?.wordSections != null ? ['word-sections.v1'] : []),
     ...([doc.attrs?.wordSections?.final, ...(doc.attrs?.wordSections?.boundaries || []).map(item=>item.properties)].some(properties=>properties?.docGrid != null) ? ['word-section-doc-grid.v1'] : []), ...(doc.attrs?.wordUserBookmarks != null ? ['word-user-bookmarks.v1'] : []),
-    ...(doc.attrs?.wordPendingRevisions?.schemaVersion === 3 ? ['word-pending-note-points.v1'] : []),
+    ...([doc.attrs?.wordPendingRevisions,...(doc.attrs?.wordPendingRevisions?.roundUndo||[]),...(doc.attrs?.wordPendingRevisions?.roundRedo||[])].some(frame=>frame?.schemaVersion===5||frame?.schemaVersion===4&&frame.restoredSchemaVersion===5)?['word-pending-nested-run-format.v1']:[]),
+    ...([doc.attrs?.wordPendingRevisions,...(doc.attrs?.wordPendingRevisions?.roundUndo||[]),...(doc.attrs?.wordPendingRevisions?.roundRedo||[])].some(frame=>frame && (frame.schemaVersion===3||Object.hasOwn(frame,'noteSourcePoints'))) ? ['word-pending-note-points.v1'] : []),
     ...(['roundUndo','roundRedo'].some(key=>doc.attrs?.wordPendingRevisions?.[key]?.some(frame=>frame.schemaVersion===4)) ? ['word-pending-round-delta.v1'] : []),
     ...(documentHasParagraphMarkTypography(doc) && require('../io/inlineTypography.cjs').inspectParagraphMarkTypography(doc) ? ['word-paragraph-mark-typography.v1'] : []),
     ...(documentHasWordLanguage(doc) ? ['word-language.v1'] : []),
@@ -425,7 +426,7 @@ function decodeSceneDocument(serializedDoc) {
   if (declaration.format !== 'yalken.scene-document' || declaration.version !== 3) fail('DOC_BLOCK_FORMAT_UNSUPPORTED');
   if (!Array.isArray(declaration.requiredFeatures) || !declaration.requiredFeatures.length
     || declaration.requiredFeatures.length > 14 || declaration.requiredFeatures.some(feature =>
-      !['word-paragraph-mark-typography.v1', 'word-pending-round-delta.v1', 'word-stories.v1', 'word-sections.v1', 'word-section-doc-grid.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-list-pattern.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
+      !['word-pending-nested-run-format.v1', 'word-paragraph-mark-typography.v1', 'word-pending-round-delta.v1', 'word-stories.v1', 'word-sections.v1', 'word-section-doc-grid.v1', 'word-user-bookmarks.v1', 'word-pending-note-points.v1', 'word-language.v1', 'word-paragraph-spacing.v1', 'word-paragraph-layout.v1', 'word-list-format.v1', 'word-list-numbering.v1', 'word-list-pattern.v1', 'word-typed-breaks.v1'].includes(feature))) fail('DOC_BLOCK_REQUIRED_FEATURES_UNSUPPORTED');
   if (newline < 0 || firstLine !== JSON.stringify({ format: 'yalken.scene-document', version: 3, requiredFeatures: declaration.requiredFeatures }))
     fail('DOC_BLOCK_FORMAT_DECLARATION_INVALID');
   const rawDoc = JSON.parse(serializedDoc.slice(newline + 1));

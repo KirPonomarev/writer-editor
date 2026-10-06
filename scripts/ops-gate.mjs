@@ -14,6 +14,11 @@ const DETERMINISTIC_HASH_SOURCES = new Set([
   'src/core/sceneInlineRangeAdmission.mjs',
 ]);
 const PURE_RUNTIME_IMPORTS_BY_SOURCE = new Map([
+  ['src/core/word-review-authority-codec-v1.cjs', new Set([
+    "const { createHash } = require('node:crypto');",
+    "const { deflateRawSync, inflateRawSync } = require('node:zlib');",
+    "const { TextDecoder } = require('node:util');",
+  ])],
   ['src/core/anchor-lineage-v1.cjs', new Set([
     "const { createHash } = require('node:crypto');",
   ])],

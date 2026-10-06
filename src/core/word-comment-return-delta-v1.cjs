@@ -57,7 +57,7 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null, mixedPendingScenes = null }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
@@ -67,6 +67,8 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     && Array.isArray(returnedParagraphs) && Array.isArray(exportMap?.scenes), 'COMMENT_RETURN_GRAPH_INCOMPLETE');
   demand(returnedThreads.every(t=>plain(t)&&Array.isArray(t.replies)) && returnedThreads.reduce((n,t)=>n+1+t.replies.length,0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_GRAPH_UNSAFE');
   demand(baseline.threads.reduce((n,t)=>n+(t?.messages?.length||0),0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_BASELINE_REQUIRED');
+  demand(Array.isArray(textChanges),'COMMENT_RETURN_TEXT_PROOF_INVALID');
+  textChanges = [...textChanges];
   const before = readState(beforeText, projectId);
   const blocks = exportMap.scenes.flatMap(scene => (scene.blocks || []).map((block, sceneParagraphIndex) => ({
     ...block, sceneId: scene.sceneId, sceneParagraphIndex,
@@ -84,19 +86,39 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   demand(Array.isArray(pendingScenes) && pendingScenes.length <= exportMap.scenes.length, 'COMMENT_RETURN_PENDING_PROOF_INVALID');
   const pendingModel=require('./word-pending-text-revisions-v1.cjs');
   const pendingByScene=new Map();
+  const protectedMixedRoundThreads=new Map();
   const pendingBound=exportMap.scenes.filter(s=>s.pendingCommentBinding!==undefined);
-  demand(mixedPendingScene?exportMap.scenes.length===1:pendingBound.length===pendingScenes.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
-  if(mixedPendingScene) {
-    demand(pendingScenes.length===0&&textChanges.length===0&&exportMap.scenes.length===1
-      &&Object.keys(mixedPendingScene).sort().join(',')==='document,returnedDocument,sceneId'
-      &&mixedPendingScene.sceneId===exportMap.scenes[0].sceneId,'COMMENT_RETURN_PENDING_PROOF_INVALID');
-    const scene=exportMap.scenes[0],anchors=before.threads.filter(t=>t.sceneId===scene.sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
-    const checked=require('./word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({...mixedPendingScene,binding:scene.pendingCommentBinding,anchors,
-      exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
+  const mixed = mixedPendingScenes === null ? (mixedPendingScene ? [mixedPendingScene] : []) : mixedPendingScenes;
+  demand(Array.isArray(mixed) && !(mixedPendingScene && mixedPendingScenes !== null)
+    && (mixed.length ? pendingScenes.length===0 && textChanges.length===0
+      && mixed.length===exportMap.scenes.length : pendingBound.length===pendingScenes.length),'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  if(mixedPendingScene)demand(exportMap.scenes.length===1,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+  for(const item of mixed) {
+    demand(plain(item)&&Object.keys(item).sort().join(',')==='document,returnedDocument,sceneId'
+      &&!pendingByScene.has(item.sceneId),'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const scene=exportMap.scenes.find(s=>s.sceneId===item.sceneId);
+    demand(scene,'COMMENT_RETURN_PENDING_PROOF_INVALID');
+    const anchors=before.threads.filter(t=>t.sceneId===scene.sceneId&&t.status!=='deleted').map(t=>({threadId:t.threadId,anchor:t.anchor}));
+    const checked=require('./word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({...item,binding:scene.pendingCommentBinding,anchors,
+      exportTypography:exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph),cleanTransportSchemaVersion:mixedPendingScenes===null?2:1,allowUntrackedRichFormatting:mixedPendingScenes!==null});
+    if(mixedPendingScenes!==null&&checked.changed&&before.threads.some(t=>t.sceneId===item.sceneId
+      &&t.anchorEditHistory?.some(h=>h.sessionId?.startsWith('recording-round:')))) {
+      const envelope=require('./document-content-envelope-v1.cjs'),oldLedger=pendingModel.readLedger(item.document);
+      demand(oldLedger,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
+      const replacement=pendingModel.replaceFromReturn(item.document,checked.document,{roundId,artifactSha256:artifactSha256.replace(/^sha256:/u,'')});
+      const planned=require('./word-pending-recording-comments-v1.cjs').planRecordingRoundDecision({beforeText,projectId,sceneId:item.sceneId,
+        beforeContent:envelope.composeObservablePayload({doc:item.document}),afterContent:envelope.composeObservablePayload({doc:replacement.doc}),decision:{action:'redo'}},oldLedger,pendingModel.readLedger(replacement.doc));
+      const projected=readState(planned?.afterText||beforeText,projectId);
+      for(const thread of projected.threads.filter(t=>t.sceneId===item.sceneId)) {
+        const prior=before.threads.find(t=>t.threadId===thread.threadId);
+        demand(stable((thread.anchorEditHistory||[]).slice(0,prior.anchorEditHistory?.length||0))===stable(prior.anchorEditHistory||[]),'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
+        protectedMixedRoundThreads.set(thread.threadId,thread);
+      }
+    }
     const texts=pendingModel.paragraphs(checked.projection.current).map(p=>(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join(''));
     demand(texts.length===scene.blocks.length,'COMMENT_RETURN_PENDING_PROOF_INVALID');
-    textChanges=scene.blocks.flatMap((b,i)=>{const oldText=b.formatIr.runs.map(r=>r.text).join('');return oldText===texts[i]?[]:[{sceneId:scene.sceneId,paragraphIndex:i,oldText,newText:texts[i]}];});
-    pendingByScene.set(scene.sceneId,{...checked,mixed:true,returnedDocument:mixedPendingScene.returnedDocument});
+    textChanges.push(...scene.blocks.flatMap((b,i)=>{const oldText=b.formatIr.runs.map(r=>r.text).join('');return oldText===texts[i]?[]:[{sceneId:scene.sceneId,paragraphIndex:i,oldText,newText:texts[i]}];}));
+    pendingByScene.set(scene.sceneId,{...checked,mixed:true,returnedDocument:item.returnedDocument});
   }
   for(const item of pendingScenes) {
     demand(plain(item) && Reflect.ownKeys(item).every(k=>typeof k==='string' && Object.hasOwn(Object.getOwnPropertyDescriptor(item,k),'value')) && Object.keys(item).sort().join(',')==='document,returnedDocument,sceneId'
@@ -323,8 +345,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       // coordinates. Keeping them could revive a remotely deleted/resolved
       // thread or make a moved anchor's persisted graph unreadable.
       if (anchorChanged || thread.status !== candidate.status) {
-        demand(!protectedHistory,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
-        delete thread.anchorEditHistory;
+        if(protectedHistory) {
+          const expected=protectedMixedRoundThreads.get(thread.threadId);
+          const geometry=anchor=>{const {authoritySource,sourceChangeId,...value}=anchor||{};return value;};
+          demand(expected&&candidate.status===expected.status&&stable(geometry(candidate.anchor))===stable(geometry(expected.anchor)),
+            'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
+          thread.anchorEditHistory=clone(expected.anchorEditHistory);
+        } else delete thread.anchorEditHistory;
       }
       thread.messages = candidate.messages; thread.status = candidate.status;
       if (anchorChanged) thread.anchor = candidate.anchor;

@@ -98,3 +98,79 @@ test('native Tiptap typing and plain paste emit empty inherited color without ch
   assert.equal(review.projection(result.doc).original, 'Native text');
   assert.ok(!JSON.stringify(review.readLedger(result.doc).source).includes('"color":""'));
 });
+test('recording retains schema5 parent-child identities, round frames and explicit note refusal',()=>{
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'added',marks:[{type:'bold'}]}]}]},common={nativeId:'native',author:'Word',date:'',dateUtc:'',paragraphIndex:0,from:0,to:5,state:'pending',groupId:null};
+ const parent={...common,id:'revision-1',operation:'insert'},child={...common,id:'revision-2',operation:'format',parentRevisionId:'revision-1',format:{kind:'run',before:[],after:[{type:'bold'}]}};
+ const initial=review.bindLedger({schemaVersion:5,source,revisions:[parent,child],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+ assert.equal(review.readLedger(recording.prepare(initial).baseline).schemaVersion,5);
+ const working=review.materialize(review.readLedger(initial));working.content[0].content.push({type:'text',text:'!'});
+ const next=recording.derive(initial,working,meta).doc,ledger=review.readLedger(next);
+ assert.equal(ledger.schemaVersion,5);assert.deepEqual(ledger.revisions.slice(0,2),[parent,child]);assert.equal(ledger.roundUndo.at(-1).schemaVersion,5);
+ assert.deepEqual(review.readLedger(review.decide(next,{action:'undo'}).doc).revisions,[parent,child]);
+ const notes={schemaVersion:5,source:doc('plain'),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[{noteId:'note-one',paragraphIndex:0,offsetUtf16:0}]};
+ const noteDoc=review.bindLedger(notes);assert.throws(()=>recording.prepare(noteDoc),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/u);assert.deepEqual(review.readLedger(noteDoc).noteSourcePoints,notes.noteSourcePoints);
+});
+
+test('Round decision anchor geometry accepts returned styles while rich Undo and message provenance stay exact',()=>{
+ const env=require('../../src/core/document-content-envelope-v1.cjs'),rounds=require('../../src/core/word-pending-recording-comments-v1.cjs'),anchor=require('../../src/core/word-comment-authoring-v1.cjs');
+ const sceneId='roman/a.txt',projectId='round-style',sha='a'.repeat(64),body='alpha';
+ const styled=source=>{const copy=structuredClone(source);copy.content[0].attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI'}};
+  for(const n of copy.content[0].content||[])n.marks=[...(n.marks||[]),{type:'textStyle',attrs:{fontFamily:'Calibri',fontSize:'14pt',wordLanguage:{val:'en-US'}}}];return copy;};
+ const state=source=>JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'root',rootCommentId:'root-message',sceneId,status:'open',
+  anchor:anchor.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:body},sceneId,[review.projection(source).current]),messages:[{commentId:'root-message',kind:'root',body:'Unchanged comment',provenance:{author:'Reader'}}]}]});
+ for(const styleOnly of [false,true]){
+  const baseline=review.bindLedger({schemaVersion:2,source:doc(body),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+  const candidate=styleOnly?baseline:recording.derive(doc(body),doc(body+'!'),meta).doc,ledger=review.readLedger(candidate);
+  const returned=review.bindLedger({...ledger,source:styled(ledger.source),roundUndo:[],roundRedo:[]});
+  const applied=review.replaceFromReturn(baseline,returned,{roundId:'style-'+styleOnly,artifactSha256:sha}).doc,beforeText=state(applied);
+  const beforeContent=env.composeObservablePayload({doc:applied}),undone=review.decide(applied,{action:'undo'}).doc,afterContent=env.composeObservablePayload({doc:undone});
+  const input={beforeText,projectId,sceneId,beforeContent,afterContent,decision:{action:'undo'}};
+  const result=rounds.planRecordingRoundDecision(input,review.readLedger(applied),review.readLedger(undone));
+  assert.deepEqual(review.roundFrame(review.readLedger(undone)),review.lastRoundFrame(review.readLedger(applied)));
+  const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(redone,applied);
+  const redo=rounds.planRecordingRoundDecision({...input,beforeText:result?.afterText||beforeText,beforeContent:afterContent,afterContent:beforeContent,decision:{action:'redo'}},review.readLedger(undone),review.readLedger(redone));
+  assert.deepEqual(JSON.parse(redo?.afterText||result?.afterText||beforeText).threads.map(t=>t.messages),JSON.parse(beforeText).threads.map(t=>t.messages));
+  for(const mutate of [
+   source=>{source.content[0].attrs.textAlign='center';},
+   source=>{source.content[0].content[0].marks.push({type:'bold'});},
+   source=>{source.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.color='#ff0000';},
+   source=>{source.content[0].type='heading';source.content[0].attrs.level=1;},
+  ]){
+   const forged=structuredClone(review.readLedger(applied));mutate(forged.source);
+   const forgedDoc=review.bindLedger(forged),restored=review.decide(forgedDoc,{action:'undo'}).doc;
+   assert.throws(()=>rounds.planRecordingRoundDecision({...input,beforeContent:env.composeObservablePayload({doc:forgedDoc}),afterContent:env.composeObservablePayload({doc:restored})},forged,review.readLedger(restored)),
+    /RECORDING_COMMENT_ROUND_(?:SOURCE_MISMATCH|UNSUPPORTED)/u);
+  }
+ }
+ const baseline=review.readLedger(review.bindLedger({schemaVersion:2,source:doc(body),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]}));
+ const noDelta={...structuredClone(baseline),roundUndo:[review.roundFrame(baseline)]};
+ assert.throws(()=>rounds.planRecordingRoundDecision({decision:{action:'undo'},beforeContent:env.composeObservablePayload({doc:review.bindLedger(noDelta)}),afterContent:env.composeObservablePayload({doc:review.bindLedger(baseline)})},noDelta,baseline),/RECORDING_COMMENT_ROUND_UNSUPPORTED/u);
+ const old=recording.derive(doc(body),doc(body+'!'),meta).doc,next=recording.derive(old,doc(body+'! tail'),meta).doc,forged=review.readLedger(next);
+ forged.source=styled(forged.source);forged.revisions[0].author='Forged prior event';
+ const forgedDoc=review.bindLedger(forged),restored=review.decide(forgedDoc,{action:'undo'}).doc;
+ assert.throws(()=>rounds.planRecordingRoundDecision({beforeText:state(forgedDoc),projectId,sceneId,decision:{action:'undo'},beforeContent:env.composeObservablePayload({doc:forgedDoc}),afterContent:env.composeObservablePayload({doc:restored})},forged,review.readLedger(restored)),/RECORDING_COMMENT_ROUND_SOURCE_MISMATCH/u);
+});
+test('Round decision retains exact prior format meaning and provenance across a common returned style underlay',()=>{
+ const env=require('../../src/core/document-content-envelope-v1.cjs'),rounds=require('../../src/core/word-pending-recording-comments-v1.cjs'),anchor=require('../../src/core/word-comment-authoring-v1.cjs');
+ const projectId='retained-format-underlay',sceneId='roman/a.txt',body='alpha',style={type:'textStyle',attrs:{fontFamily:'Calibri',fontSize:'14pt',wordLanguage:{val:'en-GB'}}};
+ for(const kind of ['run','paragraph']){
+  const old=doc(body),formatted=doc(body);
+  if(kind==='run')formatted.content[0].content[0].marks=[{type:'bold'}];else formatted.content[0].attrs={textAlign:'center'};
+  const baseline=recording.derive(old,formatted,meta).doc,next=structuredClone(formatted);next.content[0].content[0].text+='!';
+  const returned=structuredClone(review.readLedger(recording.derive(baseline,next,meta).doc));
+  for(const p of returned.source.content){p.attrs={...p.attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI'}};for(const n of p.content||[])n.marks=[...(n.marks||[]),structuredClone(style)];}
+  const prior=returned.revisions.find(r=>r.operation==='format');
+  for(const side of ['before','after'])if(kind==='run')prior.format[side].push(structuredClone(style));else prior.format[side].attrs={...prior.format[side].attrs,wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI'}};
+  const applied=review.replaceFromReturn(baseline,review.bindLedger(returned),{roundId:'underlay-'+kind,artifactSha256:'a'.repeat(64)}).doc;
+  const beforeText=JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'root',rootCommentId:'root-message',sceneId,status:'open',anchor:anchor.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:body},sceneId,[review.projection(applied).current]),messages:[{commentId:'root-message',kind:'root',body:'Retained discussion',provenance:{author:'Reader'}}]}]});
+  const execute=candidate=>{const undone=review.decide(candidate,{action:'undo'}).doc;return rounds.planRecordingRoundDecision({beforeText,projectId,sceneId,beforeContent:env.composeObservablePayload({doc:candidate}),afterContent:env.composeObservablePayload({doc:undone}),decision:{action:'undo'}},review.readLedger(candidate),review.readLedger(undone));};
+  const result=execute(applied),undone=review.decide(applied,{action:'undo'}).doc;assert.deepEqual(review.roundFrame(review.readLedger(undone)),review.roundFrame(review.readLedger(baseline)));
+  const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(redone,applied);
+  const redo=rounds.planRecordingRoundDecision({beforeText:result?.afterText||beforeText,projectId,sceneId,beforeContent:env.composeObservablePayload({doc:undone}),afterContent:env.composeObservablePayload({doc:redone}),decision:{action:'redo'}},review.readLedger(undone),review.readLedger(redone));
+  assert.deepEqual(JSON.parse(redo?.afterText||result?.afterText||beforeText).threads.map(t=>({anchor:t.anchor,messages:t.messages,status:t.status})),JSON.parse(beforeText).threads.map(t=>({anchor:t.anchor,messages:t.messages,status:t.status})));
+  for(const mutate of [r=>{r.author='Forged';},r=>{r.nativeId='forged-native';},r=>{r.date='2026-09-29T07:00:00.000Z';r.dateUtc=r.date;},r=>{r.state='accepted';},r=>{r.id='revision-999';},r=>{if(kind==='run')r.format.before.push({type:'italic'});else r.format.before.attrs={...r.format.before.attrs,textAlign:'right'};}]){
+   const forged=structuredClone(review.readLedger(applied));mutate(forged.revisions.find(r=>r.operation==='format'));
+   assert.throws(()=>execute(review.bindLedger(forged)),/RECORDING_COMMENT_ROUND_SOURCE_MISMATCH/u);
+  }
+ }
+});

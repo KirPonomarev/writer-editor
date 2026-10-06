@@ -7,12 +7,12 @@ const text = paragraph => (paragraph.content || []).map(n => n.type === 'hardBre
 const stable = value => Array.isArray(value) ? '[' + value.map(stable).join(',') + ']'
   : value && typeof value === 'object' ? '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}' : JSON.stringify(value);
 const equal = (a, b) => stable(review.normalizeNode(a)) === stable(review.normalizeNode(b));
-const frame = ledger => clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo'].map(k => [k, ledger[k]])));
+const frame = ledger => review.roundFrame(ledger);
 
 function baseline(doc) {
   const ledger = review.readLedger(doc);
-  if (ledger?.schemaVersion === 3) fail('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
-  if (ledger) return { ...clone(ledger), schemaVersion: 2, roundUndo: clone(ledger.roundUndo || []),
+  if (ledger?.schemaVersion === 3 || ledger && Object.hasOwn(ledger,'noteSourcePoints')) fail('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
+  if (ledger) return { ...clone(ledger), schemaVersion: ledger.schemaVersion===5?5:2, roundUndo: clone(ledger.roundUndo || []),
     roundRedo: clone(ledger.roundRedo || []), returnReceipts: clone(ledger.returnReceipts || []) };
   const source = review.normalizeNode(doc);
   review.paragraphs(source).forEach(p => { p.content ||= []; });

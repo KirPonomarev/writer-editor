@@ -4,6 +4,7 @@ import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity } from './p
 import envelope from './document-content-envelope-v1.cjs';
 import bookmarks from './word-user-bookmarks-v1.cjs';
 import pending from './word-pending-text-revisions-v1.cjs';
+import mixedReturn from './word-pending-comment-return-v1.cjs';
 import notesModel from './word-manuscript-notes-v1.cjs';
 import commentsModel from './word-comment-authoring-v1.cjs';
 import commentAnchors from './word-comment-anchor-save-v1.cjs';
@@ -622,8 +623,53 @@ export function planProjectStoryBodyCohort(input) {
   return frozen(plan);
 }
 
+// Fixed-topology book return: semantic output is regenerated from the signed
+// source and one complete discussion proof, never accepted as caller-written bytes.
+export function planProjectMixedWordReturnCohort(input) {
+  need(input && Object.keys(input).every(key => ['operation','operationId','projectId','manifestPath','beforeManifestText','expectedTreeRevision','scenes','notesText','commentsText','returnProofJson'].includes(key))
+    && input.operation === 'word-mixed-return', 'E_WORD_BOOK_COHORT_OPERATION');
+  need(typeof input.projectId === 'string' && input.projectId.length > 0 && input.projectId.length <= 128
+    && typeof input.operationId === 'string' && /^[A-Za-z0-9._:-]{1,128}$/u.test(input.operationId), 'E_TREE_COHORT_IDENTITY');
+  need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath)
+    && typeof input.beforeManifestText === 'string' && JSON.parse(input.beforeManifestText).projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
+  need(Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_TREE_REVISION_CAS');
+  need(Array.isArray(input.scenes) && input.scenes.length > 1 && input.scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_WORD_BOOK_COHORT_BUDGET');
+  let inputBytes=0;
+  const count=value=>{need(value===null||typeof value==='string','E_WORD_BOOK_COHORT_SOURCE');if(value!==null)inputBytes+=Buffer.byteLength(value);need(inputBytes<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');};
+  [input.beforeManifestText,input.notesText,input.commentsText,input.returnProofJson].forEach(count);
+  const seen = new Set();
+  for (const scene of input.scenes) {
+    need(scene && Object.keys(scene).sort().join(',') === 'beforeContent,commitText,sceneId', 'E_WORD_BOOK_COHORT_SOURCE');
+    count(scene.beforeContent);count(scene.commitText);
+    const relative = treeRelativePath(scene.sceneId);
+    need(relative.startsWith('roman/') && /\.(?:txt|md)$/iu.test(relative) && !seen.has(relative), 'E_WORD_BOOK_COHORT_SOURCE'); seen.add(relative);
+    need(typeof scene.beforeContent === 'string' && (scene.commitText === null || typeof scene.commitText === 'string'), 'E_WORD_BOOK_COHORT_SOURCE');
+  }
+  const semantic = mixedReturn.planMixedBookReturn({beforeText:input.commentsText,projectId:input.projectId,
+    scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson:input.returnProofJson});
+  const entries = [], affectedScenes = [];
+  for (const change of semantic.scenes) {
+    const scene = input.scenes.find(item=>item.sceneId===change.sceneId);
+    entries.push({relativePath:scene.sceneId,role:'scene',beforeBase64:b64(scene.beforeContent),afterBase64:b64(change.content)},
+      {relativePath:scene.sceneId+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(scene.commitText),afterBase64:b64(scene.commitText)});
+    if(change.changed) affectedScenes.push({from:scene.sceneId,to:scene.sceneId,copy:false});
+  }
+  need(affectedScenes.length > 0, 'E_WORD_BOOK_COHORT_NO_CHANGE');
+  need(input.notesText === null || typeof input.notesText === 'string', 'E_WORD_BOOK_COHORT_ANNOTATIONS');
+  if(input.notesText !== null) notesModel.validateManuscriptDocument(JSON.parse(input.notesText),input.projectId);
+  entries.push({relativePath:NOTE_PATH,role:'notes',beforeBase64:b64(input.notesText),afterBase64:b64(input.notesText)},
+    {relativePath:COMMENT_PATH,role:'comments',beforeBase64:b64(input.commentsText),afterBase64:b64(semantic.afterText)});
+  const plan = {mode:TREE_COHORT_MODE,projectId:input.projectId,operationId:input.operationId,
+    expectedTreeRevision:input.expectedTreeRevision,kind:'word-mixed-return',changed:true,code:'TREE_COHORT_READY',
+    beforeManifestText:input.beforeManifestText,manifestText:input.beforeManifestText,entries,directories:[],
+    affectedScenes,pathBindings:[],identityMap:{nodes:{},scenes:{},notes:{},bookmarks:{},threads:{},messages:{}},input:clone(input)};
+  plan.planDigest=sha(stable(plan));need(Buffer.byteLength(stable(plan))<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');
+  return frozen(plan);
+}
+
 export function validateProjectTreeCohort(plan) {
   need(plan?.mode === TREE_COHORT_MODE, 'E_TREE_COHORT_MODE');
+  if (plan.kind === 'word-mixed-return') { need(same(planProjectMixedWordReturnCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'story-bodies') { need(same(planProjectStoryBodyCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'undo') {
     const regenerated = planProjectTreeUndo(plan.input); need(same(regenerated, plan), 'E_TREE_COHORT_PLAN_MISMATCH');
@@ -634,7 +680,7 @@ export function validateProjectTreeCohort(plan) {
 export function planProjectTreeUndo(input) {
   const { receipt, retainedPacket: packet } = input;
   need(receipt?.projectId === input.projectId && packet?.projectId === input.projectId
-    && receipt.kind !== 'undo' && receipt.transactionId === input.lastMutation
+    && receipt.kind !== 'undo' && receipt.kind !== 'word-mixed-return' && receipt.transactionId === input.lastMutation
     && receipt.treeRevision === input.expectedTreeRevision, 'E_TREE_UNDO_UNAVAILABLE');
   need(packet.plan?.kind !== 'undo' && packet.transactionId === receipt.transactionId
     && sha(stable(packet)) === receipt.packetDigest, 'E_TREE_UNDO_PACKET');

@@ -246,8 +246,8 @@ function inspectLedgerData(input) {
 function validateState(input, frame = false) {
   if (!frame) inspectLedgerData(input);
   assert(object(input) && new TextEncoder().encode(JSON.stringify(input)).length <= MAX_BYTES, 'PENDING_REVISIONS_BUDGET');
-  const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(input.schemaVersion === 3 ? ['noteSourcePoints'] : [])];
-  assert([1, 2, 3].includes(input.schemaVersion));
+  const baseKeys = ['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...([3,5].includes(input.schemaVersion) && Object.hasOwn(input,'noteSourcePoints') ? ['noteSourcePoints'] : [])];
+  assert([1, 2, 3, 5].includes(input.schemaVersion));
   assert(exact(input, input.schemaVersion >= 2 && !frame ? [...baseKeys, 'roundUndo', 'roundRedo', 'returnReceipts'] : baseKeys));
   validateSource(input.source);
   const sourceParagraphs = paragraphs(input.source);
@@ -261,12 +261,13 @@ function validateState(input, frame = false) {
   const ids = new Set(), groups = new Map(), occupied = new Map(), paragraphFormats = new Set(), boundaries = new Set();
   let previousParagraph = -1, previousFrom = 0;
   for (const r of input.revisions) {
-    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName', 'format', 'boundary', 'structure']));
+    assert(exact(r, ['id', 'nativeId', 'operation', 'author', 'date', 'dateUtc', 'groupId', 'paragraphIndex', 'from', 'to', 'state', 'moveName', 'format', 'boundary', 'structure', ...(input.schemaVersion===5?['parentRevisionId']:[])]));
     assert(/^revision-[1-9]\d{0,3}$/u.test(r.id) && !ids.has(r.id)); ids.add(r.id);
     assert(typeof r.nativeId === 'string' && r.nativeId.length <= 80 && typeof r.author === 'string' && r.author.length <= 1024);
     assert(typeof r.date === 'string' && r.date.length <= 80 && typeof r.dateUtc === 'string' && r.dateUtc.length <= 80);
     assert(![r.nativeId, r.author, r.date, r.dateUtc].some(value => /[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)));
     assert(['insert', 'delete', 'format'].includes(r.operation) && status(r.state));
+    if(r.parentRevisionId!==undefined)assert(input.schemaVersion===5 && r.operation==='format' && r.format?.kind==='run', 'PENDING_FORMAT_PARENT_INVALID');
     assert(Number.isInteger(r.paragraphIndex) && r.paragraphIndex >= 0 && r.paragraphIndex >= previousParagraph && r.paragraphIndex < sourceParagraphs.length);
     const p = sourceParagraphs[r.paragraphIndex], text = (p.content || []).map(textOf).join('');
     assert(safeBoundary(text, r.from) && safeBoundary(text, r.to)
@@ -297,7 +298,12 @@ function validateState(input, frame = false) {
       assert(!paragraphFormats.has(r.paragraphIndex), 'PENDING_FORMAT_OVERLAP'); paragraphFormats.add(r.paragraphIndex);
     } else if (!isStructural(r)) {
       const spans = occupied.get(r.paragraphIndex) || [];
-      assert(!spans.some(s => r.from < s.to && r.to > s.from), 'PENDING_FORMAT_OVERLAP');
+      const parent=input.revisions.find(other=>other.id===r.parentRevisionId);
+      if(r.parentRevisionId!==undefined)assert(input.schemaVersion===5 && r.operation==='format' && r.format?.kind==='run'
+        && parent && parent.operation==='insert' && !parent.moveName && !isStructural(parent) && parent.parentRevisionId===undefined
+        && parent.paragraphIndex===r.paragraphIndex && parent.from<=r.from && parent.to>=r.to,'PENDING_FORMAT_PARENT_INVALID');
+      const related=other=>r.parentRevisionId===other.id || other.parentRevisionId===r.id;
+      assert(!spans.some(s => r.from < s.to && r.to > s.from && !related(s)), 'PENDING_FORMAT_OVERLAP');
       spans.push(r); occupied.set(r.paragraphIndex, spans);
     }
     assert(r.groupId === null || /^group-[1-9]\d{0,3}$/u.test(r.groupId));
@@ -347,7 +353,7 @@ function validateState(input, frame = false) {
       for (const group of groups.values()) assert(row[input.revisions.indexOf(group[0])] === row[input.revisions.indexOf(group[1])]);
     }
   }
-  if (input.schemaVersion === 3) {
+  if (input.schemaVersion === 3 || input.schemaVersion===5 && Object.hasOwn(input,'noteSourcePoints')) {
     assert(Array.isArray(input.noteSourcePoints) && input.noteSourcePoints.length > 0 && input.noteSourcePoints.length <= 256, 'PENDING_NOTE_POINTS_INVALID');
     assert(input.revisions.every(r => ['insert', 'delete'].includes(r.operation) && !isStructural(r) && !r.moveName), 'PENDING_NOTE_REVISION_UNSUPPORTED');
     const noteIds = new Set();
@@ -426,12 +432,12 @@ function bindNoteSourcePoints(doc, points) {
 }
 function noteProjection(doc, mode = 'current') {
   const ledger = readLedger(doc);
-  if (ledger?.schemaVersion !== 3) return null;
+  if(!ledger || !Object.hasOwn(ledger,'noteSourcePoints'))return null;
   return ledger.noteSourcePoints.map(point => ({ noteId: point.noteId, ...projectSourcePoint(ledger, point, mode) }));
 }
 function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
-  return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(ledger.schemaVersion === 3 ? ['noteSourcePoints'] : [])].map(key => [key, ledger[key]])));
+  return clone(Object.fromEntries(['schemaVersion', 'source', 'revisions', 'undo', 'redo', ...(Object.hasOwn(ledger,'noteSourcePoints') ? ['noteSourcePoints'] : [])].map(key => [key, ledger[key]])));
 }
 // A round stores the prior rich paragraphs relative to the immediately newer
 // source. Identity remains the reconstructed canonical frame, never its codec.
@@ -452,7 +458,7 @@ function sourceTopology(source) {
 function decodeRoundFrame(frame,base,context) {
   if(frame?.schemaVersion!==4){if(context)context.fingerprint=null;return frame;}
   assert(exact(frame,['schemaVersion','restoredSchemaVersion','sourceDelta','revisions','undo','redo','noteSourcePoints'])
-    && [1,2,3].includes(frame.restoredSchemaVersion),'PENDING_ROUND_DELTA_INVALID');
+    && [1,2,3,5].includes(frame.restoredSchemaVersion),'PENDING_ROUND_DELTA_INVALID');
   const delta=frame.sourceDelta;
   assert(exact(delta,['schemaVersion','baseSourceSha256','targetSourceSha256','replacements']) && delta.schemaVersion===1
     && /^[a-f0-9]{64}$/u.test(delta.baseSourceSha256) && /^[a-f0-9]{64}$/u.test(delta.targetSourceSha256)
@@ -503,7 +509,31 @@ function compactRoundHistory(ledger) {
 function lastRoundFrame(ledger,key='roundUndo') {
   const frame=ledger?.[key]?.at(-1);return frame?decodeRoundFrame(frame,ledger.source):null;
 }
-function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex) {
+// Identity owns the actual tracked transition. A common imported Word style
+// underlay may be rebased equally on both sides without changing that event.
+function formatTransitionMeaning(format) {
+  if(!format)return null;const copy=clone(format);
+  if(copy.kind==='run'){
+    const before=copy.before.find(m=>m.type==='textStyle'),after=copy.after.find(m=>m.type==='textStyle');
+    for(const key of ['fontFamily','fontSize','wordLanguage'])if(stable(before?.attrs?.[key])===stable(after?.attrs?.[key])){
+      if(before?.attrs)delete before.attrs[key];if(after?.attrs)delete after.attrs[key];}
+    for(const side of ['before','after'])copy[side]=copy[side].filter(m=>m.type!=='textStyle'||Object.keys(m.attrs||{}).length);
+  }else if(copy.kind==='paragraph')for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
+    if(stable(copy.before.attrs?.[key])===stable(copy.after.attrs?.[key])){
+      if(copy.before.attrs)delete copy.before.attrs[key];if(copy.after.attrs)delete copy.after.attrs[key];}
+    for(const side of ['before','after'])if(copy[side].attrs&&!Object.keys(copy[side].attrs).length)delete copy[side].attrs;
+  }
+  return copy;
+}
+function stripImportedRichStyles(doc) {
+  const result=clone(doc);paragraphs(result).forEach(p=>{
+    if(p.attrs){delete p.attrs.wordParagraphSpacing;delete p.attrs.wordParagraphMarkLanguage;if(!Object.keys(p.attrs).length)delete p.attrs;}
+    for(const n of p.content||[])if(n.marks){n.marks=n.marks.filter(m=>{
+      if(m.type!=='textStyle')return true;if(m.attrs){for(const key of ['fontFamily','fontSize','wordLanguage'])delete m.attrs[key];}
+      return Object.keys(m.attrs||{}).length>0;});if(!n.marks.length)delete n.marks;}
+  });return normalizeNode(result);
+}
+function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.paragraphIndex, revisions = []) {
   // A paragraph property's identity covers the paragraph, not its changing text.
   const text = isTableRow(revision) ? 'TABLE_ROW' : isParagraphBoundary(revision) ? '\n' : isParagraphFormat(revision) ? null : (sourceParagraphs[revision.paragraphIndex].content || []).map(textOf).join('').slice(revision.from, revision.to);
   // Word preserves dateUtc to seconds, while rewriting legacy date at minute
@@ -512,7 +542,9 @@ function revisionMeaning(sourceParagraphs, revision, paragraphIndex = revision.p
   const date = revision.dateUtc || revision.date;
   const time = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(date) && Number.isFinite(Date.parse(date))
     ? Math.floor(Date.parse(date) / 1000) : [revision.date, revision.dateUtc];
-  return stable([paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), revision.format || null]);
+  const parent=revisions.find(r=>r.id===revision.parentRevisionId && r.state==='pending');
+  const parentMeaning=parent?revisionMeaning(sourceParagraphs,parent,paragraphIndex,revisions):null;
+  return stable([paragraphIndex, revision.operation, revision.author, time, text, Boolean(revision.moveName), formatTransitionMeaning(revision.format),parentMeaning]);
 }
 function preserveReturnedIdentities(before, proposed, paragraphBindings) {
   if (paragraphBindings !== undefined) {
@@ -529,8 +561,9 @@ function preserveReturnedIdentities(before, proposed, paragraphBindings) {
         'PENDING_RETURN_TABLE_ROW_BINDING_INVALID');
     });
   }
+  if(stable(before.source)===stable(proposed.source)&&stable(before.revisions)===stable(proposed.revisions))return;
   const incomingMeaning = (source, revision) => paragraphBindings?.[revision.paragraphIndex] === null
-    ? `new-row:${revision.id}` : revisionMeaning(source, revision, paragraphBindings?.[revision.paragraphIndex]);
+    ? `new-row:${revision.id}` : revisionMeaning(source, revision, paragraphBindings?.[revision.paragraphIndex], proposed.revisions);
   const occurrences = new Map(), oldById = new Map(before.revisions.map(r => [r.id, r]));
   const oldParagraphs = paragraphs(before.source), newParagraphs = paragraphs(proposed.source);
   let nextRevision = 1, nextGroup = 1;
@@ -543,26 +576,27 @@ function preserveReturnedIdentities(before, proposed, paragraphBindings) {
     }
   }
   for (const revision of before.revisions.filter(r => r.state === 'pending')) {
-    const key = revisionMeaning(oldParagraphs, revision), rows = occurrences.get(key) || [];
+    const key = revisionMeaning(oldParagraphs, revision, revision.paragraphIndex, before.revisions), rows = occurrences.get(key) || [];
     rows.push(revision); occurrences.set(key, rows);
   }
-  const incomingCounts = new Map();
+  const incomingCounts = new Map(),incomingKeys=new Map();
   for (const revision of proposed.revisions) {
     const key = incomingMeaning(newParagraphs, revision);
-    incomingCounts.set(key, (incomingCounts.get(key) || 0) + 1);
+    incomingKeys.set(revision,key);incomingCounts.set(key, (incomingCounts.get(key) || 0) + 1);
   }
   for (const [key, rows] of occurrences) {
     const count = incomingCounts.get(key) || 0;
     assert(count === 0 || count === rows.length, 'PENDING_RETURN_IDENTITY_AMBIGUOUS');
   }
-  const groups = new Map();
+  const groups = new Map(), idMap=new Map();
   for (const revision of proposed.revisions) {
     assert(revision.state === 'pending', 'PENDING_RETURN_STATE_INVALID');
-    const previous = occurrences.get(incomingMeaning(newParagraphs, revision))?.shift();
+    const previous = occurrences.get(incomingKeys.get(revision))?.shift();
     assert(previous || nextRevision <= 9999, 'PENDING_REVISIONS_ID_BUDGET');
-    revision.id = previous?.id || `revision-${nextRevision++}`;
+    const originalId=revision.id; revision.id = previous?.id || `revision-${nextRevision++}`;idMap.set(originalId,revision.id);
     if (revision.groupId) { const rows = groups.get(revision.groupId) || []; rows.push(revision); groups.set(revision.groupId, rows); }
   }
+  for(const revision of proposed.revisions)if(revision.parentRevisionId!==undefined)revision.parentRevisionId=idMap.get(revision.parentRevisionId);
   const usedGroups = new Set();
   for (const rows of groups.values()) {
     const oldGroup = oldById.get(rows[0].id)?.groupId;
@@ -574,7 +608,7 @@ function preserveReturnedIdentities(before, proposed, paragraphBindings) {
 }
 function asRoundLedger(doc) {
   const existing = readLedger(doc);
-  if (existing) return { ...clone(existing), schemaVersion: existing.schemaVersion === 3 ? 3 : 2,
+  if (existing) return { ...clone(existing), schemaVersion: [3,5].includes(existing.schemaVersion) ? existing.schemaVersion : 2,
     roundUndo: clone(existing.roundUndo || []), roundRedo: clone(existing.roundRedo || []), returnReceipts: clone(existing.returnReceipts || []) };
   const source = normalizeNode(doc);
   assert(source?.type === 'doc' && !source.attrs, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
@@ -586,14 +620,34 @@ function replaceFromReturn(doc, returnedDoc, receipt, paragraphBindings) {
     && receipt.roundId.length > 0 && receipt.roundId.length <= 200 && !/[\x00-\x1f]/u.test(receipt.roundId)
     && /^[a-f0-9]{64}$/u.test(receipt.artifactSha256), 'PENDING_RETURN_RECEIPT_INVALID');
   const before = asRoundLedger(doc);
-  const proposed = asRoundLedger(returnedDoc);
+  let proposed = asRoundLedger(returnedDoc);
+  // A remembered authenticated receipt is idempotent even after local decisions.
+  // Both ledgers were validated; replay never replaces current source or points.
+  if (before.returnReceipts.some(r => r.roundId === receipt.roundId && r.artifactSha256 === receipt.artifactSha256))
+    return { changed: false, replay: true, doc };
+  if(Object.hasOwn(before,'noteSourcePoints')) {
+    assert(Object.hasOwn(proposed,'noteSourcePoints') && proposed.noteSourcePoints.length===before.noteSourcePoints.length,'PENDING_NOTE_REVISION_UNSUPPORTED');
+    const priorBasis=exportNoteBasis(before),returnedBasis=exportNoteBasis(proposed);
+    const originalRows=ledger=>paragraphs(materialize(ledger,'original')).map(p=>(p.content||[]).map(textOf).join(''));
+    assert(stable(originalRows(priorBasis))===stable(originalRows(returnedBasis)),'PENDING_NOTE_REVISION_UNSUPPORTED');
+    for(const point of before.noteSourcePoints) {
+      const incoming=proposed.noteSourcePoints.find(p=>p.noteId===point.noteId);
+      assert(incoming,'PENDING_NOTE_REVISION_UNSUPPORTED');
+      const original=(ledger,basis,p)=>projectSourcePoint(basis,projectSourcePoint(ledger,p,'export'),'original');
+      assert(stable(original(before,priorBasis,point))===stable(original(proposed,returnedBasis,incoming)),'PENDING_NOTE_REVISION_UNSUPPORTED');
+    }
+  }
+  if(before.revisions.some(r=>r.parentRevisionId!==undefined)&&before.revisions.some(r=>r.state!=='pending')) {
+    // Resolved parents and hidden children remain local canonical provenance.
+    // The no-op transport proof must match before retaining that geometry.
+    const binding=buildCommentExportBinding({document:doc}).binding;
+    verifyCommentReturnBinding({document:doc,returnedDocument:bindLedger(proposed),binding});
+    proposed=clone(before);
+  }
   // The caller authenticates the round. This receipt only prevents replay and
   // deliberately remains remembered across undo; it can never grant a write.
   const after = { ...proposed, undo: [], redo: [], roundUndo: before.roundUndo,
     roundRedo: [], returnReceipts: [...before.returnReceipts, clone(receipt)] };
-  if (before.returnReceipts.some(r => r.roundId === receipt?.roundId && r.artifactSha256 === receipt?.artifactSha256)) {
-    return { changed: false, replay: true, doc };
-  }
   preserveReturnedIdentities(before, proposed, paragraphBindings);
   const previous = roundFrame(before); previous.redo = [];
   after.roundUndo.push(previous);
@@ -621,16 +675,21 @@ function paragraphSegments(ledger, p, paragraphIndex, mode) {
     const cuts = [...new Set([offset, end, ...changes.flatMap(r => [r.from, r.to]).filter(n => n > offset && n < end)])].sort((a, b) => a - b);
     for (let i = 1; i < cuts.length; i++) {
       const from = cuts[i - 1], to = cuts[i];
-      const revision = changes.find(r => r.from <= from && r.to >= to);
+      const owners=changes.filter(r => r.from<=from && r.to>=to);
+      const textRevision=owners.find(r=>r.operation!=='format');
+      const formatRevision=owners.find(r=>r.operation==='format');
+      const revision=textRevision || formatRevision;
       if (revision && mode !== 'export' && !includeRevision(revision, mode)) continue;
       if (revision && mode === 'export' && revision.state !== 'pending' && !includeRevision(revision, 'current')) continue;
       const outputNode = node.type === 'hardBreak' ? clone(node) : { ...clone(node), text: text.slice(from - offset, to - offset) };
-      if (revision?.operation === 'format' && outputNode.type === 'text') {
-        const marks = revision.format[mode === 'original' || revision.state === 'rejected' ? 'before' : 'after'];
+      if (formatRevision && outputNode.type === 'text') {
+        const marks = formatRevision.format[mode === 'original' || formatRevision.state === 'rejected' ? 'before' : 'after'];
         if (marks.length) outputNode.marks = clone(marks); else delete outputNode.marks;
       }
       result.push({ node: outputNode,
-        revision: mode === 'export' && revision?.state === 'pending' ? clone(revision) : null });
+        revision: mode === 'export' && revision?.state === 'pending' ? clone(revision)
+          : mode==='export' && formatRevision?.state==='pending' ? Object.fromEntries(Object.entries(clone(formatRevision)).filter(([key])=>key!=='parentRevisionId')) : null,
+        ...(textRevision?.state==='pending' && formatRevision && mode==='export' && formatRevision.state==='pending'?{formatRevision:clone(formatRevision)}:{}) });
     }
     offset = end;
   }
@@ -700,8 +759,8 @@ function decide(doc, input) {
       if (!rounds?.length) return { changed: false, doc };
       assert(other.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET');
       const next = decodeRoundFrame(rounds.pop(),ledger.source); other.push(encodeRoundFrame(roundFrame(ledger),next.source));
-      if (next.schemaVersion !== 3) delete ledger.noteSourcePoints;
-      return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: next.schemaVersion === 3 ? 3 : 2,
+      if (!Object.hasOwn(next,'noteSourcePoints')) delete ledger.noteSourcePoints;
+      return { changed: true, doc: bindLedger({ ...ledger, ...next, schemaVersion: [3,5].includes(next.schemaVersion) ? next.schemaVersion : 2,
         roundUndo: ledger.roundUndo, roundRedo: ledger.roundRedo, returnReceipts: ledger.returnReceipts }) };
     }
     assert(target.length < 128, 'PENDING_REVISIONS_HISTORY_BUDGET'); target.push(before);
@@ -811,8 +870,7 @@ function commentTransportSegments(segments, paragraph = {}) {
       style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',...style.attrs,
         wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US',...paragraph.attrs?.wordParagraphMarkLanguage,...style.attrs?.wordLanguage}};
     }
-    if(result.revision) {
-      const r=result.revision;
+    for(const r of [result.revision,result.formatRevision].filter(Boolean)) {
       if(r.operation==='format' && r.format?.kind==='run') {
         for(const side of ['before','after'])r.format[side]=commentTransportSegments([
           {node:{type:'text',text:'x',marks:r.format[side]},revision:null}
@@ -830,7 +888,7 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
   const ledger=readLedger(document);
   assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete','format'].includes(r.operation)
     && (r.operation !== 'format' || ['run','paragraph'].includes(r.format.kind))), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
-  const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], rows=[];
+  const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], nestedFormatSpans=[], rows=[];
   const exportedParagraphs=paragraphs(exported.doc);
   exported.paragraphs.forEach((p,paragraphIndex)=>{
     const format=ledger.revisions.find(r=>r.paragraphIndex===paragraphIndex&&isParagraphFormat(r)&&r.state==='pending');
@@ -839,7 +897,12 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
     let offset=0; const parts=[];
     for(const segment of schemaVersion===2?commentTransportSegments(p.segments,exportedParagraphs[paragraphIndex]):p.segments) {
       const length=textOf(segment.node).length, from=offset; offset+=length;
-      parts.push({fromUtf16:from,toUtf16:offset,node:clone(segment.node),revision:segment.revision});
+      parts.push({fromUtf16:from,toUtf16:offset,node:clone(segment.node),revision:segment.revision,...(segment.formatRevision?{formatRevision:segment.formatRevision}:{})});
+      if(segment.formatRevision){const r=segment.formatRevision,last=nestedFormatSpans.at(-1);
+        if(last?.revisionId===r.id&&last.paragraphIndex===paragraphIndex&&last.toUtf16===from)last.toUtf16=offset;
+        else nestedFormatSpans.push({revisionId:r.id,parentRevisionId:r.parentRevisionId,paragraphIndex,fromUtf16:from,toUtf16:offset,
+          provenanceSha256:commentHash({author:r.author,date:r.date,dateUtc:r.dateUtc}),formatSha256:commentHash(r.format)});
+      }
       if(segment.revision) {
         const r=segment.revision, last=spans.at(-1);
         if(last?.revisionId===r.id && last.paragraphIndex===paragraphIndex && last.toUtf16===from) last.toUtf16=offset;
@@ -856,8 +919,9 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
       if(mode==='original'&&format){p.type=format.format.before.type;if(format.format.before.attrs)p.attrs=clone(format.format.before.attrs);else delete p.attrs;}
       p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>{
       const node=clone(s.node);
-      if(mode==='original' && s.revision?.operation==='format') {
-        if(s.revision.format.before.length)node.marks=clone(s.revision.format.before);else delete node.marks;
+      const format=s.formatRevision|| (s.revision?.operation==='format'?s.revision:null);
+      if(mode==='original' && format) {
+        if(format.format.before.length)node.marks=clone(format.format.before);else delete node.marks;
       }
       return node;
     });});
@@ -869,7 +933,7 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
     const nodes=rows[span.paragraphIndex].filter(s=>s.fromUtf16>=span.fromUtf16 && s.toUtf16<=span.toUtf16).map(s=>s.node);
     span.formatSha256=commentHash(commentRich({type:'doc',content:[{type:'paragraph',content:nodes}]},size));
   }
-  return {ledger,rows,spans,union,current,original,size};
+  return {ledger,rows,spans,nestedFormatSpans,union,current,original,size};
 }
 function basisEndpoint(basis,paragraphIndex,offsetUtf16,mode='current',inverse=false) {
   const row=basis.rows[paragraphIndex];
@@ -983,7 +1047,7 @@ function buildCommentExportBinding({document,anchors=[],exportTypography,exportP
   const projection={union:basis.union,current:basis.current,original:basis.original,segments:basis.rows};
   const binding={schemaVersion,ledgerSha256:commentHash(basis.ledger),
     basisSha256:commentHash({union:commentRich(basis.union,basis.size,indents,leftDefaults),current:commentRich(basis.current,basis.size,indents,leftDefaults),original:commentRich(basis.original,basis.size,indents,leftDefaults)}),
-    paragraphCount:basis.rows.length,revisionSpans:basis.spans,anchors:commentAnchorBindings(basis,anchors)};
+    paragraphCount:basis.rows.length,revisionSpans:basis.spans,...(basis.nestedFormatSpans.length?{nestedFormatSpans:basis.nestedFormatSpans}:{}),anchors:commentAnchorBindings(basis,anchors)};
   return {binding,projection};
 }
 function mapCommentExportEndpoint({document,binding,anchors=[],exportTypography,exportParagraphs,paragraphIndex,offsetUtf16,affinity}={}) {
@@ -1014,22 +1078,33 @@ function verifyCommentReturnBinding({document,binding,returnedDocument,anchors=[
     partitions.push({revisionId:span.revisionId,fragments});
   }
   assert(cursor===returned.spans.length,'PENDING_COMMENT_PARTITION_CHANGED');
+  let nestedCursor=0;
+  for(const span of binding.nestedFormatSpans||[]) {
+    const parent=partitions.find(p=>p.revisionId===span.parentRevisionId);assert(parent,'PENDING_COMMENT_NESTED_FORMAT_CHANGED');
+    let offset=span.fromUtf16;const fragments=[];
+    while(offset<span.toUtf16){const fragment=returned.nestedFormatSpans[nestedCursor++];
+      assert(fragment&&fragment.paragraphIndex===span.paragraphIndex&&fragment.fromUtf16===offset&&fragment.toUtf16>offset&&fragment.toUtf16<=span.toUtf16
+        &&parent.fragments.includes(fragment.parentRevisionId)&&fragment.provenanceSha256===span.provenanceSha256&&fragment.formatSha256===span.formatSha256,'PENDING_COMMENT_NESTED_FORMAT_CHANGED');
+      fragments.push(fragment.revisionId);offset=fragment.toUtf16;}
+    partitions.push({revisionId:span.revisionId,fragments});
+  }
+  assert(nestedCursor===returned.nestedFormatSpans.length,'PENDING_COMMENT_NESTED_FORMAT_CHANGED');
   return {partitions,projection:before.projection,anchors:binding.anchors};
 }
 // A checked, transport-normalized basis for the separate changed-pending proof.
 // This does not relax the unchanged-return verifier above.
-function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs}) {
+function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportTypography,exportParagraphs,allowUntrackedRichFormatting=false}) {
   const before=buildCommentExportBinding({document,binding,anchors,exportTypography,exportParagraphs,schemaVersion:binding?.schemaVersion});
   assert(stable(before.binding)===stable(binding),'PENDING_COMMENT_BINDING_CHANGED');
   const incoming=commentBasis(returnedDocument,exportTypography);
   const left=commentLeftDefaults(before.projection.union,exportParagraphs);
   const indents=commentExportIndents(before.projection.union,exportParagraphs);
-  const old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
+  let old=commentRich(before.projection.union,commentTypography(exportTypography),indents,left);
   // Match a fresh property change against its checked previous rich snapshot.
   // The published Current and Original projections remain separate and exact.
   const comparison=clone(incoming.union), oldLedger=readLedger(document);
   const sameRevision=(a,b)=>a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
-    && stable(a.format)===stable(b.format);
+    && stable(allowUntrackedRichFormatting?formatTransitionMeaning(a.format):a.format)===stable(allowUntrackedRichFormatting?formatTransitionMeaning(b.format):b.format);
   paragraphs(comparison).forEach((p,index)=>{
     const currentFormat=incoming.ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
@@ -1040,13 +1115,14 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
       p.type=currentFormat.format.before.type;if(currentFormat.format.before.attrs)p.attrs=clone(currentFormat.format.before.attrs);else delete p.attrs;
     }
     p.content=incoming.rows[index].map(segment=>{
-    const node=clone(segment.node),revision=segment.revision;
-    if(revision?.operation==='format' && !before.projection.segments[index].some(old=>old.revision && sameRevision(old.revision,revision))) {
-      node.marks=commentTransportSegments([{node:{type:'text',text:'x',marks:revision.format.before},revision:null}],p)[0].node.marks;
+    const node=clone(segment.node),revision=segment.formatRevision||segment.revision;
+    if(revision?.operation==='format' && !before.projection.segments[index].some(old=>[old.revision,old.formatRevision].some(r=>r && sameRevision(r,revision)))) {
+      node.marks=binding.schemaVersion===2?commentTransportSegments([{node:{type:'text',text:'x',marks:revision.format.before},revision:null}],p)[0].node.marks:clone(revision.format.before);
     }
     return node;
   });});
-  const next=commentRich(comparison,incoming.size,null,left);
+  let next=commentRich(comparison,incoming.size,null,left);
+  if(allowUntrackedRichFormatting){old=stripImportedRichStyles(old);next=stripImportedRichStyles(next);}
   const shape=doc=>{const copy=clone(doc);paragraphs(copy).forEach(p=>{p.content=[];});return normalizeNode(copy);};
   assert(stable(shape(old))===stable(shape(next)),'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
   return {before:before.projection,returned:{union:incoming.union,current:incoming.current,original:incoming.original,segments:incoming.rows,paragraphFormats:incoming.ledger.revisions.filter(isParagraphFormat)},
@@ -1055,4 +1131,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

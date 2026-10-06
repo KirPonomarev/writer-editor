@@ -24,13 +24,33 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
+  const stable = value => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item)
+    ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
+  const mark = properties => ({ language: properties.attrs?.wordParagraphMarkLanguage,
+    typography: properties.attrs?.wordParagraphMarkTypography });
+  if (stable(mark(before)) !== stable(mark(revision.format.after))) {
+    const paragraph = properties => {
+      const value = JSON.parse(JSON.stringify(properties));
+      if (value.attrs) {
+        delete value.attrs.wordParagraphMarkLanguage; delete value.attrs.wordParagraphMarkTypography;
+        if (!Object.keys(value.attrs).length) delete value.attrs;
+      }
+      return value;
+    };
+    if (stable(paragraph(before)) !== stable(paragraph(revision.format.after)))
+      throw Error('PENDING_PARAGRAPH_MARK_COMPOSITE_EXPORT_UNSUPPORTED');
+    // A paragraph mark is a run-property owner. Its previous properties belong
+    // under rPr/rPrChange, never under the paragraph-only pPrChange snapshot.
+    const previous = buildDocxParagraphMarkTypographyXml(before.attrs?.wordParagraphMarkTypography)
+      + buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
+    const change = `<w:rPrChange${revisionAttributes(revision, counter)}><w:rPr>${previous}</w:rPr></w:rPrChange>`;
+    const current = /<w:rPr>[\s\S]*?<\/w:rPr>/u;
+    return `<w:pPr>${current.test(body) ? body.replace(current, value => value.replace('</w:rPr>', change + '</w:rPr>'))
+      : body + `<w:rPr>${change}</w:rPr>`}</w:pPr>`;
+  }
   let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang|ind)\b[^>]*\/>/gu, '');
   protectedProperties=protectedProperties.replace(/<w:tabs\b[^>]*>[\s\S]*?<\/w:tabs>|<w:tabs\b[^>]*\/>/gu,'');
   protectedProperties = protectedProperties.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/gu, '');
-  const oldLanguage = buildDocxParagraphMarkTypographyXml(before.attrs?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
-  if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
-  else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
-  protectedProperties = protectedProperties.replace(/<w:rPr><\/w:rPr>/gu, '');
   const old = `<w:pStyle w:val="${before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal'}"/>`
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
     + (before.attrs?.textAlign ? `<w:jc w:val="${escapeXml(before.attrs.textAlign === 'justify' ? 'both' : before.attrs.textAlign)}"/>` : '')
@@ -64,8 +84,18 @@ function buildPendingRowParagraphXml(xml, revision, counter) {
 // Export segments have already been validated against canonical scene truth.
 // Keep rich runs together; live comment markers may split a deletion wrapper.
 function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', markers = new Map(), commentMarkers = new Map()) {
-  let output = '', active = null, body = '', formatText = '';
+  let output = '', active = null, body = '', formatText = '', nested=null,nestedText='';
+  const formattedRun=(revision,value)=>{
+    if(revision.format?.kind!=='run')throw Error('PENDING_FORMAT_EXPORT_INVALID');
+    const previous=renderRun({type:'text',text:'x',marks:revision.format.before});
+    const oldProperties=previous.match(/<w:rPr>([\s\S]*?)<\/w:rPr>/u)?.[1]||'';
+    const change=`<w:rPrChange${revisionAttributes(revision,counter)}><w:rPr>${oldProperties}</w:rPr></w:rPrChange>`;
+    const current=renderRun({type:'text',text:value,marks:revision.format.after});
+    return current.includes('</w:rPr>')?current.replace('</w:rPr>',change+'</w:rPr>'):current.replace('<w:r>',`<w:r><w:rPr>${change}</w:rPr>`);
+  };
+  const flushNested=()=>{if(nested){body+=formattedRun(nested,nestedText);nested=null;nestedText='';}};
   const flush = () => {
+    flushNested();
     if (!active) { output += body; body = ''; return; }
     if (active.operation === 'format') {
       if (active.format?.kind !== 'run') throw Error('PENDING_FORMAT_EXPORT_INVALID');
@@ -99,6 +129,7 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
   const remainingComments = new Map(commentMarkers);
   const emit = point => {
     if (remainingComments.has(point)) {
+      flushNested();
       // Word discards comment references contained in deleted content when it
       // saves an edited document. Preserve the exact union endpoint, but close
       // the deletion first; the next segment resumes it if this point is inside.
@@ -118,6 +149,11 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
       if ((active?.id || null) !== (segment.revision?.id || null)) { flush(); active = segment.revision; }
       const node = segment.node.type === 'hardBreak' ? segment.node : { ...segment.node, text: value.slice(cuts[i] - offset, cuts[i + 1] - offset) };
       if (active?.operation === 'format') { formatText += node.type === 'hardBreak' ? '\n' : node.text; continue; }
+      if(segment.formatRevision){
+        if(nested?.id!==segment.formatRevision.id){flushNested();nested=segment.formatRevision;}
+        nestedText+=node.type==='hardBreak'?'\n':node.text;continue;
+      }
+      flushNested();
       let xml = renderRun(node);
       if (active?.operation === 'delete' && !active.moveName) xml = xml.replace(/<w:t(?=[ >])/gu, '<w:delText').replaceAll('</w:t>', '</w:delText>');
       body += xml;

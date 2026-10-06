@@ -10,6 +10,51 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
+test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
+ const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const style=attrs=>[{type:'textStyle',attrs}],edited={fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'en-GB'}};
+ for(const authored of [undefined,{fontFamily:'Menlo',fontSize:'10pt'},edited]){
+  const source={type:'doc',content:[{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'alpha',...(authored?{marks:style(authored)}:{})}]}]};
+  const old=review.bindLedger({schemaVersion:2,source,revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from:0,to:1,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+  const packet=makeSource({projectId,projectRoot:'/project',scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'alpha',doc:old,observableContent:encode(old)}]}),capsule=packet.localAuthorityCapsule;
+  const exportParagraphs=capsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph),exportTypography=capsule.exportMap.exportTypography;
+  const binding=review.buildCommentExportBinding({document:old,anchors:[],exportTypography,exportParagraphs,schemaVersion:1}).binding;
+  const derive=(incoming,paragraphs=exportParagraphs)=>deriveMixedPendingDocument({document:old,returnedDocument:incoming,binding,anchors:[],exportTypography,exportParagraphs:paragraphs,cleanTransportSchemaVersion:1,allowUntrackedRichFormatting:true});
+  const bytes=build(packet),parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:[{sceneId,document:old}],documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest,retainPendingSceneId:sceneId});
+  if(authored===edited){assert.equal(parsed.ok,false);assert.equal(parsed.code,'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');}
+  else assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const unchanged=derive(authored===edited?old:parsed.scenes[0].returnedDocument);
+  assert.equal(unchanged.changed,false);assert.deepEqual(review.readLedger(unchanged.document).source,review.readLedger(old).source);
+  const incoming=structuredClone(review.readLedger(old));incoming.source.content[0].content=[{type:'text',text:'alpha!',marks:style(edited)}];
+  incoming.revisions.push({id:'revision-2',nativeId:'41',operation:'insert',author:'Word editor',date:'2026-10-06T00:00:00Z',dateUtc:'',paragraphIndex:0,from:5,to:6,state:'pending',groupId:null});
+  const result=derive(review.bindLedger(incoming));assert.equal(result.changed,true);for(const node of review.readLedger(result.document).source.content[0].content)assert.deepEqual(node.marks,style(edited));
+  assert.equal(review.projection(result.document).original,'lpha');assert.equal(review.projection(result.document).current,'alpha!');
+  const round=review.replaceFromReturn(old,result.document,{roundId:'round-code',artifactSha256:sha(bytes)}).doc;
+  const undone=review.decide(round,{action:'undo'}).doc;assert.deepEqual(review.readLedger(undone).source,review.readLedger(old).source);
+  const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(review.readLedger(redone).source,review.readLedger(result.document).source);
+  assert.throws(()=>derive(review.bindLedger(incoming),null),/PENDING_COMMENT_EXPORT_LAYOUT_INVALID|MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN/u);
+  const rebound=structuredClone(exportParagraphs);rebound[0].codeLanguage='python';assert.throws(()=>derive(review.bindLedger(incoming),rebound),/MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN/u);
+ }
+});
+test('Mixed book derivation retains run events through implicit emitted fonts and a fresh paragraph-mark language change',()=>{
+ const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),lang=val=>({type:'textStyle',attrs:{wordLanguage:{val}}}),defaults={fontFamily:'Times New Roman',fontSize:'12pt'};
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'a',marks:[lang('en-US')]},{type:'text',text:'b',marks:[{type:'bold'}]},{type:'text',text:'c'}]}]};
+ const revision=(id,from,to,extra)=>({id:'revision-'+id,nativeId:String(id),operation:'format',author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from,to,state:'pending',groupId:null,...extra});
+ const old=review.bindLedger({schemaVersion:5,source,revisions:[revision(1,0,1,{operation:'insert'}),revision(2,0,1,{parentRevisionId:'revision-1',format:{kind:'run',before:[lang('ru-RU')],after:[lang('en-US')]}}),revision(3,1,2,{format:{kind:'run',before:[],after:[{type:'bold'}]}})],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+ const incoming=structuredClone(review.readLedger(old)),withDefaults=marks=>{const copy=structuredClone(marks);let mark=copy.find(m=>m.type==='textStyle');if(!mark){mark={type:'textStyle',attrs:{}};copy.push(mark);}Object.assign(mark.attrs,defaults);return copy;};
+ incoming.source.content[0].content.push({type:'text',text:'!'});
+ for(const n of incoming.source.content[0].content)n.marks=withDefaults(n.marks||[]);
+ for(const r of incoming.revisions.filter(r=>r.operation==='format'))for(const side of ['before','after'])r.format[side]=withDefaults(r.format[side]);
+ incoming.revisions.push(revision(4,0,4,{format:{kind:'paragraph',before:{type:'paragraph'},after:{type:'paragraph',attrs:{wordParagraphMarkLanguage:{val:'ru-RU'}}}}}),revision(5,3,4,{operation:'insert',author:'Editor'}));incoming.source.content[0].attrs={wordParagraphMarkLanguage:{val:'ru-RU'}};
+ incoming.revisions.sort((a,b)=>a.from-b.from);
+ const binding=review.buildCommentExportBinding({document:old,anchors:[],schemaVersion:1}).binding;
+ const derive=ledger=>deriveMixedPendingDocument({document:old,returnedDocument:review.bindLedger(ledger),binding,anchors:[],cleanTransportSchemaVersion:1,allowUntrackedRichFormatting:true});
+ const result=derive(incoming),ledger=review.readLedger(result.document),paragraphFormat=ledger.revisions.find(review.isParagraphFormat);
+ assert.equal(paragraphFormat.format.before.attrs?.wordParagraphMarkLanguage,undefined);assert.deepEqual(paragraphFormat.format.after.attrs.wordParagraphMarkLanguage,{val:'ru-RU'});
+ for(const r of ledger.revisions.filter(r=>r.operation==='format'&&r.format.kind==='run')){const prior=review.readLedger(old).revisions.find(p=>p.id===r.id);assert.deepEqual(review.formatTransitionMeaning(r.format),review.formatTransitionMeaning(prior.format));assert.equal(r.nativeId,prior.nativeId);assert.equal(r.author,prior.author);assert.equal(r.parentRevisionId,prior.parentRevisionId);assert.ok(r.format.after.every(m=>!m.attrs?.fontFamily&&!m.attrs?.fontSize));}
+ assert.equal(review.projection(result.document).current,'abc!');assert.equal(review.projection(result.document).original,'bc');
+ for(const id of ['revision-2','revision-3']){const forged=structuredClone(incoming),r=forged.revisions.find(r=>r.id===id);r.format.before.push({type:'italic'});assert.throws(()=>derive(forged),/MIXED_RETURN_(?:OLD_FORMAT_TRANSITION_CHANGED|SOURCE_CHANGED)/u);}
+});
 async function fixture(clean=false,markChange=false) {
   const source={type:'doc',content:['oldnew','tail AAA BBB'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
   if(markChange)source.content.push({type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}},content:[]});

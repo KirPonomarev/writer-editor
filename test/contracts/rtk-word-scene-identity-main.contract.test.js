@@ -29,7 +29,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   if (!reopenTemp) { fs.writeFileSync(alpha, 'Alpha'); fs.writeFileSync(beta, 'Beta'); }
   const handles = new Map(), listeners = new Map();
   let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
-  const warnings = [];
+  const warnings = []; let messageResponse=0;
   const app = { isPackaged: packagedMac, getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
@@ -37,10 +37,11 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     decryptString(value){const cipher=crypto.createDecipheriv('aes-256-gcm',Buffer.alloc(32,9),value.subarray(0,12));cipher.setAuthTag(value.subarray(-16));return Buffer.concat([cipher.update(value.subarray(12,-16)),cipher.final()]).toString('utf8');}},
     app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
-    dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: 0 }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
+    dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: messageResponse }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), originalLoad = Module._load;
+  let nextBookTransaction = null;
   const compiled = new Module(mainPath, module);
   compiled.filename = mainPath; compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
   const hooks = `\nmodule.exports.__probe = {
@@ -90,6 +91,13 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     pendingDecision: payload => dispatchMenuCommand('cmd.project.review.decidePendingRevision',payload,{route:COMMAND_BUS_ROUTE}),
     beforeNextCommit(callback) { const original=commitWriterProjectSnapshot;
       commitWriterProjectSnapshot=async(...args)=>{commitWriterProjectSnapshot=original;await callback();return original(...args);}; },
+    beforeNextBookTransaction(callback) { commitProjectTransaction.arm(callback); },
+    observeKernelResults() { const original=dispatchCommandSurfaceKernel,results=[],failures=[];
+      dispatchCommandSurfaceKernel=async(...args)=>{const payload=args[1],admission=authenticatedCommentDeltaAdmissions.get(payload);
+        if(admission)authenticatedCommentDeltaAdmissions.set(payload,async()=>{try{return await admission();}catch(error){failures.push(error.code||error.message);throw error;}});
+        try{const result=await original(...args);results.push(result);return result;}
+        finally{if(admission)authenticatedCommentDeltaAdmissions.set(payload,admission);} };
+      return {results,failures,restore(){dispatchCommandSurfaceKernel=original;}}; },
     changeSession() { commentAuthoringSessionId += 1; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
@@ -106,7 +114,19 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
       return () => { if (!captured) throw Error('QUEUE_NOT_CAPTURED'); return previous(captured,label); };
     },
   };`;
-  Module._load = function (request, parent, isMain) { return request === 'electron' ? electron : originalLoad.call(this, request, parent, isMain); };
+  Module._load = function (request, parent, isMain) {
+    if(request === 'electron')return electron;
+    const actual=originalLoad.call(this,request,parent,isMain);
+    if(parent?.filename===mainPath && request==='./core/project-transaction-v1.cjs'){
+      // This owned adapter injects at the real transaction boundary, then
+      // delegates to the unchanged production transaction and lease assertions.
+      const commit=async(...args)=>{const callback=nextBookTransaction;nextBookTransaction=null;
+        if(callback)await callback(args[0]);return actual.commitProjectTransaction(...args);};
+      commit.arm=callback=>{assert.equal(nextBookTransaction,null);nextBookTransaction=callback;};
+      return {...actual,commitProjectTransaction:commit};
+    }
+    return actual;
+  };
   try { compiled._compile((packagedMac ? "const process=Object.create(global.process);Object.defineProperty(process,'platform',{value:'darwin'});\n" : '') + fs.readFileSync(mainPath, 'utf8') + hooks, mainPath); }
   finally { Module._load = originalLoad; }
   const main = compiled.exports, probe = main.__probe;
@@ -153,6 +173,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     probe.setReviewStore(store); return { capsule, store, target };
   }
   return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners,
+    chooseMessageResponse: value => { messageResponse=value; },
     chooseSavePath: (target, callback) => { nextSavePath = target; onSaveDialog = callback; }, saveDialogs: () => saveDialogs, warnings };
 }
 
@@ -2384,7 +2405,7 @@ for(const variant of ['line','page','column','inherited','type-spoof'])test(`act
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'break-replay'});await settle();assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
 });
 
-async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=false}={}) {
+async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=false,beforeExport=null}={}) {
   const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
   const comments=require('../../src/core/word-comment-authoring-v1.cjs');
   const generated=(await import('../../scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')).buildWordManuscriptFixture('MULTI_SCENE','C2','DEFAULT');
@@ -2420,6 +2441,12 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   comments.readState(JSON.stringify(state),f.query.projectId);
   const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,JSON.stringify(state));
   const observed=()=>read(third);mountRenderer(f,observed,0,null,()=>({projectId:f.query.projectId,documentId:thirdNode.nodeId}));f.probe.state({filePath:third,projectName:'Роман'});
+  if(process.env.YALKEN_BOOK_SEED_DIR && tamper) {
+    fs.mkdirSync(process.env.YALKEN_BOOK_SEED_DIR,{recursive:true});
+    fs.writeFileSync(path.join(process.env.YALKEN_BOOK_SEED_DIR,'three-scene-seed.json'),JSON.stringify({schemaVersion:1,kind:'SYNTHETIC_TEST_SEED_NOT_NATIVE_ACCEPTANCE',projectId:f.query.projectId,
+      manifest:JSON.parse(read(f.manifestPath)),scenes:paths.map((file,i)=>({sceneId:sceneIds[i],raw:read(file)})),comments:state},null,2));
+  }
+  if(beforeExport)await beforeExport({f,paths,sceneIds,docs,third});
   const source=await (scope==='scene'?f.probe.sceneSource():f.probe.fullSource()),built=await f.probe.reviewBuild(source);
   assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts={...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
@@ -2436,12 +2463,12 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
     return open+body.slice(0,at)+close+marker+open.replace(/w:id="[^"]*"/u,'w:id="901"')+body.slice(at+marker.length)+close;
   });
   assert.equal(split,true,'Word-shaped fragment split is actually exercised');
-  if(tamper)tamper(parts,{f,third,commentPath});
+  if(tamper)tamper(parts,{f,third,commentPath,projection,source});
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
   const diagnostic=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:x=>`sha256:${sha(x)}`,sha256Json:x=>`sha256:${sha(JSON.stringify(x))}`,byteLength:x=>Buffer.byteLength(x)}});
   assert.equal(diagnostic.reviewIr?.commentBodyGrammar?.status,'SUPPORTED',JSON.stringify(diagnostic.reviewIr?.commentBodyGrammar||diagnostic));
   const before=f.capture();let prepared;
-  const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;}});
+  const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;},onPendingReturnPrepared:value=>{prepared=value;}});
   return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
 }
 
@@ -2579,7 +2606,10 @@ for (const [name, mutate] of [
   }],
 ]) test(`actual Main pending reply rejects changed ${name} without writes`,async t=>{
   const x=await pendingCommentMainFixture(t,{tamper:mutate});
-  assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
+  if(['nonpending font color','pending revision provenance'].includes(name)) {
+    assert.equal(x.activated.ok,true);assert.equal(x.activated.activated,false);
+    assert.deepEqual(x.activated.pendingProductPath,{ok:false,status:'blocked',code:'MIXED_RETURN_SOURCE_CHANGED',writerOutcome:'NOT_CONFIRMED'});
+  } else assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
   assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);
 });
 
@@ -2737,4 +2767,189 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
   } finally {
     release(); await Promise.allSettled(operations); manager.writeFileAtomic = original;
   }
+});
+
+// Three durable scene entities: two edited owners and one untouched control.
+for(const foreignReply of [false,true])test('novel book actual Main mixed return prepares and atomically applies two scene ledgers and one reply graph'+(foreignReply?' with foreign Beta reply and reverse Undo order':''),async t=>{
+ const x=await pendingCommentMainFixture(t,{tamper:(parts,{projection})=>{
+  if(foreignReply){
+   const thread=projection.threads.find(t=>t.threadId==='protected-sibling'),root=thread.messages[0];
+   thread.messages.push({canonicalCommentId:'foreign-beta-reply',commentId:'910',kind:'reply',body:'Protected Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'});
+   for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+   parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="910"/>`)
+    .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="910"/><w:r><w:commentReference w:id="910"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
+  }
+  // Word's inactive implicit default must reach the complete book proof; the
+  // older comment-only lane intentionally cannot admit this mixed document.
+  assert.equal(parts['word/settings.xml'].includes('<w:defaultTabStop'),false);
+  parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:compat>','<w:defaultTabStop w:val="708"/><w:compat>');
+  let index=0; const ps=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)];
+  assert.ok(ps.length>2); const targets=new Set([0,ps.length-1]);
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
+   const n=index++;
+   if(n===0)p=p.replace(/<w:r>(<w:rPr>[\s\S]*?<\/w:rPr>)?(<w:t\b[^>]*>[\s\S]*?<\/w:t>)<\/w:r>/u,(_all,properties,text)=>{
+     const before=properties||'<w:rPr/>';const inside=properties?properties.slice(7,-8):'';
+     return `<w:r><w:rPr>${inside}<w:b/><w:rPrChange w:id="940" w:author="Book editor" w:date="2026-10-05T12:00:00Z">${before}</w:rPrChange></w:rPr>${text}</w:r>`;
+   });
+   return targets.has(n)?p.replace('</w:p>',`<w:ins w:id="${950+n}" w:author="Book editor" w:date="2026-10-05T12:00:00Z"><w:r><w:rPr><w:i/><w:rPrChange w:id="${1050+n}" w:author="Independent formatter" w:date="2026-10-05T12:01:00Z"><w:rPr/></w:rPrChange></w:rPr><w:t xml:space="preserve"> BOOK${n}</w:t></w:r></w:ins></w:p>`):p;
+  });
+ }});
+ assert.deepEqual(x.f.capture(),x.before,'preview is read-only');
+ assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));
+ assert.ok(x.prepared);const sibling=read(x.paths[1]);
+ const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'book-return.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
+ const cancel=await x.f.probe.reviewLocalFile({requestId:'book-cancel'},options);
+ assert.equal(cancel.pendingProductPath?.status,'cancelled',JSON.stringify(cancel));assert.deepEqual(x.f.capture(),x.before);
+ const dialog=x.f.warnings.at(-1);assert.match(dialog.message,/всем перечисленным сценам/u);
+ for(const scene of ['01_Alpha.txt','03_Gamma.txt'])assert.ok(dialog.detail.includes(scene));
+ assert.match(dialog.detail,/One new Word reply/u);assert.equal(dialog.cancelId,0);assert.equal(dialog.defaultId,0);
+ x.f.chooseMessageResponse(1);
+ const applied=await x.f.probe.reviewLocalFile({requestId:'book-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));
+ assert.equal(read(x.paths[1]),sibling);
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ for(const i of [0,2]){
+  const doc=envelope.parseObservablePayload(read(x.paths[i])).doc,ledger=pending.readLedger(doc);assert.match(pending.projection(doc).current,/ BOOK\d+/u);assert.equal(ledger.schemaVersion,5);
+  const child=ledger.revisions.find(r=>r.parentRevisionId);assert.equal(child.author,'Independent formatter');assert.equal(ledger.revisions.find(r=>r.id===child.parentRevisionId).operation,'insert');
+ }
+ const graph=JSON.parse(read(x.commentPath));assert.equal(graph.threads.find(t=>t.threadId==='pending-inside').messages.at(-1).body,'One new Word reply');
+ if(foreignReply){assert.equal(graph.threads.find(t=>t.threadId==='protected-sibling').messages.at(-1).body,'Protected Beta reply retained');
+  assert.equal(graph.threads.reduce((n,t)=>n+t.messages.length,0),6);}
+ const appliedScenes=x.paths.map(read),afterApply=x.f.capture();
+ const replay=await x.f.probe.reviewActivate({requestId:'book-replay',bufferSource:x.bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(replay.error?.reason,'RTK_RETURN_INTAKE_STALE_FULL_MANUSCRIPT_SCENE',JSON.stringify(replay));assert.deepEqual(x.f.capture(),afterApply);
+ const alphaDoc=envelope.parseObservablePayload(appliedScenes[0]).doc;
+ assert.ok(pending.readLedger(alphaDoc).revisions.some(r=>r.operation==='format'));
+ assert.ok(pending.paragraphs(pending.normalizeNode(alphaDoc))[0].content[0].marks.some(m=>m.type==='bold'));
+ const reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);
+ const originalMessages=graph.threads.map(thread=>({threadId:thread.threadId,messages:thread.messages}));
+ for(const [i,action] of (foreignReply?[[2,'undo'],[0,'undo'],[2,'redo'],[0,'redo']]:[[0,'undo'],[2,'undo'],[0,'redo'],[2,'redo']])) {
+   const before=x.paths.map(read),file=x.paths[i],tree=await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(tree.root,i===0?'Alpha':'Gamma');
+   mountRenderer(reopened,()=>read(file),0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}));reopened.probe.state({filePath:file,projectName:'Роман'});
+   const context=await reopened.probe.pendingContext(),result=await reopened.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});
+   assert.equal(result.ok,true,JSON.stringify(result));for(let j=0;j<3;j++)if(j!==i)assert.equal(read(x.paths[j]),before[j]);
+   assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(thread=>({threadId:thread.threadId,messages:thread.messages})),originalMessages);
+   if(action==='redo')assert.equal(read(file),appliedScenes[i]);
+ }
+ const built=await reopened.probe.reviewBuild(await reopened.probe.fullSource());assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ if(!foreignReply){
+  const secondExport=path.join(x.f.temp,'second-book.review.docx');reopened.chooseSavePath(secondExport);
+  assert.equal((await reopened.probe.exportFullReview({requestId:'second-book-export'})).ok,true);
+  const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fs.readFileSync(secondExport)}).parts;
+  const count=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].length;let index=0;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
+   const n=index++;if(n!==0&&n!==count-1)return p;
+   if(n===count-1){const property='<w:rPr><w:lang w:val="ru-RU"/><w:rPrChange w:id="8000" w:author="Second formatter" w:date="2026-10-05T12:02:00Z"><w:rPr/></w:rPrChange></w:rPr>';
+    p=p.includes('</w:pPr>')?p.replace('</w:pPr>',property+'</w:pPr>'):p.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr>'+property+'</w:pPr>');}
+   return p.replace('</w:p>',`<w:ins w:id="${8100+n}" w:author="Second editor" w:date="2026-10-05T12:02:00Z"><w:r><w:t xml:space="preserve"> ROUND2${n}</w:t></w:r></w:ins></w:p>`);
+  });
+  const secondBytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),beforeRound2=x.paths.map(read),oldGraph=JSON.parse(read(x.commentPath));
+  const protectedStatusParts={...parts};let changedStatus=false;
+  protectedStatusParts['word/commentsExtended.xml']=protectedStatusParts['word/commentsExtended.xml'].replace(/<w15:commentEx\b[^>]*\/>/u,tag=>{changedStatus=true;return tag.includes('w15:done=')?tag.replace(/w15:done="[^"]*"/u,'w15:done="1"'):tag.replace('/>',' w15:done="1"/>');});
+  assert.equal(changedStatus,true);const protectedStatusBytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(protectedStatusParts).map(([name,data])=>({name,data}))),beforeProtectedStatus=x.f.capture();
+  const statusRefusal=await reopened.probe.reviewActivate({requestId:'second-book-protected-status',bufferSource:protectedStatusBytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.match(JSON.stringify(statusRefusal),/COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT/u);assert.deepEqual(x.f.capture(),beforeProtectedStatus);
+  const secondOptions={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:secondExport,size:secondBytes.length}),readLocalFileBytes:async()=>secondBytes};
+  reopened.chooseMessageResponse(1);const second=await reopened.probe.reviewLocalFile({requestId:'second-book-apply'},secondOptions);
+  assert.equal(second.pendingProductPath?.status,'applied',JSON.stringify(second));assert.equal(read(x.paths[1]),beforeRound2[1]);
+  const afterRound2=x.paths.map(read),newGraph=JSON.parse(read(x.commentPath));
+  assert.deepEqual(newGraph.threads.map(t=>t.messages),oldGraph.threads.map(t=>t.messages));assert.deepEqual(newGraph.threads.find(t=>t.threadId==='protected-sibling'),oldGraph.threads.find(t=>t.threadId==='protected-sibling'));
+  for(const oldThread of oldGraph.threads)assert.deepEqual((newGraph.threads.find(t=>t.threadId===oldThread.threadId).anchorEditHistory||[]).slice(0,oldThread.anchorEditHistory?.length||0),oldThread.anchorEditHistory||[]);
+  for(const [i,action]of [[2,'undo'],[2,'undo'],[2,'redo'],[2,'redo'],[0,'undo'],[0,'redo']]){
+   const file=x.paths[i],before=x.paths.map(read),tree=await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(tree.root,i===0?'Alpha':'Gamma');
+   mountRenderer(reopened,()=>read(file),0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}));reopened.probe.state({filePath:file,projectName:'Роман'});
+   const context=await reopened.probe.pendingContext(),result=await reopened.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});assert.equal(result.ok,true,JSON.stringify(result));
+   for(let j=0;j<3;j++)if(j!==i)assert.equal(read(x.paths[j]),before[j]);assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(t=>t.messages),newGraph.threads.map(t=>t.messages));
+  }
+  assert.deepEqual(x.paths.map(read),afterRound2);
+ }
+});
+for(const boundary of ['unsupported default','dirty','stale sibling'])test('actual Main authenticated book route refuses '+boundary+' without falling into a legacy writer',async t=>{
+ const x=await pendingCommentMainFixture(t,{tamper:(parts,{f})=>{
+  parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:compat>',`<w:defaultTabStop w:val="${boundary==='unsupported default'?900:708}"/><w:compat>`);
+  if(boundary==='dirty')f.probe.state({dirty:true});
+  if(boundary==='stale sibling')fs.writeFileSync(f.beta,read(f.beta)+'FOREIGN');
+ }});
+ const result=x.activated;
+ assert.equal(!!x.prepared,false,JSON.stringify(result));
+ assert.ok(result.ok===false||result.pendingProductPath?.ok===false,JSON.stringify(result));
+ assert.notEqual(result.formattingProductPath?.prepared,true);assert.notEqual(result.nonOverlapTrackedReplacementProductPath?.prepared,true);
+ assert.deepEqual(x.f.capture(),x.before,'no actual scene, comment graph or manifest writer after typed refusal');
+ if(boundary==='unsupported default')assert.match(JSON.stringify(result),/PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED/u);
+});
+
+for(const boundary of ['dirty','generation','file','sibling'])test('actual Main prepared mixed book refuses changed '+boundary+' before any write',async t=>{
+ const x=await pendingCommentMainFixture(t,{tamper:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace('</w:p>',
+   '<w:ins w:id="940" w:author="Book editor" w:date="2026-10-05T12:00:00Z"><w:r><w:t> NEW_BOOK</w:t></w:r></w:ins></w:p>');
+ }});
+ assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));
+ if(boundary==='dirty')x.f.probe.state({dirty:true});
+ if(boundary==='generation')x.f.probe.state({generation:1});
+ if(boundary==='file')x.f.probe.state({filePath:x.paths[0]});
+ if(boundary==='sibling')fs.appendFileSync(x.paths[1],'FOREIGN_EDIT');
+ const before=x.f.capture(),kernel=x.f.probe.observeKernelResults();
+ try{await assert.rejects(x.prepared.apply(),boundary==='sibling'?/E_COMMAND_FAILED/:/WORD_BOOK_RETURN_CONTEXT_STALE/);
+  if(boundary==='sibling')assert.deepEqual(kernel.failures,['WORD_BOOK_RETURN_SOURCE_STALE']);
+ }finally{kernel.restore();}
+ assert.deepEqual(x.f.capture(),before);
+});
+
+test('actual Main mixed book loses its real project lease at transaction boundary and retains foreign owner plus all project bytes',async t=>{
+ const x=await pendingCommentMainFixture(t,{tamper:parts=>{
+  parts['word/document.xml']=parts['word/document.xml'].replace('</w:p>',
+   '<w:ins w:id="940" w:author="Book editor" w:date="2026-10-05T12:00:00Z"><w:r><w:t> NEW_BOOK</w:t></w:r></w:ins></w:p>');
+ }});assert.ok(x.prepared);const before=x.f.capture();let foreignFile,foreignBytes,revalidations=0;
+ x.f.probe.beforeNextBookTransaction(async request=>{
+  assert.ok(request.treeCohort);assert.equal(typeof request.revalidate,'function');
+  const base=path.join(x.f.temp,'userData','stage10-integrity-anchors'),owners=[];
+  const walk=p=>{for(const name of fs.readdirSync(p)){const file=path.join(p,name),stat=fs.lstatSync(file);
+   if(stat.isDirectory()&&!stat.isSymbolicLink())walk(file);else if(name==='owner.v3.json')owners.push(file);}};
+  walk(base);const matches=owners.filter(file=>JSON.parse(read(file)).projectId===x.f.query.projectId);assert.equal(matches.length,1);
+  foreignFile=matches[0];const owner=JSON.parse(read(foreignFile));owner.ownerToken=crypto.randomUUID();owner.ownerTokenDigest=sha(owner.ownerToken);
+  foreignBytes=JSON.stringify(owner);fs.writeFileSync(foreignFile,foreignBytes);
+  const original=request.revalidate;request.revalidate=async()=>{revalidations++;return original();};
+ });
+ await assert.rejects(x.prepared.apply(),/E_PROJECT_LEASE_OWNERSHIP_LOST/);
+ assert.ok(revalidations>0,'actual production lease assertion executed at prewrite revalidation');
+ assert.deepEqual(x.f.capture(),before);assert.equal(read(foreignFile),foreignBytes);
+});
+
+for(const area of ['note','story'])test(area==='note'?'actual Main pending full reply preserves protected note through its original comment-only route'
+ :'actual Main pending full reply refuses preexisting unsupported protected story before any write',async t=>{
+ const x=await pendingCommentMainFixture(t,{beforeExport:async({f,paths,sceneIds})=>{
+  if(area==='note'){
+   const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Protected note kept'}]}]};
+   const manuscript=notes.bindManuscriptPayload({kind:'footnote',body,sceneId:sceneIds[1],offsetUtf16:2,sceneContent:read(paths[1])});
+   const storage=await import('../../src/core/notesStorage.mjs');
+   const normalized=storage.normalizeNotesDocument({schemaVersion:1,projectId:f.query.projectId,
+    notes:[{id:'protected-beta-note',scope:'manuscript',body:'Protected note kept',manuscript}]},
+    {projectId:f.query.projectId,now:()=> '2026-10-05T12:00:00Z'});
+   fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify(normalized.value));
+  }else{
+   const sections=require('../../src/core/word-sections-v1.cjs'),stories=require('../../src/core/word-stories-v1.cjs');
+   let doc=envelope.parseObservablePayload(read(paths[1])).doc;
+   doc=sections.bind(doc,{schemaVersion:1,boundaries:[],final:{type:'nextPage'}});
+   doc=stories.bind(doc,{schemaVersion:1,evenAndOddHeaders:false,stories:[{id:'protected_beta_header',role:'header',body:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Protected header kept'}]}]}}],
+    sections:[{titlePage:false,header:{default:'protected_beta_header'},footer:{}}]});
+   fs.writeFileSync(paths[1],envelope.composeObservablePayload({doc}));
+  }
+ }});
+ const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.bytes}).parts;
+ if(area==='note'){assert.ok(x.source.documentNotes.sourceBindings.length>0);assert.ok(parts['word/footnotes.xml'].includes('Protected note kept'));}
+ else{assert.ok(x.source.documentStories);assert.ok(Object.entries(parts).some(([name,value])=>/^word\/header/u.test(name)&&value.includes('Protected header kept')));}
+ if(area==='story'){
+  // This composition is also refused by independent exact0612 Main. The
+  // positive original-plan requirement remains OPEN; refusal is only no-loss.
+  assert.equal(x.activated.ok,false);assert.equal(x.activated.error.reason,'PENDING_REVISIONS_CONTENT_UNSUPPORTED');
+  assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);return;
+ }
+ assert.equal(x.activated.commentProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+ const scenes=x.paths.map(read),manifest=read(x.f.manifestPath),notesBefore=area==='note'?read(path.join(x.f.root,'notes.craftsman.json')):null;
+ const applied=await x.prepared.apply();assert.equal(applied.status,'applied',JSON.stringify(applied));
+ assert.deepEqual(x.paths.map(read),scenes);assert.equal(read(x.f.manifestPath),manifest);
+ if(area==='note')assert.equal(read(path.join(x.f.root,'notes.craftsman.json')),notesBefore);
+ const graph=JSON.parse(read(x.commentPath));assert.equal(graph.threads.find(t=>t.threadId==='pending-inside').messages.at(-1).body,'One new Word reply');
+ let replay;const before=x.f.capture();const reopened=await x.f.probe.reviewActivate({requestId:'protected-replay-'+area,bufferSource:x.bytes.toString('base64')},
+  {allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{replay=value;}});
+ assert.equal(reopened.ok,true,JSON.stringify(reopened));assert.ok(replay);assert.equal((await replay.apply()).status,'replayed');assert.deepEqual(x.f.capture(),before);
 });

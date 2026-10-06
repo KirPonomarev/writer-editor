@@ -16,6 +16,32 @@ const sceneId = 'roman/scene.txt', projectId = 'project-test';
 const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', nativeId: '51', operation,
   author: 'Reviewer', date: '', dateUtc: '', paragraphIndex: 0, from, to, state: 'pending', groupId: null });
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+test('Return note points preserve semantic ownership across pending and resolved export bases, not raw union offsets',()=>{
+  for(const state of ['pending','accepted','rejected']) {
+    const prior=pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('Axx NOTE Z')),[{...revision(1,3,'insert'),state}])),[{noteId:'note-1',paragraphIndex:0,offsetUtf16:5}]);
+    const old=pending.readLedger(prior),basis=pending.exportNoteBasis(old),incoming=plain(basis);
+    incoming.source.content[0].content[0].text='!'+incoming.source.content[0].content[0].text;
+    incoming.revisions.forEach(r=>{r.from++;r.to++;});incoming.revisions.unshift({...revision(0,1,'insert'),id:'revision-2',nativeId:'52'});
+    const exportedPoint=pending.projectSourcePoint(old,old.noteSourcePoints[0],'export');
+    const returned=pending.bindNoteSourcePoints(pending.bindLedger({...incoming,schemaVersion:2,roundUndo:[],roundRedo:[],returnReceipts:[]}),[{noteId:'note-1',paragraphIndex:0,offsetUtf16:exportedPoint.offsetUtf16+1}]);
+    const receipt={roundId:'note-return-'+state,artifactSha256:'a'.repeat(64)},result=pending.replaceFromReturn(prior,returned,receipt);
+    assert.equal(result.changed,true);assert.deepEqual(pending.readLedger(result.doc).noteSourcePoints,pending.readLedger(returned).noteSourcePoints);
+    const undone=pending.decide(result.doc,{action:'undo'}).doc;assert.deepEqual(pending.roundFrame(pending.readLedger(undone)),pending.roundFrame(old));
+    const redone=pending.decide(undone,{action:'redo'}).doc;assert.deepEqual(redone,result.doc);
+    // Replay retains the entire current document even if a clean incoming
+    // preview no longer carries source-point bindings after local decisions.
+    assert.deepEqual(pending.replaceFromReturn(result.doc,pending.bindLedger(basis),receipt),{changed:false,replay:true,doc:result.doc});
+    for(const kind of ['missing','foreign','extra','moved','duplicate']) {
+      const forged=plain(pending.readLedger(returned));
+      if(kind==='missing'){delete forged.noteSourcePoints;forged.schemaVersion=2;}
+      if(kind==='foreign')forged.noteSourcePoints[0].noteId='other-note';
+      if(kind==='extra')forged.noteSourcePoints.push({...forged.noteSourcePoints[0],noteId:'other-note'});
+      if(kind==='moved')forged.noteSourcePoints[0].offsetUtf16++;
+      if(kind==='duplicate')forged.noteSourcePoints.push(plain(forged.noteSourcePoints[0]));
+      assert.throws(()=>pending.replaceFromReturn(prior,pending.bindLedger(forged),{roundId:'forged-note',artifactSha256:'b'.repeat(64)}),/PENDING_NOTE_(?:REVISION_UNSUPPORTED|POINTS_INVALID)/u,kind+' '+state);
+    }
+  }
+});
 function notesFor(doc, offsets) {
   const raw = envelope.composeObservablePayload({ doc });
   return { schemaVersion: 1, projectId, notes: offsets.map((offsetUtf16, i) => ({ id: 'note-' + i, title: '', scope: 'manuscript', body: 'Body 😀',

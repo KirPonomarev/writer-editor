@@ -1563,7 +1563,7 @@ async function treeDirectoryState(target, manifestPath, fsAdapter) {
 // Only the new structural operation owns annotation rebinding. Historical
 // move/copy packets must regenerate byte-for-byte with their original receipts.
 function hasStructuralAnnotationCohort(plan) {
-  return Array.isArray(plan.scenePartitions) || Boolean(plan.input?.recoveredCopy?.sourceNodeId)
+  return plan.kind === 'word-mixed-return' || Array.isArray(plan.scenePartitions) || Boolean(plan.input?.recoveredCopy?.sourceNodeId)
     || plan.kind === 'undo' && Boolean(plan.input?.retainedPacket?.plan?.input?.recoveredCopy?.sourceNodeId);
 }
 function treeManagedAnnotationEntries(plan, manifestPath) {
@@ -1801,7 +1801,7 @@ async function readVerifiedProjectTreeMutation({ manifestPath, projectId, fsAdap
   treeNeed(packet.projectId === parsed.projectId && packet.transactionId === receipt.transactionId
     && model.projectTreeCohortDigest(packet) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
     && packet.plan.kind === receipt.kind, 'E_TREE_COHORT_RECEIPT_BINDING');
-  let canUndo = receipt.kind !== 'undo', unavailableReason = canUndo ? null : 'TREE_UNDO_CONSUMED';
+  let canUndo = !['undo','word-mixed-return'].includes(receipt.kind), unavailableReason = canUndo ? null : receipt.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : 'TREE_UNDO_CONSUMED';
   if (canUndo) try { await inspectTreePacket(packet, manifestPath, fsAdapter, 'after'); }
   catch (error) { canUndo = false; unavailableReason = error.code || error.message; }
   return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason }, receipt, retainedPacket: packet };
@@ -1847,7 +1847,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   await inspectTreePacket(packet, manifestPath, fsAdapter, 'after');
   await removeDurably(journalPathFor(manifestPath), fsAdapter);
   return { success: true, changed: true, code: 'TREE_COHORT_COMMITTED', transactionId, treeRevision: receipt.treeRevision,
-    lastMutation: { id: transactionId, kind: plan.kind, canUndo: plan.kind !== 'undo', unavailableReason: plan.kind === 'undo' ? 'TREE_UNDO_CONSUMED' : null },
+    lastMutation: { id: transactionId, kind: plan.kind, canUndo: !['undo','word-mixed-return'].includes(plan.kind), unavailableReason: plan.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : plan.kind === 'undo' ? 'TREE_UNDO_CONSUMED' : null },
     affectedScenes: plan.affectedScenes, pathBindings: plan.pathBindings, identityMap: plan.identityMap, revision,
     manifestDigest: sha256hex(plan.manifestText), recovery: { recovered: false, outcome: 'NO_JOURNAL' } };
 }

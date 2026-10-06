@@ -1457,6 +1457,7 @@ for (const superseded of [false, true]) test(`actual activation installs its pri
     sanitizeDocxReviewReturnIntakeForResult: () => ({ authenticated: true }),
   });
   loadNamedFunctions(main, ['docxReviewPreviewSessionDetailString', 'buildDocxReviewPreviewSessionImportPayload',
+    'prepareAuthenticatedBookPendingReturn',
     'buildCleanLinkLabelPreviewPacket', 'summarizeDocxReviewPreviewSessionCandidate',
     'docxReviewReturnIntakeProductBudgets', 'assertDocxReviewPreviewSessionActivationResult', 'handleDocxReviewPreviewSessionActivationCommandSurface'], c);
   const budgets = main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object\.freeze\(\{[^]*?\}\);/);
