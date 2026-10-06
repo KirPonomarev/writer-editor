@@ -158,11 +158,14 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
 // An authenticated caller supplies local canonical identities. Word contributes
 // only validated source occurrences and bodies, never note IDs or write paths.
 function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exportMap,
-  beforeDoc, returnedDoc, returnedNotes, unionReferences }) {
+  beforeDoc, returnedDoc, returnedNotes, unionReferences, closedBookEmission }) {
   const pending = require('./word-pending-text-revisions-v1.cjs');
   model.validateManuscriptDocument(document, projectId);
   need(baseline?.projectId === projectId && baseline.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
     && baseline.stateDigest === notesStateDigest(document), 'PENDING_NOTE_BASELINE_CONFLICT');
+  if (closedBookEmission !== undefined) need(exportMap?.scenes?.length > 1
+    && stable(baseline.breakEmission) === stable(closedBookEmission)
+    && requireBookNoteEmission(closedBookEmission), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
   const active = document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === sceneId);
   need(active.length > 0 && active.length <= 256 && baseline.sourceBindings?.length === active.length
     && returnedNotes?.length === active.length && unionReferences?.length === active.length, 'PENDING_NOTE_GRAPH_MISMATCH');
@@ -179,7 +182,13 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
     const matches = returnedNotes.map((n, i) => ({ n, i })).filter(({ n }) => n.transportIdentity === binding.transportIdentity);
     need(binding.transportIdentity && matches.length === 1 && !used.has(matches[0].i), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { n, i } = matches[0]; used.add(i);
-    need(n.kind === binding.kind && equivalentBody(note.manuscript.body, n.body, exportMap.exportTypography), 'PENDING_NOTE_BODY_CHANGED');
+    if (closedBookEmission !== undefined) {
+      need(stable(binding.richBody) === stable(model.validateNoteBody(note.manuscript.body).body), 'PENDING_NOTE_BASELINE_MISMATCH');
+      need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
+    }
+    need(n.kind === binding.kind && (closedBookEmission !== undefined
+      ? equivalentCompleteBody(note.manuscript.body, n.body, exportMap.exportTypography, closedBookEmission)
+      : equivalentBody(note.manuscript.body, n.body, exportMap.exportTypography)), 'PENDING_NOTE_BODY_CHANGED');
     const ref = note.manuscript.reference;
     need(ref.sourceTextSha256 === model.sha(currentText), 'PENDING_NOTE_REFERENCE_STALE');
     let beforePoint = old?.noteSourcePoints?.find(p => p.noteId === note.id);
@@ -207,11 +216,21 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
   return { beforeDoc: pending.bindNoteSourcePoints(beforeDoc, beforePoints),
     returnedDoc: pending.bindNoteSourcePoints(returnedDoc, returnedPoints) };
 }
-// Complete typed body law for the composed book lane. The pinned note emitter
-// supplies 12pt runs and the reader supplies left alignment; all other typed
-// properties, including paragraph spacing/language and every break, must match.
+// Complete typed body law for the composed book lane. Legacy emission owns
+// 12pt; v2 owns the exact finite note-style profile below. Source-authored
+// properties, paragraph meaning and every effective break must still match.
 // This deliberately does not broaden the standalone note-return equivalence.
-function completeBodyMeaning(body, defaults) {
+const BOOK_NOTE_EMISSION_V2 = { schemaVersion: 2, fontSize: '12pt', fontFamily: 'Times New Roman',
+  wordLanguage: { val: 'en-US', eastAsia: 'en-US', bidi: 'en-US' },
+  paragraphSpacing: { before: 0, after: 0, line: 240, lineRule: 'auto' } };
+function requireBookNoteEmission(emission) {
+  need(stable(emission) === stable({ schemaVersion: 1, fontSize: '12pt' })
+    || stable(emission) === stable(BOOK_NOTE_EMISSION_V2), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  return emission.schemaVersion === 2;
+}
+function completeBodyMeaning(body, defaults, emission, source = false) {
+  const pinned = emission?.schemaVersion === 2;
+  if (emission) requireBookNoteEmission(emission);
   const rows = model.validateNoteBody(body).paragraphs;
   return rows.map(({ paragraph, list, table }) => {
     const content = [];
@@ -224,6 +243,11 @@ function completeBodyMeaning(body, defaults) {
           if (!style) { style = { type: 'textStyle', attrs: {} }; marks.push(style); }
           style.attrs = { fontSize: defaults.fontSize, ...style.attrs };
         }
+        if (pinned && source) {
+          if (!style) { style = { type: 'textStyle', attrs: {} }; marks.push(style); }
+          style.attrs = { fontFamily: emission.fontFamily, fontSize: emission.fontSize, ...style.attrs,
+            wordLanguage: { ...emission.wordLanguage, ...style.attrs.wordLanguage } };
+        }
         marks.sort((a, b) => a.type.localeCompare(b.type));
         value.marks = marks;
         const previous = content.at(-1);
@@ -231,20 +255,26 @@ function completeBodyMeaning(body, defaults) {
       }
       content.push(value);
     }
-    return { paragraph: { type: paragraph.type,
-      attrs: { textAlign: 'left', ...paragraph.attrs }, content }, list, ...(table ? { table } : {}) };
+    const attrs = { textAlign: 'left', ...paragraph.attrs };
+    if (pinned) {
+      // The reader already resolves inherited values. Only absent effective
+      // before/after spacing denotes zero; inherited nonzero stays observable.
+      attrs.wordParagraphSpacing = { ...(source ? emission.paragraphSpacing : { before: 0, after: 0 }), ...attrs.wordParagraphSpacing };
+      if (source) attrs.wordParagraphMarkLanguage = { ...emission.wordLanguage, ...attrs.wordParagraphMarkLanguage };
+    }
+    return { paragraph: { type: paragraph.type, attrs, content }, list, ...(table ? { table } : {}) };
   });
 }
-function equivalentCompleteBody(expected, actual, defaults) {
-  return stable(completeBodyMeaning(expected, defaults)) === stable(completeBodyMeaning(actual, defaults));
+function equivalentCompleteBody(expected, actual, defaults, emission) {
+  return stable(completeBodyMeaning(expected, defaults, emission, true)) === stable(completeBodyMeaning(actual, defaults, emission));
 }
 
 // Independently reconstruct the closed LOCAL note emission, never the returned
-// parser's defaults. A type-only hardBreak emits no run properties; only the
-// authenticated 12pt document default applies. Paragraph-mark language does
-// not propagate into note runs in this emitter.
+// parser's defaults. A type-only hardBreak inherits only the local declared
+// legacy 12pt or v2 note style. Paragraph-mark language does not propagate
+// into note runs in this emitter.
 function localBookNoteBreakProjection(body, emission) {
-  need(stable(emission)===stable({schemaVersion:1,fontSize:'12pt'}),'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  const pinned = requireBookNoteEmission(emission);
   const rows=model.validateNoteBody(body).paragraphs,breaks=[];
   rows.forEach(({paragraph},paragraphIndex)=>{
     let offset=0;
@@ -254,8 +284,8 @@ function localBookNoteBreakProjection(body, emission) {
       const marks=node.type==='text'?(node.marks||[]):[],style=marks.find(mark=>mark.type==='textStyle')?.attrs||{};
       const enabled=marks.filter(mark=>['bold','italic','underline','strike'].includes(mark.type)).map(mark=>mark.type).sort();
       const size=style.fontSize||emission.fontSize,format={marks:enabled,boldCs:enabled.includes('bold'),italicCs:enabled.includes('italic'),forceCs:false,rtl:false,
-        fontSize:size,fontSizeCs:size,...(style.fontFamily?{fontSlots:Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(slot=>[slot,style.fontFamily]))}:{}),
-        ...(style.color?{color:style.color.toLowerCase()}:{}),...(style.wordLanguage?{wordLanguage:clone(style.wordLanguage)}:{}),
+        fontSize:size,fontSizeCs:size,...(style.fontFamily||pinned?{fontSlots:Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(slot=>[slot,style.fontFamily||emission.fontFamily]))}:{}),
+        ...(style.color?{color:style.color.toLowerCase()}:{}),...(pinned?{wordLanguage:{...emission.wordLanguage,...style.wordLanguage}}:style.wordLanguage?{wordLanguage:clone(style.wordLanguage)}:{}),
         ...(marks.some(mark=>mark.type==='highlight')?{highlight:marks.find(mark=>mark.type==='highlight').attrs.color.toLowerCase()}:{}),
         ...(marks.some(mark=>mark.type==='link')?{href:marks.find(mark=>mark.type==='link').attrs.href}: {})};
       for(let at=text.indexOf('\n');at!==-1;at=text.indexOf('\n',at+1))breaks.push({paragraphIndex,offsetUtf16:offset+at,kind:'line',format:clone(format)});
@@ -310,7 +340,7 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
     need(matches.length === 1 && !used.has(matches[0].index), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { note: returned, index } = matches[0]; used.add(index);
     need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(note.manuscript.body,baseline.breakEmission)), 'PENDING_NOTE_BREAK_CHANGED');
-    need(returned.kind === binding.kind && equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography), 'PENDING_NOTE_BODY_CHANGED');
+    need(returned.kind === binding.kind && equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography, baseline.breakEmission), 'PENDING_NOTE_BODY_CHANGED');
     need(blocks[returned.paragraphIndex]?.sceneId === binding.sceneId
       && unionReferences[index]?.kind === returned.kind
       && unionReferences[index]?.paragraphIndex === returned.paragraphIndex, 'PENDING_NOTE_UNION_BINDING');
@@ -323,6 +353,7 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
     const local = note => ({ ...note, paragraphIndex: blocks[note.paragraphIndex].local });
     const bound = bindUnchangedPendingNotes({ document, projectId, sceneId: scene.sceneId,
       baseline: { ...baseline, sourceBindings: owned }, exportMap, beforeDoc: scene.document, returnedDoc: scene.returnedDocument,
+      ...(baseline.breakEmission?.schemaVersion === 2 ? { closedBookEmission: baseline.breakEmission } : {}),
       returnedNotes: indices.map(item => local(item.note)), unionReferences: indices.map(item => local(unionReferences[item.index])) });
     return { sceneId: scene.sceneId, ...bound };
   });

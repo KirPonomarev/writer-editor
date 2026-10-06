@@ -1308,7 +1308,8 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
   const initialCommentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
   const {commentExport,pendingCommentBindings} = bindPendingCommentExport({commentExport:initialCommentExport,scenes,blocks,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
-  const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true, closedBookBreakEmission: scenes.length > 1 });
+  const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true,
+    closedBookBreakEmission: scenes.length > 1, pinnedBookNoteProfile: scenes.length > 1 && pendingCommentBindings.length > 0 });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
   const sceneText = scenes.map((scene) => {

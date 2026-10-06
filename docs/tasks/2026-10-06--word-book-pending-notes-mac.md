@@ -357,6 +357,74 @@ unresolved difference and must not be normalized away. A subsequent coherent
 amendment must bind any additional note emission to an explicitly owned local
 profile; returned defaults cannot define the expected canonical meaning.
 
+### SCOPE_AMENDMENT_04 — locally pinned note emission, same atomic contour
+
+AMENDMENT04_CHECKPOINT_SHA: 0bcf70b97a179453a03cedb07ebee09e2da586eb
+AMENDMENT04_PREFLIGHT: passed on clean exact checkpoint with26 explicit paths
+AMENDMENT04_AUTHORITY: existing owner autonomous full novel implementation;
+same atomic contour, delivery chain, scope budget, ports and rollback.
+
+The six precheckpoint RTK failures are retained:3606of3612 passed, zero skips.
+Their complete six files pass66of66 on the actual clean0bcf70 checkpoint.
+Dirty frozen scopes and committed-candidate hash selection explain those
+failures; no test, oracle, allowlist or gate was disabled.
+
+Fresh real Word16.112 style-owned control263c9ba8105bef677732d116363a7114e67b7a0af5d49eb2127d0be8b2b4a02f
+saved asce957198e0ccc3acdd8543a91be1691baa50be34b9fbd18b7282c4efbc640b49
+preserves all four complete typed note meanings, except Word omits before0.
+The earlier per-run-only control is insufficient: Word removes break rPr and
+the break inherits its paragraph style. This is diagnostic evidence, not Apply.
+
+Version2 selection is local and restricted to multi-scene exports with existing
+pending-comment bindings, the current complete atomic book proof. Other exports
+keep their existing emission; a note-only delta cannot acquire transport defaults
+from this unrelated planner or silently persist them into canonical note bodies.
+For these newly emitted closed book notes, version2 explicitly owns only a finite
+note-style transport profile: Times New Roman12pt, val/eastAsia/bidi en-US,
+left alignment, spacing before0 after0 line240 auto, and unmarked text.
+The font/size/language fallback matches existing local comment transport.
+This is a declared local export choice, not an inferred canonical source font
+or language. It supersedes amendment01's absence of additional owned defaults
+only for this version2 note profile. Canonical saved bodies remain unchanged.
+Source-authored run/paragraph properties override the emitted note style;
+paragraph-mark language does not propagate into text or hardBreak runs.
+Global defaults, no-notes output and standalone note emission remain unchanged.
+
+Core independently reconstructs this exact closed profile from authenticated
+local source and rejects missing/altered profile bytes. Complete note bodies
+and every effective break retain strict comparison; returned values never
+define expected defaults. Effective omitted zero spacing may compare equal
+to zero; nonzero inherited spacing must remain visible and refuse. Keep the
+legacy version1 baseline and its complete font/language/break corruption
+negatives. The old artifact's authored ru-RU to en-US change still refuses.
+
+No parser style catalog, generic defaults engine, Core-to-export dependency,
+storage schema/writer, UI, dependency, proofing disable or global Word setting
+is introduced. Required proof includes source-bound emitted profile, both note
+kinds, actual ZIP default/style/run corruption, full rich-field preservation,
+actual Main Cancel/Apply/reopen, standalone/no-notes regressions and genuine
+SOURCE/PACKAGED changed exchanges. Original novel acceptance remains OPEN.
+
+### Amendment04 controlled implementation checkpoint
+
+The first note suite is retained as20of23 with three failures: the scene-local
+old lossy comparator still rejected the new profile, and two historical v1
+oracles expected the old emission. The scene-local v2 path now independently
+rechecks the exact local profile, complete source body and every break before
+using the complete comparator. The standalone path stays unchanged. Historical
+v1 style and ZIP corruption oracles still execute with an explicit legacy fixture.
+
+Final note suite passes24of24, zero failures/cancellations/skips/todo, log SHA256
+747ef99bce62a29ca711e26bf3a7307dfaa4bb078f044fd328e7bda29c7f21e7.
+New independent ZIP mutants cover changed document defaults, zero omission,
+renamed styles, nonzero inherited spacing, every font/language slot and altered
+local profile. Original canonical bodies remain unchanged.
+Complete Main/mixed/atomic suites pass350of350, zero failures/cancellations/skips/todo,
+log SHA256cca894fa699e4ddc38c26a40ecb775a687bf85bf6ca2a1af8b33222c43eafdcb.
+Source bytes remain exact during both runs. These are controlled code proofs on
+the owned0bcf70-based candidate; native exchanges, full RTK/baseline, CI, merge
+and original novel release remain open. Fresh origin/main remains5d0c586.
+
 ## IMPLEMENTATION_STEPS
 
 Root owns contract, declaration/E0, OPS, proof and full delivery. Separate code

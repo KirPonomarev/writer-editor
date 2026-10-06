@@ -2894,7 +2894,7 @@ test('book notes actual Main admits only inactive tab emission through complete 
  assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
  const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
  const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.bytes}).parts;
- for(const properties of ['<w:b/>','<w:lang w:val="en-US"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>']) {
+ for(const properties of ['<w:b/>','<w:lang w:val="en-GB"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>']) {
   const parts={...original,'word/footnotes.xml':original['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`)};
   assert.notEqual(parts['word/footnotes.xml'],original['word/footnotes.xml']);
   const result=await x.f.probe.reviewActivate({requestId:'inactive-tab-rich-refusal',bufferSource:pack(parts).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});

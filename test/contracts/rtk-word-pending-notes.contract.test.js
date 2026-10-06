@@ -18,7 +18,7 @@ const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', native
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 // Shared owned fixture, loaded without registering this file's tests by the
 // other two contracts. Every expected point/text below is a literal oracle.
-async function composedBookFixture(bodyOverride = null) {
+async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false } = {}) {
   const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
   const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
   const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
@@ -32,8 +32,13 @@ async function composedBookFixture(bodyOverride = null) {
   const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:ids.map((id,i)=>({threadId:'thread-'+i,rootCommentId:'root-'+i,sceneId:id,status:'open',
     anchor:exactAnchor({paragraphIndex:0,startUtf16:i===0?5:i===1?0:1,selectedText:i===0?'tail':i===1?'Control':'e'},id,[i===0?'AxxB tail':i===1?'Control Beta':'new tail']),
     messages:[{commentId:'root-'+i,kind:'root',body:'Question '+i,provenance:{author:'Writer'}}]}))};
-  const packet=(docs,notesDocument,nonTextReturnState)=>makeSource({projectId,projectRoot:'/project',notesDocument,nonTextReturnState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:'/project/'+id,order:i,
-    doc:docs[i],text:envelope.deriveVisibleTextFromDocument(docs[i]),observableContent:envelope.composeObservablePayload({doc:docs[i]})}))});
+  const packet=(docs,notesDocument,nonTextReturnState)=>{
+    const value=makeSource({projectId,projectRoot:'/project',notesDocument,nonTextReturnState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:'/project/'+id,order:i,
+      doc:docs[i],text:envelope.deriveVisibleTextFromDocument(docs[i]),observableContent:envelope.composeObservablePayload({doc:docs[i]})}))});
+    // Keep the historical emitter/proof law executable; production selects v2.
+    if(legacyNoteProfile)for(const noteBaseline of [value.documentNotes,value.localAuthorityCapsule.documentNotes])noteBaseline.breakEmission={schemaVersion:1,fontSize:'12pt'};
+    return value;
+  };
   const source=packet(beforeDocs,document,state);
   const afterDocs=[pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!AxxB tail')),[{...event(3,'insert',0,1),author:'Word editor'},{...event(4,'delete',2,4),author:'Word editor'}])),
     [{noteId:'note-left',paragraphIndex:0,offsetUtf16:2},{noteId:'note-right',paragraphIndex:0,offsetUtf16:4}]),beforeDocs[1],
@@ -124,7 +129,7 @@ test('inactive 720-to-708 tab emission requires complete local book-note bodies 
   for(const kind of ['header','footer'])refuse({...input,bytes:pack({...parts,[`word/${kind}1.xml`]:`<w:${kind==='header'?'hdr':'ftr'} xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:${kind==='header'?'hdr':'ftr'}>`})});
 });
 test('book note styles resolve completely while no-notes styles and global defaults remain byte-exact',async()=>{
-  const f=await composedBookFixture(),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  const f=await composedBookFixture(null,{legacyNoteProfile:true}),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
   const styles=parts['word/styles.xml'],definitions=[...styles.matchAll(/<w:style\b[^>]*w:styleId="([^"]+)"[^>]*>[\s\S]*?<\/w:style>/gu)];
   const ids=new Set(definitions.map(match=>match[1]));assert.equal(ids.size,definitions.length);
   for(const [kind,type] of [['Text','paragraph'],['Reference','character']])for(const prefix of ['Footnote','Endnote']){
@@ -142,7 +147,7 @@ test('book note styles resolve completely while no-notes styles and global defau
 test('actual ZIP book note break formatting is retained and every altered or forged complete projection refuses',async()=>{
   const body=d({type:'paragraph',content:[{type:'text',text:'😀X'},{type:'hardBreak'},{type:'text',text:'😀X'},{type:'hardBreak'},{type:'text',text:'last'}]},
     {type:'paragraph',content:[{type:'text',text:'kept'},{type:'hardBreak'}]});
-  const f=await composedBookFixture(body),input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
+  const f=await composedBookFixture(body,{legacyNoteProfile:true}),input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
     scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
     returnedNotes:f.proof.noteContext.returnedNotes,returnedReferences:f.proof.noteContext.returnedReferences,unionReferences:f.proof.noteContext.unionReferences};
   const format={marks:[],boldCs:false,italicCs:false,forceCs:false,rtl:false,fontSize:'12pt',fontSizeCs:'12pt'};
@@ -185,6 +190,46 @@ test('actual ZIP book note break formatting is retained and every altered or for
     x=>delete x.baseline.breakEmission,x=>x.baseline.breakEmission.fontSize='14pt',x=>x.baseline.breakEmission.wordLanguage={val:'en-US'}]) {
     const bad=plain(input);mutate(bad);assert.throws(()=>delta.bindUnchangedBookPendingNotes(bad),/PENDING_NOTE_BREAK_/u);
   }
+});
+test('closed v2 note styles survive Word defaults and zero omission while source fields and every effective break remain guarded',async()=>{
+  const f=await composedBookFixture(),baseline=f.source.documentNotes,input={document:f.document,projectId,baseline,exportMap:f.proof.exportMap,
+    scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
+    returnedNotes:f.proof.noteContext.returnedNotes,returnedReferences:f.proof.noteContext.returnedReferences,unionReferences:f.proof.noteContext.unionReferences};
+  assert.deepEqual(baseline.breakEmission,{schemaVersion:2,fontSize:'12pt',fontFamily:'Times New Roman',
+    wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},paragraphSpacing:{before:0,after:0,line:240,lineRule:'auto'}});
+  assert.deepEqual(f.document.notes.map(n=>n.manuscript.body),f.afterNotes.notes.map(n=>n.manuscript.body));
+  delta.bindUnchangedBookPendingNotes(input);
+  const original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  const read=parts=>{
+    const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},
+      {cryptoPort:{sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)}});
+    assert.equal(analysis.ok,true,JSON.stringify(analysis));return f.bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true});
+  };
+  const word={...original};
+  // Independently emulate the observed Save As: defaults differ, zero values
+  // vanish, and note style identifiers change. Source-owned style fields win.
+  word['word/styles.xml']=word['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>')
+    .replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+  for(const name of ['word/styles.xml','word/footnotes.xml','word/endnotes.xml'])word[name]=word[name].replaceAll('w:before="0"','').replaceAll('FootnoteText','WordFootnote').replaceAll('EndnoteText','WordEndnote');
+  const returned=read(word);delta.bindUnchangedBookPendingNotes({...input,returnedNotes:returned});
+  assert.deepEqual(returned.map(n=>n.breakProjection),input.returnedNotes.map(n=>n.breakProjection));
+  for(const properties of ['<w:b/>','<w:color w:val="FF0000"/>','<w:rFonts w:ascii="Arial"/>','<w:rFonts w:eastAsia="Arial"/>',
+    '<w:rFonts w:cs="Arial"/>','<w:sz w:val="28"/>',...['val','eastAsia','bidi'].map(field=>`<w:lang w:${field}="en-GB"/>`)]) {
+    const bad={...word,'word/footnotes.xml':word['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`)};
+    assert.notEqual(bad['word/footnotes.xml'],word['word/footnotes.xml']);
+    assert.throws(()=>delta.bindUnchangedBookPendingNotes({...input,returnedNotes:read(bad)}),/PENDING_NOTE_BREAK_CHANGED/u,properties);
+  }
+  const inherited={...word,'word/styles.xml':word['word/styles.xml'].replace('<w:spacing w:after="160"','<w:spacing w:before="75" w:after="160"')};
+  assert.throws(()=>delta.bindUnchangedBookPendingNotes({...input,returnedNotes:read(inherited)}),/PENDING_NOTE_BODY_CHANGED/u);
+  for(const mutate of [e=>e.fontFamily='Arial',e=>e.fontSize='14pt',e=>e.wordLanguage.bidi='ar-SA',e=>e.paragraphSpacing.line=278,e=>e.schemaVersion=3,e=>e.extra=true]) {
+    const bad=plain(baseline);mutate(bad.breakEmission);
+    assert.throws(()=>delta.bindUnchangedBookPendingNotes({...input,baseline:bad}),/PENDING_NOTE_BREAK_BASELINE_REQUIRED/u);
+    assert.throws(()=>builder.buildDocxReviewPacketBuffer({...f.afterSource,documentNotes:bad}),/DOCX_NOTE_EMISSION_INVALID/u);
+  }
+  const make=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+  const ordinary=make({projectId,projectRoot:'/project',notesDocument:f.document,nonTextReturnState:{...f.state,threads:[]},scenes:f.ids.map((sceneId,i)=>({sceneId,scenePath:'/project/'+sceneId,order:i,
+    doc:f.beforeDocs[i],text:envelope.deriveVisibleTextFromDocument(f.beforeDocs[i]),observableContent:envelope.composeObservablePayload({doc:f.beforeDocs[i]})}))});
+  assert.deepEqual(ordinary.documentNotes.breakEmission,{schemaVersion:1,fontSize:'12pt'});
 });
 test('Return note points preserve semantic ownership across pending and resolved export bases, not raw union offsets',()=>{
   for(const state of ['pending','accepted','rejected']) {
