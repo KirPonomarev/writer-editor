@@ -3012,17 +3012,17 @@ export const R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "5d83299a1a8d42c6fc0282ee492333d82fa6c0e1184c05429dfb12ff4a6f72f0"
+      "sha256": "5b2f91b0b0a0719cab0b75b478f4e8a32bfa5a3ff0a818e13ee52f4e4c008954"
     },
     {
       "path": "docs/tasks/2026-10-06--word-notes-safe-confirmation-mac.md",
-      "sha256": "69e30609a4555a3d0c2ff35780ef29e9b958e31dd0af1593bfc9f553b0765791"
+      "sha256": "4e5f6f379957a272614c75b2ea8330814b273d4623e1563f5882d770d3066c47"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d7b3468d21fb94b55b14f80b74d30150870aa40e1b8e43161d2942af45767b2c"
+      "sha256": "d79ffb52209e7a7fff6a2136a782b8be75548def3b1e70d62f5ca0d5dfd57525"
     }
   ]
 });

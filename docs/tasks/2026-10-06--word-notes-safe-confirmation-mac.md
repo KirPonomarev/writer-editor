@@ -150,6 +150,12 @@ no Yalken project, Word, old profile, AX/CUA or capture is involved. The first
 driver import failed before window creation and was corrected; its log is
 retained. These observations cover choice effects only. Mandatory frozen
 whole gates and Git delivery remain pending; full novel acceptance stays open.
+First frozen RTK at e142952b1061277698ecd9b11c386d280834dd6a executed3593
+tests:3592 passed and one failed because an existing actual-Git successor oracle
+still expected the predecessor constant. Its target is corrected to this
+contour's exact successor; all corruption, mixed-byte and ancestry checks remain.
+The failure log is preserved. No failed candidate is accepted or merged; the
+corrected candidate requires whole RTK, baseline, CI and merged verification.
 
 ## STOP_CONDITION
 
