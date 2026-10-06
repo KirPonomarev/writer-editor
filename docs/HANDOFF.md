@@ -979,3 +979,27 @@ PR2088 remains DRAFT on checkpointc8e3e8be2e66f3da4f465fed4dd186dfdabc505b. Its 
 ### 2026-10-06 — novel book frozen07 native routes complete; delivery open
 
 Frozen40F legal paragraph-mark export now survives a genuine third Word save. SOURCE07:2affected owners, Cancel/Apply all3canonicalrich scenes+wholegraph independently checked,12native UndoRedo checkpoints across3rounds, same-profile controlled restart, fullreexport4900778c opened in Word. Ordinary PACKAGED07 WRITER_LOCAL_V1 without collaboration flags: ownexport→genuineWordsave8eb1fe15→Cancel/Apply,8UndoRedo checkpoints across2rounds, restart, fullreexport3fd4d9d8 opened in Word.5discussion messages retained. Existing Comments rail exposes local decisions; genericReview entry still routes to Inspector and navigator counts refresh only after restart. All owned native processes stopped. Short183/181word fixtures do not certify100k, nativeimport,5successive novel exchanges or full Mac plan. Compound paragraph-mark+structural single-event export and implicit run-language binding remain typed/open limitations. Full frozen07 mandatory gates, ordinary tree-preserving main integration, PR2088 CI/merge/merged verification NEXT; c8 RTK3515 green predates40F. Original binding0612 fixed, original fullplan denominator unchanged.
+
+## 2026-10-06 — book-note amendment07 reexport candidate
+
+SOURCE09 genuine Word16.112 changed-save completed actual public Cancel and
+Apply; independent complete Current/Original, four rich notes/references and
+full saved discussion graph/single-event input history match. SOURCE10 same
+profile restart, Alpha accept/reject and UndoRedo preserve those meanings.
+Both owned children exit normally code0. Actual SOURCE09 reexport failed: only
+two native replacement group occurrences differ; all other source fields, note
+points and both complete comment graphs match. Retain failed receipt.
+
+Clean b12426-path preflight and root task E0 precede amendment07 writer.
+Main predicts existing emitted adjacent opposite-operation grouping only in
+the independently source-owned v3 publication expectation projection. Canonical
+IDs, independent decisions, undo/redo rows and all strict comparisons stay.
+Final focused10of10 zero fail/cancel/skip/todo;24 actual ZIP mutants refuse
+without writes. Actual Core accept-to-Undo yields divergent redo states and
+actual Main read-only both-phase export passes. Original non-injected immutable
+SOURCE09 build passes both full note/comment phases with all six business
+bytes exact. Root independently checked all8hashes, complete TAP and receipts.
+Runtime688of900, behavior765of1300. Retained fixture/recovery failures remain
+failed. Fresh native both origins, public Gamma decisions, full affected and
+mandatory gates, CI and final delivery remain OPEN at this checkpoint.
+Original100k/five-genuine-exchange/three-role Mac novel denominator unchanged.

@@ -1227,8 +1227,46 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
               for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
                 ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
             });
+            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography);
+            if(scene.bodyParagraphEmission) {
+              // Ordinary Word replacement groups are inferred on readback, not
+              // serialized. Predict them from our own emitted union intervals;
+              // retain canonical IDs and decisions outside this expectation.
+              const intervals=[],predicted=new Map(),occurrences=new Map();
+              pendingTextRevisions.exportDocument(emitted).paragraphs.forEach((paragraph,paragraphIndex)=>{
+                let offset=0;
+                for(const segment of paragraph.segments) {
+                  const end=offset+(segment.node.type==='hardBreak'?1:segment.node.text.length),last=intervals.at(-1);
+                  if(segment.revision) {
+                    if(!occurrences.has(segment.revision.id))occurrences.set(segment.revision.id,occurrences.size);
+                    if(last?.revision.id===segment.revision.id&&last.paragraphIndex===paragraphIndex&&last.to===offset)last.to=end;
+                    else intervals.push({revision:segment.revision,paragraphIndex,from:offset,to:end});
+                  }
+                  offset=end;
+                }
+              });
+              for(let i=0;i<intervals.length-1;i++) {
+                const a=intervals[i],b=intervals[i+1],left=a.revision,right=b.revision;
+                if(left.operation!=='format'&&right.operation!=='format'&&!left.moveName&&!right.moveName&&!left.boundary&&!right.boundary
+                  &&a.paragraphIndex===b.paragraphIndex&&a.to===b.from&&left.operation!==right.operation&&left.author===right.author) {
+                  const groupId=`word-emitted-replacement-${i}`;
+                  predicted.set(left.id,groupId);predicted.set(right.id,groupId);
+                  i++;
+                }
+              }
+              // Project only group occurrences after canonical validation, so
+              // independent local decisions and Undo states remain untouched.
+              const ids=[...occurrences.keys()],groups=new Map(),revisionsById=new Map(emitted.revisions.map(revision=>[revision.id,revision]));
+              for(const paragraph of expectedSemantics.paragraphs)for(const segment of paragraph.segments)if(segment.revision) {
+                const revision=revisionsById.get(ids[segment.revision.occurrence]);
+                if(!revision)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+                const key=predicted.get(revision.id)||revision.groupId;
+                if(key&&!groups.has(key))groups.set(key,groups.size);
+                segment.revision.group=key?groups.get(key):null;
+              }
+            }
             if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
-              ||stableRtkReviewTransportJson(scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography))
+              ||stableRtkReviewTransportJson(expectedSemantics)
                 !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
           }
         }

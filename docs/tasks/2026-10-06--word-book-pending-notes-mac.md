@@ -602,6 +602,70 @@ in its read-only expectation clone. Genuine changes and note/unsaved-note races
 refuse without writes. Aggregate runtime648of900, behavior664of1300.
 Full official graph/baseline/native/CI/merge are separate OPEN gates.
 
+### Amendment07 — exact native reexport replacement grouping
+
+Same open contour, original binding base and26-path allowlist. Clean checkpoint
+b124906863958d0627007befe53d3c1e99508011 is the amendment execution base.
+Clean preflight AMENDMENT07_CLEAN_PREFLIGHT_01 passes before this contract edit;
+root E0 must pass before the separate writer changes runtime or tests.
+DESIGN_TOOL_ROUTER: bound to clean amendment07 declaration; no visual or canonical policy change.
+Retain E0_01 failure from the generic task sentinel; design classification
+remains explicitly fixed in the separately validated declaration.
+
+SOURCE09 genuinely changed Word return completed actual Cancel and Apply.
+SOURCE10 same-profile restart, Alpha accept/reject and UndoRedo retain complete
+Current/Original text and rich notes. Both own children exited normally code0.
+These short observations do not close native PACKAGED or full novel proof.
+Actual SOURCE09 applied reexport fails; handler comment-proof umbrella masks
+RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH/WORD_BOOK_NOTES_PUBLICATION_SOURCE.
+Immutable applied six-file snapshot and readonly hold receipt establish that
+only Gamma paragraph4 two revision group occurrences differ null versus0.
+Full source text, shape, typography, provenance, note source points and both
+complete comment graphs match. Core intentionally clears fresh group IDs;
+existing parser groups emitted adjacent opposite operations by the same author.
+
+O: public reexport after this checked genuine book return succeeds without
+losing any field or altering saved canonical bytes. T: fresh canonical source
+and authenticated LOCAL v3 emission -> existing Main source-owned expectation
+-> unchanged full provisional/final publication guard -> existing atomic port.
+H: only the expectation clone omits the already-existing native grouping law;
+predict that law from source-owned ordered emitted revision intervals and compare
+actual full semantics unchanged. B: preserve canonical group IDs and decision
+policy, prior groups/history, all guards, note bodies/geometry, discussion graph,
+protected sibling bytes and foreign WIP. Rollback is one current delivery chain.
+P: original red sandbox case then source-owned actual Main positive in both
+phases plus adversarial group/text/provenance/format/note/graph counterexamples;
+full affected and mandatory gates remain required. I: exact b124 candidate,
+SOURCE09 immutable six bindings, original native Word artifact70fbe68f and
+readonly HOLD receipt e424e48b, no mutable profile as diagnostic authority.
+
+Writer may change only Main's closed v3 book-note publication expectation and
+existing rtk-word-scene-identity-main contracts within admitted budgets. Choose
+prediction-only repair: do not alter Core fresh grouping, parser group law,
+canonical schemas, decisions, public handler, comparisons or source files.
+Predict groups independently from canonical emitted intervals; never copy
+returned groups or drop group equality. Sameparagraph/adjacent/oppositeoperation/
+sameauthor only, with parser's format/move/boundary exclusions. Date/provenance
+still compare fully; do not invent stricter date grouping than emitted law.
+Require gap, differentauthor, sameoperation, format, boundary/move and ownership
+negatives, canonical old+new group IDs preserved byte-exact, and hostile actual
+text/span/provenance/notes/graph refused. Existing Original/current paragraph
+and note equality remain unchanged. Preserve original protected-note positive.
+Use serial bounded focused checks first, then immutable checkpoint and fresh
+native SOURCE/PACKAGED reexport/restart/decisions. Retain failed diagnostics.
+No new contour, dependency, guard relaxation or complete novel claim.
+
+Amendment07 writer terminal HOLD: source expectation projection only, with
+canonical ledger group IDs and history left unchanged even in the clone.
+Selected10of10 exit0 zero fail/cancel/skip/todo;24 typed real ZIP refusals in
+both phases. Root verified8final hashes and complete TAP. Final non-injected
+immutable SOURCE09 exact six-file build passes both full note/comment phases,
+no canonical writes. Real Core accept-to-Undo fixture confirms divergent redo
+states export safely; public native Gamma decision remains a distinct gate.
+Runtime688of900, behavior765of1300. Retain original failed clone grammar and
+fixture anchor/section/recovery attempts; no production guard was relaxed.
+Checkpoint is not whole novel completion or delivery closure.
+
 ## IMPLEMENTATION_STEPS
 
 Root owns contract, declaration/E0, OPS, proof and full delivery. Separate code

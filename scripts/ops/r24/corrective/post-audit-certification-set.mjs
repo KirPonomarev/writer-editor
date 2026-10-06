@@ -3051,7 +3051,7 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "660ecda94cf1cdd3fab0def271486cacd7757507f7fe4cc881f85fb2043bc47f"
+      "sha256": "c0145f1838b061eb5da13f1f09cdcbda24151e10a5131ed2b76b8c91150d9fb1"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -3099,7 +3099,7 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "9bae728f19e208fa2b38b2175ceb60c219576fedfe57dd8f31334b0940a83a0e"
+      "sha256": "fff026fb5ba44c0e82ffc46977d7fc0d8041f0ff297030e30e642a26d9bb8d1c"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -3107,13 +3107,13 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-      "sha256": "e5532f66ba5a923168e1e6e74a8628616a8415f8141c446b267ee8ab7babd486"
+      "sha256": "d1894f5f0f62221659029e46e27c7b7b21472bf9f55548fd7e0fb19b01a34848"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "88ce480e776c5e169c2f2ffedf7122bb6532a3b783285d48fe43e736d1a3bf3b"
+      "sha256": "fb4b4775d1a0591ba53d35103df7442bf39b856dd34fabec18507065821105b6"
     }
   ]
 });
