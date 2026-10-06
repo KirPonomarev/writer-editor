@@ -137,3 +137,62 @@ for(const recording of [false,true])for(const boundary of ['JOURNAL','MANIFEST',
   assert.deepEqual(pending.readLedger(doc).noteSourcePoints.map(p=>p.offsetUtf16),recording?[2,4]:[1,3]);
   assert.deepEqual(JSON.parse(f.request.noteState.afterText).notes.map(n=>n.manuscript?.body||n.body),JSON.parse(f.beforeText).notes.map(n=>n.manuscript?.body||n.body));
  });
+
+async function predecessorJournal(f,boundary){
+ const crash=await child(f,'crash',boundary);assert.equal(crash.signal,'SIGKILL',JSON.stringify(crash));
+ const journalPath=tx.journalPathFor(f.manifestPath),journal=JSON.parse(fs.readFileSync(journalPath,'utf8'));
+ delete journal.noteState.pendingNoteReturnProofJson;fs.writeFileSync(journalPath,JSON.stringify(journal));
+}
+// The predecessor v5 journal stores the same closed note cohort without the
+// later ephemeral replay evidence; transaction/commit identity binds its bytes.
+for(const boundary of ['JOURNAL','COMMIT'])test(`predecessor first-binding MODE journal ${boundary} recovers complete OLD or NEW bytes`,async t=>{
+ const f=proofFixture(t,false);await predecessorJournal(f,boundary);
+ const journal=JSON.parse(fs.readFileSync(tx.journalPathFor(f.manifestPath),'utf8'));
+ assert.deepEqual(Object.keys(journal.noteState).sort(),['afterText','beforeText','mode']);
+ assert.equal(journal.noteState.afterText,model.planManuscriptNoteAnchorSave({beforeText:f.beforeText,projectId:'p',sceneId:'roman/s.txt',beforeContent:f.beforeScene,afterContent:f.afterScene}).afterText);
+ const recovery=await child(f,'recover');assert.equal(recovery.code,0,recovery.stderr);
+ assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.noteState.afterText]:[f.beforeScene,f.beforeManifest,f.beforeText]);
+ assert.equal((await child(f,'recover')).code,0);
+});
+test('fresh MODE cannot invoke predecessor recovery through omitted proof or caller flags',async t=>{
+ const f=proofFixture(t,false),before=observed(f),noteState={...f.request.noteState};delete noteState.pendingNoteReturnProofJson;
+ for(const extra of [{},{recovery:true},{persistedJournal:true},{legacyNoteCohort:true}]){
+  await assert.rejects(tx.commitProjectTransaction({...f.request,...extra,noteState,publishManifest}),/NOTE_STATE/);
+  assert.deepEqual(observed(f),before);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+ }
+ for(const flag of ['recovery','persistedJournal','legacyNoteCohort']){
+  await assert.rejects(tx.commitProjectTransaction({...f.request,noteState:{...noteState,[flag]:true},publishManifest}),/NOTE_STATE/);
+  assert.deepEqual(observed(f),before);
+ }
+});
+const legacyCorruptions=[
+ ['malformed journal','JOURNAL',f=>fs.writeFileSync(tx.journalPathFor(f.manifestPath),'{'),/JOURNAL_JSON/],
+ ['foreign scene path','JOURNAL',(f,j)=>j.scenePath=path.join(f.root,'roman/foreign.txt'),/PATH_MISMATCH/],
+ ['transaction digest','JOURNAL',(f,j)=>j.transactionId='0'.repeat(64),/JOURNAL_DIGEST/],
+ ['negative revision','JOURNAL',(f,j)=>j.revision=-1,/JOURNAL_REVISION/],
+ ['foreign project','JOURNAL',(f,j)=>j.after.manifestBase64=Buffer.from(JSON.stringify({projectId:'foreign',revision:1})).toString('base64'),/NOTE_STATE/],
+ ['caller codec flag','JOURNAL',(f,j)=>j.noteState.recovery=true,/NOTE_STATE/],
+ ['malformed replay proof','JOURNAL',(f,j)=>j.noteState.pendingNoteReturnProofJson='{}',/NOTE_STATE/],
+ ...[
+  ['geometry',x=>x.notes[1].manuscript.reference.offsetUtf16=0],
+  ['source digest',x=>x.notes[1].manuscript.reference.sourceTextSha256='0'.repeat(64)],
+  ['rich body',x=>{x.notes[1].manuscript.body.content[0].content[0].text='Forged';x.notes[1].body='Forged';}],
+  ['private body',x=>x.notes[0].body='Forged private'],
+  ['foreign roster',x=>x.notes[1].id='foreign-note'],
+  ['history metadata',x=>x.updatedAtUtc='forged'],
+ ].map(([name,mutate])=>['note '+name,'JOURNAL',(f,j)=>{const notes=JSON.parse(j.noteState.afterText);mutate(notes);j.noteState.afterText=JSON.stringify(notes);},/NOTE_STATE/]),
+ ['malformed commit','COMMIT',f=>fs.writeFileSync(tx.commitPathFor(f.scenePath),'{'),/COMMIT_CORRUPT/],
+ ['commit notes digest','COMMIT',f=>{const p=tx.commitPathFor(f.scenePath),c=JSON.parse(fs.readFileSync(p));c.noteState.afterDigest='0'.repeat(64);fs.writeFileSync(p,JSON.stringify(c));},/COMMIT_CORRUPT/],
+ ['commit transaction identity','COMMIT',f=>{const p=tx.commitPathFor(f.scenePath),c=JSON.parse(fs.readFileSync(p));c.transactionId='0'.repeat(64);fs.writeFileSync(p,JSON.stringify(c));},/COMMIT_CORRUPT/],
+ ['divergent current scene','JOURNAL',f=>fs.writeFileSync(f.scenePath,'foreign current text'),/RECOVERY_DIVERGENCE/],
+ ['divergent current manifest','JOURNAL',f=>fs.writeFileSync(f.manifestPath,JSON.stringify({projectId:'p',revision:99})),/RECOVERY_DIVERGENCE/],
+ ['divergent current notes','JOURNAL',f=>fs.writeFileSync(f.notePath,f.beforeText+' '),/NOTE_CAS/],
+];
+for(const [name,boundary,mutate,code]of legacyCorruptions)test(`persisted predecessor MODE refuses ${name} without business writes`,async t=>{
+ const f=proofFixture(t,false);await predecessorJournal(f,boundary);
+ const journalPath=tx.journalPathFor(f.manifestPath),j=JSON.parse(fs.readFileSync(journalPath));
+ mutate(f,j);if(mutate.length===2)fs.writeFileSync(journalPath,JSON.stringify(j));
+ const before=observed(f),savedJournal=fs.readFileSync(journalPath,'utf8');
+ await assert.rejects(tx.recoverProjectTransaction({...f.request,publishManifest}),code);
+ assert.deepEqual(observed(f),before);assert.equal(fs.readFileSync(journalPath,'utf8'),savedJournal);
+});

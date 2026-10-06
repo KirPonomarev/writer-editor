@@ -57,13 +57,21 @@ Do not ship or claim no decoder downgrade at this incomplete checkpoint.
 Runtime147/700 and behavior392/1100; all retained failures preserved. A clean
 same-task checkpoint and validated recovery-seam amendment must come next.
 
+Amendment02 frozen component evidence: private persisted MODE decoder only at
+parseJournal; fresh admission and packet decoder unchanged. Whole journal52/52,
+zero fail, skip, todo or cancel, plus fresh omission and recovery-flag refusals.
+Genuine immutable c799 JOURNAL and COMMIT recover exact full OLD and NEW bytes;
+root independently verified all12 source and7 log hashes and complete business
+comparisons. Runtime173/700; behavior451/1100. Earlier157/77 suites bind prior
+transaction bytes; current broad compatibility, native and delivery remain open.
+
 One bounded existing-seam authoring repair with strict source-point geometry,
 Main-held recording/save admission and real atomic persistence proofs. Root
 owns this contract, factual docs, exact-byte OPS companions and delivery;
 a separate code agent owns declared runtime/behavior tests. No new writer,
 registry, schema family, dependency, IPC channel or visual surface.
 
-Diff budget:24 explicit paths; runtime maximum700 added/deleted lines;
+Diff budget:25 explicit paths; runtime maximum700 added/deleted lines;
 behavior tests maximum1100 added/deleted lines. No unrelated reformat/refactor.
 Unused allowed paths need not change. Any additional seam requires clean
 checkpoint and validated scope amendment before its first edit.
@@ -75,6 +83,7 @@ checkpoint and validated scope amendment before its first edit.
 - `src/core/word-pending-recording-comments-v1.cjs`
 - `src/core/word-manuscript-notes-v1.cjs`
 - `src/core/word-pending-text-revisions-v1.cjs`
+- `src/core/project-transaction-v1.cjs`
 - `test/contracts/rtk-word-pending-recording.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-intents.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-comments.contract.test.js`
@@ -181,6 +190,26 @@ Actual transaction must refuse without business writes. Positives include
 old single-scene return, first binding, all decisions and round Undo/Redo,
 schema3/schema5 compatibility, serial recording saves and readable recovery.
 Never weaken previous guards to make the new proof pass.
+
+Recovery amendment02 starts at clean e24d5188d0863cf03608a27d913ce12e00270992
+after fresh full startup, exact T7 and remote-main checks and declaration03
+preflight25. Original delivery base c799 is unchanged. The existing transaction
+codec is the only additional runtime seam; runtime/behavior budgets stay700/1100.
+Actual predecessor-admitted first-binding journals at JOURNAL and COMMIT are
+retained with complete independent OLD/NEW business bytes. Restore their exact
+rollback/convergence using the predecessor closed stored-cohort law exclusively
+inside journal recovery. Fresh atomic commit must retain strict independent
+transition replay and cannot select a weaker mode through any caller flag.
+No new schema, writer, decoder downgrade or public recovery authority.
+
+Preserve closed note/proof shape, complete regenerated rich/private note state,
+transaction ID, scene/manifest/note digests, path containment, commit identity,
+current-state CAS, lease, phases and readable recovery. Verify all new proof-
+bearing journal boundaries and idempotence; predecessor stored first binding
+must recover exact OLD/NEW. Malformed schema/path/digests/commit, forged note
+geometry/body/private state and divergent current bytes must refuse before
+business writes. Fresh omitted-proof and forged recovery-flag requests remain
+refused. Component evidence alone cannot certify physical Word or full novel.
 
 FEATURE_INTEGRATION_MANIFEST_V1:
 

@@ -9,7 +9,7 @@ const path = require('node:path');
 
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
 const { MODE: COMMENT_REBASE_MODE, RETURN_MODE: COMMENT_TEXT_RETURN_MODE, planCommentAnchorSave, planCommentTextReturn } = require('./word-comment-anchor-save-v1.cjs');
-const { validateNoteCohort, validateManuscriptDocument } = require('./word-manuscript-notes-v1.cjs');
+const { validateNoteCohort, validateManuscriptDocument, planManuscriptNoteAnchorSave, MODE: NOTE_REBASE_MODE, LIMITS: NOTE_LIMITS } = require('./word-manuscript-notes-v1.cjs');
 const { readState: readCanonicalCommentState } = require('./word-comment-authoring-v1.cjs');
 const MEDIA_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v6';
 const MEDIA_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v6';
@@ -288,6 +288,28 @@ function normalizeNoteState(value, scenePath, manifestPath, { before, after }) {
   }
 }
 
+// Existing proofless v5 journals were admitted by the predecessor's closed
+// anchor-cohort law. Decode only persisted bytes here; fresh admission retains
+// complete independent transition replay in normalizeNoteState.
+function normalizePersistedNoteState(value, scenePath, manifestPath, { before, after }) {
+  if (value?.mode !== NOTE_REBASE_MODE || Object.hasOwn(value, 'recordingProofJson')
+    || Object.hasOwn(value, 'pendingNoteReturnProofJson')) return normalizeNoteState(value, scenePath, manifestPath, { before, after });
+  try {
+    if (Array.isArray(value) || Object.keys(value).some(key => !['mode', 'beforeText', 'afterText'].includes(key))
+      || typeof value.beforeText !== 'string' || typeof value.afterText !== 'string'
+      || [value.beforeText, value.afterText].some(text => Buffer.byteLength(text) > 4 * NOTE_LIMITS.bytes)) throw Error('NOTE_COHORT_SHAPE');
+    const projectId = JSON.parse(before.manifest).projectId;
+    if (typeof projectId !== 'string' || !projectId || JSON.parse(after.manifest).projectId !== projectId) throw Error('PROJECT');
+    const expected = planManuscriptNoteAnchorSave({ beforeText: value.beforeText, projectId,
+      sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
+      beforeContent: before.scene, afterContent: after.scene });
+    if (!expected || expected.afterText !== value.afterText) throw Error('NOTE_COHORT_REBASE');
+    return expected;
+  } catch (error) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.RECOVER, error.code || error.message);
+  }
+}
+
 async function inspectNoteState(change, manifestPath, fsAdapter) {
   if (!change) return null;
   const target = noteStatePath(manifestPath);
@@ -528,7 +550,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
     || (commentState && resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
   }
-  const noteState = normalizeNoteState(journal.noteState, scenePath, manifestPath, { before, after });
+  const noteState = normalizePersistedNoteState(journal.noteState, scenePath, manifestPath, { before, after });
   if (journal.schemaVersion === MEDIA_JOURNAL_SCHEMA_VERSION || (continuation && resources.length)) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: before.scene, after: after.scene, noteState });
   if (journal.schemaVersion !== MEDIA_JOURNAL_SCHEMA_VERSION && !continuation && (journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION) !== Boolean(noteState)
     || (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath)))) {

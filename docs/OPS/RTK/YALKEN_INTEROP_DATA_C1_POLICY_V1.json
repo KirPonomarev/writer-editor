@@ -1122,7 +1122,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "a8d4bb8eb048c9b4fde03ac9cfc9bc3c4da167a4fe1e4bda58a6bd576c67c322"
+        "sha256": "f7efae0b89f6ce8caaa831fbe68b35212615f3a03912e2494ef0a70cbb1dcdc5"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1682,7 +1682,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
-        "sha256": "3e0615f26f691b8faefe4c3b298e51b2addc090229218721b151fcb7f17a6698"
+        "sha256": "978fcfdbccbea8dd646fe623150f4f61bffa85189aa63fa44bfdfa4fb500ea4c"
       },
       {
         "path": "src/core/notesStorage.mjs",
@@ -2734,7 +2734,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-recording-notes-mac.md",
-        "sha256": "d21d7400a9b1605af27216ec829ab4e196a94cd6a93bb992f81df2d5944e3804"
+        "sha256": "2b7330b1359d6343628d90b6d0c32d2041fd903e2c4d1a61cc00abe3a1e30a5f"
       }
     ],
     "followupRepair": {

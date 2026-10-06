@@ -3217,6 +3217,10 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
       "sha256": "f3e19414eab583db07d7a0d068c636e2a0f9c7d91bd52f0903982fb37d1cf2e7"
     },
     {
+      "path": "src/core/project-transaction-v1.cjs",
+      "sha256": "f7efae0b89f6ce8caaa831fbe68b35212615f3a03912e2494ef0a70cbb1dcdc5"
+    },
+    {
       "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
       "sha256": "8a30babe5c3eabfdca2043f7c7a00132b55a0d84226aad988f141543c33e5054"
     },
@@ -3234,17 +3238,17 @@ export const R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
-      "sha256": "3e0615f26f691b8faefe4c3b298e51b2addc090229218721b151fcb7f17a6698"
+      "sha256": "978fcfdbccbea8dd646fe623150f4f61bffa85189aa63fa44bfdfa4fb500ea4c"
     },
     {
       "path": "docs/tasks/2026-10-06--word-recording-notes-mac.md",
-      "sha256": "d21d7400a9b1605af27216ec829ab4e196a94cd6a93bb992f81df2d5944e3804"
+      "sha256": "2b7330b1359d6343628d90b6d0c32d2041fd903e2c4d1a61cc00abe3a1e30a5f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "de1fc0de65b988cbf5b850d61426a0d9777436c6995d19cb33ecb947769f66b9"
+      "sha256": "9a26f412d4609cb75638720dec6020a2804ddadbb93548bde80df3e1c1d8f76c"
     }
   ]
 });
