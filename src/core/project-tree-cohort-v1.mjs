@@ -646,18 +646,27 @@ export function planProjectMixedWordReturnCohort(input) {
     need(typeof scene.beforeContent === 'string' && (scene.commitText === null || typeof scene.commitText === 'string'), 'E_WORD_BOOK_COHORT_SOURCE');
   }
   const semantic = mixedReturn.planMixedBookReturn({beforeText:input.commentsText,projectId:input.projectId,
-    scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson:input.returnProofJson});
-  const entries = [], affectedScenes = [];
+    scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson:input.returnProofJson,notesText:input.notesText});
+  const entries = [], affectedScenes = [];let notesAfter=input.notesText;
   for (const change of semantic.scenes) {
     const scene = input.scenes.find(item=>item.sceneId===change.sceneId);
     entries.push({relativePath:scene.sceneId,role:'scene',beforeBase64:b64(scene.beforeContent),afterBase64:b64(change.content)},
       {relativePath:scene.sceneId+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(scene.commitText),afterBase64:b64(scene.commitText)});
-    if(change.changed) affectedScenes.push({from:scene.sceneId,to:scene.sceneId,copy:false});
+    if(change.changed) {
+      affectedScenes.push({from:scene.sceneId,to:scene.sceneId,copy:false});
+      if(notesAfter!==null) {
+        const active=notesModel.validateManuscriptDocument(JSON.parse(notesAfter),input.projectId).notes
+          .some(note=>!note.deleted&&note.manuscript?.reference.sceneId===scene.sceneId);
+        need(!active||JSON.parse(input.returnProofJson).schemaVersion===4,'PENDING_NOTE_BOOK_CONTEXT_REQUIRED');
+        notesAfter=notesModel.planManuscriptNoteAnchorSave({beforeText:notesAfter,projectId:input.projectId,sceneId:scene.sceneId,
+          beforeContent:scene.beforeContent,afterContent:change.content})?.afterText||notesAfter;
+      }
+    }
   }
   need(affectedScenes.length > 0, 'E_WORD_BOOK_COHORT_NO_CHANGE');
   need(input.notesText === null || typeof input.notesText === 'string', 'E_WORD_BOOK_COHORT_ANNOTATIONS');
   if(input.notesText !== null) notesModel.validateManuscriptDocument(JSON.parse(input.notesText),input.projectId);
-  entries.push({relativePath:NOTE_PATH,role:'notes',beforeBase64:b64(input.notesText),afterBase64:b64(input.notesText)},
+  entries.push({relativePath:NOTE_PATH,role:'notes',beforeBase64:b64(input.notesText),afterBase64:b64(notesAfter)},
     {relativePath:COMMENT_PATH,role:'comments',beforeBase64:b64(input.commentsText),afterBase64:b64(semantic.afterText)});
   const plan = {mode:TREE_COHORT_MODE,projectId:input.projectId,operationId:input.operationId,
     expectedTreeRevision:input.expectedTreeRevision,kind:'word-mixed-return',changed:true,code:'TREE_COHORT_READY',

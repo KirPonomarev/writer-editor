@@ -66,6 +66,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     recover: recoverPendingWriterProjectTransaction, save: handleSave, autosave: runAutoSave, backup: createBackup, text: requestEditorText, snapshot: requestEditorSnapshot, normalizeSnapshot: normalizeEditorSnapshotPayload, exportMin: handleExportDocxMin, saveAs: handleSaveAs,
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
+    fullGate:async(source,bytes)=>buildFullManuscriptPublicationGate(source,bytes,await loadRevisionBridgeModule()),
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,reviewLocalFile:handleDocxReviewPreviewSessionLocalFileCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     publishReview:publishReviewSceneWithProjectTransaction,
@@ -2781,6 +2782,130 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
   } finally {
     release(); await Promise.allSettled(operations); manager.writeFileAtomic = original;
   }
+});
+
+async function composedNotesMainFixture(t,{authored=false}={}) {
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');let originalNotes,notePath;
+ const x=await pendingCommentMainFixture(t,{beforeExport:async({f,paths,sceneIds})=>{
+  fs.writeFileSync(paths[0],envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AxxB first owner'}]}]}}));
+  if(authored){
+   const prior=pending.readLedger(envelope.parseObservablePayload(read(paths[2])).doc),value=structuredClone(prior);
+   const marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}];
+   value.source.content[0].content[0].marks=marks;value.source.content[0].content.push({type:'hardBreak',marks},{type:'text',text:'Break meaning retained'});
+   fs.writeFileSync(paths[2],envelope.composeObservablePayload({doc:pending.bindLedger(value)}));
+  }
+  const records=[];
+  for(const [owner,point,kind] of [[0,1,'footnote'],[0,3,'endnote'],[1,2,'footnote'],[2,null,'endnote']]) {
+   let doc=envelope.parseObservablePayload(read(paths[owner])).doc,ledger=pending.readLedger(doc);
+   const leaves=pending.paragraphs(pending.normalizeNode(doc)),paragraphIndex=owner===2?leaves.length-1:0;
+   const sourceOffset=point??pending.paragraphs(ledger.source)[paragraphIndex].content.map(n=>n.type==='hardBreak'?'\n':n.text).join('').length-2;
+   const id='book-note-'+records.length,sourcePoint={noteId:id,paragraphIndex,offsetUtf16:sourceOffset};
+   const projected=ledger?pending.projectSourcePoint(ledger,sourcePoint,'current'):sourcePoint;
+   const offsetUtf16=leaves.slice(0,projected.paragraphIndex).reduce((size,p)=>size+(p.content||[]).map(n=>n.type==='hardBreak'?'\n':n.text).join('').length+1,0)+projected.offsetUtf16;
+   const body={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},
+    content:[{type:'text',text:'Rich '+id,marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU'}}}]},{type:'hardBreak'},{type:'text',text:'kept'}]}]};
+   const manuscript=notes.bindManuscriptPayload({kind,body,sceneId:sceneIds[owner],offsetUtf16,sceneContent:read(paths[owner])});
+   records.push({id,scope:'manuscript',body:notes.validateNoteBody(body).text,manuscript});
+   if(ledger){doc=pending.bindNoteSourcePoints(doc,[...(ledger.noteSourcePoints||[]),sourcePoint]);fs.writeFileSync(paths[owner],envelope.composeObservablePayload({doc}));}
+  }
+  const storage=await import('../../src/core/notesStorage.mjs');originalNotes=storage.normalizeNotesDocument({schemaVersion:1,projectId:f.query.projectId,notes:records},
+   {projectId:f.query.projectId,now:()=> '2026-10-06T12:00:00Z'}).value;
+  notePath=path.join(f.root,'notes.craftsman.json');fs.writeFileSync(notePath,JSON.stringify(originalNotes));
+  if(process.env.YALKEN_BOOK_NOTES_SEED_DIR) {
+   const target=process.env.YALKEN_BOOK_NOTES_SEED_DIR;assert.equal(fs.existsSync(target),false,'never overwrite an owned seed');fs.mkdirSync(target,{recursive:true});
+   const whitelist=['project.craftsman.json',...sceneIds,'notes.craftsman.json','.yalken/word-review/non-text-return-state.v1.json'];
+   for(const relative of whitelist){const file=path.join(target,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,fs.readFileSync(path.join(f.root,relative)));}
+   fs.writeFileSync(path.join(target,'SEED_INVENTORY.json'),JSON.stringify({schemaVersion:1,kind:'SYNTHETIC_INITIAL_PROJECT_NO_AUTHORITY',projectId:f.query.projectId,
+    whitelist:whitelist.map(relative=>({relativePath:relative,sha256:sha(fs.readFileSync(path.join(target,relative)))})),noteIds:originalNotes.notes.map(n=>n.id)},null,2));
+  }
+ },tamper:(parts,{projection})=>{
+  const beta=projection.threads.find(t=>t.threadId==='protected-sibling'),root=beta.messages[0];
+  beta.messages.push({canonicalCommentId:'book-note-beta-reply',commentId:'910',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'});
+  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="910"/>`)
+   .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="910"/><w:r><w:commentReference w:id="910"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
+  let index=0;const count=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].length;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
+   const n=index++;if(n===0){
+    // The emitted two note markers split exactly the two deleted characters.
+    p=p.replace(/<w:r>(<w:rPr>[\s\S]*?<\/w:rPr>)?(<w:t\b[^>]*>[^<]{2}<\/w:t>)<\/w:r>/u,(_all,properties,text)=>`<w:del w:id="970" w:author="Book editor"><w:r>${properties||''}${text.replace(/w:t/gu,'w:delText')}</w:r></w:del>`);
+   }
+   return n===0||n===count-1?p.replace('</w:p>',`<w:ins w:id="${980+n}" w:author="Book editor"><w:r><w:t> 😀BOOK</w:t></w:r></w:ins></w:p>`):p;
+  });
+ }});
+ return {x,originalNotes,notePath};
+}
+test('book notes actual Main commits both pending owners and full discussions with exact protected sibling',async t=>{
+ const {x,originalNotes,notePath}=await composedNotesMainFixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+ assert.deepEqual(x.f.capture(),x.before);const protectedRaw=read(x.paths[1]),beforeNotes=read(notePath),beforeDocs=x.paths.map(read);
+ const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'book-notes.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
+ const cancel=await x.f.probe.reviewLocalFile({requestId:'book-notes-cancel'},options);assert.equal(cancel.pendingProductPath?.status,'cancelled',JSON.stringify(cancel));
+ assert.deepEqual(x.f.capture(),x.before);assert.equal(read(notePath),beforeNotes);
+ x.f.chooseMessageResponse(1);const applied=await x.f.probe.reviewLocalFile({requestId:'book-notes-apply'},options);
+ assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));assert.equal(read(x.paths[1]),protectedRaw);
+ const afterNotes=JSON.parse(read(notePath));assert.deepEqual(afterNotes.notes.map(n=>n.manuscript.body),originalNotes.notes.map(n=>n.manuscript.body));
+ assert.deepEqual(afterNotes.notes.map(n=>n.id),originalNotes.notes.map(n=>n.id));assert.deepEqual(afterNotes.notes.slice(0,2).map(n=>n.manuscript.reference.offsetUtf16),[1,1]);
+ assert.deepEqual(afterNotes.notes[2],originalNotes.notes[2]);
+ for(const i of [0,2]){const doc=envelope.parseObservablePayload(read(x.paths[i])).doc,ledger=pending.readLedger(doc);assert.ok(ledger.noteSourcePoints);assert.match(pending.projection(doc).current,/😀BOOK/u);}
+ const old=pending.readLedger(envelope.parseObservablePayload(beforeDocs[2]).doc),saved=pending.readLedger(envelope.parseObservablePayload(read(x.paths[2])).doc);
+ for(const revision of old.revisions){const retained=saved.revisions.find(r=>r.id===revision.id);assert.equal(retained.nativeId,revision.nativeId);assert.equal(retained.author,revision.author);assert.equal(retained.operation,revision.operation);}
+ const graph=JSON.parse(read(x.commentPath));assert.equal(graph.threads.find(t=>t.threadId==='protected-sibling').messages.at(-1).body,'Foreign Beta reply retained');
+ assert.equal(graph.threads.find(t=>t.threadId==='pending-inside').messages.at(-1).body,'One new Word reply');
+ const appliedBytes=x.f.capture(),replay=await x.f.probe.reviewActivate({requestId:'book-notes-replay',bufferSource:x.bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(replay.error?.reason,'RTK_RETURN_INTAKE_STALE_FULL_MANUSCRIPT_SCENE',JSON.stringify(replay));assert.deepEqual(x.f.capture(),appliedBytes);
+ const appliedScenes=x.paths.map(read),reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);
+ const messages=graph.threads.map(t=>({threadId:t.threadId,messages:t.messages}));
+ for(const [i,action] of [[2,'undo'],[0,'undo'],[0,'redo'],[2,'redo']]) {
+  const file=x.paths[i],before=x.paths.map(read),tree=await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(tree.root,i===0?'Alpha':'Gamma');
+  mountRenderer(reopened,()=>read(file),0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}));reopened.probe.state({filePath:file,projectName:'Роман'});
+  const context=await reopened.probe.pendingContext(),result=await reopened.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});
+  assert.equal(result.ok,true,JSON.stringify(result));for(let j=0;j<3;j++)if(j!==i)assert.equal(read(x.paths[j]),before[j]);
+  const current=JSON.parse(read(notePath));assert.deepEqual(current.notes.map(n=>n.manuscript.body),originalNotes.notes.map(n=>n.manuscript.body));
+  assert.deepEqual(current.notes[2],originalNotes.notes[2]);assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(t=>({threadId:t.threadId,messages:t.messages})),messages);
+  if(i===0)assert.deepEqual(current.notes.slice(0,2).map(n=>n.manuscript.reference.offsetUtf16),action==='undo'?[1,3]:[1,1]);
+  if(action==='redo')assert.equal(read(file),appliedScenes[i]);
+ }
+ const source=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const secondPath=path.join(x.f.temp,'book-notes-second.docx');reopened.chooseSavePath(secondPath);assert.equal((await reopened.probe.exportFullReview({requestId:'book-notes-second-export'})).ok,true);
+ const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fs.readFileSync(secondPath)}).parts;
+ let at=0;const count=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].length;
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
+  const index=at++;return index===0||index===count-1?p.replace('</w:p>',`<w:ins w:id="${8000+index}" w:author="Second editor"><w:r><w:t> SECOND</w:t></w:r></w:ins></w:p>`):p;});
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const beforeSecondNotes=JSON.parse(read(notePath));reopened.chooseMessageResponse(1);
+ const second=await reopened.probe.reviewLocalFile({requestId:'book-notes-second-apply'},{allowInlineDocxReturnIntakeParserForTests:true,
+  pickLocalFile:async()=>({path:path.join(x.f.temp,'book-notes-second-return.docx'),size:bytes.length}),readLocalFileBytes:async()=>bytes});
+ assert.equal(second.pendingProductPath?.status,'applied',JSON.stringify(second));assert.equal(read(x.paths[1]),protectedRaw);
+ assert.deepEqual(JSON.parse(read(notePath)).notes.map(n=>n.manuscript.body),beforeSecondNotes.notes.map(n=>n.manuscript.body));
+ for(const i of [0,2]){const doc=envelope.parseObservablePayload(read(x.paths[i])).doc;assert.match(pending.projection(doc).current,/ SECOND/u);assert.equal(pending.readLedger(doc).roundUndo.length,2);}
+ assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(t=>({threadId:t.threadId,messages:t.messages})),messages);
+ const final=await reopened.probe.reviewBuild(await reopened.probe.fullSource());assert.equal(final.publicationGate.publishAllowed,true,JSON.stringify(final.publicationGate));
+});
+
+test('book notes publication uses exact local emitted defaults and authored overrides, refusing every run language field and font corruption',async t=>{
+ const {x}=await composedNotesMainFixture(t,{authored:true}),built=await x.f.probe.reviewBuild(x.source);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const index=x.source.localAuthorityCapsule.exportMap.scenes[2].blocks[0].documentParagraphIndex;
+ const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ for(const [field,mutate] of [['font',p=>p.replace(/Georgia/gu,'Arial')],...['val','eastAsia','bidi'].map(field=>[field,p=>p.replace(new RegExp('w:'+field+'="(?:ru-RU|ja-JP|he-IL)"','u'),'w:'+field+'="en-GB"')]),
+  ['break-mark',p=>p.replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>run.includes('<w:br/>')?run.replace(/Georgia/gu,'Arial'):run)]]) {
+  const parts={...original};let at=0;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>at++===index?mutate(p):p);
+  assert.notEqual(parts['word/document.xml'],original['word/document.xml'],field+' actual corruption');
+  const gate=await x.f.probe.fullGate(x.source,pack(parts));assert.equal(gate.publishAllowed,false,JSON.stringify({field,gate}));
+  assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(gate.reason,'WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+ }
+ const parts={...original};parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('w:after="120"','w:after="121"');
+ const gate=await x.f.probe.fullGate(x.source,pack(parts));assert.equal(gate.publishAllowed,false);assert.equal(gate.reason,'PENDING_NOTE_BODY_CHANGED');
+ const provisional={...x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.source.provisionalSelfParseArtifact.bytes}).parts};
+ provisional['word/endnotes.xml']=provisional['word/endnotes.xml'].replace('w:val="ru-RU"','w:val="en-GB"');
+ const source={...x.source,provisionalSelfParseArtifact:{...x.source.provisionalSelfParseArtifact,bytes:pack(provisional)},
+  advisoryManifest:{...x.source.advisoryManifest,coreManifest:structuredClone(x.source.advisoryManifest.coreManifest)}};
+ source.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256='sha256:'+sha(source.provisionalSelfParseArtifact.bytes);
+ const provisionalGate=await x.f.probe.fullGate(source,built.documentBuffer);
+ assert.equal(provisionalGate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(provisionalGate.reason,'PENDING_NOTE_BODY_CHANGED');
 });
 
 // Three durable scene entities: two edited owners and one untouched control.

@@ -16,6 +16,71 @@ const sceneId = 'roman/scene.txt', projectId = 'project-test';
 const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', nativeId: '51', operation,
   author: 'Reviewer', date: '', dateUtc: '', paragraphIndex: 0, from, to, state: 'pending', groupId: null });
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
+// Shared owned fixture, loaded without registering this file's tests by the
+// other two contracts. Every expected point/text below is a literal oracle.
+async function composedBookFixture() {
+  const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+  const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
+  const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
+  const beforeDocs=[d(p('AxxB tail')),d(p('Control Beta')),pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('oldnew tail')),[event(1,'delete',0,3),event(2,'insert',3,6)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:8}])];
+  const body=d({type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},content:[
+    {type:'text',text:'Rich body',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+    {type:'hardBreak'},{type:'text',text:'kept'}]});
+  const identities=['note-left','note-right','note-beta','note-gamma'],owners=[0,0,1,2],offsets=[1,3,2,5];
+  const document={schemaVersion:1,projectId,notes:identities.map((id,i)=>({id,title:'',scope:'manuscript',body:notes.validateNoteBody(body).text,
+    manuscript:notes.bindManuscriptPayload({kind:i%2?'endnote':'footnote',body,sceneId:ids[owners[i]],offsetUtf16:offsets[i],sceneContent:envelope.composeObservablePayload({doc:beforeDocs[owners[i]]})})}))};
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:ids.map((id,i)=>({threadId:'thread-'+i,rootCommentId:'root-'+i,sceneId:id,status:'open',
+    anchor:exactAnchor({paragraphIndex:0,startUtf16:i===0?5:i===1?0:1,selectedText:i===0?'tail':i===1?'Control':'e'},id,[i===0?'AxxB tail':i===1?'Control Beta':'new tail']),
+    messages:[{commentId:'root-'+i,kind:'root',body:'Question '+i,provenance:{author:'Writer'}}]}))};
+  const packet=(docs,notesDocument,nonTextReturnState)=>makeSource({projectId,projectRoot:'/project',notesDocument,nonTextReturnState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:'/project/'+id,order:i,
+    doc:docs[i],text:envelope.deriveVisibleTextFromDocument(docs[i]),observableContent:envelope.composeObservablePayload({doc:docs[i]})}))});
+  const source=packet(beforeDocs,document,state);
+  const afterDocs=[pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!AxxB tail')),[{...event(3,'insert',0,1),author:'Word editor'},{...event(4,'delete',2,4),author:'Word editor'}])),
+    [{noteId:'note-left',paragraphIndex:0,offsetUtf16:2},{noteId:'note-right',paragraphIndex:0,offsetUtf16:4}]),beforeDocs[1],
+    pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('!oldnew tail')),[{...event(3,'insert',0,1),author:'Word editor'},event(1,'delete',1,4),event(2,'insert',4,7)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:9}])];
+  const afterNotes=plain(document),afterOffsets=[2,2,2,6],current=['!AB tail','Control Beta','!new tail'];
+  afterNotes.notes.forEach((n,i)=>{n.manuscript.reference.offsetUtf16=afterOffsets[i];n.manuscript.reference.sourceTextSha256=hash(current[owners[i]]);});
+  const afterState=plain(state);afterState.threads[0].anchor=exactAnchor({paragraphIndex:0,startUtf16:4,selectedText:'tail'},ids[0],[current[0]]);
+  afterState.threads[2].anchor=exactAnchor({paragraphIndex:0,startUtf16:2,selectedText:'e'},ids[2],[current[2]]);
+  afterState.threads[1].messages.push({commentId:'foreign-reply',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'}});
+  afterState.threads[2].messages.push({commentId:'gamma-reply',kind:'reply',body:'Gamma reply retained',provenance:{author:'Word editor'}});
+  const afterSource=packet(afterDocs,afterNotes,afterState),bytes=builder.buildDocxReviewPacketBuffer(afterSource),bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)};
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
+  const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true);
+  const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,baselineDocuments:ids.map((id,i)=>({sceneId:id,document:beforeDocs[i]})),
+    retainPendingScenes:true,documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest});assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const exportMap=plain(source.localAuthorityCapsule.exportMap);delete exportMap.commentExport;
+  const noteContext={baseline:source.documentNotes,returnedNotes:bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes),
+    returnedReferences:analysis.reviewIr.documentNotes.references,unionReferences:preview.contentPreview.pendingNoteReferences};
+  const proof={schemaVersion:4,projectId,roundId:'book-notes-round',artifactSha256:'sha256:'+hash(bytes),baseline:source.commentExport,exportMap,noteContext,
+    returnedScenes:parsed.scenes.map(s=>({sceneId:s.sceneId,ledger:pending.readLedger(s.returnedDocument)})),returnedThreads:analysis.reviewIr.commentThreads,
+    returnedParagraphs:analysis.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:analysis.reviewIr.commentReturnInventory};
+  const scenes=ids.map((id,i)=>({sceneId:id,beforeContent:envelope.composeObservablePayload({doc:beforeDocs[i]})}));
+  return {ids,beforeDocs,document,state,source,afterSource,afterDocs,afterNotes,bytes,bridge,analysis,preview,proof,scenes,notesText:JSON.stringify(document),beforeText:JSON.stringify(state),current,afterOffsets};
+}
+test('complete book note law retains typed spacing/language/breaks and rejects every changed or unknown body field',async()=>{
+  const f=await composedBookFixture(),input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
+    scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
+    returnedNotes:f.proof.noteContext.returnedNotes,returnedReferences:f.proof.noteContext.returnedReferences,unionReferences:f.proof.noteContext.unionReferences};
+  const result=delta.bindUnchangedBookPendingNotes(input);
+  assert.deepEqual(pending.readLedger(result[0].beforeDoc).noteSourcePoints.map(p=>p.offsetUtf16),[1,3]);
+  assert.deepEqual(pending.readLedger(result[0].returnedDoc).noteSourcePoints.map(p=>p.offsetUtf16),[2,4]);
+  assert.deepEqual(pending.readLedger(result[2].returnedDoc).noteSourcePoints.map(p=>p.offsetUtf16),[9]);
+  for(const mutate of [b=>b.content[0].attrs.wordParagraphSpacing.after++,b=>delete b.content[0].attrs.wordParagraphSpacing,
+    b=>b.content[0].attrs.wordParagraphMarkLanguage.val='en-US',b=>b.content[0].content[1].marks=[{type:'bold'}],
+    b=>b.content[0].content[0].marks[1].attrs.wordLanguage.bidi='ar-SA',b=>b.content[0].content[0].marks[1].attrs.fontFamily='Arial']) {
+    const bad=plain(input);mutate(bad.returnedNotes[0].body);assert.throws(()=>delta.bindUnchangedBookPendingNotes(bad),/PENDING_NOTE_BODY_CHANGED|NOTE_BODY_BREAK/u);
+  }
+  for(const mutate of [x=>x.returnedNotes.pop(),x=>x.returnedNotes[0].transportIdentity='foreign',x=>x.returnedNotes[0].transportIdentity=x.returnedNotes[1].transportIdentity,
+    x=>x.unionReferences[0].offsetUtf16++,x=>x.unionReferences[0].paragraphIndex=2,x=>x.returnedNotes[0].kind='endnote',
+    x=>x.baseline.sourceBindings[0].documentParagraphIndex=2,x=>x.scenes.reverse(),x=>x.returnedNotes.push(plain(x.returnedNotes[0])),
+    x=>x.unionReferences[2].nativeId=x.unionReferences[0].nativeId,x=>x.returnedReferences[2].nativeId=x.returnedReferences[0].nativeId,
+    x=>x.baseline.sourceBindings[2].nativeId=x.baseline.sourceBindings[0].nativeId,
+    x=>{for(const key of ['returnedNotes','returnedReferences','unionReferences'])[x[key][0],x[key][1]]=[x[key][1],x[key][0]];}]) {
+    const bad=plain(input);mutate(bad);assert.throws(()=>delta.bindUnchangedBookPendingNotes(bad),/PENDING_NOTE_|NOTE_/u,String(mutate));
+  }
+});
 test('Return note points preserve semantic ownership across pending and resolved export bases, not raw union offsets',()=>{
   for(const state of ['pending','accepted','rejected']) {
     const prior=pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('Axx NOTE Z')),[{...revision(1,3,'insert'),state}])),[{noteId:'note-1',paragraphIndex:0,offsetUtf16:5}]);

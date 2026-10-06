@@ -140,10 +140,10 @@ for(const era of ['C1','REVIEW','HOSTILE','MEDIA','REOPEN','TABLE_FILES','IMPORT
   assert.equal(git('diff', '--name-only', runtime, verifier, '--', 'src', 'package.json', 'package-lock.json'), '');
  });
 
-test('Notes confirmation successor requires every exact current binding, guard and both ancestry proofs', async () => {
+test('Book pending notes successor requires every exact current binding, guard and both ancestry proofs', async () => {
   const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
-  const expected = cert.R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR;
-  assert.ok(expected, 'current notes successor must exist');
+  const expected = cert.R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR;
+  assert.ok(expected, 'current book notes successor must exist');
   const candidate = 'f'.repeat(40);
   const bindings = [...expected.bindings, ...expected.guards];
   const bytes = new Map(await Promise.all(bindings.map(async binding => {

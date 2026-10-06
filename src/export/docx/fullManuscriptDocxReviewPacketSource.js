@@ -981,6 +981,7 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
       text: normalizeVisibleDocumentText(pendingTextRevisions.paragraphs(pendingExport.doc)
         .map(p => p.content.map(n => n.type === 'hardBreak' ? '\n' : n.text).join('')).join('\n')) }) : currentParagraphs;
     const pendingSegments = pendingExport ? pendingExport.paragraphs.map(p => p.segments) : pendingLedger ? pendingTextRevisions.exportSegments(pendingLedger) : null;
+    const pendingNotePoints=pendingTextRevisions.noteProjection(scene.doc,'export');
     for (let index = 0; index < paragraphs.length; index += 1) {
       const { text, formatIr } = paragraphs[index];
       const seed = `${scene.sceneId}\n${scene.sceneOrdinal}\n${index}\n${text}`;
@@ -1003,6 +1004,8 @@ function buildFullManuscriptBlocks(scenes, cryptoPort = createDefaultCryptoPort(
         canonicalTextSha256: sha256Text(text),
         canonicalMarksSha256: cryptoPort.sha256Json(formatIr),
         formatIr,
+        ...(pendingNotePoints ? { pendingNoteSourcePoints: pendingNotePoints.filter(point=>point.paragraphIndex===index)
+          .map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16})) } : {}),
         ...(pendingLedger ? { pendingRevisionSegments: pendingSegments[index],
           pendingParagraphRevision: pendingExport ? pendingExport.paragraphs[index].paragraphRevision : pendingLedger.revisions.find(r => r.paragraphIndex === index && pendingTextRevisions.isParagraphFormat(r)),
           ...(pendingExport?.paragraphs[index].rowRevision ? { pendingRowRevision: pendingExport.paragraphs[index].rowRevision } : {}),
@@ -1611,6 +1614,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     blocks,
     commentExport,
     documentNotes,
+    notesDocument: input.notesDocument ? cloneJson(input.notesDocument) : null,
     documentStories,
     wordDefaultTabStop,
     documentMetadata,

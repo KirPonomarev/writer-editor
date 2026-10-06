@@ -769,3 +769,13 @@ Frozen40F legal paragraph-mark export now survives a genuine third Word save. SO
   tests and6of6 hidden real Electron keyboard cases pass; complete display and
  760x640 fixed bounds independently checked. Mandatory frozen whole gates and
   full delivery pending; no whole-novel PASS recorded.
+
+## 2026-10-06 — WORD_BOOK_PENDING_NOTES_MAC_20261006 declared
+
+PR2090 full bounded confirmation delivery closed at5d0c586. Fresh canonical/
+T7/clean peer identity, full actual initial reads,22-path preflight and E0 passed
+before new code dispatch. Existing isolated peer reused on codex branch; no
+owner checkout or protected old WIP changed. Separate writer implements one
+atomic signed book insert/delete + complete discussions + unchanged existing
+foot/endnotes with complete body/source-point proof. Early short source/package
+real Word routes and all gates remain required; whole novel release remains open.

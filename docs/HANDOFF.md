@@ -1,3 +1,18 @@
+## 2026-10-06 — composed book notes implementation active
+
+PR2090 is merged and exact verified at5d0c5865280684bcd9ce287d138a9200c40eb054;
+previous pending-confirmation headers are historical. Full novel goal is active.
+Current WORD_BOOK_PENDING_NOTES_MAC_20261006 has verified clean exact base,
+ordered startup,22-path preflight/E0 and separate bounded code writer. Product
+outcome is one atomic book text/discussion return preserving existing foot/
+endnotes and provably derived source points. Full rich body equality must not
+omit paragraph spacing/language or break marks. Existing schema3, Kernel/lease,
+CAS, historical proofs, untouched middle-scene bytes and old WIP remain protected.
+Next: short actual Main/atomic writer and fresh genuine SOURCE/PACKAGED Word
+exchange, then stable affected/mandatory checks and complete Git delivery.
+No old native import, old pending profiles, giant alert, AX/CUA/capture or machine
+failure replay. This pending outcome does not close the full agreed novel plan.
+
 ## 2026-10-06 — autonomous novel release continuation
 
 Owner requests full agreed macOS large-novel direction for writer/editor/

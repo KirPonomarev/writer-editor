@@ -1,3 +1,25 @@
+## 2026-10-06 — atomic book return with notes declared
+
+Active task WORD_BOOK_PENDING_NOTES_MAC_20261006 starts from exact merged
+5d0c5865280684bcd9ce287d138a9200c40eb054. Owner requests full autonomous Mac
+novel exchange for writer/editor/proofreader; original denominator unchanged.
+PR2090 confirmation-only chain is closed at that merge: CI19/19, exact candidate
+official default RTK3593/3593 and exact merged affected151/151, all zero skipped/
+todo; actual Main hidden choice6/6. This is bounded confirmation proof only.
+
+Fresh verified T7 and clean isolated branch, full actual initial startup reads,
+22-path preflight and E0 precede this new code dispatch. One outcome: signed
+multi-scene insert/delete plus full discussion graph and unchanged foot/endnotes
+through one existing atomic cohort. Source occurrence mapping, full rich note
+body (including paragraph/break fields), independent comment re-derivation,
+provisional/final DOCX self-parse and notes recovery remain required. No new
+writer/parser/UI/dependency. Separate code writer owns six runtime/four behavior
+tests; root owns OPS/proof/delivery. Short genuine SOURCE/PACKAGED native exchange
+comes before final broad gates. Old native import/pending100k/giant alert/AX/CUA/
+capture/machine failure replay forbidden; controlled owned Node journal recovery
+is a distinct required proof. Full100k/five genuine exchanges, named styles and
+other original Mac requirements remain OPEN; target is not live yet.
+
 ## 2026-10-06 — autonomous macOS novel release direction resumed
 
 The owner explicitly requests autonomous completion of the agreed large-novel

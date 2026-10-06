@@ -10,6 +10,35 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
+async function notesBookFixture() {
+ const file=require('node:path').join(__dirname,'rtk-word-pending-notes.contract.test.js'),module={exports:{}};
+ const code=require('node:fs').readFileSync(file,'utf8').split("\ntest('complete book note law")[0]+'\nmodule.exports={composedBookFixture};';
+ new Function('require','module','__dirname',code)(require('node:module').createRequire(file),module,__dirname);
+ return module.exports.composedBookFixture();
+}
+test('book schema4 independently derives new source points and the complete foreign reply graph without caller after state',async()=>{
+ const f=await notesBookFixture(),model=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const input={beforeText:f.beforeText,projectId:f.document.projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)},result=model.planMixedBookReturn(input);
+ assert.equal(result.scenes[1].content,f.scenes[1].beforeContent,'control owner stays byte exact');
+ for(const [index,original] of [[0,'AxxB tail'],[2,'old tail']]) {
+  const doc=envelope.parseObservablePayload(result.scenes[index].content).doc;
+  assert.equal(review.projection(doc).current,f.current[index]);assert.equal(review.projection(doc).original,original);
+  assert.deepEqual(review.readLedger(doc).noteSourcePoints.map(p=>p.offsetUtf16),index===0?[2,4]:[9]);
+  assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,review.readLedger(f.beforeDocs[index])?.source||f.beforeDocs[index]);
+  assert.deepEqual(review.decide(review.decide(doc,{action:'undo'}).doc,{action:'redo'}).doc,doc);
+ }
+ const graph=JSON.parse(result.afterText);assert.equal(graph.threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
+ assert.equal(graph.threads.find(t=>t.threadId==='thread-2').messages.at(-1).body,'Gamma reply retained');
+ const comment=require('../../src/core/word-comment-return-delta-v1.cjs'),mixed=f.scenes.map((scene,i)=>({sceneId:scene.sceneId,document:f.beforeDocs[i],returnedDocument:review.bindLedger(f.proof.returnedScenes[i].ledger)}));
+ assert.equal(comment.planCommentReturnDelta({...f.proof,beforeText:f.beforeText,notesText:f.notesText,mixedPendingScenes:mixed}).afterText,result.afterText);
+ for(const alter of [p=>p.schemaVersion=3,p=>delete p.noteContext.returnedReferences,p=>p.noteContext.callerAfter=f.afterNotes,
+  p=>p.noteContext.unionReferences[0].offsetUtf16++,p=>p.noteContext.returnedNotes[0].body.content[0].attrs.wordParagraphSpacing.after++,
+  p=>p.returnedScenes[0].ledger.noteSourcePoints=[{noteId:'note-left',paragraphIndex:0,offsetUtf16:3}]]) {
+  const proof=structuredClone(f.proof);alter(proof);assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(proof)}),/PENDING_|MIXED_RETURN_|NOTE_/u,String(alter));
+ }
+ const stale=JSON.parse(f.notesText);stale.notes[0].manuscript.reference.offsetUtf16++;
+ assert.throws(()=>comment.planCommentReturnDelta({...f.proof,beforeText:f.beforeText,notesText:JSON.stringify(stale),mixedPendingScenes:mixed}),/PENDING_NOTE_BASELINE_CONFLICT/u);
+});
 test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
  const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
  const style=attrs=>[{type:'textStyle',attrs}],edited={fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'en-GB'}};

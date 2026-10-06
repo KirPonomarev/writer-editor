@@ -1176,7 +1176,56 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     };
   }
   let documentNotesBinding = null;
-  if (source.documentNotes) {
+  if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1) {
+    try {
+      const noteProofs=[];
+      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
+        const readback=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
+          const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId];
+          const document=require('./core/document-content-envelope-v1.cjs').parseObservablePayload(raw).doc;
+          if(!document)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document};});
+        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
+          baselineDocuments:noteScenes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
+          signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
+        if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        const preview=revisionBridge.buildDocxContentPreviewFromZipBytes(bytes);
+        if(!preview.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
+          projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
+          scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
+          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes),
+          returnedReferences:readback.reviewIr.documentNotes.references,
+          unionReferences:preview.contentPreview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
+        for(const scene of bound) {
+          const before=pendingTextRevisions.readLedger(scene.beforeDoc),returned=pendingTextRevisions.readLedger(scene.returnedDoc);
+          if(before?.noteSourcePoints) {
+            const expected=pendingTextRevisions.noteProjection(scene.beforeDoc,'export').map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16}));
+            // Reproduce only the pinned LOCAL pending/comment emission branch.
+            // Authored font/language fields overlay these actual emitted values;
+            // clean and schema1 paths retain their strict comparison below.
+            const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
+            const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
+            if(source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
+              &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
+              const leaves=pendingTextRevisions.paragraphs(emitted.source);
+              leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
+                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);});
+              emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
+                [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
+            }
+            if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
+              ||stableRtkReviewTransportJson(scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography))
+                !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+          }
+        }
+        noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
+      }
+      if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
+      documentNotesBinding={ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+    } catch(error) {return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',reason:error.code||error.message};}
+  } else if (source.documentNotes) {
     documentNotesBinding = validateDocumentNotesReturn({
       expected: localAuthority.documentNotes,
       returned: finalParse.reviewIr?.documentNotes,
@@ -6294,8 +6343,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     if(capsule.projectRoot!==context.projectRoot||capsule.exportMapAuthority!=='main-owned-active-export-authority-store-after-return-authentication'
       ||capsule.returnedArtifactExportMapAccepted!==false||!Buffer.isBuffer(docxBytes)||computeHash(docxBytes)!==intake.returnedArtifactSha256?.replace(/^sha256:/u,''))throw Error('WORD_BOOK_RETURN_AUTHORITY_REQUIRED');
     if(preview.ok!==true)throw Error('WORD_BOOK_RETURN_CONTENT_UNSUPPORTED');
-    if(capsule.userBookmarksCandidate||capsule.mediaReturnCandidate||capsule.storyReturnCandidate||capsule.cleanLinkLabel?.ok
-      ||capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length)throw Error('WORD_BOOK_RETURN_COMPOSITE_UNSUPPORTED');
+    if(capsule.userBookmarksCandidate||capsule.mediaReturnCandidate||capsule.storyReturnCandidate||capsule.cleanLinkLabel?.ok)throw Error('WORD_BOOK_RETURN_COMPOSITE_UNSUPPORTED');
     const envelope=await loadDocumentContentEnvelopeModule(),module=await loadRtkNonTextReturnModule();
     const projectRoot=await fs.realpath(context.projectRoot),scenes=[];let sourceBytes=0;
     if(capsule.exportMap.scenes.length>512)throw Error('WORD_BOOK_RETURN_BUDGET');
@@ -6330,10 +6378,17 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const exportMap=JSON.parse(JSON.stringify(capsule.exportMap));
     if(Object.hasOwn(exportMap,'commentExport')&&stableRtkReviewTransportJson(exportMap.commentExport)!==stableRtkReviewTransportJson(capsule.commentExport))throw Error('MIXED_RETURN_COMMENT_BASELINE_MISMATCH');
     delete exportMap.commentExport;
-    const proof={schemaVersion:3,projectId:context.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
+    const hasNotes=Boolean(capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length);
+    if(hasNotes&&(capsule.documentNotes?.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+      ||intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest!==capsule.documentNotes.protectedDigest))throw Error('PENDING_NOTE_BASELINE_CONFLICT');
+    const proof={schemaVersion:hasNotes?4:3,projectId:context.projectId,roundId:capsule.roundId,artifactSha256:intake.returnedArtifactSha256,
       baseline:capsule.commentExport,exportMap,returnedScenes:parsed.scenes.map(scene=>({sceneId:scene.sceneId,ledger:pendingTextRevisions.readLedger(scene.returnedDocument)})),
       returnedThreads:intake.parserResult.reviewIr.commentThreads,returnedParagraphs:intake.parserResult.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),
-      commentReturnInventory:intake.parserResult.reviewIr.commentReturnInventory};
+      commentReturnInventory:intake.parserResult.reviewIr.commentReturnInventory,
+      ...(hasNotes?{noteContext:{baseline:capsule.documentNotes,
+        returnedNotes:revisionBridge.parseDocumentNotesRichReturn(docxBytes,intake.parserResult.reviewIr.documentNotes),
+        returnedReferences:intake.parserResult.reviewIr.documentNotes.references,
+        unionReferences:preview.contentPreview.pendingNoteReferences||intake.parserResult.reviewIr.documentNotes.references}}:{})};
     const returnProofJson=JSON.stringify(proof),model=await loadProjectTreeCohortModule();
     const optional=async relative=>{try{return await fs.readFile(path.join(context.projectRoot,relative),'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}};
     const input={operation:'word-mixed-return',operationId:'word-book-'+computeHash(docxBytes),projectId:context.projectId,manifestPath,
@@ -6341,7 +6396,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       scenes:await Promise.all(scenes.map(async scene=>({sceneId:scene.sceneId,beforeContent:scene.raw,commitText:await optional(scene.sceneId+'.wp201-commit.json')}))),
       notesText:await optional('notes.craftsman.json'),commentsText:comments.text,returnProofJson};
     const semantic=require('./core/word-pending-comment-return-v1.cjs').planMixedBookReturn({beforeText:comments.text,projectId:context.projectId,
-      scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson});
+      scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson,notesText:input.notesText});
     if(!semantic.scenes.some(scene=>scene.changed))return null;
     const plan=model.planProjectMixedWordReturnCohort(input);
     check();let consumed=false;
@@ -11200,7 +11255,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       explicitCanonicalApplyConfirmed: false, isCurrent, docxBytes: decoded.bytes, revisionBridge,
       onPrepared: options.onCommentDeltaPrepared });
     if(commentProductPath.ok!==true
-      &&['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)) {
+      &&(['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)
+        ||commentProductPath.code==='PENDING_COMMENT_RETURN_NOTES_CHANGED'&&returnIntake.localAuthorityCapsule.exportMap.scenes.length>1)) {
       // These typed outcomes require the separate complete mixed proof. All
       // identity, capability, stale and package failures remain terminal.
       const mixedPath=await (returnIntake.localAuthorityCapsule.exportMap.scenes.length>1?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
