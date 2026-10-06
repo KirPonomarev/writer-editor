@@ -754,3 +754,18 @@ PR2088 remains DRAFT on checkpointc8e3e8be2e66f3da4f465fed4dd186dfdabc505b. Its 
 ### 2026-10-06 — novel book frozen07 native routes complete; delivery open
 
 Frozen40F legal paragraph-mark export now survives a genuine third Word save. SOURCE07:2affected owners, Cancel/Apply all3canonicalrich scenes+wholegraph independently checked,12native UndoRedo checkpoints across3rounds, same-profile controlled restart, fullreexport4900778c opened in Word. Ordinary PACKAGED07 WRITER_LOCAL_V1 without collaboration flags: ownexport→genuineWordsave8eb1fe15→Cancel/Apply,8UndoRedo checkpoints across2rounds, restart, fullreexport3fd4d9d8 opened in Word.5discussion messages retained. Existing Comments rail exposes local decisions; genericReview entry still routes to Inspector and navigator counts refresh only after restart. All owned native processes stopped. Short183/181word fixtures do not certify100k, nativeimport,5successive novel exchanges or full Mac plan. Compound paragraph-mark+structural single-event export and implicit run-language binding remain typed/open limitations. Full frozen07 mandatory gates, ordinary tree-preserving main integration, PR2088 CI/merge/merged verification NEXT; c8 RTK3515 green predates40F. Original binding0612 fixed, original fullplan denominator unchanged.
+# 2026-10-06 — autonomous novel release continuation
+
+- Owner resumed the complete agreed macOS large-novel direction for writer,
+  editor and proofreader; complex tables remain later and old crash reproduction
+  remains prohibited. Current base12474df includes delivered PR2088/2089.
+- Full startup reads and read-only plan/source/artifact reconciliation identify
+  remaining composed notes/media/stories/structure, selected scope, named styles,
+  effective defaults and five genuine100k SOURCE/PACKAGED exchanges. Separate
+  historical fixtures are not full feature acceptance.
+- Opened one mechanical note/discussion confirmation contour after clean
+ 16-path architecture preflight and corrected pre-code E0. Code delegated; root
+  owns proof and delivery. Mechanical call sites now frozen:120of120 focused
+  tests and6of6 hidden real Electron keyboard cases pass; complete display and
+ 760x640 fixed bounds independently checked. Mandatory frozen whole gates and
+  full delivery pending; no whole-novel PASS recorded.

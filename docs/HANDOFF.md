@@ -1,3 +1,24 @@
+## 2026-10-06 — autonomous novel release continuation
+
+Owner requests full agreed macOS large-novel direction for writer/editor/
+proofreader before expansion; complex tables remain later. Current merged
+base12474df25f4ce8c2cea62a1e57be65ca69f514cc includes PR2088/2089.
+See current acceptance map in CONTEXT; old pending headers are historical.
+Never replay old crash/import/giant alert, old pending profiles or AX/CUA capture.
+
+One active write contour: WORD_NOTES_SAFE_CONFIRMATION_MAC_20261006; clean
+16-path preflight and E0 before code dispatch. Separate writer owns only two
+Main confirmation call sites and three existing affected contracts. Root owns
+OPS/docs/proof/delivery. Reuse unchanged bounded adapter; final note display
+must fit32000 including headers/suffix; preserve all existing semantics and
+Kernel/lease/stale/atomic authority. No native long-alert fallback.
+Focused120of120 and actual-callsite hidden Electron6of6 pass with no skip/todo;
+complete note22506/comment369-unit details,760x640 and footer are observed.
+Next action is freeze exact hashes and complete whole mandatory proof/delivery.
+Then continue precise effective-export defaults and the measured composed-book
+gaps. Neither this task nor green standalone contracts close full novel/five
+genuine100k exchanges or both source/package release qualification.
+
 ## 2026-10-06 — bounded Word return confirmation repair in progress
 
 WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006 starts from exact merged7e8f878c203b261e7b93abda93781df84748eadb. Preserve the original three-file prepared patch, old worktree and pending novel projects byte-exact. The prepared32k-character guard still used a native alert observed at448x9566 points; a fixed viewport and internal scrolling are the scoped remedy. No replay of the old import, giant alert, CUA/AX capture or WindowServer failure is authorized.

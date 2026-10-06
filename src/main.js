@@ -12143,14 +12143,13 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
   const labels = { create: 'Добавить', update: 'Изменить', delete: 'Удалить' };
   const point = value => value ? `${value.reference.sceneId}: ${value.reference.offsetUtf16}` : '—';
   const details = changes.map((change, index) => `${index + 1}. ${labels[change.operation]}: ${kind(change.before)} → ${kind(change.after)}\nПозиция: ${point(change.before)} → ${point(change.after)}\nТекст: ${body(change.before)}\n→ ${body(change.after)}\nОформление до:\n${formatting(change.before)}\nОформление после:\n${formatting(change.after)}`);
-  // Never hide changes behind a truncated native confirmation or an enormous
-  // platform dialog. The caller reports this typed no-write refusal.
-  if (details.join('\n\n').length + String(fileName).length > 32000) throw Error('NOTE_RETURN_PREVIEW_BUDGET');
-  const result = await dialog.showMessageBox(mainWindow, { type: 'question', title: 'Сноски из Word',
+  const detail = `${fileName}\nИзменений: ${changes.length}. Удалённых: ${changes.filter(change => change.operation === 'delete').length}.\n${details.join('\n\n')}\nУдалённые сноски сохранятся с отметкой удаления.`;
+  // Bound the complete display, including headers and deletion notice, before
+  // any choice effect. The caller reports this typed no-write refusal.
+  if (detail.length > 32000) throw Error('NOTE_RETURN_PREVIEW_BUDGET');
+  return (await confirmWordReturn({ parent: mainWindow, title: 'Сноски из Word',
     message: 'Применить изменения сносок?',
-    detail: `${fileName}\nИзменений: ${changes.length}. Удалённых: ${changes.filter(change => change.operation === 'delete').length}.\n${details.join('\n\n')}\nУдалённые сноски сохранятся с отметкой удаления.`,
-    buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true });
-  return result.response === 1;
+    detail }, { BrowserWindow, screen })) === true;
 }
 
 async function confirmLocalWordCommentDelta({ fileName, changes }) {
@@ -12160,14 +12159,11 @@ async function confirmLocalWordCommentDelta({ fileName, changes }) {
   const deleted = changes.filter(change => change.statusAfter === 'deleted').length;
   const added = changes.filter(change => change.created === true).length;
   const deletedReplies = changes.reduce((total, change) => total + (change.deletedMessageIds?.length || 0), 0);
-  const result = await dialog.showMessageBox(mainWindow, {
-    type: 'question', title: 'Комментарии из Word',
+  return (await confirmWordReturn({ parent: mainWindow, title: 'Комментарии из Word',
     message: 'Применить изменения комментариев?',
     detail: `${fileName}\nИзменённых обсуждений: ${count}. ${added ? `Новых обсуждений: ${added}. ` : ''}${deleted
       ? `В файле Word отсутствует обсуждений: ${deleted}. При применении они будут помечены удалёнными в Ялкене; их тексты и авторы сохранятся в истории. ` : ''}${deletedReplies ? `Удалённых ответов: ${deletedReplies}. Их тексты и авторы сохранятся в истории. ` : ''}Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.`,
-    buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true,
-  });
-  return result.response === 1;
+  }, { BrowserWindow, screen })) === true;
 }
 
 async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {}, options = {}) {
