@@ -1,7 +1,7 @@
 {
   "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
   "taskId": "WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005",
-  "objective": "Authenticated fixed-topology full-manuscript Word return updates every affected saved scene and one discussion graph through the existing leased recoverable publisher; retains prior and nested independent revision meanings, supported styles, current messages and per-scene editorial round histories. Immutable SOURCE05 and normal PACKAGED05 genuine Word short routes observed; successor required gates and delivery remain open.",
+  "objective": "Authenticated fixed-topology multi-scene Word return preserves existing rich revisions and one discussion graph through the existing leased recoverable publisher. Frozen07 genuine SOURCE third-round and ordinary PACKAGED second-round short routes, native Cancel/Apply/UndoRedo/restart/full reexport observed; mandatory final checks and delivery remain open, not full novel acceptance.",
   "taskType": "PRODUCT_CODE",
   "bindingBaseSha": "0612a9ea13736d47e4f59c6e4964a1b71595969f",
   "scopeIn": [
@@ -426,5 +426,28 @@
       "scope": "7 original product-path failures plus note-ownership cases; not full-graph acceptance"
     },
     "frozenSourcePatchSha256": "6f802f2e21c562b33d63e10fc44f8ef22a5b906389c172f11f2e48b35e9635fb"
+  },
+  "nativeThirdSaveProducerRepair40F": {
+    "diagnosis": "previous paragraph mark rPr illegally nested in pPrChange/pPr; genuine Word save drops retained mark event",
+    "solution": "existing mark-only revision emits legal pPr/rPr/rPrChange, structural event stays pPrChange, combined single-owner event typed refusal",
+    "invariants": [
+      "nativeId author date Original Current preserved",
+      "missing old event remains refused",
+      "fresh own native third-save proof before heavy gates",
+      "structural Original and Current preserve independent unchanged mark exactly"
+    ],
+    "runtimeState": "IMPLEMENTED_WORKING_CANDIDATE_EXACT_NATIVE07_SOURCE_NOT_DELIVERED",
+    "failedArtifactSha256": "32e5923ca0c1d0e3d9580e7feaea84b7051d805c8752ca3e78aad4b5e6f56602",
+    "parserOwnerSeam": "For legal structural-only pPrChange, retain strictly validated independent unchanged direct current pPr/rPr in Original only when previous has no owner; tracked duplicate unknown unsupported mark owners refused",
+    "implementationStatus": "IMPLEMENTED_FROZEN07_NATIVE_SHORT_ROUTES_OBSERVED_REQUIRED_DELIVERY_OPEN",
+    "nativeQualification": {
+      "runtimeDigest": "c45a2271adb49a7f13c51bc6f63e62a2e158694d9883e25e439b9bf5ed5e73d9",
+      "sourceWordSha256": "d2828b63087380be7685e8fca087b2d5b5fd4c6d9688d2b6afd2d59e7baaec2a",
+      "packagedWordSha256": "8eb1fe15b391481c91f83460c8a677f2ed212904020d7171605016a2b549f334",
+      "sourceNativeUndoRedoCheckpoints": 12,
+      "packagedNativeUndoRedoCheckpoints": 8,
+      "fullNovelAcceptance": false,
+      "deliveryComplete": false
+    }
   }
 }

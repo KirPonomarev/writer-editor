@@ -2924,7 +2924,7 @@ export const R24_INTEROP_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_SUCCESSOR=Object.fr
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f3957d782289cf7792d20ca865a417a5c80bc3c7080d249ae8ccfbbba27dd9b3"
+      "sha256": "424c155957f8513dd3ca478409616edfd74e82b12def5358e3975e965b1b316b"
     }
   ]
 });

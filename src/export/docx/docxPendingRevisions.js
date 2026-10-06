@@ -24,13 +24,33 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
   if (revision.operation !== 'format' || revision.format?.kind !== 'paragraph') throw Error('PENDING_FORMAT_EXPORT_INVALID');
   const before = revision.format.before;
   const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
+  const stable = value => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item)
+    ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
+  const mark = properties => ({ language: properties.attrs?.wordParagraphMarkLanguage,
+    typography: properties.attrs?.wordParagraphMarkTypography });
+  if (stable(mark(before)) !== stable(mark(revision.format.after))) {
+    const paragraph = properties => {
+      const value = JSON.parse(JSON.stringify(properties));
+      if (value.attrs) {
+        delete value.attrs.wordParagraphMarkLanguage; delete value.attrs.wordParagraphMarkTypography;
+        if (!Object.keys(value.attrs).length) delete value.attrs;
+      }
+      return value;
+    };
+    if (stable(paragraph(before)) !== stable(paragraph(revision.format.after)))
+      throw Error('PENDING_PARAGRAPH_MARK_COMPOSITE_EXPORT_UNSUPPORTED');
+    // A paragraph mark is a run-property owner. Its previous properties belong
+    // under rPr/rPrChange, never under the paragraph-only pPrChange snapshot.
+    const previous = buildDocxParagraphMarkTypographyXml(before.attrs?.wordParagraphMarkTypography)
+      + buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
+    const change = `<w:rPrChange${revisionAttributes(revision, counter)}><w:rPr>${previous}</w:rPr></w:rPrChange>`;
+    const current = /<w:rPr>[\s\S]*?<\/w:rPr>/u;
+    return `<w:pPr>${current.test(body) ? body.replace(current, value => value.replace('</w:rPr>', change + '</w:rPr>'))
+      : body + `<w:rPr>${change}</w:rPr>`}</w:pPr>`;
+  }
   let protectedProperties = body.replace(/<w:(?:jc|pStyle|outlineLvl|spacing|lang|ind)\b[^>]*\/>/gu, '');
   protectedProperties=protectedProperties.replace(/<w:tabs\b[^>]*>[\s\S]*?<\/w:tabs>|<w:tabs\b[^>]*\/>/gu,'');
   protectedProperties = protectedProperties.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/gu, '');
-  const oldLanguage = buildDocxParagraphMarkTypographyXml(before.attrs?.wordParagraphMarkTypography)+buildDocxWordLanguageXml(before.attrs?.wordParagraphMarkLanguage);
-  if (protectedProperties.includes('</w:rPr>')) protectedProperties = protectedProperties.replace('</w:rPr>', oldLanguage + '</w:rPr>');
-  else if (oldLanguage) protectedProperties += `<w:rPr>${oldLanguage}</w:rPr>`;
-  protectedProperties = protectedProperties.replace(/<w:rPr><\/w:rPr>/gu, '');
   const old = `<w:pStyle w:val="${before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal'}"/>`
     + (before.type === 'heading' ? `<w:outlineLvl w:val="${before.attrs.level - 1}"/>` : '')
     + (before.attrs?.textAlign ? `<w:jc w:val="${escapeXml(before.attrs.textAlign === 'justify' ? 'both' : before.attrs.textAlign)}"/>` : '')

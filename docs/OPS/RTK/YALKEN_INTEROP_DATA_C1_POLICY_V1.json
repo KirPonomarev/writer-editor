@@ -960,7 +960,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "b518ce4c20ae5ee2d29b5d395c4c722bd1bc7ca3fd42dfe2e26eb68733040178"
+        "sha256": "09dc5fb586c184b45830694fb17cde286b1552e173c31824007ea8d8736195b3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1716,7 +1716,7 @@
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
-        "sha256": "b53ba7af5ebaf8cbcb16f243e3f0233bf3d8e138d24ef61ef631235ce9136873"
+        "sha256": "ed58966e0780482e13edc0b94f0e680b64bf40c3e1c4c5b4533b456fd7cb1fce"
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
@@ -1772,7 +1772,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-        "sha256": "1b873eae8a0968f046660b0f91c45962ba8ebba4b699d079039aa9f4ad597567"
+        "sha256": "57b5288a51286ef51ebb257df70796b6cb5074cf08009a3668ae7aa276b9d177"
       },
       {
         "path": "test/contracts/rtk-word-move-recording.contract.test.js",
@@ -2536,15 +2536,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8c58c188338946768e8f9f9b81ea6539e88e6978705757f59be3defd191a14e8"
+        "sha256": "506d1dd4edee53d952e42adff5cf7ac22aab3249e8d8fb143c979499038224a8"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8dd13394cacb0fff02102733d77c504ec2479abe94dd5cd23a6d34b8bc79767a"
+        "sha256": "167ce10efb93009c4e8d43a0525feb52405e44b3ecd7a32b50e3a49643f8c32a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "04769b95f241e698f0a86f28c98f53ac5576a39e854d552b95cccc1ae6e95060"
+        "sha256": "1db10e53ad90f59b5b648e0fe12c8810025c4ac7a8e00f5c3b7fc899b810b01a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2700,11 +2700,11 @@
       },
       {
         "path": "docs/tasks/2026-10-05--word-novel-multi-scene-mixed-return-mac.md",
-        "sha256": "0d017ee254eb599cf272b37a8464ddb019ee20b2ccb858085d9d4dc446c2717d"
+        "sha256": "26af843fd2cae963f3b4810e90b9e2e8a96966d411829c232aaf44d822ab6b80"
       },
       {
         "path": "docs/OPS/RTK/FEATURE_INTEGRATION_MANIFEST_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_V1.json",
-        "sha256": "788d1b411d7b865454868981cc4ca35a6b7437e3c0f9fc3dbb0f0faaa42e9e0f"
+        "sha256": "31681ced08a985d78bb750d1f1be2f57a4707da32579679844f08af982c3f81b"
       }
     ],
     "followupRepair": {

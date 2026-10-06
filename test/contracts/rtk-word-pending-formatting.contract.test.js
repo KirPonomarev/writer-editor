@@ -247,8 +247,9 @@ test('Typed spacing and language preserve pending snapshots, decisions and histo
     assert.deepEqual(model.decide(undone, { action: 'redo' }).doc, reopened);
   }
   for (const profile of ['minimum', 'full']) {
-    const returned = await parse(await exportDoc(doc, profile));
-    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode));
+    // One canonical event may retain both transitions locally, but its former
+    // pPrChange carrier cannot represent the paragraph-mark change in Word.
+    await assert.rejects(exportDoc(doc, profile), /^Error: PENDING_PARAGRAPH_MARK_COMPOSITE_EXPORT_UNSUPPORTED$/u);
   }
 });
 
@@ -489,4 +490,88 @@ test('Book paragraph style underlay rebases both snapshots without changing the 
  const forged=structuredClone(returned);forged.revisions[0].format.before.attrs.textAlign='right';
  assert.throws(()=>mixed.deriveMixedPendingDocument({...input,returnedDocument:model.bindLedger(forged)}),/MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED/u);
  assert.deepEqual(model.readLedger(before),ledger);
+});
+
+test('Word paragraph-mark exporter uses its native run-property owner independently of body and structural revisions',async()=>{
+ const [bridge]=await modules;
+ const tuple=value=>`<w:lang w:val="${value}" w:eastAsia="ru-RU" w:bidi="ar-SA"/>`;
+ const bodyLanguage='<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/>';
+ const mark=`<w:rPr>${tuple('ru-RU')}${change('rPr',45,tuple('ru-FI'))}</w:rPr>`;
+ const xml=`<w:p><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/>${mark}</w:pPr>`
+  +run('Independent body', '<w:b/>'+bodyLanguage+change('rPr',46,bodyLanguage))+'</w:p>'
+  +`<w:p><w:pPr><w:jc w:val="center"/>${change('pPr',47)}</w:pPr>${run('Independent paragraph',bodyLanguage)}</w:p>`;
+ const doc=await parse(pack(xml)),before=model.readLedger(doc),sourceCopy=structuredClone(before);
+ assert.equal(before.revisions.length,3);
+ const owned=before.revisions.find(r=>model.isParagraphFormat(r)&&r.paragraphIndex===0);
+ assert.equal(owned.nativeId,'45');assert.equal(owned.format.before.attrs.wordParagraphMarkLanguage.val,'ru-FI');
+ assert.equal(owned.format.after.attrs.wordParagraphMarkLanguage.val,'ru-RU');
+ const governed=buildFullManuscriptDocxReviewPacketSource({projectId:'format',projectRoot:'/synthetic',scenes:[
+  {sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),order:0}]});
+ const exportMap=governed.localAuthorityCapsule.exportMap;
+ const transport={exportTypography:exportMap.exportTypography,exportParagraphs:exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)};
+ for(const profile of ['minimum','full']){
+  const bytes=profile==='full'?buildDocxReviewPacketBuffer(governed):await exportDoc(doc,profile);
+  const emitted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+  // Independent XML ownership oracle: a mark change is inside current pPr/rPr;
+  // the structural change has a paragraph-only prior snapshot with no rPr.
+  assert.match(emitted,/<w:pPr><w:spacing[^>]*\/><w:rPr><w:lang[^>]*w:val="ru-RU"[^>]*\/><w:rPrChange[^>]*><w:rPr><w:lang[^>]*w:val="ru-FI"[^>]*\/><\/w:rPr><\/w:rPrChange><\/w:rPr><\/w:pPr>/u);
+  assert.equal((emitted.match(/<w:pPrChange\b/gu)||[]).length,1);
+  assert.match(emitted,/<w:pPrChange[^>]*><w:pPr><w:pStyle w:val="Normal"\/><\/w:pPr><\/w:pPrChange>/u);
+  assert.equal((emitted.match(/<w:rPrChange\b/gu)||[]).length,2);
+  const returned=await parse(bytes),revisions=model.readLedger(returned).revisions;
+  assert.equal(revisions.length,3);
+  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+  assert.deepEqual(revisions.map(r=>[r.operation,r.format.kind,r.paragraphIndex,r.author,r.date,r.dateUtc]),
+   before.revisions.map(r=>[r.operation,r.format.kind,r.paragraphIndex,r.author,r.date,r.dateUtc]));
+  const binding=model.buildCommentExportBinding({document:doc,schemaVersion:2,...transport}).binding;
+  if(profile==='full'){
+   const capsule=governed.localAuthorityCapsule;
+   // This producer uses its built-in JSON crypto port; use the matching reader
+   // default rather than changing serialization/prefixes in a fixture helper.
+   const admitted=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments:[{sceneId:'roman/a.txt',document:doc}],
+    retainPendingScenes:true,
+    documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest});
+   assert.equal(admitted.ok,true,JSON.stringify(admitted));
+   assert.doesNotThrow(()=>model.verifyCommentReturnBinding({document:doc,returnedDocument:admitted.scenes[0].returnedDocument,binding,...transport}));
+  }
+  const rejected=model.decide(returned,{action:'reject',revisionId:revisions.find(r=>model.isParagraphFormat(r)&&r.paragraphIndex===0).id}).doc;
+  assert.equal(rejected.content[0].attrs.wordParagraphMarkLanguage.val,'ru-FI');
+  assert.ok(rejected.content[0].content[0].marks.some(m=>m.type==='bold'));
+  assert.equal(rejected.content[1].attrs.textAlign,'center');
+  assert.deepEqual(model.decide(model.decide(rejected,{action:'undo'}).doc,{action:'redo'}).doc,rejected);
+ }
+ assert.deepEqual(model.readLedger(doc),sourceCopy,'export must retain canonical native ID and prior event');
+});
+
+test('Structural paragraph change retains the independently owned ordinary mark without an illegal previous rPr',async()=>{
+ const [bridge]=await modules;
+ const mark='<w:rPr><w:b/><w:lang w:val="en-GB" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr>';
+ const property=`<w:jc w:val="center"/>${mark}${change('pPr',51)}`;
+ const xml=`<w:p><w:pPr>${property}</w:pPr>${run('Text unchanged','<w:i/>')}</w:p>`;
+ const doc=await parse(pack(xml)),ledger=model.readLedger(doc);
+ assert.equal(ledger.revisions.length,1);assert.equal(ledger.revisions[0].nativeId,'51');
+ for(const mode of ['original','current']){
+  const attrs=materialized(doc,mode).content[0].attrs;
+  assert.deepEqual(attrs.wordParagraphMarkLanguage,{val:'en-GB',eastAsia:'ja-JP',bidi:'ar-SA'});
+  assert.deepEqual(attrs.wordParagraphMarkTypography,{bold:true});
+  assert.equal(attrs.textAlign,mode==='current'?'center':undefined);
+ }
+ for(const profile of ['minimum','full']){
+  const bytes=await exportDoc(doc,profile),emitted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+  const prior=emitted.match(/<w:pPrChange[^>]*>([\s\S]*?)<\/w:pPrChange>/u)[1];
+  assert.equal(prior.includes('<w:rPr>'),false,'previous paragraph owner cannot contain mark properties');
+  assert.match(emitted,/<w:rPr><w:b(?: w:val="1")?\/><w:lang[^>]*w:val="en-GB"[^>]*\/><\/w:rPr>/u);
+  const returned=await parse(bytes);
+  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+  assert.deepEqual(model.readLedger(returned).revisions.map(r=>[r.author,r.date,r.dateUtc,r.format]),
+   ledger.revisions.map(r=>[r.author,r.date,r.dateUtc,r.format]));
+ }
+ // The carry never admits tracked, duplicate, foreign or unknown mark owners.
+ for(const invalid of [property.replace(mark,mark+mark),property.replace('<w:b/>','<w:unknown/>'),
+  property.replace(mark,mark.replace('<w:b/>','<x:b xmlns:x="urn:foreign"/>')),
+  property.replace('<w:b/>','<w:b/>'+change('rPr',52)),property.replace('<w:b/>','<w:ins w:id="52"/>')])
+  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(`<w:p><w:pPr>${invalid}</w:pPr>${run('text')}</w:p>`)).ok,false,invalid);
+ const selfClosing=`<w:p><w:pPr><w:jc w:val="center"/>${mark}<w:pPrChange w:id="51" ${provenance}><w:pPr/></w:pPrChange></w:pPr>${run('text')}</w:p>`;
+ const aliased=await parse(pack(selfClosing.replaceAll('w:','q:'),'q'));
+ assert.deepEqual(materialized(aliased,'original').content[0].attrs.wordParagraphMarkLanguage,{val:'en-GB',eastAsia:'ja-JP',bidi:'ar-SA'});
 });

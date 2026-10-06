@@ -6108,8 +6108,26 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
       groupId: null, paragraphIndex, from, to: from + length, state: 'pending',
       ...(nested?{parentRevisionId:revisions.find(r=>r.nativeId===attr(wrapper,'id',W_NS))?.id}:{}) });
     propertyRemovals.push({ from: token.openStart, to: token.closeEnd, text: '' });
-    propertyReplacements.push({ from: parent.openStart, to: parent.closeEnd,
-      text: documentXml.slice(previous[0].openStart, previous[0].closeEnd) });
+    let previousXml = documentXml.slice(previous[0].openStart, previous[0].closeEnd);
+    if (kind === 'paragraph' && !markChange) {
+      const directMarks = at => children.filter(t => isWordToken(t, 'rPr') && t.depth === at.depth + 1
+        && t.openStart >= at.openEnd && t.closeEnd <= at.closeStart);
+      const currentMarks = directMarks(parent), previousMarks = directMarks(previous[0]);
+      if (currentMarks.length > 1 || previousMarks.length > 1) throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+      if (currentMarks.length === 1 && previousMarks.length === 0) {
+        // pPrChange owns paragraph properties, not the unchanged mark's run
+        // properties. Carry only the already validated ordinary current owner.
+        const mark = currentMarks[0];
+        if (children.some(t => t.openStart >= mark.openEnd && t.closeEnd <= mark.closeStart
+          && ['rPrChange', 'ins', 'del'].includes(t.localName))) throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
+        paragraphMarkTypography(scan, mark, documentXml);
+        const xml = documentXml.slice(mark.openStart, mark.closeEnd);
+        previousXml = previous[0].selfClosing ? previousXml.replace(/\/>$/u, `>${xml}</${previous[0].qName}>`)
+          : documentXml.slice(previous[0].openStart, previous[0].closeStart) + xml
+            + documentXml.slice(previous[0].closeStart, previous[0].closeEnd);
+      }
+    }
+    propertyReplacements.push({ from: parent.openStart, to: parent.closeEnd, text: previousXml });
   }
   edits.push(...propertyRemovals);
   revisions.sort((a, b) => a.paragraphIndex - b.paragraphIndex || a.from - b.from);
