@@ -16,7 +16,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
   const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR;
+  const current = cert.R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR;
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);
@@ -194,28 +194,44 @@ test('whole-thread deletion cannot use a broad prior Apply flag; native callback
   await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/);
 });
 
-test('native deletion confirmation discloses missing discussions and retained content; Cancel is default', async () => {
+function commentConfirmationHarness({ response = false, parent = { isDestroyed: () => false }, unavailable = false } = {}) {
   const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const source = main.match(/async function confirmLocalWordCommentDelta\([^]*?\n\}(?=\n|$)/u)[0];
-  let prompt;
-  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, dialog: {
-    showMessageBox: async (_, value) => { prompt = value; return { response: 0 }; },
-  } });
+  const BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {}, screen = { ownedDisplay: true }, requests = [];
+  const context = vm.createContext({ mainWindow: parent, BrowserWindow, screen,
+    confirmWordReturn: async (request, adapter) => {
+      assert.equal(request.parent, parent); assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      assert.deepEqual(Object.keys(request).sort(), ['detail', 'message', 'parent', 'title']);
+      requests.push(request); return unavailable ? false : response;
+    }, dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_COMMENT_CONFIRMATION'); } } });
   vm.runInContext(source, context);
-  assert.equal(await context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ statusAfter: 'deleted' }] }), false);
+  return { context, requests, choose: value => { response = value; } };
+}
+
+test('bounded deletion confirmation discloses missing discussions and retained content on Cancel', async () => {
+  const h = commentConfirmationHarness();
+  assert.equal(await h.context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ statusAfter: 'deleted' }] }), false);
+  const prompt = h.requests[0];
   assert.match(prompt.detail, /отсутствует обсуждений: 1/u);
   assert.match(prompt.detail, /тексты и авторы сохранятся/u);
-  assert.equal(prompt.defaultId, 0); assert.equal(prompt.cancelId, 0);
+  assert.equal(prompt.title, 'Комментарии из Word'); assert.equal(prompt.message, 'Применить изменения комментариев?');
 });
 
-function localEntryHarness({ confirm = false, failure = false } = {}) {
+function localEntryHarness({ confirm = false, failure = false, defaultConfirmation = false, unavailable = false } = {}) {
   const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
   const extract = name => main.match(new RegExp('async function ' + name + '\\([^]*?\\n}(?=\\n|$)'))[0];
   let parses = 0, writes = 0, prompts = 0;
+  const parent = { isDestroyed: () => false }, BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {}, screen = { ownedDisplay: true };
   const surface = { unrelated: 'preserved', commentSurvivalPreview: { orphanComments: ['old'] } };
   const sandbox = { Buffer, isPlainObjectValue: v => !!v && typeof v === 'object', cloneJsonSafe: v => JSON.parse(JSON.stringify(v)),
+    mainWindow: parent, BrowserWindow, screen,
+    confirmWordReturn: async (request, adapter) => {
+      prompts++; assert.equal(request.parent, parent); assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      assert.equal(request.detail, 'returned.docx\nИзменённых обсуждений: 1. Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.');
+      return unavailable ? false : confirm;
+    }, dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_COMMENT_CONFIRMATION'); } },
     DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_PAYLOAD_KEYS: new Set(['requestId']),
     DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID: 'local-entry', DOCX_INTAKE_GATE_MAX_BYTES: 100,
     normalizeDocxReviewPreviewSessionLocalFileRequestId: id => id,
@@ -233,10 +249,10 @@ function localEntryHarness({ confirm = false, failure = false } = {}) {
         commentProductPath: { ok: true, status: 'preview-ready', writerCalled: false } };
     },
   };
-  const ctx = vm.createContext(sandbox); vm.runInContext(extract('handleDocxReviewPreviewSessionLocalFileCommandSurface'), ctx);
+  const ctx = vm.createContext(sandbox); vm.runInContext(extract('confirmLocalWordCommentDelta') + '\n' + extract('handleDocxReviewPreviewSessionLocalFileCommandSurface'), ctx);
   return { sandbox, counts: () => ({ parses, writes, prompts }), run: () => ctx.handleDocxReviewPreviewSessionLocalFileCommandSurface({ requestId: 'local' }, {
     pickLocalFile: async () => ({ name: 'returned.docx' }), readLocalFileBytes: async () => Buffer.from('docx'),
-    confirmCommentDelta: async () => { prompts++; return confirm; },
+    ...(defaultConfirmation ? {} : { confirmCommentDelta: async () => { prompts++; return confirm; } }),
     notifyCommentDeltaFailure: async () => {},
   }) };
 }
@@ -245,6 +261,15 @@ test('ordinary entry cancel keeps preview and writes nothing', async () => {
   const h = localEntryHarness(), result = await h.run();
   assert.equal(result.commentProductPath.status, 'cancelled');
   assert.deepEqual(h.counts(), { parses: 1, writes: 0, prompts: 1 });
+});
+test('ordinary entry uses the bounded default port and refuses Cancel, unavailable adapter and nonboolean responses without writes', async () => {
+  for (const options of [{ confirm: false }, { unavailable: true }, { confirm: 1 }, { confirm: 'true' }, { confirm: { response: 1 } }]) {
+    const h = localEntryHarness({ ...options, defaultConfirmation: true }), result = await h.run();
+    assert.equal(result.commentProductPath.status, 'cancelled');
+    assert.deepEqual(h.counts(), { parses: 1, writes: 0, prompts: 1 });
+  }
+  const h = localEntryHarness({ confirm: true, defaultConfirmation: true }), result = await h.run();
+  assert.equal(result.commentProductPath.status, 'applied'); assert.deepEqual(h.counts(), { parses: 1, writes: 1, prompts: 1 });
 });
 test('ordinary entry explicit Apply reuses one parse and replaces false orphan projection', async () => {
   const h = localEntryHarness({ confirm: true }), result = await h.run();
@@ -315,18 +340,29 @@ test('new root requires fresh explicit confirmation and commits via Kernel once 
   await assert.rejects(() => h.prepared.apply(), /PREPARED_CONSUMED/);
 });
 
-test('new root native prompt discloses added discussions and defaults to Cancel', async () => {
-  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
-  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
-  const source = main.match(/async function confirmLocalWordCommentDelta\([^]*?\n\}(?=\n|$)/u)[0];
-  let prompt;
-  const context = vm.createContext({ mainWindow: { isDestroyed: () => false }, dialog: {
-    showMessageBox: async (_, value) => { prompt = value; return { response: 0 }; },
-  } });
-  vm.runInContext(source, context);
-  assert.equal(await context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ created: true }] }), false);
+test('new root bounded prompt discloses added discussions on Cancel', async () => {
+  const h = commentConfirmationHarness();
+  assert.equal(await h.context.confirmLocalWordCommentDelta({ fileName: 'returned.docx', changes: [{ created: true }] }), false);
+  const prompt = h.requests[0];
   assert.match(prompt.detail, /Новых обсуждений: 1/u);
-  assert.equal(prompt.defaultId, 0); assert.equal(prompt.cancelId, 0);
+  assert.equal(prompt.title, 'Комментарии из Word'); assert.equal(prompt.message, 'Применить изменения комментариев?');
+});
+
+test('bounded discussion detail retains exact counts and thread/reply deletion history with explicit boolean choice', async () => {
+  const h = commentConfirmationHarness();
+  const input = { fileName: 'returned<&🧭.docx', changes: [
+    { created: true }, { statusAfter: 'deleted', deletedMessageIds: ['reply-a', 'reply-b'] }, { deletedMessageIds: ['reply-c'] },
+  ] };
+  const detail = 'returned<&🧭.docx\nИзменённых обсуждений: 3. Новых обсуждений: 1. В файле Word отсутствует обсуждений: 1. При применении они будут помечены удалёнными в Ялкене; их тексты и авторы сохранятся в истории. Удалённых ответов: 3. Их тексты и авторы сохранятся в истории. Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.';
+  for (const choice of [false, undefined, null, 1, 'true', { response: 1 }, true]) {
+    h.choose(choice); assert.equal(await h.context.confirmLocalWordCommentDelta(input), choice === true);
+    assert.equal(h.requests.at(-1).detail, detail);
+  }
+  for (const parent of [null, { isDestroyed: () => true }]) {
+    const absent = commentConfirmationHarness({ parent, response: true });
+    assert.equal(await absent.context.confirmLocalWordCommentDelta(input), false); assert.equal(absent.requests.length, 0);
+  }
+  for (const changes of [[], null, {}]) assert.equal(await h.context.confirmLocalWordCommentDelta({ ...input, changes }), false);
 });
 
 test('reply deletion needs fresh explicit confirmation; Kernel preserves root and readable prior state', async t => {

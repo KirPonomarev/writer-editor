@@ -172,13 +172,18 @@ test('implicit default table style is retained and unsupported defaults are neve
   assert.equal(bad.ok, false);
 });
 
-test('native confirmation discloses table ownership, topology and property-only changes before Apply', async () => {
+test('bounded confirmation discloses table ownership, topology and property-only changes before Apply', async () => {
   const fs = require('node:fs'), vm = require('node:vm'), { createRequire } = require('node:module');
   const mainPath = require.resolve('../../src/main.js');
   const source = fs.readFileSync(mainPath, 'utf8');
   const fragment = source.slice(source.indexOf('async function confirmLocalWordNoteDelta('), source.indexOf('async function confirmLocalWordCommentDelta('));
   let shown;
-  const ctx = vm.createContext({ require: createRequire(mainPath), manuscriptNoteModel: model, mainWindow: { isDestroyed: () => false }, dialog: { showMessageBox: async (_w, detail) => { shown = detail; return { response: 0 }; } } });
+  const parent = { isDestroyed: () => false }, BrowserWindow = function OwnedBrowserWindow() {}, screen = { ownedDisplay: true };
+  const ctx = vm.createContext({ require: createRequire(mainPath), manuscriptNoteModel: model, mainWindow: parent, BrowserWindow, screen,
+    confirmWordReturn: async (request, adapter) => {
+      assert.equal(request.parent, parent); assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      shown = request; return false;
+    }, dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_NOTE_CONFIRMATION'); } } });
   vm.runInContext(fragment, ctx);
   const before = model.bindManuscriptPayload({ body: body(), kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
   const after = JSON.parse(JSON.stringify(before));
@@ -186,7 +191,9 @@ test('native confirmation discloses table ownership, topology and property-only 
   after.body.content[1].content[0].content[0].attrs.wordCell = { version: 1, shading: null, borders: {}, widthDxa: 4675 };
   assert.equal(await ctx.confirmLocalWordNoteDelta({ fileName: 'table.docx', changes: [{ operation: 'update', before, after }] }), false);
   for (const text of ['Таблица 1: 2 строк, 2 столбцов', 'строка 2, столбец 2', '100 пт, 150 пт', '#ABCDEF', 'предпочтительная ширина 233.75 пт', 'одинарная 0.5 пт', 'объединение 1 × 1', 'Оформление до:', 'Оформление после:']) assert(shown.detail.includes(text), text);
-  assert.equal(shown.defaultId, 0);
+  assert.equal(shown.title, 'Сноски из Word'); assert.equal(shown.message, 'Применить изменения сносок?');
+  assert.match(shown.detail, /^table\.docx\nИзменений: 1\. Удалённых: 0\./u);
+  assert.match(shown.detail, /Удалённые сноски сохранятся с отметкой удаления\.$/u);
 });
 
 async function tableReturnFixture(kind, mutate = value => value, explicit = true) {

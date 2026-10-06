@@ -1,3 +1,50 @@
+## 2026-10-06 — autonomous macOS novel release direction resumed
+
+The owner explicitly requests autonomous completion of the agreed large-novel
+release direction before further expansion. This preserves the owner scope at
+the existing “Приоритет владельца” record: writer, editor and proofreader;
+Word-origin and Yalken-origin; whole-book and selected chapter/fragment;
+100000-word composed text; five genuine changed Word exchanges in SOURCE and
+PACKAGED with save/reopen/restart/recovery, Current/Original and complete graphs.
+Complex tables, floating objects and print-layout parity remain later work.
+No historical crash, giant alert, old pending project or AX/CUA capture may be
+reproduced. The original Mac-plan denominator is unchanged.
+
+PR2088 and PR2089 are merged; current binding base is
+12474df25f4ce8c2cea62a1e57be65ca69f514cc. Their task headers below retain
+historical pre-delivery checkpoints. A passed isolated confirmation does not
+close full novel acceptance. The following is an acceptance map of the existing
+owner scope, not a new tracker, capability claim or write authority:
+
+| Acceptance family | Required observation at final stable source/package identity | Current residual |
+|---|---|---|
+| Both origins and scopes | Real Word-created import and Yalken-created book/selected DOCX can continue in either app | Full composed origin/selected-chapter qualification open |
+| Writer | Unicode, chapters/scenes, paragraph boundaries, headings, lists, styles and authoring survive repeated exchange | Named-style identity/catalog and combined structure open |
+| Editor | Tracked text and formatting retain authorship, dates, nested identities, Current/Original, decisions and Undo/Redo | Five genuine100k composed rounds open |
+| Proofreader | Exact punctuation/Unicode corrections, comments/replies/status/anchors through paragraphs and scenes remain exact | Mixed cross-scene operation qualification open |
+| Book content | Foot/endnotes, links/bookmarks, ordinary illustrations/captions, fields/page numbers and headers/footers coexist with corrections | Current pending book route refuses several compositions |
+| No-loss and conflicts | Preview/Cancel no-write; explicit Apply; replay no duplicate; local/Word conflict refusal; durable restart/recovery | Final composed native proof open |
+| Resources and delivery | Declared existing budgets, measured production phases, correct bounded display, full gates and source/package binding | Whole-profile timing and final delivery open |
+
+Read-only independent ZIP/XML diagnosis confirms that the old exported novel
+bound12pt but left font/language/spacing defaults unspecified; Word's ordinary
+save added TNR, ru-FI/ru-RU/ar-SA and after160/line278/auto. The old2030 formatting
+operations cannot honestly be called harmless without an effective baseline.
+Current tests intentionally retain those incoming inherited values. A future
+bounded export-profile repair must authenticate deterministic effective defaults,
+compare both effective views, retain canonical representation on equality and
+preserve genuinely changed fields. Legacy unknown defaults must not be erased.
+
+Current contour WORD_NOTES_SAFE_CONFIRMATION_MAC_20261006 mechanically reuses
+the delivered bounded adapter for the remaining note/discussion choice effects.
+Full ordered startup,16-path clean preflight and E0 precede runtime edits;
+original E0 draft errors were corrected before code dispatch. Core, parser,
+export, helper, surface, storage and all Apply authority remain unchanged.
+Call sites are implemented:120of120 focused tests and6of6 independent hidden
+Electron keyboard cases pass; complete display and760x640 bounds are observed.
+Mandatory frozen whole gates and full Git delivery remain pending. This does
+not close the larger goal or qualify a packaged application.
+
 ## 2026-10-06 — bounded Word return confirmation repair in progress
 
 WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006 starts from exact merged7e8f878c203b261e7b93abda93781df84748eadb. Preserve the original three-file prepared patch, old worktree and pending novel projects byte-exact. The prepared32k-character guard still used a native alert observed at448x9566 points; a fixed viewport and internal scrolling are the scoped remedy. No replay of the old import, giant alert, CUA/AX capture or WindowServer failure is authorized.

@@ -16,14 +16,26 @@ const helper = sourceMain.slice(sourceMain.indexOf('const authenticatedNoteDelta
 const handler = sourceMain.slice(sourceMain.indexOf('async function handleNotesUpdateCommand('), sourceMain.indexOf('async function handleNotesDeleteCommand('));
 const bus = sourceMain.slice(sourceMain.indexOf('function dispatchMenuCommand('), sourceMain.indexOf('function buildCommandClickHandler('));
 const snapshotNormalizer = sourceMain.slice(sourceMain.indexOf('function normalizeEditorSnapshotPayload('), sourceMain.indexOf('function requestEditorSnapshot('));
-const nativeConfirmation = sourceMain.slice(sourceMain.indexOf('async function confirmLocalWordNoteDelta('), sourceMain.indexOf('async function confirmLocalWordCommentDelta('));
+const noteConfirmation = sourceMain.slice(sourceMain.indexOf('async function confirmLocalWordNoteDelta('), sourceMain.indexOf('async function confirmLocalWordCommentDelta('));
+function confirmationHarness({ response = false, parent = { isDestroyed: () => false }, unavailable = false } = {}) {
+  const BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {};
+  const screen = { ownedDisplay: true }, requests = [];
+  const ctx = vm.createContext({ manuscriptNoteModel: model, mainWindow: parent, BrowserWindow, screen,
+    confirmWordReturn: async (request, adapter) => {
+      assert.equal(request.parent, parent);
+      assert.deepEqual(Object.keys(request).sort(), ['detail', 'message', 'parent', 'title']);
+      assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      requests.push(request);
+      return unavailable ? false : response;
+    },
+    dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_NOTE_CONFIRMATION'); } } });
+  vm.runInContext(noteConfirmation, ctx);
+  return { ctx, requests, choose: value => { response = value; } };
+}
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
-test('native confirmation exposes exact formatting-only changes and refuses an unreviewable oversized delta', async () => {
-  let shown = null, response = 0, calls = 0;
-  const ctx = vm.createContext({ manuscriptNoteModel: model, mainWindow: { isDestroyed: () => false },
-    dialog: { showMessageBox: async (_window, value) => { shown = value; calls++; return { response }; } } });
-  vm.runInContext(nativeConfirmation, ctx);
+test('bounded confirmation exposes exact formatting-only changes and refuses an unreviewable oversized delta', async () => {
+  const h = confirmationHarness(), { ctx } = h;
   const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Same text' }] }] };
   const before = model.bindManuscriptPayload({ body, kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
   const after = JSON.parse(JSON.stringify(before));
@@ -33,12 +45,46 @@ test('native confirmation exposes exact formatting-only changes and refuses an u
     { type: 'link', attrs: { href: 'https://example.invalid/exact' } }, { type: 'highlight', attrs: { color: '#ffff00' } }];
   const input = { fileName: 'return.docx', changes: [{ operation: 'update', before, after }] };
   assert.equal(await ctx.confirmLocalWordNoteDelta(input), false);
+  const shown = h.requests[0];
+  assert.equal(shown.title, 'Сноски из Word'); assert.equal(shown.message, 'Применить изменения сносок?');
   for (const text of ['Оформление до:', 'по левому краю', 'Оформление после:', 'по центру', 'полужирное', 'курсив', 'подчёркивание', 'зачёркивание', 'Aptos', '10pt', '#112233', '#ffff00', 'https://example.invalid/exact']) assert(shown.detail.includes(text), text);
-  assert.equal(shown.defaultId, 0); assert.equal(shown.cancelId, 0);
-  response = 1; assert.equal(await ctx.confirmLocalWordNoteDelta(input), true);
+  h.choose(true); assert.equal(await ctx.confirmLocalWordNoteDelta(input), true);
   const huge = JSON.parse(JSON.stringify(after)); huge.body.content[0].content[0].text = 'x'.repeat(20000);
   await assert.rejects(ctx.confirmLocalWordNoteDelta({ ...input, changes: [{ operation: 'update', before, after: huge }] }), /NOTE_RETURN_PREVIEW_BUDGET/);
-  assert.equal(calls, 2, 'oversized details cannot open a truncated confirmation');
+  assert.equal(h.requests.length, 2, 'oversized details cannot open a truncated confirmation');
+});
+test('complete note detail includes headers and deletion suffix at the exact 32000-unit boundary', async () => {
+  const h = confirmationHarness({ response: true });
+  const body = text => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
+  const before = model.bindManuscriptPayload({ body: body('Before'), kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
+  let fileName = 'boundary.docx';
+  const expectedDetail = text => `${fileName}\nИзменений: 1. Удалённых: 0.\n1. Изменить: Сноска → Сноска\nПозиция: roman/a.txt: 0 → roman/a.txt: 0\nТекст: Before\n→ ${text}\nОформление до:\nАбзац 1: по левому краю\n«Before»: обычное, параметры абзаца\nОформление после:\nАбзац 1: по левому краю\n«${text}»: обычное, параметры абзаца\nУдалённые сноски сохранятся с отметкой удаления.`;
+  if ((32000 - expectedDetail('').length) % 2) fileName = 'x' + fileName;
+  const text = '<&🧭'.repeat(3000) + 'x'.repeat((32000 - expectedDetail('').length) / 2 - 12000);
+  const after = { ...before, body: body(text) };
+  const input = { fileName, changes: [{ operation: 'update', before, after }] };
+  assert.equal(expectedDetail(text).length, 32000);
+  assert.equal(await h.ctx.confirmLocalWordNoteDelta(input), true);
+  assert.equal(h.requests[0].detail, expectedDetail(text), 'every unit and the complete suffix reach the adapter');
+  await assert.rejects(h.ctx.confirmLocalWordNoteDelta({ ...input, fileName: 'x' + fileName }), /NOTE_RETURN_PREVIEW_BUDGET/);
+  assert.equal(h.requests.length, 1, 'a one-unit final-header overflow must refuse before any choice effect');
+});
+test('note choice requires explicit boolean true and unavailable parents never invoke a choice', async () => {
+  const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Note' }] }] };
+  const after = model.bindManuscriptPayload({ body, kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
+  const input = { fileName: 'return.docx', changes: [{ operation: 'create', before: null, after }] };
+  const h = confirmationHarness();
+  for (const value of [false, undefined, null, 1, 'true', { response: 1 }]) {
+    h.choose(value); assert.equal(await h.ctx.confirmLocalWordNoteDelta(input), false);
+  }
+  h.choose(true); assert.equal(await h.ctx.confirmLocalWordNoteDelta(input), true);
+  for (const parent of [null, { isDestroyed: () => true }]) {
+    const absent = confirmationHarness({ parent, response: true });
+    assert.equal(await absent.ctx.confirmLocalWordNoteDelta(input), false); assert.equal(absent.requests.length, 0);
+  }
+  const absent = confirmationHarness({ unavailable: true });
+  assert.equal(await absent.ctx.confirmLocalWordNoteDelta(input), false); assert.equal(absent.requests.length, 1);
+  for (const changes of [[], null, {}]) assert.equal(await h.ctx.confirmLocalWordNoteDelta({ ...input, changes }), false);
 });
 async function harness(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'note-return-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -97,6 +143,62 @@ async function harness(t) {
     revisionBridge: { parseDocumentNotesRichReturn: () => structuredClone(returned) }, onPrepared: value => { h.prepared = value; } });
   h.returned = returned; h.storage = storage; h.context = context; h.sandbox = sandbox; h.document = document; return h;
 }
+async function noteEntryHarness(t, { choice = false, unavailable = false, oversized = false, superseded = false } = {}) {
+  const h = await harness(t), requests = [];
+  if (oversized) {
+    h.returned[0].body.content[0].content[0].text = 'x'.repeat(20000);
+    h.returned[0].paragraphs = ['x'.repeat(20000)];
+  }
+  const parent = { isDestroyed: () => false }, BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {}, screen = { ownedDisplay: true };
+  Object.assign(h.sandbox, { mainWindow: parent, BrowserWindow, screen,
+    confirmWordReturn: async (request, adapter) => {
+      assert.equal(request.parent, parent); assert.equal(adapter.BrowserWindow, BrowserWindow); assert.equal(adapter.screen, screen);
+      requests.push(request); if (superseded) h.current = false;
+      return unavailable ? false : choice;
+    }, dialog: { showMessageBox: () => { throw Error('UNSAFE_NATIVE_NOTE_CONFIRMATION'); } },
+    isPlainObjectValue: value => !!value && typeof value === 'object',
+    DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_PAYLOAD_KEYS: new Set(['requestId']),
+    DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID: 'local-entry', DOCX_INTAKE_GATE_MAX_BYTES: 100,
+    normalizeDocxReviewPreviewSessionLocalFileRequestId: id => id,
+    validateDocxReviewPreviewSessionLocalFileSelection: value => ({ ok: true, value }),
+    makeDocxReviewPreviewSessionLocalFileTypedError: code => ({ ok: false, code }),
+    handleDocxReviewPreviewSessionActivationCommandSurface: async (_payload, options) => {
+      const noteProductPath = await h.prepare();
+      if (h.prepared) options.onNoteDeltaPrepared(h.prepared);
+      return { ok: true, activated: true, noteProductPath };
+    },
+  });
+  const entry = sourceMain.match(/async function handleDocxReviewPreviewSessionLocalFileCommandSurface\([^]*?\n\}(?=\n|$)/u)[0];
+  vm.runInContext(noteConfirmation + '\n' + entry, h.sandbox);
+  h.requests = requests;
+  h.runEntry = () => h.sandbox.handleDocxReviewPreviewSessionLocalFileCommandSurface({ requestId: 'local' }, {
+    pickLocalFile: async () => ({ name: 'returned.docx' }), readLocalFileBytes: async () => Buffer.from('docx'),
+    notifyNoteDeltaFailure: async () => {},
+  });
+  return h;
+}
+for (const [name, options, expected] of [
+  ['Cancel', { choice: false }, 'NOTE_RETURN_APPLY_CANCELLED'],
+  ['unavailable adapter', { unavailable: true }, 'NOTE_RETURN_APPLY_CANCELLED'],
+  ['nonboolean response', { choice: { response: 1 } }, 'NOTE_RETURN_APPLY_CANCELLED'],
+  ['oversized complete detail', { oversized: true, choice: true }, 'NOTE_RETURN_PREVIEW_BUDGET'],
+  ['stale context after choice', { choice: true, superseded: true }, 'NOTE_RETURN_CONTEXT_STALE'],
+]) test(`ordinary default note entry refuses ${name} with unchanged canonical files and no writer`, async t => {
+  const h = await noteEntryHarness(t, options), before = fs.readFileSync(h.notesPath, 'utf8'), scene = fs.readFileSync(h.scenePath, 'utf8');
+  const result = await h.runEntry();
+  assert.equal(result.noteProductPath.code, expected, JSON.stringify(result.noteProductPath));
+  assert.equal(h.writes, 0); assert.equal(h.leaseCalls, 0);
+  assert.equal(fs.readFileSync(h.notesPath, 'utf8'), before); assert.equal(fs.readFileSync(h.scenePath, 'utf8'), scene);
+  assert.equal(h.requests.length, options.oversized ? 0 : 1);
+});
+test('ordinary default note entry explicit true reaches the actual Kernel and writes exactly once', async t => {
+  const h = await noteEntryHarness(t, { choice: true }), scene = fs.readFileSync(h.scenePath, 'utf8');
+  const result = await h.runEntry();
+  assert.equal(result.noteProductPath.status, 'applied', JSON.stringify(result.noteProductPath));
+  assert.equal(h.requests.length, 1); assert.equal(h.dispatches, 1); assert.equal(h.leaseCalls, 1); assert.equal(h.writes, 1);
+  assert.equal(JSON.parse(fs.readFileSync(h.notesPath)).notes[0].body, 'Edited');
+  assert.equal(fs.readFileSync(h.scenePath, 'utf8'), scene);
+});
 test('actual main return is preview-only until Kernel apply, publishes once and rejects forged or consumed admission', async t => {
   const h = await harness(t); const preview = await h.prepare();
   assert.equal(preview.status, 'preview-ready', JSON.stringify(preview)); assert.equal(h.writes, 0); assert.equal(h.dispatches, 0);
