@@ -77,6 +77,7 @@ focused semantic and safety contracts. The former prepared worktree is preserved
 - `src/main/wordReturnConfirmation.cjs`
 - `test/contracts/rtk-word-pending-return-runtime.contract.test.js`
 - `test/contracts/rtk-word-return-confirmation.contract.test.js`
+- `test/contracts/rtk-word-scene-identity-main.contract.test.js`
 - `docs/tasks/2026-10-06--word-novel-native-preview-mac.md`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
@@ -292,3 +293,12 @@ remain separate work after this delivery chain closes.
 Root acceptance checkpoint2026-10-06: final helper0fab12a1399dcffbad810aa7e268cd541b73cff2e8118d5f586bed7179b9791a passed isolated hidden Electron41.10.6 with native Enter on Cancel, native Enter on Apply and native Escape: false,true,false. Full32000-unit hostile multiline text is byte-exact in DOM;760x640 outer bounds and persistent footer are verified in all3cases. Hardware acceleration was disabled; no Yalken project, Word import, old native alert, AX/CUA or screenshot ran. This qualifies only the fixed adapter, not the full novel journey. Whole adapter contracts57/57 pass with0skip/todo. Required broad gates and Git delivery remain pending. Current18-path clean-peer scope amendment precedes mandatory RTK catalog edit; the earlier17-path first-edit preflight remains historical, not retroactively relabeled.
 
 RTK_CATALOG_COMPANION: new maintained contract added to required graph after clean exact-base18-path amendment; no discovery or denominator exclusion.
+
+WHOLE_CHAIN_FAILURE_CHECKPOINT: first whole affected run passed 680 of 682 cases,
+with two failures in actual Main mixed-book tests. Their fixture still observed
+the old native message-box call while the production path had moved to the new
+boolean confirmation effect; no request was captured. This run remains FAIL.
+Clean exact-base19-path scope amendment and current E0 precede the fixture
+repair. Observe the new adapter request and explicit boolean response while
+retaining every no-write Cancel, semantic, atomic Apply, replay and Undo check.
+No native fallback, disabled assertion or production authority change is allowed.

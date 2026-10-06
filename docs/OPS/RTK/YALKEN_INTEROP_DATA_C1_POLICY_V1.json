@@ -2035,7 +2035,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "fd47c90acd17296746c97fa05552d07677996b9c53cf0d009a6e0401310b2f45"
+        "sha256": "9c864d96133cb474b4042c9ea982e81998bba77e71c2139059f6f4f5332545d4"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2711,7 +2711,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-novel-native-preview-mac.md",
-        "sha256": "ed7801ae7d685134fb2c89116eac3bed0ee0d1bea079998d890c4652f44676f4"
+        "sha256": "54b4c348fb039f5a75ff25eed22ca1068de3359e4d635a4132b83c63cef683b5"
       },
       {
         "path": "src/main/wordReturnConfirmation.cjs",

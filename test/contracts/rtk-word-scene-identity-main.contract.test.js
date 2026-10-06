@@ -29,13 +29,14 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   if (!reopenTemp) { fs.writeFileSync(alpha, 'Alpha'); fs.writeFileSync(beta, 'Beta'); }
   const handles = new Map(), listeners = new Map();
   let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
-  const warnings = []; let messageResponse=0;
+  const warnings = [], pendingConfirmations = []; let messageResponse=0;
   const app = { isPackaged: packagedMac, getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
   const electron = { safeStorage: {isEncryptionAvailable:()=>true,getSelectedStorageBackend:()=> 'gnome_libsecret',
     encryptString(value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',Buffer.alloc(32,9),iv);return Buffer.concat([iv,cipher.update(value,'utf8'),cipher.final(),cipher.getAuthTag()]);},
     decryptString(value){const cipher=crypto.createDecipheriv('aes-256-gcm',Buffer.alloc(32,9),value.subarray(0,12));cipher.setAuthTag(value.subarray(-16));return Buffer.concat([cipher.update(value.subarray(12,-16)),cipher.final()]).toString('utf8');}},
     app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
+    screen: {},
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
     dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: messageResponse }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
@@ -55,6 +56,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
       return { filePath: currentFilePath, dirty: isDirty, generation: lastSignaledEditGeneration };
     },
     dispatch: dispatchLegacyUiTreeDocumentCommand, shellUrl: getExpectedIpcShellUrl,
+    confirmationParent: () => mainWindow,
     reviewBatchApply: handleReviewSurfaceApplyExactTextChangesBatchCommandSurface,
     bind: bindPendingDocxReviewPublication, activate: activateReviewDocxExportAuthority,
     buildAuthority: buildDocxReviewReturnAuthorityStoreRecord, authorityPath: docxReviewReturnAuthorityStorePath,
@@ -116,6 +118,18 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   };`;
   Module._load = function (request, parent, isMain) {
     if(request === 'electron')return electron;
+    if(parent?.filename===mainPath && request==='./main/wordReturnConfirmation.cjs'){
+      // Observe the owned boolean platform effect. Native warning alerts stay
+      // separate; bounded geometry, native focus and response security have
+      // their independent adapter contracts and actual Electron proof.
+      return {confirmWordReturn:async(display,adapter)=>{
+        assert.equal(adapter.BrowserWindow,electron.BrowserWindow);
+        assert.equal(adapter.screen,electron.screen);
+        assert.equal(display.parent,compiled.exports.__probe.confirmationParent());
+        pendingConfirmations.push(display);
+        return messageResponse===1;
+      }};
+    }
     const actual=originalLoad.call(this,request,parent,isMain);
     if(parent?.filename===mainPath && request==='./core/project-transaction-v1.cjs'){
       // This owned adapter injects at the real transaction boundary, then
@@ -174,7 +188,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   }
   return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners,
     chooseMessageResponse: value => { messageResponse=value; },
-    chooseSavePath: (target, callback) => { nextSavePath = target; onSaveDialog = callback; }, saveDialogs: () => saveDialogs, warnings };
+    chooseSavePath: (target, callback) => { nextSavePath = target; onSaveDialog = callback; }, saveDialogs: () => saveDialogs, warnings, pendingConfirmations };
 }
 
 test('actual Main simultaneous sibling permutation rebinds active sibling and note owner, exact persisted Undo survives reopen', async t => {
@@ -2800,9 +2814,9 @@ for(const foreignReply of [false,true])test('novel book actual Main mixed return
  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'book-return.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
  const cancel=await x.f.probe.reviewLocalFile({requestId:'book-cancel'},options);
  assert.equal(cancel.pendingProductPath?.status,'cancelled',JSON.stringify(cancel));assert.deepEqual(x.f.capture(),x.before);
- const dialog=x.f.warnings.at(-1);assert.match(dialog.message,/всем перечисленным сценам/u);
+ const dialog=x.f.pendingConfirmations.at(-1);assert.match(dialog.message,/всем перечисленным сценам/u);
  for(const scene of ['01_Alpha.txt','03_Gamma.txt'])assert.ok(dialog.detail.includes(scene));
- assert.match(dialog.detail,/One new Word reply/u);assert.equal(dialog.cancelId,0);assert.equal(dialog.defaultId,0);
+ assert.match(dialog.detail,/One new Word reply/u);assert.equal(dialog.parent,x.f.probe.confirmationParent());
  x.f.chooseMessageResponse(1);
  const applied=await x.f.probe.reviewLocalFile({requestId:'book-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));
  assert.equal(read(x.paths[1]),sibling);
