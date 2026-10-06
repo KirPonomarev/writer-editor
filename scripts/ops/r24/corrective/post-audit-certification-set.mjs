@@ -3102,14 +3102,18 @@ export const R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR=Object.freeze({
       "sha256": "95f7fdf4568f80a0c0e6e566bc9ccfa2f8e8a7a5a74180f8f3a2ce88da8ccbba"
     },
     {
+      "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "7eca952137646f9baeed63c81e2f933fd6acd7e073830543be92cd9bf53586d4"
+    },
+    {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-      "sha256": "a30684d07b26391a33aae4a965c42c641b8b98119a23bc8680bb53c0a21d8a38"
+      "sha256": "07e94b8033c0e8a7549923c4f4f4ef321ea96c39f96033256cbf6b93725a2bfb"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5ef3eea4dbeec0042a3f82bd87618701443f55b7acd91e65cfe0873f8987eabf"
+      "sha256": "e0649216a31218bdef5a27dd10efdb116787b38e0f802c7cba1b9488937503df"
     }
   ]
 });

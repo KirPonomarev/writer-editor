@@ -1,5 +1,33 @@
 ## 2026-10-06 — book notes legacy and plain-source correction checkpoint
 
+## 2026-10-06 — book-note checkpoint02 and one stale successor contract
+
+Clean ee28a379 checkpoint: whole Main271of271 and promotion37of37 pass; fresh
+SOURCE02 and ordinary PACKAGED02 actual public exports are independently
+checked for full text, pending metadata, discussion bodies, four rich notes and
+all reference geometry; six business files remain byte-exact, both owned apps
+exit normally. This is export-only evidence. Genuine changed Word return is
+OPEN: native close/save commands fail; no Word edit or real chooser/Apply ran.
+Draft PR2091 is pushed and attached; no merge or full novel release claim.
+Official unmodified RTK01 fails3609of3610 with one stale prior successor tuple
+in ordinary Apply corruption contract, not a demonstrated runtime defect.
+Clean checkpoint26-path amendment02 preflight passed before adding that exact
+existing test seam. Retain all typed corruption/mixed-byte/ancestry negatives
+and pin that test in the current19-member tuple. Retain historical failed logs.
+Same contour and original full macOS novel plan; no new runtime/UI/dependency.
+
+CI checkpoint02 retains two actual failures: strict governance rejects stale
+cross-file approval bytes, and broad baseline stops at doctor exit1. The
+committed primary PK1R1 has stale C2A and Interop100 rows; Interop100 also has
+a stale primary back-reference. Preserve all approval/history records and
+refresh in the existing delivered order C2A, Interop100, then primary PK1R1.
+Every primary row must bind final actual bytes. The historical mutual
+back-reference is not acceptance authority; neither evaluator nor strict gates
+change. Do not claim both recursive registries are simultaneously current.
+The separate writer changed only the successor constant; all19 ordinary Apply
+tests pass provisionally with no skipped/todo cases and original13 hashes
+unchanged. Root must freeze19 bindings and rerun the real committed candidate.
+
 Final amendment01 correction HOLD13: final serial focused128of128 pass with
 zero fail/cancel/skip/todo (Main28, notes22, mixed33, atomic transaction45).
 The first mandatory whole Main is retained as FAIL251of266,15 failures; focused

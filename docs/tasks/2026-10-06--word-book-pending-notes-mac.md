@@ -33,7 +33,7 @@ The hypothesis is that closed full-book note binding, source-point derivation
 and regenerated annotation cohort resolve the current composite refusal
 without weakening source/graph/lease/semantic guards.
 
-Diff budget:25 explicit paths; runtime at most900 added/deleted lines; behavior
+Diff budget:26 explicit paths; runtime at most900 added/deleted lines; behavior
 tests at most1300 added/deleted lines; generated inventory and exact hash
 companions may reflect complete serialization. No unrelated formatting/refactor.
 
@@ -52,6 +52,7 @@ companions may reflect complete serialization. No unrelated formatting/refactor.
 - `test/contracts/rtk-word-mixed-return.contract.test.js`
 - `test/contracts/rtk-word-mixed-return-transaction.contract.test.js`
 - `test/contracts/rtk-word-scene-identity-main.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
 - `docs/tasks/2026-10-06--word-book-pending-notes-mac.md`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
@@ -249,6 +250,49 @@ No Word edit, native changed exchange, capture, TCC change or new dependency.
 Next required proof: fresh independent XML and whole Main/broader exact gates,
 then safe native SOURCE/PACKAGED proof and full delivery; original novel release
 and100k/five genuine Word exchanges remain OPEN.
+
+### SCOPE_AMENDMENT_02 — current ordinary Apply successor evidence
+
+AMENDMENT02_CHECKPOINT_SHA: ee28a3794917186c530a4e78e160dc11fbd83951
+AMENDMENT02_PREFLIGHT: passed on clean exact checkpoint with26 explicit paths
+AMENDMENT02_AUTHORITY: same owner-authorized atomic book-note contour; one
+existing ordinary Apply corruption contract added, no runtime or UI expansion.
+
+Exact-clean unmodified official RTK01 executed all236 files and3610 tests:
+3609 pass,1 fail, zero cancel/skip/todo, original exit1, no signal, clean owned
+process group and temporary leases. Failure is the ordinary Apply successor
+contract hardcoding previous NOTES_SAFE_CONFIRMATION while the actual verifier
+correctly selects current BOOK_PENDING_NOTES18 bindings. Its expected tuple must
+use the current coherent cohort. The same contract becomes one of19 exact
+bindings; every individual binding/policy corruption, mixed predecessor and
+unrelated ancestry must still execute and throw its original typed guard.
+No optional skip, relaxed matcher, altered production admission or self-PASS.
+
+Whole Main271of271 and promotion37of37 passed on final source; earlier failed
+Main251of266 and RTK3609of3610 remain immutable failed attempts. Fresh SOURCE02
+and ordinary PACKAGED02 from ee28 publish34,855-byte ten-paragraph books. Root
+independent seeded XML observations verify all full rich note bodies, Original/
+Current text and reference geometry, pending metadata and discussion metadata/
+bodies; all six protected business files stay byte-exact and both owned apps
+exit normally(code0, no signal). These are export-only observations; no Word
+edit, real chooser return or Apply ran. Word close/save automation remains
+unresolved and native acceptance is OPEN. Draft PR2091 is pushed and attached;
+merge and final delivery remain gated by native and remaining broad evidence.
+Next: correct existing test binding, exact19-tuple companion freeze, clean
+checkpoint, whole ordinary Apply and full mandatory graph/baseline/OPS/CI;
+then complete safe genuine Word proof. Full novel denominator stays unchanged.
+
+CI checkpoint02 retains two actual failures: strict governance rejects stale
+cross-file approval bytes, and broad baseline stops at doctor exit1. The
+committed primary PK1R1 has stale C2A and Interop100 rows; Interop100 also has
+a stale primary back-reference. Preserve all approval/history records and
+refresh in the existing delivered order C2A, Interop100, then primary PK1R1.
+Every primary row must bind final actual bytes. The historical mutual
+back-reference is not acceptance authority; neither evaluator nor strict gates
+change. Do not claim both recursive registries are simultaneously current.
+The separate writer changed only the successor constant; all19 ordinary Apply
+tests pass provisionally with no skipped/todo cases and original13 hashes
+unchanged. Root must freeze19 bindings and rerun the real committed candidate.
 
 ## IMPLEMENTATION_STEPS
 

@@ -1585,7 +1585,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "5b2f91b0b0a0719cab0b75b478f4e8a32bfa5a3ff0a818e13ee52f4e4c008954"
+        "sha256": "7eca952137646f9baeed63c81e2f933fd6acd7e073830543be92cd9bf53586d4"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2541,15 +2541,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "d420f5e3c17ece51fc3b954028f936c9c60f01e2ad75281a32d76bfb295801fd"
+        "sha256": "dff4867e79853fe254d0960f0219b79275cd46efac567e1afe6074092f0ef8c5"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ef7b9c936f509e412a6516a4a57f833989fdb5e6ef95c93f0cf5ad5e18818f75"
+        "sha256": "6b67980272802e9c26aec15d1d5bafb39a2ea9dc238306069d822f055c027581"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "aa9a6f9bd75958c78b11b16fae7ae81fedc2e3a83fa3a3bc4f544e5862a075e5"
+        "sha256": "87f1c5c21b072a6b6e33f661d612bef44c52afd5b3023cea3f647fc4cfae3a00"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2729,7 +2729,7 @@
       },
       {
         "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
-        "sha256": "a30684d07b26391a33aae4a965c42c641b8b98119a23bc8680bb53c0a21d8a38"
+        "sha256": "07e94b8033c0e8a7549923c4f4f4ef321ea96c39f96033256cbf6b93725a2bfb"
       }
     ],
     "followupRepair": {
