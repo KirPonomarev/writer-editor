@@ -140,7 +140,7 @@ function validateRecordingSaveProof({ beforeContent, afterContent, recordingProo
     || !equal(next.edits.slice(0, previous.edits.length), previous.edits)) fail('RECORDING_COMMENT_PREFIX_STALE');
   for (const [parsed, plan] of [[before, previous], [after, next]]) {
     const derived = recording.derive(baseline.doc, review.normalizeNode(parsed.doc), proof.metadata, plan);
-    if (!equal(envelope.canonicalizeDocumentJson(derived.doc), parsed.doc))
+    if (JSON.stringify(envelope.canonicalizeDocumentJson(derived.doc)) !== JSON.stringify(parsed.doc))
       fail('RECORDING_COMMENT_LEDGER_MISMATCH');
   }
   return { proof, baseline, before, after, previous, next };

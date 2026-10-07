@@ -40,28 +40,34 @@ test('fresh canonical proof RHS is reused without changing complete rich replay 
  const notes=review.bindLedger({schemaVersion:5,source:doc('aaa'),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[{noteId:'note-one',paragraphIndex:0,offsetUtf16:1}]});
  const history=review.decide(recording.derive(notes,doc('a!aa'),meta,plan('aaa',edit('old',1,'','!'))).doc,{action:'undo'}).doc;
  assert.equal(review.readLedger(history).roundRedo.length,1);
- const parse=envelope.parseObservablePayload,canon=envelope.canonicalizeDocumentJson,derive=recording.derive,rows=[];
+ const parse=envelope.parseObservablePayload,canon=envelope.canonicalizeDocumentJson,derive=recording.derive,stringify=JSON.stringify,rows=[];
+ const stable=value=>stringify(value,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
  for(const [name,base] of Object.entries({rich,defaults,list,history})) {
   const working=review.normalizeNode(base),leaf=review.paragraphs(working)[0];leaf.content.push({type:'text',text:'!'});
   const previous=plan('aaa'),next=plan('aaa',edit('new',3,'','!')),after=derive(base,working,meta,next).doc;
   const input={beforeContent:encode(base),afterContent:encode(after),recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:encode(base),metadata:meta,previousIntents:previous,nextIntents:next,sessionId:'rhs-parity'})};
   if(name==='defaults'){const raw=JSON.stringify(base);input.beforeContent='[doc-v2 length='+raw.length+']\n'+raw;}
-  const original=JSON.stringify({base,working,after,input}),parsed=new Set(),derived=new Set();let rhsCopies=0,derivedCopies=0,replays=0;
-  envelope.parseObservablePayload=raw=>{const value=parse(raw);parsed.add(value.doc);return value;};
-  envelope.canonicalizeDocumentJson=value=>{if(parsed.has(value))rhsCopies++;if(derived.has(value))derivedCopies++;return canon(value);};
+  const original=JSON.stringify({base,working,after,input}),parsed=new Set(),derived=new Set(),canonical=new Map();let rhsCopies=0,derivedCopies=0,replays=0,functional=0,plain=0,baselineDoc;
+  envelope.parseObservablePayload=raw=>{const value=parse(raw);if(!parsed.size)baselineDoc=value.doc;parsed.add(value.doc);return value;};
+  envelope.canonicalizeDocumentJson=value=>{if(parsed.has(value))rhsCopies++;if(derived.has(value))derivedCopies++;const out=canon(value);if(derived.has(value))canonical.set(out,stringify(out));return out;};
+  JSON.stringify=(value,replacer,...args)=>{if(parsed.has(value)&&value!==baselineDoc||canonical.has(value)){if(typeof replacer==='function')functional++;else plain++;}return stringify(value,replacer,...args);};
   recording.derive=(...args)=>{const before=JSON.stringify(args),value=derive(...args);assert.equal(JSON.stringify(args),before);derived.add(value.doc);replays++;return value;};
   let result;try{result=require('../../src/core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof(input);}
-  finally{envelope.parseObservablePayload=parse;envelope.canonicalizeDocumentJson=canon;recording.derive=derive;}
+  finally{envelope.parseObservablePayload=parse;envelope.canonicalizeDocumentJson=canon;recording.derive=derive;JSON.stringify=stringify;}
   const expected={proof:JSON.parse(input.recordingProofJson),baseline:parse(encode(base)),before:parse(input.beforeContent),after:parse(input.afterContent),previous,next};
   assert.deepEqual(result,expected);assert.equal(JSON.stringify({base,working,after,input}),original);
   const returned=JSON.stringify(result);for(const [p,intents] of [[result.before,previous],[result.after,next]]) {
    const frozen=JSON.stringify(p.doc),oldRhs=canon(p.doc),oldLhs=canon(derive(result.baseline.doc,review.normalizeNode(p.doc),meta,intents).doc);
-   assert.deepEqual(oldRhs,p.doc);assert.deepEqual(oldLhs,oldRhs);assert.equal(JSON.stringify(p.doc),frozen);
+   assert.deepEqual(oldRhs,p.doc);assert.deepEqual(oldLhs,oldRhs);assert.equal(stable(oldLhs),stringify(p.doc));assert.equal(stable(p.doc),stringify(p.doc));assert.equal(JSON.stringify(p.doc),frozen);
   }
-  assert.equal(JSON.stringify(result),returned);assert.equal(parsed.size,3);assert.equal(replays,2);assert.equal(derivedCopies,2);rows.push({name,rhsCopies,replays,derivedCopies,input,result,derivedDocs:[...derived]});
+  assert.equal(JSON.stringify(result),returned);assert.equal(parsed.size,3);assert.equal(replays,2);assert.equal(derivedCopies,2);assert.equal(canonical.size,2);for(const [value,frozen] of canonical)assert.equal(stringify(value),frozen);rows.push({name,rhsCopies,replays,derivedCopies,functional,plain,input,result,derivedDocs:[...derived],canonicalReturns:[...canonical.keys()]});
  }
+ for(const raw of ['{"10":0,"2":null,"01":[{"z":false,"a":""}],"a":[],"𝄞":"unicode","toJSON":"literal"}','{"z":{"b":2,"a":1},"a":[-0,null,[]]}']) {
+  const value=JSON.parse(raw),frozen=stringify(value),out=canon({...doc('aaa'),attrs:{opaque:value}});assert.equal(stable(out),stringify(out));assert.equal(stringify(canon(out)),stringify(out));assert.equal(stringify(value),frozen); // Representation parity only; opaque attrs are not product admission.
+ }
+ assert.equal(stable({z:1,a:2}),stable({a:2,z:1}));assert.notEqual(stringify({z:1,a:2}),stringify({a:2,z:1}));
  t.diagnostic(JSON.stringify({completeCanonicalProofParity:rows}));
- for(const row of rows)assert.equal(row.rhsCopies,0,row.name);
+ for(const row of rows){assert.equal(row.rhsCopies,0,row.name);assert.equal(row.functional,0,row.name);assert.equal(row.plain,4,row.name);}
 });
 test('annotated recording proof accepts exactly 32 MiB with full replay and rejects overflow and forged history',()=>{
  const base=doc('aaa'),state=add(base),next=plan('aaa',edit('middle',1,'a',''));

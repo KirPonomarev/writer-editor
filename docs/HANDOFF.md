@@ -2589,3 +2589,105 @@ dependent failures. Current29 requiredCI/delivery/full original release OPEN.
 NEXT: deliver this finite checkpoint through required gates, then clean-admit only
 local canonical JSON equality allocation hypothesis; global equal/validation stay
 unchanged. No next implementation authority from read-only map and no native run.
+
+## 2026-10-07 — amendment30 clean admission: canonical proof equality
+
+Same unfinished original42b PR2093 contour, exact clean pushed5fe. Fresh fetched
+origin/main42b, UUID/encryption/registry/worktree checks, bootstrap, architecture
+preflight and taskE0 passed before this first edit. Declaration30_01 and clean
+admission30_01 bind the same87 paths and all75 current/Git predecessor bytes.
+No new delivery contour, dependency, schema, cache, port, writer or UI authority.
+
+Existing code writer is admitted ONLY to private comments proof comparison143
+and its existing complete parity contract. Fresh raw parsed and independently
+derived canonical operands may use literal JSON serialization equality instead
+of recursively sorting both again. Global stable/equal, all raw parse/domain/
+ledger/history/intents/provenance checks, both independent replay derives and
+both derived canonicalizations, all public/Main/atomic/lease/CAS guards remain.
+Other73of75 source pins are frozen. Root owns four docs, seven OPS companions,
+independent readback and delivery; original1800runtime2600behavior budgets stay.
+
+Causal red/green must show actual4 stable-replacer passes/proof become0 while
+retaining4 plain serializations and full rich/default/list/note/history outputs,
+inputs and actual derivations without mutation. Canonical return identities and
+complete old-vs-literal bytes accompany counts. Compact canonical ordering
+corpus is representation proof only, never product admission. Whole14 serial
+suites, unchanged audited136-input compiler twice and full frozen root review
+precede the next large observation; no test exclusion or oracle weakening.
+
+Owner explicitly permits development RAM up to40GB on the verified64GiB Mac.
+The retained unchanged5fe copied500108-word baseline completed one save/stop/
+atomicUndoRedo cycle444.973632750s, sampledRSS5208195072B, without watchdog.
+Independent Python complete Current/Original/rich notes/private/discussion/
+round history/events/frame fingerprints passed; original fixture and75 sources
+unchanged. Two saved-only reader expectations were retained and corrected to
+the existing complete round-state law, never masked. This is not native Word,
+ordinary PACKAGED or production performance acceptance.
+
+After finite proof/HOLD, execute five serial recording sessions from the same
+full imported fixture, requiring each complete save/unchanged-stop before the
+next. Retain all complete observer assertions and all five atomic UndoRedo.
+Owned RSS ceiling40,000,000,000 bytes, heap32768MiB, wall2700s and one heavy lane.
+The former2.5GiB failure receipts remain historical. Full genuine Word both
+origins/scopes/three roles, SOURCE/ordinary PACKAGED, performance and final
+semantic closure/merge/exact merged verification remain OPEN.
+
+
+### 2026-10-08 Helsinki — amendment30 finite equality checkpoint and whole copied novel observation
+
+Same original42b unfinished PR2093, predecessor5fe; original87 scope and
+1800runtime2600behavior budgets retained: actual1277runtime2582behavior,
+generated462 separately. Core changes only private fresh canonical comparison143
+to literal serialization equality; global stable/equal, all3raw parses, both full
+replays and derived canonicalizations, public planners and atomic/CAS/lease guards
+remain exact. Actual causal functional4-to0/plain4; complete four-row old/new
+input/result/derived/canonical wire parity. Whole14 serial470of470, zero exclusions;
+unchanged compiler twice, source/dist outputs exact. Root source review
+SHAc250c44375fc60bba6f5779fc1bf376e518ade768de2dea6c093b4fc965399f3.
+
+Original five-observer01 stopped on its own empty-paragraph generator TypeError
+after one valid save/stop. No second product save or computer-crash reproduction
+followed. Corrected external observer02 handles the existing empty paragraph and
+retains all business assertions; exact original500108word8391paragraph import
+restored byte-for-byte, raw9680486B SHAd9860ae52481988026ac595726f8d1593c7d8c91343c434ef6680cf1059ba2e5.
+Original failed diagnostic and redundant post-write preflight failure are retained;
+existing clean30 admission remains the mutation basis; no PRE gate was bypassed.
+
+Bounded run began2026-10-07T20:20:15.837654+00:00; actualexit-15,
+watchdogOWNED_NODE_WALL_BOUND, elapsed2701.120632s, sampled owned
+RSS5479841792B, allowed40,000,000,000B/heap32768MiB/wall2700s.
+5 complete saves/stops independently reopened. Log has 5 acknowledged Undo and 0 Redo; complete five-pair atomic replay remains OPEN.
+Node terminal business outcome not emitted; no full replay/completion claim.
+Independent complete durable Python readback ROOT_AMENDMENT30_COMPLETE_DURABLE_SAVED_PREFIX_READBACK_02.json,
+SHA0deefbd87611d5fefcfaa20036bb969223ec103a2050dfe68847716e93e7c2be, checks whole Current/Original/raw root
+formatting, all saved compact frames/source fingerprints and revisions, whole
+private/rich note bodies/current+historical points and full comment history/
+author input/events. Wrapper SHAbe310efa47d91ea48f22d907bf9def85174d29ae79cc76d8f3d2b0b08af4e9ce;
+log SHA1143d3e75fa072457e3842c64320843f742d746fcbb644512895157a67e30428. No product source or root docs changed during the run.
+Each completed unchanged stop made0additional Main derive/atomic commit and kept
+all four business files byte exact. Existing harness manifest remainsrevision1;
+atomic-call counts do not establish production manifest revision increments.
+
+Five saved sessions are synthetic Main/Kernel/Core/leased atomic proof with
+explicit platform/editor stubs, never five genuine Word exchanges. First save
+122.047300s; last completed save287.112106s.
+Known30s512MiB production targets remain unmet. Historical26 CPU attribution is
+qualified; exact current/history cost map SHAa9ff644a825f9de1583cac5c58cae90d159a48a9068b88c2d3504d112b7e29ab
+proposes one focused current validation profile, not another unchanged five-save
+loop or runtime admission. Fresh one-scene full-manuscript composed return still
+needs explicit scope/test-budget admission; map SHAe18674cdb8b798b2a5b9d441bb5cbab25028cc2fae83f7745642d79a86ad2fa2.
+Simultaneous note body/format edits with pending text remain typed unsupported
+and are not removed from the original acceptance denominator.
+
+Fresh official predecessor29 head5fe CI:19success; required/actual renderer RTK
+3903of3903 zero exclusions, plus actual separate22of22 renderer suite. Receipt
+SHA3026e45afbe9b8558c8636c8970e37ce294f2dfb0934cbb84b5a354a51e76a83. This does not certify dirty30 or native release.
+Root final OPS/gates/commit/push/CI are recorded in separately bound process and
+delivery receipts. Original full genuine Word SOURCE+ordinaryPACKAGED, both
+origins/scopes/three roles/five exchanges, speed/memory, final semantic closure,
+merge and exact merged verification remain OPEN. No native launch/AX/CUA/TCC/
+giant-alert/old-crash route was admitted. No dependency/UI/schema/cap/cache/port
+or writer change and no canon exception; ARCH_DIFF_LOG remains exact.
+NEXT: deliver only this finite checkpoint through mandatory gates and commit;
+then fresh-admit the measured current validation/profile or composed-return gap
+through a separate code writer. Full original novel remains unfinished.
