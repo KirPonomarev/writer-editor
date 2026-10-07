@@ -426,3 +426,52 @@ test('actual effective marker equality preserves authored off and reset spelling
  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
  const result=bridge.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:analysis.reviewIr},{fullManuscriptExportMap:map});assert.deepEqual(result.candidates,[]);assert.deepEqual(result.diagnostics,[]);assert.deepEqual(doc,before);assert.deepEqual(source.localAuthorityCapsule.exportMap,map);
 });
+
+test('closed body profiles accept native ordinary realms without executing foreign object callbacks',()=>{
+ const vm=require('node:vm'),helper=require('../../src/core/word-review-typography-v1.cjs');
+ for(const original of [typography,helper.freshBodyTypography()]){
+  const foreign=vm.runInNewContext('('+JSON.stringify(original)+')');
+  assert.deepEqual(helper.validate(foreign),original);
+  const nullOwned=Object.assign(Object.create(null),original);assert.deepEqual(helper.validate(nullOwned),original);
+ }
+ let calls=0;
+ const base={...typography},getter={...base};Object.defineProperty(getter,'fontSize',{enumerable:true,get(){calls++;return '12pt';}});
+ const hidden={...base};Object.defineProperty(hidden,'extra',{value:true});
+ const symbol={...base,[Symbol('extra')]:true},callback={...base,toJSON(){calls++;return base;}};
+ const fakeProto=Object.create(null);Object.defineProperty(fakeProto,'constructor',{value:Object});
+ const accessorProto=Object.create(null);Object.defineProperty(accessorProto,'constructor',{get(){calls++;return Object;}});
+ const classValue=new (class Profile{constructor(){Object.assign(this,base);}})();
+ for(const value of [getter,hidden,symbol,callback,classValue,Object.assign(Object.create(fakeProto),base),Object.assign(Object.create(accessorProto),base),Object.assign(Object.create({}),base),{...base,extra:true},{fontSize:'12pt'},null])assert.throws(()=>helper.validate(value),/WORD_REVIEW_TYPOGRAPHY_INVALID/u);
+ const pollution=JSON.parse('{"schemaVersion":"yalken.review-docx.typography-defaults.v1","fontSize":"12pt","__proto__":{}}');assert.throws(()=>helper.validate(pollution),/WORD_REVIEW_TYPOGRAPHY_INVALID/u);
+ assert.equal(calls,0);
+});
+
+test('body publication compares exact source-owned internal hyperlink join and refuses foreign metadata',async()=>{
+ const [,bridge]=await modules,model=require('../../src/core/word-user-bookmarks-v1.cjs'),helper=require('../../src/core/word-review-typography-v1.cjs');
+ const p={type:'paragraph',content:[{type:'text',text:'Target'}]},created=model.planMutation({doc:{type:'doc',content:[p]},action:'create',projectId:'project-body-profile',sceneId,requestId:'body-join',name:'Target',start:{paragraphIndex:0,offsetUtf16:0,edge:'text'},end:{paragraphIndex:0,offsetUtf16:6,edge:'text'}});
+ created.doc.content[0].content[0].marks=[{type:'link',attrs:model.linkAttrs(created.registry.bookmarks[0])}];
+ const before=structuredClone(created.doc),source=freshBodySource(created.doc),bytes=buildDocxReviewPacketBuffer(source),analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);
+ const raw=source.blocks[0].formatIr,actual=analysis.reviewIr.formattingParagraphs[0];
+ assert.deepEqual(actual.formattedRuns[0].inlineState,{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},link:'#Target',wordBookmarkName:'Target'});
+ assert.equal(helper.readback(raw,actual,source.exportTypography),true);
+ for(const mutate of [r=>r.inlineState.wordBookmarkName='Foreign',r=>r.inlineState.link='#Foreign',r=>r.inlineState.link='https://example.invalid',r=>r.inlineState.foreign=true]){
+  const forged=structuredClone(actual);mutate(forged.formattedRuns[0]);assert.equal(helper.readback(raw,forged,source.exportTypography),false);
+ }
+ for(const mutate of [m=>m.type='foreign',m=>m.attrs.wordBookmarkId='ubm-invalid',m=>m.attrs.wordBookmarkName='Foreign',m=>m.attrs.href='https://example.invalid']){
+  const forged=structuredClone(raw);mutate(forged.runs[0].preservedMarks[0]);assert.equal(helper.readback(forged,actual,source.exportTypography),false);
+ }
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;parts['word/document.xml']=parts['word/document.xml'].replace('w:anchor="Target"','w:anchor="Foreign"');
+ const altered=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(altered.ok,true);
+ assert.equal(helper.readback(raw,altered.reviewIr.formattingParagraphs[0],source.exportTypography),false);
+ const unknown=structuredClone(created.doc.content[0].content[0].marks[0]);unknown.attrs.wordBookmarkId='ubm-'+'f'.repeat(32);
+ assert.throws(()=>model.inspectInternalLink(unknown,created.registry),/USER_BOOKMARK_LINK_TARGET_INVALID/u,'typed source attr classification cannot grant registry membership');
+ assert.deepEqual(created.doc,before);
+});
+
+test('source-owned settings reject duplicate default tab stops before return meaning is selected',async()=>{
+ const [,bridge]=await modules,source=freshBodySource({type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Tab sentinel'}]}]}),bytes=buildDocxReviewPacketBuffer(source);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts,settings=parts['word/settings.xml'],parser=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+ assert.deepEqual(parser.extractDocumentDefaultTabStopV1(settings,{cryptoPort}),{effective:720,explicit:true});
+ assert.throws(()=>parser.extractDocumentDefaultTabStopV1(settings.replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>'),{cryptoPort}),/WORD_DEFAULT_TAB_STOP_INVALID/u);
+ assert.deepEqual(parser.extractDocumentDefaultTabStopV1(settings.replace('<w:defaultTabStop w:val="720"/>','<w:defaultTabStop w:val="708"/>'),{cryptoPort}),{effective:708,explicit:true});
+});

@@ -18,8 +18,8 @@ const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', native
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 // Shared owned fixture, loaded without registering this file's tests by the
 // other two contracts. Every expected point/text below is a literal oracle.
-async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null, includeCodeBlock = false } = {}) {
-  const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null, includeCodeBlock = false, sourceFactory = null } = {}) {
+  const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=sourceFactory||require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
   const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
   const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
   const beforeDocs=[d(p('AxxB tail')),d(p('Control Beta')),pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('oldnew tail')),[event(1,'delete',0,3),event(2,'insert',3,6)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:8}])];
@@ -96,8 +96,16 @@ test('complete book note law retains typed spacing/language/breaks and rejects e
   }
 });
 test('inactive 720-to-708 tab emission requires complete local book-note bodies and returned identities',async()=>{
-  const f=await composedBookFixture(),original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  // Execute the exact predecessor producer, which selects its own V1 law.
+  // This observes compatibility; it grants no runtime round/write authority.
+  const file=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),Module=require('node:module');
+  const old=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8'});
+  assert.equal(hash(old),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+  const predecessor=new Module(file,module);predecessor.filename=file;predecessor.paths=Module._nodeModulePaths(path.dirname(file));predecessor._compile(old,file);
+  const f=await composedBookFixture(null,{sourceFactory:predecessor.exports.buildFullManuscriptDocxReviewPacketSource}),original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
   const pack=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  assert.equal(f.source.exportTypography,undefined,'predecessor packet retains its original top-level shape');
+  assert.equal(f.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v1');
   assert.doesNotMatch(original['word/settings.xml'],/<w:defaultTabStop\b/u);
   assert.ok(f.source.localAuthorityCapsule.exportMap.scenes.every(scene=>scene.documentFormatIr.explicit===false&&scene.documentFormatIr.wordDefaultTabStop===720));
   const parts={...original,'word/settings.xml':original['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>')},bytes=pack(parts);
@@ -136,6 +144,21 @@ test('inactive 720-to-708 tab emission requires complete local book-note bodies 
   }
   for(const defaultTab of [719,721])refuse({...input,bytes:pack({...parts,'word/settings.xml':parts['word/settings.xml'].replace('w:val="708"',`w:val="${defaultTab}"`)})});
   for(const kind of ['header','footer'])refuse({...input,bytes:pack({...parts,[`word/${kind}1.xml`]:`<w:${kind==='header'?'hdr':'ftr'} xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:${kind==='header'?'hdr':'ftr'}>`})});
+});
+test('fresh body720 book-note transport preserves all raw source and refuses a genuine single708 setting edit',async()=>{
+ const f=await composedBookFixture(),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+ const protectedRaw=JSON.stringify({scenes:f.scenes,beforeDocs:f.beforeDocs,notes:f.notesText,source:f.source.localAuthorityCapsule.exportMap});
+ assert.equal(f.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.match(parts['word/settings.xml'],/<w:defaultTabStop w:val="720"\/>/u);
+ const input={bytes:f.bytes,exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),
+  baselineDocumentNotes:f.source.documentNotes,documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest,
+  allowInactiveDefaultTabEmission:true,retainPendingScenes:true};
+ const unchanged=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);assert.equal(unchanged.ok,true,JSON.stringify(unchanged));
+ assert.deepEqual(unchanged.scenes,f.proof.returnedScenes.map(scene=>({sceneId:scene.sceneId,returnedDocument:pending.bindLedger(scene.ledger)})));
+ parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:defaultTabStop w:val="720"/>','<w:defaultTabStop w:val="708"/>');
+ const changed=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),refused=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({...input,bytes:changed});
+ assert.equal(refused.ok,false);assert.equal(refused.code,'PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
+ assert.equal(JSON.stringify({scenes:f.scenes,beforeDocs:f.beforeDocs,notes:f.notesText,source:f.source.localAuthorityCapsule.exportMap}),protectedRaw);
 });
 test('book note styles resolve completely while no-notes styles and global defaults remain byte-exact',async()=>{
   const f=await composedBookFixture(null,{legacyNoteProfile:true}),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;

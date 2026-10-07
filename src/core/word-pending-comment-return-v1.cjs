@@ -63,8 +63,13 @@ function importRunStyle(node, returnedMarks, expectedMarks, paragraphType, parag
   if(index>=0)marks.splice(index,1);if(Object.keys(attrs).length)marks.push({type:'textStyle',attrs});
   if(marks.length)result.marks=marks;else delete result.marks;return review.normalizeNode(result);
 }
-function rebaseRetainedRunFormat(retained,incoming,node) {
-  need(equal(review.formatTransitionMeaning(retained),review.formatTransitionMeaning(incoming)),
+function rebaseRetainedRunFormat(retained,incoming,node,sourceParagraph,exportTypography) {
+  const typography=require('./word-review-typography-v1.cjs');
+  const profile=typography.validate(exportTypography,{allowUndefined:true});
+  const expected=profile?.schemaVersion===typography.V2
+    ?typography.segments([{node:{type:'text',text:'x'},revision:{operation:'format',format:retained}}],
+      {nodeType:sourceParagraph.type,...sourceParagraph.attrs},profile)[0].revision.format:retained;
+  need(equal(review.formatTransitionMeaning(expected),review.formatTransitionMeaning(incoming)),
     'MIXED_RETURN_OLD_FORMAT_TRANSITION_CHANGED');
   const format=clone(retained),actual=(node.marks||[]).find(m=>m.type==='textStyle')?.attrs||{};
   for(const key of ['fontFamily','fontSize','wordLanguage']) {
@@ -211,6 +216,14 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       for(const key of new Set([...Object.keys(previous),...Object.keys(next)])){
         const boolean=['bold','italic','underline','strike'].includes(key);
         if(equal(boolean?(previous[key]??false):previous[key],boolean?(next[key]??false):next[key]))continue;
+        const slots=['ascii','hAnsi','eastAsia','cs'];
+        if(key==='fontSlots'&&bodyProfile?.schemaVersion===bodyTypography.V2&&value.fontSlots
+          &&Object.keys(previous.fontSlots||{}).length===4&&Object.keys(next.fontSlots||{}).length===4
+          &&slots.every(slot=>typeof previous.fontSlots[slot]==='string'&&typeof next.fontSlots[slot]==='string')) {
+          const authored=clone(value.fontSlots);
+          for(const slot of slots)if(previous.fontSlots[slot]!==next.fontSlots[slot])authored[slot]=next.fontSlots[slot];
+          value.fontSlots=authored;continue;
+        }
         if(boolean)value[key]=next[key]??false;else if(next[key]===undefined)delete value[key];else value[key]=clone(next[key]);
       }
       if(Object.keys(value).length)after.attrs={...after.attrs,wordParagraphMarkTypography:value};
@@ -237,9 +250,17 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       if(fresh)changes++;
       let canonicalNode=match===null?token.node:canonicalRow[match].node;
       if(allowUntrackedRichFormatting&&match!==null){
-        const expectedMarks=sourceParagraphs[p].type==='codeBlock'
-          ?(old?.revision?.operation==='format'?old.revision.format.before:canonicalNode.marks):before[match].node.marks;
-        const imported=importRunStyle(canonicalNode,token.revision?.operation==='format'?token.revision.format.before:token.node.marks,expectedMarks,sourceParagraphs[p].type,sourceParagraphs[p].attrs,bodyEmission);
+        const retainedCurrent=bodyProfile?.schemaVersion===bodyTypography.V2&&retained?.operation==='format';
+        const ownedParagraph=retainedCurrent?canonicalParagraphs[p]:sourceParagraphs[p];
+        const ownedFormat=retainedCurrent?oldLedger.revisions.find(r=>r.id===retained.id).format:null;
+        const expectedMarks=retainedCurrent
+          ?bodyTypography.segments([{node:{type:'text',text:'x'},revision:{operation:'format',format:ownedFormat}}],
+            {nodeType:ownedParagraph.type,...ownedParagraph.attrs},bodyProfile)[0].revision.format.after
+          :sourceParagraphs[p].type==='codeBlock'
+            ?(old?.revision?.operation==='format'?old.revision.format.before:canonicalNode.marks):before[match].node.marks;
+        const incomingMarks=token.revision?.operation==='format'
+          ?token.revision.format[retainedCurrent?'after':'before']:token.node.marks;
+        const imported=importRunStyle(canonicalNode,incomingMarks,expectedMarks,ownedParagraph.type,ownedParagraph.attrs,bodyEmission);
         need(!noteBinding||equal(imported,canonicalNode),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
         if(!equal(imported,canonicalNode))changes++;canonicalNode=imported;
       }
@@ -257,7 +278,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
         const key=retained?'old:'+retained.id:'new:'+token.revision.id;
         let r=groups.get(key);
         if(!r){r={...clone(retained?oldLedger.revisions.find(r=>r.id===retained.id):token.revision),paragraphIndex:p,from:offset,to:offset+text(node).length};
-          if(retained && allowUntrackedRichFormatting && r.operation==='format')r.format=rebaseRetainedRunFormat(r.format,token.revision.format,node);
+          if(retained && allowUntrackedRichFormatting && r.operation==='format')r.format=rebaseRetainedRunFormat(r.format,token.revision.format,node,canonicalParagraphs[p],exportTypography);
           if(!retained){r.id='revision-'+nextId++;r.groupId=null;
             if(r.operation==='format')r.format={kind:'run',before:clone(canonicalNode.marks||[]),after:clone(node.marks||[])};
           }
@@ -274,7 +295,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
         if(!child){child={...clone(retainedFormat?oldLedger.revisions.find(r=>r.id===retainedFormat.id):incomingFormat),id:retainedFormat?.id||'revision-'+nextId++,
           parentRevisionId:parent.id,paragraphIndex:p,from:offset,to:offset+text(node).length};
           if(!retainedFormat)child.format={kind:'run',before:clone(match===null?incomingFormat.format.before:canonicalNode.marks||[]),after:clone(node.marks||[])};
-          else if(allowUntrackedRichFormatting)child.format=rebaseRetainedRunFormat(child.format,incomingFormat.format,node);
+          else if(allowUntrackedRichFormatting)child.format=rebaseRetainedRunFormat(child.format,incomingFormat.format,node,canonicalParagraphs[p],exportTypography);
           groups.set(key,child);revisions.push(child);if(!retainedFormat)changes++;
         }else{need(child.to===offset,'MIXED_RETURN_PARTITION_SPLIT');child.to=offset+text(node).length;}
       }

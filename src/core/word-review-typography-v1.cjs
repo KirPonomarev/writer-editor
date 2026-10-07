@@ -11,12 +11,24 @@ const BODY = Object.freeze({schemaVersion:V2,fontSize:'12pt',
   bodyRunDefaults:Object.freeze({fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:LANGUAGE})});
 const clone = value => JSON.parse(JSON.stringify(value));
 const fail = code => {throw Object.assign(Error(code),{code});};
+// An ordinary native Object prototype can belong to another execution realm.
+// Inspect own data descriptors; no caller coercion or serialization runs here.
+function ordinary(value) {
+  const proto=Object.getPrototypeOf(value);
+  if(proto===null)return true;
+  if(Object.getPrototypeOf(proto)!==null)return false;
+  const ctor=Object.getOwnPropertyDescriptor(proto,'constructor');
+  if(!ctor||!Object.hasOwn(ctor,'value')||typeof ctor.value!=='function')return false;
+  const owner=Object.getOwnPropertyDescriptor(ctor.value,'prototype');
+  return owner&&Object.hasOwn(owner,'value')&&owner.value===proto
+    &&Function.prototype.toString.call(ctor.value)===Function.prototype.toString.call(Object);
+}
 // Read complete own data before interpreting a version or serializing a caller.
 function data(value, depth=0) {
   if(depth>5)fail('WORD_REVIEW_TYPOGRAPHY_INVALID');
   if(typeof value==='string'||typeof value==='number')return value;
   if(!value||typeof value!=='object'||Array.isArray(value)
-    || ![Object.prototype,null].includes(Object.getPrototypeOf(value)))fail('WORD_REVIEW_TYPOGRAPHY_INVALID');
+    || !ordinary(value))fail('WORD_REVIEW_TYPOGRAPHY_INVALID');
   const result={};
   for(const key of Reflect.ownKeys(value)) {
     const descriptor=Object.getOwnPropertyDescriptor(value,key);
@@ -162,7 +174,20 @@ function readback(raw,actual,typography,{allowTextChanges=false}={}) {
     if(!a.fontSize&&next[0].inheritedFontSize)a.fontSize=next[0].inheritedFontSize;
     for(const mark of old[0].preservedMarks||[]) {
       if(mark.type!=='link')return false;
-      b.link=mark.attrs.href;
+      const attrs=mark.attrs;
+      // This classifies the source-owned transport attributes only. The
+      // separate bookmark publication/intake path proves the actual registry.
+      if(!attrs||typeof attrs.href!=='string')return false;
+      if(attrs.href.startsWith('#')||attrs.wordBookmarkId!=null||attrs.wordBookmarkName!=null) {
+        const keys=Object.keys(attrs),name=attrs.wordBookmarkName;
+        if(keys.some(key=>!['href','target','rel','class','title','wordBookmarkId','wordBookmarkName'].includes(key))
+          || !/^ubm-[a-f0-9]{32}$/u.test(attrs.wordBookmarkId) || typeof name!=='string'
+          || name.length>40 || !/^\p{L}[\p{L}\p{N}_]*$/u.test(name) || /^YRTK_/iu.test(name)
+          || attrs.href!==`#${name}` || attrs.title!=null
+          || ['target','rel','class'].some(key=>attrs[key]!=null&&typeof attrs[key]!=='string'))return false;
+        b.wordBookmarkName=name;
+      }
+      b.link=attrs.href;
     }
     if(!same(normalized(a),normalized(b)))return false;
   }

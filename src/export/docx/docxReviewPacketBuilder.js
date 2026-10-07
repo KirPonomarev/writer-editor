@@ -343,7 +343,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   const bodyTypography=require('../../core/word-review-typography-v1.cjs');
   const profile=bodyTypography.validate(exportTypography,{allowUndefined:true});
   if(profile?.schemaVersion===bodyTypography.V2)block={...block,formatIr:bodyTypography.formatIr(block.formatIr,profile),
-    ...(block.pendingParagraphRevision?{pendingParagraphRevision:{...block.pendingParagraphRevision,format:{
+    ...(block.pendingParagraphRevision?{pendingParagraphRevision:{...block.pendingParagraphRevision,format:{...block.pendingParagraphRevision.format,
       before:bodyTypography.snapshot(block.pendingParagraphRevision.format.before,profile),
       after:bodyTypography.snapshot(block.pendingParagraphRevision.format.after,profile)}}}:{})};
   const bookmarkId = String(index + 1);

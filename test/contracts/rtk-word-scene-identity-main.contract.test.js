@@ -17,7 +17,7 @@ const find = (root, label) => root?.label === label ? root : (root?.children || 
 
 // Compile the actual entire Main source with owned local adapters. Private
 // state access is added ONLY to this test module, never shipped in production.
-async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packagedMac = false, reopenTemp = null) {
+async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packagedMac = false, reopenTemp = null, sourceFactory = null) {
   const spelled = reopenTemp || await fsp.mkdtemp(path.join(os.tmpdir(), 'scene-identity-main-'));
   const temp = await fsp.realpath(spelled);
   t.after(() => fsp.rm(temp, { recursive: true, force: true }));
@@ -133,6 +133,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
       }};
     }
     const actual=originalLoad.call(this,request,parent,isMain);
+    if(sourceFactory && parent?.filename===mainPath && request==='./export/docx/fullManuscriptDocxReviewPacketSource')return {...actual,buildFullManuscriptDocxReviewPacketSource:sourceFactory};
     if(parent?.filename===mainPath && request==='./core/project-transaction-v1.cjs'){
       // This owned adapter injects at the real transaction boundary, then
       // delegates to the unchanged production transaction and lease assertions.
@@ -1416,30 +1417,46 @@ for(const bookmarked of [true,false])test(`actual whole Main clean return activa
   assert.notEqual(replay.applied,true);assert.ok(replay.ok===false || replay.status==='blocked');assert.deepEqual(f.capture(),after);
 });
 
-for (const languageOnly of [false,true]) test(`actual whole Main clean Word language return preserves the run boundary through Apply and re-export; language-only ${languageOnly}`,async t=>{
-  const originalPart=languageOnly?'Unannotated':'Unannotated target',changedPart=languageOnly?' target':' CLEAN_EDIT';
-  const {f,activated}=await cleanTextReturnFixture(t,{mutateReturn:parts=>{
-    parts['word/document.xml']=parts['word/document.xml']
-      .replace(/(<w:p\b[^>]*>)/u,'$1<w:pPr><w:rPr><w:lang w:val="en-US"/></w:rPr></w:pPr>')
-      .replace('Unannotated target CLEAN_EDIT',originalPart+'</w:t></w:r><w:r><w:rPr><w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart);
+for (const languageOnly of [false,true,'paragraph']) test(`actual whole Main clean Word language return preserves the run boundary through Apply and re-export; language-only ${languageOnly}`,async t=>{
+  const markerOnly=languageOnly==='paragraph',originalPart=languageOnly===true?'Unannotated':markerOnly?'Unannotated target':'Unannotated target',changedPart=languageOnly===true?' target':' CLEAN_EDIT';
+  const unchangedLanguage={val:'en-US',eastAsia:'en-US',bidi:'en-US'},changedLanguage={...unchangedLanguage,val:'fr-FR'};
+  const {f,activated,source,bytes,bridge,beforeActivation}=await cleanTextReturnFixture(t,{omitTextEdit:languageOnly!==false,mutateReturn:parts=>{
+    const target=languageOnly===false?'Unannotated target CLEAN_EDIT':'Unannotated target';let changed=false;
+    parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/gu,p=>{
+      if(!p.includes('>'+target+'</w:t>'))return p;
+      assert.equal(changed,false);changed=true;assert.equal((p.match(/<w:pPr>/gu)||[]).length,1);
+      if(markerOnly)return p.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/u,props=>{assert.ok(props.includes('w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"'));return props.replace('w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"','w:val="fr-FR" w:eastAsia="en-US" w:bidi="en-US"');});
+      return p.replace(/<w:r>(<w:rPr>[\s\S]*?<\/w:rPr>)(<w:t\b[^>]*>)([^<]*)<\/w:t><\/w:r>/gu,(all,props,open,text)=>{
+        if(text!==target)return all;assert.ok(props.includes('w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"'));
+        return '<w:r>'+props+open+originalPart+'</w:t></w:r><w:r>'+props.replace('w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"','w:val="fr-FR" w:eastAsia="en-US" w:bidi="en-US"')+open+changedPart+'</w:t></w:r>';
+      });
+    });assert.equal(changed,true);
   }});
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');assert.deepEqual(source.exportTypography,source.localAuthorityCapsule.exportMap.exportTypography);
+  const cryptoPort={sha256Text:x=>'sha256:'+sha(x),sha256Json:x=>'sha256:'+sha(JSON.stringify(x)),byteLength:Buffer.byteLength};
+  const returned=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(returned.ok,true,JSON.stringify(returned));
+  const actual=returned.reviewIr.formattingParagraphs[0];assert.deepEqual(actual.wordParagraphMarkLanguage,markerOnly?changedLanguage:unchangedLanguage);
+  assert.deepEqual(actual.formattedRuns.map(r=>r.wordLanguage),markerOnly?[unchangedLanguage]:[unchangedLanguage,changedLanguage]);
+  for(const run of actual.formattedRuns){assert.equal(run.inlineState.fontFamily,'Times New Roman');assert.equal(run.inlineState.fontSize,'12pt');}
   assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.activated,true,JSON.stringify(activated));
   const before=f.capture(),sibling=read(f.beta);await f.probe.refreshReview();
   const result=await f.probe.fullApply({requestId:'clean-language-apply'});
   assert.equal(result.applied,true,JSON.stringify(result));assert.equal(read(f.beta),sibling);
-  const reopened=envelope.parseObservablePayload(read(f.alpha));assert.equal(reopened.issue,null);
-  const paragraph=reopened.doc.content[0];
-  assert.deepEqual(paragraph.attrs.wordParagraphMarkLanguage,{val:'en-US'});
-  assert.equal(paragraph.content[0].text,originalPart);assert.equal(paragraph.content[0].marks,undefined);
-  assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]);
+  const reopened=envelope.parseObservablePayload(read(f.alpha));assert.equal(reopened.issue,null);const paragraph=reopened.doc.content[0];
+  const reexport=await f.probe.fullSource(),built=await f.probe.reviewBuild(reexport);
+  if(process.env.YALKEN_LANGUAGE_EVIDENCE_DIR)fs.writeFileSync(path.join(process.env.YALKEN_LANGUAGE_EVIDENCE_DIR,'LANGUAGE_'+String(languageOnly)+'_01.json'),JSON.stringify({kind:'SYNTHETIC_REAL_MAIN_COUNTEREXAMPLE_NOT_NATIVE',sourceMap:source.localAuthorityCapsule.exportMap,beforeActivation,before,after:f.capture(),returnedParagraph:actual,appliedParagraph:paragraph,publicationGate:built.publicationGate,returnedXml:bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml']},null,2)+'\n',{flag:'wx'});
   assert.equal(bookmarks.readRegistry(reopened.doc).bookmarks.length,7);
   const notesAfter=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))),notesBefore=JSON.parse(Buffer.from(before.files['notes.craftsman.json'],'base64').toString());
-  assert.equal(notesAfter.notes[0].manuscript.reference.offsetUtf16,notesBefore.notes[0].manuscript.reference.offsetUtf16+(languageOnly?0:' CLEAN_EDIT'.length));
-  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(notesAfter.notes[0].manuscript.reference.offsetUtf16,notesBefore.notes[0].manuscript.reference.offsetUtf16+(languageOnly===false?' CLEAN_EDIT'.length:0));
   assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
-  const bridge=await import('../../src/io/revisionBridge/index.mjs'),xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts['word/document.xml'];
-  assert.match(xml,/<w:pPr><w:rPr><w:lang w:val="en-US"\/><\/w:rPr><\/w:pPr>/u);
-  assert.ok(xml.includes('<w:lang w:val="en-US"/></w:rPr><w:t xml:space="preserve">'+changedPart+'</w:t></w:r>'));
+  const reparsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort});assert.equal(reparsed.ok,true);
+  assert.deepEqual(reparsed.reviewIr.formattingParagraphs[0].wordParagraphMarkLanguage,markerOnly?changedLanguage:unchangedLanguage);
+  assert.deepEqual(reparsed.reviewIr.formattingParagraphs[0].formattedRuns.map(r=>r.wordLanguage),markerOnly?[unchangedLanguage]:[unchangedLanguage,changedLanguage]);
+  assert.deepEqual(paragraph.attrs?.wordParagraphMarkLanguage,markerOnly?changedLanguage:undefined,'unchanged emitted marker remains absent in canonical source');
+  assert.equal(paragraph.content[0].text,originalPart);
+  // A genuinely changed marker requires explicit unchanged EN to retain the actual run's meaning.
+  assert.deepEqual(paragraph.content[0].marks,markerOnly?[{type:'textStyle',attrs:{wordLanguage:unchangedLanguage}}]:undefined,'run-only edits retain raw absence; marker edit preserves actual EN run meaning');
+  if(!markerOnly){assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:changedLanguage}}]);}
 });
 
 for(const variant of ['note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
@@ -2119,7 +2136,10 @@ for(const composite of ['none','single','multi'])for(const stale of (composite==
  assert.match(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
  parts['word/numbering.xml']=parts['word/numbering.xml'].replace('<w:start w:val="4"/>','<w:start w:val="7"/>').replace(/<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"\/><\/w:lvlOverride>/u,'');
  assert.doesNotMatch(parts['word/numbering.xml'],/<w:startOverride w:val="4"\/>/);
- if(composite!=='none')parts['word/settings.xml']=parts['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>');
+ if(composite!=='none'){
+  const settings=parts['word/settings.xml'],stop='<w:defaultTabStop w:val="708"/>';
+  parts['word/settings.xml']=/<w:defaultTabStop\b/u.test(settings)?settings.replace(/<w:defaultTabStop\b[^>]*\/>/u,stop):settings.replace('</w:settings>',stop+'</w:settings>');
+ }
  if(composite!=='none')parts['word/document.xml']=parts['word/document.xml'].replace(' Continuation native-round5',' Continuation native-round5 WORD_COMPOSITE');
  if(composite==='multi')parts['word/document.xml']=parts['word/document.xml'].replace('>First</w:t>','>First WORD_SECOND</w:t>');
  if(stale==='equal'||stale==='different'){const local=structuredClone(original);local.content[0].attrs.wordNumbering.levels[0].start=stale==='equal'?7:8;delete local.content[0].attrs.wordNumbering.startOverrides;local.content[0].attrs.start=stale==='equal'?7:8;observed=envelope.composeObservablePayload({doc:local});fs.writeFileSync(f.alpha,observed);}
@@ -2421,8 +2441,8 @@ for(const variant of ['line','page','column','inherited','type-spoof'])test(`act
  const persisted=f.capture(),replay=await f.probe.formatApply({requestId:'break-replay'});await settle();assert.equal(replay.ok,true,JSON.stringify(replay));assert.equal(replay.reviewSurface.formattingReturnResult.writerCalled,false);assert.deepEqual(f.capture(),persisted);
 });
 
-async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=false,beforeExport=null}={}) {
-  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=false,beforeExport=null,sourceFactory=null}={}) {
+  const f=await fixture(t,false,'01_Alpha.txt',false,null,sourceFactory),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
   const comments=require('../../src/core/word-comment-authoring-v1.cjs');
   const generated=(await import('../../scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')).buildWordManuscriptFixture('MULTI_SCENE','C2','DEFAULT');
   assert.equal(generated.scenes.length,3);
@@ -2788,9 +2808,16 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
   }
 });
 
-async function composedNotesMainFixture(t,{authored=false,plainSibling=false,inactiveTab=false,bodyParagraphAttrs=null,wordBodyDefaults=false}={}) {
+function predecessorFullSourceFactory() {
+ const file=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const old=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:ROOT,encoding:'utf8'});
+ assert.equal(sha(old),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+ const predecessor=new Module(file,module);predecessor.filename=file;predecessor.paths=Module._nodeModulePaths(path.dirname(file));predecessor._compile(old,file);
+ return predecessor.exports.buildFullManuscriptDocxReviewPacketSource;
+}
+async function composedNotesMainFixture(t,{authored=false,plainSibling=false,inactiveTab=false,bodyParagraphAttrs=null,wordBodyDefaults=false,sourceFactory=null}={}) {
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');let originalNotes,notePath;
- const x=await pendingCommentMainFixture(t,{beforeExport:async({f,paths,sceneIds})=>{
+ const x=await pendingCommentMainFixture(t,{sourceFactory,beforeExport:async({f,paths,sceneIds})=>{
   if(plainSibling)fs.writeFileSync(paths[1],bookmarks.paragraphs(envelope.parseObservablePayload(read(paths[1])).doc).map(p=>bookmarks.textOf(p)).join('\n'));
   fs.writeFileSync(paths[0],envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AxxB first owner'}]}]}}));
   if(authored){
@@ -2917,7 +2944,8 @@ for(const bodyParagraphAttrs of [null,{wordParagraphSpacing:{after:120},wordPara
  for(const scene of source.localAuthorityCapsule.exportMap.scenes)assert.deepEqual(scene.blocks[0].formatIr.paragraph.wordParagraphSpacing,bodyParagraphAttrs?.wordParagraphSpacing);
 });
 test('book notes actual Main admits only inactive tab emission through complete proof, retaining rich-note refusals and Cancel',async t=>{
- const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{inactiveTab:true}),before=x.f.capture(),beforeNotes=read(notePath);
+ const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{inactiveTab:true,sourceFactory:predecessorFullSourceFactory()}),before=x.f.capture(),beforeNotes=read(notePath);
+ assert.equal(x.source.exportTypography,undefined);assert.equal(x.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v1');
  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
  assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
  const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
@@ -2937,16 +2965,18 @@ test('book notes actual Main admits only inactive tab emission through complete 
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');for(const i of [0,2])assert.match(pending.projection(envelope.parseObservablePayload(read(x.paths[i])).doc).current,/😀BOOK/u);
  assert.equal(JSON.parse(read(x.commentPath)).threads.find(t=>t.threadId==='protected-sibling').messages.at(-1).body,'Foreign Beta reply retained');
 });
-test('book notes publication authenticates omitted plain sibling baseline and refuses forged bytes',async t=>{
- const {x}=await composedNotesMainFixture(t,{plainSibling:true}),sibling=read(x.paths[1]),sceneId=x.source.localAuthorityCapsule.exportMap.scenes[1].sceneId;
+for(const legacy of [true,false])test('book notes publication authenticates omitted plain sibling baseline and refuses forged bytes; legacy '+legacy,async t=>{
+ const {x}=await composedNotesMainFixture(t,{plainSibling:true,sourceFactory:legacy?predecessorFullSourceFactory():null}),sibling=read(x.paths[1]),sceneId=x.source.localAuthorityCapsule.exportMap.scenes[1].sceneId;
+ const expectedReason=legacy?'WORD_BOOK_NOTES_PUBLICATION_BASELINE':'WORD_BODY_BASELINE';
+ assert.equal(x.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v'+(legacy?1:2));
  assert.equal(Object.hasOwn(x.source.localAuthorityCapsule.baselineObservableContentBySceneId,sceneId),false);
  const built=await x.f.probe.reviewBuild(x.source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  const source={...x.source,localAuthorityCapsule:{...x.source.localAuthorityCapsule,baselineFinalTextBySceneId:{...x.source.localAuthorityCapsule.baselineFinalTextBySceneId,[sceneId]:sibling+' FORGED'}}};
- const rejected=await x.f.probe.fullGate(source,built.documentBuffer);assert.equal(rejected.reason,'WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+ const rejected=await x.f.probe.fullGate(source,built.documentBuffer);assert.equal(rejected.reason,expectedReason);
  for(const malformed of [false,true]){const raw=malformed?'[doc-v2 length=1]\n{':sibling,bad={...x.source,localAuthorityCapsule:{...x.source.localAuthorityCapsule,
   baselineFinalTextBySceneId:{...x.source.localAuthorityCapsule.baselineFinalTextBySceneId,[sceneId]:raw},exportMap:structuredClone(x.source.localAuthorityCapsule.exportMap)}};
   bad.localAuthorityCapsule.exportMap.scenes[1].rawSha256='sha256:'+(malformed?sha(raw):'0'.repeat(64));
-  assert.equal((await x.f.probe.fullGate(bad,built.documentBuffer)).reason,'WORD_BOOK_NOTES_PUBLICATION_BASELINE');}
+  assert.equal((await x.f.probe.fullGate(bad,built.documentBuffer)).reason,expectedReason);}
  assert.equal(read(x.paths[1]),sibling);assert.deepEqual(x.f.capture(),x.before);assert.equal(envelope.parseObservablePayload(sibling).hasMetaBlock,false);
 });
 
@@ -3026,10 +3056,8 @@ for(const foreignReply of [false,true])test('novel book actual Main mixed return
    parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="910"/>`)
     .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="910"/><w:r><w:commentReference w:id="910"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
   }
-  // Word's inactive implicit default must reach the complete book proof; the
-  // older comment-only lane intentionally cannot admit this mixed document.
-  assert.equal(parts['word/settings.xml'].includes('<w:defaultTabStop'),false);
-  parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:compat>','<w:defaultTabStop w:val="708"/><w:compat>');
+  // Fresh v2 exports bind the source-owned default explicitly.
+  assert.match(parts['word/settings.xml'],/<w:defaultTabStop w:val="720"\/>/u);
   let index=0; const ps=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)];
   assert.ok(ps.length>2); const targets=new Set([0,ps.length-1]);
   parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
@@ -3112,7 +3140,8 @@ for(const foreignReply of [false,true])test('novel book actual Main mixed return
 });
 for(const boundary of ['unsupported default','dirty','stale sibling'])test('actual Main authenticated book route refuses '+boundary+' without falling into a legacy writer',async t=>{
  const x=await pendingCommentMainFixture(t,{tamper:(parts,{f})=>{
-  parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:compat>',`<w:defaultTabStop w:val="${boundary==='unsupported default'?900:708}"/><w:compat>`);
+  assert.match(parts['word/settings.xml'],/<w:defaultTabStop w:val="720"\/>/u);
+  if(boundary==='unsupported default')parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:defaultTabStop w:val="720"/>','<w:defaultTabStop w:val="900"/>');
   if(boundary==='dirty')f.probe.state({dirty:true});
   if(boundary==='stale sibling')fs.writeFileSync(f.beta,read(f.beta)+'FOREIGN');
  }});

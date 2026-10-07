@@ -16,7 +16,11 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
   const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR;
+  // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
+  const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
+  const literal = [...committed.matchAll(/^export const R24_INTEROP_WORD_[A-Z0-9_]+_SUCCESSOR=Object\.freeze\((\{[\s\S]*?\})\);$/gmu)].at(-1);
+  assert.ok(literal, 'candidate must declare its direct Word successor');
+  const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);

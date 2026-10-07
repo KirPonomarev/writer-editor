@@ -473,7 +473,7 @@ test('full product export retained transport self-return and clean target/delete
     if (kind === 'alter-relationship') changed['customXml/_rels/item1.xml.rels'] = changed['customXml/_rels/item1.xml.rels'].replace('rIdYrtkCustomXmlProps', 'changed');
     const seen = w.io.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: bytesOf(changed) }, { cryptoPort });
     const result = w.analyzer.analyzeUserBookmarksReturn({ baselineDoc, exportMap: kind === 'old-baseline' ? { scenes: privateMap.scenes } : privateMap,
-      sceneId: 'a.txt', reviewIr: seen.reviewIr, exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
+      sceneId: 'a.txt', reviewIr: seen.reviewIr, exportTypography: product.exportTypography });
     const expected = ['unchanged', 'retarget', 'delete', 'label'].includes(kind);
     assert.equal(result.ok, expected, `${kind}: ${result.detail}`);
     if (expected) {

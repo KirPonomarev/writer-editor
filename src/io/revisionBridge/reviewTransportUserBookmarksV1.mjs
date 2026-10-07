@@ -429,9 +429,15 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
-      const markChanged=!same(baseP.wordParagraphMarkTypography??null,p.paragraphState?.wordParagraphMarkTypography??null);
+      const completeBody=exportTypography?.schemaVersion===bodyTypography.V2;
+      if(completeBody&&p.effectiveParagraphMarkTypographyInvalid)return reject('paragraph-mark-typography-invalid');
+      const returnedMarker=completeBody?p.effectiveParagraphMarkTypography:p.paragraphState?.wordParagraphMarkTypography;
+      const markChanged=completeBody
+        ?!same(bodyTypography.markerMeaning(baseP.wordParagraphMarkTypography??null),bodyTypography.markerMeaning(returnedMarker??null))
+        :!same(baseP.wordParagraphMarkTypography??null,returnedMarker??null);
       if(markChanged&&!ordinaryTextMode)return reject('paragraph-mark-typography-change');
-      const spacingChanged=!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null);
+      const spacingMeaning=value=>completeBody&&value?{before:0,after:0,...value}:value||null;
+      const spacingChanged=!same(spacingMeaning(baseP.wordParagraphSpacing),spacingMeaning(p.paragraphState?.wordParagraphSpacing));
       if(spacingChanged && !ordinaryTextMode)return reject('paragraph-spacing-change');
       const returnedSpacing=p.paragraphState?.wordParagraphSpacing == null ? null
         : paragraphSpacing.normalizeWordParagraphSpacing(p.paragraphState.wordParagraphSpacing);
@@ -440,7 +446,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         sceneId,blockId:block.blockId,paragraphOrdinal:i,from,to,selectedText:p.paragraphText.slice(from,to),inline,paragraph,
         sourceAuthority:'authenticated-full-manuscript-export-map-format-ir-v1',sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,
       });
-      if(markChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{}, {wordParagraphMarkTypography:p.paragraphState?.wordParagraphMarkTypography==null?{action:'remove'}:{action:'set',value:p.paragraphState.wordParagraphMarkTypography}}));
+      if(markChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{}, {wordParagraphMarkTypography:returnedMarker==null?{action:'remove'}:{action:'set',value:returnedMarker}}));
       if(spacingChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{},
         {wordParagraphSpacing:returnedSpacing===null?{action:'remove'}:{action:'set',value:returnedSpacing}}));
       if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');

@@ -89,16 +89,38 @@ test('changed text, comment bodies and pending language survive exact mixed retu
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
   const bytes=build(source),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
   assert.equal(preview.ok,true,JSON.stringify(preview));
+  const scoped=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,
+    baselineDocuments:[{sceneId,document:doc}],documentSections:source.localAuthorityCapsule.documentSections,
+    signedSectionsDigest:source.localAuthorityCapsule.documentSections.protectedDigest,retainPendingSceneId:sceneId});
+  assert.equal(scoped.ok,true,JSON.stringify(scoped));
+  const returned=scoped.scenes[0].returnedDocument;
   // Fresh full-manuscript v2 uses the checked rich-format policy of planMixedBookReturn.
   const unchanged=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
-    document:doc,returnedDocument:preview.contentPreview.pendingRevisionDocument,
+    document:doc,returnedDocument:returned,
     binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,allowUntrackedRichFormatting:true,
     anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),
     exportTypography:source.localAuthorityCapsule.exportMap.exportTypography,
     exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)});
   assert.equal(unchanged.changed,false);
   assert.deepEqual(review.readLedger(unchanged.document).revisions,ledger.revisions);
-  const forged=structuredClone(preview.contentPreview.pendingRevisionDocument),bad=review.readLedger(forged);
+  assert.deepEqual(review.readLedger(unchanged.document).source,ledger.source,'unchanged finite emission retains the full raw canonical source');
+  const protectedRaw=JSON.stringify({doc,ledger,state});
+  for(const side of ['before','after'])for(const [key,value] of [['val','de-DE'],['eastAsia','ja-JP'],['bidi','he-IL'],['fontSize','14pt'],['fontFamily','Georgia']]){
+    const altered=structuredClone(review.readLedger(returned)),r=altered.revisions.find(r=>r.operation==='format');
+    const style=r.format[side].find(mark=>mark.type==='textStyle').attrs;
+    if(['val','eastAsia','bidi'].includes(key))style.wordLanguage[key]=value;else style[key]=value;
+    if(side==='after'){
+      let offset=0;for(const node of review.paragraphs(altered.source)[r.paragraphIndex].content||[]){
+        const end=offset+(node.type==='text'?node.text.length:1);if(node.type==='text'&&r.from<end&&r.to>offset)node.marks=structuredClone(r.format.after);offset=end;
+      }
+    }
+    assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
+      document:doc,returnedDocument:review.bindLedger(altered),binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,allowUntrackedRichFormatting:true,
+      anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),exportTypography:source.exportTypography,
+      exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)}),/MIXED_RETURN_|PENDING_/u,side+':'+key);
+    assert.equal(JSON.stringify({doc,ledger,state}),protectedRaw);
+  }
+  const forged=structuredClone(returned),bad=review.readLedger(forged);
   const property=bad.revisions.find(r=>r.operation==='format');
   property.format.before=[{type:'bold'}];
   const forgedDoc=review.bindLedger(bad);

@@ -1,3 +1,53 @@
+## 2026-10-07 — actual whole failures and genuine product counterexamples
+
+Continue the same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 undelivered contour,
+original42b, candidate47cc; do not restart or claim full-novel closure.
+Frozen root Other14=581of586 and Main=319of326, aggregate900of912, twelve
+failures and zero exclusions. All held source/test bytes stayed unchanged.
+HOLD04B pins33 files with all18 runtime hashes unchanged from HOLD04.
+Selected01=10of16 and selected02=1of2 retain actual red artifacts. Historical
+v1 inactive708 compatibility, V1/V2 omitted-baseline guards, certificate
+corruption/ancestry controls and genuine paragraph-language Current/reexport
+meaning actually passed. Run-only language Apply promotes unchanged raw
+default language in two cases; mixed-book Apply/replay/UndoRedo reaches two
+WORD_BODY_READBACK_PROVISIONAL repeat-export failures. No runtime05 repair
+has happened. HOLD04C freezes33 source/test bindings; runtime539/behavior661
+remain inside original1800/2600 budgets. The corrected bookmark matrix1of1
+executes all five negatives and a recognized-language positive. Exact mixed
+diagnosis rejects unsupported rPrChange despite complete actual body meaning
+matching independent source. Reuse full pending before/after/provenance and
+coordinate proof before admitting this particular wrapper; no blanket ignore.
+Freeze aligned tests, retain observed expected/actual fields, then clean
+known-incomplete checkpoint and same-task declaration/preflight before code.
+Only the authenticated source and finite owned profile may reconstruct
+minimal language effects or pending emission expectations. Actual Word must
+remain the independent observation; no broader comparator or guard weakening.
+Native SOURCE, ordinary PACKAGED, required gates and full Git delivery remain
+open, as does the complete original macOS novel denominator.
+
+## 2026-10-07 — finite body composition fixed; frozen whole and native proof pending
+
+Same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour
+from42b at47cc. Writer HOLD04 pins33 runtime/test files, SHA256
+05a554c81178c485ac5e9f2a40146c063002613f98c1ba77402d78eb68e7c6b4.
+Root verified every binding and22 retained log hashes. Actual final whole body
+87of87, mixed transaction46of46 and notes plus mixed86of86 pass; corrected
+styled-list selection8of8 passes. All have zero exclusions. Earlier failures
+remain immutable and are superseded only within these executed denominators.
+Source-owned retained current-format comparison and per-slot marker replay
+preserve raw omissions and revision provenance. Bookmark effective equality
+eliminates invented operations; empty content remains exact without a new Main
+normalizer. Cross-realm closed data, internal-link source join and pending
+paragraph discriminator are repaired without new authority or broader OOXML.
+Genuine pinned42b legacy absent-setting/Office708 note controls still execute;
+freshv2 genuine720-to708 remains a strict document-format change.
+Original total runtime539of1800 and behavior538of2600 are within budget.
+Mechanical OPS refresh is only exact-byte governance. Root frozen whole15,
+fresh SOURCE and ordinary PACKAGED real Word Cancel/Apply/full rich readback,
+restart/reexport and complete mandatory Git delivery remain OPEN. The original
+100k novel, five genuine exchanges in both origins, three roles and production
+performance are not certified by this component checkpoint.
+
 ## 2026-10-07 — protected code/private correction; broad return counterexamples open
 
 Same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains undelivered from42b.

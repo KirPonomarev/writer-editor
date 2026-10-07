@@ -880,7 +880,7 @@ test('split local field instructions preserve styled labels and broken targets; 
 
 test('clean local-field return requires exact one-to-one instruction provenance and authenticated scene locators', async () => {
   const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
-  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
   const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const fixture=require('../fixtures/word-user-bookmarks-native-v1.json'),sample=fixture.snapshots.find(s=>s.name.startsWith('04-'));
   const bytesOf=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
@@ -888,11 +888,12 @@ test('clean local-field return requires exact one-to-one instruction provenance 
   assert.equal(g.ok,true);const baselineDoc=envelope.parseObservablePayload(g.candidateCreatePlan.entries[0].content).doc;
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'local-field-synthetic',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-09-30T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');assert.deepEqual(source.exportTypography,exportMap.exportTypography);
   const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
   const xml=parts['word/document.xml'].replace(/<w:hyperlink\b[^>]*w:anchor="([^"]+)"[^>]*>([\s\S]*?)<\/w:hyperlink>/gu,(_,name,result)=>asNativeLocalField(name,result));assert.notEqual(xml,parts['word/document.xml']);
   const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
   const analysis=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':xml})},{cryptoPort});assert.equal(analysis.ok,true);
-  const check=reviewIr=>analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  const check=reviewIr=>analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,exportTypography:source.exportTypography});
   const unchanged=check(analysis.reviewIr);assert.equal(unchanged.ok,true,JSON.stringify(unchanged));assert.equal(unchanged.changed,false);
   for(const mutate of [
     ir=>ir.formattingParagraphs.find(p=>p.inertHyperlinkInstructions?.length).inertHyperlinkInstructions[0].openStart++,
@@ -907,7 +908,7 @@ test('clean local-field return requires exact one-to-one instruction provenance 
 
 test('authenticated native label, retarget and case-only rename retain exact trusted internal link attrs', async () => {
   const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
-  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js'),{buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
   const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const fixture=require('../fixtures/word-user-bookmarks-native-v1.json'),sample=fixture.snapshots.find(s=>s.name.startsWith('04-'));
   const bytesOf=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
@@ -917,6 +918,7 @@ test('authenticated native label, retarget and case-only rename retain exact tru
   let count=0;for(const p of model.paragraphs(baselineDoc))for(const n of p.content||[])for(const m of n.marks||[])if(m.type==='link')Object.assign(m.attrs,attrs[count++]);assert.equal(count,2);
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'attrs-synthetic',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-09-30T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');assert.deepEqual(source.exportTypography,exportMap.exportTypography);
   const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
   for(const action of ['unchanged','label','retarget','case-rename']) {
     let xml=parts['word/document.xml'];
@@ -926,7 +928,7 @@ test('authenticated native label, retarget and case-only rename retain exact tru
     if(action!=='unchanged')assert.notEqual(xml,parts['word/document.xml']);
     xml=xml.replace(/<w:hyperlink\b[^>]*w:anchor="([^"]+)"[^>]*>([\s\S]*?)<\/w:hyperlink>/gu,(_,name,result)=>asNativeLocalField(name,result));
     const analysis=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytesOf({...parts,'word/document.xml':xml})},{cryptoPort});assert.equal(analysis.ok,true);
-    const result=analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:analysis.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});assert.equal(result.ok,true,JSON.stringify(result));
+    const result=analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:analysis.reviewIr,exportTypography:source.exportTypography});assert.equal(result.ok,true,JSON.stringify(result));
     let index=0;for(const p of model.paragraphs(result.doc))for(const n of p.content||[])for(const m of n.marks||[])if(m.type==='link') {
       assert.deepEqual(Object.fromEntries(['target','rel','class','title'].map(k=>[k,m.attrs[k]])),attrs[index++],action);
       assert.ok(model.inspectInternalLink(m,result.registry));
@@ -1010,16 +1012,17 @@ test('authenticated label replacement maps enclosing ranges and boundary points 
 test('real DOCX analysis admits only proven label boundary shifts and Core rechecks the resulting candidate',async()=>{
   const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
-  const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
   const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const baselineDoc=labelBoundaryFixture();
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'label-boundaries',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-10-01T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');assert.deepEqual(source.exportTypography,exportMap.exportTypography);
   const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
   const analyze=xml=>{
     const bytes=buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})));
     const parsed=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true,JSON.stringify(parsed));
-    return analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+    return analyzer.analyzeUserBookmarksReturn({baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:source.exportTypography});
   };
   for(const text of ['x','new 😺 label','other']) {
     const xml=parts['word/document.xml'].replace('>label<','>'+text+'<');assert.notEqual(xml,parts['word/document.xml']);
@@ -1034,16 +1037,17 @@ test('real DOCX analysis admits only proven label boundary shifts and Core reche
 test('ordinary clean block text is separately analyzed against literal bookmark endpoints, with strict default',async()=>{
   const io=await import('../../src/io/revisionBridge/index.mjs'),analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
-  const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
   const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const baselineDoc=create(doc('Target Twin Alpha','STARTBOUND_Target Twin Alpha_ENDBOUND'),'Other',ep(0,1),ep(10,1)).doc;
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'clean-block',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes:[{sceneId:'a.txt',scenePath:'/synthetic/a.txt',order:0,title:'A',doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}]},{createdAtUtc:'2026-10-02T09:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original),parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');assert.deepEqual(source.exportTypography,exportMap.exportTypography);
   const hash=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:v=>'sha256:'+hash(JSON.stringify(v)),byteLength:Buffer.byteLength};
   const xml=parts['word/document.xml'].replace('>Target Twin Alpha<','>Target Twin Alpha ADDED<');assert.notEqual(xml,parts['word/document.xml']);
   const bytes=buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data})));
   const parsed=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
-  const input={baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS};
+  const input={baselineDoc,sceneId:'a.txt',exportMap,reviewIr:parsed.reviewIr,exportTypography:source.exportTypography};
   assert.equal(analyzer.analyzeUserBookmarksReturn(input).detail,'label-footprint-ambiguous');
   const result=analyzer.analyzeUserBookmarksReturn({...input,ordinaryTextMode:true});assert.equal(result.ok,true,JSON.stringify(result));
   assert.equal(result.canWriteManuscript,false);assert.equal(result.ordinaryTextChanges.length,1);
@@ -1051,12 +1055,15 @@ test('ordinary clean block text is separately analyzed against literal bookmark 
   assert.equal(result.ordinaryTextChanges[0].sceneParagraphIndex,0);
   assert.deepEqual(result.registry,model.readRegistry(baselineDoc));
   assert.equal(result.doc.content[0].content[0].text,'Target Twin Alpha ADDED');
-  for(const mutate of [
+  const recognized=copy(parsed.reviewIr);recognized.formattingParagraphs[0].formattedRuns[0].unsupportedNames.push('lang');
+  assert.deepEqual(recognized.formattingParagraphs[0].formattedRuns[0].wordLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});
+  assert.equal(analyzer.analyzeUserBookmarksReturn({...input,reviewIr:recognized,ordinaryTextMode:true}).ok,true,'recognized valid language retains the existing supported law');
+  for(const [mutantIndex,mutate] of [
     ir=>ir.userBookmarkInventory.bookmarks[0].end.offsetUtf16++,
     ir=>ir.formattingParagraphs[0].formattedRuns[0].inlineState.color='#ff0000',
-    ir=>ir.formattingParagraphs[0].formattedRuns[0].unsupportedNames.push('lang'),
+    ir=>{ir.formattingParagraphs[0].formattedRuns[0].unsupportedNames.push('lang');ir.formattingParagraphs[0].formattedRuns[0].wordLanguageInvalid=true;},
     ir=>ir.formattingParagraphs[0].bookmarkNames=[],
     ir=>ir.textRevisions=[{operation:'insert',text:'untrusted'}],
-  ]){const ir=copy(parsed.reviewIr);mutate(ir);const rejected=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:ir,ordinaryTextMode:true});assert.equal(rejected.ok,false,JSON.stringify(rejected));}
+  ].entries()){const ir=copy(parsed.reviewIr);mutate(ir);const rejected=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:ir,ordinaryTextMode:true});assert.equal(rejected.ok,false,JSON.stringify({mutantIndex,rejected}));}
   assert.deepEqual(model.readRegistry(baselineDoc),result.registry);
 });

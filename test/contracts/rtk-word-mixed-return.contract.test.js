@@ -87,7 +87,8 @@ test('v3 book transport keeps authored absent and partial body fields through pa
  }
  const legacy=await notesBookFixture({noteProfileV2:true}),proof=structuredClone(legacy.proof);
  proof.returnedScenes[0].ledger.source.content[0].attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}};
- assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
+ assert.equal(legacy.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
 });
 test('v3 notes and discussions preserve unchanged codeBlock through changed text while its original typed format guard rejects actual ZIP mutations',async()=>{
  const f=await notesBookFixture({includeCodeBlock:true}),model=require('../../src/core/word-pending-comment-return-v1.cjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
@@ -97,7 +98,12 @@ test('v3 notes and discussions preserve unchanged codeBlock through changed text
  assert.equal(result.scenes[1].content,f.scenes[1].beforeContent);assert.equal(JSON.parse(result.afterText).threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
  assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,f.beforeDocs[0]);
  const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,codeParagraph=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)][1][0];
- assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);assert.doesNotMatch(codeParagraph,/<w:spacing\b|<w:lang\b/u);
+ assert.equal(f.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);
+ assert.match(codeParagraph,/<w:spacing w:before="80" w:after="80" w:line="240" w:lineRule="auto"\/>/u);
+ assert.match(codeParagraph,/<w:rFonts w:ascii="Menlo" w:hAnsi="Menlo" w:eastAsia="Menlo" w:cs="Menlo"\/>/u);
+ assert.match(codeParagraph,/<w:sz w:val="20"\/><w:szCs w:val="20"\/>/u);
+ assert.match(codeParagraph,/<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"\/>/u);
  const parse=xml=>f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data}))),
   exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),retainPendingScenes:true,
   documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest});
@@ -105,10 +111,10 @@ test('v3 notes and discussions preserve unchanged codeBlock through changed text
  // proofing language has no representation here; it is not a claimed invariant.
  for(const property of ['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>','<w:sz w:val="28"/>']){
   const changed=codeParagraph.replace('<w:r>','<w:r><w:rPr>'+property+'</w:rPr>');assert.notEqual(changed,codeParagraph);
-  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'WORD_BODY_CODE_FORMAT_UNSUPPORTED');
  }
  const forged=structuredClone(f.proof);forged.returnedScenes[0].ledger.source.content[1].attrs.language='python';
- assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
+ assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_CODE_LANGUAGE_CHANGED/u);
 });
 test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
  const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
@@ -317,4 +323,12 @@ test('Paragraph mark fontSlots: compound text discussions retain source slots th
  const undone=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(undone),before);
  const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(redone),review.normalizeNode(doc));await assertDiscussionReadback(redone,p.afterText);
  const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument);ledger.revisions.find(review.isParagraphFormat).format.before.attrs.wordParagraphMarkTypography.fontSlots.ascii='Courier New';forged.proof.returnedDocument=review.bindLedger(ledger);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
+ const protectedRaw=JSON.stringify(f.beforeDoc);
+ for(const side of ['before','after'])for(const slot of ['ascii','hAnsi','eastAsia','cs']){
+  const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument),r=ledger.revisions.find(review.isParagraphFormat);
+  r.format[side].attrs.wordParagraphMarkTypography.fontSlots[slot]='Courier New';
+  assert.throws(()=>{forged.proof.returnedDocument=review.bindLedger(ledger);return plan(forged);},/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED|PENDING_FORMAT_SOURCE_MISMATCH/u,side+':'+slot);
+  assert.equal(JSON.stringify(f.beforeDoc),protectedRaw);
+ }
+
 });

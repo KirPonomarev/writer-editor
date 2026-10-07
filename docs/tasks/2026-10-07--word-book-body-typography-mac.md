@@ -325,6 +325,186 @@ no-save SOURCE and ordinary PACKAGED physical controls before full gates and
 complete delivery. A short component success cannot close original100k/five
 exchanges/three roles/both origins or product performance acceptance.
 
+### AMENDMENT04_FINITE_BODY_COMPOSITION_PARITY
+
+Clean47cc661839157f310c89ffd019d929b75be53095 binds the same original42b
+contour,44 paths and1800/2600 total budgets. Fresh bootstrap/preflight process0
+bind ARCHITECTURE_DECLARATION_AMENDMENT_04.json SHA256
+7bcb7db2a364adba542e89dafecf95af79738c1102ea576a14d4acbb7fccf1ce.
+Remote42b remains unchanged; T7 identity is verified. E0 precedes code dispatch.
+No whole-novel, native or current delivery acceptance exists.
+
+The four executed diagnosis predicates justify these immediate corrections:
+exact source-owned typed internal-link name/href expectation; ordinary native
+Object prototypes across realms with strict own-data closed grammar; preserving
+complete pending paragraph format discriminator/provenance while projecting
+only before/after; and using the existing authenticated scoped reexport parser
+in the full-book behavioral path. The generic preview retains strict root attrs.
+No new dependency, writer, schema/command/port, auth boolean or OOXML acceptance.
+
+Realm means execution context, never descriptor version, source trust or write
+permission. Null prototype or native Object.prototype is admitted only via
+own data native Object constructor, its own prototype identity and null parent.
+Never execute caller accessors/toJSON/toString. Arrays/classes/custom/forged
+prototypes, symbol/nonenumerable/extra/partial/getter/pollution data remain
+refusal before serialization. No global allowNull or harness-only workaround.
+Link native join attrs must agree with authenticated source href/name/ID and
+existing typed builder law. Wrong href/name, external-link internal attrs and
+foreign preserved marks remain refusal; full registry/geometry proof is separate.
+
+Before changing userbookmark actual-effective marker/spacing, untouched empty
+content absence or a duplicate defaultTabStop fixture, retain actual red fields
+and unchanged predicate. Only closedv2 effective source-versus-actual equality
+may select existing reconstruction; v1 direct law and genuine changed values
+remain. Untouched canonical empty leaf must remain exact. A genuine Word edit
+replaces an existing setting; duplicate setting remains a strict negative.
+Obsolete emitted-code assertions may change only to the actual freshv2 complete
+emission proven by source/XML, retaining authored raw and changed-value checks.
+
+The corrected scoped reexport reaches a separately retained exact failure:
+MIXED_RETURN_OLD_FORMAT_TRANSITION_CHANGED. Canonical before is empty and after
+has only wordLanguage.val ru-RU; actual emitted before/after include full owned
+EN auxiliary defaults and identical family/size. At the existing retained-format
+Core guard only, derive expected finitev2 transition from raw retained snapshots
+and authenticated OLD canonical paragraph type/attrs. Compare against untouched
+actual incoming through the unchanged shared formatTransitionMeaning guard.
+Keep canonical retained format/provenance raw and existing uniform-underlay
+rebasing; no source/hash/ledger default promotion, common comparator change or
+new proof field. A subsequent exact red exposes source current AFTER ru-RU
+being compared to actual tracked BEFORE EN3, inventing a source change and
+PENDING_FORMAT_SOURCE_MISMATCH. For finitev2 retained run formats only, import
+actual current AFTER against independently source-owned retained current AFTER
+emission. Fresh-format previous snapshots and legacyv1 paths stay unchanged.
+Nested retained-format guard also receives the same old source/profile inputs;
+no raw format or native provenance replacement. Legacyv1 stays exact.
+A separately retained compound paragraph-format red has raw slots ascii Arial,
+hAnsi Georgia; actual previous/next include unchanged emitted eastAsia TNR,
+while ascii changes to Aptos and cs changes from TNR to Arial. For finitev2
+validated full previous/next slot maps and authored raw fontSlots only, replay
+changed individual ascii/hAnsi/eastAsia/cs fields onto raw source-owned map.
+Keep unchanged authored fields and absence exact. Never copy equal emitted
+slots, convert arbitrary family cases or strip defaults globally. Full Current,
+Original, decisions/UndoRedo and forged all-slot controls remain required. Changed main/auxiliary language, family,
+size and forged before/after transitions remain rejected or explicit effects.
+
+The original inactive Office708 note exception must keep its genuine legacy
+positive and all complete-note/identity negatives executable. In the existing
+composedBookFixture only, select the actual42b full-manuscript source factory
+for that historical case, loaded from pinned Git bytes SHA256
+829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d.
+Use the existing CommonJS/VM source-loading pattern and current dependencies;
+the actual predecessor factory must itself produce its v1 descriptor. Never
+downgrade or edit a freshv2 descriptor. This is a test-only compatibility
+observation, not runtime authority or a new harness engine. Retain full source
+equality and legacy absent-setting law. Add a distinct freshv2 unchanged720
+positive and genuine720-to708 PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED negative,
+both with complete protected source equality. Earlier finitev2 code-format
+refusal may update only its typed expectation, retaining every mutation and
+no-write assertion. Required CI already fetches complete Git history.
+
+Separate writer owns runtime/behavior, root docs/OPS/review/native/Git. Root
+requires all affected whole files after frozen bytes; retain every failure and
+stop the third identical signature. Native no-save SOURCE and ordinary packaged
+Cancel/Apply/full readback/restart/reexport plus full gates and one Git chain
+remain required before a different contour or original-novel completion.
+
+### AMENDMENT04_FROZEN_WHOLE_COUNTEREXAMPLES_AND_TEST_ALIGNMENT
+
+Root actually executed all15 frozen files with all33 bindings equal before and
+after: Other14 581of586, Main319of326,12 total failures and zero exclusions.
+Logs SHA256ddfcc568a322826e988eb9abd43b373469e7da9327f621c12714a1cceb6117d2
+and dba286c7675d319cba3891976f41ae3977f3d789e6368d34f88ea057fcd0f46a
+remain immutable. No native or semantic completion follows.
+
+Same amendment04 permits test-only corrections within the existing44 paths:
+four bookmark cases use their actual fresh source.exportTypography and assert
+its signed-map equality, retaining all original geometry/provenance/registry
+positives and negatives. Certificate expected bindings come from the last
+directly declared Word successor JSON literal in the candidate's committed
+Git certificate bytes, independent of verifier output or dirty working tree;
+all per-binding/per-guard corruption, mixed-byte and ancestry checks remain.
+No hash matcher, runtime verifier change or new harness engine is permitted.
+
+At the existing scoped Main Module loading seam only, an optional test factory
+may select the actual pinned42b predecessor full-source function SHA256
+829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d.
+Current Main must establish publication and authenticated intake itself. Keep
+outer descriptor absent and signed local profilev1 genuine; never patch a
+fresh descriptor. Thread through existing note fixtures only. Preserve all
+legacy inactive708 note-body/identity negatives, Cancel and actual Apply/raw
+sibling/notes/discussion assertions. Execute the original omitted-sibling
+matrix separately for genuinev1 note guard and freshv2 earlier body guard.
+Generic preview may expose owned720 as derived state; complete applied raw
+equality and UndoRedo stay required. Unsupported setting edits replace owned
+720 with900; lifecycle/CAS cases keep valid720 so their own guards execute.
+Existing duplicate-settings negative remains unchanged.
+
+Two stale language stimuli must become genuine valid edits before diagnosis:
+preserve the existing sole pPr and clone the complete matching rPr; change
+only second-run val to fr-FR, preserving aux language/fonts/size/other fields.
+Language-only uses no text edit. Assert the actual complete returned meaning,
+source profile, raw untouched marker/first run, note geometry, sibling bytes,
+actual Apply and reexport. A distinct valid paragraph-language edit within the
+existing sole pPr must preserve actual full Current language meaning of each
+run; do not remove paragraph coverage. If the real edit promotes unchanged
+defaults or changes meaning, retain its exact red and stop. No runtime repair
+is authorized here; root must admit its mapped source-owned effect projection
+on a new clean checkpoint/declaration before code. All prior artifacts remain.
+
+### AMENDMENT04B_OBSERVED_COUNTEREXAMPLES
+
+Root whole15 actually executed900of912 with twelve failures and zero
+exclusions. Every33 held source/test hash remained exact before and after.
+WRITER_AMENDMENT04B_HOLD_01.json SHA256
+5d787db6e33c8a07ee299255c00385fbe1ccd9903510992c619ca9cdb4fa53ba
+retains selected01 10of16 and selected02 1of2, both actual exit1 without
+exclusions. All18 runtime hashes are unchanged from HOLD04; original budget
+runtime539of1800 and behavior656of2600. These are not acceptance counts.
+Two valid run-only language controls actually activate, Apply and reexport
+with exact returned Current language, but materialize unchanged raw paragraph
+and first-run defaults. Genuine changed-marker Current meaning passes after
+removing an overstrict raw-absence assertion where EN must override changed
+paragraph inheritance. Two mixed-book cases pass Apply/replay/UndoRedo, then
+refuse reexport with WORD_BODY_READBACK_PROVISIONAL; divergent field remains
+to be mapped. Retain all actual red artifacts. Historical source law and
+certificate mutation controls passed. Recognized valid lang is not an invalid
+language stimulus: keep a separate positive and use actual invalid language
+for that existing negative, without runtime edits or broader acceptance.
+No runtime repair is authorized by this evidence section. A new clean base,
+same-task mapped declaration/preflight and E0 precede amendment05 code.
+
+### AMENDMENT04C_TEST_FREEZE_AND_EXACT_FIELD_MAP
+
+WRITER_AMENDMENT04C_HOLD_01.json SHA256
+17aeb80322b1f9fc1029e644a12dadc9c78f26eaa3bef426cae885516ee33645
+freezes33 source/test files; all18 runtime bytes still match HOLD04. Original
+runtime539of1800 and behavior661of2600. The remaining bookmark matrix executes
+1of1 with all five negative indices and a separate recognized valid-language
+positive, exit0 and zero exclusions. The existing invalid-language flag is
+used; no runtime exception or other mutant assertion was weakened.
+A bounded logging-only mixed-book diagnostic executes0of1, exit1: unchanged
+readback rejects run.unsupportedNames=['rPrChange']; complete actual paragraph
+properties and run font/language/style meaning match independent source
+emission. Its fields artifact SHA256
+29451062a22331084853e0f7275d4ec006f9f34dea866d4196883a4cba5ca633
+and complete six-file synthetic business capture SHA256
+658d4f7b615efdf947d8a96196c75a2271b39decd2b92e8371786a541ddc6fa7
+remain immutable. This is a product counterexample, not a successful reexport.
+Minimal language slot preservation and source-authenticated pending wrapper
+readback remain open. Mechanical governance and a clean incomplete checkpoint
+do not satisfy semantic closure, native acceptance or mandatory Git delivery.
+
+### AMENDMENT04_COMPONENT_FREEZE
+
+WRITER_AMENDMENT04_HOLD_01.json SHA256
+05a554c81178c485ac5e9f2a40146c063002613f98c1ba77402d78eb68e7c6b4
+pins33 source/test files at47cc. Root independently verified every binding and
+all22 retained log hashes. Final actual body87of87, transaction46of46, notes
+plus mixed86of86 and corrected styled-list8of8 have zero exclusions; prior
+failed logs remain retained. Original42b total runtime539 and behavior538
+remain within1800/2600. No whole15, native or delivery completion follows.
+Root owns exact frozen whole proof and fresh native practical checks next.
+
 ### AMENDMENT03_FROZEN_COUNTEREXAMPLES_AND_CHECKPOINT
 
 HOLD03 freezes33 declared source/test hashes; aggregate runtime467of1800 and

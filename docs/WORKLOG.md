@@ -1,3 +1,12 @@
+## 2026-10-07 — final test-only freeze and pending-format cause
+
+HOLD04C freezes33 source/test bindings and unchanged18 runtime files. Bookmark
+matrix1of1 executes all five real negatives and recognized-language positive.
+Original539runtime/661behavior budget retained. The unchanged mixed publication
+predicate rejects only rPrChange; independently emitted full body properties
+match. Actual0of1 diagnostic and full synthetic business snapshots remain red
+evidence. No runtime, native, whole-novel or delivery closure is inferred.
+
 ## 2026-10-07 — body candidate frozen; genuine full-book Word proof open
 
 WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour at42b.
@@ -1083,3 +1092,18 @@ unchanged empty representation remain hypotheses. Mechanical frozen OPS is
 not acceptance. Next: admit same-task bounded repair on a clean checkpoint,
 then full source/ordinary packaged native checks and mandatory delivery.
 Original100k/five genuine both-origin three-role and performance remain OPEN.
+
+
+## 2026-10-07 — WORD_BOOK_BODY_TYPOGRAPHY_MAC amendment04 freeze
+
+HOLD04 SHA25605a554c81178c485ac5e9f2a40146c063002613f98c1ba77402d78eb68e7c6b4 pins33 source/test files at47cc. Root verified33 bytes and22 log hashes; original42b aggregate539 runtime538 behavior is within1800/2600. Actual final body87/87, transaction46/46, notes plus mixed86/86, styled-list8/8 have zero exclusions. Retained-format current snapshots and marker slots preserve raw authored omissions; pending discriminator, source link joins, native-realm own-data and effective bookmark comparisons corrected. Genuine42b legacy708 controls and distinct freshv2 changed708 refusal retained. Frozen whole15, real SOURCE/ordinary packaged Cancel/Apply/restart/reexport, mandatory gates and one Git delivery remain OPEN; original whole100k/five genuine both-origin three-role goal unchanged. Mechanical OPS binding never supplies acceptance.
+# 2026-10-07 — actual frozen body proof and mapped failures
+
+Root whole15 executed900of912, twelve failures, zero exclusions and all33
+source/test bindings unchanged. Test-only alignment with genuine historicalv1
+and freshv2 stimuli then exposed two raw-language materialization failures
+and two postUndoRedo mixed-book reexport refusals. HOLD04B freezes33 bindings;
+all18 runtime bytes are unchanged. Genuine paragraph-marker Current/reexport,
+historical compatibility and candidate certificate negative controls passed.
+Release/native/performance/full-novel and delivery remain open. Next: final
+test freeze and clean same-contour checkpoint, then mapped source-owned repair.
