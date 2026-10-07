@@ -1488,3 +1488,22 @@ zero exclusions, compiler idempotent/predecessor exact. Actual Main publication
 rejects BOTH Enter and paragraph-mark-format effective carrier interpretation.
 Raw source and generic Current/Original retained. Clean samePR checkpoint only;
 next map/admit checked-carrier parser correction, full novel/native/gates OPEN.
+
+WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 amendment16 admitted on clean70bdd2
+after fresh bootstrap/preflight/E0. Only existing parser mark-property evidence
+and typography test: actual carrier fully validated first, exact ordinary-current
+view reused, full UNION/provenance/strict owner and unknown refusal preserved.
+Both actual Root public export reds require positive provisional/final readback.
+Same original42b PR2093/scope/budgets; full native novel/current gates OPEN.
+
+### 2026-10-07 — body amendment16 frozen checked-carrier correction
+
+Root verified all35pins/14logs14artifacts: runtime816/1800, behavior1133/2600;
+only existing parser and typography test changed. Whole99of99 passed; affected
+20of29 failed with same9 open signatures, zero exclusions. Independent actual
+Main probes now publish both original boundary/mark cases; malformed wrong-owner
+final ZIP refuses WORD_BODY_READBACK_FINAL. Provisional BODY separately executed
+with valid rehashed property corruption; SHA/earlier structural guards retained.
+Root publication review00bf648ebb096071c1498b97449ca8c14b0cb2e5c6c6ecadf166efcde3551658.
+Current100k/native full novel/performance/mandatory graph/Git chain remain OPEN;
+mechanical byte binding and checkpoint never certify the original whole feature.

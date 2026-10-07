@@ -968,7 +968,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "9b158da62c01cb5d51562bd10ccbc29ea32b77c12f8d8eb1b354e98a4a4b62c1"
+        "sha256": "e7e48e14b9f3267088c29637d7df3616fc53fa2663d12b296808b13222a05b21"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1496,7 +1496,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "c19a7a19b3837e3d4b6f1cc9d4a5c29e85d7ea525dd57863e71efaf4a8198f48"
+        "sha256": "027de8ebbaad6f0d65761e92494356fea705d31486dc1733e7cbbf4467087cf8"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "878bf68d8270cf63810baa97f345aeb1a5802d54ae554dc75dfdbc818fe270a5"
+        "sha256": "2b3f90ef6192a5cedff09f9b30cbd10ced209dd3e65d94750944e648e196962a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "a67820a3c34d5dd30c5d9bf0396d29a0edd78a1a4a007884caa0888742a9a24b"
+        "sha256": "4854232907aa1dfa9f3b8e585d8be485a2cb54c6516cde2a5b6a69002f09e9ad"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "488b0711dcc944ab919879e9f35a73f44fa038a133d718d160b6ac6b88174d13"
+        "sha256": "d3ab867a1c954038c3573429f31de629e5281c60e076abbe8f93b3dd8eee2fb1"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "a906405e967b336b83404373faf22b3f2f869c01a227b11dbfd368889f7dae08"
+        "sha256": "23d204ede3ad1a895c68109b7ca8e2e868b67df2fa9d7aa843005f7f7e129fe8"
       }
     ],
     "followupRepair": {

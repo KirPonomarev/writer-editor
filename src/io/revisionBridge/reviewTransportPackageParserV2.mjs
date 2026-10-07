@@ -3045,6 +3045,19 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const defaultFontFamily = reviewDefaultFontFamily(visibilityStyles);
   const linkStyleCache = {};
   const effectiveStyles = reviewEffectiveStyleCatalog(visibilityStyles,documentScan,options.stylesXml || '',documentXml,{family:defaultFontFamily,size:defaultFontSize});
+  // This is a carrier candidate inventory, never evidence of validity. Check
+  // the entire actual revision graph once, retaining the original union rows.
+  const structuralMarkCandidates = documentScan.tokens.filter(t => ['ins','del'].includes(t.localName)
+    && (t.path.includes('pPr') || t.path.slice(-3).join('/') === 'tr/trPr/' + t.localName));
+  let structuralMarkInvalid = false;
+  if (structuralMarkCandidates.length) try {
+    extractPendingTextRevisionSourceV1(documentXml, { ...options, allowCommentMarkers: true });
+    for (const carrier of structuralMarkCandidates) if (!isWordToken(carrier,carrier.localName) || !carrier.selfClosing
+      || carrier.attributes.some(a => a.qName !== 'xmlns' && a.prefix !== 'xmlns'
+        && !(a.namespaceUri === W_NS && ['id','author','date'].includes(a.localName))
+        && !(a.namespaceUri === W16DU_NS && a.localName === 'dateUtc')))
+      throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+  } catch { structuralMarkInvalid = true; }
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
     try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
@@ -3089,10 +3102,33 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
     const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
       .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
+    const directMark = markProperties[0] ? childTokensWithin(paragraphScan,markProperties[0])
+      .filter(t => t.depth === markProperties[0].depth + 1) : [];
+    let checkedMarkCarrier = null, markViewInvalid = false;
+    try {
+      if (markProperties.length > 1) throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
+      if (structuralMarkInvalid || directParagraphChildren.some(t => ['ins','del','rPrChange'].includes(t.localName)))
+        throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
+      checkedMarkCarrier = checkedParagraphMarkChange({ tokens: [paragraph, ...paragraphRecord.tokens] }, markProperties[0], documentXml);
+      const structural = directMark.filter(t => ['ins','del'].includes(t.localName));
+      if (structural.length) {
+        const carrier = structural[0];
+        if (checkedMarkCarrier || structural.length !== 1 || structuralMarkInvalid
+          || !structuralMarkCandidates.includes(carrier) || !isWordToken(carrier,carrier.localName) || !carrier.selfClosing
+          || carrier.attributes.some(a => a.qName !== 'xmlns' && a.prefix !== 'xmlns'
+            && !(a.namespaceUri === W_NS && ['id','author','date'].includes(a.localName))
+            && !(a.namespaceUri === W16DU_NS && a.localName === 'dateUtc')))
+          throw Error('PENDING_PARAGRAPH_BOUNDARY_OWNER');
+        checkedMarkCarrier = carrier;
+      }
+    } catch { markViewInvalid = true; }
+    // Only the exact checked non-property token is absent from this read view.
+    // The current owner, previous snapshot and every ordinary property stay raw.
+    const currentMarkProperties = directMark.filter(t => t !== checkedMarkCarrier);
     let markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
     if(paragraphStyle)try {
-      const directMark=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
-      const effectiveMark=effectiveStyles.run(paragraphStyle,directMark,true).find(t=>isWordToken(t,'lang'));
+      if(markViewInvalid)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      const effectiveMark=effectiveStyles.run(paragraphStyle,currentMarkProperties,true).find(t=>isWordToken(t,'lang'));
       if(effectiveMark)markLanguage={value:readEffectiveTuple(effectiveMark,'lang')};
     }catch{markLanguage={invalid:true};}
     if(markLanguage.value){paragraphState.wordParagraphMarkLanguage=markLanguage.value;paragraphActions.wordParagraphMarkLanguage={action:'set',value:markLanguage.value};}
@@ -3107,9 +3143,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     let effectiveParagraphMarkTypography, effectiveParagraphMarkTypographyInvalid=false;
     let effectiveCodeStyle;
     try {
-      if(!paragraphStyle)throw Error('effective-marker-style');
-      const direct=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
-      const tokens=effectiveStyles.run(paragraphStyle,direct,true),fonts=tokens.find(t=>isWordToken(t,'rFonts'));
+      if(!paragraphStyle||markViewInvalid)throw Error('effective-marker-style');
+      const tokens=effectiveStyles.run(paragraphStyle,currentMarkProperties,true),fonts=tokens.find(t=>isWordToken(t,'rFonts'));
       const slots=Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(key=>[key,fonts?attr(fonts,key,W_NS):'']));
       const actions=formattingInlineActions(tokens),value={};
       for(const [name,key]of [['b','bold'],['i','italic'],['u','underline'],['strike','strike'],['color','color'],['highlight','highlight'],['shd','highlight'],['sz','fontSize'],['szCs','fontSize']])
@@ -3126,15 +3161,14 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     }catch{effectiveParagraphMarkTypographyInvalid=true;}
     let markTypographyInvalid=false;
     try {
-      if(markProperties.length>1)throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
-      const markChange=checkedParagraphMarkChange(paragraphScan,markProperties[0],documentXml);
-      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml,markChange);
-      if(paragraphStyle){const direct=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
-        const effectiveTokens=effectiveStyles.run(paragraphStyle,direct,true),effectiveActions=formattingInlineActions(effectiveTokens);
+      if(markViewInvalid)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml,checkedMarkCarrier);
+      if(paragraphStyle){
+        const effectiveTokens=effectiveStyles.run(paragraphStyle,currentMarkProperties,true),effectiveActions=formattingInlineActions(effectiveTokens);
         // A scalar marker family/size cannot flatten heterogeneous inherited
         // script slots when a direct property overrides only one slot.
         if(value?.fontFamily&&!effectiveActions.fontFamily)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
-        if(direct.some(t=>isWordToken(t,'sz')||isWordToken(t,'szCs'))&&!effectiveActions.fontSize)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');
+        if(currentMarkProperties.some(t=>isWordToken(t,'sz')||isWordToken(t,'szCs'))&&!effectiveActions.fontSize)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');
         const effective=formattingInlineState(effectiveActions);
         const inherited=Object.fromEntries(['bold','italic','underline','strike'].filter(key=>effective[key]===true).map(key=>[key,true]));
         if(Object.keys(inherited).length)value={...inherited,...value};

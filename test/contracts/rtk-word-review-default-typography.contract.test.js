@@ -287,6 +287,86 @@ function freshBodySource(doc,nonTextReturnState) {
  return buildFullManuscriptDocxReviewPacketSource({projectId:'project-body-profile',...(nonTextReturnState?{nonTextReturnState}:{}),scenes:[{sceneId,doc,text:require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc),order:0}]},
   {createdAtUtc:'2026-10-07T00:00:00.000Z',roundIdHex:'ab'.repeat(16),keyIdHex:'cd'.repeat(16),hmacSecret:'owned-local-body-profile-test',cryptoPort:{sha256Text:x=>'sha256:'+hash(x),sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value)),hmacSha256Json:(x,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(x)).digest('hex'),byteLength:x=>Buffer.byteLength(x)}});
 }
+function actualBodyPublication(doc,bridge) {
+ const vm=require('node:vm'),mainPath=require.resolve('../../src/main.js'),main=fs.readFileSync(mainPath,'utf8'),rq=require('node:module').createRequire(mainPath),producer=rq('./export/docx/fullManuscriptDocxReviewPacketSource.js'),envelope=rq('./core/document-content-envelope-v1.cjs');
+ const names=['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'];
+ const context=vm.createContext({crypto,Buffer,require:rq,isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',sha256DocxReviewPreviewSessionBytes:hash,cloneJsonSafe:x=>JSON.parse(JSON.stringify(x)),docxReviewReturnIntakeBlocked:code=>({ok:false,code}),validateFullManuscriptDocumentSectionsReturn:producer.validateFullManuscriptDocumentSectionsReturn});
+ vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]+'\n'+names.map(name=>{const declaration=main.match(new RegExp('function '+name+'\\([^]*?\\n}(?=\\n|$)'));assert.ok(declaration,name);return declaration[0];}).join('\n'),context);
+ const raw=envelope.composeObservablePayload({doc}),source=producer.buildFullManuscriptDocxReviewPacketSource({projectId:'synthetic-publication-observation',projectRoot:'/synthetic',scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,text:envelope.deriveVisibleTextFromDocument(doc),doc,observableContent:raw,order:0}]},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort()});
+ return {source,raw,bytes:buildDocxReviewPacketBuffer(source),publish:(bytes,candidate=source)=>context.buildFullManuscriptPublicationGate(candidate,bytes,bridge)};
+}
+for(const kind of ['boundary','paragraph-mark'])test('checked carrier actual Main publication '+kind,async()=>{
+ const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),recording=require('../../src/core/word-pending-recording-v1.cjs'),envelope=require('../../src/core/document-content-envelope-v1.cjs');
+ const p=text=>({type:'paragraph',content:[{type:'text',text}]}),before={type:'doc',content:[p('AB')]};
+ if(kind==='paragraph-mark')before.content[0].attrs={wordParagraphMarkTypography:{fontFamily:'Arial',fontSize:'12pt',bold:false}};
+ const working=kind==='boundary'?{type:'doc',content:[p('A'),p('B')]}:structuredClone(before);
+ if(kind==='paragraph-mark')working.content[0].attrs.wordParagraphMarkTypography={fontFamily:'Georgia',fontSize:'14pt',bold:true};
+ const doc=recording.derive(before,working,{author:'Synthetic Writer',date:'2026-10-05T12:00:03.000Z'}).doc,captured=structuredClone(doc),f=actualBodyPublication(doc,bridge),map=structuredClone(f.source.localAuthorityCapsule.exportMap);
+ const result=await f.publish(f.bytes);assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.publishAllowed,true,JSON.stringify(result));
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:f.bytes},{cryptoPort});assert.equal(analysis.ok,true);
+ for(const row of analysis.reviewIr.formattingParagraphs){assert.equal(row.effectiveParagraphMarkTypographyInvalid,undefined);assert.equal(row.paragraphFormattingInvalid,false);assert.deepEqual(row.unsupportedParagraphNames,[]);assert.deepEqual(row.effectiveParagraphMarkTypography,kind==='paragraph-mark'?{fontFamily:'Georgia',fontSize:'14pt',bold:true}:{fontFamily:'Times New Roman',fontSize:'12pt'});assert.deepEqual(row.wordParagraphMarkLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});assert.deepEqual(row.paragraphState.wordParagraphSpacing,{before:0,after:0,line:240,lineRule:'auto'});}
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts['word/document.xml'],family=kind==='paragraph-mark'?'Georgia':'Times New Roman',size=kind==='paragraph-mark'?'28':'24';
+ assert.ok(xml.includes('<w:rFonts w:ascii="'+family+'" w:hAnsi="'+family+'" w:eastAsia="'+family+'" w:cs="'+family+'"/>'));assert.ok(xml.includes('<w:sz w:val="'+size+'"/><w:szCs w:val="'+size+'"/>'));
+ const parsed=bridge.buildDocxContentPreviewFromZipBytes(f.bytes);assert.equal(parsed.ok,true,JSON.stringify(parsed));assert.equal(review.projection(parsed.contentPreview.pendingRevisionDocument).current,kind==='boundary'?'A\nB':'AB');assert.equal(review.projection(parsed.contentPreview.pendingRevisionDocument).original,'AB');
+ const ledger=review.readLedger(parsed.contentPreview.pendingRevisionDocument);assert.equal(ledger.revisions[0].author,'Synthetic Writer');assert.equal(ledger.revisions[0].dateUtc,'2026-10-05T12:00:03.000Z');
+ if(kind==='paragraph-mark'){assert.match(xml,/<w:rPrChange[^>]*>[\s\S]*?<w:rFonts w:ascii="Arial"/u);assert.deepEqual(ledger.revisions[0].format.before.attrs.wordParagraphMarkTypography,{bold:false,fontFamily:'Arial',fontSize:'12pt'});assert.deepEqual(ledger.revisions[0].format.after.attrs.wordParagraphMarkTypography,{bold:true,fontFamily:'Georgia',fontSize:'14pt'});}
+ // Rehash only the existing actual provisional artifact identity. The
+ // source/capsule semantics stay original; this valid property edit reaches BODY.
+ const provisional=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.source.provisionalSelfParseArtifact.bytes}).parts,original=provisional['word/document.xml'];provisional['word/document.xml']=original.replace('<w:sz w:val="'+size+'"/>','<w:sz w:val="36"/>').replace('<w:szCs w:val="'+size+'"/>','<w:szCs w:val="36"/>');assert.notEqual(provisional['word/document.xml'],original);
+ const changed=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(provisional).map(([name,data])=>({name,data}))),candidate={...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes:changed},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(changed)}}}},denied=await f.publish(f.bytes,candidate);
+ assert.equal(denied.ok,false,JSON.stringify(denied));assert.equal(denied.code,'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH');assert.equal(denied.reason,'WORD_BODY_READBACK_PROVISIONAL');assert.deepEqual(candidate.localAuthorityCapsule,f.source.localAuthorityCapsule);
+ assert.deepEqual(doc,captured);assert.deepEqual(f.source.localAuthorityCapsule.exportMap,map);assert.equal(envelope.composeObservablePayload({doc}),f.raw);assert.deepEqual(review.decide(review.decide(doc,{action:'acceptAll'}).doc,{action:'undo'}).doc.content,doc.content);
+});
+test('checked carrier actual ZIP rejects malformed current previous and structural owners in both publication phases',async()=>{
+ const [,bridge]=await modules,recording=require('../../src/core/word-pending-recording-v1.cjs'),zip=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip;
+ const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),row=text=>({type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:[paragraph(text)]}]}),date='2026-10-05T12:00:03.000Z';
+ for(const kind of ['boundary','paragraph-mark','row']){
+  const before={type:'doc',content:kind==='row'?[{type:'table',content:[row('Keep')]}]:[paragraph('AB')]};if(kind==='paragraph-mark')before.content[0].attrs={wordParagraphMarkTypography:{bold:false,fontFamily:'Arial',fontSize:'12pt'}};
+  const after=kind==='boundary'?{type:'doc',content:[paragraph('A'),paragraph('B')]}:structuredClone(before);if(kind==='row')after.content[0].content.push(row('New'));if(kind==='paragraph-mark')after.content[0].attrs.wordParagraphMarkTypography={bold:true,fontFamily:'Georgia',fontSize:'14pt'};
+  const doc=recording.derive(before,after,{author:'Owner',date}).doc,captured=structuredClone(doc),f=actualBodyPublication(doc,bridge),saved=structuredClone(f.source.localAuthorityCapsule),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,xml=parts['word/document.xml'];
+  const mutations=kind==='paragraph-mark'?{
+   duplicateOwner:x=>x.replace('</w:pPr>','<w:rPr/></w:pPr>'),
+   duplicateChange:x=>x.replace(/(<w:rPrChange\b[^]*?<\/w:rPrChange>)/u,'$1$1'),
+   foreignChangeAttribute:x=>x.replace('<w:rPrChange ','<w:rPrChange w:foreign="x" '),
+   priorUnknownProperty:x=>x.replace(/(<w:rPrChange\b[^>]*><w:rPr>)/u,'$1<w:unsupported/>'),
+   nestedPriorChange:x=>x.replace(/(<w:rPrChange\b[^>]*><w:rPr>)/u,'$1<w:rPrChange w:id="90"><w:rPr/></w:rPrChange>'),
+   priorInvalidLanguage:x=>x.replace(/(<w:rPrChange\b[^]*?w:val=")en-US/u,'$1bad_tag'),
+   ordinaryUnknownProperty:x=>x.replace('<w:rPr>','<w:rPr><w:unsupported/>'),
+   wrongPreviousOwner:x=>x.replace(/(<w:rPrChange\b[^>]*>)<w:rPr>/u,'$1<w:pPr>').replace('</w:rPr></w:rPrChange>','</w:pPr></w:rPrChange>')
+  }:kind==='boundary'?{
+   duplicateOwner:x=>x.replace('</w:pPr>','<w:rPr/></w:pPr>'),
+   duplicateCarrier:x=>x.replace(/(<w:ins\b[^>]*\/>)/u,'$1$1'),
+   foreignAttribute:x=>x.replace('<w:ins ','<w:ins w:foreign="x" '),
+   foreignNamespace:x=>x.replace('<w:ins ','<foreign:ins xmlns:foreign="urn:foreign" '),
+   nonSelfClosing:x=>x.replace(/(<w:ins\b[^>]*)\/>/u,'$1></w:ins>'),
+   wrongOwner:x=>x.replace(/(<w:ins\b[^>]*\/>)(<\/w:rPr>)/u,'$2$1'),
+   ordinaryUnknownProperty:x=>x.replace('<w:rPr>','<w:rPr><w:unsupported/>'),
+   mixedFormatBoundary:x=>x.replace('</w:rPr></w:pPr>','<w:rPrChange w:id="90" w:author="Owner"><w:rPr/></w:rPrChange></w:rPr></w:pPr>')
+  }:{
+   duplicateOwner:x=>x.replace(/(<w:ins\b[^>]*\/>)(<\/w:rPr>)/u,'$1$2<w:rPr/>'),
+   childAuthor:x=>x.replace(/(<w:rPr>(?:(?!<\/w:rPr>)[^])*?<w:ins\b[^>]*w:author=")Owner/u,'$1Foreign'),
+   childDate:x=>x.replace(/(<w:rPr>(?:(?!<\/w:rPr>)[^])*?<w:ins\b[^>]*w:date=")2026-10-05T12:00:03.000Z/u,'$12026-10-05T12:00:04.000Z'),
+   childUtc:x=>x.replace(/(<w:rPr>(?:(?!<\/w:rPr>)[^])*?<w:ins\b[^>]*w16du:dateUtc=")2026-10-05T12:00:03.000Z/u,'$12026-10-05T12:00:04.000Z'),
+   duplicateNativeId:x=>x.replace(/(<w:rPr>(?:(?!<\/w:rPr>)[^])*?<w:ins\b[^>]*w:id=")[^"]+/u,'$11'),
+   childForeignAttribute:x=>x.replace(/(<w:rPr>(?:(?!<\/w:rPr>)[^])*?<w:ins )/u,'$1w:foreign="x" '),
+   parentForeignAttribute:x=>x.replace(/(<w:trPr><w:ins )/u,'$1w:foreign="x" '),
+   parentAuthor:x=>x.replace(/(<w:trPr><w:ins\b[^>]*w:author=")Owner/u,'$1Foreign'),
+   parentDate:x=>x.replace(/(<w:trPr><w:ins\b[^>]*w:date=")2026-10-05T12:00:03.000Z/u,'$12026-10-05T12:00:04.000Z'),
+   parentUtc:x=>x.replace(/(<w:trPr><w:ins\b[^>]*w16du:dateUtc=")2026-10-05T12:00:03.000Z/u,'$12026-10-05T12:00:04.000Z')
+  };
+  for(const [name,mutate] of Object.entries(mutations)){
+   const changed=mutate(xml);assert.notEqual(changed,xml,kind+':'+name);const bytes=zip(Object.entries({...parts,'word/document.xml':changed}).map(([name,data])=>({name,data})));
+   const actual=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.ok(!actual.ok||actual.reviewIr.formattingParagraphs.some(p=>p.effectiveParagraphMarkTypographyInvalid||p.paragraphFormattingInvalid||p.unsupportedParagraphNames.length),JSON.stringify({kind,name,actual}));
+   for(const phase of ['provisional','final']){const candidate=phase==='provisional'?{...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes}}:f.source,result=await f.publish(phase==='final'?bytes:f.bytes,candidate);assert.equal(result.ok,false,JSON.stringify({kind,name,phase,result}));assert.equal(result.publishAllowed,false);assert.equal(result.code,phase==='provisional'?'RTK_V4_PUBLICATION_GATE_PROVISIONAL_DOCX_SHA_MISMATCH':'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH');}
+   if(kind==='boundary'&&name==='wrongOwner'||kind==='paragraph-mark'&&name==='priorUnknownProperty') {
+    const provisional=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.source.provisionalSelfParseArtifact.bytes}).parts,original=provisional['word/document.xml'];provisional['word/document.xml']=mutate(original);assert.notEqual(provisional['word/document.xml'],original);
+    const bytes=zip(Object.entries(provisional).map(([name,data])=>({name,data}))),candidate={...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(bytes)}}}},result=await f.publish(f.bytes,candidate);
+    assert.equal(result.ok,false,JSON.stringify({kind,name,phase:'actual-provisional-body',result}));assert.equal(result.code,kind==='boundary'?'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED':'PENDING_FORMAT_PROPERTIES_UNSUPPORTED');assert.deepEqual(candidate.localAuthorityCapsule,saved);
+   }
+  }
+  assert.deepEqual(doc,captured);assert.deepEqual(f.source.localAuthorityCapsule,saved);
+ }
+});
 test('finite body timed pending emission preserves raw provenance through five checked rounds',async()=>{
  const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),adapter=require('../../src/core/word-pending-comment-return-v1.cjs');
  const date='2026-10-05T12:00:03Z',original={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'}]}]};
@@ -348,9 +428,9 @@ test('finite body no-comment structural Enter keeps its original timestamp and e
  assert.throws(()=>review.buildCommentExportBinding({document:doc,exportTypography:source.exportTypography,schemaVersion:2}),/PENDING_COMMENT_REVISION_UNSUPPORTED/u);
  const ownedProperties=[...xml.matchAll(/<w:p\b[^>]*><w:pPr>([\s\S]*?)<\/w:pPr>/gu)].map(m=>m[1]);assert.equal(ownedProperties.length,2);
  for(const props of ownedProperties){assert.ok(props.includes('<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>'));assert.ok(props.includes('<w:sz w:val="24"/><w:szCs w:val="24"/>'));assert.ok(props.includes('<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/>'));assert.ok(props.includes('<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>'));assert.equal((props.match(/<w:rPr>/gu)||[]).length,1);}
- // The unchanged formatting reader treats structural rPr markers as unsupported;
- // literal owned XML and the separate pending parser prove this transport lane.
- const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);assert.equal(analysis.reviewIr.formattingParagraphs.length,2);for(const p of analysis.reviewIr.formattingParagraphs){if(p.paragraphIndex===0)assert.equal(p.effectiveParagraphMarkTypographyInvalid,true);else assert.deepEqual(p.effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});assert.deepEqual(p.wordParagraphMarkLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});assert.deepEqual(p.paragraphState.wordParagraphSpacing,{before:0,after:0,line:240,lineRule:'auto'});}
+ // Complete ordinary-current marker evidence follows the independently checked
+ // structural carrier; the separate pending parser still proves both phases.
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);assert.equal(analysis.reviewIr.formattingParagraphs.length,2);for(const p of analysis.reviewIr.formattingParagraphs){assert.equal(p.effectiveParagraphMarkTypographyInvalid,undefined);assert.equal(p.paragraphFormattingInvalid,false);assert.deepEqual(p.unsupportedParagraphNames,[]);assert.deepEqual(p.effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});assert.deepEqual(p.wordParagraphMarkLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});assert.deepEqual(p.paragraphState.wordParagraphSpacing,{before:0,after:0,line:240,lineRule:'auto'});}
  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts,bad={...parts,'word/document.xml':xml.replace('</w:pPr>','<w:rPr/></w:pPr>')};assert.notEqual(bad['word/document.xml'],xml);const refused=bridge.buildDocxContentPreviewFromZipBytes(require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(bad).map(([name,data])=>({name,data}))));assert.equal(refused.ok,false);assert.equal(refused.reason,'PENDING_PARAGRAPH_BOUNDARY_OWNER');
  const authoring=require('../../src/core/word-comment-authoring-v1.cjs'),state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId:'project-body-profile',revision:0,events:[],threads:[{threadId:'root',rootCommentId:'message',sceneId,status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'A'},sceneId,['A','B']),messages:[{commentId:'message',kind:'root',body:'Protected body',provenance:{author:'Reader'}}]}]},stateBefore=structuredClone(state);
  assert.throws(()=>freshBodySource(doc,state),/PENDING_COMMENT_REVISION_UNSUPPORTED/u);assert.deepEqual(state,stateBefore);
@@ -408,9 +488,9 @@ test('finite body owned direct boundary and row markers retain nested previous p
  const parsed=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(parsed.ok,true,JSON.stringify(parsed));assert.equal(review.projection(parsed.contentPreview.pendingRevisionDocument).current,'Keep\nNew');assert.equal(review.projection(parsed.contentPreview.pendingRevisionDocument).original,'Keep');
  const ownedProperties=[...xml.matchAll(/<w:p\b[^>]*><w:pPr>([\s\S]*?)<\/w:pPr>/gu)].map(m=>m[1]);assert.equal(ownedProperties.length,2);
  for(const props of ownedProperties){assert.ok(props.includes('<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>'));assert.ok(props.includes('<w:sz w:val="24"/><w:szCs w:val="24"/>'));assert.ok(props.includes('<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/>'));assert.ok(props.includes('<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>'));assert.equal((props.match(/<w:rPr>/gu)||[]).length,1);}
- // The unchanged formatting reader treats structural rPr markers as unsupported;
- // literal owned XML and the separate pending parser prove this transport lane.
- const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);assert.equal(analysis.reviewIr.formattingParagraphs.length,2);for(const p of analysis.reviewIr.formattingParagraphs){if(p.paragraphIndex===1)assert.equal(p.effectiveParagraphMarkTypographyInvalid,true);else assert.deepEqual(p.effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});assert.deepEqual(p.wordParagraphMarkLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});assert.deepEqual(p.paragraphState.wordParagraphSpacing,{before:0,after:0,line:240,lineRule:'auto'});}
+ // Complete ordinary-current marker evidence follows the independently checked
+ // structural carrier; the separate pending parser still proves both phases.
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);assert.equal(analysis.reviewIr.formattingParagraphs.length,2);for(const p of analysis.reviewIr.formattingParagraphs){assert.equal(p.effectiveParagraphMarkTypographyInvalid,undefined);assert.equal(p.paragraphFormattingInvalid,false);assert.deepEqual(p.unsupportedParagraphNames,[]);assert.deepEqual(p.effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});assert.deepEqual(p.wordParagraphMarkLanguage,{val:'en-US',eastAsia:'en-US',bidi:'en-US'});assert.deepEqual(p.paragraphState.wordParagraphSpacing,{before:0,after:0,line:240,lineRule:'auto'});}
  const bad={...parts,'word/document.xml':xml.replace('w:author="Owner"','w:author="Foreign"')};assert.notEqual(bad['word/document.xml'],xml);const refused=bridge.buildDocxContentPreviewFromZipBytes(require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(bad).map(([name,data])=>({name,data}))));assert.equal(refused.ok,false);assert.equal(refused.reason,'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED');
  assert.deepEqual(doc,raw);
 });
