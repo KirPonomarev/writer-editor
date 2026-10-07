@@ -1198,7 +1198,38 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       for(const scene of localAuthority.exportMap.scenes)if(stableRtkReviewTransportJson(scene.pendingCommentBinding??null)!==stableRtkReviewTransportJson(reconstructed.pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?.binding??null))throw Error('WORD_BODY_PENDING_BINDING');
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
         const read=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
-        const rows=read.reviewIr?.formattingParagraphs;
+        let rows=read.reviewIr?.formattingParagraphs;
+        if(rows?.some(row=>row.formattedRuns?.some(run=>run.unsupportedNames?.includes('rPrChange')))) {
+          const returned=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
+            baselineDocuments:canonicalScenes.map(scene=>({sceneId:scene.sceneId,document:scene.doc||require('./core/document-content-envelope-v1.cjs').buildParagraphDocumentFromText(scene.text)})),retainPendingScenes:true,
+            documentSections:localAuthority.documentSections,signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
+          if(!returned.ok)throw Error(returned.code||'WORD_BODY_PENDING_READBACK');
+          const checked=new Set();
+          for(const scene of canonicalScenes) {
+            const blocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
+            if(!scene.pendingCommentBinding)continue;
+            // Source-owned canonical anchor reconstruction, identical to the
+            // existing exporter. The returned packet cannot supply this roster.
+            const paragraphs=blocks.map(block=>({text:block.text,...(block.formatIr.table?{table:block.formatIr.table}:{})}));
+            const anchors=(source.commentExport?.threads||[]).filter(thread=>thread.sceneId===scene.sceneId).map(thread=>{
+              const a=thread.anchor,input={paragraphIndex:blocks.findIndex(block=>block.blockId===a.blockId),startUtf16:a.startUtf16,selectedText:a.selectedText,
+                ...(a.kind==='multi-paragraph-range'?{kind:a.kind,endParagraphIndex:blocks.findIndex(block=>block.blockId===a.endBlockId),endUtf16:a.endUtf16}:a.kind==='point'?{kind:'point',affinity:'right'}:{})};
+              return {threadId:thread.threadId,anchor:{...require('./core/word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId:scene.sceneId,paragraphs,input}),...(a.pendingUnionLocator?{pendingUnionLocator:a.pendingUnionLocator}:{})}};
+            });
+            pendingTextRevisions.verifyCommentReturnBinding({document:scene.doc,binding:scene.pendingCommentBinding,
+              returnedDocument:returned.scenes.find(item=>item.sceneId===scene.sceneId)?.returnedDocument,anchors,
+              exportTypography:bodyProfile,exportParagraphs:blocks.map(block=>block.formatIr.paragraph)});
+            blocks.forEach(block=>checked.add(block.documentParagraphIndex));
+          }
+          // The complete actual wrapper roster (including nested parents,
+          // provenance and both projections) has passed. Keep every other
+          // actual field and diagnostic for the strict body comparison.
+          rows=rows.map((row,index)=>({...row,formattedRuns:row.formattedRuns.map(run=>{
+            if(!run.unsupportedNames?.includes('rPrChange'))return run;
+            if(!checked.has(index))throw Error('WORD_BODY_PENDING_READBACK');
+            return {...run,unsupportedNames:run.unsupportedNames.filter(name=>name!=='rPrChange')};
+          })}));
+        }
         if(!read.ok||rows?.length!==source.blocks.length||source.blocks.some((block,index)=>!bodyTypography.readback(block.formatIr,rows[index],bodyProfile)))throw Error(`WORD_BODY_READBACK_${phase.toUpperCase()}`);
         const tabStops=localAuthority.exportMap.scenes.map(scene=>scene.documentFormatIr?.wordDefaultTabStop);
         if(new Set(tabStops).size!==1||read.reviewIr.documentProperties?.effective!==tabStops[0])throw Error('WORD_BODY_TAB_STOP_READBACK');

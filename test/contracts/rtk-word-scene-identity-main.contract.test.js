@@ -1266,7 +1266,7 @@ for(const variant of ['typed-failure','formatting-failure','secret-filter','canc
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
-async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
+async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,variedEmphasis=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
   if(!parsed.doc)parsed.doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};
@@ -1295,6 +1295,7 @@ async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTai
     parsed.doc.content[0].content=[{type:'text',text:target.slice(0,1)},
       {type:'text',text:target.slice(1),marks:[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]}];
   }
+  if(variedEmphasis)parsed.doc.content[0].content=[{type:'text',text:target.slice(0,1),marks:[{type:'bold'}]},{type:'text',text:target.slice(1),marks:[{type:'italic'}]}];
   const intermediate=envelope.composeObservablePayload({...parsed,metaEnabled:true,doc:parsed.doc});
   const beforeAppend=structuredClone(parsed.doc);
   // Repeated quote belongs to a different signed block, not this operation.
@@ -1452,11 +1453,31 @@ for (const languageOnly of [false,true,'paragraph']) test(`actual whole Main cle
   const reparsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort});assert.equal(reparsed.ok,true);
   assert.deepEqual(reparsed.reviewIr.formattingParagraphs[0].wordParagraphMarkLanguage,markerOnly?changedLanguage:unchangedLanguage);
   assert.deepEqual(reparsed.reviewIr.formattingParagraphs[0].formattedRuns.map(r=>r.wordLanguage),markerOnly?[unchangedLanguage]:[unchangedLanguage,changedLanguage]);
-  assert.deepEqual(paragraph.attrs?.wordParagraphMarkLanguage,markerOnly?changedLanguage:undefined,'unchanged emitted marker remains absent in canonical source');
+  assert.deepEqual(paragraph.attrs?.wordParagraphMarkLanguage,markerOnly?{val:'fr-FR'}:undefined,'only changed marker fields enter canonical source');
   assert.equal(paragraph.content[0].text,originalPart);
   // A genuinely changed marker requires explicit unchanged EN to retain the actual run's meaning.
-  assert.deepEqual(paragraph.content[0].marks,markerOnly?[{type:'textStyle',attrs:{wordLanguage:unchangedLanguage}}]:undefined,'run-only edits retain raw absence; marker edit preserves actual EN run meaning');
-  if(!markerOnly){assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:changedLanguage}}]);}
+  assert.deepEqual(paragraph.content[0].marks,markerOnly?[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}]:undefined,'run-only edits retain raw absence; marker edit preserves actual EN run meaning');
+  if(!markerOnly){assert.equal(paragraph.content[1].text,changedPart);assert.deepEqual(paragraph.content[1].marks,[{type:'textStyle',attrs:{wordLanguage:{val:'fr-FR'}}}]);}
+});
+
+
+for(const forgedStyle of [false,true])test('actual Main unchanged-text proofing language preserves varied source emphasis; forged style '+forgedStyle,async t=>{
+ const {f,activated,beforeActivation,bridge}=await cleanTextReturnFixture(t,{omitTextEdit:true,variedEmphasis:true,mutateReturn:parts=>{
+  let done=false;parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/gu,p=>{
+   if(done||!p.includes('>nannotated target</w:t>'))return p;done=true;
+   return p.replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>run.includes('>nannotated target</w:t>')?run.replace('w:val="en-US"','w:val="fr-FR"').replace('</w:rPr>',(forgedStyle?'<w:b/>':'')+'</w:rPr>'):run);
+  });assert.equal(done,true);
+ }});
+ if(forgedStyle){assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error?.details?.detail,'non-link-style-change');assert.deepEqual(f.capture(),beforeActivation);return;}
+ assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.activated,true,JSON.stringify(activated));
+ assert.deepEqual(f.capture(),beforeActivation);await f.probe.refreshReview();const result=await f.probe.fullApply({requestId:'varied-language'});assert.equal(result.applied,true,JSON.stringify(result));
+ const paragraph=envelope.parseObservablePayload(read(f.alpha)).doc.content[0];
+ assert.deepEqual(paragraph.content,[{type:'text',text:'U',marks:[{type:'bold'}]},{type:'text',text:'nannotated target',marks:[{type:'italic'},{type:'textStyle',attrs:{wordLanguage:{val:'fr-FR'}}}]}]);
+ assert.equal(paragraph.attrs?.wordParagraphMarkLanguage,undefined);assert.equal(bookmarks.readRegistry(envelope.parseObservablePayload(read(f.alpha)).doc).bookmarks.length,7);
+ for(const name of ['roman/Imported/02_Beta.txt','notes.craftsman.json','.yalken/word-review/non-text-return-state.v1.json'])assert.equal(f.capture().files[name],beforeActivation.files[name]);
+ const built=await f.probe.reviewBuild(await f.probe.fullSource());assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort:{sha256Text:x=>'sha256:'+sha(x),sha256Json:x=>'sha256:'+sha(JSON.stringify(x)),byteLength:Buffer.byteLength}});
+ assert.deepEqual(analysis.reviewIr.formattingParagraphs[0].formattedRuns.map(r=>r.wordLanguage),[{val:'en-US',eastAsia:'en-US',bidi:'en-US'},{val:'fr-FR',eastAsia:'en-US',bidi:'en-US'}]);
 });
 
 for(const variant of ['note-body','tracked-composite'])test(`actual whole Main clean return refuses ${variant} without canonical writes`,async t=>{
@@ -3105,19 +3126,51 @@ for(const foreignReply of [false,true])test('novel book actual Main mixed return
    assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(thread=>({threadId:thread.threadId,messages:thread.messages})),originalMessages);
    if(action==='redo')assert.equal(read(file),appliedScenes[i]);
  }
- const built=await reopened.probe.reviewBuild(await reopened.probe.fullSource());assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ const reexportSource=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(reexportSource);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  if(!foreignReply){
+  const protectedBytes=x.f.capture(),pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const mutations=[
+   ['before',xml=>xml.replace(/(<w:rPrChange\b[^>]*><w:rPr>)/u,'$1<w:u w:val="single"/>')],
+   ['after',xml=>xml.replace(/(<w:r><w:rPr>)([\s\S]*?<w:rPrChange\b)/u,'$1<w:u w:val="single"/>$2')],
+   ['author',xml=>xml.replace(/(<w:rPrChange\b[^>]*w:author=")[^"]*/u,'$1Forged formatter')],
+   ['date',xml=>xml.replace(/(<w:rPrChange\b[^>]*w:date=")[^"]*/u,'$12026-10-07T13:00:00Z')],
+   ['dateUtc',xml=>xml.replace(/(<w:rPrChange\b)/u,'$1 xmlns:w16du="http://schemas.microsoft.com/office/word/2023/wordml/word16du" w16du:dateUtc="2026-10-07T13:00:00Z"')],
+   ['range',xml=>xml.replace(/<w:r>(<w:rPr>[\s\S]*?<w:rPrChange\b[\s\S]*?<\/w:rPr>)(<w:t\b[^>]*>)([^<]+)<\/w:t><\/w:r>/u,(all,props,open,text)=>'<w:r>'+props+open+text.slice(0,1)+'</w:t></w:r><w:r>'+props.replace(/<w:rPrChange\b[\s\S]*?<\/w:rPrChange>/u,'')+open+text.slice(1)+'</w:t></w:r>')],
+   ['parent',xml=>xml.replace(/<w:ins\b[^>]*>([\s\S]*?<w:rPrChange\b[\s\S]*?)<\/w:ins>/u,'$1')],
+   ['nested-before',xml=>xml.replace(/(<w:ins\b[^>]*>[\s\S]*?<w:rPrChange\b[^>]*><w:rPr>)/u,'$1<w:u w:val="single"/>')],
+   ['nested-author',xml=>xml.replace(/(<w:ins\b[^>]*>[\s\S]*?<w:rPrChange\b[^>]*w:author=")[^"]*/u,'$1Forged nested formatter')],
+   ['extra-same-meaning-bound',xml=>{let index=0;const target=reexportSource.blocks.findIndex((block,i)=>i>0&&block.sceneId.includes('01_Alpha')&&block.text&&block.formatIr.paragraph.nodeType==='paragraph');assert.ok(target>0);return xml.replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>index++===target?p.replace(/<w:r><w:rPr>([\s\S]*?)<\/w:rPr>/u,(all,props)=>'<w:r><w:rPr>'+props+'<w:rPrChange w:id="99993" w:author="Forged formatter"><w:rPr>'+props+'</w:rPr></w:rPrChange></w:rPr>'):p);} ],
+   ['extra-bound',xml=>xml.replace(/<w:rPrChange\b[\s\S]*?<\/w:rPrChange>/u,value=>value+value.replace(/w:id="[^"]*"/u,'w:id="99991"'))],
+   ['extra-clean',xml=>{let index=0;const target=reexportSource.blocks.findIndex(block=>block.sceneId.includes('02_Beta'));
+    return xml.replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>index++===target?p.replace(/<w:r><w:rPr>([\s\S]*?)<\/w:rPr>/u,(all,props)=>'<w:r><w:rPr>'+props+'<w:rPrChange w:id="99992" w:author="Forged formatter"><w:rPr>'+props+'</w:rPr></w:rPrChange></w:rPr>'):p);} ],
+  ];
+  for(const phase of ['provisional','final'])for(const [name,mutate] of mutations){
+   const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:phase==='final'?built.documentBuffer:reexportSource.provisionalSelfParseArtifact.bytes}).parts,parts={...original};
+   parts['word/document.xml']=mutate(parts['word/document.xml']);assert.notEqual(parts['word/document.xml'],original['word/document.xml'],name+' actual XML mutation');const bytes=pack(parts);
+   let expectedSource=reexportSource,actualBytes=bytes;
+   if(phase==='provisional'){expectedSource={...reexportSource,provisionalSelfParseArtifact:{...reexportSource.provisionalSelfParseArtifact,bytes},advisoryManifest:{...reexportSource.advisoryManifest,coreManifest:structuredClone(reexportSource.advisoryManifest.coreManifest)}};expectedSource.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256='sha256:'+sha(bytes);actualBytes=built.documentBuffer;}
+   const gate=await reopened.probe.fullGate(expectedSource,actualBytes).catch(error=>{assert.equal(name,'extra-bound');assert.equal(error.message,'PENDING_FORMAT_PROPERTIES_UNSUPPORTED');return {publishAllowed:false,code:error.message};});assert.equal(gate.publishAllowed,false,JSON.stringify({phase,name,gate}));assert.deepEqual(x.f.capture(),protectedBytes);
+   console.log('PENDING_FORMAT_REFUSAL '+JSON.stringify({phase,name,code:gate.code,reason:gate.reason}));
+  }
+  const forgedSource={...reexportSource,localAuthorityCapsule:structuredClone(reexportSource.localAuthorityCapsule)};
+  forgedSource.localAuthorityCapsule.exportMap.scenes.find(scene=>scene.pendingCommentBinding?.nestedFormatSpans?.length).pendingCommentBinding.nestedFormatSpans[0].formatSha256='0'.repeat(64);
+  const forgedGate=await reopened.probe.fullGate(forgedSource,built.documentBuffer);assert.equal(forgedGate.publishAllowed,false);assert.deepEqual(x.f.capture(),protectedBytes);
   const secondExport=path.join(x.f.temp,'second-book.review.docx');reopened.chooseSavePath(secondExport);
   assert.equal((await reopened.probe.exportFullReview({requestId:'second-book-export'})).ok,true);
   const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:fs.readFileSync(secondExport)}).parts;
   const count=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].length;let index=0;
   parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>{
    const n=index++;if(n!==0&&n!==count-1)return p;
-   if(n===count-1){const property='<w:rPr><w:lang w:val="ru-RU"/><w:rPrChange w:id="8000" w:author="Second formatter" w:date="2026-10-05T12:02:00Z"><w:rPr/></w:rPrChange></w:rPr>';
-    p=p.includes('</w:pPr>')?p.replace('</w:pPr>',property+'</w:pPr>'):p.replace(/(<w:p(?:\s[^>]*)?>)/u,'$1<w:pPr>'+property+'</w:pPr>');}
+   if(n===count-1)p=p.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/u,properties=>properties.replace(/<w:rPr>([\s\S]*?)<\/w:rPr>/u,(before,inside)=>{
+    assert.match(inside,/w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/u);
+    return '<w:rPr>'+inside.replace('w:val="en-US"','w:val="ru-RU"')+'<w:rPrChange w:id="8000" w:author="Second formatter" w:date="2026-10-05T12:02:00Z">'+before+'</w:rPrChange></w:rPr>';
+   }));
    return p.replace('</w:p>',`<w:ins w:id="${8100+n}" w:author="Second editor" w:date="2026-10-05T12:02:00Z"><w:r><w:t xml:space="preserve"> ROUND2${n}</w:t></w:r></w:ins></w:p>`);
   });
   const secondBytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),beforeRound2=x.paths.map(read),oldGraph=JSON.parse(read(x.commentPath));
+  const duplicateParts={...parts};duplicateParts['word/document.xml']=duplicateParts['word/document.xml'].replace(/(<w:pPr>[\s\S]*?)(<w:rPr>[\s\S]*?<\/w:rPr>)/u,'$1$2<w:rPr><w:lang w:val="en-US"/></w:rPr>');
+  const duplicateBefore=x.f.capture(),duplicateResult=await reopened.probe.reviewActivate({requestId:'second-book-duplicate-marker',bufferSource:pack(duplicateParts).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  assert.equal(duplicateResult.ok,false);assert.match(JSON.stringify(duplicateResult),/WORD_LANGUAGE_INVALID|PENDING_FORMAT_PROPERTIES_UNSUPPORTED/u);assert.deepEqual(x.f.capture(),duplicateBefore);
   const protectedStatusParts={...parts};let changedStatus=false;
   protectedStatusParts['word/commentsExtended.xml']=protectedStatusParts['word/commentsExtended.xml'].replace(/<w15:commentEx\b[^>]*\/>/u,tag=>{changedStatus=true;return tag.includes('w15:done=')?tag.replace(/w15:done="[^"]*"/u,'w15:done="1"'):tag.replace('/>',' w15:done="1"/>');});
   assert.equal(changedStatus,true);const protectedStatusBytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(protectedStatusParts).map(([name,data])=>({name,data}))),beforeProtectedStatus=x.f.capture();
@@ -3388,15 +3441,29 @@ test('fresh manuscript body defaults do not enter canonical source through actua
 });
 
 
-for(const variant of ['unchanged','word-relocated','tracked-text','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
+for(const variant of ['unchanged','word-relocated','tracked-text','format-reexport','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),ledger={schemaVersion:1,source:{type:'doc',content:[p('AxxB'),{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},p('')]},
   revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]};
+ if(variant==='format-reexport'){
+  ledger.source.content[0].content=[{type:'text',text:'Axx'},{type:'text',text:'B',marks:[{type:'bold'}]}];
+  ledger.revisions.push({id:'revision-2',nativeId:'2',operation:'format',author:'Formatter',date:'2026-10-07T01:00:00Z',dateUtc:'',groupId:null,paragraphIndex:0,from:3,to:4,state:'pending',format:{kind:'run',before:[],after:[{type:'bold'}]}});
+ }
  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc:pending.bindLedger(ledger)}));f.source=read(f.alpha);
  mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  assert.equal(source.documentNotes?.sourceBindings?.length||0,0);assert.equal(source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.schemaVersion,2);
+ if(variant==='format-reexport'){
+  assert.equal(read(f.beta),'Beta');const before=f.capture(),again=await f.probe.reviewBuild(await f.probe.fullSource());assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
+  for(const missing of [true,false]){const forged={...source,localAuthorityCapsule:structuredClone(source.localAuthorityCapsule)},scene=forged.localAuthorityCapsule.exportMap.scenes.find(s=>s.sceneId.includes('02_Beta'));
+   if(missing){delete forged.localAuthorityCapsule.baselineObservableContentBySceneId[scene.sceneId];delete forged.localAuthorityCapsule.baselineFinalTextBySceneId[scene.sceneId];}
+   else forged.localAuthorityCapsule.baselineObservableContentBySceneId[scene.sceneId]='Changed Beta';
+   const denied=await f.probe.fullGate(forged,built.documentBuffer);assert.equal(denied.publishAllowed,false);assert.equal(denied.reason,'WORD_BODY_BASELINE');assert.deepEqual(f.capture(),before);
+  }
+  assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),ledger);assert.deepEqual(f.capture(),before);return;
+ }
+
  const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
  const initial=f.capture();
  if(variant==='forged-binding'){

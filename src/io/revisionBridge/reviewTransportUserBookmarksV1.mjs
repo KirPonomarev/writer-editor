@@ -529,12 +529,14 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           if(!block.text||!p.paragraphText
             ||before.some(run=>run.link)||after.some(run=>run.link)
             ||resultPs[i].content.some(node=>!['text','hardBreak'].includes(node.type))
-            ||!before.length||!after.length
-            ||before.some(run=>!same(run.style,before[0].style))
+            ||!before.length||!after.length)return reject('ordinary-text-rich-footprint');
+          if(completeBody&&block.text===p.paragraphText)compareStyles(before,after,0,0,block.text.length);
+          else if(before.some(run=>!same(run.style,before[0].style))
             ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
-          replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
+          if(!completeBody||block.text!==p.paragraphText)replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
           if(!same(wordBreaks.paragraphBreaks(resultPs[i]),returnedBreaks))return reject('typed-break-position-change');
-          if(hasLanguage&&languageChanged){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
+          if(hasLanguage&&languageChanged){const effect=completeBody?bodyTypography.languageEffects(resultPs[i],languageChange,exportTypography):languageChange;
+            Object.assign(languageChange,effect);const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
           ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
             sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage&&languageChanged?{wordLanguageChange:languageChange}:{})});
           continue;

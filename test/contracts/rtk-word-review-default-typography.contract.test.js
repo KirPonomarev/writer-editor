@@ -475,3 +475,56 @@ test('source-owned settings reject duplicate default tab stops before return mea
  assert.throws(()=>parser.extractDocumentDefaultTabStopV1(settings.replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>'),{cryptoPort}),/WORD_DEFAULT_TAB_STOP_INVALID/u);
  assert.deepEqual(parser.extractDocumentDefaultTabStopV1(settings.replace('<w:defaultTabStop w:val="720"/>','<w:defaultTabStop w:val="708"/>'),{cryptoPort}),{effective:708,explicit:true});
 });
+
+
+test('finite body language effects validate complete coverage and preserve raw UTF16 break and partial authored fields',()=>{
+ const body=require('../../src/core/word-review-typography-v1.cjs'),language=require('../../src/core/word-language-v1.cjs'),profile=body.freshBodyTypography();
+ const source={type:'paragraph',attrs:{wordParagraphMarkLanguage:{eastAsia:'ja-JP'}},content:[
+  {type:'text',text:'A😀',marks:[{type:'bold'},{type:'textStyle',attrs:{wordLanguage:{bidi:'ar-SA'}}}]},
+  {type:'hardBreak',attrs:{wordBreakType:'page'},marks:[{type:'italic'}]},
+  {type:'text',text:'B',marks:[{type:'italic'}]}]};
+ const original=JSON.stringify(source),marker={val:'en-US',eastAsia:'ja-JP',bidi:'en-US'};
+ for(const key of ['val','eastAsia','bidi']) {
+  const changed={...marker,[key]:{val:'fr-FR',eastAsia:'zh-CN',bidi:'he-IL'}[key]};
+  const actual={schemaVersion:1,paragraphMark:marker,runs:[
+   {from:0,to:3,language:{...marker,bidi:'ar-SA'}},{from:3,to:4,language:marker},{from:4,to:5,language:changed}]};
+  const effect=body.languageEffects(source,actual,profile),applied=language.applyParagraphLanguage(source,effect);
+  assert.deepEqual(effect.paragraphMark,{eastAsia:'ja-JP'});assert.deepEqual(effect.runs.map(r=>r.language),[{bidi:'ar-SA'},null,{[key]:changed[key]}]);
+  assert.deepEqual(applied.content[1],source.content[1]);assert.equal(applied.content[0].text,'A😀');assert.equal(applied.content[2].marks[0].type,'italic');
+  const projected=body.document({type:'doc',content:[applied]},profile).content[0];
+  assert.deepEqual(projected.content.map(n=>n.marks.find(m=>m.type==='textStyle').attrs.wordLanguage),actual.runs.map(r=>r.language));
+ }
+ const valid={schemaVersion:1,paragraphMark:marker,runs:[{from:0,to:5,language:marker}]};
+ for(const mutate of [x=>x.runs[0].from=1,x=>x.runs[0].to=6,x=>x.runs[0].to=4,
+  x=>x.runs=[{from:0,to:2,language:marker},{from:2,to:5,language:marker}],
+  x=>x.runs=[{from:0,to:3,language:marker},{from:2,to:5,language:marker}],
+  x=>x.runs=[{from:0,to:3,language:marker},{from:4,to:5,language:marker}],
+  x=>x.runs[0].ignored=true,x=>delete x.runs[0].language.bidi,x=>x.ignored=true]) {
+  const bad=structuredClone(valid);mutate(bad);assert.throws(()=>body.languageEffects(source,bad,profile),/WORD_LANGUAGE_INVALID|WORD_BODY_LANGUAGE_EFFECT_UNPROVEN/u);
+  assert.equal(JSON.stringify(source),original);
+ }
+});
+
+
+test('actual finite body producer ZIP language edits retain partial authored source and UTF16 typed breaks for each slot',async()=>{
+ const [,bridge]=await modules,body=require('../../src/core/word-review-typography-v1.cjs'),language=require('../../src/core/word-language-v1.cjs');
+ const paragraph={type:'paragraph',attrs:{wordParagraphMarkLanguage:{eastAsia:'ja-JP'}},content:[
+  {type:'text',text:'A😀',marks:[{type:'bold'},{type:'textStyle',attrs:{wordLanguage:{bidi:'ar-SA'}}}]},
+  {type:'hardBreak',attrs:{wordBreakType:'page'},marks:[{type:'italic'}]},{type:'text',text:'B',marks:[{type:'italic'}]}]};
+ const doc={type:'doc',content:[paragraph]},original=JSON.stringify(doc),source=freshBodySource(doc),own=buildDocxReviewPacketBuffer(source);
+ const originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:own}).parts;
+ for(const [key,value] of [['val','fr-FR'],['eastAsia','zh-CN'],['bidi','he-IL']]) {
+  const parts={...originalParts};let changed=false;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:r>[\s\S]*?<\/w:r>/gu,run=>{
+   if(!run.includes('>B</w:t>'))return run;assert.equal(changed,false);changed=true;return run.replace(new RegExp('w:'+key+'="[^"]+"','u'),'w:'+key+'="'+value+'"');
+  });assert.equal(changed,true);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),actual=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(actual.ok,true);
+  const row=actual.reviewIr.formattingParagraphs[0],change={schemaVersion:1,paragraphMark:row.wordParagraphMarkLanguage,runs:row.formattedRuns.map(run=>({from:run.from,to:run.to,language:run.wordLanguage}))};
+  assert.deepEqual(row.typedBreaks,[{offset:3,type:'page'}]);
+  const effect=body.languageEffects(paragraph,change,source.exportTypography),next=language.applyParagraphLanguage(paragraph,effect);
+  assert.deepEqual(next.attrs,paragraph.attrs);assert.deepEqual(next.content.slice(0,2),paragraph.content.slice(0,2));assert.deepEqual(next.content[2].marks,[{type:'italic'},{type:'textStyle',attrs:{wordLanguage:{[key]:value}}}]);assert.equal(JSON.stringify(doc),original);
+  const reexport=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildDocxReviewPacketBuffer(freshBodySource({type:'doc',content:[next]}))},{cryptoPort});assert.equal(reexport.ok,true);
+  assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].formattedRuns.map(run=>run.wordLanguage),row.formattedRuns.map(run=>run.wordLanguage));
+  assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].wordParagraphMarkLanguage,row.wordParagraphMarkLanguage);assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].typedBreaks,row.typedBreaks);
+ }
+});

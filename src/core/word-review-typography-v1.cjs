@@ -85,6 +85,43 @@ function inline(value,sourceParagraph,typography) {
   return {...checked.bodyRunDefaults,...(code?{fontFamily:'Menlo',fontSize:'10pt'}:{}),...value,
     wordLanguage:{...checked.bodyRunDefaults.wordLanguage,...sourceParagraph.wordParagraphMarkLanguage,...value?.wordLanguage}};
 }
+// Actual language is observed independently; only source-owned differences
+// and required inheritance overrides enter the existing partial-language law.
+function languageEffects(source,change,typography) {
+  const profile=validate(typography),language=require('./word-language-v1.cjs');
+  if(profile.schemaVersion!==V2)fail('WORD_REVIEW_BODY_PROFILE_REQUIRED');
+  const keys=['val','eastAsia','bidi'],complete=value=>{
+    const checked=language.normalizeWordLanguage(value);
+    if(!checked||keys.some(key=>!Object.hasOwn(checked,key)))fail('WORD_BODY_LANGUAGE_EFFECT_UNPROVEN');return checked;
+  };
+  // Enforce the existing complete coverage, UTF16 and closed change grammar
+  // before deriving a smaller effect; the discarded clone grants no authority.
+  language.applyParagraphLanguage(source,change);
+  const actualRuns=change.runs.map(run=>({...run,language:complete(run.language)}));
+  const owned={nodeType:source.type,...source.attrs},beforeMark=paragraph(owned,profile).wordParagraphMarkLanguage;
+  const observedMark=complete(change.paragraphMark),mark={...(source.attrs?.wordParagraphMarkLanguage||{})};
+  for(const key of keys)if(beforeMark[key]!==observedMark[key])mark[key]=observedMark[key];
+  const nextParagraph={...owned,wordParagraphMarkLanguage:mark},runs=[];let offset=0,ri=0;
+  for(const node of source.content||[]) {
+    const length=node.type==='hardBreak'?1:node.type==='text'?node.text.length:0;
+    if(!length)continue;
+    const styles=(node.marks||[]).filter(mark=>mark.type==='textStyle');
+    if(styles.length>1)fail('WORD_BODY_LANGUAGE_EFFECT_UNPROVEN');
+    const raw=styles[0]?.attrs?.wordLanguage||{},expected=inline(styles[0]?.attrs,owned,profile).wordLanguage;
+    const end=offset+length;let from=offset;
+    while(from<end) {
+      while(actualRuns[ri].to<=from)ri++;
+      const actual=actualRuns[ri],to=Math.min(end,actual.to),observed=actual.language,value={...raw};
+      for(const key of keys)if(expected[key]!==observed[key])value[key]=observed[key];
+      const effective=inline({wordLanguage:value},nextParagraph,profile).wordLanguage;
+      for(const key of keys)if(effective[key]!==observed[key])value[key]=observed[key];
+      runs.push({from,to,language:Object.keys(value).length?value:null});from=to;
+    }
+    offset=end;
+  }
+  return {schemaVersion:1,paragraphMark:Object.keys(mark).length?mark:null,runs};
+}
+
 function formatIr(value,typography) {
   const checked=validate(typography,{allowUndefined:true});
   if(checked?.schemaVersion!==V2)return clone(value);
@@ -193,4 +230,4 @@ function readback(raw,actual,typography,{allowTextChanges=false}={}) {
   }
   return true;
 }
-module.exports={markerMeaning,V1,V2,validate,freshBodyTypography,paragraph,inline,formatIr,document,segments,snapshot,readback};
+module.exports={markerMeaning,V1,V2,validate,freshBodyTypography,paragraph,inline,languageEffects,formatIr,document,segments,snapshot,readback};

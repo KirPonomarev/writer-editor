@@ -1,3 +1,26 @@
+## 2026-10-07 — HOLD05; continue early genuine Word verification
+
+Continue the original42b WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 contour.
+Writer HOLD05 binds33 files, SHA25617397308b8db68c58003d3808b08490becfd644b6fd7ca61582aa7aefe3ab2f5.
+Root review02 actually verifies33 bindings,19 logs and26 artifacts. Final
+focused13 is11of11, exit0, zero exclusions; runtime615/1800, behavior789/2600.
+Minimal source-owned language effects retain full actual Current/reexport and
+raw omissions; varied emphasis accepts only unchanged-text finitev2 language
+after complete nonlanguage equality. Legacy replacement executes unchanged.
+Complete source pending binding authenticates standalone/nested wrapper roster,
+parents/provenance and both projections before local rPrChange diagnostic
+removal. All24 actual ZIP mutants, forged binding and public duplicate refuse
+without writes. Two mixed workflows and parsed plain-v1 sibling publication
+pass. Shared language writer, source hashes, durable state and ports unchanged.
+Retain intermediate failures and prior whole900of912 as historical red; this
+focused proof does not certify whole15/native/performance or the full novel.
+Root finalizes exact OPS companions and clean same-contour checkpoint, then
+SOURCE05 unchanged genuine save, SOURCE06 changed Cancel/Apply and SOURCE07
+same-profile restart/reexport. Ordinary PACKAGED follows with exact ASAR source
+binding. No AX/TCC/giant alert/old crash replay; one native or heavy lane only.
+Full gates, push/PR/CI/merge/merged verification remain OPEN. Original release
+denominator unchanged; do not create a separate contour before delivery.
+
 ## 2026-10-07 — actual whole failures and genuine product counterexamples
 
 Continue the same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 undelivered contour,

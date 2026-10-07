@@ -1,3 +1,18 @@
+## 2026-10-07 — amendment05 final focused freeze
+
+Clean747/bootstrap/preflight/E0 preceded bounded05 language and pending-readback
+repair. Writer HOLD05 freezes33 bindings. Root actual review02 verifies every
+binding,19 retained logs and26 artifacts; final focused13=11of11, exit0, zero
+exclusions. Three language controls, UTF16/auxiliary/partial source, varied
+emphasis and forged style, both complete mixed workflows, plain sibling and
+missing/changed baseline guards, genuine persisted-v1 compatibility execute.
+Both phases reject24 real ZIP mutations plus forged binding and malformed
+public duplicate without writes. Runtime615/1800; behavior789/2600. Previous
+causal and fixture reds retained. Scoped fallback applies only parsed validv1;
+language writer and raw hashes unchanged. Exact-byte governance/checkpoint
+is not native, whole-novel or delivery acceptance. Early real SOURCE/ordinary
+PACKAGED, full affected/mandatory gates and one delivery chain next.
+
 ## 2026-10-07 — final test-only freeze and pending-format cause
 
 HOLD04C freezes33 source/test bindings and unchanged18 runtime files. Bookmark

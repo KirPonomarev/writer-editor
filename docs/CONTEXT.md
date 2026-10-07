@@ -1,3 +1,26 @@
+## 2026-10-07 — amendment05 held; actual native body proof next
+
+The original42b body contour remains undelivered. Clean747 admitted05; writer
+HOLD05 SHA25617397308b8db68c58003d3808b08490becfd644b6fd7ca61582aa7aefe3ab2f5
+freezes33 source/test files. Root reviewed all33 bindings,19 retained logs and
+26 artifacts; final focused13 actually passes11of11, exit0, zero exclusions.
+Complete returned language meaning survives minimal source-owned partial
+effects, including UTF16 breaks and authored auxiliary fields. Finitev2
+unchanged-text language preserves varied emphasis only after full style equality;
+simultaneous style forgery refuses. Legacy replacement execution is unchanged.
+Both mixed-book workflows include Cancel/Apply/replay/reexport/Round2/UndoRedo.
+Both publication phases reject24 actual ZIP wrapper/provenance/range mutations,
+a forged nested binding and malformed duplicate public intake without writes.
+Only complete unchanged pending binding proof permits its rPrChange diagnostic
+in the local actual comparison clone. Valid plain-v1 siblings use the existing
+paragraph baseline; missing/changed raw baselines still refuse. Raw authority
+hashes and shared word-language writer remain unchanged. Runtime615of1800 and
+behavior789of2600. Earlier broad900of912 and intermediate reds remain retained;
+focused11 does not replace whole-suite or native evidence. Next is clean same
+contour checkpoint, early real SOURCE and ordinary PACKAGED Word exchange,
+then full mandatory gates and delivery. Original100k/five-real/both-origin/
+three-role/performance release denominator remains OPEN.
+
 ## 2026-10-07 — frozen whole failures mapped; genuine language and reexport gaps open
 
 The same original42b body contour is not semantically closed. Root frozen

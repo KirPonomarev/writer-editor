@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: NATIVE_BODY_SCHEMA_COMPARISON_REPAIR_AND_DELIVERY_OPEN
+STATUS: AMENDMENT05_HELD_NATIVE_PROOF_AND_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -198,6 +198,80 @@ integrationMode: EXISTING_SEAM
 ```
 
 ## IMPLEMENTATION_STEPS
+
+### AMENDMENT05_SOURCE_OWNED_LANGUAGE_AND_PENDING_READBACK
+
+Clean74798a0b5b6154e3d500f036bc040f5c6a63565a is a known-incomplete
+checkpoint of the same original42b contour, not semantic closure. Fresh
+bootstrap and preflight process0 bind the same44 paths and original total
+1800runtime/2600behavior budgets. Declaration05 SHA256
+68a06089a3e80056d6aec153f566fac879f5e386f905298b0172a96a812837dd.
+Root E0 must pass before separate code writer dispatch. Canonical and foreign
+state remain protected; fresh origin/main42b and verified encrypted T7.
+
+O: genuine run and paragraph language edits preserve complete returned Word
+Current on Apply/reexport while storing only source-owned required effects;
+pending standalone/nested format survives full-book repeat export and decisions.
+T: authenticated raw source plus finitev2 profile, existing Kernel admission,
+independent Core replay and single leased atomic writer. Actual Word is the
+observation and never supplies source authority. Renderer and storage writer
+remain unchanged. I:747 checkpoint, original42b, exact held33 source/tests,
+profilev2; real native SOURCE/ordinary PACKAGED identities require fresh proof.
+H: whole actual language tuples currently promote unchanged canonical slots;
+derive each field against the authenticated raw paragraph/run and owned
+emission. A changed paragraph marker may require a minimal run override to
+retain actual Current. The reexport rejection is only unsupported rPrChange;
+complete existing unchanged pending binding proof should authenticate that
+source-owned wrapper before body comparison. Predict unchanged effective
+meaning, minimal raw representation and strict forged-wrapper refusal.
+B: preserve whole private documents, notes/comments, siblings, UTF16 geometry,
+all original guards and legacyv1; one original PR rollback, no new dependency,
+schema, helper engine, registry, caller authority flag, common comparator,
+renderer, envelope, writer, command, port or broader OOXML acceptance.
+
+Runtime edits are limited to immediate existing reader/pure finite helper and
+Main publication/scoped-parser consumers within the declared allowlist.
+word-language-v1.cjs and other shared domain writers stay read-only. Keep the
+existing schema1 partial-language contract. Preserve every unchanged raw
+val/eastAsia/bidi omission and explicit authored value; replay only genuinely
+changed fields and necessary inheritance overrides. Never use returned tuples
+as baseline or globally strip defaults. Raw authenticated source stays exact.
+Strengthen the existing three genuine Main controls to minimal changed val
+and required override while retaining full actual parser/reexport equality,
+notes/bookmark geometry and private/sibling bytes. Add actual individual
+auxiliary-field and authored-partial controls, malformed and stale no-write.
+An initial no-bookmark language-only stimulus uses the existing formatting
+route, so its fullApply envelope refusal does not prove a reader defect.
+Retain that qualification. The intended bookmarked varied-emphasis control
+must observe the committed uniform guard with an exact inner reason before
+any refinement. Only if that causal red is observed, unchanged-text language
+may use existing compareStyles over all UTF16 intervals to prove complete
+nonlanguage equality. Keep changed-text uniform footprints, links, opaque
+lanes and existing formatting route strict. Bold/italic, geometry and every
+unrelated raw field stay exact; simultaneous style forgery still refuses.
+
+For each provisional/final artifact reuse the existing scoped parser and
+independently reconstructed raw-scene pending binding. The existing unchanged
+verifyCommentReturnBinding must verify full union/Current/Original and every
+standalone/nested occurrence, parent membership, ranges, before/after and
+provenance, including extra-fragment refusal. scenePendingExportSemantics
+alone omits nested formatRevision and cannot prove this. Prefer a checked
+Current/Original projection or a local read-only actual comparison clone only
+after full proof. A specific rPrChange may be admitted solely at its verified
+source-owned scene/paragraph/run occurrence; all other unsupported diagnostics
+remain refusal. Clean rows, extra wrappers, changed author/date/dateUtc,
+before/after/parent/range/IDs/binding must refuse without canonical writes.
+If the existing verifier reveals a genuine transport snapshot mismatch,
+retain expected/actual first and reconstruct only the separately authenticated
+finite source emission at that existing seam; never weaken a hash guard.
+
+P: focused genuine full-Main language and mixed repeat-export controls plus
+negative property/provenance/range controls, then frozen affected whole files
+and early genuine short SOURCE and ordinary PACKAGED Word Cancel/Apply,
+restart/reexport/decisions with independent whole business/XML observations.
+Complete mandatory gates/CI/exact merge follow; no unexecuted success. Existing
+red artifacts stay immutable and the original100k/five genuine both-origin,
+three-role/production-performance release denominator stays open.
 
 ### Same-task amendment01 — genuine Word unchanged return
 
@@ -569,6 +643,36 @@ fresh packet validation; no production cached analysis branch is used by Main.
 All fresh native controls and full mandatory delivery proofs remain open. Root
 freezes only exact-byte OPS companions after source hold, then commits a clean
 candidate for SOURCE and ordinary packaged execution. No whole-plan PASS.
+
+### AMENDMENT05_FINAL_FOCUSED_FREEZE
+
+WRITER_AMENDMENT05_HOLD_01.json SHA256
+17397308b8db68c58003d3808b08490becfd644b6fd7ca61582aa7aefe3ab2f5
+freezes33 bindings at747 checkpoint; no writer changes after final13 launch.
+ROOT_AMENDMENT05_FROZEN_REVIEW_02.json verifies33 source/test files,19 logs
+and26 artifacts. Receipt01 checked actual bindings/logs but used an empty
+retainedArtifacts lookup;02 executes the actual artifacts collection and
+supersedes that broad wording. The during-run snapshot matches terminal
+bytes; its PRE_RUN basename is not independent timestamped pre-run evidence.
+AMENDMENT05_FINAL_FOCUSED_13.log SHA256
+60b7e470b46a264daf64ffccd3889eb7adae81176158f9f4d3c1ae393ba6dca9
+actually passes11of11, exit0, zero fail/cancel/skip/todo. Original aggregate
+runtime615of1800 and behavior789of2600. Complete actual Current/reexport,
+minimal raw language effects, UTF16/auxiliary fields, varied emphasis and
+simultaneous style-forgery refusal execute. Both mixed workflows cover
+Cancel/Apply/replay/reexport/Round2/UndoRedo;24 real ZIP mutations in both
+phases, forged nested binding and malformed duplicate intake refuse without
+business writes. Valid plain-v1 sibling, missing/changed baseline guards and
+genuine persisted-v1 compatibility execute. The existing shared language
+writer, raw authority/hash and literal legacy replacement remain unchanged.
+Intermediate actual failures retained. The no-bookmark formatting-only route
+never supplied a fullApply envelope and is not a reader defect. Correct causal
+bookmarked red observed ordinary-text-rich-footprint before the finitev2 guard
+repair. The plain counterexample failed at WORD_LIST_NUMBERING_INVALID before
+the existing parsed-v1 baseline fallback; the final actual positive confirms
+both publication phases and raw no-write guards, without bypassing its stale
+round lease. Whole15, genuine SOURCE/ordinary PACKAGED, mandatory gates and
+full Git delivery are still OPEN. This freeze is not full-novel acceptance.
 
 ## CHECKS
 
