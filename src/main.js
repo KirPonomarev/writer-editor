@@ -1181,6 +1181,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     bodyProfile=bodyTypography.validate(localAuthority.exportMap.exportTypography,{allowUndefined:true});
     if(bodyProfile?.schemaVersion===bodyTypography.V2) {
       if(stableRtkReviewTransportJson(bodyProfile)!==stableRtkReviewTransportJson(bodyTypography.validate(source.exportTypography)))throw Error('WORD_BODY_PROFILE_SOURCE');
+      if((source.officeModeTransport===true)!==(localAuthority.officeModeTransport===true))throw Error('WORD_BODY_OFFICE_MODE_MISMATCH');
       const sourceModel=require('./export/docx/fullManuscriptDocxReviewPacketSource.js'),canonicalScenes=[];
       for(const scene of localAuthority.exportMap.scenes) {
         const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
@@ -1231,7 +1232,18 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             return {...run,unsupportedNames:run.unsupportedNames.filter(name=>name!=='rPrChange')};
           })}));
         }
-        if(!read.ok||rows?.length!==source.blocks.length||source.blocks.some((block,index)=>!bodyTypography.readback(block.formatIr,rows[index],bodyProfile)))throw Error(`WORD_BODY_READBACK_${phase.toUpperCase()}`);
+        if(!read.ok||rows?.length!==source.blocks.length||source.blocks.some((block,index)=> {
+          let expected=block.formatIr;
+          const section=localAuthority.documentSections?.protectedSections?.find(section=>section.endParagraphIndex===index);
+          if(phase==='final'&&source.officeModeTransport===true&&block.text===''&&expected.runs.length===0
+            &&section?.breakPlacement==='PARAGRAPH_PROPERTIES'&&section.ordinal<localAuthority.documentSections.protectedSections.length-1) {
+            const names=(rows[index]?.bookmarkNames||[]).filter(name=>/^YRTK_/u.test(name));
+            const owned=(block.wordSignals||[]).filter(signal=>signal.kind==='bookmarkName').map(signal=>signal.value?.name);
+            if(block.canonicalTextSha256!==`sha256:${cryptoPort.sha256Text('')}`||owned.length!==1||names.length!==1||names[0]!==owned[0])throw Error('WORD_BODY_OFFICE_CARRIER_OWNER');
+            expected={...expected,runs:[{from:0,to:1,text:'\u2060',inline:bodyTypography.inline({},expected.paragraph,bodyProfile)}]};
+          }
+          return !bodyTypography.readback(expected,rows[index],bodyProfile);
+        }))throw Error(`WORD_BODY_READBACK_${phase.toUpperCase()}`);
         const tabStops=localAuthority.exportMap.scenes.map(scene=>scene.documentFormatIr?.wordDefaultTabStop);
         if(new Set(tabStops).size!==1||read.reviewIr.documentProperties?.effective!==tabStops[0])throw Error('WORD_BODY_TAB_STOP_READBACK');
       }

@@ -394,7 +394,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   // break. A word joiner is visually empty but keeps the authored paragraph
   // and its boundary in the DOCX transport. It is enabled only for C4 export.
   const sectionCarrier = officeModeTransport && sectionBreak && block.text === ''
-    ? '<w:r><w:t>\u2060</w:t></w:r>' : '';
+    ? profile?.schemaVersion===bodyTypography.V2
+      ? buildFormatIrRunsXml({text:'\u2060',formatIr:{runs:[{text:'\u2060',inline:bodyTypography.inline({},authoredParagraph,profile)}]}},hyperlinkByHref)
+      : '<w:r><w:t>\u2060</w:t></w:r>' : '';
   const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
   const headingLevel = Number(block.formatIr?.paragraph?.headingLevel);
   const paragraphPropertyParts = [];

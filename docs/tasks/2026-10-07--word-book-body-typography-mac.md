@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT20_IMPLEMENTED_PLAIN_SOURCE_FIX_OFFICE_CARRIER_GAP_OPEN
+STATUS: AMENDMENT21_SCOPED_PROOF_READY_FOR_CHECKPOINT_FULL_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -1571,3 +1571,43 @@ and verify all480 before commit.622paths/1597inventory/old tuples stay exact.
 Same unfinished original42b PR2093/56scope/rollback; known-incomplete checkpoint
 only. Next clean admission: exact source-owned Office carrier emission/readback.
 Full genuine novel/roles/SOURCE/PACKAGED/five exchanges/resources/CI/merge OPEN.
+
+
+### Same-contour amendment21 source-owned Office section carrier
+
+Clean477a continues original42b PR2093/rollback,56scope1800runtime2600behavior.
+Full ordered21 authority reads and clean bootstrap/preflight/task E0 actual0
+precede any repository edit; declaration21_01 SHA256
+c3dabbe97eef366c5c85071a637a60b2c037c48ecb8820673ec7dd7483b0d5d8.
+O: actual final Office empty-section publication retains full canonical source
+while independently verifying exact emitted carrier typography and text.
+T: authenticated raw/map/IR -> SOURCE-only finite transport expectation and
+existing producer -> actual strict double parser/sections/YRTK2/body readback.
+H: bare final U2060 has no explicit effective run font/language and raw-empty
+expectation. Retained real20 failure plus readonly model confirms both gaps.
+MOVE: separate code writer only existing builder sectionCarrier, Main SOURCE
+expected-body seam/phase+Office agreement and meaningful existing volume tests.
+Existing inline/formatIR/emitter helpers derive SOURCE language/code defaults;
+only authenticated canonical-empty signed nonfinal section end gets one carrier.
+Provisional remains literal; Office flags must agree, authored U2060 stays text.
+B: actual returned side, parser/Core/source hashes/raw IR/private/history/owner/
+sections/capability/lease/CAS unchanged; other41of44pins/build outputs frozen.
+P: final source-preserving default and authored-language/code/quote controls,
+actual ZIP carrier/style/placement/phase/flag/owner/digest strict refusals;
+explicit non500k case names and affected whole chain, root independent reparse,
+then finalized4docs before mechanical7OPS/all480 actual pins/loadDataPolicy/gates.
+I: clean477a/main42b fresh, encrypted unlocked writable registered T7;44sourcepins.
+No new helper/module/cache/trustflag/schema/API/dependency/UI/budget or writer.
+CHECK_01 before edits; CHECK_02+ afterward. One heavy lane; writer no large/native.
+Full SOURCE/PACKAGED genuine novel/roles/five rounds/resources/CI/merge OPEN.
+
+### Amendment21 executed source-owned Office carrier checkpoint
+
+- Exact predecessor477a; same unfinished original42b, PR2093,56 admitted paths and one rollback. Main and existing exporter only derive the final carrier expectation after raw/source/map/profile and signed-section checks. Source/local Office flags agree, canonical empty digest and one exact owned YRTK occurrence are mandatory; actual observed rows remain literal.
+- Writer frozen HOLD21 38767e7de2df96d1de52e8beb0e6094f9af34e9a9d30660ecf690ea562013149:19of19 explicit non500k volume and99of99 whole typography, zero reported exclusions. Actual unsafe foreign-owner first acceptance is retained, fixed and independently refused. Source/code/quote/language/paragraph-mark/spacing and parser-valid mutation controls remain strict.
+- Root actual44 byte review b26c97778a533346db9e9ad6bfe890d6061416d2a60cf2d8e3fbe907c51a6ee5: only Main, exporter and volume changed; other41, five compiler inputs and generated artifacts exact. Runtime851of1800, behavior1519of2600, generated456 separately. No new API, dependency, UI, cache, parser budget or Core writer.
+- Root independent8scene plain/rich corpus:4 complete actual transport phases and6 parser-valid refusals, complete source unchanged. Receipt898bbd51ba4d1cf91dc0e79b5aa8cb00a53364c0bf77e93feec2e6c0500211d5. Raw authored empty paragraphs remain distinct from source-owned final transport joiners; genuine authored U+2060 remains literal. Observer01 expected canonical text from a literal transport reader and failed; observer02 records source-derived transport expectation separately, without rewriting actual rows or claiming canonical import.
+- A forged local block owner plus matching actual ZIP, with authenticated map owner unchanged, is independently refused by the earlier provisional paragraph-order gate. Receipt579a3c43b13fe366ebec59095a336cf75e1ac57aa229b6eee55f858871eca20a.
+- Root one separately selected existing500k test:1of1 actual0, complete Main double publication and complete21scene final readback;79.159s, peak single owned process1914454016bytes. Log68069a767a99f716e614c8dbff391866f6f16490f20bb617b934773418a3ba07; all44 frozen bytes unchanged. Together with the writer19 selected cases, all20 current volume cases actually execute across two serial commands; no single whole-file run or native/performance acceptance claim.
+- Official committed20 CI is terminal3783of3844,61FAIL,zero exclusions;15 checks green and4 red. Raw full log d9f3ba7a972a6b56a711221dc62708600a05649c76b24663ca62d2b2f231fcda. The four prior policy-dependent failures are gone. Current21 complete CI, remaining interaction defects, full genuine Word novel roles/five exchanges/SOURCE/PACKAGED, resource acceptance and merge remain OPEN.
+- Root finalizes these four documents before the seven OPS binding writes; actual production loadDataPolicy must consume all480 current source bytes. Gates, commit/push and required CI follow this freeze. These mechanical records never prove product acceptance. Next product work remains the measured full return-path defects and repeated parse cost inside the authorized novel goal.
