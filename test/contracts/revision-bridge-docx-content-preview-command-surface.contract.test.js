@@ -53,7 +53,9 @@ function instantiateDocxContentPreviewPort(options = {}) {
     exports: {},
   };
   vm.runInNewContext(
-    `${section}
+    `${mainSource.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]}
+${mainSource.match(/function docxReviewReturnIntakeProductBudgets\([^]*?\n}(?=\n|$)/)[0]}
+${section}
 module.exports = {
   DOCX_CONTENT_PREVIEW_COMMAND_ID,
   DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS,
@@ -67,6 +69,25 @@ module.exports = {
   );
   return sandbox.module.exports;
 }
+
+test('DOCX content preview product profile is Main-owned and public budgets grant no authority', async () => {
+  const bridge = await loadBridge(), bytes = cleanDocxZip();
+  let actual;
+  const port = instantiateDocxContentPreviewPort({ loadRevisionBridgeModule: async () => ({
+    ...bridge,
+    buildDocxContentPreviewFromZipBytes(input) { actual = input; return bridge.buildDocxContentPreviewFromZipBytes(input); },
+  }) });
+  const preview = await port.handleDocxContentPreviewCommandSurface(toPayload(bytes));
+  assert.equal(preview.ok, true); assert.equal(preview.previewOk, true);
+  assert.deepEqual(Buffer.from(actual.bytes), bytes);
+  assert.deepEqual(cloneJsonSafe(actual.budgets), {maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024});
+  assert.equal(preview.docxContentPreviewReport.canWriteStorage, undefined);
+  assert.equal(preview.docxContentPreviewReport.canImportMutate, undefined);
+  actual = null;
+  const denied = await port.handleDocxContentPreviewCommandSurface({...toPayload(bytes), budgets:{maxBlocks:1}});
+  assert.equal(denied.ok, false); assert.equal(denied.error.reason, 'DOCX_CONTENT_PREVIEW_PAYLOAD_UNSUPPORTED_FIELDS');
+  assert.deepEqual(denied.error.details.fields, ['budgets']); assert.equal(actual, null);
+});
 
 function asciiBytes(value) {
   return Buffer.from(value, 'ascii');

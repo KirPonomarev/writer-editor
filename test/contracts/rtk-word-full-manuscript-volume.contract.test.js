@@ -25,10 +25,66 @@ function harness(){
     docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',
     sha256DocxReviewPreviewSessionBytes:b=>hash(b).slice(7),cloneJsonSafe:clone,docxReviewReturnIntakeBlocked:code=>({ok:false,code}),
     validateFullManuscriptDocumentSectionsReturn,
+    createDocxImportPreviewReferences:require('../../src/utils/docxImportPreviewReferences').createDocxImportPreviewReferences,
+    copyValidatedDocxUserBookmarkInventory:require('../../src/utils/docxImportLocalFilePreview').copyValidatedDocxUserBookmarkInventory,
+    rememberDocxImportPreviewPlanAdmission:require('../../src/utils/docxImportSafeCreate').rememberDocxImportPreviewPlanAdmission,
+    getProjectRootPath:()=>'/synthetic',loadRevisionBridgeModule:()=>import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs'))),
   });
-  vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]+'\n'+['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'].map(declaration).join('\n'),context);
+  vm.runInContext(['PROFILE_DEFAULTS','CEILING','FULL_MANUSCRIPT_PRODUCT_BUDGETS'].map(name=>main.match(new RegExp('const DOCX_REVIEW_RETURN_INTAKE_'+name+' = Object.freeze\\([^]*?\\n}\\);'))[0]).join('\n')+'\n'+['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','resolveDocxReturnIntakeEffectiveBudgets','docxReviewReturnIntakeEffectiveBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'].map(declaration).join('\n'),context);
+  vm.runInContext(['DOCX_IMPORT_PREVIEW_REFERENCES','DOCX_CONTENT_PREVIEW_COMMAND_SURFACE','DOCX_IMPORT_PREVIEW_COMMAND_SURFACE'].map(name=>{
+    const start=main.indexOf('// '+name+'_START'),end=main.indexOf('// '+name+'_END',start);assert.ok(start>=0&&end>start,name);return main.slice(start,end);
+  }).join('\n'),context);
   return context;
 }
+test('Existing Main full manuscript budgets retain tighter requests and declared clamps',()=>{
+  const c=harness(),tight={budgets:{maxBlocks:1,maxWorkerOutputBytes:1024,maxInflatedPartBytes:1024}};
+  assert.deepEqual(clone(c.docxReviewReturnIntakeProductBudgets(tight)),tight.budgets);
+  const result=c.docxReviewReturnIntakeEffectiveBudgets(tight);
+  for(const [key,value] of Object.entries(tight.budgets))assert.equal(result.effective[key],value,key);
+  assert.deepEqual(clone(c.docxReviewReturnIntakeProductBudgets()),{maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024});
+  const large=c.docxReviewReturnIntakeEffectiveBudgets({budgets:{maxBlocks:50001,maxWorkerOutputBytes:64*1024*1024+1}});
+  assert.equal(large.effective.maxBlocks,50000);assert.equal(large.effective.maxWorkerOutputBytes,64*1024*1024);
+  assert.deepEqual(Array.from(large.clampedFields,entry=>entry.field).sort(),['maxBlocks','maxWorkerOutputBytes']);
+});
+test('Finite pending preview and scoped return honor caller budgets without creating authority',async()=>{
+  const review=require('../../src/core/word-pending-text-revisions-v1.cjs'),envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const doc=review.bindLedger({schemaVersion:1,source:{type:'doc',content:['AB','second','third'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))},revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Writer',date:'',dateUtc:'',groupId:null,paragraphIndex:0,from:1,to:2,state:'pending'}],undo:[],redo:[]});
+  const f=await fixture([['']],{observableContents:[envelope.composeObservablePayload({doc})]}),bytes=buildDocxReviewPacketBuffer(f.source),cap=f.source.localAuthorityCapsule,before=JSON.stringify(f.source);
+  const input={bytes,exportMap:cap.exportMap,baselineDocuments:[{sceneId:cap.exportMap.scenes[0].sceneId,document:doc}],documentSections:cap.documentSections,signedSectionsDigest:cap.documentSections.protectedDigest,retainPendingScenes:true,cryptoPort:f.context.createRtkReviewTransportCryptoPort()};
+  const normal=f.bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(normal.ok,true,JSON.stringify(normal));
+  const full=f.bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:f.context.docxReviewReturnIntakeProductBudgets()});assert.equal(full.ok,true,JSON.stringify(full));
+  assert.deepEqual(full.contentPreview.pendingRevisionDocument,normal.contentPreview.pendingRevisionDocument);
+  assert.equal(full.carrierIgnored?.tokenDetected,true);assert.equal(full.carrierIgnored?.ignored,true);
+  assert.equal(full.canWriteStorage,undefined);assert.equal(full.canImportMutate,undefined);
+  for(const [budgets,code] of [[{maxBlocks:2},'PENDING_REVISIONS_XML_INVALID'],[{maxWorkerOutputBytes:1024},'PENDING_COMMENT_SECTION_CHANGED']]) {
+    const analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets},{cryptoPort:f.context.createRtkReviewTransportCryptoPort()});
+    assert.equal(analysis.ok,false);assert.equal(analysis.code,'RTK_BUDGET_EXCEEDED');
+    assert.ok(analysis.reasons.some(reason=>reason.code==='RTK_BUDGET_EXCEEDED'));
+    const denied=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({...input,budgets});
+    assert.equal(denied.ok,false,JSON.stringify({budgets,denied}));assert.equal(denied.code,code);
+  }
+  const parsed=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({...input,budgets:f.context.docxReviewReturnIntakeProductBudgets()});assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const adapter=require('../../src/core/word-pending-comment-return-v1.cjs'),map=cap.exportMap;
+  const derived=adapter.deriveMixedPendingDocument({document:doc,returnedDocument:parsed.scenes[0].returnedDocument,binding:map.scenes[0].pendingCommentBinding,anchors:[],exportTypography:map.exportTypography,exportParagraphs:map.scenes[0].blocks.map(block=>block.formatIr.paragraph),allowUntrackedRichFormatting:true});
+  assert.equal(derived.changed,false);assert.deepEqual(review.readLedger(derived.document).source,review.readLedger(doc).source);assert.deepEqual(review.readLedger(derived.document).revisions,review.readLedger(doc).revisions);assert.equal(JSON.stringify(f.source),before);
+});
+test('Finite preview preserves tighter package part and total byte requests before interpretation',async()=>{
+  const {source,bridge}=await fixture([['one','two','three']]),bytes=buildDocxReviewPacketBuffer(source),before=JSON.stringify(source);
+  for(const [key,value,field] of [['maxInflatedPartBytes',1024,/^zip\..+\.partBytes$/u],['maxTotalInflatedBytes',1024,'zip.totalInflatedBytes'],['maxDocxBytes',1024,'zip.rawDocxBytes'],['maxZipEntries',1,'zip.entries']]) {
+    const result=bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:{[key]:value}});
+    assert.equal(result.ok,false,key+':'+JSON.stringify(result));assert.equal(result.contentPreview,null,key);assert.equal(result.parse.attempted,false,key);
+    assert.equal(result.parse.completed,false);assert.equal(result.reason,'RTK_BUDGET_EXCEEDED');
+    assert.equal(result.diagnostics[0].sourceCode,'RTK_BUDGET_EXCEEDED');assert.equal(result.diagnostics[0].limit,value);
+    assert.ok(result.diagnostics[0].actual>value);if(typeof field==='string')assert.equal(result.diagnostics[0].field,field);else assert.match(result.diagnostics[0].field,field);
+  }
+  const clamped=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:{maxInflatedPartBytes:17*1024*1024,maxBlocks:50001,maxWorkerOutputBytes:65*1024*1024}},{cryptoPort:harness().createRtkReviewTransportCryptoPort()});
+  assert.equal(clamped.ok,true);assert.equal(clamped.effectiveBudgets.maxInflatedPartBytes,16*1024*1024);assert.equal(clamped.effectiveBudgets.maxBlocks,50000);assert.equal(clamped.effectiveBudgets.maxWorkerOutputBytes,64*1024*1024);
+  assert.equal(bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:{maxInflatedPartBytes:17*1024*1024}}).ok,true);
+  for(const input of [{bytes:'/foreign/path',budgets:{maxBlocks:50000}},{path:'/foreign/path',budgets:{maxBlocks:50000}},{bytes:[],budgets:{maxBlocks:50000}}]) {
+    const denied=bridge.buildDocxContentPreviewFromZipBytes(input);assert.equal(denied.ok,false);assert.equal(denied.parse.attempted,false);assert.equal(denied.reason,'STAGE02_PACKAGE_MALFORMED');
+  }
+  assert.equal(JSON.stringify(source),before);
+});
 async function fixture(paragraphs,{rich=false,observableContents}={}){
   const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
   const envelope=await import(pathToFileURL(path.join(ROOT,'src/renderer/documentContentEnvelope.mjs')));
@@ -429,7 +485,33 @@ test('500k-word publication uses the bounded16MiB full-manuscript file profile',
   assert.equal(observed.ok,true,JSON.stringify(observed));
   assert.deepEqual(observed.sceneTexts,corpus.scenes.map(s=>s.paragraphs.join('\n')));
   assert.equal(observed.sceneTexts.join('\n\n'),source.sceneText);
+  const content=await context.handleDocxContentPreviewCommandSurface({requestId:'volume-content',bufferSource:bytes.toString('base64')});
+  assert.equal(content.previewOk,true,JSON.stringify(content));assert.match(content.docxContentPreviewRef,/^[a-f0-9]{64}$/u);
+  const literal=corpus.scenes.flatMap(scene=>scene.paragraphs);
+  assert.deepEqual(clone(content.docxContentPreviewReport.contentPreview.paragraphs.map(p=>p.text)),literal);
+  const plan=await context.handleDocxImportPreviewCommandSurface({requestId:'volume-plan',docxContentPreviewRef:content.docxContentPreviewRef});
+  assert.equal(plan.importPreviewOk,true,JSON.stringify(plan));assert.match(plan.docxImportPreviewRef,/^[a-f0-9]{64}$/u);
+  const entries=plan.docxImportPreviewPlan.candidateCreatePlan.entries;assert.equal(entries.length,1);
+  const imported=require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(entries[0].content).doc;
+  assert.deepEqual(imported.content.map(p=>p.type),literal.map(()=> 'paragraph'));
+  assert.deepEqual(imported.content.map(p=>(p.content||[]).map(n=>n.text||'').join('')),literal);
+  assert.equal(hash(JSON.stringify(source)),protectedSource);
   const rejected=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:{maxInflatedPartBytes:1024},hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
   assert.equal(rejected.ok,false);
   assert.equal(rejected.code,'RTK_BUDGET_EXCEEDED');
+});
+
+test('Finite actual Main content and import preview retain all three-scene literal paragraphs through bounded references',async()=>{
+  const ps=[['','first 🧑‍💻',''],['second','Café'],['','last','']],{source,context}=await fixture(ps,{rich:true});
+  const protectedSource=JSON.stringify(source),bytes=buildDocxReviewPacketBuffer(source),literal=ps.flat();
+  const content=await context.handleDocxContentPreviewCommandSurface({requestId:'finite-content',bufferSource:bytes.toString('base64')});
+  assert.equal(content.previewOk,true,JSON.stringify(content));assert.match(content.docxContentPreviewRef,/^[a-f0-9]{64}$/u);
+  assert.deepEqual(clone(content.docxContentPreviewReport.contentPreview.paragraphs.map(p=>p.text)),literal);
+  const plan=await context.handleDocxImportPreviewCommandSurface({requestId:'finite-plan',docxContentPreviewRef:content.docxContentPreviewRef});
+  assert.equal(plan.importPreviewOk,true,JSON.stringify(plan));assert.match(plan.docxImportPreviewRef,/^[a-f0-9]{64}$/u);
+  const entries=plan.docxImportPreviewPlan.candidateCreatePlan.entries;assert.equal(entries.length,1);
+  const imported=require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(entries[0].content).doc;
+  assert.deepEqual(imported.content.map(p=>p.type),literal.map(()=> 'paragraph'));
+  assert.deepEqual(imported.content.map(p=>(p.content||[]).map(n=>n.text||'').join('')),literal);
+  assert.equal(JSON.stringify(source),protectedSource);
 });

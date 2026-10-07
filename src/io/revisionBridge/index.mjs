@@ -4123,6 +4123,14 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         { failure: localHeader.failure },
       );
     }
+    const compressionRatio = entry.byteSize === 0 ? 0 : entry.byteSize / entry.compressedSize;
+    if (compressionRatio > effective.maxCompressionRatio) {
+      return docxReviewTransportAnalysisFailure('RTK_BUDGET_EXCEEDED', {
+        field: `zip.${entry.entryId}.compressionRatio`,
+        actual: compressionRatio,
+        limit: effective.maxCompressionRatio,
+      });
+    }
     const dataStart = localHeader.dataOffset;
     const dataEnd = dataStart + entry.compressedSize;
     inventoryEntries.push({
@@ -4265,7 +4273,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // them only through the existing checked pending union view; the raw
     // ReviewIR still retains their independent IDs, snapshots and provenance.
     const numberingXml=result.reviewIr.propertyRevisions?.length
-      ? extractPendingTextRevisionSourceV1(documentXml,{allowCommentMarkers:true,cryptoPort:options.cryptoPort||{
+      ? extractPendingTextRevisionSourceV1(documentXml,{budgets:parserInput.budgets,allowCommentMarkers:true,cryptoPort:options.cryptoPort||{
         sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,
         byteLength:value=>new TextEncoder().encode(value).length,
       }}).xml : documentXml;
@@ -11316,7 +11324,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
     const bodyProfile=bodyTypography.validate(exportMap.exportTypography,{allowUndefined:true});
@@ -11324,13 +11332,13 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
     if(retainPendingScenes!==false&&retainPendingScenes!==true)throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingScenes&&(!baselineDocuments||retainPendingSceneId!==undefined))throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
-    const preview=buildDocxContentPreviewFromZipBytes(bytes);
+    const preview=buildDocxContentPreviewFromZipBytes({bytes,budgets});
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
     let sectionsVerified=false,returnedDocumentNotes,actualMarkerTransport;
     if(baselineDocuments!==undefined){
       if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
         ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
-      const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:cryptoPort||{sha256Text:value=>`sha256:${sha256Hex(value)}`,sha256Json:value=>`sha256:${sha256Hex(JSON.stringify(value))}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets},{cryptoPort:cryptoPort||{sha256Text:value=>`sha256:${sha256Hex(value)}`,sha256Json:value=>`sha256:${sha256Hex(JSON.stringify(value))}`,byteLength:value=>new TextEncoder().encode(value).length}});
       const proof=analysis.ok&&fullManuscriptSource.validateFullManuscriptDocumentSectionsReturn({expected:documentSections,returned:analysis.reviewIr.documentSections,
         signedDigest:signedSectionsDigest,allowOfficeDefaultOmissions});
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
@@ -11341,7 +11349,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         if(!targets.ok)throw Error('WORD_BODY_MARK_PACKAGE_REQUIRED');
         const actualXml=targets.extractedTargets.get('word/document.xml');
         const part=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
-        const options={cryptoPort:cryptoPort||{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length},
+        const options={budgets,cryptoPort:cryptoPort||{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length},
           stylesXml:part('word/styles.xml'),themeXml:part('word/theme/theme1.xml'),settingsXml:part('word/settings.xml'),relationshipsXml:part('word/_rels/document.xml.rels')};
         const pending=extractPendingTextRevisionSourceV1(actualXml,{...options,allowCommentMarkers:true});
         const scan=xml=>{const result=extractReviewTransportFormattingRunsV2(xml,options);
@@ -11464,7 +11472,9 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
 }
 
 export function buildDocxContentPreviewFromZipBytes(input) {
-  const preflight = buildDocxIntakePreflightReportFromZipBytes(input);
+  const byteInput = docxZipInventoryInputToBytes(input) || (isPlainObject(input) ? input.bytes : input);
+  const budgets = isPlainObject(input) && isPlainObject(input.budgets) ? input.budgets : undefined;
+  const preflight = buildDocxIntakePreflightReportFromZipBytes(byteInput);
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
   if (
     preflight?.ok !== true
@@ -11475,8 +11485,18 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     return docxContentPreviewBlockedByPreflight(preflight);
   }
 
-  const bytes = docxZipInventoryInputToBytes(input);
+  const bytes = docxZipInventoryInputToBytes(byteInput);
   if (bytes === null) return docxContentPreviewBlockedByPreflight(preflight);
+  if (budgets && ['maxDocxBytes','maxZipEntries','maxInflatedPartBytes','maxTotalInflatedBytes','maxCompressionRatio'].some(key=>Object.hasOwn(budgets,key))) {
+    const bounded = extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets});
+    if (!bounded.ok) return docxContentPreviewResult({
+      ok:false,status:'blocked',decision:'blocked',code:DOCX_CONTENT_PREVIEW_CODES.PREFLIGHT_BLOCKED,
+      reason:bounded.code,preflightSummary,parseAttempted:false,parseCompleted:false,
+      diagnostics:[{...docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_CODES.PREFLIGHT_BLOCKED,
+        {sourceCode:bounded.code,actual:bounded.details?.actual,limit:bounded.details?.limit}),field:bounded.details?.field}],
+      evidence:[docxContentPreviewEvidence('packageBudget',{sourceCode:bounded.code,...bounded.details})],
+    });
+  }
 
   // GENERIC-01 (G1): full SHA-256 over raw artifact bytes — computed once at
   // first touch so the identity thread is unbroken from raw bytes to receipt.
@@ -11606,12 +11626,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   let namedStylesNormalized = false;
   try {
     const settingsPart=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
-    const settingsCrypto={cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
+    const settingsCrypto={budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
     validateDocumentSettingsBindingV1({settingsXml:settingsPart('word/settings.xml'),relationshipsXml:settingsPart('word/_rels/document.xml.rels'),contentTypesXml:settingsPart('[Content_Types].xml')},settingsCrypto);
-    const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+    const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
     const inlineStyles = docxInlineStyleCatalog(bytes);
     namedStylesNormalized = inlineStyles.styles.size > 0;
-    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { allowCommentMarkers: true, cryptoPort: {
+    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { budgets, allowCommentMarkers: true, cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
       byteLength: value => new TextEncoder().encode(value).length,
     } });
@@ -11630,7 +11650,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure && !pendingSource.revisions.length
       && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
         || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
-      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
       if (inventory.bookmarks.length || inventory.links.length) {
         if (parsed.paragraphSourceIndexes.some((source,index)=>source !== index)) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
         parsed.contentPreview.userBookmarkInventory = inventory;
@@ -11720,7 +11740,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       if (auxiliary('word/footnotes.xml') || auxiliary('word/endnotes.xml')
         || parsed.diagnostics.some(item => ['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName))) {
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, { cryptoPort: {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } });
@@ -11760,7 +11780,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } };
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, commentPorts);
         // The same bounded rich grammar applies to native-origin import and
         // authenticated return. Formatting projection never grants return
         // authority: generic import still allocates entirely new local IDs.
@@ -11782,7 +11802,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const refs = extractDocumentMediaReferencesV1(xmlText, {
         // Match the existing bounded full-manuscript count profile; generic
         // text-only intake retains its own unchanged 64k paragraph ceiling.
-        budgets: { maxBlocks: 50000 },
+        budgets: { maxBlocks: 50000, ...budgets },
         relationshipsXml: Buffer.from(auxiliary('word/_rels/document.xml.rels') || []).toString('utf8'),
         contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
         cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },

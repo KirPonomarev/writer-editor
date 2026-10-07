@@ -6283,7 +6283,7 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
   // Ordinary/split bookmarks retain their existing guards. Shifted ranges
   // either share a recipient paragraph or change the authenticated name order.
   const declaredNames = declared.map(t => attr(t, 'name', W_NS));
-  const duplicateParagraph = declared.some((s, i) => declared.slice(0, i).some(p => paragraphOf(p) === paragraphOf(s)));
+  const duplicateParagraph = new Set(declared.map(paragraphOf)).size !== declared.length;
   const ordinaryNames = blocks.map(b => (b.wordSignals || []).filter(s => s.kind === 'bookmarkName'));
   // Legacy/non-transport maps and unaffected ordinary returns stay on the
   // caller's original validation path; restoration cannot manufacture a map.

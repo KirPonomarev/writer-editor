@@ -1852,3 +1852,126 @@ resource/performance acceptance and original release goal remain OPEN.
 These final4 docs precede7 mechanical OPS writes/all480 actual current pins,
 unchanged622 paths/1597 inventory/217 historical frozen tuples and required gates.
 Mechanical bindings never establish product acceptance or completion authority.
+
+### Same-contour amendment23 consistent bounded full-manuscript intake
+
+O: complete large Word-origin import and authenticated novel return use the
+already declared full-manuscript profile through every nested decoder; SOURCE
+text, raw formatting omissions, typed breaks, history and discussions remain.
+T: owned bytes -> hostile/CRC/bounds -> existing parser/min-clamp -> immutable
+preview/independent SOURCE checks -> Kernel/CAS/lease -> existing atomic writer.
+H: actual5001 owned package fails omitted generic5k/16MiB; exact same bytes
+with existing50k/64MiB decode every independent literal paragraph. Main already
+configures that profile; nested preview/section/pending/format/ownership and
+notes/comments calls drop it. Propagate existing budgets; do not raise caps.
+B: same original42b, clean9a81, PR2093,72 paths,1800runtime2600behavior and one
+rollback. Existing SOURCE/map/private/HMAC/UTF8/CRC/ratio/depth/identity/CAS/lease
+and capability gates remain; generic absent profile keeps existing defaults.
+No budget grants authority; excessive requests clamp and tight requests refuse.
+MOVE: separate existing writer only Main and Index callsites plus existing
+admitted focused volume/ZIP/preview tests. Parser/Core/source/emitter/adapter
+UserBookmarks/defaults/ceilings/compiler/generated remain frozen initially.
+No new helper/module/cache/flag/API/schema/port/writer/dependency/UI/network.
+P: cheap actual red/control/tight-limit proof; finite affected chains; root
+independent actual5001/full500k complete SOURCE/package readback and wall/RSS.
+One heavy lane; writer no large/native/fullgraph/OPS/Git. Root four docs then
+seven mechanical OPS/all480 pins, unchanged622/1597 and old218 frozen tuples.
+I: clean23 bootstrap, actual architecture preflight0 and taskE0 0 preceded
+this first doc write; declaration9df1feea8ba10f8d396484c9c43df1d166a7b1cef4651d13e41417ab6758b119.
+CHECK_01 before edits; CHECK_02+ after.60 actual prewrite source bindings.
+Current22 five synthetic100k rounds406.788sec/1810776064bytes are functional
+code proof, not genuine Word or speed acceptance. Official22 CI still running.
+Full native SOURCE/ordinary PACKAGED both origins/scopes/roles/five exchanges,
+resource acceptance, original delivery/merge and release goal remain OPEN.
+
+### Amendment23 precise tight-budget precedence addendum
+
+Independent same-realm actual Main helper observation fa642c49e9afee4270879979d55a67086c49d3777357d141fa606a3d5d66cb8a
+shows caller maxBlocks1/output1024 overridden by defaults50k/64MiB while tight
+part1024 survives. Root admits only the two existing Main budget helpers:
+full-profile defaults before strict plain caller values, existing min-clamp and
+recording unchanged. No new helper/caps/schema/authority. Cheap negative/control
+proof before correction; root retains observer01 foreign-realm input mistake.
+Same clean23 admission/scope72/1800runtime2600behavior/one original42b rollback.
+
+### Amendment23 measured full-import capacity and ordinary ownership cost
+
+Root independent HOLD23 059d022db790e3aeb88b890c10efd47da120a4bc81f987cca74ba76166b10701
+verifies60 actual source bytes and final57/231/23/3 finite TAP with zero exclusions.
+Actual5001 scoped SOURCE paragraphs retain every literal node, revision and
+nonempty redo history;75.572s sampled peak1034108928B, no publicApply/native claim.
+Actual500k single selected test fails after successful complete Main publication
+and21scene literal readback: private content-reference snapshot10901820B exceeds
+8MiB. Same actual retained final DOCX8772919B SHA256
+e1827e1382b54b3ad5f6c46a7eec1b2ac6a885ee7d3f4ed31348e67a1f706e1f
+has8391 literal paragraphs; independent actual Main refuses at reference retention.
+The actual derived plan10473416B and preview fit two original-factory context-bound
+references with16MiB per snapshot and32MiB aggregate; wrong-context lookup refuses.
+This experiment is diagnosis, not current public import or storage acceptance.
+
+Existing ordinary ownership helper duplicate search costs43.289/281.430/2667.407ms
+at320/640/1280 paragraphs, with1959of2006 CPU samples at the all-pairs predicate.
+The complete actual XML remains unchanged. Root admission
+AMENDMENT23_MEASURED_CAPACITY_AND_OWNERSHIP_ADMISSION_01.json SHA256
+a88139af9df12db4308883d974072a37e858d7906a342e7a282517cec86fec76
+extends only the current bounded capacity correction: existing Main private cache
+16MiB snapshot/32MiB total, and existing parser local duplicate-paragraph predicate
+with one paragraph lookup per declared bookmark plus a local Set. Preserve the
+exact predicate including repeated unowned-1 indexes, all later shifted-cell,
+ordering, identity, CRC, SOURCE/private/HMAC, TTL, generation, IPC and writer gates.
+No grammar/helper/worker/persistent cache/API/profile/dependency/UI expansion.
+Root ARCH_DIFF_LOG records the exact private snapshot limit exception before edit.
+Same72 paths, original1800runtime2600behavior, original42b and one rollback/PR2093.
+Root owned5 admission docs replace the earlier4-doc binding; writer must preserve
+these exact bytes, run final finite affected/cell-shift controls, then HOLD02.
+Root owns bounded complete500k rerun, independent cost proof, native and delivery.
+All19 official22 CI checks are terminal SUCCESS at9a81; this does not certify23.
+Full genuine Word SOURCE/ordinary PACKAGED/both origins/scopes/roles/five cycles,
+resource512MiB and hard30s acceptance, atomic large rich import/reopen and release
+remain OPEN. No prior crash route, giant native alert or force quit is admitted.
+
+### Amendment23 measured final candidate and open authoring capacity finding
+
+Root independently byte-verifies final HOLD02 SHA256
+505c681ff15bef767cdcc729d74ebc41ebe6f47f9ae3fe387bf4815bdae5b21d:
+60 source/test/generated pins, all retained logs/addenda/artifacts, seven final
+diffs and exact five pre-final admission docs. Runtime988of1800 and behavior
+2044of2600 from original42b; compiler133 closure and generated outputs unchanged.
+Executed finite suites22of22 cell-shift,57of57 ZIP/content/reference/e2e,
+231of231 pending/notes/mixed/transaction/typography,23of23 finite volume.
+The separately planned500k test now executes1of1 at these exact frozen bytes:
+complete21-scene publication/readback plus Main content/plan and every8391
+literal paragraph,500108 whitespace-delimited words;90.071s, sampled owned
+aggregate RSS1891090432B, no watchdog. No native or resource acceptance follows.
+
+Independent actual strict Main references preserve both real snapshots within
+16MiB each/32MiB total and refuse wrong context/kind and actual generation
+invalidation.11.582s, sampled793608192B. Actual leased Core atomic import writes
+one rich scene9680486B, SHA256
+d9860ae52481988026ac595726f8d1593c7d8c91343c434ef6680cf1059ba2e5;
+all complete proposed/raw document bytes and literal text match. Idempotent
+retry makes zero further manifest writes;15.787s, sampled789544960B.
+Host Function evaluation of verbatim Main sections shares the original strict
+guard and real provider realm. Original observer01 incorrectly mixed host
+guard with foreign VM command-result prototype; actual refusal after one
+write is retained, observer-only correction02 is explicit. No guard weakened.
+These are synthetic actual Main/Core disk proofs, not native renderer/ACK.
+
+Fresh5001 SOURCE control75.495s, sampled1133838336B preserves all literal
+source/current/original/provenance nodes, complete ledger and nonempty redo;
+absent profile and tight budgets still refuse. No publicApply/native claim.
+Ordinary complete XML unchanged at1280 paragraphs:2667.407ms before versus
+28.368ms after local equivalent predicate. This is one component measurement,
+not full Word latency or portable performance acceptance.
+
+OPEN PRODUCT FINDING: the actual atomically imported9680486-byte rich scene
+is refused by Main readCommentAuthoringContext8MiB guard. Actual Core one-edit
+ledger input6784185B refuses PENDING_REVISIONS_BUDGET at4MiB. Root actual
+read-only observation retains unchanged scene and manifest bytes. Importing
+whole text is therefore not three-role authoring completion. Other book/notes/
+comments/tree8MiB guards are source findings, not executed acceptance. Next
+bounded same-original42b continuation must align import and real authoring
+capacity after current checkpoint gates/Git; no silent bypass or speculative
+registry. Native SOURCE/ordinary PACKAGED, both origins/scopes, three roles,
+five real exchanges, hard30s/512MiB targets, merge and release remain OPEN.
+Same72 paths, one rollback, draft PR2093; no new independent write contour.

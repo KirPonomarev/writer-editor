@@ -928,7 +928,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
   // longer re-extracts DOCX ZIP package parts directly. The bridge helper is
   // the single owner of ZIP part extraction.
   const extracted = typeof revisionBridge.extractDocxReviewTransportWordDocumentProjection === 'function'
-    ? revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes }, { cryptoPort })
+    ? revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes, budgets:docxReviewReturnIntakeProductBudgets() }, { cryptoPort })
     : null;
   if (!extracted || extracted.ok !== true) {
     return {
@@ -1202,7 +1202,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         const read=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
         let rows=read.reviewIr?.formattingParagraphs;
         if(rows?.some(row=>row.formattedRuns?.some(run=>run.unsupportedNames?.includes('rPrChange')))) {
-          const returned=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
+          const returned=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
             baselineDocuments:canonicalScenes.map(scene=>({sceneId:scene.sceneId,document:scene.doc||require('./core/document-content-envelope-v1.cjs').buildParagraphDocumentFromText(scene.text)})),retainPendingScenes:true,
             documentSections:localAuthority.documentSections,signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
           if(!returned.ok)throw Error(returned.code||'WORD_BODY_PENDING_READBACK');
@@ -1262,11 +1262,11 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
           if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
           const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
           if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
+        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
           baselineDocuments:noteScenes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
           signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
         if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const preview=revisionBridge.buildDocxContentPreviewFromZipBytes(bytes);
+        const preview=revisionBridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()});
         if(!preview.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
         const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
           projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
@@ -5413,7 +5413,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (pendingCommentBinding && source.commentExport?.threads.length) {
     if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
       throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
-    const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer,
+    const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer, budgets: docxReviewReturnIntakeProductBudgets(),
       exportMap: source.localAuthorityCapsule.exportMap,
       baselineDocuments: [{sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId, document: baselineDocument.doc}],
       documentSections: source.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
@@ -5431,7 +5431,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger?.schemaVersion === 3) {
     if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest
       || (parsed.reviewIr.commentThreads || []).length) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:documentBuffer,budgets:docxReviewReturnIntakeProductBudgets()});
     if (!preview.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
     const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
     if (!plan.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
@@ -5457,7 +5457,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger?.revisions.some(revision => revision.state === 'pending')
     && source.documentNotes.notes.length === 0 && source.documentNotes.sourceBindings.length === 0
     && (parsed.reviewIr.documentNotes?.notes || []).length === 0 && (parsed.reviewIr.commentThreads || []).length === 0) {
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:documentBuffer,budgets:docxReviewReturnIntakeProductBudgets()});
     const returnedDoc = preview?.contentPreview?.pendingRevisionDocument;
     const returnedLedger = returnedDoc && pendingTextRevisions.readLedger(returnedDoc);
     const topology = revisionBridge.validateDocxReviewTableTopology(parsed.reviewIr.formattingParagraphs,
@@ -6343,7 +6343,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
   // lane when no canonical pending state requires this single-scene writer.
   const hasSingleRichBaseline = capsule?.exportMap?.scenes?.length === 1 && baselines.length === 1;
   if (!baselinePending && capsule?.pendingReturnOnly !== true && !hasSingleRichBaseline) return null;
-  const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+  const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   const returnedPending = !!preview?.contentPreview?.pendingRevisionDocument;
   if (!baselinePending && !returnedPending) return null;
   try {
@@ -6364,10 +6364,10 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const sceneId = scenes[0].sceneId;
     if (capsule.scenePathBySceneId?.[sceneId] !== file) throw Error('PENDING_RETURN_OPEN_SCENE_REQUIRED');
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}) }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     const mixedComments = Boolean(capsule.commentExport && scenes.length===1
@@ -6417,7 +6417,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     if(mixedComments&&!replay) {
       if(capsule.userBookmarksCandidate||capsule.mediaReturnCandidate||capsule.storyReturnCandidate||capsule.cleanLinkLabel?.ok
         ||activeNotes.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length)throw Error('MIXED_RETURN_COMPOSITE_UNSUPPORTED');
-      const parsedScenes=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
+      const parsedScenes=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}),exportMap:capsule.exportMap,
         baselineDocuments:[{sceneId,document:current.parsed.doc}],retainPendingSceneId:sceneId,documentSections:capsule.documentSections,
         signedSectionsDigest:capsule.documentSections?.protectedDigest,allowOfficeDefaultOmissions:capsule.officeModeTransport===true,cryptoPort});
       if(!parsedScenes.ok||parsedScenes.scenes.length!==1)throw Error(parsedScenes.code||'MIXED_RETURN_PARSE_FAILED');
@@ -6468,7 +6468,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
 async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurrent,docxBytes,revisionBridge,onPrepared}) {
   const capsule=context?.reviewTransportAuthorityCapsule,intake=context?.reviewTransportReturnIntake;
   if(intake?.authenticated!==true || capsule?.exportMap?.scenes?.length<=1) return null;
-  const preview=revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+  const preview=revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   if(!preview?.contentPreview?.pendingRevisionDocument) return null;
   try {
     const owner=activeStage10ApplicationBootstrap,lifecycle=currentLifecycleSubjectId(),file=currentFilePath,generation=lastSignaledEditGeneration;
@@ -6524,7 +6524,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const hasNotes=Boolean(capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length);
     if(hasNotes&&(capsule.documentNotes?.projectId!==context.projectId||capsule.documentNotes?.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
       ||intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest!==capsule.documentNotes.protectedDigest))throw Error('PENDING_NOTE_BASELINE_CONFLICT');
-    const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
+    const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}),exportMap:capsule.exportMap,
       baselineDocuments:scenes.map(scene=>({sceneId:scene.sceneId,document:scene.parsed.doc})),retainPendingScenes:true,
       ...(hasNotes?{baselineDocumentNotes:capsule.documentNotes}:{}),
       documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections?.protectedDigest,
@@ -6716,7 +6716,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
-async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge, bookContext = null) {
+async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge, bookContext = null, budgets) {
   const scenes = capsule?.exportMap?.scenes;
   const signedScenes = scenes?.filter(scene => scene.pendingCommentBinding);
   if (!signedScenes?.length) return null;
@@ -6733,7 +6733,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
     if (source.issue || !source.doc) throw Error('PENDING_COMMENT_RETURN_BASELINE_INVALID');
     return { sceneId: scene.sceneId, document: source.doc };
   });
-  const parsed = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: docxBytes,
+  const parsed = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets({budgets}),
     exportMap: capsule.exportMap, baselineDocuments, documentSections: capsule.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
     signedSectionsDigest: capsule.documentSections?.protectedDigest,
     allowOfficeDefaultOmissions: capsule.officeModeTransport === true,
@@ -6748,8 +6748,8 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
   if (v3Book) {
     if (!bookContext) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const readback = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:docxBytes},{cryptoPort});
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+    const readback = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets})},{cryptoPort});
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets})});
     if (!readback.ok || !preview.ok) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
     noteBindings = require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({
       document:bookContext.notesDocument,projectId:capsule.commentExport.projectId,baseline:capsule.documentNotes,
@@ -6855,7 +6855,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     }
     const bookBefore = v3Book ? await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId}) : null;
     const pendingScenes = await buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge,
-      v3Book ? {notesDocument:notesBefore.current.document,commentState:require('./core/word-comment-authoring-v1.cjs').readState(bookBefore.text,context.projectId)} : null);
+      v3Book ? {notesDocument:notesBefore.current.document,commentState:require('./core/word-comment-authoring-v1.cjs').readState(bookBefore.text,context.projectId)} : null, intake.parserResult?.effectiveBudgets);
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
@@ -9839,8 +9839,8 @@ const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze(
 
 function docxReviewReturnIntakeProductBudgets(input = {}) {
   return {
-    ...(isPlainObjectValue(input?.budgets) ? input.budgets : {}),
     ...DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS,
+    ...(isPlainObjectValue(input?.budgets) ? input.budgets : {}),
   };
 }
 
@@ -9850,8 +9850,8 @@ function docxReviewReturnIntakeProductBudgets(input = {}) {
 function docxReviewReturnIntakeEffectiveBudgets(input = {}) {
   const callerBudgets = isPlainObjectValue(input?.budgets) ? input.budgets : {};
   const { effective, clampedFields } = resolveDocxReturnIntakeEffectiveBudgets({
-    ...callerBudgets,
     ...DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS,
+    ...callerBudgets,
   });
   return { effective, clampedFields };
 }
@@ -11242,10 +11242,10 @@ async function inspectDocxReviewReturnIntakeV2({
   );
   if (!tableBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets(options) }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
       localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingTableRows: true }) : null;
-    const preview = ownership?.ok && ownership.sourceParagraphBindings ? revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes) : null;
+    const preview = ownership?.ok && ownership.sourceParagraphBindings ? revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets(options)}) : null;
     if (preview?.ok && preview.contentPreview?.pendingRevisionDocument) {
       tableBinding = { ok: true, applicable: true, reviewIr: verifiedParserResult.reviewIr,
         proof: { kind: 'CHECKED_NATIVE_PENDING_TABLE_ROWS', sourceParagraphBindings: ownership.sourceParagraphBindings,
@@ -11308,7 +11308,7 @@ async function inspectDocxReviewReturnIntakeV2({
   });
   if (!documentSectionsBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets(options) }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
       localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingParagraphSplits: true, allowPendingTableRows: true }) : null;
     if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
@@ -12640,11 +12640,12 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_PREVIEW_REFERENCES_START
-// A 500k-word content preview is about 4.6 MB. Let one snapshot use up to
-// half of the existing 16 MiB cache; total retention, TTL and input limits stay fixed.
+// The measured 500k-word preview and plan each use about 10 MiB. Retain
+// both context-bound snapshots within 16 MiB each and 32 MiB in total;
+// entry count, TTL, context guards and wire limits remain unchanged.
 const docxImportPreviewReferences = createDocxImportPreviewReferences({
-  maxSnapshotBytes: 8 * 1024 * 1024,
-  maxTotalBytes: 16 * 1024 * 1024,
+  maxSnapshotBytes: 16 * 1024 * 1024,
+  maxTotalBytes: 32 * 1024 * 1024,
 });
 let docxImportPreviewProjectGeneration = 0;
 
@@ -12866,7 +12867,7 @@ async function handleDocxContentPreviewCommandSurface(payload = {}) {
 
   let previewResult = null;
   try {
-    previewResult = revisionBridge.buildDocxContentPreviewFromZipBytes(decoded.bytes);
+    previewResult = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:decoded.bytes,budgets:{maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024}});
   } catch (error) {
     return makeDocxContentPreviewTypedError(
       'E_DOCX_CONTENT_PREVIEW_FAILED',

@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { deflateRawSync } = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 const { execFileSync } = require('node:child_process');
 
@@ -293,6 +294,8 @@ function zipBytes(entries, options = {}) {
     const content = Buffer.isBuffer(entry.content)
       ? entry.content
       : Buffer.from(String(entry.content ?? ''), 'utf8');
+    const method = entry.method === 8 ? 8 : 0;
+    const compressed = method === 8 ? deflateRawSync(content) : content;
     const realCrc = crc32Bytes(content);
     const localCrc = Number.isSafeInteger(entry.localCrc) ? entry.localCrc : realCrc;
     const centralCrc = Number.isSafeInteger(entry.centralCrc) ? entry.centralCrc : localCrc;
@@ -301,26 +304,26 @@ function zipBytes(entries, options = {}) {
     local.writeUInt32LE(0x04034b50, 0);
     local.writeUInt16LE(20, 4);
     local.writeUInt16LE(0, 6);
-    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(method, 8);
     local.writeUInt16LE(0, 10);
     local.writeUInt16LE(0, 12);
     local.writeUInt32LE(localCrc, 14);
-    local.writeUInt32LE(content.length, 18);
+    local.writeUInt32LE(compressed.length, 18);
     local.writeUInt32LE(content.length, 22);
     local.writeUInt16LE(name.length, 26);
     local.writeUInt16LE(0, 28);
-    localParts.push(local, name, content);
+    localParts.push(local, name, compressed);
 
     const central = Buffer.alloc(46);
     central.writeUInt32LE(0x02014b50, 0);
     central.writeUInt16LE(20, 4);
     central.writeUInt16LE(20, 6);
     central.writeUInt16LE(0, 8);
-    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(method, 10);
     central.writeUInt16LE(0, 12);
     central.writeUInt16LE(0, 14);
     central.writeUInt32LE(centralCrc, 16);
-    central.writeUInt32LE(content.length, 20);
+    central.writeUInt32LE(compressed.length, 20);
     central.writeUInt32LE(content.length, 24);
     central.writeUInt16LE(name.length, 28);
     central.writeUInt16LE(0, 30);
@@ -330,7 +333,7 @@ function zipBytes(entries, options = {}) {
     central.writeUInt32LE(0, 38);
     central.writeUInt32LE(offset, 42);
     centralParts.push(central, name);
-    offset += local.length + name.length + content.length;
+    offset += local.length + name.length + compressed.length;
   }
   const centralDirectory = Buffer.concat(centralParts);
   const end = Buffer.alloc(22);
@@ -866,4 +869,31 @@ test('ZIP0116MiB exact part admission preserves tighter requests and every decla
   const {effective,clampedFields}=budget.resolveEffectiveBudgets({requested:{maxInflatedPartBytes:limit+1},profileDefaults:budget.RTK_ZIP_PROFILE_DEFAULTS_V6,ceiling:budget.RTK_ZIP_CEILING_DECLARED});
   assert.equal(effective.maxInflatedPartBytes,limit);assert.deepEqual(clampedFields,[{field:'maxInflatedPartBytes',requested:limit+1,ceiling:limit}]);
   for(const [key,value] of Object.entries({maxDocxBytes:50*1024*1024,maxTotalInflatedBytes:50*1024*1024,maxCompressionRatio:200,maxXmlDepth:64,maxAttributes:128,hardTimeoutMs:30000}))assert.equal(effective[key],value,key);
+});
+
+// Actual DEFLATE metadata/CRC remains valid; a tighter ratio is a bound, never authority.
+test('ZIP01 caller compression ratio is enforced before semantic inflation', async()=>{
+  const bridge=await loadBridge();
+  const entries=[{name:'[Content_Types].xml',content:contentTypesXml()},{name:'_rels/.rels',content:relsXml()},{name:'word/document.xml',content:documentXml('<w:p><w:r><w:t>literal repeated text literal repeated text literal repeated text</w:t></w:r></w:p>')}];
+  const bytes=zipBytes(entries.map(entry=>({...entry,method:8})));
+  const rawGate=bridge.inspectDocxHostileFileGateFromZipBytes(bytes);assert.equal(rawGate.ok,true,JSON.stringify(rawGate));
+  const baseline=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});
+  assert.equal(baseline.ok,true,JSON.stringify(baseline));
+  for(const entry of entries.slice(0,3))assert.equal(baseline.parts[entry.name],entry.content);
+  const ratios=baseline.zipInventory.entries.filter(entry=>entry.byteSize>0).map(entry=>entry.byteSize/entry.compressedSize);
+  assert.ok(ratios.every(ratio=>ratio>1&&ratio<200));
+  for(const maxCompressionRatio of [200,201]){
+    const allowed=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxCompressionRatio}});
+    assert.equal(allowed.ok,true,JSON.stringify(allowed));assert.deepEqual(allowed.parts,baseline.parts);
+  }
+  const denied=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxCompressionRatio:1}});
+  assert.equal(denied.ok,false);assert.equal(denied.code,'RTK_BUDGET_EXCEEDED');
+  assert.match(denied.details.field,/^zip\..+\.compressionRatio$/u);assert.equal(denied.details.limit,1);assert.ok(denied.details.actual>1);
+  const preview=bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:{maxCompressionRatio:1}});
+  assert.equal(preview.ok,false);assert.equal(preview.reason,'RTK_BUDGET_EXCEEDED');assert.equal(preview.parse.attempted,false);assert.equal(preview.parse.completed,false);
+  assert.equal(preview.diagnostics[0].field,denied.details.field);assert.equal(preview.diagnostics[0].actual,denied.details.actual);
+  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok,true);
+  const excessive=zipBytes(entries.map(entry=>({...entry,content:entry.name==='word/document.xml'?documentXml('<w:p><w:r><w:t>'+ 'x'.repeat(100000)+'</w:t></w:r></w:p>'):entry.content,method:8})));
+  const hostile=bridge.inspectDocxHostileFileGateFromZipBytes(excessive);assert.equal(hostile.ok,false);
+  assert.ok(hostile.diagnostics.some(diagnostic=>/COMPRESSION_RATIO/u.test(diagnostic.code||'')),JSON.stringify(hostile));
 });
