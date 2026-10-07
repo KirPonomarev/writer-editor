@@ -226,7 +226,7 @@ test('DOCX local file preview adapter: exports bounded local preview contract on
 
   assert.equal(DOCX_IMPORT_LOCAL_FILE_PREVIEW_SCHEMA, 'revision-bridge.docx-import-local-file-preview.v1');
   assert.equal(DOCX_IMPORT_LOCAL_FILE_PREVIEW_TYPE, 'docx.import.localFilePreview');
-  assert.equal(DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES, 10 * 1024 * 1024);
+  assert.equal(DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES, 16 * 1024 * 1024);
   assert.equal(typeof createDocxImportLocalFilePreview, 'function');
   assert.equal(source.includes('applyDocxImportSafeCreate'), false);
   assert.equal(source.includes('writeFlowSceneBatchAtomic'), false);
@@ -733,4 +733,18 @@ test('DOCX local file preview adapter: hostile bridge output triggers forbidden 
   assert.equal(hostile.error.reason, DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.OUTPUT_FORBIDDEN);
   assert.equal(hostile.error.details.key, 'docxImportPreviewPlan.writeReceipt');
   assertNoForbiddenPublicFields(hostile);
+});
+
+test('DOCX local file preview adapter: exact16MiB reaches actual inspection without granting import',async()=>{
+  const bytes=Buffer.alloc(16*1024*1024,0x61);let reads=0,loads=0;
+  const result=await createDocxImportLocalFilePreview({}, {
+    pickLocalFile:async options=>{assert.equal(options.maxBytes,bytes.length);return {path:path.join(os.tmpdir(),'Bounded.docx'),size:bytes.length};},
+    readLocalFileBytes:async(_selection,options)=>{reads++;assert.equal(options.maxBytes,bytes.length);return bytes;},
+    loadRevisionBridgeModule:async()=>{loads++;return loadBridge();},
+  });
+  assert.equal(reads,1);assert.equal(loads,1);
+  // Byte admission is distinct from semantic acceptance: these are not ZIP bytes.
+  assert.equal(result.ok,true);assert.equal(result.code,DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.CONTENT_BLOCKED);
+  assert.equal(result.status,'blocked');assert.equal(result.importPreviewOk,false);assert.equal(result.writeEffects,false);assert.equal(result.docxImportPreviewPlan,null);
+  assertNoForbiddenPublicFields(result);
 });

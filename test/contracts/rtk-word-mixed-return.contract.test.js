@@ -182,8 +182,32 @@ async function fixture(clean=false,markChange=false) {
   afterState.threads[0].messages[0].body='Edited query';
   afterState.threads[1].anchor=exactAnchor({paragraphIndex:1,startUtf16:9,selectedText:'BBB'},sceneId,['new','tail ZZZ BBB']);
   afterState.threads.push({threadId:'new-root-thread',rootCommentId:'new-root',sceneId,status:'open',anchor:exactAnchor({paragraphIndex:1,startUtf16:6,selectedText:'ZZ'},sceneId,['new','tail ZZZ BBB']),messages:[{commentId:'new-root',kind:'root',body:'Fresh insertion query',provenance:{author:'Editor'}}]});
-  let bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]}));
+  const afterSource=makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]});
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),cryptoPort={sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)};
+  const protectedSources=JSON.stringify({exported,afterSource,beforeDoc,returnedDoc});
+  const originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(exported)).parts;
+  const returnedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(afterSource)).parts;
+  const originalXml=originalParts['word/document.xml'],returnedXml=returnedParts['word/document.xml'];
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(match=>match[1]);
+  const originalNames=names(originalXml),returnedNames=names(returnedXml);
+  const occurrence=map=>map.scenes.flatMap(scene=>scene.blocks.map((block,index)=>[scene.sceneId,index,block.documentParagraphIndex]));
+  assert.deepEqual(occurrence(afterSource.localAuthorityCapsule.exportMap),occurrence(exported.localAuthorityCapsule.exportMap));
+  const declared=exported.localAuthorityCapsule.exportMap.scenes.flatMap(scene=>scene.blocks.map(block=>block.wordSignals.filter(signal=>signal.kind==='bookmarkName')[0].value.name));
+  assert.deepEqual(originalNames,declared);assert.equal(returnedNames.length,originalNames.length);
+  const {extractTransportParagraphOwnershipV1}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const paragraphOwners=originalNames.map((_,index)=>[index]);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(originalXml,originalNames,{cryptoPort}),paragraphOwners);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedXml,returnedNames,{cryptoPort}),paragraphOwners);
+  // Word edits retain the original round's owned body bookmark occurrences.
+  // The second producer supplies changed XML only, never replacement authority.
+  let ordinal=0;
+  returnedParts['word/document.xml']=returnedXml.replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>{
+    assert.equal(name,returnedNames[ordinal]);return tag.replace(`w:name="${name}"`,`w:name="${originalNames[ordinal++]}"`);
+  });
+  assert.equal(ordinal,originalNames.length);assert.deepEqual(names(returnedParts['word/document.xml']),originalNames);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedParts['word/document.xml'],originalNames,{cryptoPort}),paragraphOwners);
+  let bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(returnedParts).map(([name,data])=>({name,data})));
+  assert.equal(JSON.stringify({exported,afterSource,beforeDoc,returnedDoc}),protectedSources);
   if(markChange==='omit-off'){const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;parts['word/document.xml']=parts['word/document.xml'].replaceAll('<w:b w:val="0"/>','');bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));}
   const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
   const capsule=exported.localAuthorityCapsule;

@@ -464,3 +464,14 @@ test('DOCX content preview command surface: contour section stays out of UI impo
     assert.equal(section.includes(marker), false, `${marker} must stay out of DOCX content preview command surface`);
   }
 });
+
+// File admission is independent of semantic parsing and never grants Apply.
+test('DOCX_CONTENT_PREVIEW admits exact16MiB and rejects one extra byte before bridge work', () => {
+  const port=instantiateDocxContentPreviewPort();
+  assert.equal(port.DOCX_CONTENT_PREVIEW_MAX_BYTES,16*1024*1024);
+  const bytes=Buffer.alloc(16*1024*1024,0x61);
+  const accepted=port.decodeDocxContentPreviewBufferSource({bufferSource:bytes.toString('base64')});
+  assert.equal(accepted.ok,true);assert.deepEqual(accepted.bytes,bytes);
+  const denied=port.decodeDocxContentPreviewBufferSource({bufferSource:Buffer.concat([bytes,Buffer.from('a')]).toString('base64')});
+  assert.equal(denied.ok,false);assert.equal(denied.error.reason,'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_TOO_LARGE');
+});

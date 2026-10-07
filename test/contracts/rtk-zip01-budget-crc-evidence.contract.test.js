@@ -533,9 +533,9 @@ test('ZIP01-Z5-worker-accepts-transferable-bytes', async () => {
 // ===========================================================================
 test('ZIP01-Z6-pre-inflate-part-budget', async () => {
   const bridge = await loadBridge();
-  // 11 MiB uncompressed part (> 10 MiB V6 maxInflatedPartBytes, < 32 MiB host bound).
-  const bigContent = Buffer.alloc(11 * 1024 * 1024, 0x61);
-  // Add minimal XML wrapping so the part is still .xml-extracted; content stays > 10MiB.
+  // 16 MiB + 1 byte uncompressed part (> 16 MiB V6 maxInflatedPartBytes, < 32 MiB host bound).
+  const bigContent = Buffer.alloc(16 * 1024 * 1024 + 1, 0x61);
+  // Add minimal XML wrapping so the part is still .xml-extracted; content stays > 16MiB.
   const doc = Buffer.concat([Buffer.from(documentXml(''), 'utf8'), bigContent]);
 
   const bytes = zipBytes([
@@ -549,12 +549,12 @@ test('ZIP01-Z6-pre-inflate-part-budget', async () => {
   });
 
   // CURRENT: maxPartBytes defaults to DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes
-  // which equals 32 MiB, so 11 MiB is admitted (RED).
-  // TARGET: effective budget maxInflatedPartBytes=10MiB rejects pre-inflate.
+  // which equals 32 MiB, so 16 MiB + 1 byte is admitted (RED).
+  // TARGET: effective budget maxInflatedPartBytes=16MiB rejects pre-inflate.
   assert.equal(
     result.ok,
     false,
-    'RED reason: intake uses 32 MiB host bound, not 10 MiB effective V6 ceiling. TARGET: part-bytes budget rejection.',
+    'RED reason: intake uses 32 MiB host bound, not 16 MiB effective V6 ceiling. TARGET: part-bytes budget rejection.',
   );
   assert.equal(
     reasonCodes(result).some((code) => code.includes('BUDGET'))
@@ -789,3 +789,20 @@ function baseParts() {
     'word/document.xml': documentXml('<w:p><w:r><w:t>body</w:t></w:r></w:p>'),
   };
 }
+
+test('ZIP0116MiB exact part admission preserves tighter requests and every declared ceiling',async()=>{
+  const bridge=await loadBridge(),limit=16*1024*1024;
+  const wrap=documentXml(''),doc=Buffer.from(documentXml('x'.repeat(limit-Buffer.byteLength(wrap))));
+  assert.equal(doc.length,limit);
+  const packed=body=>zipBytes([{name:'[Content_Types].xml',content:contentTypesXml()},{name:'_rels/.rels',content:relsXml()},{name:'word/document.xml',content:body}]);
+  const bytes=packed(doc),accepted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes},{cryptoPort:cryptoPort()});
+  assert.equal(accepted.ok,true,JSON.stringify(accepted));assert.equal(Buffer.byteLength(accepted.parts['word/document.xml']),limit);
+  const denied=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:packed(Buffer.concat([doc,Buffer.from('x')]))},{cryptoPort:cryptoPort()});
+  assert.equal(denied.ok,false);assert.equal(denied.code,'RTK_BUDGET_EXCEEDED');
+  const tighter=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxInflatedPartBytes:10*1024*1024}},{cryptoPort:cryptoPort()});
+  assert.equal(tighter.ok,false);assert.equal(tighter.code,'RTK_BUDGET_EXCEEDED');
+  const budget=await import('../../src/io/revisionBridge/reviewTransportZipEvidenceV1.mjs');
+  const {effective,clampedFields}=budget.resolveEffectiveBudgets({requested:{maxInflatedPartBytes:limit+1},profileDefaults:budget.RTK_ZIP_PROFILE_DEFAULTS_V6,ceiling:budget.RTK_ZIP_CEILING_DECLARED});
+  assert.equal(effective.maxInflatedPartBytes,limit);assert.deepEqual(clampedFields,[{field:'maxInflatedPartBytes',requested:limit+1,ceiling:limit}]);
+  for(const [key,value] of Object.entries({maxDocxBytes:50*1024*1024,maxTotalInflatedBytes:50*1024*1024,maxCompressionRatio:200,maxXmlDepth:64,maxAttributes:128,hardTimeoutMs:30000}))assert.equal(effective[key],value,key);
+});

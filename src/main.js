@@ -5694,7 +5694,7 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
 
 // DOCX_INTAKE_GATE_COMMAND_SURFACE_START
 const DOCX_INTAKE_GATE_COMMAND_ID = 'cmd.project.review.inspectDocxIntakeGate';
-const DOCX_INTAKE_GATE_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_INTAKE_GATE_MAX_BYTES = 16 * 1024 * 1024;
 const DOCX_INTAKE_GATE_MAX_BASE64_CHARS = Math.ceil(DOCX_INTAKE_GATE_MAX_BYTES / 3) * 4;
 const DOCX_INTAKE_GATE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'bufferSource', 'explicitCanonicalApplyConfirmed']);
 
@@ -9765,7 +9765,7 @@ const DOCX_REVIEW_RETURN_INTAKE_PROFILE_DEFAULTS = Object.freeze({
   maxCandidates: 50_000,
   maxWorkerOutputBytes: 64 * 1024 * 1024,
   maxZipEntries: 50_000,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxDocxBytes: 50 * 1024 * 1024,
   hardTimeoutMs: 30_000,
@@ -9779,7 +9779,7 @@ const DOCX_REVIEW_RETURN_INTAKE_CEILING = Object.freeze({
   maxCandidates: 50_000,
   maxWorkerOutputBytes: 64 * 1024 * 1024,
   maxZipEntries: 50_000,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxDocxBytes: 50 * 1024 * 1024,
   hardTimeoutMs: 30_000,
@@ -12657,7 +12657,7 @@ function resolveDocxImportPreviewReference(kind, reference) {
 
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
-const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_CONTENT_PREVIEW_MAX_BYTES = 16 * 1024 * 1024;
 const DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS = Math.ceil(DOCX_CONTENT_PREVIEW_MAX_BYTES / 3) * 4;
 const DOCX_CONTENT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'bufferSource']);
 const DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([

@@ -183,3 +183,40 @@ Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word retu
 - Narrow representation exception: this task uses NONE plus a precise reason for no new events, migrations or irrelevant fields. No field is omitted or empty, no architecture responsibility changes, and no runtime/authority/acceptance gate is waived. The fixed confirmation remains an effect returning intent to the existing independently revalidated Apply path.
 - Do not broaden E0 or add a governance subsystem during the UI repair. Both full manifests remain reviewable in the declared task document. The unused-field wording exception belongs only to this task and does not change the doctrine or future output rules.
 - Rollback/removal: revert the task together with the single repair chain if needed. A separately scoped future task-shape correction can reconcile exact normative markers; do not reuse this exception as standing authority.
+
+## 2026-10-07 — owner-authorized16MiB novel DOCX capacity profile
+
+- Authority: direct owner instruction to increase megabyte limits and finish the
+  macOS large-novel product direction; same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
+  original42b PR2093, clean1859cb40b pre-edit56-path declaration/preflight/E0.
+- Deviation: WordV4 PACKAGE_BUDGETS part10MiB becomes task-versioned16MiB for
+  bounded strict DOCX review package intake. Existing Main/local DOCX input
+  limits10MiB become16MiB. Shared V6 and mirrored Core defaults/declared ceiling
+  change together; effective-budget digest continues to bind the actual values.
+  This limit concerns each inflated part, including auxiliary XML. Generic
+  content preview retains existing32MiB host part envelope; no claim of16MiB
+  inflated generic enforcement. No new public profile/schema or authority flag.
+- Reason: actual500108-word exported DOCX8772919B disproves old test8MiB limit;
+  bounded16MiB provides declared headroom for authored formatting and corrections.
+  Raising byte capacity alone does not prove full transfer, latency or memory.
+- Protected:50MiB raw package/strict total, ratio200, depth64, attributes128,
+  hard30s and canon512MiB memory; existing generic host and source8MiB/snapshot/
+  private/round caps. Tighter requested budgets and all integrity/CAS/no-write
+  gates remain. No Google execution or broader semantic capability is opened.
+- Risk: larger inputs may need more memory/time. Real boundary, hostile package,
+  full rich500k publication and production phase measurements are mandatory;
+  an exhausted unchanged resource budget remains a typed refusal, never PASS.
+- Rollback: revert only the single coherent delivery through ordinary Git path;
+  preserve readable projects, original DOCX, all history and failed evidence.
+  No scene rewrite, pruning, reset or old-profile crash reproduction.
+- Removal: integrate the measured capacity into a later explicitly versioned
+  canonical profile after full native/resource qualification, or restore10MiB
+  through verified no-loss delivery. Until then this is one owner-bound task
+  exception; it never waives remaining original novel or delivery requirements.
+
+- Executed qualification18: exact16MiB/+1/tighter limits pass; complete clean
+  500108-word publication is observed through real Main,86946.656ms and
+  peakRSS1842774016B. This exceeds the unchanged memory target; no resource or
+  native whole-feature PASS follows. The test did not retain its final package.
+  Remaining actual Office empty-section RAW binding and untouched third-fixture
+  identity failures remain open; no safety/semantic refusal is waived.

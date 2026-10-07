@@ -26,7 +26,7 @@ export const RTK_ZIP_EVIDENCE_V1_SCHEMA = 'yalken.rtk.zip-evidence.v1';
 export const RTK_ZIP_PROFILE_DEFAULTS_V6 = Object.freeze({
   maxDocxBytes: 50 * 1024 * 1024,
   maxZipEntries: 512,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxCompressionRatio: 200,
   maxXmlDepth: 64,
@@ -49,7 +49,7 @@ export const RTK_ZIP_PROFILE_DEFAULTS_V6 = Object.freeze({
 export const RTK_ZIP_CEILING_DECLARED = Object.freeze({
   maxDocxBytes: 50 * 1024 * 1024,
   maxZipEntries: 50_000,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxCompressionRatio: 200,
   maxXmlDepth: 64,

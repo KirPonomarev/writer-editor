@@ -4,6 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const crypto=require('node:crypto');
 const vm=require('node:vm');
+const {createRequire}=require('node:module');
 const {pathToFileURL}=require('node:url');
 const path=require('node:path');
 const ROOT=path.resolve(__dirname,'../..');
@@ -19,7 +20,7 @@ const hash=b=>'sha256:'+crypto.createHash('sha256').update(b).digest('hex');
 const clone=v=>JSON.parse(JSON.stringify(v));
 function declaration(name){const match=main.match(new RegExp('function '+name+'\\([^]*?\\n}(?=\\n|$)'));assert.ok(match,name);return match[0];}
 function harness(){
-  const context=vm.createContext({crypto,Buffer,
+  const context=vm.createContext({crypto,Buffer,require:createRequire(path.join(ROOT,'src/main.js')),
     isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),
     docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',
     sha256DocxReviewPreviewSessionBytes:b=>hash(b).slice(7),cloneJsonSafe:clone,docxReviewReturnIntakeBlocked:code=>({ok:false,code}),
@@ -265,20 +266,28 @@ test('Compact advisory keeps every document part and signed carrier while retain
   assert.equal(gate.ok,true,JSON.stringify(gate));
   assert.equal(gate.yrtk2Verification.ok,true);
 });
-test('500k-word publication uses the existing full-manuscript profile within unchanged byte ceilings',async()=>{
+test('500k-word publication uses the bounded16MiB full-manuscript file profile',async()=>{
   const {buildWordVolumeFixture}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-volume-fixtures.mjs')));
   const corpus=buildWordVolumeFixture('LARGE_DOCUMENT');
   assert.equal(corpus.scenes.length,21);
   assert.equal(corpus.minimumWords,500000);
   const {source,bridge,context}=await fixture(corpus.scenes.map(s=>s.paragraphs),{rich:true});
   assert.ok(source.blocks.length>5000);
+  const protectedSource=hash(JSON.stringify(source));
   const bytes=buildDocxReviewPacketBuffer(source);
-  assert.ok(bytes.length<8*1024*1024,'The actual 500k-word DOCX must fit existing evidence and intake byte budgets');
+  assert.ok(bytes.length<16*1024*1024,'The actual 500k-word DOCX must fit the declared16MiB intake budget');
   const gate=await context.buildFullManuscriptPublicationGate(source,bytes,bridge);
   assert.equal(gate.ok,true,JSON.stringify(gate));
   assert.equal(gate.provisionalSelfParse.verified,true);
   assert.equal(gate.finalSelfParse.semanticEquivalent,true);
   assert.equal(gate.yrtk2Verification.ok,true);
+  assert.equal(hash(JSON.stringify(source)),protectedSource);
+  const actual=bridge.extractDocxReviewTransportWordDocumentProjection({bytes},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+  assert.equal(actual.ok,true,JSON.stringify(actual));
+  const observed=bridge.visibleSceneTextsFromWordDocumentXml(actual.documentXml,source.localAuthorityCapsule.exportMap,{cryptoPort:context.createRtkReviewTransportCryptoPort(),stylesXml:actual.stylesXml,relationshipsXml:actual.relationshipsXml,budgets:context.docxReviewReturnIntakeProductBudgets()});
+  assert.equal(observed.ok,true,JSON.stringify(observed));
+  assert.deepEqual(observed.sceneTexts,corpus.scenes.map(s=>s.paragraphs.join('\n')));
+  assert.equal(observed.sceneTexts.join('\n\n'),source.sceneText);
   const rejected=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:{maxInflatedPartBytes:1024},hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
   assert.equal(rejected.ok,false);
   assert.equal(rejected.code,'RTK_BUDGET_EXCEEDED');
