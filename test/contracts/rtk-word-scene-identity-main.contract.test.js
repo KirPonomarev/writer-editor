@@ -3439,6 +3439,66 @@ test('actual Main reads genuine predecessor-published persisted v1 round after e
  assert.equal(admitted.ok,true,JSON.stringify(admitted));assert.deepEqual(reopened.capture(),before);assert.equal(read(reopened.probe.authorityPath(reopened.root)),persisted);
 });
 
+for(const variant of ['no-save','unchanged','javascript','python','empty-language','text','format','role','extra-attr','stale-source','late-live','late-source','dirty','generation'])test('actual Main book renderer code default '+variant,async t=>{
+ const f=await fixture(t),p=text=>({type:'paragraph',content:[{type:'text',text}]}),doc={type:'doc',content:[p('Anchor'),{type:'codeBlock',content:[{type:'text',text:'code();'}]},p('Tail')]};
+ const raw=envelope.composeObservablePayload({doc,metaEnabled:true,meta:{status:'черновик',synopsis:'private untouched',tags:{}},cards:[]});
+ fs.writeFileSync(f.alpha,raw);f.source=raw;
+ const [{Editor},{default:StarterKit}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit')]);
+ const editor=new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false})],content:doc});
+ const working=envelope.canonicalizeDocumentJson(editor.getJSON());editor.destroy();
+ assert.deepEqual(working.content[1].attrs,{language:null},'actual renderer schema materializes the missing code language');
+ const comparator=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+ assert.equal(comparator.commentSceneSnapshotsEqual(working,doc),false,'shared comparator remains strict and unchanged');
+ let observed=envelope.composeObservablePayload({...envelope.parseObservablePayload(raw),metaEnabled:true,doc:working});
+ mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ assert.equal(source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ if(variant!=='unchanged'){
+  const run=parts['word/document.xml'].match(/<w:r>[\s\S]*?<w:t[^>]*>Beta<\/w:t><\/w:r>/u);assert.ok(run);const literal=run[0].slice(run[0].lastIndexOf('<w:r>'));
+  parts['word/document.xml']=parts['word/document.xml'].replace(literal,literal+'<w:ins w:id="971" w:author="Word writer" w:date="2026-10-07T01:02:03Z">'+literal.replace('Beta',' NEW')+'</w:ins>');
+ }
+ if(['javascript','python','empty-language','text','format','role','extra-attr'].includes(variant)){
+  const changed=structuredClone(working);
+  if(['javascript','python','empty-language'].includes(variant))changed.content[1].attrs.language=variant==='empty-language'?'':variant;
+  if(variant==='text')changed.content[0].content[0].text+=' LOCAL';
+  if(variant==='format')changed.content[0].content[0].marks=[{type:'bold'}];
+  if(variant==='role'){changed.content[1].type='paragraph';delete changed.content[1].attrs;}
+  if(variant==='extra-attr')changed.content[1].attrs.wordCustom='preserve';
+  observed=envelope.composeObservablePayload({...envelope.parseObservablePayload(raw),metaEnabled:true,doc:changed});
+ }
+ if(variant==='stale-source')fs.appendFileSync(f.beta,' OWNER');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),before=f.capture();let prepared;
+ const activated=await f.probe.reviewActivate({requestId:'code-schema-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onPendingReturnPrepared:value=>{prepared=value;}});
+ assert.deepEqual(f.capture(),before);
+ if(['javascript','python','empty-language','text','format','role','extra-attr','stale-source'].includes(variant)){
+  assert.equal(activated.pendingProductPath?.code,variant==='stale-source'?'WORD_BOOK_RETURN_SOURCE_STALE':'WORD_BOOK_RETURN_SAVE_FIRST',JSON.stringify(activated));assert.equal(prepared,undefined);return;
+ }
+ if(variant==='unchanged'){
+  assert.equal(prepared,undefined);assert.equal(activated.error?.reason,'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS',JSON.stringify(activated));assert.equal(activated.error.details.candidateSummary.diagnosticItemCount,0);return;
+ }
+ assert.equal(activated.pendingProductPath?.status,'preview-ready',JSON.stringify({activated,savedSource:doc,actualParsedSource:require('../../src/core/word-pending-text-revisions-v1.cjs').readLedger(bridge.buildDocxContentPreviewFromZipBytes(bytes).contentPreview.pendingRevisionDocument)?.source}));assert.ok(prepared);
+ if(['late-live','late-source','dirty','generation'].includes(variant)){
+  if(variant==='late-live'){const changed=structuredClone(working);changed.content[1].attrs.language='javascript';observed=envelope.composeObservablePayload({doc:changed});}
+  if(variant==='late-source')fs.appendFileSync(f.beta,' OWNER');
+  if(variant==='dirty')f.probe.state({dirty:true});if(variant==='generation')f.probe.state({generation:1});
+  const protectedBytes=f.capture(),kernel=f.probe.observeKernelResults();
+  try{await assert.rejects(prepared.apply(),['dirty','generation'].includes(variant)?/WORD_BOOK_RETURN_CONTEXT_STALE/u:/E_COMMAND_FAILED/u);
+   if(variant==='late-live')assert.deepEqual(kernel.failures,['WORD_BOOK_RETURN_SAVE_FIRST']);if(variant==='late-source')assert.deepEqual(kernel.failures,['WORD_BOOK_RETURN_SOURCE_STALE']);
+  }finally{kernel.restore();}assert.deepEqual(f.capture(),protectedBytes);return;
+ }
+ const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(f.temp,'code-default-return.docx'),size:bytes.length}),readLocalFileBytes:async()=>bytes};
+ const cancelled=await f.probe.reviewLocalFile({requestId:'code-default-cancel'},options);assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(f.capture(),before);
+ f.chooseMessageResponse(1);const applied=await f.probe.reviewLocalFile({requestId:'code-default-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));assert.equal(applied.pendingProductPath.writerCalled,true);
+ assert.equal(read(f.alpha),raw,'comparison default must never save the source or its private metadata');
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),after=envelope.parseObservablePayload(read(f.beta)).doc,ledger=pending.readLedger(after);
+ assert.equal(pending.projection(after).current,'Beta NEW');assert.equal(pending.projection(after).original,'Beta');
+ assert.deepEqual(ledger.source,{type:'doc',content:[p('Beta NEW')]});assert.equal(ledger.revisions.length,1);
+ assert.deepEqual({...ledger.revisions[0],id:null},{id:null,nativeId:'971',operation:'insert',author:'Word writer',date:'2026-10-07T01:02:03Z',dateUtc:'2026-10-07T01:02:03Z',groupId:null,paragraphIndex:0,from:4,to:8,state:'pending'});
+ for(const [name,value] of Object.entries(before.files))if(name!=='roman/Imported/02_Beta.txt')assert.equal(f.capture().files[name],value);
+});
+
 for(const variant of ['unchanged','code-fill','marker-font'])test('actual Main effective Word relocation role preview '+variant,async t=>{
  const f=await fixture(t),p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),doc={type:'doc',content:[p('Anchor'),p(''),{type:'blockquote',content:[p('Quote')]},
   {type:'bulletList',content:[{type:'listItem',content:[p('Bullet')]}]},{type:'orderedList',attrs:{start:1},content:[{type:'listItem',content:[p('Number')]}]},

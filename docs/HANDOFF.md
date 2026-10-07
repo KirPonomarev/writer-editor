@@ -1,3 +1,26 @@
+## 2026-10-07 — actual unchanged full-book control; code schema return still blocked
+
+Same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 contour remains undelivered.
+SOURCE03 public full13p and3scene export passed real Word unchanged Save As:
+complete independent Current and Original, roles, fonts, languages, spacing
+and numbering agree. Public intake has zero diagnostics and no candidate;
+all six business files are exact and owned Electron exits normally.
+SOURCE04 genuine four tracked events in Alpha and Gamma preserve the full
+Original and independently expected literal Current. Public intake refuses
+WORD_BOOK_RETURN_SAVE_FIRST before Apply; complete protected files are exact.
+A readonly actual renderer schema diagnosis identifies absent versus null
+codeBlock.language. Main-only amendment02 removes that first mismatch.
+Actual selected Main tests pass8of14 and fail6of14 at the later independent
+Core MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED barrier: actual DOCX converter
+materializes language empty string, while authenticated saved code has no
+language property. Failed artifacts are retained; no Cancel or leased Apply
+success is claimed. This clean checkpoint is known incomplete, not acceptance.
+The next same-task amendment must reconstruct only source-owned protected
+code-language representation at existing checked intake and independent replay
+seams. Raw source, strict genuine property checks, authority and writer stay
+unchanged. SOURCE and ordinary PACKAGED changed controls, full gates and Git
+delivery plus original100k/five genuine exchanges remain OPEN.
+
 ## 2026-10-07 — unchanged Word counterexample repaired; fresh native pending
 
 WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour from42b.

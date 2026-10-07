@@ -852,7 +852,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "85a03bf79d9201dc972eb14eb8df972541528c9a3633a8983e6839f9722615bf"
+        "sha256": "9e09c4c798c8aaf87a32ce676b1eef74a41c981ca8a72c4c9337f2513a6afc1a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2040,7 +2040,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "7752696e193729967f0a55a28c3cbe25c4f66c528317e2bb929a4c44654519f2"
+        "sha256": "9e1d4c2cc7f1b75fdc0d30deb5b4a9b72e981193232f972a5aca466d34920411"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "0cb294b0dcb21d0eee71c52c9981f0b6282445fe5c95d0cf474d29edb1556e2b"
+        "sha256": "42b57ed76cb213a518065efab19bf72d3d9bff88cfc549045c41844e2fa73981"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "66c615bb88dbf88272ab79fc79d7706a14245923f047a82d0da7cbdff7cfa9eb"
+        "sha256": "b8bd962d87e1e4fe9f779d07ef4341537673de3c700dee789d0f46bf2c33ca6f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2b0470b22145354226756f17bdcc3930f9e82a9cd3e87ba26df120fa30c4ded9"
+        "sha256": "7f9bf036ad4c16b3be2e8c60c3033c9f348fef1c6ef20458493d884d68901560"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "47c5c4b9648e8a772b3b7a202e7cdd2723184301aecdbfd702d6ecc7b7926a54"
+        "sha256": "1781fbc471cfd61cf0096b6200dfad8f8e0416a58aad7d909f6802a67f949a1c"
       }
     ],
     "followupRepair": {

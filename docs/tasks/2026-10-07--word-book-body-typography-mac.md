@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: NATIVE_UNCHANGED_COUNTEREXAMPLE_REPAIR_AND_DELIVERY_OPEN
+STATUS: NATIVE_BODY_SCHEMA_COMPARISON_REPAIR_AND_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -244,6 +244,62 @@ and ordinary PACKAGED controls on clean candidate bytes before delivery.
 3. Actual ZIP/Main/atomic controls, then root independent review and early fresh
    short genuine SOURCE/PACKAGED Word route before broad stable gates.
 4. Freeze bytes, full required proofs and complete Git delivery.
+
+### AMENDMENT02_LIVE_SAVED_CODE_SCHEMA_COMPARISON
+
+Clean ebbec2 is the same undelivered contour, with original42b rollback/base and
+same44 paths and total1800/2600 budgets. Fresh bootstrap and preflight process0
+bind ARCHITECTURE_DECLARATION_AMENDMENT_02.json SHA256
+61e77d81e0afad3c6aca11a0a749d962200ff266907e444d02601a4d0fb8fabb;
+T7 identity reverified, current remote42b unchanged. E0 precedes writer edits.
+
+SOURCE03 actual public full13p/3scene export -> real Word unchanged Save As ->
+public intake now has zero diagnostics and no candidate; independent entire
+Current/Original and all roles/fonts/languages/spacing/list meaning agree.
+All six business files stay exact; native child normally exits0.
+SOURCE04 same-profile normal restart has exact six bytes without reseeding.
+Real Word creates four tracked events in Alpha and Gamma; complete Original
+and literal Current two edits/all other properties match independently.
+Actual public intake refuses WORD_BOOK_RETURN_SAVE_FIRST before confirmation
+or writes. That failure and all source/Word artifacts remain retained.
+
+Existing renderer materializes declared codeBlock.language:null when source
+has no attrs/language. Current Main6461 saved/live comparator covers other
+schema defaults but omits this one. A separately observed complete working
+root PMJSON after ordinary Save, processed by the actual renderer canonicalizer,
+matches the after saved document. Applying only language:null to a clone of
+the original code node makes the entire comparator equal. Non-null JavaScript
+and Python remain unequal. Actual pre-block snapshot.content was not captured;
+this is an exact post-Save diagnostic and prediction, not changed Word success.
+Ordinary diagnostic Save added default metadata to a source without a metadata
+block; parsed meta/cards were preserved. No private loss was established.
+
+Implement only the Main full-book live/saved comparison (and existing pure body
+helper if necessary). Derived clone may materialize language:null only for a
+codeBlock missing language. Do not erase any other attrs or convert empty/
+non-null values; do not call emission-default projection. Shared comparator,
+renderer/envelope, source hashes, capsule and atomic writer remain unchanged.
+Dirty/snapshot/lifecycle/generation/capability/full-source CAS guards remain.
+
+Before repair retain an actual Main red with declared renderer code default;
+after repair require exact positive and non-null language, changed text/role/
+format and stale-source no-write negatives. Keep legacy descriptor behavior and
+all raw/private bytes. Root repeats a fresh normal no-save native path before
+Word and explicit Cancel/Apply/restart/reexport in SOURCE and ordinary PACKAGED;
+full stable gates and complete current PR delivery remain required.
+
+### AMENDMENT02_KNOWN_INCOMPLETE_CHECKPOINT
+
+Separate writer WRITER_AMENDMENT02_HOLD_01.json binds Main14added/1removed
+lines and60 added behavior lines; aggregate runtime428of1800 and
+behavior350of2600 against original42b. Actual selected Main8of14 pass,
+6of14 fail with zero exclusions. First SAVE_FIRST mismatch is repaired;
+subsequent independent Core shape comparison refuses actual parser-produced
+code language empty string against source absence. No Cancel/leased Apply
+was reached. All retained positive assertions remain required and unchanged.
+The intermediate checkpoint records this known failure to admit the same-task
+source-owned representation repair with a clean exact base. It does not close
+semantic, native, gate or delivery acceptance and does not start a new contour.
 
 ### AMENDMENT01_COMPONENT_FREEZE
 

@@ -6454,11 +6454,24 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       scenes.push({sceneId:scene.sceneId,target,raw,parsed});
     }
     const open=scenes.find(scene=>scene.target===file);if(!open)throw Error('WORD_BOOK_RETURN_OPEN_SCENE_REQUIRED');
+    const bodyTypography=require('./core/word-review-typography-v1.cjs');
+    const compareCodeSchemaDefaults=bodyTypography.validate(capsule.exportMap.exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2;
+    // The renderer's declared code language default is comparison-only. Raw
+    // source bytes and every explicit language/other attribute remain exact.
+    const liveSavedDocument=value=>{
+      if(!compareCodeSchemaDefaults||!value||typeof value!=='object')return value;
+      const copied=JSON.parse(JSON.stringify(value)),pending=[copied];
+      while(pending.length){const node=pending.pop();
+        if(node.type==='codeBlock'&&!Object.hasOwn(node.attrs||{},'language'))node.attrs={...node.attrs,language:null};
+        if(Array.isArray(node.content))pending.push(...node.content);
+      }
+      return copied;
+    };
     const verifySources=async()=>{check();for(const scene of scenes)if(await fs.readFile(scene.target,'utf8')!==scene.raw)throw Error('WORD_BOOK_RETURN_SOURCE_STALE');
       const snapshot=await requestEditorSnapshot();
       if(!Number.isSafeInteger(snapshot.generation)||snapshot.generation<generation||snapshot.commentAuthoringPending||snapshot.manuscriptNoteAuthoringPending)throw Error('WORD_BOOK_RETURN_EDITOR_STALE');
       const live=envelope.parseObservablePayload(snapshot.content);
-      if(live.issue||!module.commentSceneSnapshotsEqual(live.doc||live.text,open.parsed.doc))throw Error('WORD_BOOK_RETURN_SAVE_FIRST');check();return snapshot;};
+      if(live.issue||!module.commentSceneSnapshotsEqual(liveSavedDocument(live.doc||live.text),liveSavedDocument(open.parsed.doc)))throw Error('WORD_BOOK_RETURN_SAVE_FIRST');check();return snapshot;};
     const manifestPath=path.join(context.projectRoot,'project.craftsman.json');
     const state=await readVerifiedProjectTreeMutation({manifestPath,projectId:context.projectId});
     const snapshot=await verifySources();
