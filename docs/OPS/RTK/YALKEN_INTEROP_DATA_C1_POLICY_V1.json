@@ -964,7 +964,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "666324f2c0245d71a0caaac49a5761146955f45b8bc1a093cd0665cc5eadc29e"
+        "sha256": "bf64d6a67d79c5e14939013de16d06cb02bb20f1977f62c1168826da23fe6a48"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -988,7 +988,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "d5b3a83c94a2f7df1f5a21a4db5b7da92fa13b2f56282ee88da5df83c4361159"
+        "sha256": "2796aaaf0dc8abb255b9efd3c7f4afbe1da6776623fbabaddd2adeb994287404"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -1496,7 +1496,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "2a51aedd231d9420d9fcefce062f6138d8c82c756b7f99e2d34d38bc2c5e1cea"
+        "sha256": "c19a7a19b3837e3d4b6f1cc9d4a5c29e85d7ea525dd57863e71efaf4a8198f48"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -1724,7 +1724,7 @@
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
-        "sha256": "ed58966e0780482e13edc0b94f0e680b64bf40c3e1c4c5b4533b456fd7cb1fce"
+        "sha256": "bba6aa65a65a9892952de1683555c302b67dc992a3931ddf3bba0c7e7dc51f20"
       },
       {
         "path": "src/renderer/tiptap/wordPendingRevisions.mjs",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "4674afced450c31b90eb638898e782549c18de2c279c9b95bd664077a1415c87"
+        "sha256": "878bf68d8270cf63810baa97f345aeb1a5802d54ae554dc75dfdbc818fe270a5"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c249272975b954ca5184bf381185eb57eb66e07aab45c85ad8ed019d640fc0f6"
+        "sha256": "a67820a3c34d5dd30c5d9bf0396d29a0edd78a1a4a007884caa0888742a9a24b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b7ee5acd88b0ef9edd8b20b71e9e27f4452e06f8a486bfd8398f519e0d1512f3"
+        "sha256": "488b0711dcc944ab919879e9f35a73f44fa038a133d718d160b6ac6b88174d13"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "c900d9599cdcfc9e9614426079cb1b63aba4940bd5f59265986499159e6ca9d6"
+        "sha256": "a906405e967b336b83404373faf22b3f2f869c01a227b11dbfd368889f7dae08"
       }
     ],
     "followupRepair": {

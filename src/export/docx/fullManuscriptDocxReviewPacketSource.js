@@ -1309,6 +1309,12 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
   const initialCommentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography });
   const {commentExport,pendingCommentBindings} = bindPendingCommentExport({commentExport:initialCommentExport,scenes,blocks,exportTypography});
+  // The complete source ledger, including resolved topology, determines the
+  // transport law. These derived segment clones never enter authored IR/hashes.
+  const boundScenes=new Set(pendingCommentBindings.map(item=>item.sceneId));
+  for(const block of blocks)if(boundScenes.has(block.sceneId)&&block.pendingRevisionSegments)
+    block.pendingRevisionSegments=pendingTextRevisions.commentTransportSegments(block.pendingRevisionSegments,
+      {type:block.formatIr.paragraph.nodeType,attrs:block.formatIr.paragraph});
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true,
     pinnedSingleSceneNoteProfile: scenes.length === 1, closedBookBreakEmission: scenes.length > 1, pinnedBookNoteProfile: scenes.length > 1 && pendingCommentBindings.length > 0 && Boolean(commentExport?.threads?.length) });
   // Use authored paragraph boundaries, not the envelope's normalized display text.

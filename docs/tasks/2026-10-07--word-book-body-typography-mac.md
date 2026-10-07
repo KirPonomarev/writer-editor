@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT14_FROZEN_ENTER_DOWNSTREAM_FAILURE
+STATUS: AMENDMENT15_FROZEN_PUBLICATION_FAILURE
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -1208,3 +1208,80 @@ CI log atcd114fe independently has exactly the SAME156 failed tests as local
 Mechanical14 OPS freeze is byte binding only. Checkpoint commit preserves
 this same undelivered PR for clean H2 admission; all required final delivery,
 full native novel and current whole gates remain OPEN, not bypassed.
+
+### 2026-10-07 — amendment15 source-owned provenance and direct marker admission
+
+Same original42b PR2093 finite body contour and rollback,46paths and original
+1800runtime/2600behavior budgets. Clean checkpointc110f, no independent contour.
+CHECK_01 precedes all edits: fresh bootstrap/preflight/E0 actualexit0, unchanged
+registered identity and freshly verified encrypted/unlocked/writable T7 UUID.
+Current AGENTS/CANON_STATUS/startup and immediate source read; continuous same
+authority reads retained, no context-cache shortcut or new acceptance authority.
+Final declaration ARCHITECTURE_DECLARATION_AMENDMENT_15_FINAL_01.json SHA256
+1495551c4c0ffcb2b9b3d3b09be7195e2219d054726a0f0fe6d993ba4a1e4f11.
+Prior15 prototype and rejected dirty14H2 remain immutable, never reused as permit.
+
+Actual root unchanged Main100k case at clean c110f completed1of1, zero exclusions,
+exit0: five exchanges, fiveUndo/fiveRedo, complete old revisions and discussion
+entities,200threads/410messages, first Cancel zero disk writes, final DOCX
+discussion readback. Log SHA25636066a6a4722f6c59cfa879c6595711d0fef9b200aabc5537ed2c2afa22cb0f8.
+This is VM/Main plus actual atomic disk proof, NOT five genuine Word exchanges
+or production performance: observed exchanges38to61seconds, prepare28to34s.
+Source held clean unchanged during the entire heavy lane; lane now completed.
+
+MAP counterexamples retained: Enter/row helper appends second direct pPr/rPr,
+strict parser correctly refuses. Valid Enter acceptAll/rejectAll followed by
+ordinary insertion keeps resolved structural source history but active blocks
+omit it; builder14 improperly normalizes ordinary timestamp despite no binding.
+Complete resolved source evidence AMENDMENT14_RESOLVED_TOPOLOGY_READONLY_MAP_01.json
+SHA2561cb3ff7e4001a724c489972b16ed289c92353728c9cfd74b897cce20173e1344.
+
+MOVE exact four immediate seams: existing PendingRevisions boundary/row owned
+direct-marker composition; FullProducer immediately AFTER actual complete
+source bindPendingCommentExport; Builder V2 consumes source-owned transported
+segments without active-block eligibility; existing typography behavior test.
+Reuse actual pendingCommentBindings scene membership and commentTransportSegments
+on derived clones. No new flag/field/API/schema/port/writer or source history
+normalization. Preserve authored formatIR/text geometry/signed hashes and V1
+literal law. Exactly one direct rPr, complete nested previous rPrChange retained;
+malformed/duplicate owners reject with existing typed export refusal. Comments14,
+Main/Core/parser/adapter/body helper/renderer sources stay frozen; only existing
+compiler may refresh declared generated companions if dependencies require it.
+Separate existing code agent owns runtime/behavior; root docs/OPS/proof/delivery.
+
+PROVE old red before repair; actual XML/scoped parser/Core where lawful, directV2
+literal date, full eligible-source binding, valid resolved accept/reject history,
+Enter/row raw parent-child provenance, literal complete body typography, nested
+previous owner and malformed duplicates, V1 exact bytes. Existing six parsed
+forgeries/five short exchanges/UndoRedo remain. Whole typography and unchanged
+structural/move/row suites, affected and mandatory gates, fresh native both
+profiles and original full native novel/performance/Git chain remain OPEN.
+No skipped assertions, default stripping or weakened parser/sourceCAS guards.
+
+Root15 independently verified WRITER_AMENDMENT15_KNOWN_INCOMPLETE_HOLD_01.json
+SHA256505beefebc99e62ed896c8bbbbc9b8620631394f42ea2f66115681043dbb0ba0:
+all35pins,31exact predecessor,9actual logs and18artifacts; runtime766/1800,
+behavior1053/2600, generated456 separate. Focused5of5 and whole typography96of96
+passed, zero exclusions. Unchanged structural/move/row20of29 FAILED, all9retained;
+move9of9 passes. Two actual unchanged compiler executions are byte-idempotent,
+generated companions exactly predecessor. No full graph/native acceptance.
+
+Root actual public Main publication observations independently confirm BOTH
+recorded Enter and paragraph-mark-format source exports fail before publication:
+RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH / WORD_BODY_READBACK_PROVISIONAL.
+Complete synthetic source/XML and stable8sourcepins retained in
+ROOT_STRUCTURAL_MAIN_PUBLICATION_AMENDMENT15_01.json SHA256
+f1b57f2f3a6c61833cdb70eb05a651f7fbfa3fae48168bbfcb07d97da6a43e91 and
+ROOT_PARAGRAPH_MARK_MAIN_PUBLICATION_AMENDMENT15_01.json SHA256
+fd5002a1752aaa7d4ac3e90cf3c851efe512bc16ebd600e5e19c3c8981e35f2e.
+Generic Current/Original succeeds, raw source exact; this is a REAL PUBLIC
+export gap, not merely a fixture mismatch. Formatter passes checked ins/del or
+rPrChange carrier into ordinary effective property semantics and marks it invalid.
+The next hypothesis is consistent already-validated carrier exclusion while
+retaining complete original union rows, strict owners, prior snapshot, provenance
+and every malformed/foreign/duplicate/composite refusal. Full structural validation
+must precede any such observation; no blanket filtering or parser relaxation.
+No parser/Core/Main change occurred under15. Mechanical OPS checkpoint only binds
+reviewed bytes for clean same-contour successor admission; never semantic
+acceptance, delivery reset, no-loss refusal-as-completion or denominator reduction.
+Original full novel/native/performance/current mandatory graph and Git chain OPEN.

@@ -339,7 +339,7 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map(), exportTypography, commentTransportScenes) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map(), exportTypography) {
   const bodyTypography=require('../../core/word-review-typography-v1.cjs');
   const profile=bodyTypography.validate(exportTypography,{allowUndefined:true});
   const authoredParagraph=block.formatIr?.paragraph;
@@ -373,8 +373,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
     const rawSegments = block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments;
-    const transportedSegments = profile?.schemaVersion===bodyTypography.V2
-      ?commentTransportScenes.has(block.sceneId)?require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments,{type:authoredParagraph?.nodeType,attrs:authoredParagraph}):rawSegments
+    const transportedSegments = profile?.schemaVersion===bodyTypography.V2 ? rawSegments
       :commentExport?.threads?.length?require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments,{type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}):rawSegments;
     const emittedSegments = profile?.schemaVersion===bodyTypography.V2 ? bodyTypography.segments(transportedSegments,authoredParagraph,profile) : transportedSegments;
     textRun = buildPendingRunsXml(emittedSegments, node => {
@@ -460,15 +459,6 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
 }
 
 function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null, exportTypography) {
-  // Decide once for the complete emitted scene. Structural carriers and their
-  // ordinary neighboring runs retain one literal provenance representation.
-  const commentTransportScenes=new Set(blocks.map(block=>block.sceneId));
-  for(const block of blocks) {
-    const revisions=[block.pendingBoundaryRevision,block.pendingRowRevision,block.pendingParagraphRevision,
-      ...(block.pendingRevisionSegments||[]).flatMap(segment=>[segment.revision,segment.formatRevision])].filter(Boolean);
-    if(revisions.some(r=>r.boundary==='paragraph'||r.structure?.kind==='tableRow'||r.moveName
-      ||!['insert','delete','format'].includes(r.operation)||r.operation==='format'&&!['run','paragraph'].includes(r.format?.kind)))commentTransportScenes.delete(block.sceneId);
-  }
   const userBookmarkIds=new Map(), opened=new Set(), closed=new Set(), names=new Set(), identities=new Map();
   for (const block of blocks) for (const marker of block.formatIr?.userBookmarks || []) {
     if (!/^ubm-[a-f0-9]{32}$/u.test(marker.id) || typeof marker.name!=='string' || marker.name.length>40 || !/^\p{L}[\p{L}\p{N}_]*$/u.test(marker.name) || /^YRTK_/iu.test(marker.name) || !['start','end'].includes(marker.kind)) throw Error('DOCX_USER_BOOKMARK_MARKER_INVALID');
@@ -501,7 +491,6 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     revisionCounter,
     userBookmarkIds,
     exportTypography,
-    commentTransportScenes,
   ), row => buildPendingRowPropertiesXml(row.map(p => p.item.pendingRowRevision), revisionCounter));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection

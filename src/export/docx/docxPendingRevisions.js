@@ -59,13 +59,39 @@ function buildPendingParagraphPropertiesXml(propertiesXml, revision, counter) {
     + protectedProperties;
   return `<w:pPr>${body}<w:pPrChange${revisionAttributes(revision, counter)}><w:pPr>${old}</w:pPr></w:pPrChange></w:pPr>`;
 }
+// Only the locally emitted property fragment is composed here. Match its
+// direct owner with a balanced stack so old rPrChange snapshots stay intact.
+function appendOwnedParagraphMarker(xml, marker, code) {
+  const properties=xml||'<w:pPr></w:pPr>',stack=[];let owner=null,rootClose=-1,end=0;
+  if(!properties.startsWith('<w:pPr>')||!properties.endsWith('</w:pPr>'))throw Error(code);
+  for(const token of properties.matchAll(/<\/?([A-Za-z_][\w:.-]*)\b[^>]*>/gu)) {
+    if(properties.slice(end,token.index).trim())throw Error(code);
+    const name=token[1],closing=token[0].startsWith('</'),selfClosing=token[0].endsWith('/>');
+    if(closing) {
+      if(stack.pop()!==name)throw Error(code);
+      if(name==='w:rPr'&&stack.length===1&&stack[0]==='w:pPr')owner.close=token.index;
+      if(!stack.length){if(name!=='w:pPr'||rootClose!==-1)throw Error(code);rootClose=token.index;}
+    }else{
+      if(!stack.length&&token.index!==0)throw Error(code);
+      if(stack.length===1&&name==='w:rPr'){
+        if(owner||(selfClosing&&token[0]!=='<w:rPr/>'))throw Error(code);owner={start:token.index,end:token.index+token[0].length,selfClosing};
+      }
+      if(stack.length===2&&stack[1]==='w:rPr'&&['w:ins','w:del'].includes(name))throw Error(code);
+      if(!selfClosing)stack.push(name);
+    }
+    end=token.index+token[0].length;
+  }
+  if(stack.length||end!==properties.length||rootClose<0)throw Error(code);
+  if(owner?.selfClosing)return properties.slice(0,owner.start)+'<w:rPr>'+marker+'</w:rPr>'+properties.slice(owner.end);
+  const at=owner?owner.close:rootClose;
+  return properties.slice(0,at)+(owner?marker:'<w:rPr>'+marker+'</w:rPr>')+properties.slice(at);
+}
 function buildPendingParagraphBoundaryXml(propertiesXml, revision, counter) {
   if (!revision) return propertiesXml;
   if (revision.boundary !== 'paragraph' || revision.state !== 'pending' || !['insert', 'delete'].includes(revision.operation))
     throw Error('PENDING_PARAGRAPH_BOUNDARY_INVALID');
-  const body = propertiesXml.replace(/^<w:pPr>/u, '').replace(/<\/w:pPr>$/u, '');
-  const mark = `<w:rPr><w:${revision.operation === 'insert' ? 'ins' : 'del'}${revisionAttributes(revision, counter)}/></w:rPr>`;
-  return `<w:pPr>${body}${mark}</w:pPr>`;
+  const mark = `<w:${revision.operation === 'insert' ? 'ins' : 'del'}${revisionAttributes(revision, counter)}/>`;
+  return appendOwnedParagraphMarker(propertiesXml,mark,'PENDING_PARAGRAPH_BOUNDARY_INVALID');
 }
 function buildPendingRowPropertiesXml(revisions, counter) {
   const revision = revisions.find(Boolean);
@@ -78,8 +104,7 @@ function buildPendingRowPropertiesXml(revisions, counter) {
 function buildPendingRowParagraphXml(xml, revision, counter) {
   if (!revision) return xml;
   const mark = buildPendingRowPropertiesXml([revision], counter);
-  return xml.includes('</w:pPr>') ? xml.replace('</w:pPr>', `<w:rPr>${mark}</w:rPr></w:pPr>`)
-    : `<w:pPr><w:rPr>${mark}</w:rPr></w:pPr>${xml}`;
+  return appendOwnedParagraphMarker(xml,mark,'PENDING_TABLE_ROW_EXPORT_INVALID');
 }
 // Export segments have already been validated against canonical scene truth.
 // Keep rich runs together; live comment markers may split a deletion wrapper.

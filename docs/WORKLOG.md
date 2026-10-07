@@ -1473,3 +1473,18 @@ CI log atcd114fe independently has exactly the SAME156 failed tests as local
 Mechanical14 OPS freeze is byte binding only. Checkpoint commit preserves
 this same undelivered PR for clean H2 admission; all required final delivery,
 full native novel and current whole gates remain OPEN, not bypassed.
+
+2026-10-07 WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 amendment15 admitted at clean
+c110f after fresh bootstrap/preflight/E0. Same original42b PR2093/46paths/budgets.
+Root unchanged actualMain approximately100k5exchanges+5Undo+5Redo1of1 passed,
+zero exclusions; NOT native Word or production-speed proof. Preserve full log.
+Repair only owned paragraph marker and existing source-binding transport seams;
+complete resolved history decides eligibility, never emitted-block heuristic.
+All original full novel/native/mandatory gates and delivery remain OPEN.
+
+WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 amendment15 frozen known-incomplete:
+root35pins/9logs18artifacts exact;96of96 typography,20of29affected with9fail,
+zero exclusions, compiler idempotent/predecessor exact. Actual Main publication
+rejects BOTH Enter and paragraph-mark-format effective carrier interpretation.
+Raw source and generic Current/Original retained. Clean samePR checkpoint only;
+next map/admit checked-carrier parser correction, full novel/native/gates OPEN.
