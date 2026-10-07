@@ -309,6 +309,72 @@ function addBoundNotes(h, withComments = true, schemaVersion = 3) {
 const protectedNoteMeaning=document=>({...document,notes:document.notes.map(note=>!note.manuscript?note:{...note,
  manuscript:{...note.manuscript,reference:{...note.manuscript.reference,offsetUtf16:0,sourceTextSha256:''}}})});
 const business=h=>[h.file,h.manifest,h.notePath,h.commentPath].map(file=>fs.existsSync(file)?fs.readFileSync(file,'utf8'):null);
+test('recording save independently replays complete proof four times with exact durable output',async t=>{
+ const h=await harness(t),seed=addBoundNotes(h,true,5);
+ h.c.Date=class extends Date{constructor(...args){super(...(args.length?args:['2026-10-05T12:00:07.000Z']));}};
+ h.c.crypto={...crypto,randomUUID:()=> 'recording-proof-count'};
+ await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ const real=recording.derive,proofCalls=[];
+ recording.derive=function(...args){const stack=new Error().stack;if(stack.includes('validateRecordingSaveProof'))proofCalls.push(stack);return real.apply(this,args);};
+ let result;try{result=await h.save();}finally{recording.derive=real;}
+ assert.equal(result.success,true,JSON.stringify(result));assert.equal(h.writes,1);
+ const saved=business(h),ledger=model.readLedger(h.context().parsed.doc);
+ assert.equal(model.projection(h.context().parsed.doc).current,'A!B tail');assert.equal(model.projection(h.context().parsed.doc).original,'AxxB tail');
+ assert.deepEqual(protectedNoteMeaning(JSON.parse(saved[2])),protectedNoteMeaning(seed.document));
+ assert.deepEqual(h.readComments().state.threads[0].messages,JSON.parse(seed.comments).threads[0].messages);
+ assert.deepEqual(ledger.noteSourcePoints.map(p=>p.offsetUtf16),[2,4]);
+ // Each unchanged public validator executes both previous and next derivations.
+ t.diagnostic('PROOF_COUNT_OUTPUT '+JSON.stringify({proofCalls:proofCalls.length/2,saved}));
+ assert.equal(proofCalls.length,8);assert.equal(proofCalls.filter(s=>s.includes('revalidatePendingRecordingSave')).length,0);
+ assert.equal(proofCalls.filter(s=>s.includes('normalizeCommentState')).length,2);
+ assert.equal(proofCalls.filter(s=>s.includes('normalizeNoteState')).length,2);
+});
+test('public recording planners and atomic writer independently refuse forged proof operands',async t=>{
+ const h=await harness(t);addBoundNotes(h,true,5);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));
+ const snapshot=await h.capture(),admission=h.c.resolvePendingRecordingSaveAdmission(h.file,snapshot.content,snapshot.generation);
+ const input={projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:admission.expected,afterContent:snapshot.content,recordingProofJson:admission.recordingProofJson};
+ const comments=require('../../src/core/word-pending-recording-comments-v1.cjs'),commentInput={...input,beforeText:h.readComments().text},noteInput={...input,beforeText:fs.readFileSync(h.notePath,'utf8')};
+ const commentState=comments.planRecordingCommentSave(commentInput),noteState=notesModel.planManuscriptNoteAnchorSave(noteInput),before=business(h),working=h.editor;
+ for(const field of ['baseline','previous','next','source','points','history']){
+  const forged={...input},proof=JSON.parse(input.recordingProofJson);
+  if(field==='baseline'){const ledger=structuredClone(model.readLedger(envelope.parseObservablePayload(proof.baselineContent).doc));ledger.source.content[0].content[0].text='Foreign baseline';proof.baselineContent=envelope.composeObservablePayload({doc:model.bindLedger(ledger)});}
+  if(field==='previous')proof.previousIntents.baselineTextSha256='f'.repeat(64);
+  if(field==='next')proof.nextIntents.edits[0].insertedParagraphs=['?'];
+  if(['source','points','history'].includes(field)){
+   const ledger=structuredClone(model.readLedger(envelope.parseObservablePayload(forged.afterContent).doc));
+   if(field==='source')ledger.source.content[0].content.find(n=>n.text.includes('xx')).text='Foreign source';
+   if(field==='points')ledger.noteSourcePoints[0].offsetUtf16=1;
+   if(field==='history')ledger.returnReceipts.push({roundId:'foreign',artifactSha256:'f'.repeat(64)});
+   forged.afterContent=envelope.composeObservablePayload({doc:model.bindLedger(ledger)});
+  }
+  forged.recordingProofJson=JSON.stringify(proof);
+  assert.throws(()=>comments.planRecordingCommentSave({...commentInput,...forged}),error=>{t.diagnostic('FORGED_PUBLIC '+field+' comments '+error.message);return /RECORDING_|COMMENT_/u.test(error.message);});
+  assert.throws(()=>notesModel.planManuscriptNoteAnchorSave({...noteInput,...forged}),error=>{t.diagnostic('FORGED_PUBLIC '+field+' notes '+error.message);return /RECORDING_|COMMENT_/u.test(error.message);});
+  for(const cohort of ['comments','notes']){
+   const manifest=fs.readFileSync(h.manifest,'utf8');
+   await assert.rejects(tx.commitProjectTransaction({scenePath:h.file,manifestPath:h.manifest,expectedSceneContent:input.beforeContent,sceneContent:forged.afterContent,
+    expectedManifestContent:manifest,manifestContent:manifest,revision:snapshot.generation,
+    publishManifest:async({manifestPath,expectedText,nextText,revision})=>{assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);await durableSaveTransaction({filePath:manifestPath,content:nextText,revision});},
+    ...(cohort==='comments'?{commentState:{...commentState,recordingProofJson:forged.recordingProofJson}}:{noteState:{...noteState,recordingProofJson:forged.recordingProofJson}})}),
+    cohort==='comments'?/E_PROJECT_TRANSACTION_COMMENT_STATE/u:/E_PROJECT_TRANSACTION_NOTE_STATE/u,field+' '+cohort);
+   assert.deepEqual(business(h),before);assert.equal(h.editor,working);assert.equal(h.writes,0);
+  }
+ }
+});
+test('both recording save revalidation stages retain complete fresh drift guards',async t=>{
+ for(const stage of [1,2])for(const field of ['scene','comments','notes','session','generation','project','manifest']){
+  const h=await harness(t);addBoundNotes(h);await h.start();h.type('A!B tail');h.intents=intents('AB tail',typed('first',1,'','!'));const snapshot=await h.capture(),working=h.editor;
+  const port=h.c.commitWriterProjectSnapshot.recordingPort;let calls=0,expected=business(h);
+  h.c.commitWriterProjectSnapshot.recordingPort={...port,revalidate:async admission=>{
+   if(++calls===stage){if(field==='scene')fs.appendFileSync(h.file,' ');if(field==='comments')fs.appendFileSync(h.commentPath,' ');if(field==='notes')fs.appendFileSync(h.notePath,' ');
+    if(field==='session')h.c.commentAuthoringSessionId='foreign';if(field==='generation')admission.session.savedGeneration=snapshot.generation+1;
+    if(field==='project')h.foreignProject=true;if(field==='manifest')fs.appendFileSync(h.manifest,' ');expected=business(h);}
+   return port.revalidate(admission);
+  }};
+  const refused=await h.commit(snapshot);assert.equal(refused.success,false,field+' '+stage);assert.equal(calls,field==='manifest'?2:stage,field+' '+stage);assert.equal(h.writes,0);
+  assert.deepEqual(business(h),expected);assert.equal(h.editor,working);assert.equal(h.c.isDirty,true);
+ }
+});
 for(const comments of [false,true]) for(const schemaVersion of [3,5]) test(`actual Main schema${schemaVersion} records notes${comments?' plus complete discussions':''} across atomic ACKs and restart`,async t=>{
  const h=await harness(t),seed=addBoundNotes(h,comments,schemaVersion);
  const capability=await h.c.readPendingRevisionProjection();assert.equal(capability.recordingAvailable,true,JSON.stringify(capability));

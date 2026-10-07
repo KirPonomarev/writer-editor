@@ -858,7 +858,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "61edcf44a45cb285359cc09eb61c13f97044eb67aa950204fea308fcdfcb8ab4"
+        "sha256": "db219e1a0a78c9966972773d06641b6b973d7b076b00daf6c541ab1c44059768"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1770,7 +1770,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "55721177bc480654829e15999f3ac7c5558581370ebd80d22642fb44457f4c4d"
+        "sha256": "7fcf1b5fd7a3206272c20d8f099f90a4073e231fc25d41b8d040c905f3309a1e"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "4163b4df300022a35035f4fcb4da5a18baf6bf7dbc68903fe4758229beb70dfe"
+        "sha256": "ab0dc7cc64f279b334005f5ff92d68dfeb4da608ab2974eddd591e3fe8b8799e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "22217e37469d252365a78fee5b9426e168961b799952737e3b4ce2a45d7b21d0"
+        "sha256": "89c2fe26ed4a79d6ced53e10c7cacdf332af81efe939bcb45c06db3c0239dcf4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f41afa2467c23f7c7f87af6e9062736812534049c4a3c74f4f19d3ec1e9c90fc"
+        "sha256": "d9fe38fcc4fcb69583c6c521fa8d577992be78fa408633037ae5d281f98760f8"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "abb594d21fdbc5b3194eb1846b32ea96e1a6e46586e5c20ddd94ae0071c0c7da"
+        "sha256": "caabae14dc78e4455c1d71f335dcff55734b50f5236ae8cad5792c02210b96bd"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",

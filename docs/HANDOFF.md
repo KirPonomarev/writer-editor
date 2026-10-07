@@ -2430,3 +2430,87 @@ compiler/root large diagnostic/required gates/delivery remain OPEN.
 Amendment27 finite installed LIVE body projection admitted by clean declaration05 at unchanged1f478/origin42b: bootstrap/preflight/taskE0 actual0, scope86/source74 and1800/2600 budgets preserved. Actual24-case production-schema probe mapped known null defaults, unique recognized mark order, typed empty-content omission and complete-markup text coalescing; unknown attr loss must refuse. Canonical source/ledger/frame/proof/meta/cards and Current/Original remain exact. Two safe owned-WIP captures retain all prior work and failed artifacts. Implementation/whole-chain/large/native/release proofs remain open.
 
 Amendment27 candidate frozen:436/436 actual serial tests,2 byte-idempotent builds,74 held source operands, runtime1273/1800 and behavior2473/2600. Root500k copy saved once in148.887s; owned RSS guard stopped before stop completed at182.909s/2687107072B. Independent complete durable Current/Original/root/compactframe/notes/discussions/anchors readback exit0 (SHA50bcd6bfdf55a922da656214a5cddd569e924be0cd961b8448c5b3f6d81052f4). No native/stop/UndoRedo/five/resource/releasePASS; failed bounded artifact retained, no unchanged rerun/bound raise. Full delivery and original goal remain open. Root performs exact bindings/gates/commit/push; proposed next performance contour removes only two duplicate Main static proof replays while retaining fresh guards and all public/authoritative replay paths.
+
+
+### Amendment28 — remove redundant Main static recording-proof replay
+
+O: retain complete saved novel text, history, private/rich notes and discussions,
+while reducing exactly two redundant static proof replays in a note-bearing save.
+T: existing Kernel save -> private Main admission -> both fresh session/generation/
+source/project/annotation checks -> existing public comment/note planners ->
+single leased transaction with independent complete proof regeneration -> actual
+scene/manifest/annotation readback. No alternate writer, cache or authority flag.
+H: source map shows the same immutable proof rederived in both Main revalidation
+calls despite independent public planning and authoritative transaction replay.
+Remove only the standalone validateRecordingSaveProof invocation in existing
+revalidatePendingRecordingSave. Retain BOTH callers and EVERY other statement,
+including the noteRecording block and full note equality. Predict two fewer
+actual static calls with exactly equal complete outputs and forged/stale refusals;
+no latency or memory claim before measurement. Static call graph is not execution.
+B: no Core/public planner/atomic writer/Renderer/parser/preload/schema/limit change.
+All fresh capability/lifecycle/owner/session/generation/source/manifest/comments/
+notes checks, current proof strings, all source/history/meta/private bytes and
+conditional publication remain protected. Failure must be typed/non-silent with
+zero durable writes and existing no-loss retry. No proof cache or validated object.
+P: actual before/after call evidence plus full business equality; forged baseline/
+previous/next/source/point/history inputs at public planners and actual transaction;
+both fresh revalidation stages with drift and failed-save/retry, no-comment/no-note
+variants. Existing whole13 serial suites, unchanged compiler twice/idempotence,
+root full binding/diff review and all mandatory gates. One materially changed
+hypothesis500k diagnostic keeps SAME240s/2.5GiB/2048MiB safety bounds and fixture
+adapters; five only after a complete first success. No unchanged rerun/bound raise.
+I: clean pushed3f0b9bacd462e77c2c79ae3e9dcc1cf567b49004, fresh origin/main42b7d2e,
+registered encrypted/unlocked/writable T7; same unfinished original42b PR2093,
+86 scope/74 prewrite pins and original1800runtime2600behavior budgets/rollback.
+Declaration28_01 SHA18180de4201d7a6a54f3f309b742c7c72675261b5bf8b0c71d685322657959e8;
+clean bootstrap/preflight/taskE0 actual0 BEFORE any repository edit; admission
+SHA6a4e54ce9a4ff7051c1a80ccf26ca7293591da16acfe165a97c7a52c56ea6584.
+Writer alone owns Main and current recording runtime test; all other74 source
+operands remain frozen. Root owns4 docs/7 OPS/proof/Git. Preserve223 historical
+tuples/622 admitted480 bindings/1597 inventory; one nonrecursive successor only
+at final HOLD. ARCH_DIFF_LOG unchanged: no canon exception. Mechanical backend
+scope changes no design contract. CHECK_01 precedes writes; CHECK_02+ follows.
+Current27 official CI is running; no new contour, semantic closure or merge.
+Genuine native Word SOURCE/ordinaryPACKAGED,both origins/scopes/three roles/five,
+hard30s512MiB,single composed return and full original release remain OPEN.
+NEXT: separate writer implements and proves only this admitted replay correction.
+
+
+AMENDMENT28_FINITE_REPLAY_CORRECTION_AND_ACTUAL_BOUND_OUTCOME
+Exact predecessor3f0b9bac; writer HOLD28_01 SHAe1cdafeafa4e76204e7be5932ed0e279f934e05b2f86aaf72915633ce2069793.
+Only Main standalone two-line static-proof invocation was removed; both fresh
+revalidation callers and every source/project/session/generation/annotation
+check remain exact. Independent public comment/note planners and authoritative
+atomic transaction regenerations remain unchanged. Actual small save counts6
+complete replays before versus4 after, one atomic write each, complete four
+business strings byte exact. Six forged operands reach both public planners
+and both atomic cohorts;14 fresh drift cases preserve all unsaved/durable state.
+Whole13 SERIAL439/439, zero exclusions, actual0; both compiler invocations0,
+136 complete input/72 source-test/5 admission-doc pins exact; outputs unchanged.
+Root independently reviewed all74 current/predecessor pins, complete two-file
+diff/logs/artifacts, four durable strings and all compiler inputs. Review SHA
+d7189be084e8a866c0f2f6da6de5b6b2f98e1f9faf41dce564f8ce84ed108874.
+One SAME500108word/8391paragraph observer28 executed with unchanged240s/2.5GiB
+and heap2048MiB bounds. Actual owned process SIGTERM at157.818897s after sampled
+2694971392B RSS exceeded2684354560B. Save completion was NOT observed; stop,
+ACK/UndoRedo/five were NOT reached. Outcome SHA
+3b3de64a143fab328c1ee3c1053bdb64af97c06b658d161662d690f30b9a6b05.
+Independent complete durable baseline readback verifies original rich Current,
+Original/root/body, zero new revisions/history, private/rich note bodies and
+original points, complete discussion/event/input digest and unchanged manifest.
+Readback SHA8e6c7fe93ddb8c62cdbd20e26d8612fe2957eeb19c47545e204d86ae317ebcac.
+Observer01 incorrectly expected compact-frame feature on schema3 empty-history
+baseline; retained failure corrected02 from actual envelope feature law385–386,
+not by changing product bytes or removing an assertion. No full saved-phase claim.
+This diagnostic uses explicit Renderer fixture adapters, not native EditorView;
+no speed magnitude or production/native memory acceptance follows from it.
+Official CI27 on3f has an actual ordinary-tree static ordering assertion failure
+because it sees an earlier independently guarded recording branch setter.
+Actual following replacement listener matrix passed. Actual build+clean-tree
+passed; full RTK emitted878 cases then600s no-progress timeout, cleanup identity
+ambiguous. Blocking case unknown; no timeout increase, skip or cleanup bypass.
+Current original86scope budgets1275/1800runtime2539/2600behavior, generated462;
+full original release/required CI/merge remain OPEN, no semantic closure.
+NEXT: deliver this finite checkpoint under all mandatory local gates, then admit
+precise required-CI test correction and investigate actual allocation pressure;
+no unchanged third RSS rerun and no giant native alert/crash reproduction.

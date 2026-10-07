@@ -25968,8 +25968,6 @@ async function revalidatePendingRecordingSave(admission) {
   if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
   if (session.noteRecording) {
     if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
-    require('./core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof({
-      beforeContent: admission.expected, afterContent: admission.content, recordingProofJson: admission.recordingProofJson });
   }
   const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
   if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
